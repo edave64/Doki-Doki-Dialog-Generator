@@ -10,7 +10,7 @@
 		"no-consecutive-blank-lines": false,
 		"object-literal-sort-keys": false,
 		"ordered-imports": false,
-		"quotemark": [true, "single"],
+		"quotemark": [true, "single", "avoid-escape", "avoid-template"],
 		"arrow-parens": false,
 		"curly": [true, "ignore-same-line"],
 		"trailing-comma": [
