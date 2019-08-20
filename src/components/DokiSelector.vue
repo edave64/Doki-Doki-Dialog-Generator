@@ -1,6 +1,6 @@
 <template>
 	<div id="girl_sel" class="gui">
-		<img ref="girl_sel" src="../assets/chibi.png" @click="onClick" />
+		<img ref="girl_sel" src="/assets/chibi.png" @click="onClick" />
 	</div>
 </template>
 

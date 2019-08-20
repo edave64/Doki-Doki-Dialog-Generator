@@ -503,14 +503,14 @@ interface DialogLetter {
 	font-family: aller;
 	font-weight: normal;
 	font-style: normal;
-	src: url(assets/aller.ttf);
+	src: url(/assets/aller.ttf);
 }
 
 @font-face {
 	font-family: riffic;
 	font-weight: normal;
 	font-style: normal;
-	src: url(assets/riffic.ttf);
+	src: url(/assets/riffic.ttf);
 }
 
 html,
