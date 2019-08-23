@@ -632,6 +632,7 @@ body {
 		margin-top: -3px;
 		margin-left: -3px;
 		button {
+			outline: 0;
 			box-sizing: border-box;
 			width: 48px;
 			height: 48px;
