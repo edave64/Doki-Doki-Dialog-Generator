@@ -1,4 +1,4 @@
-import { Background } from './background';
+import { Background } from '../asset-manager';
 
 export interface IApp {
 	currentBackground: Background | null;

@@ -1,11 +1,50 @@
 <template>
 	<div id="app">
 		<div id="container">
-			<canvas id="scaled_display" ref="sd">
+			<canvas
+				id="scaled_display"
+				ref="sd"
+				:height="canvasHeight"
+				:width="canvasWidth"
+				@click="onUiClick"
+			>
 				HTML5 is required to use this
 				<strike>shitpost</strike>meme generator.
 			</canvas>
 		</div>
+		<div id="panels" :class="{ vertical }">
+			<div id="toolbar">
+				<button :class="{ active: panel === 'add' }" @click="panel = panel === 'add' ? '' : 'add'">A</button>
+				<button
+					:class="{ active: panel === 'backgrounds' }"
+					@click="panel = panel === 'backgrounds' ? '' : 'backgrounds'"
+				>B</button>
+				<button>&nbsp;</button>
+				<button @click="download">D</button>
+			</div>
+			<keep-alive>
+				<general-panel
+					v-if="panel === ''"
+					:options="textboxOptions"
+					:vertical="vertical"
+					:lqRendering.sync="lqRendering"
+				/>
+				<add-panel v-if="panel === 'add'" :vertical="vertical" @chosen="onDokiChosen" />
+				<backgrounds-panel
+					v-if="panel === 'backgrounds'"
+					:vertical="vertical"
+					v-model="currentBackground"
+				/>
+				<doki-panel
+					v-if="panel === 'doki'"
+					:vertical="vertical"
+					:girl="selectedGirl"
+					@shiftLayer="onDokiLayerShift"
+					@invalidate-render="render_"
+				/>
+			</keep-alive>
+		</div>
+		<!--
 		<div
 			ref="ui"
 			id="ui"
@@ -24,25 +63,11 @@
 			<br />
 			<doki-button @click="close_guis();editDialog=true;">Edit text</doki-button>
 			<div id="ui_bl">
-				<toggle label="Textbox visible?" v-model="renderTextbox" />
-				<toggle label="Textbox corrupt?" v-model="corruptedTextbox" />
-				<br />Person talking:
-				<select v-model="talking">
-					<option value>No-one</option>
-					<option value="Sayori">Sayori</option>
-					<option value="Yuri">Yuri</option>
-					<option value="Natsuki">Natsuki</option>
-					<option value="Monika">Monika</option>
-					<option value="other">Other</option>
-				</select>
-				<toggle label="Controls visible?" v-model="showControls" />
-				<toggle label="Able to skip?" v-model="allowSkipping" />
-				<toggle label="Continue arrow?" v-model="showContinueArrow" />
 			</div>
 			<div id="ui_br">
 				<doki-button @click="download">Download</doki-button>
 			</div>
-			<div style="float:clear;width:1px;height:2em;"></div>
+			<div style="clear:both;width:1px;height:2em;"></div>
 			<doki-settings
 				v-if="selectedGirl"
 				:girl="selectedGirl"
@@ -51,57 +76,53 @@
 				@invalidate-render="render_"
 			/>
 		</div>
-		<assets />
 		<doki-button id="hsui" @click="showUI = !showUI">{{showUI ? "Show UI" : "Hide UI"}}</doki-button>
-		<doki-selector v-if="dokiSelectorOpen" @chosen="onDokiChosen" />
-		<background-selector
-			v-if="backgroundSelectorOpen"
-			v-model="currentBackground"
-			@input="render_();close_guis()"
-		/>
-		<dialog-editor v-if="editDialog" v-model="dialog" lazy @close="close_guis()" />
+		<keep-alive>
+			<doki-selector v-if="dokiSelectorOpen" @chosen="onDokiChosen" />
+			<background-selector
+				v-if="backgroundSelectorOpen"
+				v-model="currentBackground"
+				@input="render_();close_guis()"
+			/>
+			<dialog-editor v-if="editDialog" v-model="dialog" lazy @close="close_guis()" />
+		</keep-alive>
 		<ip />
+		-->
 	</div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import DokiButton from './components/DokiButton.vue';
-import DokiSettings, { MoveGirl } from './components/DokiSettings.vue';
-import DokiSelector from './components/DokiSelector.vue';
-import BackgroundSelector from './components/BackgroundSelector.vue';
-import Assets from './components/Assets.vue';
-import Ip from './components/Ip.vue';
-import Toggle from './components/Toggle.vue';
 import DialogEditor from './components/DialogEditor.vue';
+import GeneralPanel from './components/panels/general.vue';
+import AddPanel from './components/panels/add.vue';
+import DokiPanel from './components/panels/doki.vue';
+import BackgroundsPanel from './components/panels/backgrounds.vue';
 import { IApp } from './models/app';
-import { Background } from './models/background';
-import { backgrounds, girlPositions, poses } from './models/constants';
+import { girlPositions } from './models/constants';
+import { TextboxOptions } from './models/textbox';
 import { Girl, GirlName } from './models/girl';
+import { Background, backgrounds, getAsset } from './asset-manager';
+import { Renderer } from './renderer/renderer';
+import { RenderContext } from './renderer/rendererContext';
+import { MoveGirl } from './components/DokiSettings.vue';
 
 @Component({
 	components: {
 		DokiButton,
-		DokiSettings,
-		DokiSelector,
-		Assets,
-		Toggle,
 		DialogEditor,
-		BackgroundSelector,
-		Ip,
+		GeneralPanel,
+		AddPanel,
+		DokiPanel,
+		BackgroundsPanel,
 	},
 })
 export default class App extends Vue implements IApp {
-	public area = {
-		top: 0,
-		left: 0,
-		width: 0,
-		height: 0,
-	};
+	public canvasWidth: number = 0;
+	public canvasHeight: number = 0;
 	public currentBackground: Background | null = null;
 
-	private fs!: HTMLCanvasElement;
-	private fsCtx!: CanvasRenderingContext2D;
 	private sdCtx: CanvasRenderingContext2D | undefined;
 	private girls: Girl[] = [];
 	private selectedGirl: Girl | null = null;
@@ -109,18 +130,25 @@ export default class App extends Vue implements IApp {
 	private backgroundSelectorOpen: boolean = false;
 	private editDialog: boolean = false;
 
-	private renderTextbox: boolean = true;
-	private corruptedTextbox: boolean = false;
-	private showControls: boolean = true;
-	private allowSkipping: boolean = true;
-	private showContinueArrow: boolean = true;
-	private talking: string = '';
-	private customName: string = '';
-	private dialog: string = '';
+	private vertical: boolean = false;
+	private textboxOptions: TextboxOptions = {
+		render: true,
+		corrupted: false,
+		showControls: true,
+		allowSkipping: true,
+		showContinueArrow: true,
+		talking: '',
+		customName: '',
+		dialog: '',
+	};
 
+	private renderer: Renderer = new Renderer();
 	private showUI: boolean = true;
-
 	private loaded: boolean = false;
+	private uiSize: number = 192;
+	private lqRendering: boolean = true;
+
+	private panel: string = '';
 
 	public close_guis(): void {
 		this.selectedGirl = null;
@@ -132,87 +160,89 @@ export default class App extends Vue implements IApp {
 	@Watch('selectedGirl')
 	public onSelectedGirlChange(newGirl: Girl, oldGirl: Girl) {
 		if (oldGirl) oldGirl.unselect();
-		if (newGirl) newGirl.select();
-		this.render_();
+		if (newGirl) {
+			newGirl.select();
+			this.panel = 'doki';
+		}
+		this.invalidateRender();
 	}
 
-	@Watch('renderTextbox')
-	@Watch('corruptedTextbox')
-	@Watch('showControls')
-	@Watch('allowSkipping')
-	@Watch('showContinueArrow')
-	@Watch('talking')
-	@Watch('customName')
-	@Watch('dialog')
-	public async render_(): Promise<void> {
-		if (!this.loaded) {
-			const sd = this.$refs.sd as HTMLCanvasElement;
-			this.fsCtx.clearRect(0, 0, this.fs.width, this.fs.height);
-
-			this.drawText(
-				'Starting...',
-				this.fs.width / 2,
-				this.fs.height / 2,
-				'center',
-				5,
-				'white',
-				'#b59',
-				'32px riffic'
-			);
-		} else {
-			this.render_bg();
-
-			for (const girl of this.girls) {
-				if (!girl.infront) {
-					girl.render();
-				}
-			}
-
-			await this.render_textbox();
-
-			for (const girl of this.girls) {
-				if (girl.infront) {
-					girl.render();
-				}
-			}
+	@Watch('panel')
+	public onPanel(newPanel: string) {
+		if (newPanel !== 'doki') {
+			this.selectedGirl = null;
 		}
+	}
 
-		this.display();
+	private _queuedRender: number | null = null;
+	private _renderInProgress: boolean = false;
+
+	@Watch('textboxOptions.render')
+	@Watch('textboxOptions.corrupted')
+	@Watch('textboxOptions.showControls')
+	@Watch('textboxOptions.allowSkipping')
+	@Watch('textboxOptions.showContinueArrow')
+	@Watch('textboxOptions.talking')
+	@Watch('textboxOptions.customName')
+	@Watch('textboxOptions.dialog')
+	@Watch('lqRendering')
+	@Watch('currentBackground')
+	public invalidateRender() {
+		if (this._queuedRender) return;
+		this._queuedRender = requestAnimationFrame(() => this.render_());
+	}
+
+	public async render_(hq?: boolean): Promise<void> {
+		if (this._queuedRender) {
+			cancelAnimationFrame(this._queuedRender);
+			this._queuedRender = null;
+		}
+		if (this._renderInProgress) {
+			// Delay rerender when render already in progress
+			this.invalidateRender();
+		}
+		this._renderInProgress = true;
+
+		try {
+			if (hq === undefined) hq = !this.lqRendering;
+			await this.renderer.render(async rx => {
+				if (!this.loaded) {
+					rx.drawText(
+						'Starting...',
+						this.renderer.width / 2,
+						this.renderer.height / 2,
+						'center',
+						5,
+						'white',
+						'#b59',
+						'32px riffic'
+					);
+				} else {
+					await this.render_bg(rx);
+
+					for (const girl of this.girls) {
+						if (!girl.infront) {
+							await girl.render(rx);
+						}
+					}
+
+					await this.render_textbox(rx);
+
+					for (const girl of this.girls) {
+						if (girl.infront) {
+							await girl.render(rx);
+						}
+					}
+				}
+			}, hq);
+			this.display();
+		} finally {
+			this._renderInProgress = false;
+		}
 	}
 
 	private created(): void {
-		this.fs = document.createElement('canvas');
-		this.fs.width = 1280;
-		this.fs.height = 720;
-		this.fsCtx = this.fs.getContext('2d')!;
-
 		(window as any).cats = this;
-	}
-
-	private drawText(
-		text: string,
-		x: number,
-		y: number,
-		align: CanvasTextAlign,
-		w: number,
-		col: string,
-		ocol: string,
-		font: string
-	): void {
-		w = w || 1;
-		col = col || 'white';
-		ocol = ocol || '#533643';
-		font = font || '20px aller';
-
-		this.fsCtx.fillStyle = col;
-		this.fsCtx.strokeStyle = ocol;
-		this.fsCtx.lineWidth = 2 * w;
-		this.fsCtx.textAlign = align;
-		this.fsCtx.font = font;
-		this.fsCtx.lineJoin = 'round';
-
-		this.fsCtx.strokeText(text, x, y);
-		this.fsCtx.fillText(text, x, y);
 	}
 
 	private mounted(): void {
@@ -226,82 +256,76 @@ export default class App extends Vue implements IApp {
 				this.close_guis();
 			}
 		});
-		for (const el of document.getElementById('assets')!.children) {
-			const type = el.getAttribute('what');
-			const element = el as HTMLImageElement;
 
-			if (type === 'bg') {
-				backgrounds.push(new Background(element));
-			}
-
-			this.currentBackground = backgrounds[0];
-
-			if (type === 'pose') {
-				poses[element.getAttribute('girl') as GirlName][
-					element.getAttribute('part') as ('head' | 'right' | 'left')
-				].push(element);
-			}
-		}
+		this.currentBackground = backgrounds[0];
 
 		Promise.all([
-			this.getAsset('initBG'),
-			this.getAsset('tbimg'),
-			this.getAsset('namebox'),
-			this.getAsset('contarr'),
+			getAsset(this.currentBackground.path, false),
+			getAsset('textbox'),
+			getAsset('namebox'),
+			getAsset('next'),
 		])
 			.then(() => {
 				this.loaded = true;
-				this.render_();
+				this.invalidateRender();
 			})
 			.catch(() => {
 				alert('Error while loading. Sorry :/');
 			});
+	}
 
-		/*
-		setInterval(() => {
-			let tb;
+	private optimum(sw: number, sh: number): [number, number] {
+		let rh = sw / (16 / 9);
+		let rw = sh * (16 / 9);
 
-			if ((tb = document.querySelector('#ted > textarea'))) {
-				tb.style.height = tb.parentNode.offsetHeight - tb.offsetTop - 48 + 'px';
-			}
-		}, 64);*/
+		if (rh > sh) {
+			rh = sh;
+		} else {
+			rw = sw;
+		}
+
+		return [rw, rh];
+	}
+
+	private optimizeWithMenu(sw: number, sh: number): [number, number, boolean] {
+		const opth = this.optimum(sw, sh - this.uiSize);
+		const optv = this.optimum(sw - this.uiSize, sh);
+
+		if (opth[0] * opth[1] > optv[0] * optv[1]) {
+			return [opth[0], opth[1], false];
+		} else {
+			return [optv[0], optv[1], true];
+		}
 	}
 
 	private updateArea(): void {
-		const sd = this.$refs.sd as HTMLCanvasElement;
-		sd.width = sd.offsetWidth;
-		sd.height = sd.offsetHeight;
-		this.area.top = sd.offsetTop;
-		this.area.left = sd.offsetLeft;
-		this.area.width = sd.width;
-		this.area.height = sd.height;
-		this.render_();
+		const [cw, ch, v] = this.optimizeWithMenu(
+			window.innerWidth,
+			window.innerHeight
+		);
+
+		this.canvasWidth = cw;
+		this.canvasHeight = ch;
+		this.vertical = v;
+		this.$nextTick(() => {
+			this.display();
+		});
 	}
 
-	@Watch('talking')
-	private talkingChange(newName: string, oldName: string): void {
-		if (newName === oldName) return;
-		if (newName !== 'other') return;
-		const customName = prompt('Enter name:');
-		if (customName) {
-			this.customName = customName;
-		}
-	}
+	private async render_textbox(rx: RenderContext): Promise<void> {
+		if (!this.textboxOptions.render) return;
 
-	private async render_textbox(): Promise<void> {
-		if (!this.renderTextbox) return;
-
-		if (this.corruptedTextbox) {
-			this.fsCtx.drawImage(await this.getAsset('tbimg_corrupt'), 190, 565);
+		if (this.textboxOptions.corrupted) {
+			rx.drawImage(await getAsset('textbox_monika'), 190, 565);
 		} else {
-			this.fsCtx.drawImage(await this.getAsset('tbimg'), 232, 565);
+			rx.drawImage(await getAsset('textbox'), 232, 565);
 		}
 
-		const name = this.talking;
+		const name = this.textboxOptions.talking;
 		if (name) {
-			this.fsCtx.drawImage(await this.getAsset('namebox'), 264, 565 - 39);
-			this.drawText(
-				name === 'other' ? this.customName : name,
+			rx.drawImage(await getAsset('namebox'), 264, 565 - 39);
+			rx.drawText(
+				name === 'other' ? this.textboxOptions.customName : name,
 				264 + 84,
 				565 - 10,
 				'center',
@@ -312,32 +336,43 @@ export default class App extends Vue implements IApp {
 			);
 		}
 
-		this.render_text();
+		this.render_text(rx);
 
-		if (this.showControls) {
-			this.fsCtx.font = '13px aller';
-			this.fsCtx.fillStyle = this.allowSkipping ? '#522' : '#a66';
-			this.fsCtx.textAlign = 'left';
-
-			this.fsCtx.fillText('Skip', 566, 700);
-
-			this.fsCtx.fillStyle = '#522';
-
-			this.fsCtx.fillText('History', 512, 700);
-			this.fsCtx.fillText('Auto   Save   Load   Settings', 600, 700);
+		if (this.textboxOptions.showControls) {
+			rx.drawText(
+				'Skip',
+				566,
+				700,
+				'left',
+				1,
+				this.textboxOptions.allowSkipping ? '#522' : '#a66',
+				null,
+				'13px aller'
+			);
+			rx.drawText('History', 512, 700, 'left', 1, '#522', null, '13px aller');
+			rx.drawText(
+				'Auto   Save   Load   Settings',
+				600,
+				700,
+				'left',
+				1,
+				'#522',
+				null,
+				'13px aller'
+			);
 		}
 
-		if (this.showContinueArrow) {
-			this.fsCtx.drawImage(await this.getAsset('contarr'), 1020, 685);
+		if (this.textboxOptions.showContinueArrow) {
+			rx.drawImage(await getAsset('next'), 1020, 685);
 		}
 	}
 
-	private render_text(): void {
+	private render_text(rx: RenderContext): void {
 		const text: DialogLetter[][] = [];
 
 		let b = false;
 
-		for (const line of this.dialog.split('\n')) {
+		for (const line of this.textboxOptions.dialog.split('\n')) {
 			let cl;
 			text.push((cl = []));
 			for (const l of line) {
@@ -371,7 +406,7 @@ export default class App extends Vue implements IApp {
 						i++;
 					}
 
-					this.drawText(
+					rx.drawText(
 						ct,
 						x,
 						y,
@@ -381,32 +416,27 @@ export default class App extends Vue implements IApp {
 						cb ? '#000' : '#523140',
 						'24px aller'
 					);
-					x += this.fsCtx.measureText(ct).width;
+					x += rx.measureText(ct).width;
 				}
 			}
 			y += 26;
 		}
 	}
 
-	private getAsset(name: string): Promise<HTMLImageElement> {
-		return new Promise((resolve, reject) => {
-			const element = document.getElementById(name) as HTMLImageElement;
-			if (element.complete) {
-				resolve(element);
-				return;
-			}
-			element.addEventListener('load', () => resolve(element));
-		});
-	}
-
 	private display(): void {
 		if (!this.sdCtx) return;
-		this.sdCtx.drawImage(this.fs, 0, 0, this.area.width, this.area.height);
+		this.renderer.paintOnto(
+			this.sdCtx,
+			0,
+			0,
+			this.canvasWidth,
+			this.canvasHeight
+		);
 	}
 
-	private render_bg(): void {
+	private async render_bg(rx: RenderContext): Promise<void> {
 		if (!this.currentBackground) return;
-		this.fsCtx.drawImage(this.currentBackground.el, 0, 0);
+		rx.drawImage(await getAsset(this.currentBackground.path, rx.hq), 0, 0);
 	}
 
 	private downloadURI(uri: string, name: string) {
@@ -420,13 +450,13 @@ export default class App extends Vue implements IApp {
 
 	private async download() {
 		this.selectedGirl = null;
-		await this.render_();
-		this.downloadURI(this.fs.toDataURL(), 'shitpost.png');
+		await this.render_(true);
+		this.renderer.download('shitpost.png');
 	}
 
 	private onDokiChosen(girl: GirlName): void {
 		this.dokiSelectorOpen = false;
-		this.girls.push(new Girl(girl, this.fsCtx));
+		this.girls.push(new Girl(girl, this.invalidateRender));
 		this.render_();
 	}
 
@@ -437,8 +467,7 @@ export default class App extends Vue implements IApp {
 	}
 
 	private onUiClick(e: MouseEvent): void {
-		if (e.target !== this.$refs.ui) return;
-		this.close_guis();
+		this.panel = '';
 
 		const sd = this.$refs.sd as HTMLCanvasElement;
 		const rx = e.clientX - sd.offsetLeft;
@@ -478,7 +507,8 @@ export default class App extends Vue implements IApp {
 				targetIdx = this.girls.length;
 				break;
 			case 'Delete':
-				this.render_();
+				this.panel = '';
+				this.invalidateRender();
 				return;
 		}
 		if (targetIdx <= 0) {
@@ -488,7 +518,7 @@ export default class App extends Vue implements IApp {
 		} else {
 			this.girls.splice(targetIdx, 0, event.girl);
 		}
-		this.render_();
+		this.invalidateRender();
 	}
 }
 
@@ -499,71 +529,115 @@ interface DialogLetter {
 </script>
 
 <style lang="scss">
-@font-face {
-	font-family: aller;
-	font-weight: normal;
-	font-style: normal;
-	src: url(/assets/aller.ttf);
-}
-
-@font-face {
-	font-family: riffic;
-	font-weight: normal;
-	font-style: normal;
-	src: url(/assets/riffic.ttf);
-}
-
 html,
 body {
 	margin: 0;
+	padding: 0;
 	overflow: hidden;
 
 	font-family: aller;
 }
-
-#container {
-	width: 100vw;
-	height: 100vh;
+#panels {
+	background-color: #ffe6f4;
+	border: 3px solid #ffbde1;
+	position: absolute;
 	display: flex;
-	justify-content: center;
-	align-items: center;
-}
 
-#scaled_display {
-	width: 70vw;
-	height: 39.375vw;
-}
+	.panel {
+		display: flex;
+		flex-direction: column;
+		padding: 4px;
 
-#ui {
-	//display: none;
-	position: absolute;
-	padding: 1em;
-	box-sizing: border-box;
-}
+		h1 {
+			margin: 0;
+			color: white;
+			font-family: riffic;
+			text-shadow: 0 0 7px black;
+			text-align: center;
+		}
+	}
 
-#ui_bl {
-	position: absolute;
-	bottom: 3em;
-	left: 1em;
-	display: inline-block;
-	background-color: #ffe6f480;
-	height: 9em;
-	padding: 1em;
-}
+	&:not(.vertical) {
+		flex-direction: row;
+		left: 0;
+		bottom: 0;
+		height: 186px;
+		width: calc(100vw - 6px);
 
-#ui_br {
-	position: absolute;
-	bottom: 1em;
-	right: 1em;
-	display: inline-block;
-}
+		.panel {
+			flex-grow: 1;
+			flex-wrap: wrap;
+			align-content: flex-start;
+			overflow-x: auto;
+			overflow-y: hidden;
 
-#hsui {
-	position: absolute;
-	bottom: 1em;
-	right: 1em;
-	padding: 4px 0;
-	width: 6em;
-	text-align: center;
+			> * {
+				margin-right: 8px;
+			}
+		}
+
+		#toolbar {
+			width: 48px;
+			height: 100%;
+			float: left;
+
+			button {
+				border-bottom: none;
+
+				&:nth-child(4) {
+					border-bottom: 3px solid #ffbde1;
+				}
+
+				&.active {
+					border-right: 3px solid #ffe6f4;
+				}
+			}
+		}
+
+		h1 {
+			writing-mode: vertical-rl;
+			height: 100%;
+		}
+	}
+
+	&.vertical {
+		flex-direction: column;
+		top: 0;
+		right: 0;
+		height: calc(100vh - 6px);
+		width: 186px;
+
+		.panel {
+			overflow-x: hidden;
+			overflow-y: auto;
+		}
+
+		#toolbar {
+			width: calc(100% + 6px);
+			button {
+				border-right: none;
+
+				&:nth-child(4) {
+					border-right: 3px solid #ffbde1;
+				}
+
+				&.active {
+					border-bottom: 3px solid #ffe6f4;
+				}
+			}
+		}
+	}
+
+	#toolbar {
+		margin-top: -3px;
+		margin-left: -3px;
+		button {
+			box-sizing: border-box;
+			width: 48px;
+			height: 48px;
+			background-color: #ffe6f4;
+			border: 3px solid #ffbde1;
+		}
+	}
 }
 </style>

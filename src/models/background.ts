@@ -20,7 +20,9 @@ export class Background {
 
 		const el = document.createElement('div');
 		el.style.backgroundColor =
-			this === main.currentBackground ? 'white' : 'transparent';
+			main.currentBackground && this.name === main.currentBackground!.name
+				? 'white'
+				: 'transparent';
 		el.style.color = '#555';
 		el.style.fontSize = '16pt';
 		el.style.height = '72px';
@@ -33,7 +35,7 @@ export class Background {
 
 		const me = this;
 		el.addEventListener('click', () => {
-			main.currentBackground = me;
+			// main.currentBackground = me;
 			main.render_();
 			main.close_guis();
 		});

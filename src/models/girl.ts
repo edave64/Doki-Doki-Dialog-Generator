@@ -1,32 +1,24 @@
-import { poses, girlPositions } from './constants';
+import { girlPositions } from './constants';
+import { RenderContext } from '../renderer/rendererContext';
+import { poses, getAsset } from '../asset-manager';
 
 export type GirlName = 'sayori' | 'yuri' | 'natsuki' | 'monika';
 
 export class Girl {
-	public name: GirlName;
-	public pose: {
-		left: number;
-		right: number;
-		head: number;
+	public pose = {
+		left: 0,
+		right: 0,
+		head: 0,
 	};
-	public pos: number;
-	public infront: boolean;
-	public close: boolean;
-	private ctx: CanvasRenderingContext2D;
+	public pos: number = 4;
+	public infront: boolean = false;
+	public close: boolean = false;
 	private selected: boolean = false;
 
-	public constructor(name: GirlName, ctx: CanvasRenderingContext2D) {
-		this.name = name;
-		this.pose = {
-			left: 0,
-			right: 0,
-			head: 0,
-		};
-		this.pos = 4;
-		this.infront = false;
-		this.close = false;
-		this.ctx = ctx;
-	}
+	public constructor(
+		public readonly name: GirlName,
+		private readonly invalidator: Invalidator
+	) {}
 
 	public select() {
 		this.selected = true;
@@ -36,7 +28,7 @@ export class Girl {
 		this.selected = false;
 	}
 
-	public render() {
+	public async render(rx: RenderContext) {
 		const left = poses[this.name].left[this.pose.left];
 		const right = poses[this.name].right[this.pose.right];
 		const head = poses[this.name].head[this.pose.head];
@@ -44,59 +36,61 @@ export class Girl {
 		const x = girlPositions[this.pos]! - size / 2;
 		const y = this.close ? -100 : 0;
 
-		this.ctx.drawImage(
-			head,
+		const [headAsset, leftAsset, rightAsset] = await Promise.all([
+			getAsset(head, rx.hq),
+			getAsset(left, rx.hq),
+			getAsset(right, rx.hq),
+		]);
+
+		rx.drawImage(
+			headAsset,
 			x,
 			y + (this.name === 'monika' ? 1 : 0),
 			size,
 			size
 		);
-		this.ctx.drawImage(left, x, y, size, size);
-		this.ctx.drawImage(right, x, y, size, size);
+		rx.drawImage(leftAsset, x, y, size, size);
+		rx.drawImage(rightAsset, x, y, size, size);
 
 		if (this.selected) {
-			this.ctx.beginPath();
-			this.ctx.rect(x + size / 3, 50, size / 3, 620);
-			this.ctx.strokeStyle = 'red';
-			this.ctx.lineWidth = 3;
-			this.ctx.stroke();
+			rx.drawRectOutline(x + size / 3, 50, size / 3, 620, 'red', 3);
 		}
 	}
 
 	public headl() {
 		if (this.pose.head-- === 0) {
 			this.pose.head = poses[this.name].head.length - 1;
+			this.invalidator();
 		}
-		this.render();
 	}
 	public headr() {
 		if (++this.pose.head === poses[this.name].head.length) {
 			this.pose.head = 0;
+			this.invalidator();
 		}
-		this.render();
 	}
 	public leftl() {
 		if (this.pose.left-- === 0) {
 			this.pose.left = poses[this.name].left.length - 1;
+			this.invalidator();
 		}
-		this.render();
 	}
 	public leftr() {
 		if (++this.pose.left === poses[this.name].left.length) {
 			this.pose.left = 0;
+			this.invalidator();
 		}
-		this.render();
 	}
 	public rightl() {
 		if (this.pose.right-- === 0) {
 			this.pose.right = poses[this.name].right.length - 1;
+			this.invalidator();
 		}
-		this.render();
 	}
 	public rightr() {
 		if (++this.pose.right === poses[this.name].right.length) {
 			this.pose.right = 0;
+			this.invalidator();
 		}
-		this.render();
 	}
 }

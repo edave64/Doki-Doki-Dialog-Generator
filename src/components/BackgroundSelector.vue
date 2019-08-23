@@ -12,9 +12,8 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { backgrounds } from '../models/constants';
-import { Background } from '../models/background';
 import BackgroundSelectorItem from './BackgroundSelectorItem.vue';
+import { Background, backgrounds } from '../asset-manager';
 
 @Component({
 	components: {
@@ -23,7 +22,7 @@ import BackgroundSelectorItem from './BackgroundSelectorItem.vue';
 })
 export default class BackgroundSelector extends Vue {
 	@Prop({ type: Background, required: true })
-	private value!: Background;
+	private readonly value!: Background;
 	private get backgrounds(): Background[] {
 		return backgrounds;
 	}

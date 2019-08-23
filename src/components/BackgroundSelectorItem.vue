@@ -1,14 +1,13 @@
 <template>
 	<div @click="$emit('click')" :class="{ active }" :title="background.name">
-		<img :src="background.el.src" />
+		<img :src="src" />
 		{{background.name}}
 	</div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { backgrounds } from '../models/constants';
-import { Background } from '../models/background';
+import { Background, getAsset } from '../asset-manager';
 
 @Component({
 	components: {},
@@ -16,6 +15,11 @@ import { Background } from '../models/background';
 export default class BackgroundSelectorItem extends Vue {
 	@Prop({ required: true }) private background!: Background;
 	@Prop({ type: Boolean, default: false }) private active!: boolean;
+	private src: string = '';
+
+	private async created() {
+		this.src = (await getAsset(this.background.path, false)).src;
+	}
 }
 </script>
 

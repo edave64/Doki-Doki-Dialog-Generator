@@ -1,0 +1,1 @@
+type Invalidator = () => void;
