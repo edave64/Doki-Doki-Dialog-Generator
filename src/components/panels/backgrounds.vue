@@ -72,6 +72,7 @@ textarea {
 		box-shadow: inset 0 0 8px #000000;
 		height: 48px;
 		min-height: 48px;
+		text-align: center;
 	}
 
 	&:not(.vertical) {
