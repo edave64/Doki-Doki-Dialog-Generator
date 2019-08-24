@@ -1,7 +1,8 @@
 export class RenderContext {
 	public constructor(
 		private fsCtx: CanvasRenderingContext2D,
-		public readonly hq: boolean
+		public readonly hq: boolean,
+		public readonly preview: boolean
 	) {}
 
 	public drawText(

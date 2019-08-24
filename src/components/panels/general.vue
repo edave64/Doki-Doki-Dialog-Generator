@@ -7,7 +7,7 @@
 			:value="lqRendering"
 			@input="$emit('update:lqRendering', $event)"
 		/>
-		<toggle label="Textbox visible?" v-model="options.render" />
+		<toggle label="Textbox visible?" v-model="options.display" />
 		<toggle label="Textbox corrupt?" v-model="options.corrupted" />
 		<div>
 			Person talking:
@@ -35,7 +35,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import { TextboxOptions } from '../../models/textbox';
+import { Textbox } from '../../models/textbox';
 import Toggle from '../Toggle.vue';
 
 @Component({
@@ -44,7 +44,7 @@ import Toggle from '../Toggle.vue';
 	},
 })
 export default class DokiSelector extends Vue {
-	@Prop({ required: true }) private readonly options!: TextboxOptions;
+	@Prop({ required: true }) private readonly options!: Textbox;
 	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
 	@Prop({ required: true, type: Boolean })
 	private readonly lqRendering!: boolean;

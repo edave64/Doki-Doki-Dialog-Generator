@@ -25,7 +25,7 @@
 			<keep-alive>
 				<general-panel
 					v-if="panel === ''"
-					:options="textboxOptions"
+					:options="textbox"
 					:vertical="vertical"
 					:lqRendering.sync="lqRendering"
 				/>
@@ -54,13 +54,13 @@ import GeneralPanel from './components/panels/general.vue';
 import AddPanel from './components/panels/add.vue';
 import DokiPanel, { MoveGirl } from './components/panels/doki.vue';
 import BackgroundsPanel from './components/panels/backgrounds.vue';
-import { IApp } from './models/app';
 import { girlPositions } from './models/constants';
-import { TextboxOptions } from './models/textbox';
+import { Textbox } from './models/textbox';
 import { Girl, GirlName } from './models/girl';
-import { Background, backgrounds, getAsset } from './asset-manager';
+import { backgrounds, getAsset } from './asset-manager';
 import { Renderer } from './renderer/renderer';
 import { RenderContext } from './renderer/rendererContext';
+import { Background } from './models/background';
 
 @Component({
 	components: {
@@ -71,7 +71,7 @@ import { RenderContext } from './renderer/rendererContext';
 		BackgroundsPanel,
 	},
 })
-export default class App extends Vue implements IApp {
+export default class App extends Vue {
 	public canvasWidth: number = 0;
 	public canvasHeight: number = 0;
 	public currentBackground: Background | null = null;
@@ -84,16 +84,7 @@ export default class App extends Vue implements IApp {
 	private editDialog: boolean = false;
 
 	private vertical: boolean = false;
-	private textboxOptions: TextboxOptions = {
-		render: true,
-		corrupted: false,
-		showControls: true,
-		allowSkipping: true,
-		showContinueArrow: true,
-		talking: '',
-		customName: '',
-		dialog: '',
-	};
+	private textbox = new Textbox();
 
 	private renderer: Renderer = new Renderer();
 	private showUI: boolean = true;
@@ -103,12 +94,8 @@ export default class App extends Vue implements IApp {
 
 	private panel: string = '';
 
-	public close_guis(): void {
-		this.selectedGirl = null;
-		this.dokiSelectorOpen = false;
-		this.backgroundSelectorOpen = false;
-		this.editDialog = false;
-	}
+	private renderInProgress: boolean = false;
+	private queuedRender: number | null = null;
 
 	@Watch('selectedGirl')
 	public onSelectedGirlChange(newGirl: Girl, oldGirl: Girl) {
@@ -127,70 +114,64 @@ export default class App extends Vue implements IApp {
 		}
 	}
 
-	private _queuedRender: number | null = null;
-	private _renderInProgress: boolean = false;
-
-	@Watch('textboxOptions.render')
-	@Watch('textboxOptions.corrupted')
-	@Watch('textboxOptions.showControls')
-	@Watch('textboxOptions.allowSkipping')
-	@Watch('textboxOptions.showContinueArrow')
-	@Watch('textboxOptions.talking')
-	@Watch('textboxOptions.customName')
-	@Watch('textboxOptions.dialog')
+	@Watch('textbox', { deep: true })
 	@Watch('lqRendering')
 	@Watch('currentBackground')
 	public invalidateRender() {
-		if (this._queuedRender) return;
-		this._queuedRender = requestAnimationFrame(() => this.render_());
+		if (this.queuedRender) return;
+		this.queuedRender = requestAnimationFrame(() => this.render_());
 	}
 
 	public async render_(downloadRendering?: boolean): Promise<void> {
-		if (this._queuedRender) {
-			cancelAnimationFrame(this._queuedRender);
-			this._queuedRender = null;
+		if (this.queuedRender) {
+			cancelAnimationFrame(this.queuedRender);
+			this.queuedRender = null;
 		}
-		if (this._renderInProgress) {
+		if (this.renderInProgress) {
 			// Delay rerender when render already in progress
 			this.invalidateRender();
 		}
-		this._renderInProgress = true;
+		this.renderInProgress = true;
 
 		try {
 			const hq = downloadRendering || !this.lqRendering;
-			await this.renderer.render(async rx => {
-				if (!this.loaded) {
-					rx.drawText(
-						'Starting...',
-						this.renderer.width / 2,
-						this.renderer.height / 2,
-						'center',
-						5,
-						'white',
-						'#b59',
-						'32px riffic'
-					);
-				} else {
-					await this.render_bg(rx, !!downloadRendering);
-
-					for (const girl of this.girls) {
-						if (!girl.infront) {
-							await girl.render(rx);
-						}
-					}
-
-					await this.render_textbox(rx);
-
-					for (const girl of this.girls) {
-						if (girl.infront) {
-							await girl.render(rx);
-						}
-					}
-				}
-			}, hq);
+			await this.renderer.render(this.renderCallback, hq);
 			this.display();
 		} finally {
-			this._renderInProgress = false;
+			this.renderInProgress = false;
+		}
+	}
+
+	private async renderCallback(rx: RenderContext): Promise<void> {
+		if (!this.loaded) {
+			rx.drawText(
+				'Starting...',
+				this.renderer.width / 2,
+				this.renderer.height / 2,
+				'center',
+				5,
+				'white',
+				'#b59',
+				'32px riffic'
+			);
+		} else {
+			if (this.currentBackground) {
+				await this.currentBackground.render(rx);
+			}
+
+			for (const girl of this.girls) {
+				if (!girl.infront) {
+					await girl.render(rx);
+				}
+			}
+
+			await this.textbox.render(rx);
+
+			for (const girl of this.girls) {
+				if (girl.infront) {
+					await girl.render(rx);
+				}
+			}
 		}
 	}
 
@@ -206,11 +187,13 @@ export default class App extends Vue implements IApp {
 		window.addEventListener('resize', this.updateArea);
 		window.addEventListener('keypress', e => {
 			if (e.keyCode === 27) {
-				this.close_guis();
+				this.selectedGirl = null;
+				this.panel = '';
 			}
 		});
 
 		this.currentBackground = backgrounds[0];
+		this.invalidateRender();
 
 		Promise.all([
 			getAsset(this.currentBackground.path, false),
@@ -265,117 +248,6 @@ export default class App extends Vue implements IApp {
 		});
 	}
 
-	private async render_textbox(rx: RenderContext): Promise<void> {
-		if (!this.textboxOptions.render) return;
-
-		if (this.textboxOptions.corrupted) {
-			rx.drawImage(await getAsset('textbox_monika'), 190, 565);
-		} else {
-			rx.drawImage(await getAsset('textbox'), 232, 565);
-		}
-
-		const name = this.textboxOptions.talking;
-		if (name) {
-			rx.drawImage(await getAsset('namebox'), 264, 565 - 39);
-			rx.drawText(
-				name === 'other' ? this.textboxOptions.customName : name,
-				264 + 84,
-				565 - 10,
-				'center',
-				3,
-				'white',
-				'#b59',
-				'24px riffic'
-			);
-		}
-
-		this.render_text(rx);
-
-		if (this.textboxOptions.showControls) {
-			rx.drawText(
-				'Skip',
-				566,
-				700,
-				'left',
-				1,
-				this.textboxOptions.allowSkipping ? '#522' : '#a66',
-				null,
-				'13px aller'
-			);
-			rx.drawText('History', 512, 700, 'left', 1, '#522', null, '13px aller');
-			rx.drawText(
-				'Auto   Save   Load   Settings',
-				600,
-				700,
-				'left',
-				1,
-				'#522',
-				null,
-				'13px aller'
-			);
-		}
-
-		if (this.textboxOptions.showContinueArrow) {
-			rx.drawImage(await getAsset('next'), 1020, 685);
-		}
-	}
-
-	private render_text(rx: RenderContext): void {
-		const text: DialogLetter[][] = [];
-
-		let b = false;
-
-		for (const line of this.textboxOptions.dialog.split('\n')) {
-			let cl;
-			text.push((cl = []));
-			for (const l of line) {
-				if (l === '[') {
-					b = true;
-				} else if (l === ']') {
-					b = false;
-				} else {
-					cl.push({ l, b });
-				}
-			}
-		}
-
-		let y = 620;
-		for (const line of text) {
-			let f = false;
-			if (line.length) {
-				let x = 270;
-				let i = 0;
-				while (i < line.length) {
-					let ct = '';
-					const cb = line[i].b;
-
-					f = f || cb;
-
-					while (i < line.length && line[i].b === cb) {
-						ct += line[i].l;
-						if (cb) {
-							ct += ' ';
-						}
-						i++;
-					}
-
-					rx.drawText(
-						ct,
-						x,
-						y,
-						'left',
-						cb ? 8 : 2,
-						'#fff',
-						cb ? '#000' : '#523140',
-						'24px aller'
-					);
-					x += rx.measureText(ct).width;
-				}
-			}
-			y += 26;
-		}
-	}
-
 	private display(): void {
 		if (!this.sdCtx) return;
 		this.renderer.paintOnto(
@@ -387,33 +259,9 @@ export default class App extends Vue implements IApp {
 		);
 	}
 
-	private async render_bg(
-		rx: RenderContext,
-		downloadRendering: boolean
-	): Promise<void> {
-		if (!this.currentBackground) return;
-		if (
-			downloadRendering &&
-			this.currentBackground.path === '/backgrounds/transparent'
-		) {
-			return;
-		}
-		rx.drawImage(await getAsset(this.currentBackground.path, rx.hq), 0, 0);
-	}
-
-	private downloadURI(uri: string, name: string) {
-		const link = document.createElement('a');
-		link.download = name;
-		link.href = uri;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-	}
-
 	private async download() {
 		this.selectedGirl = null;
-		await this.render_(true);
-		this.renderer.download('shitpost.png');
+		this.renderer.download(this.renderCallback, 'panel.png');
 	}
 
 	private onDokiChosen(girl: GirlName): void {
@@ -431,11 +279,11 @@ export default class App extends Vue implements IApp {
 		const sx = (rx / sd.width) * 1280;
 		const sy = (ry / sd.width) * 720;
 
-		const girl = sy > 50 && sy < 550 ? this.girl_at(sx) : null;
+		const girl = sy > 50 && sy < 550 ? this.girlAt(sx) : null;
 
 		this.selectedGirl = girl;
 	}
-	private girl_at(x: number) {
+	private girlAt(x: number) {
 		for (let i = this.girls.length - 1; i >= 0; i--) {
 			if (Math.abs(girlPositions[this.girls[i].pos]! - x) < 120) {
 				return this.girls[i];
@@ -476,11 +324,6 @@ export default class App extends Vue implements IApp {
 		}
 		this.invalidateRender();
 	}
-}
-
-interface DialogLetter {
-	l: string;
-	b: boolean;
 }
 </script>
 

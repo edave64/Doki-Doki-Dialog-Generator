@@ -1,29 +1,29 @@
 import { RenderContext } from './rendererContext';
 
 export class Renderer {
-	private fs: HTMLCanvasElement;
+	private previewCanvas: HTMLCanvasElement;
 
 	public constructor() {
-		this.fs = document.createElement('canvas');
-		this.fs.width = 1280;
-		this.fs.height = 720;
+		this.previewCanvas = document.createElement('canvas');
+		this.previewCanvas.width = 1280;
+		this.previewCanvas.height = 720;
 	}
 
 	public async render(
 		renderCallback: (rc: RenderContext) => Promise<void>,
 		hq: boolean = true
 	) {
-		const fsCtx = this.fs.getContext('2d')!;
-		fsCtx.clearRect(0, 0, this.fs.width, this.fs.height);
-		await renderCallback(new RenderContext(fsCtx, hq));
+		const ctx = this.previewCanvas.getContext('2d')!;
+		ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
+		await renderCallback(new RenderContext(ctx, hq, true));
 	}
 
 	public get width(): number {
-		return this.fs.width;
+		return this.previewCanvas.width;
 	}
 
 	public get height(): number {
-		return this.fs.height;
+		return this.previewCanvas.height;
 	}
 
 	public paintOnto(
@@ -33,11 +33,22 @@ export class Renderer {
 		w: number,
 		h: number
 	) {
-		c.drawImage(this.fs, x, y, w, h);
+		c.drawImage(this.previewCanvas, x, y, w, h);
 	}
 
-	public download(filename: string) {
-		const url = this.fs.toDataURL();
+	public async download(
+		renderCallback: (rc: RenderContext) => Promise<void>,
+		filename: string
+	) {
+		const downloadCanvas = document.createElement('canvas');
+		downloadCanvas.width = this.previewCanvas.width;
+		downloadCanvas.height = this.previewCanvas.height;
+
+		const ctx = downloadCanvas.getContext('2d')!;
+		ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
+		await renderCallback(new RenderContext(ctx, true, false));
+
+		const url = downloadCanvas.toDataURL();
 
 		if (undefined === window.navigator.msSaveOrOpenBlob) {
 			const e = document.createElement('a');

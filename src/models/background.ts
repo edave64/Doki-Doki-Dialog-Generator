@@ -1,45 +1,19 @@
-import { IApp } from './app';
+import { RenderContext } from '@/renderer/rendererContext';
+import { getAsset } from '@/asset-manager';
 
 export class Background {
-	public readonly el: HTMLImageElement;
-	public readonly tab: string;
-	public readonly name: string;
-
-	public constructor(element: HTMLImageElement) {
-		this.el = element;
-		this.tab = element.getAttribute('tab')!;
-		this.name = element.getAttribute('alt')!;
+	public readonly path: string;
+	public constructor(path: string, public readonly name: string) {
+		this.path = '/backgrounds/' + path;
 	}
 
-	public icon(main: IApp) {
-		const img = document.createElement('img');
-		img.src = this.el.src;
-		img.style.width = '128px';
-		img.style.cssFloat = 'left';
-		img.style.marginRight = '1em';
-
-		const el = document.createElement('div');
-		el.style.backgroundColor =
-			main.currentBackground && this.name === main.currentBackground!.name
-				? 'white'
-				: 'transparent';
-		el.style.color = '#555';
-		el.style.fontSize = '16pt';
-		el.style.height = '72px';
-		el.style.padding = '5px';
-		el.style.cursor = 'pointer';
-		el.setAttribute('title', this.name);
-
-		el.appendChild(img);
-		el.appendChild(document.createTextNode(this.name));
-
-		const me = this;
-		el.addEventListener('click', () => {
-			// main.currentBackground = me;
-			main.render_();
-			main.close_guis();
-		});
-
-		return el;
+	public async render(rx: RenderContext): Promise<void> {
+		rx.drawImage(await getAsset(this.path, rx.hq), 0, 0);
 	}
 }
+
+export const transparent = new Background('transparent', 'Transparent');
+transparent.render = async function(rx: RenderContext) {
+	if (!rx.preview) return;
+	return await Background.prototype.render.call(this, rx);
+};

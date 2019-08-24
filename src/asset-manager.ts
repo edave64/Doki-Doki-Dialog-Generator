@@ -1,4 +1,5 @@
 import { GirlName } from './models/girl';
+import { Background, transparent } from './models/background';
 
 let webpSupportPromise: Promise<boolean>;
 
@@ -48,13 +49,6 @@ export async function getAsset(
 	return assetCache[url];
 }
 
-export class Background {
-	public readonly path: string;
-	public constructor(path: string, public readonly name: string) {
-		this.path = '/backgrounds/' + path;
-	}
-}
-
 export const backgrounds = [
 	new Background('club', 'Clubroom'),
 	new Background('closet', 'Closet'),
@@ -68,7 +62,7 @@ export const backgrounds = [
 	new Background('club-skill', 'Clubroom with hanging Sayori poster'),
 	new Background('bsod', 'Blue screen of death'),
 	new Background('unused-house', 'Unused house found in game files'),
-	new Background('transparent', 'Transparent'),
+	transparent,
 ];
 
 export const dokis: { [name: string]: IDoki<any> } = {};

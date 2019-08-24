@@ -14,7 +14,8 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { isWebPSupported, backgrounds, Background } from '../../asset-manager';
+import { isWebPSupported, backgrounds } from '../../asset-manager';
+import { Background } from '../../models/background';
 
 interface IDoki {
 	id: string;
