@@ -192,7 +192,7 @@ export default class App extends Vue implements IApp {
 		this._queuedRender = requestAnimationFrame(() => this.render_());
 	}
 
-	public async render_(hq?: boolean): Promise<void> {
+	public async render_(downloadRendering?: boolean): Promise<void> {
 		if (this._queuedRender) {
 			cancelAnimationFrame(this._queuedRender);
 			this._queuedRender = null;
@@ -204,7 +204,7 @@ export default class App extends Vue implements IApp {
 		this._renderInProgress = true;
 
 		try {
-			if (hq === undefined) hq = !this.lqRendering;
+			const hq = downloadRendering || !this.lqRendering;
 			await this.renderer.render(async rx => {
 				if (!this.loaded) {
 					rx.drawText(
@@ -218,7 +218,7 @@ export default class App extends Vue implements IApp {
 						'32px riffic'
 					);
 				} else {
-					await this.render_bg(rx);
+					await this.render_bg(rx, !!downloadRendering);
 
 					for (const girl of this.girls) {
 						if (!girl.infront) {
@@ -434,8 +434,17 @@ export default class App extends Vue implements IApp {
 		);
 	}
 
-	private async render_bg(rx: RenderContext): Promise<void> {
+	private async render_bg(
+		rx: RenderContext,
+		downloadRendering: boolean
+	): Promise<void> {
 		if (!this.currentBackground) return;
+		if (
+			downloadRendering &&
+			this.currentBackground.path === '/backgrounds/transparent'
+		) {
+			return;
+		}
 		rx.drawImage(await getAsset(this.currentBackground.path, rx.hq), 0, 0);
 	}
 

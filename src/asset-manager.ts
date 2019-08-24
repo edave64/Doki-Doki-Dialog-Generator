@@ -64,6 +64,7 @@ export const backgrounds = [
 	new Background('club-skill', 'Clubroom with hanging Sayori poster'),
 	new Background('bsod', 'Blue screen of death'),
 	new Background('unused-house', 'Unused house found in game files'),
+	new Background('transparent', 'Transparent'),
 ];
 
 export const poses = {
