@@ -1,44 +1,26 @@
 <template>
 	<div :class="{ panel: true, vertical }">
-		<h1>{{girl.name.charAt(0).toUpperCase()}}{{girl.name.substring(1)}}</h1>
+		<h1>{{captialize(girl.name)}}</h1>
 		<fieldset>
 			<legend>Pose:</legend>
 			<table>
 				<tbody>
 					<tr>
 						<td>
-							<button @click="girl.headl();$emit('invalidate-render')">&lt;</button>
+							<button @click="girl.posel();">&lt;</button>
 						</td>
-						<td>Head</td>
+						<td>Pose</td>
 						<td>
-							<button @click="girl.headr();$emit('invalidate-render')">&gt;</button>
-						</td>
-					</tr>
-					<tr v-if="girl.name === 'yuri'">
-						<td>
-							<button @click="girl.leftl();$emit('invalidate-render')">&lt;</button>
-						</td>
-						<td>Left</td>
-						<td>
-							<button @click="girl.leftr();$emit('invalidate-render')">&gt;</button>
+							<button @click="girl.poser();">&gt;</button>
 						</td>
 					</tr>
-					<tr v-if="girl.name === 'yuri'">
+					<tr v-for="part of parts" :key="part">
 						<td>
-							<button @click="girl.rightl();$emit('invalidate-render')">&lt;</button>
+							<button @click="girl.partl(part);">&lt;</button>
 						</td>
-						<td>Right</td>
+						<td>{{captialize(part)}}</td>
 						<td>
-							<button @click="girl.rightr();$emit('invalidate-render')">&gt;</button>
-						</td>
-					</tr>
-					<tr v-if="girl.name !== 'yuri'">
-						<td>
-							<button @click="girl.leftl();girl.rightl();$emit('invalidate-render')">&lt;</button>
-						</td>
-						<td>Body</td>
-						<td>
-							<button @click="girl.leftr();girl.rightr();$emit('invalidate-render')">&gt;</button>
+							<button @click="girl.partr(part);">&gt;</button>
 						</td>
 					</tr>
 				</tbody>
@@ -91,6 +73,14 @@ export default class AddPanel extends Vue {
 
 	private async created() {
 		this.isWebPSupported = await isWebPSupported();
+	}
+
+	private get parts(): string[] {
+		return this.girl.getParts();
+	}
+
+	private captialize(str: string) {
+		return str.charAt(0).toUpperCase() + str.substring(1);
 	}
 
 	private assetPath(doki: string) {

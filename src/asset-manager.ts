@@ -1,3 +1,5 @@
+import { GirlName } from './models/girl';
+
 let webpSupportPromise: Promise<boolean>;
 
 export function isWebPSupported(): Promise<boolean> {
@@ -38,6 +40,8 @@ export async function getAsset(
 				reject(`Failed to load "${url}"`);
 			});
 			img.src = url;
+			img.style.display = 'none';
+			document.body.appendChild(img);
 		});
 	}
 
@@ -67,175 +71,269 @@ export const backgrounds = [
 	new Background('transparent', 'Transparent'),
 ];
 
-export const poses = {
-	sayori: {
-		left: ['sayori/1l', 'sayori/2l', 'sayori/1bl', 'sayori/2bl'],
-		right: ['sayori/1r', 'sayori/2r', 'sayori/1br', 'sayori/2br'],
-		head: [
-			'sayori/a',
-			'sayori/b',
-			'sayori/c',
-			'sayori/d',
-			'sayori/e',
-			'sayori/f',
-			'sayori/g',
-			'sayori/h',
-			'sayori/i',
-			'sayori/j',
-			'sayori/k',
-			'sayori/l',
-			'sayori/m',
-			'sayori/n',
-			'sayori/o',
-			'sayori/p',
-			'sayori/q',
-			'sayori/r',
-			'sayori/s',
-			'sayori/t',
-			'sayori/u',
-			'sayori/v',
-			'sayori/w',
-			'sayori/x',
-			'sayori/y',
+export const dokis: { [name: string]: IDoki<any> } = {};
+function addDoki<T extends DokiHeads>(name: GirlName, doki: IDoki<T>) {
+	dokis[name] = doki;
+}
+
+addDoki('sayori', {
+	name: 'Sayori',
+	folder: 'sayori',
+	heads: {
+		straight: [
+			'a',
+			'b',
+			'c',
+			'd',
+			'e',
+			'f',
+			'g',
+			'h',
+			'i',
+			'j',
+			'k',
+			'l',
+			'm',
+			'n',
+			'o',
+			'p',
+			'q',
+			'r',
+			's',
+			't',
+			'u',
+			'v',
+			'w',
+			'x',
+			'y',
+		],
+		sideways: ['a2', 'b2', 'c2', 'd2'],
+	},
+	poses: [
+		{
+			compatibleHeads: ['straight'],
+			left: ['1l', '2l'],
+			right: ['1r', '2r'],
+		},
+		{
+			compatibleHeads: ['straight'],
+			left: ['1bl', '2bl'],
+			right: ['1br', '2br'],
+		},
+		{
+			compatibleHeads: ['sideways'],
+			static: '3',
+		},
+	],
+});
+addDoki('yuri', {
+	name: 'Yuri',
+	folder: 'yuri',
+	heads: {
+		straight: [
+			'a',
+			'b',
+			'c',
+			'd',
+			'e',
+			'f',
+			'g',
+			'h',
+			'i',
+			'j',
+			'k',
+			'l',
+			'm',
+			'n',
+			'o',
+			'p',
+			'q',
+			'r',
+			's',
+			't',
+			'u',
+			'v',
+			'w',
+			'y1',
+			'y2',
+			'y3',
+			'y4',
+			'y5',
+			'y6',
+			'y7',
+			'hisui',
+		],
+		sideways: ['a2', 'b2', 'c2', 'd2', 'e2'],
+	},
+	poses: [
+		{
+			compatibleHeads: ['straight'],
+			left: ['1l', '2l'],
+			right: ['1r', '2r'],
+		},
+		{
+			compatibleHeads: ['straight'],
+			left: ['1bl', '2bl'],
+			right: ['1br', '2br'],
+		},
+		{
+			compatibleHeads: ['sideways'],
+			static: '3',
+		},
+		{
+			compatibleHeads: ['sideways'],
+			static: '3b',
+		},
+	],
+});
+addDoki('natsuki', {
+	name: 'Natsuki',
+	folder: 'natsuki',
+	heads: {
+		straight: [
+			'a',
+			'b',
+			'c',
+			'd',
+			'e',
+			'f',
+			'g',
+			'h',
+			'i',
+			'j',
+			'k',
+			'l',
+			'm',
+			'n',
+			'o',
+			'p',
+			'q',
+			'r',
+			's',
+			't',
+			'u',
+			'v',
+			'w',
+			'x',
+			'y',
+			'z',
+			'1t',
+			'scream',
+			'corrupt',
+			'crying',
+		],
+		sideways: [
+			'2t',
+			'2ta',
+			'2tb',
+			'2tc',
+			'2td',
+			'2te',
+			'2tf',
+			'2tg',
+			'2th',
+			'2ti',
+			'2bta',
+			'2btb',
+			'2btc',
+			'2btd',
+			'2bte',
+			'2btf',
+			'2btg',
+			'2bth',
+			'2bti',
 		],
 	},
-	yuri: {
-		left: [
-			'yuri/1l',
-			'yuri/1l',
-			'yuri/2l',
-			'yuri/1bl',
-			'yuri/1bl',
-			'yuri/2bl',
-			'yuri/3',
-			'yuri/3b',
+	poses: [
+		{
+			compatibleHeads: ['straight', 'sideways'],
+			left: ['1l', '2l'],
+			right: ['1r', '2r'],
+		},
+		{
+			compatibleHeads: ['straight', 'sideways'],
+			left: ['1bl', '2bl'],
+			right: ['1br', '2br'],
+		},
+		{
+			compatibleHeads: ['straight'],
+			headAnchor: [18, 22],
+			static: '3',
+		},
+		{
+			compatibleHeads: ['straight'],
+			headAnchor: [18, 22],
+			static: '3b',
+		},
+	],
+});
+addDoki('monika', {
+	name: 'Monika',
+	folder: 'monika',
+	heads: {
+		straight: [
+			'a',
+			'b',
+			'c',
+			'd',
+			'e',
+			'f',
+			'g',
+			'h',
+			'i',
+			'j',
+			'k',
+			'l',
+			'm',
+			'n',
+			'o',
+			'p',
+			'q',
+			'r',
 		],
-		right: [
-			'yuri/1r',
-			'yuri/2r',
-			'yuri/2r',
-			'yuri/1br',
-			'yuri/2br',
-			'yuri/2br',
-			'blank',
-			'blank',
-		],
-		head: [
-			'yuri/a',
-			'yuri/a2',
-			'yuri/b',
-			'yuri/b2',
-			'yuri/c',
-			'yuri/c2',
-			'yuri/d',
-			'yuri/d2',
-			'yuri/e',
-			'yuri/e2',
-			'yuri/f',
-			'yuri/g',
-			'yuri/h',
-			'yuri/i',
-			'yuri/j',
-			'yuri/k',
-			'yuri/l',
-			'yuri/m',
-			'yuri/n',
-			'yuri/o',
-			'yuri/p',
-			'yuri/q',
-			'yuri/r',
-			'yuri/s',
-			'yuri/t',
-			'yuri/u',
-			'yuri/v',
-			'yuri/w',
-			'yuri/y1',
-			'yuri/y2',
-			'yuri/y3',
-			'yuri/y4',
-			'yuri/y5',
-			'yuri/y6',
-			'yuri/y7',
-			'yuri/hisui',
-		],
+		sideways: ['a2', 'b2'],
 	},
-	natsuki: {
-		left: ['natsuki/1l', 'natsuki/2l', 'natsuki/1bl', 'natsuki/2bl'],
-		right: ['natsuki/1r', 'natsuki/2r', 'natsuki/1br', 'natsuki/2br'],
-		head: [
-			'natsuki/a',
-			'natsuki/b',
-			'natsuki/c',
-			'natsuki/d',
-			'natsuki/e',
-			'natsuki/f',
-			'natsuki/g',
-			'natsuki/h',
-			'natsuki/i',
-			'natsuki/j',
-			'natsuki/k',
-			'natsuki/l',
-			'natsuki/m',
-			'natsuki/n',
-			'natsuki/o',
-			'natsuki/p',
-			'natsuki/q',
-			'natsuki/r',
-			'natsuki/s',
-			'natsuki/t',
-			'natsuki/u',
-			'natsuki/v',
-			'natsuki/w',
-			'natsuki/x',
-			'natsuki/y',
-			'natsuki/z',
-			'natsuki/1t',
-			'natsuki/scream',
-			'natsuki/2t',
-			'natsuki/2ta',
-			'natsuki/2tb',
-			'natsuki/2tc',
-			'natsuki/2td',
-			'natsuki/2te',
-			'natsuki/2tf',
-			'natsuki/2tg',
-			'natsuki/2th',
-			'natsuki/2ti',
-			'natsuki/2bta',
-			'natsuki/2btb',
-			'natsuki/2btc',
-			'natsuki/2btd',
-			'natsuki/2bte',
-			'natsuki/2btf',
-			'natsuki/2btg',
-			'natsuki/2bth',
-			'natsuki/2bti',
-			'natsuki/corrupt',
-			'natsuki/crying',
-		],
-	},
-	monika: {
-		left: ['monika/1l', 'monika/2l'],
-		right: ['monika/1r', 'monika/2r'],
-		head: [
-			'monika/a',
-			'monika/b',
-			'monika/c',
-			'monika/d',
-			'monika/e',
-			'monika/f',
-			'monika/g',
-			'monika/h',
-			'monika/i',
-			'monika/j',
-			'monika/k',
-			'monika/l',
-			'monika/m',
-			'monika/n',
-			'monika/o',
-			'monika/p',
-			'monika/q',
-			'monika/r',
-		],
-	},
-};
+	poses: [
+		{
+			compatibleHeads: ['straight'],
+			left: ['1l', '2l'],
+			right: ['1r', '2r'],
+		},
+		{
+			compatibleHeads: ['sideways'],
+			static: '3',
+		},
+	],
+});
+export interface IDokiHeads {
+	folder?: string;
+	all: string[];
+}
+
+export interface DokiHeads {
+	[id: string]: IDokiHeads | string[];
+}
+
+interface IPose<H> {
+	compatibleHeads: Array<keyof H>;
+	folder?: string;
+	headAnchor?: [number, number];
+}
+
+interface IStaticPose<H> extends IPose<H> {
+	static: string;
+}
+
+interface ITwoSidedPose<H> extends IPose<H> {
+	left: string[];
+	right: string[];
+}
+
+export type Pose<H extends DokiHeads> = IStaticPose<H> | ITwoSidedPose<H>;
+
+export interface IDoki<H extends DokiHeads> {
+	name: string;
+	folder?: string;
+	heads: H;
+	poses: Array<Pose<H>>;
+}

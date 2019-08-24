@@ -50,7 +50,6 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import DokiButton from './components/DokiButton.vue';
-import DialogEditor from './components/DialogEditor.vue';
 import GeneralPanel from './components/panels/general.vue';
 import AddPanel from './components/panels/add.vue';
 import DokiPanel, { MoveGirl } from './components/panels/doki.vue';
@@ -66,7 +65,6 @@ import { RenderContext } from './renderer/rendererContext';
 @Component({
 	components: {
 		DokiButton,
-		DialogEditor,
 		GeneralPanel,
 		AddPanel,
 		DokiPanel,
