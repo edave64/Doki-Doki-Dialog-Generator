@@ -97,7 +97,7 @@ import DokiButton from './components/DokiButton.vue';
 import DialogEditor from './components/DialogEditor.vue';
 import GeneralPanel from './components/panels/general.vue';
 import AddPanel from './components/panels/add.vue';
-import DokiPanel from './components/panels/doki.vue';
+import DokiPanel, { MoveGirl } from './components/panels/doki.vue';
 import BackgroundsPanel from './components/panels/backgrounds.vue';
 import { IApp } from './models/app';
 import { girlPositions } from './models/constants';
@@ -106,7 +106,6 @@ import { Girl, GirlName } from './models/girl';
 import { Background, backgrounds, getAsset } from './asset-manager';
 import { Renderer } from './renderer/renderer';
 import { RenderContext } from './renderer/rendererContext';
-import { MoveGirl } from './components/DokiSettings.vue';
 
 @Component({
 	components: {

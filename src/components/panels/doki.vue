@@ -107,6 +107,11 @@ export default class AddPanel extends Vue {
 		this.$emit('chosen', girl);
 	}
 }
+
+export interface MoveGirl {
+	girl: Girl;
+	move: 'Forward' | 'Backward' | 'Back' | 'Front' | 'Delete';
+}
 </script>
 
 <style lang="scss" scoped>
