@@ -40,7 +40,7 @@
 					:vertical="vertical"
 					:girl="selectedGirl"
 					@shiftLayer="onDokiLayerShift"
-					@invalidate-render="render_"
+					@invalidate-render="invalidateRender"
 				/>
 			</keep-alive>
 		</div>
@@ -465,13 +465,7 @@ export default class App extends Vue implements IApp {
 	private onDokiChosen(girl: GirlName): void {
 		this.dokiSelectorOpen = false;
 		this.girls.push(new Girl(girl, this.invalidateRender));
-		this.render_();
-	}
-
-	private onBackgroundChosen(): void {
-		this.backgroundSelectorOpen = false;
-
-		this.render_();
+		this.invalidateRender();
 	}
 
 	private onUiClick(e: MouseEvent): void {
