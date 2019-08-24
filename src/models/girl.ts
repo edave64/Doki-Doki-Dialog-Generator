@@ -94,10 +94,7 @@ export class Girl {
 		}
 
 		const head = this.currentHeads
-			? headFolder +
-			  this.doki.heads[pose.compatibleHeads[this.posePositions.headType]][
-					this.posePositions.head
-			  ]
+			? headFolder + this.currentHeads.all[this.posePositions.head]
 			: null;
 		const size = this.close ? 720 * 2 : 720;
 		const x = girlPositions[this.pos]! - size / 2;
@@ -129,6 +126,7 @@ export class Girl {
 	}
 
 	public headl(): void {
+		if (!this.currentHeads) return;
 		--this.posePositions.head;
 		if (this.posePositions.head < 0) {
 			--this.posePositions.headType;
@@ -141,6 +139,7 @@ export class Girl {
 	}
 
 	public headr(): void {
+		if (!this.currentHeads) return;
 		++this.posePositions.head;
 		if (this.posePositions.head >= this.currentHeads.all.length) {
 			++this.posePositions.headType;
