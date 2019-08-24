@@ -44,50 +44,6 @@
 				/>
 			</keep-alive>
 		</div>
-		<!--
-		<div
-			ref="ui"
-			id="ui"
-			:style="{ 
-				top: area.top + 'px',
-				left: area.left + 'px',
-				height: area.height + 'px',
-				width: area.width + 'px',
-				display: showUI ? 'block' : 'none'
-			}"
-			@click="onUiClick"
-		>
-			<doki-button style="float:right;" @click="close_guis(); dokiSelectorOpen = true">Add character</doki-button>
-			<doki-button @click="close_guis(); backgroundSelectorOpen = true">Change background</doki-button>
-			<br />
-			<br />
-			<doki-button @click="close_guis();editDialog=true;">Edit text</doki-button>
-			<div id="ui_bl">
-			</div>
-			<div id="ui_br">
-				<doki-button @click="download">Download</doki-button>
-			</div>
-			<div style="clear:both;width:1px;height:2em;"></div>
-			<doki-settings
-				v-if="selectedGirl"
-				:girl="selectedGirl"
-				@close="selectedGirl = null"
-				@shiftLayer="onDokiLayerShift"
-				@invalidate-render="render_"
-			/>
-		</div>
-		<doki-button id="hsui" @click="showUI = !showUI">{{showUI ? "Show UI" : "Hide UI"}}</doki-button>
-		<keep-alive>
-			<doki-selector v-if="dokiSelectorOpen" @chosen="onDokiChosen" />
-			<background-selector
-				v-if="backgroundSelectorOpen"
-				v-model="currentBackground"
-				@input="render_();close_guis()"
-			/>
-			<dialog-editor v-if="editDialog" v-model="dialog" lazy @close="close_guis()" />
-		</keep-alive>
-		<ip />
-		-->
 	</div>
 </template>
 
