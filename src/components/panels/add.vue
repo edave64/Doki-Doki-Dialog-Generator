@@ -36,9 +36,9 @@ export default class AddPanel extends Vue {
 	}
 
 	private assetPath(doki: string) {
-		return `/assets/chibis/${doki.toLowerCase()}.lq.${
+		return `${process.env.BASE_URL}/assets/chibis/${doki.toLowerCase()}.lq.${
 			this.isWebPSupported ? 'webp' : 'png'
-		}`;
+		}`.replace(/\/+/, '/');
 	}
 
 	private onClick(e: MouseEvent): void {

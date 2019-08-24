@@ -27,9 +27,9 @@ export async function getAsset(
 	asset: string,
 	hq: boolean = true
 ): Promise<HTMLImageElement> {
-	const url = `/assets/${asset}${hq ? '' : '.lq'}${
+	const url = `${process.env.BASE_URL}/assets/${asset}${hq ? '' : '.lq'}${
 		(await isWebPSupported()) ? '.webp' : '.png'
-	}`;
+	}`.replace(/\/+/, '/');
 
 	if (!assetCache[url]) {
 		assetCache[url] = new Promise((resolve, reject) => {

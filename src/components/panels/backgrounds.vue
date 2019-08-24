@@ -41,9 +41,9 @@ export default class BackgroundsPanel extends Vue {
 	}
 
 	private assetPath(doki: string) {
-		return `/assets/${doki.toLowerCase()}.lq.${
+		return `${process.env.BASE_URL}/assets/${doki.toLowerCase()}.lq.${
 			this.isWebPSupported ? 'webp' : 'png'
-		}`;
+		}`.replace(/\/+/, '/');
 	}
 
 	private onClick(e: MouseEvent): void {
