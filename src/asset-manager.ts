@@ -45,7 +45,10 @@ export async function getAsset(
 }
 
 export class Background {
-	public constructor(public path: string, public name: string) {}
+	public readonly path: string;
+	public constructor(path: string, public readonly name: string) {
+		this.path = '/backgrounds/' + path;
+	}
 }
 
 export const backgrounds = [
