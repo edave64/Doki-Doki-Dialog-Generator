@@ -279,18 +279,23 @@ export default class App extends Vue {
 		const sx = (rx / sd.width) * 1280;
 		const sy = (ry / sd.width) * 720;
 
-		const girl = sy > 50 && sy < 550 ? this.girlAt(sx) : null;
+		const girls = sy > 50 && sy < 550 ? this.girlsAt(sx) : [];
 
-		this.selectedGirl = girl;
-	}
-	private girlAt(x: number) {
-		for (let i = this.girls.length - 1; i >= 0; i--) {
-			if (Math.abs(girlPositions[this.girls[i].pos]! - x) < 120) {
-				return this.girls[i];
-			}
+		const currentCharacterIdx = girls.indexOf(this.selectedGirl!);
+
+		if (currentCharacterIdx === 0) {
+			this.selectedGirl = null;
+		} else if (currentCharacterIdx !== -1) {
+			// Select the next lower girl
+			this.selectedGirl = girls[currentCharacterIdx - 1];
+		} else {
+			this.selectedGirl = girls[girls.length - 1] || null;
 		}
-
-		return null;
+	}
+	private girlsAt(x: number): Girl[] {
+		return this.girls.filter(
+			girl => Math.abs(girlPositions[girl.pos]! - x) < 120
+		);
 	}
 
 	private onDokiLayerShift(event: MoveGirl): void {
