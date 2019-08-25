@@ -27,7 +27,9 @@ export class RenderContext {
 	}
 
 	public drawImage(
-		params: { image: HTMLImageElement; flip?: boolean } & IRPos & IOSize
+		params: { image: HTMLImageElement; flip?: boolean } & IRPos &
+			IOSize &
+			IOShadow
 	): void {
 		const { image, flip, x, y, w, h } = {
 			flip: false,
@@ -37,6 +39,22 @@ export class RenderContext {
 		};
 
 		this.fsCtx.save();
+
+		if (params.shadow) {
+			const shadow = params.shadow;
+			if (shadow.color) {
+				this.fsCtx.shadowColor = shadow.color;
+			}
+			if (shadow.blur) {
+				this.fsCtx.shadowBlur = shadow.blur;
+			}
+			if (shadow.offsetX) {
+				this.fsCtx.shadowOffsetX = shadow.offsetX;
+			}
+			if (shadow.offsetY) {
+				this.fsCtx.shadowOffsetY = shadow.offsetY;
+			}
+		}
 
 		this.fsCtx.translate(x + w / 2, y + h / 2);
 		this.fsCtx.scale(flip ? -1 : 1, 1);
@@ -73,6 +91,17 @@ const optShadow = {
 	offsetX: 0,
 	offsetY: 0,
 };
+
+export interface IShadow {
+	blur?: number;
+	color?: string;
+	offsetX?: number;
+	offsetY?: number;
+}
+
+interface IOShadow {
+	shadow?: IShadow;
+}
 
 interface IRPos {
 	x: number;

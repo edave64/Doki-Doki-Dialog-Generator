@@ -106,24 +106,26 @@ export class Girl {
 			...assets.map(asset => getAsset(asset, rx.hq)),
 		]);
 
-		const shared = { w: size, h: size, flip: this.flip };
-		if (headAsset) {
-			const headAnchor = this.pose.headAnchor || [0, 0];
+		const drawImages = (shared: any) => {
+			Object.assign(shared, { w: size, h: size, flip: this.flip });
+			if (headAsset) {
+				const headAnchor = this.pose.headAnchor || [0, 0];
 
-			rx.drawImage({
-				image: headAsset,
-				x: x + headAnchor[0],
-				y: y + (this.name === 'monika' ? 1 : 0) + headAnchor[1],
-				...shared,
-			});
-		}
-		for (const bodyPart of bodyParts) {
-			rx.drawImage({ image: bodyPart!, x, y, ...shared });
-		}
-
+				rx.drawImage({
+					image: headAsset,
+					x: x + headAnchor[0],
+					y: y + (this.name === 'monika' ? 1 : 0) + headAnchor[1],
+					...shared,
+				});
+			}
+			for (const bodyPart of bodyParts) {
+				rx.drawImage({ image: bodyPart!, x, y, ...shared });
+			}
+		};
 		if (this.selected) {
-			rx.drawRectOutline(x + size / 3, 50, size / 3, 620, 'red', 3);
+			drawImages({ shadow: { blur: 20, color: 'red' } });
 		}
+		drawImages({});
 	}
 
 	public headl(): void {
