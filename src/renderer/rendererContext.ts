@@ -1,4 +1,9 @@
+import { RenderAbortedException } from './renderAbortedException';
+import { Renderer } from './renderer';
+
 export class RenderContext {
+	private aborted: boolean = false;
+
 	public constructor(
 		private fsCtx: CanvasRenderingContext2D,
 		public readonly hq: boolean,
@@ -15,6 +20,7 @@ export class RenderContext {
 		ocol: string | null = '#533643',
 		font: string = '20px aller'
 	) {
+		if (this.aborted) throw new RenderAbortedException();
 		this.fsCtx.fillStyle = col;
 		if (ocol) this.fsCtx.strokeStyle = ocol;
 		this.fsCtx.lineWidth = 2 * w;
@@ -31,6 +37,7 @@ export class RenderContext {
 			IOSize &
 			IOShadow
 	): void {
+		if (this.aborted) throw new RenderAbortedException();
 		const { image, flip, x, y, w, h } = {
 			flip: false,
 			w: params.image.width,
@@ -76,6 +83,7 @@ export class RenderContext {
 		style: string,
 		strokeWidth: number
 	) {
+		if (this.aborted) throw new RenderAbortedException();
 		this.fsCtx.beginPath();
 		this.fsCtx.rect(x, y, w, h);
 		this.fsCtx.strokeStyle = style;
@@ -84,7 +92,12 @@ export class RenderContext {
 	}
 
 	public measureText(str: string): TextMetrics {
+		if (this.aborted) throw new RenderAbortedException();
 		return this.fsCtx.measureText(str);
+	}
+
+	public abort(): void {
+		this.aborted = true;
 	}
 }
 

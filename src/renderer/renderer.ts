@@ -1,7 +1,9 @@
 import { RenderContext } from './rendererContext';
+import { RenderAbortedException } from './renderAbortedException';
 
 export class Renderer {
 	private previewCanvas: HTMLCanvasElement;
+	private runningContext: RenderContext | null = null;
 
 	public constructor(w: number = 1280, h: number = 720) {
 		this.previewCanvas = document.createElement('canvas');
@@ -12,10 +14,27 @@ export class Renderer {
 	public async render(
 		renderCallback: (rc: RenderContext) => Promise<void>,
 		hq: boolean = true
-	) {
+	): Promise<boolean> {
+		if (this.runningContext) {
+			this.runningContext.abort();
+		}
+
 		const ctx = this.previewCanvas.getContext('2d')!;
 		ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
-		await renderCallback(new RenderContext(ctx, hq, true));
+		const context = (this.runningContext = new RenderContext(ctx, hq, true));
+		try {
+			await renderCallback(this.runningContext);
+		} catch (e) {
+			if (e instanceof RenderAbortedException) {
+				return false;
+			}
+			throw e;
+		} finally {
+			if (context === this.runningContext) {
+				this.runningContext = null;
+			}
+		}
+		return true;
 	}
 
 	public get width(): number {

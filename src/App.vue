@@ -95,7 +95,6 @@ export default class App extends Vue {
 
 	private panel: string = '';
 
-	private renderInProgress: boolean = false;
 	private queuedRender: number | null = null;
 
 	private hitDetectionFallback = false;
@@ -125,23 +124,18 @@ export default class App extends Vue {
 		this.queuedRender = requestAnimationFrame(() => this.render_());
 	}
 
-	public async render_(downloadRendering?: boolean): Promise<void> {
+	public async render_(): Promise<void> {
 		if (this.queuedRender) {
 			cancelAnimationFrame(this.queuedRender);
 			this.queuedRender = null;
 		}
-		if (this.renderInProgress) {
-			// Delay rerender when render already in progress
-			this.invalidateRender();
-		}
-		this.renderInProgress = true;
 
-		try {
-			const hq = downloadRendering || !this.lqRendering;
-			await this.renderer.render(this.renderCallback, hq);
+		const completed = await this.renderer.render(
+			this.renderCallback,
+			!this.lqRendering
+		);
+		if (completed) {
 			this.display();
-		} finally {
-			this.renderInProgress = false;
 		}
 	}
 
