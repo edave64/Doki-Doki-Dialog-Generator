@@ -114,7 +114,7 @@ export class Girl {
 
 				rx.drawImage({
 					image: headAsset,
-					x: x + headAnchor[0] * zoom,
+					x: x + headAnchor[0] * zoom * (this.flip ? -1 : 1),
 					y: y + (this.name === 'monika' ? 1 : 0) + headAnchor[1] * zoom,
 					...shared,
 				});
