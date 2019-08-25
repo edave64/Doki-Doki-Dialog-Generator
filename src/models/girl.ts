@@ -108,17 +108,30 @@ export class Girl {
 				...assets.map(asset => getAsset(asset, rx.hq)),
 			]);
 
-			if (headAsset) {
-				const headAnchor = this.pose.headAnchor ? this.pose.headAnchor : [0, 0];
+			const drawHead = () => {
+				if (headAsset) {
+					const headAnchor = this.pose.headAnchor
+						? this.pose.headAnchor
+						: [0, 0];
 
-				rx.drawImage({
-					image: headAsset,
-					x: headAnchor[0],
-					y: (this.name === 'monika' ? 1 : 0) + headAnchor[1],
-				});
+					rx.drawImage({
+						image: headAsset,
+						x: headAnchor[0],
+						y: (this.name === 'monika' ? 1 : 0) + headAnchor[1],
+					});
+				}
+			};
+
+			if (!this.pose.headInForeground) {
+				drawHead();
 			}
+
 			for (const bodyPart of bodyParts) {
 				rx.drawImage({ image: bodyPart!, x: 0, y: 0 });
+			}
+
+			if (this.pose.headInForeground) {
+				drawHead();
 			}
 		});
 	}

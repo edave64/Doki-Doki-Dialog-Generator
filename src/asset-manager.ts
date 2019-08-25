@@ -228,6 +228,8 @@ addDoki('natsuki', {
 			'2tg',
 			'2th',
 			'2ti',
+		],
+		sidewaysCasuals: [
 			'2bta',
 			'2btb',
 			'2btc',
@@ -242,6 +244,7 @@ addDoki('natsuki', {
 	poses: [
 		{
 			compatibleHeads: ['straight', 'sideways'],
+			headInForeground: true,
 			left: ['1l', '2l'],
 			right: ['1r', '2r'],
 		},
@@ -251,7 +254,8 @@ addDoki('natsuki', {
 			static: '3',
 		},
 		{
-			compatibleHeads: ['straight', 'sideways'],
+			compatibleHeads: ['straight', 'sidewaysCasuals'],
+			headInForeground: true,
 			left: ['1bl', '2bl'],
 			right: ['1br', '2br'],
 		},
@@ -311,6 +315,7 @@ export interface DokiHeads {
 
 interface IPose<H> {
 	compatibleHeads: Array<keyof H>;
+	headInForeground?: boolean;
 	folder?: string;
 	headAnchor?: [number, number];
 }
