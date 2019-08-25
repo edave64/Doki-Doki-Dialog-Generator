@@ -1,6 +1,8 @@
 <template>
 	<div :class="{ panel: true, vertical }">
-		<h1>Credits</h1>All assets used are IP of Team Salvato
+		<h1>Credits</h1>
+		<p>All assets used are IP of Team Salvato</p>
+		<p>Doki Doki Dialog Generator developed by EDave64</p>
 	</div>
 </template>
 
