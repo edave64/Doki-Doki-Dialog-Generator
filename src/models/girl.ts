@@ -110,7 +110,9 @@ export class Girl {
 		const drawImages = (shared: any) => {
 			Object.assign(shared, { w: size, h: size, flip: this.flip });
 			if (headAsset) {
-				const headAnchor = this.pose.headAnchor || [0, 0];
+				const headAnchor = this.pose.headAnchor
+					? this.pose.headAnchor.map(coord => coord * 0.8)
+					: [0, 0];
 
 				rx.drawImage({
 					image: headAsset,
