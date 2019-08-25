@@ -97,7 +97,8 @@ export class Girl {
 		const head = this.currentHeads
 			? headFolder + this.currentHeads.all[this.posePositions.head]
 			: null;
-		const size = this.close ? 720 * 2 : 720;
+		const zoom = this.close ? 2 : 1;
+		const size = 720 * zoom;
 		const x = girlPositions[this.pos]! - size / 2;
 		const y = this.close ? -100 : 0;
 
@@ -113,8 +114,8 @@ export class Girl {
 
 				rx.drawImage({
 					image: headAsset,
-					x: x + headAnchor[0],
-					y: y + (this.name === 'monika' ? 1 : 0) + headAnchor[1],
+					x: x + headAnchor[0] * zoom,
+					y: y + (this.name === 'monika' ? 1 : 0) + headAnchor[1] * zoom,
 					...shared,
 				});
 			}
