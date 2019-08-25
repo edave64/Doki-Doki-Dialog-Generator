@@ -4,8 +4,9 @@
 			<canvas
 				id="scaled_display"
 				ref="sd"
-				:height="canvasHeight"
-				:width="canvasWidth"
+				height="720"
+				width="1280"
+				:style="{width: canvasWidth+ 'px', height: canvasHeight + 'px'}"
 				@click="onUiClick"
 			>
 				HTML5 is required to use this
@@ -250,13 +251,7 @@ export default class App extends Vue {
 
 	private display(): void {
 		if (!this.sdCtx) return;
-		this.renderer.paintOnto(
-			this.sdCtx,
-			0,
-			0,
-			this.canvasWidth,
-			this.canvasHeight
-		);
+		this.renderer.paintOnto(this.sdCtx, 0, 0, 1280, 780);
 	}
 
 	private async download() {
@@ -276,8 +271,9 @@ export default class App extends Vue {
 		const sd = this.$refs.sd as HTMLCanvasElement;
 		const rx = e.clientX - sd.offsetLeft;
 		const ry = e.clientY - sd.offsetTop;
-		const sx = (rx / sd.width) * 1280;
-		const sy = (ry / sd.width) * 720;
+		const sx = (rx / sd.offsetWidth) * sd.width;
+		const sy = (ry / sd.offsetWidth) * sd.width;
+		debugger;
 
 		const girls = sy > 50 && sy < 550 ? this.girlsAt(sx) : [];
 
@@ -322,7 +318,7 @@ export default class App extends Vue {
 		}
 		if (targetIdx <= 0) {
 			this.girls.unshift(event.girl);
-		} else if (targetIdx >= this.girls.length - 1) {
+		} else if (targetIdx >= this.girls.length) {
 			this.girls.push(event.girl);
 		} else {
 			this.girls.splice(targetIdx, 0, event.girl);
