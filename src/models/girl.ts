@@ -143,7 +143,16 @@ export class Girl {
 			shadow: this.selected ? { blur: 20, color: 'red' } : undefined,
 		});
 	}
-		drawImages({});
+
+	public hittest(hx: number, hy: number): boolean {
+		const zoom = this.close ? 1.6 : 0.8;
+		const size = 960 * zoom;
+		const x = (hx - girlPositions[this.pos]! + size / 2) / zoom;
+		const y = (hy - (this.close ? -100 : 0)) / zoom;
+
+		const data = this.localRenderer.getDataAt(x, y);
+
+		return data[3] !== 0;
 	}
 
 	public headl(): void {

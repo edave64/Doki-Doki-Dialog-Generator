@@ -40,6 +40,7 @@ export async function getAsset(
 			img.addEventListener('error', () => {
 				reject(`Failed to load "${url}"`);
 			});
+			img.crossOrigin = 'Anonymous';
 			img.src = url;
 			img.style.display = 'none';
 			document.body.appendChild(img);

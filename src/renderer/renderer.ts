@@ -67,6 +67,12 @@ export class Renderer {
 		}
 	}
 
+	public getDataAt(x: number, y: number): Uint8ClampedArray {
+		const ctx = this.previewCanvas.getContext('2d');
+
+		return ctx!.getImageData(x, y, 1, 1).data;
+	}
+
 	private dataURItoBlob(dataURI: string) {
 		const binary = atob(dataURI.split(',')[1]);
 		const array = [];

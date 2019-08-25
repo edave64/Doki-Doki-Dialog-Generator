@@ -98,6 +98,8 @@ export default class App extends Vue {
 	private renderInProgress: boolean = false;
 	private queuedRender: number | null = null;
 
+	private hitDetectionFallback = false;
+
 	@Watch('selectedGirl')
 	public onSelectedGirlChange(newGirl: Girl, oldGirl: Girl) {
 		if (oldGirl) oldGirl.unselect();
@@ -275,7 +277,7 @@ export default class App extends Vue {
 		const sy = (ry / sd.offsetWidth) * sd.width;
 		debugger;
 
-		const girls = sy > 50 && sy < 550 ? this.girlsAt(sx) : [];
+		const girls = sy > 50 ? this.girlsAt(sx, sy) : [];
 
 		const currentCharacterIdx = girls.indexOf(this.selectedGirl!);
 
@@ -288,7 +290,23 @@ export default class App extends Vue {
 			this.selectedGirl = girls[girls.length - 1] || null;
 		}
 	}
-	private girlsAt(x: number): Girl[] {
+	private girlsAt(x: number, y: number): Girl[] {
+		if (!this.hitDetectionFallback) {
+			try {
+				return this.girls.filter(girl => girl.hittest(x, y));
+			} catch (e) {
+				// On chrome for android, the hit test tends to fail because of cross-origin shinanigans, even though we only ever load from one origin.
+				// ¯\_(ツ)_/¯
+				// So we have a fallback that doesn't read the contents of the canvas. This looses accuracy, but at least works always.
+				if (e instanceof DOMException && e.message.includes('cross-origin')) {
+					this.hitDetectionFallback = true;
+				} else {
+					throw e;
+				}
+			}
+		}
+
+		if (y > 550) return [];
 		return this.girls.filter(
 			girl => Math.abs(girlPositions[girl.pos]! - x) < 120
 		);
