@@ -251,7 +251,7 @@ export default class App extends Vue {
 
 	private display(): void {
 		if (!this.sdCtx) return;
-		this.renderer.paintOnto(this.sdCtx, 0, 0, 1280, 780);
+		this.renderer.paintOnto(this.sdCtx, 0, 0, 1280, 720);
 	}
 
 	private async download() {

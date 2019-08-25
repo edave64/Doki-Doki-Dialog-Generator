@@ -3,10 +3,10 @@ import { RenderContext } from './rendererContext';
 export class Renderer {
 	private previewCanvas: HTMLCanvasElement;
 
-	public constructor() {
+	public constructor(w: number = 1280, h: number = 720) {
 		this.previewCanvas = document.createElement('canvas');
-		this.previewCanvas.width = 1280;
-		this.previewCanvas.height = 720;
+		this.previewCanvas.width = w;
+		this.previewCanvas.height = h;
 	}
 
 	public async render(
@@ -30,10 +30,14 @@ export class Renderer {
 		c: CanvasRenderingContext2D,
 		x: number,
 		y: number,
-		w: number,
-		h: number
+		w?: number,
+		h?: number
 	) {
-		c.drawImage(this.previewCanvas, x, y, w, h);
+		if (w && h) {
+			c.drawImage(this.previewCanvas, x, y, w, h);
+		} else {
+			c.drawImage(this.previewCanvas, x, y);
+		}
 	}
 
 	public async download(

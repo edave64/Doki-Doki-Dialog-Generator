@@ -1,6 +1,7 @@
 import { girlPositions } from './constants';
 import { RenderContext } from '../renderer/rendererContext';
 import { dokis, getAsset, Pose, IDoki, IDokiHeads } from '../asset-manager';
+import { Renderer } from '../renderer/renderer';
 
 export type GirlName = 'sayori' | 'yuri' | 'natsuki' | 'monika';
 export type Part = 'variant' | 'left' | 'right' | 'head';
@@ -10,6 +11,7 @@ export class Girl {
 	public infront: boolean = false;
 	public close: boolean = false;
 	public flip: boolean = false;
+	private lq: boolean = true;
 	private selected: boolean = false;
 	private poseId: number = 0;
 	private posePositions = {
@@ -19,6 +21,8 @@ export class Girl {
 		head: 0,
 		headType: 0,
 	};
+	private localRenderer = new Renderer(960, 960);
+	private dirty = true;
 
 	public constructor(
 		public readonly name: GirlName,
@@ -70,64 +74,75 @@ export class Girl {
 		return heads;
 	}
 
-	public async render(rx: RenderContext) {
-		const pose = this.pose as Pose<any>;
-		const assets: string[] = [];
-		const partKeys = this.getParts();
+	public async updateLocalCanvas() {
+		await this.localRenderer.render(async rx => {
+			const pose = this.pose as Pose<any>;
+			const assets: string[] = [];
+			const partKeys = this.getParts();
 
-		const poseFolder =
-			(this.doki.folder ? this.doki.folder + '/' : '') +
-			(this.pose.folder ? this.pose.folder + '/' : '');
+			const poseFolder =
+				(this.doki.folder ? this.doki.folder + '/' : '') +
+				(this.pose.folder ? this.pose.folder + '/' : '');
 
-		const headFolder =
-			(this.doki.folder ? this.doki.folder + '/' : '') +
-			(this.currentHeads && this.currentHeads.folder
-				? this.currentHeads.folder + '/'
-				: '');
+			const headFolder =
+				(this.doki.folder ? this.doki.folder + '/' : '') +
+				(this.currentHeads && this.currentHeads.folder
+					? this.currentHeads.folder + '/'
+					: '');
 
-		if ((pose as any).static) {
-			assets.push(poseFolder + (pose as any).static);
-		} else {
-			for (const key of partKeys) {
-				if (key === 'head') continue;
-				assets.push(poseFolder + (pose as any)[key][this.posePositions[key]]);
+			if ((pose as any).static) {
+				assets.push(poseFolder + (pose as any).static);
+			} else {
+				for (const key of partKeys) {
+					if (key === 'head') continue;
+					assets.push(poseFolder + (pose as any)[key][this.posePositions[key]]);
+				}
 			}
+
+			const head = this.currentHeads
+				? headFolder + this.currentHeads.all[this.posePositions.head]
+				: null;
+
+			const [headAsset, ...bodyParts] = await Promise.all([
+				head ? getAsset(head, rx.hq) : Promise.resolve(null),
+				...assets.map(asset => getAsset(asset, rx.hq)),
+			]);
+
+			if (headAsset) {
+				const headAnchor = this.pose.headAnchor ? this.pose.headAnchor : [0, 0];
+
+				rx.drawImage({
+					image: headAsset,
+					x: headAnchor[0],
+					y: (this.name === 'monika' ? 1 : 0) + headAnchor[1],
+				});
+			}
+			for (const bodyPart of bodyParts) {
+				rx.drawImage({ image: bodyPart!, x: 0, y: 0 });
+			}
+		});
+	}
+
+	public async render(rx: RenderContext) {
+		if (this.dirty || this.lq !== !rx.hq) {
+			await this.updateLocalCanvas();
 		}
 
-		const head = this.currentHeads
-			? headFolder + this.currentHeads.all[this.posePositions.head]
-			: null;
 		const zoom = this.close ? 2 : 1;
 		const size = 720 * zoom;
 		const x = girlPositions[this.pos]! - size / 2;
 		const y = this.close ? -100 : 0;
 
-		const [headAsset, ...bodyParts] = await Promise.all([
-			head ? getAsset(head, rx.hq) : Promise.resolve(null),
-			...assets.map(asset => getAsset(asset, rx.hq)),
-		]);
-
-		const drawImages = (shared: any) => {
-			Object.assign(shared, { w: size, h: size, flip: this.flip });
-			if (headAsset) {
-				const headAnchor = this.pose.headAnchor
-					? this.pose.headAnchor.map(coord => coord * 0.8)
-					: [0, 0];
-
-				rx.drawImage({
-					image: headAsset,
-					x: x + headAnchor[0] * zoom * (this.flip ? -1 : 1),
-					y: y + (this.name === 'monika' ? 1 : 0) + headAnchor[1] * zoom,
-					...shared,
-				});
-			}
-			for (const bodyPart of bodyParts) {
-				rx.drawImage({ image: bodyPart!, x, y, ...shared });
-			}
-		};
-		if (this.selected) {
-			drawImages({ shadow: { blur: 20, color: 'red' } });
-		}
+		rx.drawImage({
+			image: this.localRenderer,
+			x,
+			y,
+			w: size,
+			h: size,
+			flip: this.flip,
+			shadow: this.selected ? { blur: 20, color: 'red' } : undefined,
+		});
+	}
 		drawImages({});
 	}
 
@@ -141,6 +156,7 @@ export class Girl {
 			}
 			this.posePositions.head = this.currentHeads.all.length - 1;
 		}
+		this.dirty = true;
 		this.invalidator();
 	}
 
@@ -154,6 +170,7 @@ export class Girl {
 			}
 			this.posePositions.head = 0;
 		}
+		this.dirty = true;
 		this.invalidator();
 	}
 
@@ -165,6 +182,7 @@ export class Girl {
 		if (this.posePositions[part] < 0) {
 			this.posePositions[part] = (this.pose as any)[part].length - 1;
 		}
+		this.dirty = true;
 		this.invalidator();
 	}
 
@@ -176,6 +194,7 @@ export class Girl {
 		if (this.posePositions[part] >= (this.pose as any)[part].length) {
 			this.posePositions[part] = 0;
 		}
+		this.dirty = true;
 		this.invalidator();
 	}
 
@@ -199,6 +218,7 @@ export class Girl {
 		this.posePositions.left = 0;
 		this.posePositions.right = 0;
 		this.posePositions.variant = 0;
+		this.dirty = true;
 		this.invalidator();
 	}
 
@@ -222,6 +242,7 @@ export class Girl {
 		this.posePositions.left = 0;
 		this.posePositions.right = 0;
 		this.posePositions.variant = 0;
+		this.dirty = true;
 		this.invalidator();
 	}
 }

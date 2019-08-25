@@ -27,7 +27,7 @@ export class RenderContext {
 	}
 
 	public drawImage(
-		params: { image: HTMLImageElement; flip?: boolean } & IRPos &
+		params: { image: HTMLImageElement | Renderer; flip?: boolean } & IRPos &
 			IOSize &
 			IOShadow
 	): void {
@@ -59,7 +59,11 @@ export class RenderContext {
 		this.fsCtx.translate(x + w / 2, y + h / 2);
 		this.fsCtx.scale(flip ? -1 : 1, 1);
 
-		this.fsCtx.drawImage(image, -w / 2, -h / 2, w, h);
+		if (image instanceof Renderer) {
+			image.paintOnto(this.fsCtx, -w / 2, -h / 2, w, h);
+		} else {
+			this.fsCtx.drawImage(image, -w / 2, -h / 2, w, h);
+		}
 
 		this.fsCtx.restore();
 	}
