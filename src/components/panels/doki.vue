@@ -43,6 +43,7 @@
 		</fieldset>
 		<toggle v-model="girl.infront" @input="$emit('invalidate-render')" label="In front of textbox?" />
 		<toggle v-model="girl.close" @input="$emit('invalidate-render')" label="Close up?" />
+		<toggle v-model="girl.flip" @input="$emit('invalidate-render')" label="Flipped?" />
 
 		<button @click="$emit('shiftLayer', {girl: girl, move: 'Delete'});$emit('close')">Delete</button>
 	</div>

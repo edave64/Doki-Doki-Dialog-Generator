@@ -9,6 +9,7 @@ export class Girl {
 	public pos: number = 4;
 	public infront: boolean = false;
 	public close: boolean = false;
+	public flip: boolean = false;
 	private selected: boolean = false;
 	private poseId: number = 0;
 	private posePositions = {
@@ -105,7 +106,7 @@ export class Girl {
 			...assets.map(asset => getAsset(asset, rx.hq)),
 		]);
 
-		const shared = { w: size, h: size };
+		const shared = { w: size, h: size, flip: this.flip };
 		if (headAsset) {
 			const headAnchor = this.pose.headAnchor || [0, 0];
 
