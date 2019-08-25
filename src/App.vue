@@ -275,7 +275,6 @@ export default class App extends Vue {
 		const ry = e.clientY - sd.offsetTop;
 		const sx = (rx / sd.offsetWidth) * sd.width;
 		const sy = (ry / sd.offsetWidth) * sd.width;
-		debugger;
 
 		const girls = sy > 50 ? this.girlsAt(sx, sy) : [];
 
@@ -295,9 +294,10 @@ export default class App extends Vue {
 			try {
 				return this.girls.filter(girl => girl.hittest(x, y));
 			} catch (e) {
-				// On chrome for android, the hit test tends to fail because of cross-origin shinanigans, even though we only ever load from one origin.
-				// ¯\_(ツ)_/¯
-				// So we have a fallback that doesn't read the contents of the canvas. This looses accuracy, but at least works always.
+				// On chrome for android, the hit test tends to fail because of cross-origin shinanigans, even though
+				// we only ever load from one origin. ¯\_(ツ)_/¯
+				// So we have a fallback that doesn't read the contents of the canvas. This looses accuracy, but at
+				// least works always.
 				if (e instanceof DOMException && e.message.includes('cross-origin')) {
 					this.hitDetectionFallback = true;
 				} else {
