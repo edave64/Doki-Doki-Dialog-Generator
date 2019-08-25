@@ -20,7 +20,10 @@
 					:class="{ active: panel === 'backgrounds' }"
 					@click="panel = panel === 'backgrounds' ? '' : 'backgrounds'"
 				>B</button>
-				<button>&nbsp;</button>
+				<button
+					:class="{ active: panel === 'credits' }"
+					@click="panel = panel === 'credits' ? '' : 'credits'"
+				>C</button>
 				<button @click="download">D</button>
 			</div>
 			<keep-alive>
@@ -36,6 +39,7 @@
 					:vertical="vertical"
 					v-model="currentBackground"
 				/>
+				<credits-panel v-if="panel === 'credits'" :vertical="vertical" />
 				<doki-panel
 					v-if="panel === 'doki'"
 					:vertical="vertical"
@@ -54,6 +58,7 @@ import DokiButton from './components/DokiButton.vue';
 import GeneralPanel from './components/panels/general.vue';
 import AddPanel from './components/panels/add.vue';
 import DokiPanel, { MoveGirl } from './components/panels/doki.vue';
+import CreditsPanel from './components/panels/credits.vue';
 import BackgroundsPanel from './components/panels/backgrounds.vue';
 import { girlPositions } from './models/constants';
 import { Textbox } from './models/textbox';
@@ -68,8 +73,9 @@ import { Background } from './models/background';
 		DokiButton,
 		GeneralPanel,
 		AddPanel,
-		DokiPanel,
 		BackgroundsPanel,
+		CreditsPanel,
+		DokiPanel,
 	},
 })
 export default class App extends Vue {
