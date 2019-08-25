@@ -15,14 +15,14 @@ export class Textbox {
 		if (!this.display) return;
 
 		if (this.corrupted) {
-			rx.drawImage(await getAsset('textbox_monika'), 190, 565);
+			rx.drawImage({ image: await getAsset('textbox_monika'), x: 190, y: 565 });
 		} else {
-			rx.drawImage(await getAsset('textbox'), 232, 565);
+			rx.drawImage({ image: await getAsset('textbox'), x: 232, y: 565 });
 		}
 
 		const name = this.talking;
 		if (name) {
-			rx.drawImage(await getAsset('namebox'), 264, 565 - 39);
+			rx.drawImage({ image: await getAsset('namebox'), x: 264, y: 565 - 39 });
 			rx.drawText(
 				name === 'other' ? this.customName : name,
 				264 + 84,
@@ -62,7 +62,7 @@ export class Textbox {
 		}
 
 		if (this.showContinueArrow) {
-			rx.drawImage(await getAsset('next'), 1020, 685);
+			rx.drawImage({ image: await getAsset('next'), x: 1020, y: 685 });
 		}
 	}
 

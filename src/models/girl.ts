@@ -105,19 +105,19 @@ export class Girl {
 			...assets.map(asset => getAsset(asset, rx.hq)),
 		]);
 
+		const shared = { w: size, h: size };
 		if (headAsset) {
 			const headAnchor = this.pose.headAnchor || [0, 0];
 
-			rx.drawImage(
-				headAsset,
-				x + headAnchor[0],
-				y + (this.name === 'monika' ? 1 : 0) + headAnchor[1],
-				size,
-				size
-			);
+			rx.drawImage({
+				image: headAsset,
+				x: x + headAnchor[0],
+				y: y + (this.name === 'monika' ? 1 : 0) + headAnchor[1],
+				...shared,
+			});
 		}
 		for (const bodyPart of bodyParts) {
-			rx.drawImage(bodyPart!, x, y, size, size);
+			rx.drawImage({ image: bodyPart!, x, y, ...shared });
 		}
 
 		if (this.selected) {

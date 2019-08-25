@@ -8,7 +8,7 @@ export class Background {
 	}
 
 	public async render(rx: RenderContext): Promise<void> {
-		rx.drawImage(await getAsset(this.path, rx.hq), 0, 0);
+		rx.drawImage({ image: await getAsset(this.path, rx.hq), x: 0, y: 0 });
 	}
 }
 

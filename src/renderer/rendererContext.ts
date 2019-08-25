@@ -27,22 +27,21 @@ export class RenderContext {
 	}
 
 	public drawImage(
-		image: HTMLImageElement,
-		x: number,
-		y: number,
-		width?: number,
-		height?: number,
-		flip: boolean = false
+		params: { image: HTMLImageElement; flip?: boolean } & IRPos & IOSize
 	): void {
+		const { image, flip, x, y, w, h } = {
+			flip: false,
+			w: params.image.width,
+			h: params.image.height,
+			...params,
+		};
+
 		this.fsCtx.save();
 
-		if (flip) this.fsCtx.scale(-1, 1);
+		this.fsCtx.translate(x + w / 2, y + h / 2);
+		this.fsCtx.scale(flip ? -1 : 1, 1);
 
-		if (width && height) {
-			this.fsCtx.drawImage(image, x, y, width!, height!);
-		} else {
-			this.fsCtx.drawImage(image, x, y!);
-		}
+		this.fsCtx.drawImage(image, -w / 2, -h / 2, w, h);
 
 		this.fsCtx.restore();
 	}
@@ -65,4 +64,27 @@ export class RenderContext {
 	public measureText(str: string): TextMetrics {
 		return this.fsCtx.measureText(str);
 	}
+}
+
+const optSize = { w: 0, h: 0 };
+const optShadow = {
+	blur: 0,
+	color: 'none',
+	offsetX: 0,
+	offsetY: 0,
+};
+
+interface IRPos {
+	x: number;
+	y: number;
+}
+
+interface IRSize {
+	w: number;
+	h: number;
+}
+
+interface IOSize {
+	w?: number;
+	h?: number;
 }
