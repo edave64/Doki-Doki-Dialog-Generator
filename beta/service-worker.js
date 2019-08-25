@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/Doki-Doki-Dialog-Generator/beta/precache-manifest.094b1e0baa7198a3beebb4a015946c32.js"
+  "/Doki-Doki-Dialog-Generator/beta/precache-manifest.5a58acf6181a5295d1e5ed0a56cbdc27.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "doki-doki-dialog-generator"});
