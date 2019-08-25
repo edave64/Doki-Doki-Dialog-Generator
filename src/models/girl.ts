@@ -160,8 +160,12 @@ export class Girl {
 	public hittest(hx: number, hy: number): boolean {
 		const zoom = this.close ? 1.6 : 0.8;
 		const size = 960 * zoom;
-		const x = (hx - girlPositions[this.pos]! + size / 2) / zoom;
+		let x = (hx - girlPositions[this.pos]! + size / 2) / zoom;
 		const y = (hy - (this.close ? -100 : 0)) / zoom;
+
+		if (this.flip) {
+			x = 960 - x;
+		}
 
 		const data = this.localRenderer.getDataAt(x, y);
 
