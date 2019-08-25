@@ -3,8 +3,12 @@ import { getAsset } from '@/asset-manager';
 
 export class Background {
 	public readonly path: string;
-	public constructor(path: string, public readonly name: string) {
-		this.path = '/backgrounds/' + path;
+	public constructor(
+		path: string,
+		public readonly name: string,
+		public readonly custom: boolean = false
+	) {
+		this.path = (custom ? '' : '/backgrounds/') + path;
 	}
 
 	public async render(rx: RenderContext): Promise<void> {

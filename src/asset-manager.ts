@@ -22,11 +22,16 @@ export function isWebPSupported(): Promise<boolean> {
 }
 
 const assetCache: { [url: string]: Promise<HTMLImageElement> } = {};
+const customAssets: { [id: string]: Promise<HTMLImageElement> } = {};
 
 export async function getAsset(
 	asset: string,
 	hq: boolean = true
 ): Promise<HTMLImageElement> {
+	if (customAssets[asset]) {
+		return customAssets[asset];
+	}
+
 	const url = `${process.env.BASE_URL}/assets/${asset}${hq ? '' : '.lq'}${
 		(await isWebPSupported()) ? '.webp' : '.png'
 	}`.replace(/\/+/, '/');
@@ -48,6 +53,24 @@ export async function getAsset(
 	}
 
 	return assetCache[url];
+}
+
+export function registerAsset(asset: string, file: File): string {
+	const url = URL.createObjectURL(file);
+	customAssets[asset] = new Promise((resolve, reject) => {
+		const img = new Image();
+		img.addEventListener('load', () => {
+			resolve(img);
+		});
+		img.addEventListener('error', () => {
+			reject(`Failed to load "${url}"`);
+		});
+		img.crossOrigin = 'Anonymous';
+		img.src = url;
+		img.style.display = 'none';
+		document.body.appendChild(img);
+	});
+	return url;
 }
 
 export const backgrounds = [
