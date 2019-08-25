@@ -110,13 +110,13 @@ addDoki('sayori', {
 			right: ['1r', '2r'],
 		},
 		{
+			compatibleHeads: ['sideways'],
+			static: '3',
+		},
+		{
 			compatibleHeads: ['straight'],
 			left: ['1bl', '2bl'],
 			right: ['1br', '2br'],
-		},
-		{
-			compatibleHeads: ['sideways'],
-			static: '3',
 		},
 	],
 });
@@ -166,13 +166,13 @@ addDoki('yuri', {
 			right: ['1r', '2r'],
 		},
 		{
+			compatibleHeads: ['sideways'],
+			static: '3',
+		},
+		{
 			compatibleHeads: ['straight'],
 			left: ['1bl', '2bl'],
 			right: ['1br', '2br'],
-		},
-		{
-			compatibleHeads: ['sideways'],
-			static: '3',
 		},
 		{
 			compatibleHeads: ['sideways'],
@@ -245,14 +245,14 @@ addDoki('natsuki', {
 			right: ['1r', '2r'],
 		},
 		{
-			compatibleHeads: ['straight', 'sideways'],
-			left: ['1bl', '2bl'],
-			right: ['1br', '2br'],
-		},
-		{
 			compatibleHeads: ['straight'],
 			headAnchor: [18, 22],
 			static: '3',
+		},
+		{
+			compatibleHeads: ['straight', 'sideways'],
+			left: ['1bl', '2bl'],
+			right: ['1br', '2br'],
 		},
 		{
 			compatibleHeads: ['straight'],
