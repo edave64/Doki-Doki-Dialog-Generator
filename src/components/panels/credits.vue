@@ -5,6 +5,10 @@
 		<p>Doki Doki Dialog Generator developed by EDave64</p>
 		<p>MC Classic Sprite by Childish-N</p>
 		<p>MC Chibis from Seanm0451's Chibi Pack</p>
+		<p>
+			FeMC Sprite by Meddy-sin
+			<br />FeMC Casual Sprite by SlightlySimple
+		</p>
 	</div>
 </template>
 

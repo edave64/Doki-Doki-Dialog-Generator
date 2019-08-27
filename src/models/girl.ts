@@ -8,7 +8,8 @@ export type GirlName =
 	| 'ddlc.natsuki'
 	| 'ddlc.sayori'
 	| 'ddlc.yuri'
-	| 'ddlc.fan.mc_classic';
+	| 'ddlc.fan.mc_classic'
+	| 'ddlc.fan.femc';
 export type Part = 'variant' | 'left' | 'right' | 'head';
 
 export class Girl {

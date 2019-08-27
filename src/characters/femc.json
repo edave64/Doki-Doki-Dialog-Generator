@@ -1,0 +1,172 @@
+{
+	"id": "ddlc.fan.femc",
+	"internalId": "femc",
+	"name": "FeMC",
+	"heads": {
+		"straight": {
+			"folder": "femc",
+			"all": [
+				"a",
+				"b",
+				"c",
+				"d",
+				"e",
+				"f",
+				"g",
+				"h",
+				"i",
+				"j",
+				"k",
+				"l",
+				"m",
+				"n",
+				"o",
+				"p",
+				"q",
+				"r",
+				"s",
+				"t",
+				"u",
+				"v",
+				"w",
+				"x",
+				"y",
+				"z",
+				"glitch1",
+				"glitch2",
+				"_1",
+				"_2",
+				"_3",
+				"_4",
+				"_5",
+				"_6",
+				"_7",
+				"_8",
+				"_9",
+				"_10",
+				"_10alt",
+				"_11",
+				"_12",
+				"_13",
+				"_14"
+			]
+		},
+		"straight_lh": {
+			"folder": "femc_lh",
+			"all": [
+				"a",
+				"b",
+				"c",
+				"d",
+				"e",
+				"f",
+				"g",
+				"h",
+				"i",
+				"j",
+				"k",
+				"l",
+				"m",
+				"n",
+				"o",
+				"p",
+				"q",
+				"r",
+				"s",
+				"t",
+				"u",
+				"v",
+				"w",
+				"x",
+				"y",
+				"z",
+				"glitch1",
+				"glitch2",
+				"z",
+				"_1",
+				"_2",
+				"_3",
+				"_4",
+				"_5",
+				"_6",
+				"_7",
+				"_8",
+				"_9",
+				"_10",
+				"_10alt",
+				"_11",
+				"_12",
+				"_13",
+				"_14"
+			]
+		}
+	},
+	"poses": [
+		{
+			"compatibleHeads": ["straight"],
+			"folder": "femc",
+			"left": ["1l", "2l", "4l", "5l"],
+			"right": ["1r", "4r"]
+		},
+		{
+			"compatibleHeads": ["straight"],
+			"folder": "femc",
+			"static": "3"
+		},
+		{
+			"compatibleHeads": ["straight"],
+			"folder": "femc",
+			"left": ["1bl", "2bl", "4bl", "5bl"],
+			"right": ["1br", "4br"]
+		},
+		{
+			"compatibleHeads": ["straight"],
+			"folder": "femc",
+			"static": "3b"
+		},
+		{
+			"compatibleHeads": ["straight"],
+			"folder": "femc",
+			"left": ["1cl", "2cl", "4cl", "5cl"],
+			"right": ["1cr", "4cr"]
+		},
+		{
+			"compatibleHeads": ["straight"],
+			"folder": "femc",
+			"static": "3c"
+		},
+		{
+			"compatibleHeads": ["straight_lh"],
+			"folder": "femc_lh",
+			"left": ["1l", "2l", "4l", "5l"],
+			"right": ["1r", "4r"]
+		},
+		{
+			"compatibleHeads": ["straight_lh"],
+			"folder": "femc_lh",
+			"static": "3"
+		},
+		{
+			"compatibleHeads": ["straight_lh"],
+			"folder": "femc_lh",
+			"left": ["1bl", "2bl", "4bl", "5bl"],
+			"right": ["1br", "4br"]
+		},
+		{
+			"compatibleHeads": ["straight_lh"],
+			"folder": "femc_lh",
+			"static": "3b"
+		},
+		{
+			"compatibleHeads": ["straight_lh"],
+			"folder": "femc_lh",
+			"left": ["1cl", "2cl", "4cl", "5cl"],
+			"right": ["1cr", "4cr"]
+		},
+		{
+			"compatibleHeads": ["straight_lh"],
+			"folder": "femc_lh",
+			"static": "3c"
+		}
+	]
+}
