@@ -1,15 +1,16 @@
-import { GirlName } from './models/girl';
 import { Background, transparent } from './models/background';
 import Sayori from './characters/sayori.json';
 import Yuri from './characters/yuri.json';
 import Monika from './characters/monika.json';
 import Natsuki from './characters/natsuki.json';
+import MCClassic from './characters/mc_classic.json';
 
 export const dokiOrder = ([
 	Monika,
 	Natsuki,
 	Sayori,
 	Yuri,
+	MCClassic,
 ] as any) as Array<IDoki<any>>;
 
 export const dokis: { [name: string]: IDoki<any> } = {
@@ -17,6 +18,7 @@ export const dokis: { [name: string]: IDoki<any> } = {
 	[Yuri.id]: Yuri as any,
 	[Natsuki.id]: Natsuki as any,
 	[Monika.id]: Monika as any,
+	[MCClassic.id]: MCClassic as any,
 };
 
 let webpSupportPromise: Promise<boolean>;

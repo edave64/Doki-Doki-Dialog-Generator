@@ -1,6 +1,6 @@
 <template>
 	<div :class="{ panel: true, vertical }">
-		<h1>{{captialize(girl.name)}}</h1>
+		<h1>{{girl.label}}</h1>
 		<fieldset>
 			<legend>Pose:</legend>
 			<table>

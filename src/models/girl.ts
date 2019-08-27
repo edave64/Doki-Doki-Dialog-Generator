@@ -7,7 +7,8 @@ export type GirlName =
 	| 'ddlc.monika'
 	| 'ddlc.natsuki'
 	| 'ddlc.sayori'
-	| 'ddlc.yuri';
+	| 'ddlc.yuri'
+	| 'ddlc.fan.mc_classic';
 export type Part = 'variant' | 'left' | 'right' | 'head';
 
 export class Girl {
@@ -32,6 +33,10 @@ export class Girl {
 		public readonly name: GirlName,
 		private readonly invalidator: Invalidator
 	) {}
+
+	public get label() {
+		return this.doki.name;
+	}
 
 	public select() {
 		this.selected = true;
