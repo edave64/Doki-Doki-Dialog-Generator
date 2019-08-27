@@ -1,0 +1,40 @@
+{
+	"id": "ddlc.monika",
+	"name": "Monika",
+	"internalId": "monika",
+	"folder": "monika",
+	"heads": {
+		"straight": [
+			"a",
+			"b",
+			"c",
+			"d",
+			"e",
+			"f",
+			"g",
+			"h",
+			"i",
+			"j",
+			"k",
+			"l",
+			"m",
+			"n",
+			"o",
+			"p",
+			"q",
+			"r"
+		],
+		"sideways": ["a2", "b2"]
+	},
+	"poses": [
+		{
+			"compatibleHeads": ["straight"],
+			"left": ["1l", "2l"],
+			"right": ["1r", "2r"]
+		},
+		{
+			"compatibleHeads": ["sideways"],
+			"static": "3"
+		}
+	]
+}

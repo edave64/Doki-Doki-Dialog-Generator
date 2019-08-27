@@ -3,7 +3,11 @@ import { RenderContext } from '../renderer/rendererContext';
 import { dokis, getAsset, Pose, IDoki, IDokiHeads } from '../asset-manager';
 import { Renderer } from '../renderer/renderer';
 
-export type GirlName = 'sayori' | 'yuri' | 'natsuki' | 'monika';
+export type GirlName =
+	| 'ddlc.monika'
+	| 'ddlc.natsuki'
+	| 'ddlc.sayori'
+	| 'ddlc.yuri';
 export type Part = 'variant' | 'left' | 'right' | 'head';
 
 export class Girl {
@@ -117,7 +121,7 @@ export class Girl {
 					rx.drawImage({
 						image: headAsset,
 						x: headAnchor[0],
-						y: (this.name === 'monika' ? 1 : 0) + headAnchor[1],
+						y: (this.name === 'ddlc.monika' ? 1 : 0) + headAnchor[1],
 					});
 				}
 			};
@@ -166,7 +170,6 @@ export class Girl {
 		if (this.flip) {
 			x = 960 - x;
 		}
-
 		const data = this.localRenderer.getDataAt(x, y);
 
 		return data[3] !== 0;

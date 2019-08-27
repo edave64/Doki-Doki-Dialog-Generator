@@ -1,0 +1,52 @@
+{
+	"id": "ddlc.sayori",
+	"name": "Sayori",
+	"internalId": "sayori",
+	"folder": "sayori",
+	"heads": {
+		"straight": [
+			"a",
+			"b",
+			"c",
+			"d",
+			"e",
+			"f",
+			"g",
+			"h",
+			"i",
+			"j",
+			"k",
+			"l",
+			"m",
+			"n",
+			"o",
+			"p",
+			"q",
+			"r",
+			"s",
+			"t",
+			"u",
+			"v",
+			"w",
+			"x",
+			"y"
+		],
+		"sideways": ["a2", "b2", "c2", "d2"]
+	},
+	"poses": [
+		{
+			"compatibleHeads": ["straight"],
+			"left": ["1l", "2l"],
+			"right": ["1r", "2r"]
+		},
+		{
+			"compatibleHeads": ["sideways"],
+			"static": "3"
+		},
+		{
+			"compatibleHeads": ["straight"],
+			"left": ["1bl", "2bl"],
+			"right": ["1br", "2br"]
+		}
+	]
+}

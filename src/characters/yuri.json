@@ -1,0 +1,62 @@
+{
+	"id": "ddlc.yuri",
+	"name": "Yuri",
+	"internalId": "yuri",
+	"folder": "yuri",
+	"heads": {
+		"straight": [
+			"a",
+			"b",
+			"c",
+			"d",
+			"e",
+			"f",
+			"g",
+			"h",
+			"i",
+			"j",
+			"k",
+			"l",
+			"m",
+			"n",
+			"o",
+			"p",
+			"q",
+			"r",
+			"s",
+			"t",
+			"u",
+			"v",
+			"w",
+			"y1",
+			"y2",
+			"y3",
+			"y4",
+			"y5",
+			"y6",
+			"y7",
+			"hisui"
+		],
+		"sideways": ["a2", "b2", "c2", "d2", "e2"]
+	},
+	"poses": [
+		{
+			"compatibleHeads": ["straight"],
+			"left": ["1l", "2l"],
+			"right": ["1r", "2r"]
+		},
+		{
+			"compatibleHeads": ["sideways"],
+			"static": "3"
+		},
+		{
+			"compatibleHeads": ["straight"],
+			"left": ["1bl", "2bl"],
+			"right": ["1br", "2br"]
+		},
+		{
+			"compatibleHeads": ["sideways"],
+			"static": "3b"
+		}
+	]
+}

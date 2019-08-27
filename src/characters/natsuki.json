@@ -1,0 +1,87 @@
+{
+	"id": "ddlc.natsuki",
+	"name": "Natsuki",
+	"internalId": "natsuki",
+	"folder": "natsuki",
+	"heads": {
+		"straight": [
+			"a",
+			"b",
+			"c",
+			"d",
+			"e",
+			"f",
+			"g",
+			"h",
+			"i",
+			"j",
+			"k",
+			"l",
+			"m",
+			"n",
+			"o",
+			"p",
+			"q",
+			"r",
+			"s",
+			"t",
+			"u",
+			"v",
+			"w",
+			"x",
+			"y",
+			"z",
+			"1t",
+			"scream",
+			"corrupt",
+			"crying"
+		],
+		"sideways": [
+			"2t",
+			"2ta",
+			"2tb",
+			"2tc",
+			"2td",
+			"2te",
+			"2tf",
+			"2tg",
+			"2th",
+			"2ti"
+		],
+		"sidewaysCasuals": [
+			"2bta",
+			"2btb",
+			"2btc",
+			"2btd",
+			"2bte",
+			"2btf",
+			"2btg",
+			"2bth",
+			"2bti"
+		]
+	},
+	"poses": [
+		{
+			"compatibleHeads": ["straight", "sideways"],
+			"headInForeground": true,
+			"left": ["1l", "2l"],
+			"right": ["1r", "2r"]
+		},
+		{
+			"compatibleHeads": ["straight"],
+			"headAnchor": [18, 22],
+			"static": "3"
+		},
+		{
+			"compatibleHeads": ["straight", "sidewaysCasuals"],
+			"headInForeground": true,
+			"left": ["1bl", "2bl"],
+			"right": ["1br", "2br"]
+		},
+		{
+			"compatibleHeads": ["straight"],
+			"headAnchor": [18, 22],
+			"static": "3b"
+		}
+	]
+}

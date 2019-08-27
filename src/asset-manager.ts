@@ -1,5 +1,23 @@
 import { GirlName } from './models/girl';
 import { Background, transparent } from './models/background';
+import Sayori from './characters/sayori.json';
+import Yuri from './characters/yuri.json';
+import Monika from './characters/monika.json';
+import Natsuki from './characters/natsuki.json';
+
+export const dokiOrder = ([
+	Monika,
+	Natsuki,
+	Sayori,
+	Yuri,
+] as any) as Array<IDoki<any>>;
+
+export const dokis: { [name: string]: IDoki<any> } = {
+	[Sayori.id]: Sayori as any,
+	[Yuri.id]: Yuri as any,
+	[Natsuki.id]: Natsuki as any,
+	[Monika.id]: Monika as any,
+};
 
 let webpSupportPromise: Promise<boolean>;
 
@@ -89,244 +107,6 @@ export const backgrounds = [
 	transparent,
 ];
 
-export const dokis: { [name: string]: IDoki<any> } = {};
-function addDoki<T extends DokiHeads>(name: GirlName, doki: IDoki<T>) {
-	dokis[name] = doki;
-}
-
-addDoki('sayori', {
-	name: 'Sayori',
-	folder: 'sayori',
-	heads: {
-		straight: [
-			'a',
-			'b',
-			'c',
-			'd',
-			'e',
-			'f',
-			'g',
-			'h',
-			'i',
-			'j',
-			'k',
-			'l',
-			'm',
-			'n',
-			'o',
-			'p',
-			'q',
-			'r',
-			's',
-			't',
-			'u',
-			'v',
-			'w',
-			'x',
-			'y',
-		],
-		sideways: ['a2', 'b2', 'c2', 'd2'],
-	},
-	poses: [
-		{
-			compatibleHeads: ['straight'],
-			left: ['1l', '2l'],
-			right: ['1r', '2r'],
-		},
-		{
-			compatibleHeads: ['sideways'],
-			static: '3',
-		},
-		{
-			compatibleHeads: ['straight'],
-			left: ['1bl', '2bl'],
-			right: ['1br', '2br'],
-		},
-	],
-});
-addDoki('yuri', {
-	name: 'Yuri',
-	folder: 'yuri',
-	heads: {
-		straight: [
-			'a',
-			'b',
-			'c',
-			'd',
-			'e',
-			'f',
-			'g',
-			'h',
-			'i',
-			'j',
-			'k',
-			'l',
-			'm',
-			'n',
-			'o',
-			'p',
-			'q',
-			'r',
-			's',
-			't',
-			'u',
-			'v',
-			'w',
-			'y1',
-			'y2',
-			'y3',
-			'y4',
-			'y5',
-			'y6',
-			'y7',
-			'hisui',
-		],
-		sideways: ['a2', 'b2', 'c2', 'd2', 'e2'],
-	},
-	poses: [
-		{
-			compatibleHeads: ['straight'],
-			left: ['1l', '2l'],
-			right: ['1r', '2r'],
-		},
-		{
-			compatibleHeads: ['sideways'],
-			static: '3',
-		},
-		{
-			compatibleHeads: ['straight'],
-			left: ['1bl', '2bl'],
-			right: ['1br', '2br'],
-		},
-		{
-			compatibleHeads: ['sideways'],
-			static: '3b',
-		},
-	],
-});
-addDoki('natsuki', {
-	name: 'Natsuki',
-	folder: 'natsuki',
-	heads: {
-		straight: [
-			'a',
-			'b',
-			'c',
-			'd',
-			'e',
-			'f',
-			'g',
-			'h',
-			'i',
-			'j',
-			'k',
-			'l',
-			'm',
-			'n',
-			'o',
-			'p',
-			'q',
-			'r',
-			's',
-			't',
-			'u',
-			'v',
-			'w',
-			'x',
-			'y',
-			'z',
-			'1t',
-			'scream',
-			'corrupt',
-			'crying',
-		],
-		sideways: [
-			'2t',
-			'2ta',
-			'2tb',
-			'2tc',
-			'2td',
-			'2te',
-			'2tf',
-			'2tg',
-			'2th',
-			'2ti',
-		],
-		sidewaysCasuals: [
-			'2bta',
-			'2btb',
-			'2btc',
-			'2btd',
-			'2bte',
-			'2btf',
-			'2btg',
-			'2bth',
-			'2bti',
-		],
-	},
-	poses: [
-		{
-			compatibleHeads: ['straight', 'sideways'],
-			headInForeground: true,
-			left: ['1l', '2l'],
-			right: ['1r', '2r'],
-		},
-		{
-			compatibleHeads: ['straight'],
-			headAnchor: [18, 22],
-			static: '3',
-		},
-		{
-			compatibleHeads: ['straight', 'sidewaysCasuals'],
-			headInForeground: true,
-			left: ['1bl', '2bl'],
-			right: ['1br', '2br'],
-		},
-		{
-			compatibleHeads: ['straight'],
-			headAnchor: [18, 22],
-			static: '3b',
-		},
-	],
-});
-addDoki('monika', {
-	name: 'Monika',
-	folder: 'monika',
-	heads: {
-		straight: [
-			'a',
-			'b',
-			'c',
-			'd',
-			'e',
-			'f',
-			'g',
-			'h',
-			'i',
-			'j',
-			'k',
-			'l',
-			'm',
-			'n',
-			'o',
-			'p',
-			'q',
-			'r',
-		],
-		sideways: ['a2', 'b2'],
-	},
-	poses: [
-		{
-			compatibleHeads: ['straight'],
-			left: ['1l', '2l'],
-			right: ['1r', '2r'],
-		},
-		{
-			compatibleHeads: ['sideways'],
-			static: '3',
-		},
-	],
-});
 export interface IDokiHeads {
 	folder?: string;
 	all: string[];
@@ -355,6 +135,8 @@ interface ITwoSidedPose<H> extends IPose<H> {
 export type Pose<H extends DokiHeads> = IStaticPose<H> | ITwoSidedPose<H>;
 
 export interface IDoki<H extends DokiHeads> {
+	id: string;
+	internalId: string;
 	name: string;
 	folder?: string;
 	heads: H;

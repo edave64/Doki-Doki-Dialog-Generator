@@ -4,23 +4,18 @@
 		<div
 			class="doki"
 			v-for="doki of dokis"
-			:key="doki"
-			:title="doki"
-			@click="$emit('chosen', doki.toLowerCase())"
+			:key="doki.id"
+			:title="doki.name"
+			@click="$emit('chosen', doki.id.toLowerCase())"
 		>
-			<img :src="assetPath(doki)" :alt="doki" />
+			<img :src="assetPath(doki)" :alt="doki.name" />
 		</div>
 	</div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { isWebPSupported } from '../../asset-manager';
-
-interface IDoki {
-	id: string;
-	name: string;
-}
+import { isWebPSupported, IDoki, dokiOrder } from '../../asset-manager';
 
 @Component({
 	components: {},
@@ -29,24 +24,19 @@ export default class AddPanel extends Vue {
 	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
 
 	private isWebPSupported: boolean | null = null;
-	private dokis: string[] = ['Monika', 'Natsuki', 'Sayori', 'Yuri'];
 
 	private async created() {
 		this.isWebPSupported = await isWebPSupported();
 	}
 
-	private assetPath(doki: string) {
-		return `${process.env.BASE_URL}/assets/chibis/${doki.toLowerCase()}.lq.${
-			this.isWebPSupported ? 'webp' : 'png'
-		}`.replace(/\/+/, '/');
+	private get dokis(): Array<IDoki<any>> {
+		return dokiOrder;
 	}
 
-	private onClick(e: MouseEvent): void {
-		const girlSel = this.$el as HTMLDivElement;
-		const cx = e.clientX - girlSel.offsetLeft;
-		const girl =
-			cx < 123 ? 'sayori' : cx < 247 ? 'yuri' : cx < 370 ? 'monika' : 'natsuki';
-		this.$emit('chosen', girl);
+	private assetPath(doki: IDoki<any>) {
+		return `${process.env.BASE_URL}/assets/chibis/${doki.internalId}.lq.${
+			this.isWebPSupported ? 'webp' : 'png'
+		}`.replace(/\/+/, '/');
 	}
 }
 </script>
