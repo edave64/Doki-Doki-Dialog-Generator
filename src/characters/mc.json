@@ -1,0 +1,84 @@
+{
+	"id": "ddlc.fan.mc2",
+	"name": "MC",
+	"internalId": "mc",
+	"folder": "mc",
+	"heads": {
+		"straight": [
+			"a",
+			"b",
+			"c",
+			"d",
+			"e",
+			"f",
+			"g",
+			"h",
+			"i",
+			"j",
+			"k",
+			"l",
+			"m",
+			"n",
+			"o",
+			"p",
+			"q",
+			"r",
+			"s",
+			"t",
+			"u",
+			"v",
+			"w",
+			"x",
+			"y",
+			"z",
+			"error",
+			"error1",
+			"shock"
+		],
+		"straight_red": {
+			"folder": "red",
+			"all": [
+				"a",
+				"b",
+				"c",
+				"d",
+				"e",
+				"f",
+				"g",
+				"h",
+				"i",
+				"j",
+				"k",
+				"l",
+				"m",
+				"n",
+				"o",
+				"p",
+				"q",
+				"r",
+				"s",
+				"t",
+				"u",
+				"v",
+				"w",
+				"x",
+				"y",
+				"z",
+				"error",
+				"error1",
+				"shock"
+			]
+		}
+	},
+	"poses": [
+		{
+			"compatibleHeads": ["straight", "straight_red"],
+			"left": ["1l", "2l"],
+			"right": ["1r", "2r"]
+		},
+		{
+			"compatibleHeads": ["straight", "straight_red"],
+			"static": "3"
+		}
+	]
+}

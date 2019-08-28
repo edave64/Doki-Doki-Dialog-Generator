@@ -4,6 +4,7 @@ import Yuri from './characters/yuri.json';
 import Monika from './characters/monika.json';
 import Natsuki from './characters/natsuki.json';
 import FeMC from './characters/femc.json';
+import MC from './characters/mc.json';
 import MCClassic from './characters/mc_classic.json';
 
 export const dokiOrder = ([
@@ -12,6 +13,7 @@ export const dokiOrder = ([
 	Sayori,
 	Yuri,
 	FeMC,
+	MC,
 	MCClassic,
 ] as any) as Array<IDoki<any>>;
 
@@ -21,6 +23,7 @@ export const dokis: { [name: string]: IDoki<any> } = {
 	[Natsuki.id]: Natsuki as any,
 	[Monika.id]: Monika as any,
 	[FeMC.id]: FeMC as any,
+	[MC.id]: MC as any,
 	[MCClassic.id]: MCClassic as any,
 };
 
