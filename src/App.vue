@@ -356,7 +356,7 @@ body {
 	font-family: aller;
 }
 #panels {
-	background-color: #ffe6f4;
+	background-color: #ffffff;
 	border: 3px solid #ffbde1;
 	position: absolute;
 	display: flex;
@@ -368,9 +368,8 @@ body {
 
 		h1 {
 			margin: 0;
-			color: white;
+			color: black;
 			font-family: riffic;
-			text-shadow: 0 0 7px black;
 			text-align: center;
 		}
 	}
@@ -407,7 +406,7 @@ body {
 				}
 
 				&.active {
-					border-right: 3px solid #ffe6f4;
+					border-right: 3px solid white;
 				}
 			}
 		}
@@ -440,7 +439,7 @@ body {
 				}
 
 				&.active {
-					border-bottom: 3px solid #ffe6f4;
+					border-bottom: 3px solid white;
 				}
 			}
 		}
@@ -456,6 +455,10 @@ body {
 			height: 48px;
 			background-color: #ffe6f4;
 			border: 3px solid #ffbde1;
+
+			&.active {
+				background: white;
+			}
 		}
 	}
 }

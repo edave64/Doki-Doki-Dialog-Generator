@@ -10,26 +10,31 @@
 		<toggle label="Textbox visible?" v-model="options.display" />
 		<toggle label="Textbox corrupt?" v-model="options.corrupted" />
 		<div>
-			Person talking:
+			<label for="current_talking">Person talking:</label>
 			<br />
-			<select v-model="options.talking">
+			<select id="current_talking" v-model="options.talking">
 				<option value>No-one</option>
 				<option value="Sayori">Sayori</option>
 				<option value="Yuri">Yuri</option>
 				<option value="Natsuki">Natsuki</option>
 				<option value="Monika">Monika</option>
+				<option value="FeMC">FeMC</option>
+				<option value="MC">MC</option>
 				<option value="other">Other</option>
 			</select>
 		</div>
 		<div>
-			Other name:
+			<label for="custom_name">Other name:</label>
 			<br />
-			<input v-model="options.customName" />
+			<input id="custom_name" v-model="options.customName" />
 		</div>
 		<toggle label="Controls visible?" v-model="options.showControls" />
 		<toggle label="Able to skip?" v-model="options.allowSkipping" />
 		<toggle label="Continue arrow?" v-model="options.showContinueArrow" />
-		<textarea v-model="options.dialog" />
+		<div id="dialog_text_wrapper">
+			<label for="dialog_text">Dialog:</label>
+			<textarea v-model="options.dialog" id="dialog_text" />
+		</div>
 	</div>
 </template>
 
@@ -63,8 +68,18 @@ textarea {
 
 .panel {
 	&:not(.vertical) {
-		textarea {
+		#dialog_text_wrapper {
 			height: calc(100% - 2px);
+			display: table;
+
+			* {
+				display: table-row;
+				height: 100%;
+			}
+
+			label {
+				height: 0px;
+			}
 		}
 	}
 

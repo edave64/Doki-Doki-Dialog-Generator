@@ -106,19 +106,7 @@ export interface MoveGirl {
 </script>
 
 <style lang="scss" scoped>
-textarea {
-	flex-grow: 1;
-}
-
-.panel {
-	&:not(.vertical) {
-		justify-content: center;
-	}
-
-	&.vertical {
-		.doki {
-			text-align: center;
-		}
-	}
+fieldset {
+	border: 3px solid #ffbde1;
 }
 </style>
