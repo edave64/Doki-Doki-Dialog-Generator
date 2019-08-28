@@ -72,12 +72,21 @@
 	},
 	"poses": [
 		{
-			"compatibleHeads": ["straight", "straight_red"],
+			"compatibleHeads": ["straight"],
 			"left": ["1l", "2l"],
 			"right": ["1r", "2r"]
 		},
 		{
-			"compatibleHeads": ["straight", "straight_red"],
+			"compatibleHeads": ["straight"],
+			"static": "3"
+		},
+		{
+			"compatibleHeads": ["straight_red"],
+			"left": ["1l", "2l"],
+			"right": ["1r", "2r"]
+		},
+		{
+			"compatibleHeads": ["straight_red"],
 			"static": "3"
 		}
 	]
