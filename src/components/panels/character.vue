@@ -1,11 +1,11 @@
 <template>
 	<div :class="{ panel: true, vertical }">
 		<h1>{{girl.label}}</h1>
-		<fieldset>
+		<fieldset v-if="hasMultiplePoses || parts.length > 0">
 			<legend>Pose:</legend>
 			<table>
 				<tbody>
-					<tr>
+					<tr v-if="hasMultiplePoses">
 						<td>
 							<button @click="girl.posel();">&lt;</button>
 						</td>
@@ -65,7 +65,7 @@ interface IDoki {
 		Toggle,
 	},
 })
-export default class AddPanel extends Vue {
+export default class CharacterPanel extends Vue {
 	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
 	@Prop({ type: Girl, required: true }) private girl!: Girl;
 
@@ -80,22 +80,12 @@ export default class AddPanel extends Vue {
 		return this.girl.getParts();
 	}
 
+	private get hasMultiplePoses(): boolean {
+		return this.girl.doki.poses.length > 1;
+	}
+
 	private captialize(str: string) {
 		return str.charAt(0).toUpperCase() + str.substring(1);
-	}
-
-	private assetPath(doki: string) {
-		return `/assets/chibis/${doki.toLowerCase()}.lq.${
-			this.isWebPSupported ? 'webp' : 'png'
-		}`;
-	}
-
-	private onClick(e: MouseEvent): void {
-		const girlSel = this.$el as HTMLDivElement;
-		const cx = e.clientX - girlSel.offsetLeft;
-		const girl =
-			cx < 123 ? 'sayori' : cx < 247 ? 'yuri' : cx < 370 ? 'monika' : 'natsuki';
-		this.$emit('chosen', girl);
 	}
 }
 

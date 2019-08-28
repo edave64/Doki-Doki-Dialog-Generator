@@ -40,7 +40,7 @@
 					v-model="currentBackground"
 				/>
 				<credits-panel v-if="panel === 'credits'" :vertical="vertical" />
-				<doki-panel
+				<character-panel
 					v-if="panel === 'doki'"
 					:vertical="vertical"
 					:girl="selectedGirl"
@@ -57,7 +57,7 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import DokiButton from './components/DokiButton.vue';
 import GeneralPanel from './components/panels/general.vue';
 import AddPanel from './components/panels/add.vue';
-import DokiPanel, { MoveGirl } from './components/panels/doki.vue';
+import CharacterPanel, { MoveGirl } from './components/panels/character.vue';
 import CreditsPanel from './components/panels/credits.vue';
 import BackgroundsPanel from './components/panels/backgrounds.vue';
 import { girlPositions } from './models/constants';
@@ -75,7 +75,7 @@ import { Background } from './models/background';
 		AddPanel,
 		BackgroundsPanel,
 		CreditsPanel,
-		DokiPanel,
+		CharacterPanel,
 	},
 })
 export default class App extends Vue {
