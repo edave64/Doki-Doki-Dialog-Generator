@@ -1,26 +1,26 @@
 <template>
 	<div :class="{ panel: true, vertical }">
-		<h1>{{girl.label}}</h1>
+		<h1>{{character.label}}</h1>
 		<fieldset v-if="hasMultiplePoses || parts.length > 0">
 			<legend>Pose:</legend>
 			<table>
 				<tbody>
 					<tr v-if="hasMultiplePoses">
 						<td>
-							<button @click="girl.posel();">&lt;</button>
+							<button @click="character.posel();">&lt;</button>
 						</td>
 						<td>Pose</td>
 						<td>
-							<button @click="girl.poser();">&gt;</button>
+							<button @click="character.poser();">&gt;</button>
 						</td>
 					</tr>
 					<tr v-for="part of parts" :key="part">
 						<td>
-							<button @click="girl.partl(part);">&lt;</button>
+							<button @click="character.partl(part);">&lt;</button>
 						</td>
 						<td>{{captialize(part)}}</td>
 						<td>
-							<button @click="girl.partr(part);">&gt;</button>
+							<button @click="character.partr(part);">&gt;</button>
 						</td>
 					</tr>
 				</tbody>
@@ -28,37 +28,45 @@
 		</fieldset>
 		<fieldset>
 			<legend>Position:</legend>
-			<button @click="girl.pos=Math.max(1, girl.pos-1);$emit('invalidate-render')">&lt; left</button>
-			<button @click="girl.pos=Math.min(7, girl.pos+1);$emit('invalidate-render')">&gt; right</button>
+			<button @click="character.pos=Math.max(1, character.pos-1);$emit('invalidate-render')">&lt; left</button>
+			<button @click="character.pos=Math.min(7, character.pos+1);$emit('invalidate-render')">&gt; right</button>
 		</fieldset>
 		<fieldset id="layerfs">
 			<legend>Layer:</legend>
-			<button @click="$emit('shiftLayer', {girl: girl, move: 'Back'})" title="Move to back">&#10515;</button>
 			<button
-				@click="$emit('shiftLayer', {girl: girl, move: 'Backward'})"
+				@click="$emit('shiftLayer', {character: character, move: 'Back'})"
+				title="Move to back"
+			>&#10515;</button>
+			<button
+				@click="$emit('shiftLayer', {character: character, move: 'Backward'})"
 				title="Move backwards"
 			>&#8595;</button>
-			<button @click="$emit('shiftLayer', {girl: girl, move: 'Forward'})" title="Move forwards">&#8593;</button>
-			<button @click="$emit('shiftLayer', {girl: girl, move: 'Front'})" title="Move to front">&#10514;</button>
+			<button
+				@click="$emit('shiftLayer', {character: character, move: 'Forward'})"
+				title="Move forwards"
+			>&#8593;</button>
+			<button
+				@click="$emit('shiftLayer', {character: character, move: 'Front'})"
+				title="Move to front"
+			>&#10514;</button>
 		</fieldset>
-		<toggle v-model="girl.infront" @input="$emit('invalidate-render')" label="In front of textbox?" />
-		<toggle v-model="girl.close" @input="$emit('invalidate-render')" label="Close up?" />
-		<toggle v-model="girl.flip" @input="$emit('invalidate-render')" label="Flipped?" />
+		<toggle
+			v-model="character.infront"
+			@input="$emit('invalidate-render')"
+			label="In front of textbox?"
+		/>
+		<toggle v-model="character.close" @input="$emit('invalidate-render')" label="Close up?" />
+		<toggle v-model="character.flip" @input="$emit('invalidate-render')" label="Flipped?" />
 
-		<button @click="$emit('shiftLayer', {girl: girl, move: 'Delete'});$emit('close')">Delete</button>
+		<button @click="$emit('shiftLayer', {character: character, move: 'Delete'});$emit('close')">Delete</button>
 	</div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { isWebPSupported } from '../../asset-manager';
-import { Girl } from '../../models/girl';
+import { Character } from '../../models/character';
 import Toggle from '../Toggle.vue';
-
-interface IDoki {
-	id: string;
-	name: string;
-}
 
 @Component({
 	components: {
@@ -67,21 +75,20 @@ interface IDoki {
 })
 export default class CharacterPanel extends Vue {
 	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
-	@Prop({ type: Girl, required: true }) private girl!: Girl;
+	@Prop({ type: Character, required: true }) private character!: Character;
 
 	private isWebPSupported: boolean | null = null;
-	private dokis: string[] = ['Monika', 'Natsuki', 'Sayori', 'Yuri'];
 
 	private async created() {
 		this.isWebPSupported = await isWebPSupported();
 	}
 
 	private get parts(): string[] {
-		return this.girl.getParts();
+		return this.character.getParts();
 	}
 
 	private get hasMultiplePoses(): boolean {
-		return this.girl.doki.poses.length > 1;
+		return this.character.data.poses.length > 1;
 	}
 
 	private captialize(str: string) {
@@ -89,8 +96,8 @@ export default class CharacterPanel extends Vue {
 	}
 }
 
-export interface MoveGirl {
-	girl: Girl;
+export interface MoveCharacter {
+	character: Character;
 	move: 'Forward' | 'Backward' | 'Back' | 'Front' | 'Delete';
 }
 </script>

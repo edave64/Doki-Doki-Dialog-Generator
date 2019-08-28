@@ -1,9 +1,15 @@
-import { girlPositions } from './constants';
+import { characterPositions } from './constants';
 import { RenderContext } from '../renderer/rendererContext';
-import { dokis, getAsset, Pose, IDoki, IDokiHeads } from '../asset-manager';
+import {
+	characters,
+	getAsset,
+	Pose,
+	ICharacter,
+	IHeads,
+} from '../asset-manager';
 import { Renderer } from '../renderer/renderer';
 
-export type GirlName =
+export type CharacterIds =
 	| 'ddlc.monika'
 	| 'ddlc.natsuki'
 	| 'ddlc.sayori'
@@ -12,7 +18,7 @@ export type GirlName =
 	| 'ddlc.fan.femc';
 export type Part = 'variant' | 'left' | 'right' | 'head';
 
-export class Girl {
+export class Character {
 	public pos: number = 4;
 	public infront: boolean = false;
 	public close: boolean = false;
@@ -31,12 +37,12 @@ export class Girl {
 	private dirty = true;
 
 	public constructor(
-		public readonly name: GirlName,
+		public readonly name: CharacterIds,
 		private readonly invalidator: Invalidator
 	) {}
 
 	public get label() {
-		return this.doki.name;
+		return this.data.name;
 	}
 
 	public select() {
@@ -47,12 +53,12 @@ export class Girl {
 		this.selected = false;
 	}
 
-	public get doki(): IDoki<any> {
-		return dokis[this.name];
+	public get data(): ICharacter<any> {
+		return characters[this.name];
 	}
 
 	public get pose(): Pose<any> {
-		return this.doki.poses[this.poseId];
+		return this.data.poses[this.poseId];
 	}
 
 	public getParts(): Part[] {
@@ -69,11 +75,11 @@ export class Girl {
 		return head;
 	}
 
-	public get currentHeads(): IDokiHeads | null {
+	public get currentHeads(): IHeads | null {
 		if (!this.pose.compatibleHeads || this.pose.compatibleHeads.length === 0) {
 			return null;
 		}
-		const heads = this.doki.heads[
+		const heads = this.data.heads[
 			this.pose.compatibleHeads[this.posePositions.headType]
 		];
 		if (heads instanceof Array) {
@@ -91,11 +97,11 @@ export class Girl {
 			const partKeys = this.getParts();
 
 			const poseFolder =
-				(this.doki.folder ? this.doki.folder + '/' : '') +
+				(this.data.folder ? this.data.folder + '/' : '') +
 				(this.pose.folder ? this.pose.folder + '/' : '');
 
 			const headFolder =
-				(this.doki.folder ? this.doki.folder + '/' : '') +
+				(this.data.folder ? this.data.folder + '/' : '') +
 				(this.currentHeads && this.currentHeads.folder
 					? this.currentHeads.folder + '/'
 					: '');
@@ -153,7 +159,7 @@ export class Girl {
 
 		const zoom = this.close ? 2 : 1;
 		const size = 720 * zoom;
-		const x = girlPositions[this.pos]! - size / 2;
+		const x = characterPositions[this.pos]! - size / 2;
 		const y = this.close ? -100 : 0;
 
 		rx.drawImage({
@@ -170,7 +176,7 @@ export class Girl {
 	public hittest(hx: number, hy: number): boolean {
 		const zoom = this.close ? 1.6 : 0.8;
 		const size = 960 * zoom;
-		let x = (hx - girlPositions[this.pos]! + size / 2) / zoom;
+		let x = (hx - characterPositions[this.pos]! + size / 2) / zoom;
 		const y = (hy - (this.close ? -100 : 0)) / zoom;
 
 		if (this.flip) {
@@ -239,7 +245,7 @@ export class Girl {
 		];
 		--this.poseId;
 		if (this.poseId < 0) {
-			this.poseId = this.doki.poses.length - 1;
+			this.poseId = this.data.poses.length - 1;
 		}
 		const newHeadCollectionNr = this.pose.compatibleHeads.indexOf(
 			oldHeadCollection
@@ -262,7 +268,7 @@ export class Girl {
 			this.posePositions.headType
 		];
 		++this.poseId;
-		if (this.poseId >= this.doki.poses.length) {
+		if (this.poseId >= this.data.poses.length) {
 			this.poseId = 0;
 		}
 		const newHeadCollectionNr = this.pose.compatibleHeads.indexOf(

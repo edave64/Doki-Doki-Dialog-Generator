@@ -1,21 +1,25 @@
 <template>
 	<div :class="{ panel: true, vertical }" v-if="isWebPSupported !== undefined">
-		<h1>Add doki</h1>
+		<h1>Add character</h1>
 		<div
-			class="doki"
-			v-for="doki of dokis"
-			:key="doki.id"
-			:title="doki.name"
-			@click="$emit('chosen', doki.id.toLowerCase())"
+			class="character"
+			v-for="character of characters"
+			:key="character.id"
+			:title="character.name"
+			@click="$emit('chosen', character.id.toLowerCase())"
 		>
-			<img :src="assetPath(doki)" :alt="doki.name" />
+			<img :src="assetPath(character)" :alt="character.name" />
 		</div>
 	</div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { isWebPSupported, IDoki, dokiOrder } from '../../asset-manager';
+import {
+	isWebPSupported,
+	ICharacter,
+	characterOrder,
+} from '../../asset-manager';
 
 @Component({
 	components: {},
@@ -29,12 +33,12 @@ export default class AddPanel extends Vue {
 		this.isWebPSupported = await isWebPSupported();
 	}
 
-	private get dokis(): Array<IDoki<any>> {
-		return dokiOrder;
+	private get characters(): Array<ICharacter<any>> {
+		return characterOrder;
 	}
 
-	private assetPath(doki: IDoki<any>) {
-		return `${process.env.BASE_URL}/assets/chibis/${doki.internalId}.lq.${
+	private assetPath(character: ICharacter<any>) {
+		return `${process.env.BASE_URL}/assets/chibis/${character.internalId}.lq.${
 			this.isWebPSupported ? 'webp' : 'png'
 		}`.replace(/\/+/, '/');
 	}
@@ -52,7 +56,7 @@ textarea {
 	}
 
 	&.vertical {
-		.doki {
+		.character {
 			text-align: center;
 		}
 	}

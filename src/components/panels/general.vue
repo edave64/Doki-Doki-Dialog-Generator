@@ -48,7 +48,7 @@ import Toggle from '../Toggle.vue';
 		Toggle,
 	},
 })
-export default class DokiSelector extends Vue {
+export default class GeneralPanel extends Vue {
 	@Prop({ required: true }) private readonly options!: Textbox;
 	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
 	@Prop({ required: true, type: Boolean })

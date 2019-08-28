@@ -33,7 +33,7 @@
 					:vertical="vertical"
 					:lqRendering.sync="lqRendering"
 				/>
-				<add-panel v-if="panel === 'add'" :vertical="vertical" @chosen="onDokiChosen" />
+				<add-panel v-if="panel === 'add'" :vertical="vertical" @chosen="onCharacterCreate" />
 				<backgrounds-panel
 					v-if="panel === 'backgrounds'"
 					:vertical="vertical"
@@ -41,10 +41,10 @@
 				/>
 				<credits-panel v-if="panel === 'credits'" :vertical="vertical" />
 				<character-panel
-					v-if="panel === 'doki'"
+					v-if="panel === 'character'"
 					:vertical="vertical"
-					:girl="selectedGirl"
-					@shiftLayer="onDokiLayerShift"
+					:character="selectedCharacter"
+					@shiftLayer="onCharacterLayerShift"
 					@invalidate-render="invalidateRender"
 				/>
 			</keep-alive>
@@ -57,12 +57,14 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import DokiButton from './components/DokiButton.vue';
 import GeneralPanel from './components/panels/general.vue';
 import AddPanel from './components/panels/add.vue';
-import CharacterPanel, { MoveGirl } from './components/panels/character.vue';
+import CharacterPanel, {
+	MoveCharacter,
+} from './components/panels/character.vue';
 import CreditsPanel from './components/panels/credits.vue';
 import BackgroundsPanel from './components/panels/backgrounds.vue';
-import { girlPositions } from './models/constants';
+import { characterPositions } from './models/constants';
 import { Textbox } from './models/textbox';
-import { Girl, GirlName } from './models/girl';
+import { Character, CharacterIds } from './models/character';
 import { backgrounds, getAsset } from './asset-manager';
 import { Renderer } from './renderer/renderer';
 import { RenderContext } from './renderer/rendererContext';
@@ -84,9 +86,9 @@ export default class App extends Vue {
 	public currentBackground: Background | null = null;
 
 	private sdCtx: CanvasRenderingContext2D | undefined;
-	private girls: Girl[] = [];
-	private selectedGirl: Girl | null = null;
-	private dokiSelectorOpen: boolean = false;
+	private characters: Character[] = [];
+	private selectedCharacter: Character | null = null;
+	private characterSelectorOpen: boolean = false;
 	private backgroundSelectorOpen: boolean = false;
 	private editDialog: boolean = false;
 
@@ -105,20 +107,23 @@ export default class App extends Vue {
 
 	private hitDetectionFallback = false;
 
-	@Watch('selectedGirl')
-	public onSelectedGirlChange(newGirl: Girl, oldGirl: Girl) {
-		if (oldGirl) oldGirl.unselect();
-		if (newGirl) {
-			newGirl.select();
-			this.panel = 'doki';
+	@Watch('selectedCharacter')
+	public onSelectedCharacterChange(
+		newCharacter: Character,
+		oldCharacter: Character
+	) {
+		if (oldCharacter) oldCharacter.unselect();
+		if (newCharacter) {
+			newCharacter.select();
+			this.panel = 'character';
 		}
 		this.invalidateRender();
 	}
 
 	@Watch('panel')
 	public onPanel(newPanel: string) {
-		if (newPanel !== 'doki') {
-			this.selectedGirl = null;
+		if (newPanel !== 'character') {
+			this.selectedCharacter = null;
 		}
 	}
 
@@ -162,17 +167,17 @@ export default class App extends Vue {
 				await this.currentBackground.render(rx);
 			}
 
-			for (const girl of this.girls) {
-				if (!girl.infront) {
-					await girl.render(rx);
+			for (const character of this.characters) {
+				if (!character.infront) {
+					await character.render(rx);
 				}
 			}
 
 			await this.textbox.render(rx);
 
-			for (const girl of this.girls) {
-				if (girl.infront) {
-					await girl.render(rx);
+			for (const character of this.characters) {
+				if (character.infront) {
+					await character.render(rx);
 				}
 			}
 		}
@@ -190,7 +195,7 @@ export default class App extends Vue {
 		window.addEventListener('resize', this.updateArea);
 		window.addEventListener('keypress', e => {
 			if (e.keyCode === 27) {
-				this.selectedGirl = null;
+				this.selectedCharacter = null;
 				this.panel = '';
 			}
 		});
@@ -257,13 +262,13 @@ export default class App extends Vue {
 	}
 
 	private async download() {
-		this.selectedGirl = null;
+		this.selectedCharacter = null;
 		this.renderer.download(this.renderCallback, 'panel.png');
 	}
 
-	private onDokiChosen(girl: GirlName): void {
-		this.dokiSelectorOpen = false;
-		this.girls.push(new Girl(girl, this.invalidateRender));
+	private onCharacterCreate(character: CharacterIds): void {
+		this.characterSelectorOpen = false;
+		this.characters.push(new Character(character, this.invalidateRender));
 		this.invalidateRender();
 	}
 
@@ -276,23 +281,23 @@ export default class App extends Vue {
 		const sx = (rx / sd.offsetWidth) * sd.width;
 		const sy = (ry / sd.offsetWidth) * sd.width;
 
-		const girls = sy > 50 ? this.girlsAt(sx, sy) : [];
+		const characters = sy > 50 ? this.characterAt(sx, sy) : [];
 
-		const currentCharacterIdx = girls.indexOf(this.selectedGirl!);
+		const currentCharacterIdx = characters.indexOf(this.selectedCharacter!);
 
 		if (currentCharacterIdx === 0) {
-			this.selectedGirl = null;
+			this.selectedCharacter = null;
 		} else if (currentCharacterIdx !== -1) {
-			// Select the next lower girl
-			this.selectedGirl = girls[currentCharacterIdx - 1];
+			// Select the next lower character
+			this.selectedCharacter = characters[currentCharacterIdx - 1];
 		} else {
-			this.selectedGirl = girls[girls.length - 1] || null;
+			this.selectedCharacter = characters[characters.length - 1] || null;
 		}
 	}
-	private girlsAt(x: number, y: number): Girl[] {
+	private characterAt(x: number, y: number): Character[] {
 		if (!this.hitDetectionFallback) {
 			try {
-				return this.girls.filter(girl => girl.hittest(x, y));
+				return this.characters.filter(character => character.hittest(x, y));
 			} catch (e) {
 				// On chrome for android, the hit test tends to fail because of cross-origin shinanigans, even though
 				// we only ever load from one origin. ¯\_(ツ)_/¯
@@ -307,15 +312,14 @@ export default class App extends Vue {
 		}
 
 		if (y > 550) return [];
-		return this.girls.filter(
-			girl => Math.abs(girlPositions[girl.pos]! - x) < 120
+		return this.characters.filter(
+			character => Math.abs(characterPositions[character.pos]! - x) < 120
 		);
 	}
-
-	private onDokiLayerShift(event: MoveGirl): void {
-		const idx = this.girls.indexOf(event.girl);
+	private onCharacterLayerShift(event: MoveCharacter): void {
+		const idx = this.characters.indexOf(event.character);
 		let targetIdx = idx;
-		this.girls.splice(idx, 1);
+		this.characters.splice(idx, 1);
 		switch (event.move) {
 			case 'Forward':
 				targetIdx += 1;
@@ -327,7 +331,7 @@ export default class App extends Vue {
 				targetIdx = 0;
 				break;
 			case 'Front':
-				targetIdx = this.girls.length;
+				targetIdx = this.characters.length;
 				break;
 			case 'Delete':
 				this.panel = '';
@@ -335,11 +339,11 @@ export default class App extends Vue {
 				return;
 		}
 		if (targetIdx <= 0) {
-			this.girls.unshift(event.girl);
-		} else if (targetIdx >= this.girls.length) {
-			this.girls.push(event.girl);
+			this.characters.unshift(event.character);
+		} else if (targetIdx >= this.characters.length) {
+			this.characters.push(event.character);
 		} else {
-			this.girls.splice(targetIdx, 0, event.girl);
+			this.characters.splice(targetIdx, 0, event.character);
 		}
 		this.invalidateRender();
 	}

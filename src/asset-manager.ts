@@ -7,7 +7,7 @@ import FeMC from './characters/femc.json';
 import MC from './characters/mc.json';
 import MCClassic from './characters/mc_classic.json';
 
-export const dokiOrder = ([
+export const characterOrder = ([
 	Monika,
 	Natsuki,
 	Sayori,
@@ -15,9 +15,9 @@ export const dokiOrder = ([
 	FeMC,
 	MC,
 	MCClassic,
-] as any) as Array<IDoki<any>>;
+] as any) as Array<ICharacter<any>>;
 
-export const dokis: { [name: string]: IDoki<any> } = {
+export const characters: { [name: string]: ICharacter<any> } = {
 	[Sayori.id]: Sayori as any,
 	[Yuri.id]: Yuri as any,
 	[Natsuki.id]: Natsuki as any,
@@ -115,13 +115,13 @@ export const backgrounds = [
 	transparent,
 ];
 
-export interface IDokiHeads {
+export interface IHeads {
 	folder?: string;
 	all: string[];
 }
 
-export interface DokiHeads {
-	[id: string]: IDokiHeads | string[];
+export interface Heads {
+	[id: string]: IHeads | string[];
 }
 
 interface IPose<H> {
@@ -140,9 +140,9 @@ interface ITwoSidedPose<H> extends IPose<H> {
 	right: string[];
 }
 
-export type Pose<H extends DokiHeads> = IStaticPose<H> | ITwoSidedPose<H>;
+export type Pose<H extends Heads> = IStaticPose<H> | ITwoSidedPose<H>;
 
-export interface IDoki<H extends DokiHeads> {
+export interface ICharacter<H extends Heads> {
 	id: string;
 	internalId: string;
 	name: string;

@@ -26,11 +26,6 @@ import {
 } from '../../asset-manager';
 import { Background } from '../../models/background';
 
-interface IDoki {
-	id: string;
-	name: string;
-}
-
 @Component({
 	components: {},
 })
@@ -53,18 +48,10 @@ export default class BackgroundsPanel extends Vue {
 		return backgrounds;
 	}
 
-	private assetPath(doki: string) {
-		return `${process.env.BASE_URL}/assets/${doki.toLowerCase()}.lq.${
+	private assetPath(background: string) {
+		return `${process.env.BASE_URL}/assets/${background.toLowerCase()}.lq.${
 			this.isWebPSupported ? 'webp' : 'png'
 		}`.replace(/\/+/, '/');
-	}
-
-	private onClick(e: MouseEvent): void {
-		const girlSel = this.$el as HTMLDivElement;
-		const cx = e.clientX - girlSel.offsetLeft;
-		const girl =
-			cx < 123 ? 'sayori' : cx < 247 ? 'yuri' : cx < 370 ? 'monika' : 'natsuki';
-		this.$emit('chosen', girl);
 	}
 
 	private onFileUpload(e: Event) {
