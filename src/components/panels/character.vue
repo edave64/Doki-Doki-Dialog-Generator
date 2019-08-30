@@ -34,19 +34,19 @@
 		<fieldset id="layerfs">
 			<legend>Layer:</legend>
 			<button
-				@click="$emit('shiftLayer', {character: character, move: 'Back'})"
+				@click="$emit('shiftLayer', {object: character, move: 'Back'})"
 				title="Move to back"
 			>&#10515;</button>
 			<button
-				@click="$emit('shiftLayer', {character: character, move: 'Backward'})"
+				@click="$emit('shiftLayer', {object: character, move: 'Backward'})"
 				title="Move backwards"
 			>&#8595;</button>
 			<button
-				@click="$emit('shiftLayer', {character: character, move: 'Forward'})"
+				@click="$emit('shiftLayer', {object: character, move: 'Forward'})"
 				title="Move forwards"
 			>&#8593;</button>
 			<button
-				@click="$emit('shiftLayer', {character: character, move: 'Front'})"
+				@click="$emit('shiftLayer', {object: character, move: 'Front'})"
 				title="Move to front"
 			>&#10514;</button>
 		</fieldset>
@@ -58,7 +58,7 @@
 		<toggle v-model="character.close" @input="$emit('invalidate-render')" label="Close up?" />
 		<toggle v-model="character.flip" @input="$emit('invalidate-render')" label="Flipped?" />
 
-		<button @click="$emit('shiftLayer', {character: character, move: 'Delete'});$emit('close')">Delete</button>
+		<button @click="$emit('shiftLayer', {object: character, move: 'Delete'});$emit('close')">Delete</button>
 	</div>
 </template>
 
@@ -67,6 +67,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import { isWebPSupported } from '../../asset-manager';
 import { Character } from '../../models/character';
 import Toggle from '../Toggle.vue';
+import { IRenderable } from '../../models/renderable';
 
 @Component({
 	components: {
@@ -96,8 +97,8 @@ export default class CharacterPanel extends Vue {
 	}
 }
 
-export interface MoveCharacter {
-	character: Character;
+export interface MoveObject {
+	object: IRenderable;
 	move: 'Forward' | 'Backward' | 'Back' | 'Front' | 'Delete';
 }
 </script>

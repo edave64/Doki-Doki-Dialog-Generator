@@ -10,6 +10,10 @@
 		>
 			<img :src="assetPath(character)" :alt="character.name" />
 		</div>
+		<div class="btn custom-sprite" @click="$refs.upload.click()">
+			Custom sprite
+			<input type="file" ref="upload" @change="onFileUpload" />
+		</div>
 	</div>
 </template>
 
@@ -19,6 +23,7 @@ import {
 	isWebPSupported,
 	ICharacter,
 	characterOrder,
+	registerAsset,
 } from '../../asset-manager';
 
 @Component({
@@ -28,6 +33,7 @@ export default class AddPanel extends Vue {
 	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
 
 	private isWebPSupported: boolean | null = null;
+	private customAssetCount = 0;
 
 	private async created() {
 		this.isWebPSupported = await isWebPSupported();
@@ -42,6 +48,18 @@ export default class AddPanel extends Vue {
 			this.isWebPSupported ? 'webp' : 'png'
 		}`.replace(/\/+/, '/');
 	}
+
+	private onFileUpload(e: Event) {
+		const uploadInput = this.$refs.upload as HTMLInputElement;
+		if (!uploadInput.files) return;
+		for (const file of uploadInput.files) {
+			(nr => {
+				const name = 'customAsset' + nr;
+				const url = registerAsset(name, file);
+				this.$emit('add-custom-asset', name);
+			})(++this.customAssetCount);
+		}
+	}
 }
 </script>
 
@@ -51,6 +69,8 @@ textarea {
 }
 
 .panel {
+	flex-wrap: nowrap;
+
 	&:not(.vertical) {
 		justify-content: center;
 	}
@@ -58,6 +78,12 @@ textarea {
 	&.vertical {
 		.character {
 			text-align: center;
+		}
+	}
+
+	.custom-sprite {
+		input {
+			display: none;
 		}
 	}
 }

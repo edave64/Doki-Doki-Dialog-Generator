@@ -1,7 +1,9 @@
 import { RenderContext } from '@/renderer/rendererContext';
 import { getAsset } from '@/asset-manager';
+import { IRenderable } from './renderable';
 
-export class Background {
+export class Background implements IRenderable {
+	public readonly infront = false;
 	public readonly path: string;
 	public constructor(
 		path: string,
@@ -13,6 +15,10 @@ export class Background {
 
 	public async render(rx: RenderContext): Promise<void> {
 		rx.drawImage({ image: await getAsset(this.path, rx.hq), x: 0, y: 0 });
+	}
+
+	public hitTest(hx: number, hy: number): boolean {
+		return false;
 	}
 }
 

@@ -8,6 +8,7 @@ import {
 	IHeads,
 } from '../asset-manager';
 import { Renderer } from '../renderer/renderer';
+import { IRenderable } from './renderable';
 
 export type CharacterIds =
 	| 'ddlc.monika'
@@ -18,7 +19,7 @@ export type CharacterIds =
 	| 'ddlc.fan.femc';
 export type Part = 'variant' | 'left' | 'right' | 'head';
 
-export class Character {
+export class Character implements IRenderable {
 	public pos: number = 4;
 	public infront: boolean = false;
 	public close: boolean = false;
@@ -35,6 +36,7 @@ export class Character {
 	};
 	private localRenderer = new Renderer(960, 960);
 	private dirty = true;
+	private hitDetectionFallback = true;
 
 	public constructor(
 		public readonly name: CharacterIds,
@@ -173,7 +175,7 @@ export class Character {
 		});
 	}
 
-	public hittest(hx: number, hy: number): boolean {
+	public hitTest(hx: number, hy: number): boolean {
 		const zoom = this.close ? 1.6 : 0.8;
 		const size = 960 * zoom;
 		let x = (hx - characterPositions[this.pos]! + size / 2) / zoom;
@@ -182,9 +184,25 @@ export class Character {
 		if (this.flip) {
 			x = 960 - x;
 		}
-		const data = this.localRenderer.getDataAt(x, y);
+		if (!this.hitDetectionFallback) {
+			try {
+				const data = this.localRenderer.getDataAt(x, y);
+				return data[3] !== 0;
+			} catch (e) {
+				// On chrome for android, the hit test tends to fail because of cross-origin shinanigans, even though
+				// we only ever load from one origin. ¯\_(ツ)_/¯
+				// So we have a fallback that doesn't read the contents of the canvas. This looses accuracy, but at
+				// least works always.
+				if (e instanceof DOMException && e.message.includes('cross-origin')) {
+					this.hitDetectionFallback = true;
+				} else {
+					throw e;
+				}
+			}
+		}
 
-		return data[3] !== 0;
+		if (y < 50 || y > 680) return false;
+		return Math.abs(x - 480) < 150;
 	}
 
 	public headl(): void {

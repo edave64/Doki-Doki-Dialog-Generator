@@ -33,7 +33,12 @@
 					:vertical="vertical"
 					:lqRendering.sync="lqRendering"
 				/>
-				<add-panel v-if="panel === 'add'" :vertical="vertical" @chosen="onCharacterCreate" />
+				<add-panel
+					v-if="panel === 'add'"
+					:vertical="vertical"
+					@chosen="onCharacterCreate"
+					@add-custom-asset="onAssetCreate"
+				/>
 				<backgrounds-panel
 					v-if="panel === 'backgrounds'"
 					:vertical="vertical"
@@ -44,7 +49,14 @@
 					v-if="panel === 'character'"
 					:vertical="vertical"
 					:character="selectedCharacter"
-					@shiftLayer="onCharacterLayerShift"
+					@shiftLayer="onObjectLayerShift"
+					@invalidate-render="invalidateRender"
+				/>
+				<sprite-panel
+					v-if="panel === 'sprite'"
+					:vertical="vertical"
+					:sprite="selectedSprite"
+					@shiftLayer="onObjectLayerShift"
 					@invalidate-render="invalidateRender"
 				/>
 			</keep-alive>
@@ -57,9 +69,8 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import DokiButton from './components/DokiButton.vue';
 import GeneralPanel from './components/panels/general.vue';
 import AddPanel from './components/panels/add.vue';
-import CharacterPanel, {
-	MoveCharacter,
-} from './components/panels/character.vue';
+import CharacterPanel, { MoveObject } from './components/panels/character.vue';
+import SpritePanel from './components/panels/sprite.vue';
 import CreditsPanel from './components/panels/credits.vue';
 import BackgroundsPanel from './components/panels/backgrounds.vue';
 import { characterPositions } from './models/constants';
@@ -69,6 +80,8 @@ import { backgrounds, getAsset } from './asset-manager';
 import { Renderer } from './renderer/renderer';
 import { RenderContext } from './renderer/rendererContext';
 import { Background } from './models/background';
+import { IRenderable } from './models/renderable';
+import { Sprite } from './models/sprite';
 
 @Component({
 	components: {
@@ -78,6 +91,7 @@ import { Background } from './models/background';
 		BackgroundsPanel,
 		CreditsPanel,
 		CharacterPanel,
+		SpritePanel,
 	},
 })
 export default class App extends Vue {
@@ -86,8 +100,9 @@ export default class App extends Vue {
 	public currentBackground: Background | null = null;
 
 	private sdCtx: CanvasRenderingContext2D | undefined;
-	private characters: Character[] = [];
+	private characters: IRenderable[] = [];
 	private selectedCharacter: Character | null = null;
+	private selectedSprite: Sprite | null = null;
 	private characterSelectorOpen: boolean = false;
 	private backgroundSelectorOpen: boolean = false;
 	private editDialog: boolean = false;
@@ -105,8 +120,6 @@ export default class App extends Vue {
 
 	private queuedRender: number | null = null;
 
-	private hitDetectionFallback = false;
-
 	@Watch('selectedCharacter')
 	public onSelectedCharacterChange(
 		newCharacter: Character,
@@ -116,6 +129,16 @@ export default class App extends Vue {
 		if (newCharacter) {
 			newCharacter.select();
 			this.panel = 'character';
+		}
+		this.invalidateRender();
+	}
+
+	@Watch('selectedSprite')
+	public onSelectedSpriteChange(newSprite: Sprite, oldSprite: Sprite) {
+		if (oldSprite) oldSprite.unselect();
+		if (newSprite) {
+			newSprite.select();
+			this.panel = 'sprite';
 		}
 		this.invalidateRender();
 	}
@@ -281,43 +304,44 @@ export default class App extends Vue {
 		const sx = (rx / sd.offsetWidth) * sd.width;
 		const sy = (ry / sd.offsetWidth) * sd.width;
 
-		const characters = sy > 50 ? this.characterAt(sx, sy) : [];
+		const characters = this.objectsAt(sx, sy);
 
-		const currentCharacterIdx = characters.indexOf(this.selectedCharacter!);
+		const currentCharacterIdx = characters.indexOf(
+			(this.selectedCharacter || this.selectedSprite)!
+		);
+		let selectedObject: IRenderable | null;
+
+		debugger;
 
 		if (currentCharacterIdx === 0) {
-			this.selectedCharacter = null;
+			selectedObject = null;
 		} else if (currentCharacterIdx !== -1) {
 			// Select the next lower character
-			this.selectedCharacter = characters[currentCharacterIdx - 1];
+			selectedObject = characters[currentCharacterIdx - 1];
 		} else {
-			this.selectedCharacter = characters[characters.length - 1] || null;
-		}
-	}
-	private characterAt(x: number, y: number): Character[] {
-		if (!this.hitDetectionFallback) {
-			try {
-				return this.characters.filter(character => character.hittest(x, y));
-			} catch (e) {
-				// On chrome for android, the hit test tends to fail because of cross-origin shinanigans, even though
-				// we only ever load from one origin. ¯\_(ツ)_/¯
-				// So we have a fallback that doesn't read the contents of the canvas. This looses accuracy, but at
-				// least works always.
-				if (e instanceof DOMException && e.message.includes('cross-origin')) {
-					this.hitDetectionFallback = true;
-				} else {
-					throw e;
-				}
-			}
+			selectedObject = characters[characters.length - 1] || null;
 		}
 
-		if (y > 550) return [];
-		return this.characters.filter(
-			character => Math.abs(characterPositions[character.pos]! - x) < 120
-		);
+		if (!selectedObject) {
+			this.selectedCharacter = null;
+			this.selectedSprite = null;
+		} else if (selectedObject instanceof Sprite) {
+			this.selectedCharacter = null;
+			this.selectedSprite = selectedObject;
+		} else if (selectedObject instanceof Character) {
+			this.selectedSprite = null;
+			this.selectedCharacter = selectedObject;
+		} else {
+			throw new Error('Unknown selected object');
+		}
 	}
-	private onCharacterLayerShift(event: MoveCharacter): void {
-		const idx = this.characters.indexOf(event.character);
+
+	private objectsAt(x: number, y: number): IRenderable[] {
+		return this.characters.filter(character => character.hitTest(x, y));
+	}
+
+	private onObjectLayerShift(event: MoveObject): void {
+		const idx = this.characters.indexOf(event.object);
 		let targetIdx = idx;
 		this.characters.splice(idx, 1);
 		switch (event.move) {
@@ -339,13 +363,17 @@ export default class App extends Vue {
 				return;
 		}
 		if (targetIdx <= 0) {
-			this.characters.unshift(event.character);
+			this.characters.unshift(event.object);
 		} else if (targetIdx >= this.characters.length) {
-			this.characters.push(event.character);
+			this.characters.push(event.object);
 		} else {
-			this.characters.splice(targetIdx, 0, event.character);
+			this.characters.splice(targetIdx, 0, event.object);
 		}
 		this.invalidateRender();
+	}
+
+	private onAssetCreate(assetName: string) {
+		this.characters.push(new Sprite(assetName, this.invalidateRender));
 	}
 }
 </script>
