@@ -7,9 +7,14 @@
 				height="720"
 				width="1280"
 				:style="{width: canvasWidth+ 'px', height: canvasHeight + 'px'}"
+				draggable
 				@click="onUiClick"
+				@dragstart="onDragStart"
+				@mousemove="onSpriteDragMove"
+				@mouseup="onSpriteDrop"
 				@dragover="onDragOver"
 				@drop="onDrop"
+				@mouseenter="onMouseEnter"
 			>
 				HTML5 is required to use this
 				<strike>shitpost</strike>meme generator.
@@ -84,6 +89,7 @@ import { RenderContext } from './renderer/rendererContext';
 import { Background } from './models/background';
 import { IRenderable } from './models/renderable';
 import { Sprite } from './models/sprite';
+import { IDragable } from './models/dragable';
 
 @Component({
 	components: {
@@ -123,6 +129,7 @@ export default class App extends Vue {
 	private queuedRender: number | null = null;
 
 	private dropSpriteCount = 0;
+	private dropPreventClick = false;
 
 	@Watch('selectedCharacter')
 	public onSelectedCharacterChange(
@@ -299,14 +306,24 @@ export default class App extends Vue {
 		this.invalidateRender();
 	}
 
-	private onUiClick(e: MouseEvent): void {
-		this.panel = '';
-
+	private toRendererCoordinate(x: number, y: number): [number, number] {
 		const sd = this.$refs.sd as HTMLCanvasElement;
-		const rx = e.clientX - sd.offsetLeft;
-		const ry = e.clientY - sd.offsetTop;
+		const rx = x - sd.offsetLeft;
+		const ry = y - sd.offsetTop;
 		const sx = (rx / sd.offsetWidth) * sd.width;
 		const sy = (ry / sd.offsetWidth) * sd.width;
+		return [sx, sy];
+	}
+
+	private onUiClick(e: MouseEvent): void {
+		if (this.dropPreventClick) {
+			this.dropPreventClick = false;
+			return;
+		}
+
+		this.panel = '';
+
+		const [sx, sy] = this.toRendererCoordinate(e.clientX, e.clientY);
 
 		const characters = this.objectsAt(sx, sy);
 
@@ -378,10 +395,54 @@ export default class App extends Vue {
 		this.characters.push(new Sprite(assetName, this.invalidateRender));
 	}
 
+	private draggedObject: IDragable | null = null;
+	private dragXOffset: number = 0;
+	private dragYOffset: number = 0;
+	private dragXOriginal: number = 0;
+	private dragYOriginal: number = 0;
+
+	private onDragStart(e: DragEvent) {
+		console.log('start');
+		e.preventDefault();
+		this.dropPreventClick = false;
+		const selected = this.selectedCharacter || this.selectedSprite;
+		if (!selected) return;
+		this.draggedObject = selected;
+		const [x, y] = this.toRendererCoordinate(e.clientX, e.clientY);
+		this.dragXOffset = x - selected.x;
+		this.dragYOffset = y - selected.y;
+		this.dragXOriginal = selected.x;
+		this.dragYOriginal = selected.y;
+	}
+
 	private onDragOver(e: DragEvent) {
 		e.stopPropagation();
 		e.preventDefault();
 		e.dataTransfer!.dropEffect = 'copy';
+	}
+
+	private onSpriteDragMove(e: MouseEvent) {
+		if (this.draggedObject) {
+			console.log('move');
+			let [x, y] = this.toRendererCoordinate(e.clientX, e.clientY);
+			x -= this.dragXOffset;
+			y -= this.dragYOffset;
+
+			if (e.shiftKey) {
+				const deltaX = Math.abs(x - this.dragXOriginal);
+				const deltaY = Math.abs(y - this.dragYOriginal);
+
+				if (deltaX > deltaY) {
+					y = this.dragYOriginal;
+				} else {
+					x = this.dragXOriginal;
+				}
+			}
+
+			this.draggedObject.x = x;
+			this.draggedObject.y = y;
+			this.invalidateRender();
+		}
 	}
 
 	private onDrop(e: DragEvent) {
@@ -396,6 +457,20 @@ export default class App extends Vue {
 				const url = registerAsset(name, item.getAsFile()!);
 				this.onAssetCreate(name);
 			}
+		}
+	}
+
+	private onSpriteDrop(e: MouseEvent) {
+		console.log('drop');
+		if (this.draggedObject) {
+			this.dropPreventClick = true;
+			this.draggedObject = null;
+		}
+	}
+
+	private onMouseEnter(e: MouseEvent) {
+		if (e.buttons !== 1) {
+			this.draggedObject = null;
 		}
 	}
 }

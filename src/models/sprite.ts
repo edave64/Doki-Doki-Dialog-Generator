@@ -1,8 +1,9 @@
 import { RenderContext } from '../renderer/rendererContext';
 import { getAsset } from '../asset-manager';
 import { IRenderable } from './renderable';
+import { IDragable } from './dragable';
 
-export class Sprite implements IRenderable {
+export class Sprite implements IRenderable, IDragable {
 	public infront: boolean = false;
 	public x: number = 0;
 	public y: number = 0;
@@ -50,6 +51,8 @@ export class Sprite implements IRenderable {
 	}
 
 	public hitTest(hx: number, hy: number): boolean {
-		return hx - this.x <= this.width && hy - this.y <= this.height;
+		const hitX = hx - this.x;
+		const hitY = hy - this.y;
+		return hitX >= 0 && hitX <= this.width && hitY >= 0 && hitY <= this.height;
 	}
 }

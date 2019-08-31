@@ -28,8 +28,48 @@
 		</fieldset>
 		<fieldset>
 			<legend>Position:</legend>
-			<button @click="character.pos=Math.max(1, character.pos-1);$emit('invalidate-render')">&lt; left</button>
-			<button @click="character.pos=Math.min(7, character.pos+1);$emit('invalidate-render')">&gt; right</button>
+			<toggle
+				v-model="character.allowFreeMove"
+				label="Move freely?"
+				@input="$emit('invalidate-render')"
+			/>
+			<div v-if="!character.allowFreeMove">
+				<button @click="--character.pos;$emit('invalidate-render')">&lt; left</button>
+				<button @click="++character.pos;$emit('invalidate-render')">&gt; right</button>
+			</div>
+			<div v-else>
+				<label for="sprite_x">X:</label>
+				<input
+					id="sprite_x"
+					type="number"
+					v-model.number="character.x"
+					@input="$emit('invalidate-render')"
+				/>
+				<br />
+				<label for="sprite_y">Y:</label>
+				<input
+					id="sprite_y"
+					type="number"
+					v-model.number="character.y"
+					@input="$emit('invalidate-render')"
+				/>
+				<br />
+				<label for="sprite_w">Width:</label>
+				<input
+					id="sprite_w"
+					type="number"
+					v-model.number="character.width"
+					@input="$emit('invalidate-render')"
+				/>
+				<br />
+				<label for="sprite_h">Height:</label>
+				<input
+					id="sprite_h"
+					type="number"
+					v-model.number="character.height"
+					@input="$emit('invalidate-render')"
+				/>
+			</div>
 		</fieldset>
 		<fieldset id="layerfs">
 			<legend>Layer:</legend>
@@ -106,5 +146,15 @@ export interface MoveObject {
 <style lang="scss" scoped>
 fieldset {
 	border: 3px solid #ffbde1;
+}
+
+.vertical {
+	fieldset {
+		box-sizing: border-box;
+		width: calc(100% - 4px);
+		input {
+			width: 60px;
+		}
+	}
 }
 </style>

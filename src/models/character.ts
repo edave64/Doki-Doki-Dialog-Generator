@@ -9,6 +9,7 @@ import {
 } from '../asset-manager';
 import { Renderer } from '../renderer/renderer';
 import { IRenderable } from './renderable';
+import { IDragable } from './dragable';
 
 export type CharacterIds =
 	| 'ddlc.monika'
@@ -19,8 +20,7 @@ export type CharacterIds =
 	| 'ddlc.fan.femc';
 export type Part = 'variant' | 'left' | 'right' | 'head';
 
-export class Character implements IRenderable {
-	public pos: number = 4;
+export class Character implements IRenderable, IDragable {
 	public infront: boolean = false;
 	public close: boolean = false;
 	public flip: boolean = false;
@@ -37,6 +37,11 @@ export class Character implements IRenderable {
 	private localRenderer = new Renderer(960, 960);
 	private dirty = true;
 	private hitDetectionFallback = true;
+
+	private freeMove: boolean = false;
+	private pPos: number = 4;
+	private pX: number = characterPositions[3]!;
+	private pY: number = 0;
 
 	public constructor(
 		public readonly name: CharacterIds,
@@ -159,10 +164,10 @@ export class Character implements IRenderable {
 			await this.updateLocalCanvas();
 		}
 
-		const zoom = this.close ? 2 : 1;
-		const size = 720 * zoom;
-		const x = characterPositions[this.pos]! - size / 2;
-		const y = this.close ? -100 : 0;
+		const zoom = this.close ? 1.6 : 0.8;
+		const size = 960 * zoom;
+		const x = this.pX - size / 2;
+		const y = (this.close ? -100 : 0) + this.pY;
 
 		rx.drawImage({
 			image: this.localRenderer,
@@ -178,8 +183,8 @@ export class Character implements IRenderable {
 	public hitTest(hx: number, hy: number): boolean {
 		const zoom = this.close ? 1.6 : 0.8;
 		const size = 960 * zoom;
-		let x = (hx - characterPositions[this.pos]! + size / 2) / zoom;
-		const y = (hy - (this.close ? -100 : 0)) / zoom;
+		let x = (hx - this.pX + size / 2) / zoom;
+		const y = (hy - (this.close ? -100 : 0) + this.pY) / zoom;
 
 		if (this.flip) {
 			x = 960 - x;
@@ -303,5 +308,63 @@ export class Character implements IRenderable {
 		this.posePositions.variant = 0;
 		this.dirty = true;
 		this.invalidator();
+	}
+
+	public get allowFreeMove(): boolean {
+		return this.freeMove;
+	}
+
+	public set allowFreeMove(allow: boolean) {
+		if (allow) {
+			this.freeMove = true;
+		} else {
+			this.freeMove = false;
+			this.pos = this.closestCharacterSlot(this.pX);
+			this.pY = 0;
+		}
+	}
+
+	public get x(): number {
+		return this.pX;
+	}
+
+	public set x(pos: number) {
+		if (this.allowFreeMove) {
+			this.pX = pos;
+		} else {
+			this.pos = this.closestCharacterSlot(pos);
+		}
+	}
+
+	public get y(): number {
+		return this.pY;
+	}
+
+	public set y(pos: number) {
+		if (this.allowFreeMove) {
+			this.pY = pos;
+		} else {
+			this.pY = 0;
+		}
+	}
+
+	public get pos() {
+		return this.pPos;
+	}
+
+	public set pos(pos: number) {
+		if (this.allowFreeMove) return;
+		if (pos < 0) pos = 0;
+		if (pos >= characterPositions.length) pos = characterPositions.length - 1;
+
+		this.pPos = pos;
+		this.pX = characterPositions[pos];
+	}
+
+	private closestCharacterSlot(pos: number): number {
+		const sorted = characterPositions
+			.map((x, idx) => ({ pos: Math.abs(pos - x), idx }))
+			.sort((a, b) => a.pos - b.pos);
+		return sorted[0].idx;
 	}
 }
