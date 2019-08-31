@@ -8,6 +8,8 @@
 				width="1280"
 				:style="{width: canvasWidth+ 'px', height: canvasHeight + 'px'}"
 				@click="onUiClick"
+				@dragover="onDragOver"
+				@drop="onDrop"
 			>
 				HTML5 is required to use this
 				<strike>shitpost</strike>meme generator.
@@ -76,7 +78,7 @@ import BackgroundsPanel from './components/panels/backgrounds.vue';
 import { characterPositions } from './models/constants';
 import { Textbox } from './models/textbox';
 import { Character, CharacterIds } from './models/character';
-import { backgrounds, getAsset } from './asset-manager';
+import { backgrounds, getAsset, registerAsset } from './asset-manager';
 import { Renderer } from './renderer/renderer';
 import { RenderContext } from './renderer/rendererContext';
 import { Background } from './models/background';
@@ -119,6 +121,8 @@ export default class App extends Vue {
 	private panel: string = '';
 
 	private queuedRender: number | null = null;
+
+	private dropSpriteCount = 0;
 
 	@Watch('selectedCharacter')
 	public onSelectedCharacterChange(
@@ -311,8 +315,6 @@ export default class App extends Vue {
 		);
 		let selectedObject: IRenderable | null;
 
-		debugger;
-
 		if (currentCharacterIdx === 0) {
 			selectedObject = null;
 		} else if (currentCharacterIdx !== -1) {
@@ -374,6 +376,27 @@ export default class App extends Vue {
 
 	private onAssetCreate(assetName: string) {
 		this.characters.push(new Sprite(assetName, this.invalidateRender));
+	}
+
+	private onDragOver(e: DragEvent) {
+		e.stopPropagation();
+		e.preventDefault();
+		e.dataTransfer!.dropEffect = 'copy';
+	}
+
+	private onDrop(e: DragEvent) {
+		e.stopPropagation();
+		e.preventDefault();
+
+		if (!e.dataTransfer) return;
+
+		for (const item of e.dataTransfer.items) {
+			if (item.kind === 'file' && item.type.match(/image.*/)) {
+				const name = 'dropCustomAsset' + ++this.dropSpriteCount;
+				const url = registerAsset(name, item.getAsFile()!);
+				this.onAssetCreate(name);
+			}
+		}
 	}
 }
 </script>
