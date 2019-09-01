@@ -6,6 +6,7 @@ import Natsuki from './characters/natsuki.json';
 import FeMC from './characters/femc.json';
 import MC from './characters/mc.json';
 import MCClassic from './characters/mc_classic.json';
+import Amy from './characters/amy.json';
 import AmyClassic from './characters/amy_classic.json';
 
 export const characterOrder = ([
@@ -16,6 +17,7 @@ export const characterOrder = ([
 	FeMC,
 	MC,
 	MCClassic,
+	Amy,
 	AmyClassic,
 ] as any) as Array<ICharacter<any>>;
 
@@ -27,6 +29,7 @@ export const characters: { [name: string]: ICharacter<any> } = {
 	[FeMC.id]: FeMC as any,
 	[MC.id]: MC as any,
 	[MCClassic.id]: MCClassic as any,
+	[Amy.id]: Amy as any,
 	[AmyClassic.id]: AmyClassic as any,
 };
 

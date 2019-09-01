@@ -1,0 +1,58 @@
+{
+	"id": "ddlc.fan.amy2",
+	"name": "Amy",
+	"internalId": "amy",
+	"folder": "amy",
+	"heads": {
+		"straight": [
+			"a",
+			"b",
+			"c",
+			"d",
+			"e",
+			"f",
+			"g",
+			"h",
+			"i",
+			"h",
+			"k",
+			"l",
+			"m",
+			"n",
+			"o",
+			"p",
+			"q",
+			"r",
+			"s",
+			"t",
+			"u",
+			"v",
+			"w",
+			"x",
+			"y",
+			"z"
+		],
+		"straight_broken_glases": ["!1", "!2", "!3", "!4", "!5"]
+	},
+	"poses": [
+		{
+			"compatibleHeads": ["straight", "straight_broken_glases"],
+			"left": ["1l", "2l", "3l"],
+			"right": ["1r", "2r"],
+			"headInForeground": true
+		},
+		{
+			"compatibleHeads": ["straight", "straight_broken_glases"],
+			"static": "5"
+		},
+		{
+			"compatibleHeads": ["straight", "straight_broken_glases"],
+			"static": "6"
+		},
+		{
+			"compatibleHeads": ["straight"],
+			"left": ["4l"],
+			"right": ["1r", "2r"]
+		}
+	]
+}

@@ -14,6 +14,7 @@
 			<br />FeMC Casual Sprite by SlightlySimple
 		</p>
 		<p>Classic Amy Sprite by Meddy-sin</p>
+		<p>Amy Sprite by Meddy-sin and SlightlySimple</p>
 	</div>
 </template>
 
