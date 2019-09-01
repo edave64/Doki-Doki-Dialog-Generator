@@ -325,9 +325,7 @@ export default class App extends Vue {
 	}
 
 	private onUiClick(e: MouseEvent): void {
-		console.log('click');
 		if (this.dropPreventClick) {
-			console.log('click prevented');
 			this.dropPreventClick = false;
 			return;
 		}
@@ -413,7 +411,6 @@ export default class App extends Vue {
 	private dragYOriginal: number = 0;
 
 	private onDragStart(e: DragEvent) {
-		console.log('start');
 		e.preventDefault();
 		const selected = this.selectedCharacter || this.selectedSprite;
 		if (!selected) return;
@@ -426,7 +423,6 @@ export default class App extends Vue {
 	}
 
 	private onTouchStart(e: TouchEvent) {
-		console.log('touch start');
 		const selected = this.selectedCharacter || this.selectedSprite;
 		if (!selected) return;
 		this.draggedObject = selected;
@@ -448,7 +444,6 @@ export default class App extends Vue {
 
 	private onSpriteDragMove(e: MouseEvent | TouchEvent) {
 		if (this.draggedObject) {
-			console.log('move');
 			e.preventDefault();
 
 			let [x, y] =
@@ -500,8 +495,7 @@ export default class App extends Vue {
 
 	private onSpriteDrop(e: MouseEvent | TouchEvent) {
 		if (this.draggedObject) {
-			console.log('drop');
-			if (e instanceof TouchEvent) {
+			if ('TouchEvent' in window && e instanceof TouchEvent) {
 				this.dropPreventClick = false;
 			}
 			this.draggedObject = null;
