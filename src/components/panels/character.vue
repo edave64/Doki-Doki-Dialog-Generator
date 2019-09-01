@@ -53,22 +53,6 @@
 					v-model.number="character.y"
 					@input="$emit('invalidate-render')"
 				/>
-				<br />
-				<label for="sprite_w">Width:</label>
-				<input
-					id="sprite_w"
-					type="number"
-					v-model.number="character.width"
-					@input="$emit('invalidate-render')"
-				/>
-				<br />
-				<label for="sprite_h">Height:</label>
-				<input
-					id="sprite_h"
-					type="number"
-					v-model.number="character.height"
-					@input="$emit('invalidate-render')"
-				/>
 			</div>
 		</fieldset>
 		<fieldset id="layerfs">
