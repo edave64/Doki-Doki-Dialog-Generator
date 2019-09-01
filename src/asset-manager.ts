@@ -6,6 +6,7 @@ import Natsuki from './characters/natsuki.json';
 import FeMC from './characters/femc.json';
 import MC from './characters/mc.json';
 import MCClassic from './characters/mc_classic.json';
+import AmyClassic from './characters/amy_classic.json';
 
 export const characterOrder = ([
 	Monika,
@@ -15,6 +16,7 @@ export const characterOrder = ([
 	FeMC,
 	MC,
 	MCClassic,
+	AmyClassic,
 ] as any) as Array<ICharacter<any>>;
 
 export const characters: { [name: string]: ICharacter<any> } = {
@@ -25,6 +27,7 @@ export const characters: { [name: string]: ICharacter<any> } = {
 	[FeMC.id]: FeMC as any,
 	[MC.id]: MC as any,
 	[MCClassic.id]: MCClassic as any,
+	[AmyClassic.id]: AmyClassic as any,
 };
 
 let webpSupportPromise: Promise<boolean>;
