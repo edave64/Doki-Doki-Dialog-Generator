@@ -36,7 +36,7 @@ export class Character implements IRenderable, IDragable {
 	};
 	private localRenderer = new Renderer(960, 960);
 	private dirty = true;
-	private hitDetectionFallback = true;
+	private hitDetectionFallback = false;
 
 	private freeMove: boolean = false;
 	private pPos: number = 4;
@@ -184,7 +184,7 @@ export class Character implements IRenderable, IDragable {
 		const zoom = this.close ? 1.6 : 0.8;
 		const size = 960 * zoom;
 		let x = (hx - this.pX + size / 2) / zoom;
-		const y = (hy - (this.close ? -100 : 0) + this.pY) / zoom;
+		const y = (hy - (this.close ? -100 : 0) - this.pY) / zoom;
 
 		if (this.flip) {
 			x = 960 - x;
