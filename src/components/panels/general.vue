@@ -82,11 +82,9 @@ textarea {
 			}
 		}
 	}
+}
 
-	&.vertical {
-		textarea {
-			height: 128px;
-		}
-	}
+textarea {
+	min-height: 148px;
 }
 </style>
