@@ -9,8 +9,11 @@
 				:style="{width: canvasWidth+ 'px', height: canvasHeight + 'px'}"
 				draggable
 				@click="onUiClick"
+				@touchstart="onTouchStart"
 				@dragstart="onDragStart"
+				@touchmove="onSpriteDragMove"
 				@mousemove="onSpriteDragMove"
+				@touchend="onSpriteDrop"
 				@mouseup="onSpriteDrop"
 				@dragover="onDragOver"
 				@drop="onDrop"
@@ -219,6 +222,12 @@ export default class App extends Vue {
 
 	private created(): void {
 		(window as any).cats = this;
+		window.removeEventListener('keydown', this.onKeydown);
+		window.addEventListener('keydown', this.onKeydown);
+	}
+
+	private destroyed(): void {
+		window.removeEventListener('keydown', this.onKeydown);
 	}
 
 	private mounted(): void {
@@ -316,7 +325,9 @@ export default class App extends Vue {
 	}
 
 	private onUiClick(e: MouseEvent): void {
+		console.log('click');
 		if (this.dropPreventClick) {
+			console.log('click prevented');
 			this.dropPreventClick = false;
 			return;
 		}
@@ -404,11 +415,25 @@ export default class App extends Vue {
 	private onDragStart(e: DragEvent) {
 		console.log('start');
 		e.preventDefault();
-		this.dropPreventClick = false;
 		const selected = this.selectedCharacter || this.selectedSprite;
 		if (!selected) return;
 		this.draggedObject = selected;
 		const [x, y] = this.toRendererCoordinate(e.clientX, e.clientY);
+		this.dragXOffset = x - selected.x;
+		this.dragYOffset = y - selected.y;
+		this.dragXOriginal = selected.x;
+		this.dragYOriginal = selected.y;
+	}
+
+	private onTouchStart(e: TouchEvent) {
+		console.log('touch start');
+		const selected = this.selectedCharacter || this.selectedSprite;
+		if (!selected) return;
+		this.draggedObject = selected;
+		const [x, y] = this.toRendererCoordinate(
+			e.touches[0].clientX,
+			e.touches[0].clientY
+		);
 		this.dragXOffset = x - selected.x;
 		this.dragYOffset = y - selected.y;
 		this.dragXOriginal = selected.x;
@@ -421,12 +446,25 @@ export default class App extends Vue {
 		e.dataTransfer!.dropEffect = 'copy';
 	}
 
-	private onSpriteDragMove(e: MouseEvent) {
+	private onSpriteDragMove(e: MouseEvent | TouchEvent) {
 		if (this.draggedObject) {
 			console.log('move');
-			let [x, y] = this.toRendererCoordinate(e.clientX, e.clientY);
+			e.preventDefault();
+
+			let [x, y] =
+				e instanceof MouseEvent
+					? this.toRendererCoordinate(e.clientX, e.clientY)
+					: this.toRendererCoordinate(
+							e.touches[0].clientX,
+							e.touches[0].clientY
+					  );
 			x -= this.dragXOffset;
 			y -= this.dragYOffset;
+
+			const deltaX = Math.abs(x - this.dragXOriginal);
+			const deltaY = Math.abs(y - this.dragYOriginal);
+
+			if (deltaX + deltaY > 1) this.dropPreventClick = true;
 
 			if (e.shiftKey) {
 				const deltaX = Math.abs(x - this.dragXOriginal);
@@ -460,10 +498,12 @@ export default class App extends Vue {
 		}
 	}
 
-	private onSpriteDrop(e: MouseEvent) {
-		console.log('drop');
+	private onSpriteDrop(e: MouseEvent | TouchEvent) {
 		if (this.draggedObject) {
-			this.dropPreventClick = true;
+			console.log('drop');
+			if (e instanceof TouchEvent) {
+				this.dropPreventClick = false;
+			}
 			this.draggedObject = null;
 		}
 	}
@@ -471,6 +511,42 @@ export default class App extends Vue {
 	private onMouseEnter(e: MouseEvent) {
 		if (e.buttons !== 1) {
 			this.draggedObject = null;
+		}
+	}
+
+	private onKeydown(e: KeyboardEvent) {
+		const target = this.selectedCharacter || this.selectedSprite;
+		if (target && e.key === 'Delete') {
+			this.onObjectLayerShift({
+				object: target,
+				move: 'Delete',
+			});
+		} else if (target && e.key === 'ArrowLeft') {
+			if (target instanceof Character && !target.allowFreeMove) {
+				target.pos -= 1;
+			} else {
+				target.x -= e.shiftKey ? 1 : 20;
+				target.x |= 0;
+			}
+			this.invalidateRender();
+		} else if (target && e.key === 'ArrowRight') {
+			if (target instanceof Character && !target.allowFreeMove) {
+				target.pos += 1;
+			} else {
+				target.x += e.shiftKey ? 1 : 20;
+				target.x |= 0;
+			}
+			this.invalidateRender();
+		} else if (target && e.key === 'ArrowUp') {
+			target.y -= e.shiftKey ? 1 : 20;
+			target.y |= 0;
+			this.invalidateRender();
+		} else if (target && e.key === 'ArrowDown') {
+			target.y += e.shiftKey ? 1 : 20;
+			target.y |= 0;
+			this.invalidateRender();
+		} else {
+			console.log(e);
 		}
 	}
 }
