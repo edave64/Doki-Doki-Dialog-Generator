@@ -81,7 +81,7 @@ function queueAssetConversions(folder) {
 		const files = pngsWithoutLQ
 			.map(png => path.join(folder.name, png))
 			.join(' ');
-		ret.push(`pngquant -ext .lq.png ${files}`);
+		ret.push(`pngquant -ext .lq.png ${files}.png`);
 	}
 
 	const pngsWithoutHQWebp = allPNGs.filter(
