@@ -79,9 +79,9 @@ function queueAssetConversions(folder) {
 		ret.push(`pngquant -ext .lq.png ${folder.name}*.png`);
 	} else if (pngsWithoutLQ.length > 0) {
 		const files = pngsWithoutLQ
-			.map(png => path.join(folder.name, png))
+			.map(png => path.join(folder.name, png) + '.png')
 			.join(' ');
-		ret.push(`pngquant -ext .lq.png ${files}.png`);
+		ret.push(`pngquant -ext .lq.png ${files}`);
 	}
 
 	const pngsWithoutHQWebp = allPNGs.filter(
