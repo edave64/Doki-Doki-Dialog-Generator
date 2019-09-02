@@ -18,10 +18,7 @@
 				@dragover="onDragOver"
 				@drop="onDrop"
 				@mouseenter="onMouseEnter"
-			>
-				HTML5 is required to use this
-				<strike>shitpost</strike>meme generator.
-			</canvas>
+			>HTML5 is required to use the Doki Doki Dialog Generator.</canvas>
 		</div>
 		<div id="panels" :class="{ vertical }">
 			<div id="toolbar">
