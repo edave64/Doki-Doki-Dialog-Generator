@@ -6,9 +6,14 @@
 			Doki Doki Dialog Generator developed by EDave64
 			<br />Based on gemdude46's DDLC Shitpost generator
 		</p>
-		<p>MC Classic Sprite by Childish-N</p>
-		<p>MC Sprite by Childish-N</p>
-		<p>MC Chibis by GyleToTheRescue</p>
+		<p>
+			MC Classic Sprite by Childish-N
+			<br />MC Classic Chibi by GyleToTheRescue
+		</p>
+		<p>
+			MC Sprite by Childish-N
+			<br />MC Chibi by SlightlySimple
+		</p>
 		<p>
 			FeMC Sprite by Meddy-sin
 			<br />FeMC Casual Sprite by SlightlySimple
