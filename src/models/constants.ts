@@ -2,7 +2,18 @@ import { Background } from './background';
 
 export const backgrounds = [] as Background[];
 
-export const characterPositions = [208, 256, 500, 640, 790, 1024, 1094];
+export const characterPositions = [
+	200,
+	240,
+	400,
+	493,
+	640,
+	640,
+	786,
+	880,
+	1040,
+	1080,
+];
 
 export const poses = {
 	sayori: {

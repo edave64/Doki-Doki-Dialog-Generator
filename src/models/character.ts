@@ -40,7 +40,7 @@ export class Character implements IRenderable, IDragable {
 
 	private freeMove: boolean = false;
 	private pPos: number = 4;
-	private pX: number = characterPositions[3]!;
+	private pX: number = characterPositions[4]!;
 	private pY: number = 0;
 
 	public constructor(
