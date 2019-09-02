@@ -167,7 +167,7 @@ export class Character implements IRenderable, IDragable {
 		const zoom = this.close ? 1.6 : 0.8;
 		const size = 960 * zoom;
 		const x = this.pX - size / 2;
-		const y = (this.close ? -100 : 0) + this.pY;
+		const y = (this.close ? -100 : -26.0) + this.pY;
 
 		rx.drawImage({
 			image: this.localRenderer,
