@@ -15,6 +15,11 @@
 			<br />MC Chibi by SlightlySimple
 		</p>
 		<p>
+			MC Chad Sprite by Cylent-Nite
+			<br />MC Chad Poses and expressions by SlightlySimple
+			<br />MC Chad Poses and chibi by Meddy-sin
+		</p>
+		<p>
 			FeMC Sprite by Meddy-sin
 			<br />FeMC Casual Sprite by SlightlySimple
 		</p>

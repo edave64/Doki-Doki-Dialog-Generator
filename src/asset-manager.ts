@@ -5,6 +5,7 @@ import Monika from './characters/monika.json';
 import Natsuki from './characters/natsuki.json';
 import FeMC from './characters/femc.json';
 import MC from './characters/mc.json';
+import MCChad from './characters/mc_chad.json';
 import MCClassic from './characters/mc_classic.json';
 import Amy from './characters/amy.json';
 import AmyClassic from './characters/amy_classic.json';
@@ -16,6 +17,7 @@ export const characterOrder = ([
 	Yuri,
 	FeMC,
 	MC,
+	MCChad,
 	MCClassic,
 	Amy,
 	AmyClassic,
@@ -28,6 +30,7 @@ export const characters: { [name: string]: ICharacter<any> } = {
 	[Monika.id]: Monika as any,
 	[FeMC.id]: FeMC as any,
 	[MC.id]: MC as any,
+	[MCChad.id]: MCChad as any,
 	[MCClassic.id]: MCClassic as any,
 	[Amy.id]: Amy as any,
 	[AmyClassic.id]: AmyClassic as any,

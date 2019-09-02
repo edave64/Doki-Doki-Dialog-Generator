@@ -1,0 +1,104 @@
+{
+	"id": "ddlc.fan.mc_chad",
+	"name": "MC (Chad)",
+	"internalId": "chad",
+	"folder": "chad",
+	"heads": {
+		"straight": [
+			"a",
+			"b",
+			"c",
+			"d",
+			"e",
+			"f",
+			"g",
+			"h",
+			"i",
+			"j",
+			"k",
+			"l",
+			"m",
+			"n",
+			"o",
+			"p",
+			"q",
+			"r",
+			"s",
+			"t",
+			"y",
+			"z",
+			"error",
+			"error1",
+			"shock"
+		],
+		"straight_closed": ["u", "w", "v", "x1", "x2", "x3", "x4"],
+		"straight_red": {
+			"folder": "red",
+			"all": [
+				"a",
+				"b",
+				"c",
+				"d",
+				"e",
+				"f",
+				"g",
+				"h",
+				"i",
+				"j",
+				"k",
+				"l",
+				"m",
+				"n",
+				"o",
+				"p",
+				"q",
+				"r",
+				"s",
+				"t",
+				"y",
+				"z",
+				"error",
+				"error1",
+				"shock"
+			]
+		}
+	},
+	"poses": [
+		{
+			"compatibleHeads": ["straight", "straight_closed"],
+			"left": ["1l", "2l", "4l"],
+			"right": ["1r", "2r"]
+		},
+		{
+			"compatibleHeads": ["straight", "straight_closed"],
+			"static": "3"
+		},
+		{
+			"compatibleHeads": ["straight", "straight_closed"],
+			"left": ["1bl", "2bl", "4bl"],
+			"right": ["1br", "2br"]
+		},
+		{
+			"compatibleHeads": ["straight", "straight_closed"],
+			"static": "3b"
+		},
+		{
+			"compatibleHeads": ["straight_red", "straight_closed"],
+			"left": ["1l", "2l", "4l"],
+			"right": ["1r", "2r"]
+		},
+		{
+			"compatibleHeads": ["straight_red", "straight_closed"],
+			"static": "3"
+		},
+		{
+			"compatibleHeads": ["straight_red", "straight_closed"],
+			"left": ["1bl", "2bl", "4bl"],
+			"right": ["1br", "2br"]
+		},
+		{
+			"compatibleHeads": ["straight_red", "straight_closed"],
+			"static": "3b"
+		}
+	]
+}
