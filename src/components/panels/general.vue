@@ -36,6 +36,9 @@
 			<label for="dialog_text">Dialog:</label>
 			<textarea v-model="options.dialog" id="dialog_text" />
 		</div>
+		<p>Formatting:<br />
+			[In brackets] for editied style text
+		</p>
 	</div>
 </template>
 
