@@ -9,6 +9,7 @@ import MCChad from './characters/mc_chad.json';
 import MCClassic from './characters/mc_classic.json';
 import Amy from './characters/amy.json';
 import AmyClassic from './characters/amy_classic.json';
+import { VariantBackground } from './models/variant-background';
 
 export const characterOrder = ([
 	Monika,
@@ -109,7 +110,10 @@ export function registerAsset(asset: string, file: File): string {
 }
 
 export const backgrounds = [
-	new Background('club', 'Clubroom'),
+	new VariantBackground('Clubroom', '/backgrounds/', [
+		['club'],
+		['club-skill'],
+	]),
 	new Background('closet', 'Closet'),
 	new Background('corridor', 'Corridor'),
 	new Background('class', 'Classroom'),
@@ -118,7 +122,6 @@ export const backgrounds = [
 	new Background('bedroom', 'Bedroom'),
 	new Background('kitchen', 'Kitchen'),
 	new Background('sayori_bedroom', "Sayori's bedroom"),
-	new Background('club-skill', 'Clubroom with hanging Sayori poster'),
 	new Background('bsod', 'Blue screen of death'),
 	new Background('unused-house', 'Unused house found in game files'),
 	transparent,
