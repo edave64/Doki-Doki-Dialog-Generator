@@ -36,18 +36,7 @@
 			"corrupt",
 			"crying"
 		],
-		"sideways": [
-			"2t",
-			"2ta",
-			"2tb",
-			"2tc",
-			"2td",
-			"2te",
-			"2tf",
-			"2tg",
-			"2th",
-			"2ti"
-		],
+		"sideways": ["2ta", "2tb", "2tc", "2td", "2te", "2tf", "2tg", "2th", "2ti"],
 		"sidewaysCasuals": [
 			"2bta",
 			"2btb",
