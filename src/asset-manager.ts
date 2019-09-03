@@ -124,6 +124,28 @@ export const backgrounds = [
 	new Background('sayori_bedroom', "Sayori's bedroom"),
 	new Background('bsod', 'Blue screen of death'),
 	new Background('unused-house', 'Unused house found in game files'),
+	new VariantBackground('Natsuki reading manga', '/cg/natsuki1/', [
+		['n_cg1_bg'],
+		['n_cg1_bg', 'n_cg1_base'],
+		['n_cg1_bg', 'n_cg1_base', 'n_cg1_exp1'],
+		['n_cg1_bg', 'n_cg1_base', 'n_cg1_exp2'],
+		['n_cg1_bg', 'n_cg1_base', 'n_cg1_exp3'],
+		['n_cg1_bg', 'n_cg1_base', 'n_cg1_exp4'],
+		['n_cg1_bg', 'n_cg1_base', 'n_cg1_exp5'],
+	]),
+	new VariantBackground('Natsuki in the closet', '/cg/natsuki2/', [
+		['n_cg2_bg'],
+		['n_cg2_bg', 'n_cg2_base'],
+		['n_cg2_bg', 'n_cg2_base', 'n_cg2_exp1'],
+		['n_cg2_bg', 'n_cg2_base', 'n_cg2_exp2'],
+	]),
+	new VariantBackground('Natsuki against the wall', '/cg/natsuki3/', [
+		['n_cg3_base'],
+		['n_cg3_base', 'n_cg3_exp1'],
+		['n_cg3_base', 'n_cg3_exp2'],
+		['n_cg3_base', 'n_cg3_exp1', 'n_cg3_cake'],
+		['n_cg3_base', 'n_cg3_exp2', 'n_cg3_cake'],
+	]),
 	transparent,
 ];
 
