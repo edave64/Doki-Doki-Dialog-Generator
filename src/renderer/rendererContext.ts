@@ -75,20 +75,29 @@ export class RenderContext {
 		this.fsCtx.restore();
 	}
 
-	public drawRectOutline(
-		x: number,
-		y: number,
-		w: number,
-		h: number,
-		style: string,
-		strokeWidth: number
-	) {
+	public drawRect({
+		x,
+		y,
+		w,
+		h,
+		outline,
+		fill,
+	}: IRPos & IRSize & IOOutline & IOFill) {
 		if (this.aborted) throw new RenderAbortedException();
+		this.fsCtx.save();
 		this.fsCtx.beginPath();
 		this.fsCtx.rect(x, y, w, h);
-		this.fsCtx.strokeStyle = style;
-		this.fsCtx.lineWidth = strokeWidth;
-		this.fsCtx.stroke();
+
+		if (fill) {
+			this.fsCtx.fillStyle = fill.style;
+			this.fsCtx.fill();
+		}
+		if (outline) {
+			this.fsCtx.strokeStyle = outline.style;
+			this.fsCtx.lineWidth = outline.width;
+			this.fsCtx.stroke();
+		}
+		this.fsCtx.restore();
 	}
 
 	public measureText(str: string): TextMetrics {
@@ -116,6 +125,15 @@ export interface IShadow {
 	offsetY?: number;
 }
 
+export interface IOutline {
+	style: string;
+	width: number;
+}
+
+export interface IFill {
+	style: string;
+}
+
 interface IOShadow {
 	shadow?: IShadow;
 }
@@ -133,4 +151,12 @@ interface IRSize {
 interface IOSize {
 	w?: number;
 	h?: number;
+}
+
+interface IOOutline {
+	outline?: IOutline;
+}
+
+interface IOFill {
+	fill?: IFill;
 }

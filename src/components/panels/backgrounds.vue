@@ -1,6 +1,16 @@
 <template>
 	<div :class="{ panel: true, vertical }" v-if="isWebPSupported !== undefined">
 		<h1>Background</h1>
+		<fieldset v-if="value === colorBackground">
+			<legend>Settings:</legend>
+			<label for="bg_color">Color:</label>
+			<input
+				id="bg_color"
+				type="color"
+				v-model="colorBackground.color"
+				@input="$emit('invalidate-render')"
+			/>
+		</fieldset>
 		<div
 			v-for="background of backgrounds"
 			:class="{background: true, active: background === value}"
@@ -9,6 +19,13 @@
 			:style="{backgroundImage: 'url(' + (background.custom ? customPathLookup[background.path] : assetPath(background.path)) + ')'}"
 			@click="$emit('input', background)"
 		>{{background.name}}</div>
+		<div
+			:class="{background: true, active: colorBackground === value}"
+			:key="colorBackground.name"
+			:title="colorBackground.name"
+			:style="{background: colorBackground.color }"
+			@click="$emit('input', colorBackground)"
+		>{{colorBackground.name}}</div>
 		<div class="btn upload-background" @click="$refs.upload.click()">
 			Upload
 			<input type="file" ref="upload" @change="onFileUpload" />
@@ -24,7 +41,7 @@ import {
 	registerAsset,
 	getAsset,
 } from '../../asset-manager';
-import { Background } from '../../models/background';
+import { Background, IBackground, color } from '../../models/background';
 
 @Component({
 	components: {},
@@ -42,10 +59,14 @@ export default class BackgroundsPanel extends Vue {
 		this.isWebPSupported = await isWebPSupported();
 	}
 
-	private get backgrounds(): Background[] {
+	private get colorBackground(): typeof color {
+		return color;
+	}
+
+	private get backgrounds(): IBackground[] {
 		// this is just to force a recompute when a new custom background gets added.
 		const count = this.customBGCount;
-		return backgrounds;
+		return backgrounds.filter(background => background instanceof Background);
 	}
 
 	private assetPath(background: string) {
@@ -115,6 +136,20 @@ textarea {
 
 		input {
 			display: none;
+		}
+	}
+}
+fieldset {
+	border: 3px solid #ffbde1;
+	min-height: 135px;
+}
+
+.vertical {
+	fieldset {
+		box-sizing: border-box;
+		width: calc(100% - 4px);
+		input {
+			width: 60px;
 		}
 	}
 }

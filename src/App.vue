@@ -50,6 +50,7 @@
 					v-if="panel === 'backgrounds'"
 					:vertical="vertical"
 					v-model="currentBackground"
+					@invalidate-render="invalidateRender"
 				/>
 				<credits-panel v-if="panel === 'credits'" :vertical="vertical" />
 				<character-panel
@@ -86,7 +87,7 @@ import { Character, CharacterIds } from './models/character';
 import { backgrounds, getAsset, registerAsset } from './asset-manager';
 import { Renderer } from './renderer/renderer';
 import { RenderContext } from './renderer/rendererContext';
-import { Background } from './models/background';
+import { Background, IBackground } from './models/background';
 import { IRenderable } from './models/renderable';
 import { Sprite } from './models/sprite';
 import { IDragable } from './models/dragable';
@@ -105,7 +106,7 @@ import { IDragable } from './models/dragable';
 export default class App extends Vue {
 	public canvasWidth: number = 0;
 	public canvasHeight: number = 0;
-	public currentBackground: Background | null = null;
+	public currentBackground: IBackground | null = null;
 
 	private sdCtx: CanvasRenderingContext2D | undefined;
 	private characters: IRenderable[] = [];
@@ -244,7 +245,7 @@ export default class App extends Vue {
 		this.invalidateRender();
 
 		Promise.all([
-			getAsset(this.currentBackground.path, false),
+			getAsset((this.currentBackground as Background).path, false),
 			getAsset('textbox'),
 			getAsset('namebox'),
 			getAsset('next'),

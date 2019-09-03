@@ -2,8 +2,12 @@ import { RenderContext } from '@/renderer/rendererContext';
 import { getAsset } from '@/asset-manager';
 import { IRenderable } from './renderable';
 
-export class Background implements IRenderable {
-	public readonly infront = false;
+export interface IBackground {
+	name: string;
+	render(rx: RenderContext): Promise<void>;
+}
+
+export class Background implements IBackground {
 	public readonly path: string;
 	public constructor(
 		path: string,
@@ -16,14 +20,21 @@ export class Background implements IRenderable {
 	public async render(rx: RenderContext): Promise<void> {
 		rx.drawImage({ image: await getAsset(this.path, rx.hq), x: 0, y: 0 });
 	}
-
-	public hitTest(hx: number, hy: number): boolean {
-		return false;
-	}
 }
 
-export const transparent = new Background('transparent', 'Transparent');
-transparent.render = async function(rx: RenderContext) {
-	if (!rx.preview) return;
-	return await Background.prototype.render.call(this, rx);
+export const color = {
+	name: 'Static color',
+	color: '#000000',
+
+	async render(rx: RenderContext): Promise<void> {
+		rx.drawRect({ x: 0, y: 0, w: 1280, h: 720, fill: { style: this.color } });
+	},
+};
+
+export const transparent = {
+	name: 'Transparent',
+	async render(rx: RenderContext): Promise<void> {
+		if (!rx.preview) return;
+		return await Background.prototype.render.call(this, rx);
+	},
 };
