@@ -33,8 +33,6 @@ export const color = {
 
 export const transparent = {
 	name: 'Transparent',
-	async render(rx: RenderContext): Promise<void> {
-		if (!rx.preview) return;
-		return await Background.prototype.render.call(this, rx);
-	},
+	// tslint:disable-next-line: no-empty
+	async render(rx: RenderContext): Promise<void> {},
 };

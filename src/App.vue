@@ -199,6 +199,14 @@ export default class App extends Vue {
 				'32px riffic'
 			);
 		} else {
+			if (rx.preview) {
+				rx.drawImage({
+					x: 0,
+					y: 0,
+					image: await getAsset('backgrounds/transparent'),
+				});
+			}
+
 			if (this.currentBackground) {
 				await this.currentBackground.render(rx);
 			}
@@ -250,6 +258,7 @@ export default class App extends Vue {
 			getAsset('textbox'),
 			getAsset('namebox'),
 			getAsset('next'),
+			getAsset('backgrounds/transparent'),
 		])
 			.then(() => {
 				this.loaded = true;
