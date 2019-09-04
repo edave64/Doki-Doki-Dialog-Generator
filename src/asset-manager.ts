@@ -143,6 +143,7 @@ export const backgrounds = [
 		['n_cg3_base'],
 		['n_cg3_base', 'n_cg3_exp1'],
 		['n_cg3_base', 'n_cg3_exp2'],
+		['n_cg3_base', 'n_cg3_cake'],
 		['n_cg3_base', 'n_cg3_exp1', 'n_cg3_cake'],
 		['n_cg3_base', 'n_cg3_exp2', 'n_cg3_cake'],
 	]),
