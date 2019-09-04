@@ -1,53 +1,16 @@
 <template>
-	<div :class="{ panel: true, vertical }" v-if="isWebPSupported !== undefined">
+	<div :class="{ panel: true, vertical }">
 		<h1>Background</h1>
-		<fieldset v-if="value === colorBackground">
-			<legend>Settings:</legend>
-			<label for="bg_color">Color:</label>
-			<input
-				id="bg_color"
-				type="color"
-				v-model="colorBackground.color"
-				@input="$emit('invalidate-render')"
-			/>
-		</fieldset>
-		<fieldset v-if="isVariantBackground">
-			<legend>Settings:</legend>
-			<table>
-				<tr>
-					<td>
-						<button @click="--value.variant;$emit('invalidate-render')">&lt;</button>
-					</td>
-					<td>Variant</td>
-					<td>
-						<button @click="++value.variant;$emit('invalidate-render')">&gt;</button>
-					</td>
-				</tr>
-			</table>
-		</fieldset>
-		<div
+		<background-settings :value="value" @invalidate-render="$emit('invalidate-render')" />
+
+		<background-button
 			v-for="background of backgrounds"
-			:class="{background: true, active: background === value}"
 			:key="background.name"
-			:title="background.name"
-			:style="{backgroundImage: 'url(' + (background.custom ? customPathLookup[background.path] : assetPath(background.path)) + ')'}"
-			@click="$emit('input', background)"
-		>{{background.name}}</div>
-		<div
-			v-for="background of variantBackgrounds"
-			:class="{background: true, active: background === value}"
-			:key="background.name"
-			:title="background.name"
-			:style="{backgroundImage: 'url(' + assetPath(background.path) + ')'}"
-			@click="$emit('input', background)"
-		>{{background.name}}</div>
-		<div
-			:class="{background: true, active: colorBackground === value}"
-			:key="colorBackground.name"
-			:title="colorBackground.name"
-			:style="{background: colorBackground.color }"
-			@click="$emit('input', colorBackground)"
-		>{{colorBackground.name}}</div>
+			:background="background"
+			:value="value"
+			:customPathLookup="customPathLookup"
+			@input="$emit('input', background)"
+		/>
 		<div class="btn upload-background" @click="$refs.upload.click()">
 			Upload
 			<input type="file" ref="upload" @change="onFileUpload" />
@@ -57,57 +20,29 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import {
-	isWebPSupported,
-	backgrounds,
-	registerAsset,
-	getAsset,
-} from '../../asset-manager';
+import { backgrounds, registerAsset, getAsset } from '../../asset-manager';
 import { Background, IBackground, color } from '../../models/background';
 import { VariantBackground } from '../../models/variant-background';
+import BackgroundButton from './background/button.vue';
+import BackgroundSettings from './background/settings.vue';
 
 @Component({
-	components: {},
+	components: {
+		BackgroundButton,
+		BackgroundSettings,
+	},
 })
 export default class BackgroundsPanel extends Vue {
 	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
 	@Prop({ required: true }) private readonly value!: IBackground;
 
-	private isWebPSupported: boolean | null = null;
 	private customPathLookup: { [name: string]: string } = {};
 	private customBGCount = 0;
 
-	private async created() {
-		this.isWebPSupported = await isWebPSupported();
-	}
-
-	private get colorBackground(): typeof color {
-		return color;
-	}
-
-	private get isVariantBackground(): boolean {
-		return this.value instanceof VariantBackground;
-	}
-
-	private get backgrounds(): Background[] {
-		// this is just to force a recompute when a new custom background gets added.
-		const count = this.customBGCount;
-		return backgrounds.filter(
-			background => background instanceof Background
-		) as Background[];
-	}
-
-	private get variantBackgrounds(): VariantBackground[] {
-		// this is just to force a recompute when a new custom background gets added.
-		return backgrounds.filter(
-			background => background instanceof VariantBackground
-		) as VariantBackground[];
-	}
-
-	private assetPath(background: string) {
-		return `${process.env.BASE_URL}/assets/${background.toLowerCase()}.lq.${
-			this.isWebPSupported ? 'webp' : 'png'
-		}`.replace(/\/+/, '/');
+	private get backgrounds(): IBackground[] {
+		// tslint:disable-next-line: no-unused-expression
+		this.customBGCount;
+		return backgrounds;
 	}
 
 	private onFileUpload(e: Event) {
@@ -118,7 +53,7 @@ export default class BackgroundsPanel extends Vue {
 				const name = 'customBg' + nr;
 				const url = registerAsset(name, file);
 				backgrounds.push(new Background(name, file.name, true));
-				this.customPathLookup[name] = url;
+				this.$set(this.customPathLookup, name, url);
 			})(++this.customBGCount);
 		}
 	}
@@ -131,21 +66,6 @@ textarea {
 }
 
 .panel {
-	.background {
-		margin-top: 4px;
-		background-size: cover;
-		text-shadow: 0 0 2px black;
-		color: white;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.5);
-		height: 48px;
-		min-height: 48px;
-		text-align: center;
-		user-select: none;
-	}
-
 	&:not(.vertical) {
 		> div {
 			width: 12rem;
@@ -160,11 +80,17 @@ textarea {
 
 	.upload-background {
 		margin-top: 4px;
+		background-size: cover;
+		text-shadow: 0 0 2px black;
+		color: white;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.5);
 		height: 48px;
 		min-height: 48px;
+		text-align: center;
+		user-select: none;
 		text-align: center;
 		user-select: none;
 		box-sizing: border-box;
@@ -173,10 +99,6 @@ textarea {
 			display: none;
 		}
 	}
-}
-fieldset {
-	border: 3px solid #ffbde1;
-	min-height: 135px;
 }
 
 .vertical {
