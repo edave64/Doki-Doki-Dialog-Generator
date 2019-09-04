@@ -4,6 +4,7 @@ import { getAsset } from '@/asset-manager';
 
 export class VariantBackground implements IBackground {
 	public readonly path: string;
+	public flip: boolean = false;
 	private variantI: number = 0;
 
 	public constructor(
@@ -36,7 +37,7 @@ export class VariantBackground implements IBackground {
 			this.variants[this.variantI].map(img => getAsset(img, rx.hq))
 		);
 		for (const asset of assets) {
-			rx.drawImage({ image: asset, x: 0, y: 0 });
+			rx.drawImage({ image: asset, x: 0, y: 0, flip: this.flip });
 		}
 	}
 }

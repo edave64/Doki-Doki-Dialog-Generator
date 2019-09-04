@@ -7,6 +7,11 @@
 	<fieldset v-else>
 		<legend>Settings:</legend>
 		<table>
+			<tr>
+				<td colspan="3">
+					<toggle v-model="value.flip" label="Flipped?" @input="$emit('invalidate-render')" />
+				</td>
+			</tr>
 			<tr v-if="isVariant">
 				<td>
 					<button @click="--value.variant;$emit('invalidate-render')">&lt;</button>

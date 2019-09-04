@@ -1,6 +1,5 @@
 import { RenderContext } from '@/renderer/rendererContext';
 import { getAsset } from '@/asset-manager';
-import { IRenderable } from './renderable';
 
 export interface IBackground {
 	name: string;
@@ -9,6 +8,7 @@ export interface IBackground {
 
 export class Background implements IBackground {
 	public readonly path: string;
+	public flip: boolean = false;
 	public constructor(
 		path: string,
 		public readonly name: string,
@@ -18,7 +18,12 @@ export class Background implements IBackground {
 	}
 
 	public async render(rx: RenderContext): Promise<void> {
-		rx.drawImage({ image: await getAsset(this.path, rx.hq), x: 0, y: 0 });
+		rx.drawImage({
+			image: await getAsset(this.path, rx.hq),
+			x: 0,
+			y: 0,
+			flip: this.flip,
+		});
 	}
 }
 
