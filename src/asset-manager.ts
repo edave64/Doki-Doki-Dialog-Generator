@@ -1,4 +1,4 @@
-import { Background, transparent } from './models/background';
+import { Background, transparent, color } from './models/background';
 import Sayori from './characters/sayori.json';
 import Yuri from './characters/yuri.json';
 import Monika from './characters/monika.json';
@@ -146,6 +146,7 @@ export const backgrounds = [
 		['n_cg3_base', 'n_cg3_exp1', 'n_cg3_cake'],
 		['n_cg3_base', 'n_cg3_exp2', 'n_cg3_cake'],
 	]),
+	color,
 	transparent,
 ];
 
