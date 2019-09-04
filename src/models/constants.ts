@@ -8,7 +8,6 @@ export const characterPositions = [
 	400,
 	493,
 	640,
-	640,
 	786,
 	880,
 	1040,
