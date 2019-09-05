@@ -162,6 +162,7 @@ export class Character implements IRenderable, IDragable {
 	public async render(rx: RenderContext) {
 		if (this.dirty || this.lq !== !rx.hq) {
 			await this.updateLocalCanvas();
+			this.dirty = false;
 		}
 
 		const zoom = this.close ? 1.6 : 0.8;
