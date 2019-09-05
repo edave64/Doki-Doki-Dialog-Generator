@@ -193,44 +193,44 @@ export default class App extends Vue {
 	private async renderCallback(rx: RenderContext): Promise<void> {
 		this.currentlyRendering = true;
 		try {
-		if (!this.loaded) {
-			rx.drawText(
-				'Starting...',
-				this.renderer.width / 2,
-				this.renderer.height / 2,
-				'center',
-				5,
-				'white',
-				'#b59',
-				'32px riffic'
-			);
-		} else {
-			if (rx.preview) {
-				rx.drawImage({
-					x: 0,
-					y: 0,
-					image: await getAsset('backgrounds/transparent'),
-				});
-			}
+			if (!this.loaded) {
+				rx.drawText(
+					'Starting...',
+					this.renderer.width / 2,
+					this.renderer.height / 2,
+					'center',
+					5,
+					'white',
+					'#b59',
+					'32px riffic'
+				);
+			} else {
+				if (rx.preview) {
+					rx.drawImage({
+						x: 0,
+						y: 0,
+						image: await getAsset('backgrounds/transparent'),
+					});
+				}
 
-			if (this.currentBackground) {
-				await this.currentBackground.render(rx);
-			}
+				if (this.currentBackground) {
+					await this.currentBackground.render(rx);
+				}
 
-			for (const character of this.characters) {
-				if (!character.infront) {
-					await character.render(rx);
+				for (const character of this.characters) {
+					if (!character.infront) {
+						await character.render(rx);
+					}
+				}
+
+				await this.textbox.render(rx);
+
+				for (const character of this.characters) {
+					if (character.infront) {
+						await character.render(rx);
+					}
 				}
 			}
-
-			await this.textbox.render(rx);
-
-			for (const character of this.characters) {
-				if (character.infront) {
-					await character.render(rx);
-				}
-			}
-		}
 		} finally {
 			this.currentlyRendering = false;
 		}

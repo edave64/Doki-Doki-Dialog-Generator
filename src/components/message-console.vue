@@ -1,6 +1,7 @@
 <template>
 	<div class="messageConsole">
 		<p v-if="showLoading">Loading...</p>
+		<p v-for="(message, i) in messages" :key="message + '_' + i">{{message}}</p>
 	</div>
 </template>
 
@@ -18,8 +19,16 @@ export default class DokiButton extends Vue {
 	private showLoadingTimeout: number = 0;
 	private hideLoadingTimeout: number = 0;
 
+	public messages: string[] = [];
+
 	private created() {
 		this.onLoadingChange(this.loading);
+		EventBus.subscribe(AssetFailureEvent, ev => {
+			this.messages.push(`Failed to load asset '${ev.path}'`);
+			setTimeout(() => {
+				this.messages.pop();
+			}, 5000);
+		});
 	}
 
 	@Watch('loading')
