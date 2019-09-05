@@ -24,6 +24,7 @@ export class Character implements IRenderable, IDragable {
 	public infront: boolean = false;
 	public close: boolean = false;
 	public flip: boolean = false;
+	public opacity: number = 100;
 	private lq: boolean = true;
 	private selected: boolean = false;
 	private poseId: number = 0;
@@ -178,6 +179,7 @@ export class Character implements IRenderable, IDragable {
 			h: size,
 			flip: this.flip,
 			shadow: this.selected ? { blur: 20, color: 'red' } : undefined,
+			opacity: this.opacity,
 		});
 	}
 

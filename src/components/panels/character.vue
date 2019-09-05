@@ -76,6 +76,18 @@
 				title="Move to front"
 			>&#10514;</button>
 		</fieldset>
+		<div>
+			<label for="characterOpacity">Opacity:</label>
+			<input
+				type="number"
+				max="100"
+				min="0"
+				id="characterOpacity"
+				v-model.number="character.opacity"
+				@input="$emit('invalidate-render')"
+				@keydown.stop
+			/>
+		</div>
 		<toggle
 			v-model="character.infront"
 			@input="$emit('invalidate-render')"

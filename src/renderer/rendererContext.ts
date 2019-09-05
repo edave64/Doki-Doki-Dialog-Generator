@@ -39,18 +39,24 @@ export class RenderContext {
 			flip?: boolean;
 		} & IRPos &
 			IOSize &
-			IOShadow
+			IOShadow &
+			IOOpacity
 	): void {
 		if (this.aborted) throw new RenderAbortedException();
 		if (params.image instanceof ErrorAsset) return;
-		const { image, flip, x, y, w, h } = {
+		const { image, flip, x, y, w, h, opacity } = {
 			flip: false,
 			w: params.image.width,
 			h: params.image.height,
+			opacity: 100,
 			...params,
 		};
 
 		this.fsCtx.save();
+
+		if (opacity < 100) {
+			this.fsCtx.globalAlpha = opacity / 100;
+		}
 
 		if (params.shadow) {
 			const shadow = params.shadow;
@@ -160,6 +166,9 @@ interface IOSize {
 
 interface IOOutline {
 	outline?: IOutline;
+}
+interface IOOpacity {
+	opacity?: number;
 }
 
 interface IOFill {

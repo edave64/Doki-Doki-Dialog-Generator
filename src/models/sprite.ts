@@ -11,6 +11,7 @@ export class Sprite implements IRenderable, IDragable {
 	public width: number = 0;
 	public height: number = 0;
 	public flip: boolean = false;
+	public opacity: number = 100;
 	private asset: HTMLImageElement | null = null;
 	private selected: boolean = false;
 
@@ -51,6 +52,7 @@ export class Sprite implements IRenderable, IDragable {
 			h: this.height,
 			shadow: this.selected ? { blur: 20, color: 'red' } : undefined,
 			flip: this.flip,
+			opacity: this.opacity,
 		});
 	}
 
