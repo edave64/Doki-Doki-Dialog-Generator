@@ -39,7 +39,9 @@
 					v-if="panel === ''"
 					:options="textbox"
 					:vertical="vertical"
+					:has-prev-render="prevRender !== ''"
 					:lqRendering.sync="lqRendering"
+					@show-prev-render="showPreviousRender"
 				/>
 				<add-panel
 					v-if="panel === 'add'"
@@ -133,6 +135,8 @@ export default class App extends Vue {
 	private panel: string = '';
 
 	private queuedRender: number | null = null;
+	private prevRender: string = '';
+	private showingLast: boolean = false;
 
 	private dropSpriteCount = 0;
 	private dropPreventClick = false;
@@ -318,12 +322,29 @@ export default class App extends Vue {
 
 	private display(): void {
 		if (!this.sdCtx) return;
+		this.showingLast = false;
 		this.renderer.paintOnto(this.sdCtx, 0, 0, 1280, 720);
 	}
 
 	private async download() {
 		this.selectedCharacter = null;
-		this.renderer.download(this.renderCallback, 'panel.png');
+		this.prevRender = await this.renderer.download(
+			this.renderCallback,
+			'panel.png'
+		);
+	}
+
+	private async showPreviousRender() {
+		if (this.showingLast) {
+			this.display();
+			return;
+		}
+		this.showingLast = true;
+		const img = new Image();
+		img.onload = () => {
+			this.sdCtx!.drawImage(img, 0, 0, 1280, 720);
+		};
+		img.src = this.prevRender;
 	}
 
 	private onCharacterCreate(character: CharacterIds): void {

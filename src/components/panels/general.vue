@@ -7,6 +7,7 @@
 			:value="lqRendering"
 			@input="$emit('update:lqRendering', $event)"
 		/>
+		<button :disabled="!hasPrevRender" @click="$emit('show-prev-render')">Compare to last download</button>
 		<toggle label="Textbox visible?" v-model="options.display" />
 		<toggle label="Textbox corrupt?" v-model="options.corrupted" />
 		<div>
@@ -36,8 +37,9 @@
 			<label for="dialog_text">Dialog:</label>
 			<textarea v-model="options.dialog" id="dialog_text" />
 		</div>
-		<p>Formatting:<br />
-			[In brackets] for editied style text
+		<p>
+			Formatting:
+			<br />[In brackets] for editied style text
 		</p>
 	</div>
 </template>
@@ -57,6 +59,8 @@ export default class GeneralPanel extends Vue {
 	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
 	@Prop({ required: true, type: Boolean })
 	private readonly lqRendering!: boolean;
+	@Prop({ required: true, type: Boolean })
+	private readonly hasPrevRender!: boolean;
 
 	@Watch('options.customName')
 	private talkingChange(): void {

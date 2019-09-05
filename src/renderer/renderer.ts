@@ -62,7 +62,7 @@ export class Renderer {
 	public async download(
 		renderCallback: (rc: RenderContext) => Promise<void>,
 		filename: string
-	) {
+	): Promise<string> {
 		const downloadCanvas = document.createElement('canvas');
 		downloadCanvas.width = this.previewCanvas.width;
 		downloadCanvas.height = this.previewCanvas.height;
@@ -84,6 +84,8 @@ export class Renderer {
 			// IE-specific code
 			window.navigator.msSaveBlob(this.dataURItoBlob(url), filename);
 		}
+
+		return url;
 	}
 
 	public getDataAt(x: number, y: number): Uint8ClampedArray {
