@@ -34,8 +34,11 @@
 				@input="$emit('invalidate-render')"
 			/>
 			<div v-if="!character.allowFreeMove">
-				<button @click="--character.pos;$emit('invalidate-render')">&lt; left</button>
-				<button @click="++character.pos;$emit('invalidate-render')">&gt; right</button>
+				<button @click="--character.pos;$emit('invalidate-render')">&lt;</button>
+				<select id="current_talking" v-model.number="character.pos" @input="$emit('invalidate-render')">
+					<option v-for="(val, key) of positionNames" :key="key" :value="key">{{val}}</option>
+				</select>
+				<button @click="++character.pos;$emit('invalidate-render')">&gt;</button>
 			</div>
 			<div v-else>
 				<label for="sprite_x">X:</label>
@@ -106,6 +109,7 @@ import { isWebPSupported } from '../../asset-manager';
 import { Character } from '../../models/character';
 import Toggle from '../Toggle.vue';
 import { IRenderable } from '../../models/renderable';
+import { positions } from '../../models/constants';
 
 @Component({
 	components: {
@@ -120,6 +124,10 @@ export default class CharacterPanel extends Vue {
 
 	private async created() {
 		this.isWebPSupported = await isWebPSupported();
+	}
+
+	private get positionNames(): string[] {
+		return positions;
 	}
 
 	private get parts(): string[] {
