@@ -44,6 +44,7 @@
 					type="number"
 					v-model.number="character.x"
 					@input="$emit('invalidate-render')"
+					@keydown.stop
 				/>
 				<br />
 				<label for="sprite_y">Y:</label>
@@ -52,6 +53,7 @@
 					type="number"
 					v-model.number="character.y"
 					@input="$emit('invalidate-render')"
+					@keydown.stop
 				/>
 			</div>
 		</fieldset>

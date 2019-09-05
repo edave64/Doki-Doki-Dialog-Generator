@@ -4,10 +4,22 @@
 		<fieldset>
 			<legend>Position/Size:</legend>
 			<label for="sprite_x">X:</label>
-			<input id="sprite_x" type="number" v-model.number="sprite.x" @input="$emit('invalidate-render')" />
+			<input
+				id="sprite_x"
+				type="number"
+				v-model.number="sprite.x"
+				@input="$emit('invalidate-render')"
+				@keydown.stop
+			/>
 			<br />
 			<label for="sprite_y">Y:</label>
-			<input id="sprite_y" type="number" v-model.number="sprite.y" @input="$emit('invalidate-render')" />
+			<input
+				id="sprite_y"
+				type="number"
+				v-model.number="sprite.y"
+				@input="$emit('invalidate-render')"
+				@keydown.stop
+			/>
 			<br />
 			<label for="sprite_w">Width:</label>
 			<input
@@ -15,6 +27,7 @@
 				type="number"
 				v-model.number="sprite.width"
 				@input="$emit('invalidate-render')"
+				@keydown.stop
 			/>
 			<br />
 			<label for="sprite_h">Height:</label>
@@ -23,6 +36,7 @@
 				type="number"
 				v-model.number="sprite.height"
 				@input="$emit('invalidate-render')"
+				@keydown.stop
 			/>
 		</fieldset>
 		<fieldset id="layerfs">
