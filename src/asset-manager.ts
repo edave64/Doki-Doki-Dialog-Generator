@@ -10,6 +10,8 @@ import MCClassic from './characters/mc_classic.json';
 import Amy from './characters/amy.json';
 import AmyClassic from './characters/amy_classic.json';
 import { VariantBackground } from './models/variant-background';
+import EventBus, { AssetFailureEvent } from './event-bus';
+import { ErrorAsset } from './models/error-asset';
 
 export const characterOrder = ([
 	Monika,
@@ -57,13 +59,15 @@ export function isWebPSupported(): Promise<boolean> {
 	return webpSupportPromise;
 }
 
-const assetCache: { [url: string]: Promise<HTMLImageElement> } = {};
+const assetCache: {
+	[url: string]: Promise<HTMLImageElement | ErrorAsset> | undefined;
+} = {};
 const customAssets: { [id: string]: Promise<HTMLImageElement> } = {};
 
 export async function getAsset(
 	asset: string,
 	hq: boolean = true
-): Promise<HTMLImageElement> {
+): Promise<HTMLImageElement | ErrorAsset> {
 	if (customAssets[asset]) {
 		return customAssets[asset];
 	}
@@ -79,7 +83,9 @@ export async function getAsset(
 				resolve(img);
 			});
 			img.addEventListener('error', () => {
-				reject(`Failed to load "${url}"`);
+				EventBus.fire(new AssetFailureEvent(url));
+				assetCache[url] = undefined;
+				resolve(new ErrorAsset());
 			});
 			img.crossOrigin = 'Anonymous';
 			img.src = url;
@@ -88,7 +94,7 @@ export async function getAsset(
 		});
 	}
 
-	return assetCache[url];
+	return assetCache[url]!;
 }
 
 export function registerAsset(asset: string, file: File): string {

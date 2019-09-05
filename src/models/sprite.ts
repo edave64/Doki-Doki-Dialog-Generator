@@ -2,6 +2,7 @@ import { RenderContext } from '../renderer/rendererContext';
 import { getAsset } from '../asset-manager';
 import { IRenderable } from './renderable';
 import { IDragable } from './dragable';
+import { ErrorAsset } from './error-asset';
 
 export class Sprite implements IRenderable, IDragable {
 	public infront: boolean = false;
@@ -19,6 +20,9 @@ export class Sprite implements IRenderable, IDragable {
 	) {
 		getAsset(assetName)
 			.then(asset => {
+				if (asset instanceof ErrorAsset) {
+					return;
+				}
 				this.asset = asset;
 				this.width = asset.width;
 				this.height = asset.height;

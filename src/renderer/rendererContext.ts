@@ -1,5 +1,6 @@
 import { RenderAbortedException } from './renderAbortedException';
 import { Renderer } from './renderer';
+import { ErrorAsset } from '@/models/error-asset';
 
 export class RenderContext {
 	private aborted: boolean = false;
@@ -33,11 +34,15 @@ export class RenderContext {
 	}
 
 	public drawImage(
-		params: { image: HTMLImageElement | Renderer; flip?: boolean } & IRPos &
+		params: {
+			image: HTMLImageElement | ErrorAsset | Renderer;
+			flip?: boolean;
+		} & IRPos &
 			IOSize &
 			IOShadow
 	): void {
 		if (this.aborted) throw new RenderAbortedException();
+		if (params.image instanceof ErrorAsset) return;
 		const { image, flip, x, y, w, h } = {
 			flip: false,
 			w: params.image.width,
@@ -69,7 +74,7 @@ export class RenderContext {
 		if (image instanceof Renderer) {
 			image.paintOnto(this.fsCtx, -w / 2, -h / 2, w, h);
 		} else {
-			this.fsCtx.drawImage(image, -w / 2, -h / 2, w, h);
+			this.fsCtx.drawImage(image as HTMLImageElement, -w / 2, -h / 2, w, h);
 		}
 
 		this.fsCtx.restore();

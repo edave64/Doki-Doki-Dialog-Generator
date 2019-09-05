@@ -30,3 +30,9 @@ interface IEventClass<T> {
 	kind: string;
 	new (...args: any[]): T;
 }
+
+export class AssetFailureEvent implements IEvent {
+	public static readonly kind = 'AssetFailureEvent';
+	public readonly kind = 'AssetFailureEvent';
+	public constructor(public path: string) {}
+}
