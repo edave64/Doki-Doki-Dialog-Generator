@@ -20,6 +20,7 @@
 				@mouseenter="onMouseEnter"
 			>HTML5 is required to use the Doki Doki Dialog Generator.</canvas>
 		</div>
+		<message-console :loading="currentlyRendering" id="messages" :class="{ vertical }" />
 		<div id="panels" :class="{ vertical }">
 			<div id="toolbar">
 				<button :class="{ active: panel === 'add' }" @click="panel = panel === 'add' ? '' : 'add'">A</button>
@@ -81,6 +82,7 @@ import CharacterPanel, { MoveObject } from './components/panels/character.vue';
 import SpritePanel from './components/panels/sprite.vue';
 import CreditsPanel from './components/panels/credits.vue';
 import BackgroundsPanel from './components/panels/backgrounds.vue';
+import MessageConsole from './components/message-console.vue';
 import { characterPositions } from './models/constants';
 import { Textbox } from './models/textbox';
 import { Character, CharacterIds } from './models/character';
@@ -102,6 +104,7 @@ import { VariantBackground } from './models/variant-background';
 		CreditsPanel,
 		CharacterPanel,
 		SpritePanel,
+		MessageConsole,
 	},
 })
 export default class App extends Vue {
@@ -125,6 +128,7 @@ export default class App extends Vue {
 	private loaded: boolean = false;
 	private uiSize: number = 192;
 	private lqRendering: boolean = true;
+	private currentlyRendering: boolean = false;
 
 	private panel: string = '';
 
@@ -187,6 +191,8 @@ export default class App extends Vue {
 	}
 
 	private async renderCallback(rx: RenderContext): Promise<void> {
+		this.currentlyRendering = true;
+		try {
 		if (!this.loaded) {
 			rx.drawText(
 				'Starting...',
@@ -224,6 +230,9 @@ export default class App extends Vue {
 					await character.render(rx);
 				}
 			}
+		}
+		} finally {
+			this.currentlyRendering = false;
 		}
 	}
 
@@ -668,6 +677,20 @@ body {
 				background: white;
 			}
 		}
+	}
+}
+
+#messages {
+	position: absolute;
+
+	&.vertical {
+		right: 200px;
+		top: 0;
+	}
+
+	&:not(.vertical) {
+		bottom: 200px;
+		left: 0;
 	}
 }
 </style>
