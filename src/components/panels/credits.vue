@@ -25,6 +25,7 @@
 		</p>
 		<p>Classic Amy Sprite by Meddy-sin</p>
 		<p>Amy Sprite by Meddy-sin and SlightlySimple</p>
+		<p>Special thanks to SlightlySimple for testing and technical help</p>
 	</div>
 </template>
 
