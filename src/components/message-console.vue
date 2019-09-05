@@ -35,7 +35,6 @@ export default class DokiButton extends Vue {
 	private onLoadingChange(newValue: boolean) {
 		console.log('onLoadingChange', newValue);
 		if (newValue) {
-			debugger;
 			if (this.hideLoadingTimeout) {
 				clearTimeout(this.hideLoadingTimeout);
 				this.hideLoadingTimeout = 0;
