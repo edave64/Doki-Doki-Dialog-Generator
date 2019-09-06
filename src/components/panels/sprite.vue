@@ -22,22 +22,11 @@
 			/>
 			<br />
 			<label for="sprite_w">Width:</label>
-			<input
-				id="sprite_w"
-				type="number"
-				v-model.number="sprite.width"
-				@input="$emit('invalidate-render')"
-				@keydown.stop
-			/>
+			<input id="sprite_w" type="number" :value="sprite.width" @input="setWidth" @keydown.stop />
 			<br />
 			<label for="sprite_h">Height:</label>
-			<input
-				id="sprite_h"
-				type="number"
-				v-model.number="sprite.height"
-				@input="$emit('invalidate-render')"
-				@keydown.stop
-			/>
+			<input id="sprite_h" type="number" :value="sprite.height" @input="setHeight" @keydown.stop />
+			<toggle :value="sprite.lockedRatio" @input="setRatioLock" label="Lock ratio?" />
 		</fieldset>
 		<fieldset id="layerfs">
 			<legend>Layer:</legend>
@@ -97,6 +86,32 @@ import { Sprite } from '../../models/sprite';
 export default class SpritePanel extends Vue {
 	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
 	@Prop({ type: Sprite, required: true }) private sprite!: Sprite;
+
+	private setHeight(event: Event): void {
+		const height = Number((event.target! as HTMLInputElement).value);
+		if (this.sprite.lockedRatio) {
+			this.sprite.width = height * this.sprite.ratio;
+		}
+		this.sprite.height = height;
+		this.$emit('invalidate-render');
+	}
+
+	private setWidth(event: Event): void {
+		const width = Number((event.target! as HTMLInputElement).value);
+		if (this.sprite.lockedRatio) {
+			this.sprite.height = width / this.sprite.ratio;
+		}
+		this.sprite.width = width;
+		this.$emit('invalidate-render');
+	}
+
+	private setRatioLock(lock: boolean) {
+		debugger;
+		this.sprite.lockedRatio = lock;
+		if (lock) {
+			this.sprite.ratio = this.sprite.width / this.sprite.height;
+		}
+	}
 }
 </script>
 

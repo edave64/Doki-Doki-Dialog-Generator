@@ -10,6 +10,8 @@ export class Sprite implements IRenderable, IDragable {
 	public y: number = 0;
 	public width: number = 0;
 	public height: number = 0;
+	public ratio: number = 0;
+	public lockedRatio: boolean = true;
 	public flip: boolean = false;
 	public opacity: number = 100;
 	private asset: HTMLImageElement | null = null;
@@ -27,6 +29,7 @@ export class Sprite implements IRenderable, IDragable {
 				this.asset = asset;
 				this.width = asset.width;
 				this.height = asset.height;
+				this.ratio = this.width / this.height;
 				this.invalidator();
 			})
 			.catch(err => {
