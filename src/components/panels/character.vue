@@ -34,11 +34,14 @@
 				@input="$emit('invalidate-render')"
 			/>
 			<div v-if="!character.allowFreeMove">
-				<button @click="--character.pos;$emit('invalidate-render')">&lt;</button>
+				<button @click="--character.pos;$emit('invalidate-render')" :disabled="character.pos === 0">&lt;</button>
 				<select id="current_talking" v-model.number="character.pos" @input="$emit('invalidate-render')">
 					<option v-for="(val, key) of positionNames" :key="key" :value="key">{{val}}</option>
 				</select>
-				<button @click="++character.pos;$emit('invalidate-render')">&gt;</button>
+				<button
+					@click="++character.pos;$emit('invalidate-render')"
+					:disabled="character.pos >= positionNames.length - 1"
+				>&gt;</button>
 			</div>
 			<div v-else>
 				<label for="sprite_x">X:</label>
