@@ -17,3 +17,7 @@ If a character is selected, the [character panel](panels/characters.md) is shown
 Sometimes, the object you want to select is hidden behind another one. In this case, you can use the click through behavior. If you click on an object that is already selected, the click goes through the selected object and selects whatever is behind it.
 
 ![Clicking through multiple characters](selection_click_through.png 'Clicking through multiple characters')
+
+## Drag and drop
+
+Once an object is selected it can be moved by dragging and dropping. While dragging a freely moving, you can press the shift key to limit the move to a single direction.
