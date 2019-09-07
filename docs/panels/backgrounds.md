@@ -17,6 +17,7 @@ If this is checked the background will be flipped horizontally.
 Some backgrounds (mostly the CGs) have multiple variants. With the "<" buttons ">", you can switch between them.
 
 <img align="right" src="backgrounds_color.png">
+
 ### Color
 
 This option is only shown when the "Static color" background was chosen. Click on the button for a color chooser. The chosen color will be used as the background.<br style="clear:both" />
