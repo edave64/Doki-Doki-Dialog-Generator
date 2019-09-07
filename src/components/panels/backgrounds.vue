@@ -1,7 +1,7 @@
 <template>
 	<div :class="{ panel: true, vertical }">
 		<h1>Background</h1>
-		<background-settings :value="value" @invalidate-render="$emit('invalidate-render')" />
+		<background-settings :value="value" :nsfw="nsfw" @invalidate-render="$emit('invalidate-render')" />
 
 		<background-button
 			v-for="background of backgrounds"
@@ -9,7 +9,7 @@
 			:background="background"
 			:value="value"
 			:customPathLookup="customPathLookup"
-			@input="$emit('input', background)"
+			@input="nsfwFilter(background);$emit('input', background)"
 		/>
 		<div class="btn upload-background" @click="$refs.upload.click()">
 			Upload
@@ -21,7 +21,12 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { backgrounds, registerAsset, getAsset } from '../../asset-manager';
-import { Background, IBackground, color } from '../../models/background';
+import {
+	Background,
+	IBackground,
+	color,
+	nsfwFilter,
+} from '../../models/background';
 import { VariantBackground } from '../../models/variant-background';
 import BackgroundButton from './background/button.vue';
 import BackgroundSettings from './background/settings.vue';
@@ -35,6 +40,7 @@ import BackgroundSettings from './background/settings.vue';
 export default class BackgroundsPanel extends Vue {
 	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
 	@Prop({ required: true }) private readonly value!: IBackground;
+	@Prop({ required: true, type: Boolean }) private readonly nsfw!: boolean;
 
 	private customPathLookup: { [name: string]: string } = {};
 	private customBGCount = 0;
@@ -42,7 +48,7 @@ export default class BackgroundsPanel extends Vue {
 	private get backgrounds(): IBackground[] {
 		// tslint:disable-next-line: no-unused-expression
 		this.customBGCount;
-		return backgrounds;
+		return this.nsfw ? backgrounds : backgrounds.filter(bg => !bg.nsfw);
 	}
 
 	private onFileUpload(e: Event) {
@@ -52,9 +58,15 @@ export default class BackgroundsPanel extends Vue {
 			(nr => {
 				const name = 'customBg' + nr;
 				const url = registerAsset(name, file);
-				backgrounds.push(new Background(name, file.name, true));
+				backgrounds.push(new Background(name, file.name, false, true));
 				this.$set(this.customPathLookup, name, url);
 			})(++this.customBGCount);
+		}
+	}
+
+	private nsfwFilter(background: IBackground) {
+		if (!this.nsfw) {
+			nsfwFilter(background);
 		}
 	}
 }

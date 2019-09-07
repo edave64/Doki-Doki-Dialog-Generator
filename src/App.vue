@@ -41,6 +41,7 @@
 					:vertical="vertical"
 					:has-prev-render="prevRender !== ''"
 					:lqRendering.sync="lqRendering"
+					:nsfw.sync="nsfw"
 					@show-prev-render="showPreviousRender"
 				/>
 				<add-panel
@@ -53,6 +54,7 @@
 					v-if="panel === 'backgrounds'"
 					:vertical="vertical"
 					v-model="currentBackground"
+					:nsfw="nsfw"
 					@invalidate-render="invalidateRender"
 				/>
 				<credits-panel v-if="panel === 'credits'" :vertical="vertical" />
@@ -60,6 +62,7 @@
 					v-if="panel === 'character'"
 					:vertical="vertical"
 					:character="selectedCharacter"
+					:nsfw="nsfw"
 					@shiftLayer="onObjectLayerShift"
 					@invalidate-render="invalidateRender"
 				/>
@@ -91,7 +94,7 @@ import { Character, CharacterIds } from './models/character';
 import { backgrounds, getAsset, registerAsset } from './asset-manager';
 import { Renderer } from './renderer/renderer';
 import { RenderContext } from './renderer/rendererContext';
-import { Background, IBackground } from './models/background';
+import { Background, IBackground, nsfwFilter } from './models/background';
 import { IRenderable } from './models/renderable';
 import { Sprite } from './models/sprite';
 import { IDragable } from './models/dragable';
@@ -123,6 +126,7 @@ export default class App extends Vue {
 	private editDialog: boolean = false;
 
 	private vertical: boolean = false;
+	private nsfw: boolean = false;
 	private textbox = new Textbox();
 
 	private renderer: Renderer = new Renderer();
@@ -580,6 +584,24 @@ export default class App extends Vue {
 		} else {
 			console.log(e);
 		}
+	}
+
+	@Watch('nsfw')
+	onNSFWChange(newNSFW: boolean) {
+		if (!this.currentBackground) return;
+		if (newNSFW) return;
+		if (this.currentBackground.nsfw) {
+			this.currentBackground = backgrounds[0];
+		}
+		nsfwFilter(this.currentBackground);
+		for (const character of this.characters) {
+			if (character instanceof Character) {
+				if (character.pose.nsfw) {
+					character.seekPose(1, false);
+				}
+			}
+		}
+		this.invalidateRender();
 	}
 }
 </script>

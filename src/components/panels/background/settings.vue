@@ -14,11 +14,11 @@
 			</tr>
 			<tr v-if="isVariant">
 				<td>
-					<button @click="--value.variant;$emit('invalidate-render')">&lt;</button>
+					<button @click="value.seekVariant(-1, nsfw);$emit('invalidate-render')">&lt;</button>
 				</td>
 				<td>Variant</td>
 				<td>
-					<button @click="++value.variant;$emit('invalidate-render')">&gt;</button>
+					<button @click="value.seekVariant(1, nsfw);$emit('invalidate-render')">&gt;</button>
 				</td>
 			</tr>
 		</table>
@@ -37,9 +37,13 @@ import Toggle from '../../Toggle.vue';
 })
 export default class BackgroundSettings extends Vue {
 	@Prop({ required: true }) private readonly value!: IBackground;
+	@Prop({ required: true, type: Boolean }) private readonly nsfw!: boolean;
 
 	private get isVariant() {
-		return this.value instanceof VariantBackground;
+		return (
+			this.value instanceof VariantBackground &&
+			this.value.hasVariants(this.nsfw)
+		);
 	}
 
 	private get colorBackground() {

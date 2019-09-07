@@ -1,8 +1,10 @@
 import { RenderContext } from '@/renderer/rendererContext';
 import { getAsset } from '@/asset-manager';
+import { VariantBackground } from './variant-background';
 
 export interface IBackground {
 	name: string;
+	nsfw?: boolean;
 	render(rx: RenderContext): Promise<void>;
 }
 
@@ -12,6 +14,7 @@ export class Background implements IBackground {
 	public constructor(
 		path: string,
 		public readonly name: string,
+		public readonly nsfw: boolean = false,
 		public readonly custom: boolean = false
 	) {
 		this.path = (custom ? '' : '/backgrounds/') + path;
@@ -41,3 +44,12 @@ export const transparent = {
 	// tslint:disable-next-line: no-empty
 	async render(rx: RenderContext): Promise<void> {},
 };
+
+export function nsfwFilter(background: IBackground) {
+	if (
+		background instanceof VariantBackground &&
+		background.variants[background.variant].nsfw
+	) {
+		background.seekVariant(1, false);
+	}
+}

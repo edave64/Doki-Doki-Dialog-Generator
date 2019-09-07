@@ -1,4 +1,9 @@
-import { Background, transparent, color } from './models/background';
+import {
+	Background,
+	transparent,
+	color,
+	IBackground,
+} from './models/background';
 import Sayori from './characters/sayori.json';
 import Yuri from './characters/yuri.json';
 import Monika from './characters/monika.json';
@@ -115,7 +120,7 @@ export function registerAsset(asset: string, file: File): string {
 	return url;
 }
 
-export const backgrounds = [
+export const backgrounds: IBackground[] = [
 	new VariantBackground('Clubroom', '/backgrounds/', [
 		['club'],
 		['club-skill'],
@@ -237,6 +242,7 @@ interface IPose<H> {
 	compatibleHeads: Array<keyof H>;
 	headInForeground?: boolean;
 	folder?: string;
+	nsfw?: boolean;
 	headAnchor?: [number, number];
 }
 
@@ -256,6 +262,7 @@ export interface ICharacter<H extends Heads> {
 	internalId: string;
 	name: string;
 	folder?: string;
+	nsfw?: boolean;
 	heads: H;
 	poses: Array<Pose<H>>;
 }

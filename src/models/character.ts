@@ -10,6 +10,7 @@ import {
 import { Renderer } from '../renderer/renderer';
 import { IRenderable } from './renderable';
 import { IDragable } from './dragable';
+import { arraySeeker, nsfwArraySeeker } from './seekers';
 
 export type CharacterIds =
 	| 'ddlc.monika'
@@ -213,90 +214,46 @@ export class Character implements IRenderable, IDragable {
 		return Math.abs(x - 480) < 150;
 	}
 
-	public headl(): void {
+	public seekHead(delta: 1 | -1) {
 		if (!this.currentHeads) return;
-		--this.posePositions.head;
-		if (this.posePositions.head < 0) {
-			--this.posePositions.headType;
+		this.posePositions.head += delta;
+		if (
+			this.posePositions.head < 0 ||
+			this.posePositions.head >= this.currentHeads.all.length
+		) {
+			this.posePositions.headType += delta;
 			if (this.posePositions.headType < 0) {
 				this.posePositions.headType = this.pose.compatibleHeads.length - 1;
-			}
-			this.posePositions.head = this.currentHeads.all.length - 1;
-		}
-		this.dirty = true;
-		this.invalidator();
-	}
-
-	public headr(): void {
-		if (!this.currentHeads) return;
-		++this.posePositions.head;
-		if (this.posePositions.head >= this.currentHeads.all.length) {
-			++this.posePositions.headType;
-			if (this.posePositions.headType >= this.pose.compatibleHeads.length) {
+			} else if (
+				this.posePositions.headType >= this.pose.compatibleHeads.length
+			) {
 				this.posePositions.headType = 0;
 			}
-			this.posePositions.head = 0;
+			this.posePositions.head =
+				delta === 1 ? 0 : this.currentHeads.all.length - 1;
 		}
 		this.dirty = true;
 		this.invalidator();
 	}
 
-	public partl(part: Part) {
-		if (part === 'head') return this.headl();
+	public seekPart(part: Part, delta: 1 | -1) {
+		if (part === 'head') return this.seekHead(delta);
 		if (!(this.pose as any)[part]) return;
-		--this.posePositions[part];
-
-		if (this.posePositions[part] < 0) {
-			this.posePositions[part] = (this.pose as any)[part].length - 1;
-		}
-		this.dirty = true;
-		this.invalidator();
-	}
-
-	public partr(part: Part) {
-		if (part === 'head') return this.headr();
-		if (!(this.pose as any)[part]) return;
-		++this.posePositions[part];
-
-		if (this.posePositions[part] >= (this.pose as any)[part].length) {
-			this.posePositions[part] = 0;
-		}
-		this.dirty = true;
-		this.invalidator();
-	}
-
-	public posel() {
-		const oldHeadCollection = this.pose.compatibleHeads[
-			this.posePositions.headType
-		];
-		--this.poseId;
-		if (this.poseId < 0) {
-			this.poseId = this.data.poses.length - 1;
-		}
-		const newHeadCollectionNr = this.pose.compatibleHeads.indexOf(
-			oldHeadCollection
+		this.posePositions[part] = arraySeeker(
+			(this.pose as any)[part],
+			this.posePositions[part],
+			delta
 		);
-		if (newHeadCollectionNr >= 0) {
-			this.posePositions.headType = newHeadCollectionNr;
-		} else {
-			this.posePositions.headType = 0;
-			this.posePositions.head = 0;
-		}
-		this.posePositions.left = 0;
-		this.posePositions.right = 0;
-		this.posePositions.variant = 0;
 		this.dirty = true;
 		this.invalidator();
 	}
 
-	public poser() {
+	public seekPose(delta: number, nsfw: boolean) {
 		const oldHeadCollection = this.pose.compatibleHeads[
 			this.posePositions.headType
 		];
-		++this.poseId;
-		if (this.poseId >= this.data.poses.length) {
-			this.poseId = 0;
-		}
+
+		this.poseId = nsfwArraySeeker(this.data.poses, this.poseId, delta, nsfw);
 		const newHeadCollectionNr = this.pose.compatibleHeads.indexOf(
 			oldHeadCollection
 		);

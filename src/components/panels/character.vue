@@ -7,20 +7,20 @@
 				<tbody>
 					<tr v-if="hasMultiplePoses">
 						<td>
-							<button @click="character.posel();">&lt;</button>
+							<button @click="character.seekPose(-1, nsfw);">&lt;</button>
 						</td>
 						<td>Pose</td>
 						<td>
-							<button @click="character.poser();">&gt;</button>
+							<button @click="character.seekPose(1, nsfw);">&gt;</button>
 						</td>
 					</tr>
 					<tr v-for="part of parts" :key="part">
 						<td>
-							<button @click="character.partl(part);">&lt;</button>
+							<button @click="character.seekPart(part, -1);">&lt;</button>
 						</td>
 						<td>{{captialize(part)}}</td>
 						<td>
-							<button @click="character.partr(part);">&gt;</button>
+							<button @click="character.seekPart(part, 1);">&gt;</button>
 						</td>
 					</tr>
 				</tbody>
@@ -122,6 +122,7 @@ import { positions } from '../../models/constants';
 export default class CharacterPanel extends Vue {
 	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
 	@Prop({ type: Character, required: true }) private character!: Character;
+	@Prop({ required: true, type: Boolean }) private readonly nsfw!: boolean;
 
 	private isWebPSupported: boolean | null = null;
 
