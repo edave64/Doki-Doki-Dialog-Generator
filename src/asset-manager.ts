@@ -123,7 +123,10 @@ export function registerAsset(asset: string, file: File): string {
 export const backgrounds: IBackground[] = [
 	new VariantBackground('Clubroom', '/backgrounds/', [
 		['club'],
-		['club-skill'],
+		{
+			nsfw: true,
+			images: ['club-skill'],
+		},
 	]),
 	new Background('closet', 'Closet'),
 	new Background('corridor', 'Corridor'),
@@ -201,17 +204,12 @@ export const backgrounds: IBackground[] = [
 		['y_cg3_base'],
 		['y_cg3_base', 'y_cg3_exp1'],
 	]),
-	new VariantBackground("Yuri's death", '/cg/yuri_kill/', [
-		['1a'],
-		['1b'],
-		['1c'],
-		['2a'],
-		['2b'],
-		['2c'],
-		['3a'],
-		['3b'],
-		['3c'],
-	]),
+	new VariantBackground(
+		"Yuri's death",
+		'/cg/yuri_kill/',
+		[['1a'], ['1b'], ['1c'], ['2a'], ['2b'], ['2c'], ['3a'], ['3b'], ['3c']],
+		true
+	),
 	new VariantBackground('The spaceroom', '/cg/monika/', [
 		['monika_room'],
 		['monika_room_highlight'],
