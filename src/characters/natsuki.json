@@ -71,6 +71,30 @@
 			"compatibleHeads": ["straight"],
 			"headAnchor": [18, 22],
 			"static": "3b"
+		},
+		{
+			"compatibleHeads": [],
+			"nsfw": true,
+			"static": "ghost1"
+		},
+		{
+			"compatibleHeads": [],
+			"nsfw": true,
+			"static": "ghost2"
+		},
+		{
+			"compatibleHeads": [],
+			"nsfw": true,
+			"static": "ghost3"
+		},
+		{
+			"compatibleHeads": [],
+			"static": "glitch1"
+		},
+		{
+			"compatibleHeads": [],
+			"nsfw": true,
+			"static": "vomit"
 		}
 	]
 }
