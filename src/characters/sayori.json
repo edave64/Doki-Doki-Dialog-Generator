@@ -47,6 +47,16 @@
 			"compatibleHeads": ["straight"],
 			"left": ["1bl", "2bl"],
 			"right": ["1br", "2br"]
+		},
+		{
+			"compatibleHeads": [],
+			"static": "dead1",
+			"nsfw": true
+		},
+		{
+			"compatibleHeads": [],
+			"static": "dead2",
+			"nsfw": true
 		}
 	]
 }

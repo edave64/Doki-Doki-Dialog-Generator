@@ -135,7 +135,11 @@ export const backgrounds: IBackground[] = [
 	new Background('house', 'House'),
 	new Background('bedroom', 'Bedroom'),
 	new Background('kitchen', 'Kitchen'),
-	new Background('sayori_bedroom', "Sayori's bedroom"),
+	new VariantBackground("Sayori's bedroom", '', [
+		['/backgrounds/sayori_bedroom'],
+		['/cg/sayori_kill/s_kill_bg'],
+		['/cg/sayori_kill/s_kill_bg2'],
+	]),
 	new Background('bsod', 'Blue screen of death'),
 	new Background('unused-house', 'Unused house found in game files'),
 	new VariantBackground('Natsuki reading manga', '/cg/natsuki_1/', [
