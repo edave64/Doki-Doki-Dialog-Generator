@@ -75,7 +75,7 @@ function queueAssetConversions(folder) {
 	const pngsWithoutLQ = allPNGs.filter(
 		png => !folder.files.includes(png + '.lq.png')
 	);
-	if (pngsWithoutLQ.length === allPNGs.length) {
+	if (pngsWithoutLQ.length === allPNGs.length && pngsWithoutLQ > 0) {
 		ret.push(`pngquant -ext .lq.png ${folder.name}*.png`);
 	} else if (pngsWithoutLQ.length > 0) {
 		const files = pngsWithoutLQ
