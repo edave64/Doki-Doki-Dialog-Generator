@@ -1,3 +1,5 @@
+[Help](../index.md) / [Toolbox](../toolbox.md) / Backgrounds panel
+
 # The Backgrounds panel
 
 ![The Backgrounds panel](backgrounds.png 'The Backgrounds panel')

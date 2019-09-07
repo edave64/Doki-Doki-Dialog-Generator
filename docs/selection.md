@@ -1,3 +1,5 @@
+[Help](index.md) / Selection
+
 # Selection
 
 Objects (characters and sprites) can be selected by clicking on them in the preview. When an object is selected, it is shown with a red outline.

@@ -1,3 +1,5 @@
+[Help](index.md) / Quick start
+
 # Quick start
 
 ## How to add a character
