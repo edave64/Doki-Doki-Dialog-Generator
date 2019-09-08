@@ -57,6 +57,35 @@
 		{
 			"compatibleHeads": ["sideways"],
 			"static": "3b"
+		},
+		{
+			"compatibleHeads": [],
+			"static": "cuts",
+			"nsfw": true
+		},
+		{
+			"compatibleHeads": [],
+			"folder": "/stab/",
+			"variant": ["1", "2", "3", "4", "5", "6-full"],
+			"nsfw": true
+		},
+		{
+			"compatibleHeads": [],
+			"variant": [
+				"0a",
+				"0b",
+				"eyesfull",
+				"glitch1",
+				"glitch2",
+				"glitch3",
+				"glitch4",
+				"glitch5"
+			],
+			"nsfw": true
+		},
+		{
+			"compatibleHeads": [],
+			"variant": ["dragon1", "dragon2"]
 		}
 	]
 }
