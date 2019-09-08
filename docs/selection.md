@@ -6,7 +6,7 @@ Objects (characters and sprites) can be selected by clicking on them in the prev
 
 ![Selecting Natsuki](selection.png 'Selecting Natsuki')
 
-When an object is selected, the [toolbar](toolbar.md) shows you options for the selected object.
+When an object is selected, the [toolbox](toolbox.md) shows you options for the selected object.
 
 ![The character panel](panels/characters.png 'The character panel')
 
