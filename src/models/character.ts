@@ -70,6 +70,14 @@ export class Character implements IRenderable, IDragable {
 		return this.data.poses[this.poseId];
 	}
 
+	public nsfwCheck(): void {
+		const pose = this.pose as Pose<any>;
+
+		if (pose.nsfw) {
+			this.seekPose(1, false);
+		}
+	}
+
 	public getParts(): Part[] {
 		const pose = this.pose;
 		const head: Array<'head'> =

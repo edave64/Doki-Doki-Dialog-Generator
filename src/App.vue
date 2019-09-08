@@ -596,9 +596,7 @@ export default class App extends Vue {
 		nsfwFilter(this.currentBackground);
 		for (const character of this.characters) {
 			if (character instanceof Character) {
-				if (character.pose.nsfw) {
-					character.seekPose(1, false);
-				}
+				character.nsfwCheck();
 			}
 		}
 		this.invalidateRender();
