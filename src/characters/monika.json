@@ -35,6 +35,15 @@
 		{
 			"compatibleHeads": ["sideways"],
 			"static": "3"
+		},
+		{
+			"compatibleHeads": [],
+			"folder": "/old/",
+			"variant": ["1", "2", "3", "4", "5"]
+		},
+		{
+			"compatibleHeads": [],
+			"variant": ["g1_scaled", "g2", "g3", "g4"]
 		}
 	]
 }
