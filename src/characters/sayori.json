@@ -50,12 +50,16 @@
 		},
 		{
 			"compatibleHeads": [],
-			"static": "dead1",
-			"nsfw": true
+			"folder": "/old/",
+			"variant": ["1", "2", "3", "4", "5"]
 		},
 		{
 			"compatibleHeads": [],
-			"static": "dead2",
+			"variant": ["glitch1", "glitch2", "end-glitch1", "end-glitch2"]
+		},
+		{
+			"compatibleHeads": [],
+			"variant": ["dead1", "dead2"],
 			"nsfw": true
 		}
 	]
