@@ -252,12 +252,19 @@ interface IStaticPose<H> extends IPose<H> {
 	static: string;
 }
 
+interface IVariantPose<H> extends IPose<H> {
+	variant: string[];
+}
+
 interface ITwoSidedPose<H> extends IPose<H> {
 	left: string[];
 	right: string[];
 }
 
-export type Pose<H extends Heads> = IStaticPose<H> | ITwoSidedPose<H>;
+export type Pose<H extends Heads> =
+	| IStaticPose<H>
+	| IVariantPose<H>
+	| ITwoSidedPose<H>;
 
 export interface ICharacter<H extends Heads> {
 	id: string;
