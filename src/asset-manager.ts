@@ -225,7 +225,10 @@ export const backgrounds: IBackground[] = [
 		['monika_bg_glitch', 'monika_glitch2'],
 		['monika_bg_glitch', 'monika_glitch3'],
 		['monika_bg_glitch', 'monika_glitch4'],
-		['monika_scare'],
+		{
+			nsfw: true,
+			images: ['monika_scare'],
+		},
 	]),
 	color,
 	transparent,
