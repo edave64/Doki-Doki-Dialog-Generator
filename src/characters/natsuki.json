@@ -62,6 +62,15 @@
 			"static": "3"
 		},
 		{
+			"compatibleHeads": [],
+			"static": "old2/5"
+		},
+		{
+			"compatibleHeads": [],
+			"nsfw": true,
+			"static": "vomit"
+		},
+		{
 			"compatibleHeads": ["straight", "sidewaysCasuals"],
 			"headInForeground": true,
 			"left": ["1bl", "2bl"],
@@ -75,26 +84,16 @@
 		{
 			"compatibleHeads": [],
 			"nsfw": true,
-			"static": "ghost1"
+			"variant": ["ghost1", "ghost2", "ghost3"]
 		},
 		{
 			"compatibleHeads": [],
-			"nsfw": true,
-			"static": "ghost2"
-		},
-		{
-			"compatibleHeads": [],
-			"nsfw": true,
-			"static": "ghost3"
+			"folder": "/old/",
+			"variant": ["1", "2", "3", "4", "5"]
 		},
 		{
 			"compatibleHeads": [],
 			"static": "glitch1"
-		},
-		{
-			"compatibleHeads": [],
-			"nsfw": true,
-			"static": "vomit"
 		}
 	]
 }
