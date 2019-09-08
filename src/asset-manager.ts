@@ -233,6 +233,7 @@ export const backgrounds: IBackground[] = [
 
 export interface IHeads {
 	folder?: string;
+	nsfw?: boolean;
 	all: string[];
 }
 
@@ -252,13 +253,18 @@ interface IStaticPose<H> extends IPose<H> {
 	static: string;
 }
 
+export interface INsfwAbleImg {
+	img: string;
+	nsfw: boolean;
+}
+
 interface IVariantPose<H> extends IPose<H> {
-	variant: string[];
+	variant: Array<string | INsfwAbleImg>;
 }
 
 interface ITwoSidedPose<H> extends IPose<H> {
-	left: string[];
-	right: string[];
+	left: Array<string | INsfwAbleImg>;
+	right: Array<string | INsfwAbleImg>;
 }
 
 export type Pose<H extends Heads> =

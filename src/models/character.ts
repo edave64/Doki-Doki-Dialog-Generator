@@ -6,6 +6,7 @@ import {
 	Pose,
 	ICharacter,
 	IHeads,
+	INsfwAbleImg,
 } from '../asset-manager';
 import { Renderer } from '../renderer/renderer';
 import { IRenderable } from './renderable';
@@ -72,9 +73,29 @@ export class Character implements IRenderable, IDragable {
 
 	public nsfwCheck(): void {
 		const pose = this.pose as Pose<any>;
+		const partKeys = this.getParts();
 
 		if (pose.nsfw) {
 			this.seekPose(1, false);
+		}
+
+		for (const key of partKeys) {
+			if (key === 'head') continue;
+			const image: { nsfw?: boolean } = (pose as any)[key][
+				this.posePositions[key]
+			];
+
+			if (image.nsfw) {
+				this.seekPart(key, 1, false);
+			}
+		}
+
+		if (this.currentHeads) {
+			if (this.currentHeads.nsfw) {
+				this.posePositions.headType = 0;
+				this.posePositions.head = 0;
+				this.dirty = true;
+			}
 		}
 	}
 
@@ -128,7 +149,14 @@ export class Character implements IRenderable, IDragable {
 			} else {
 				for (const key of partKeys) {
 					if (key === 'head') continue;
-					assets.push(poseFolder + (pose as any)[key][this.posePositions[key]]);
+					const image: string | INsfwAbleImg = (pose as any)[key][
+						this.posePositions[key]
+					];
+
+					assets.push(
+						poseFolder +
+							(typeof image === 'string' ? image : (image as INsfwAbleImg).img)
+					);
 				}
 			}
 
@@ -222,21 +250,19 @@ export class Character implements IRenderable, IDragable {
 		return Math.abs(x - 480) < 150;
 	}
 
-	public seekHead(delta: 1 | -1) {
+	public seekHead(delta: 1 | -1, nsfw: boolean) {
 		if (!this.currentHeads) return;
 		this.posePositions.head += delta;
 		if (
 			this.posePositions.head < 0 ||
 			this.posePositions.head >= this.currentHeads.all.length
 		) {
-			this.posePositions.headType += delta;
-			if (this.posePositions.headType < 0) {
-				this.posePositions.headType = this.pose.compatibleHeads.length - 1;
-			} else if (
-				this.posePositions.headType >= this.pose.compatibleHeads.length
-			) {
-				this.posePositions.headType = 0;
-			}
+			this.posePositions.headType = nsfwArraySeeker(
+				this.pose.compatibleHeads.map(headKey => this.data.heads[headKey]),
+				this.posePositions.headType,
+				delta,
+				nsfw
+			);
 			this.posePositions.head =
 				delta === 1 ? 0 : this.currentHeads.all.length - 1;
 		}
@@ -244,13 +270,14 @@ export class Character implements IRenderable, IDragable {
 		this.invalidator();
 	}
 
-	public seekPart(part: Part, delta: 1 | -1) {
-		if (part === 'head') return this.seekHead(delta);
+	public seekPart(part: Part, delta: 1 | -1, nsfw: boolean) {
+		if (part === 'head') return this.seekHead(delta, nsfw);
 		if (!(this.pose as any)[part]) return;
-		this.posePositions[part] = arraySeeker(
+		this.posePositions[part] = nsfwArraySeeker(
 			(this.pose as any)[part],
 			this.posePositions[part],
-			delta
+			delta,
+			nsfw
 		);
 		this.dirty = true;
 		this.invalidator();

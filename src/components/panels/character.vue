@@ -16,11 +16,11 @@
 					</tr>
 					<tr v-for="part of parts" :key="part">
 						<td>
-							<button @click="character.seekPart(part, -1);">&lt;</button>
+							<button @click="character.seekPart(part, -1, nsfw);">&lt;</button>
 						</td>
 						<td>{{captialize(part)}}</td>
 						<td>
-							<button @click="character.seekPart(part, 1);">&gt;</button>
+							<button @click="character.seekPart(part, 1, nsfw);">&gt;</button>
 						</td>
 					</tr>
 				</tbody>
