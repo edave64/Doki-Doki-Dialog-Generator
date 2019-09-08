@@ -43,7 +43,14 @@
 		{
 			"compatibleHeads": ["straight"],
 			"left": ["1l", "2l"],
-			"right": ["1r", "2r"]
+			"right": [
+				"1r",
+				"2r",
+				{
+					"img": "2r_cuts",
+					"nsfw": true
+				}
+			]
 		},
 		{
 			"compatibleHeads": ["sideways"],
@@ -57,11 +64,6 @@
 		{
 			"compatibleHeads": ["sideways"],
 			"static": "3b"
-		},
-		{
-			"compatibleHeads": [],
-			"static": "cuts",
-			"nsfw": true
 		},
 		{
 			"compatibleHeads": [],
