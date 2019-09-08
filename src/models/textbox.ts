@@ -1,6 +1,18 @@
 import { RenderContext } from '../renderer/rendererContext';
 import { getAsset } from '../asset-manager';
 
+const ScreenWidth = 1280;
+const TextBoxWidth = 816;
+const TextBoxCorruptedWidth = 900;
+const TextBoxY = 568;
+const NameboxHeight = 39;
+const NameboxXOffset = 34;
+
+const TextBoxX = ScreenWidth / 2 - TextBoxWidth / 2;
+const TextBoxCorruptedX = ScreenWidth / 2 - TextBoxCorruptedWidth / 2;
+const NameboxY = TextBoxY - NameboxHeight;
+const NameboxX = TextBoxX + NameboxXOffset;
+
 export class Textbox {
 	public display: boolean = true;
 	public corrupted: boolean = false;
@@ -15,18 +27,30 @@ export class Textbox {
 		if (!this.display) return;
 
 		if (this.corrupted) {
-			rx.drawImage({ image: await getAsset('textbox_monika'), x: 190, y: 565 });
+			rx.drawImage({
+				image: await getAsset('textbox_monika'),
+				x: TextBoxCorruptedX,
+				y: TextBoxY,
+			});
 		} else {
-			rx.drawImage({ image: await getAsset('textbox'), x: 232, y: 565 });
+			rx.drawImage({
+				image: await getAsset('textbox'),
+				x: TextBoxX,
+				y: TextBoxY,
+			});
 		}
 
 		const name = this.talking;
 		if (name) {
-			rx.drawImage({ image: await getAsset('namebox'), x: 264, y: 565 - 39 });
+			rx.drawImage({
+				image: await getAsset('namebox'),
+				x: NameboxX,
+				y: NameboxY,
+			});
 			rx.drawText(
 				name === 'other' ? this.customName : name,
-				264 + 84,
-				565 - 10,
+				266 + 84,
+				568 - 10,
 				'center',
 				3,
 				'white',
