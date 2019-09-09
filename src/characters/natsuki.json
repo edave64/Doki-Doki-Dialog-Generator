@@ -74,7 +74,7 @@
 			"static": "vomit"
 		},
 		{
-			"compatibleHeads": ["straight", "sidewaysCasuals", "straight_nsfw"],
+			"compatibleHeads": ["straight", "straight_nsfw", "sidewaysCasuals"],
 			"headInForeground": true,
 			"left": ["1bl", "2bl"],
 			"right": ["1br", "2br"]
