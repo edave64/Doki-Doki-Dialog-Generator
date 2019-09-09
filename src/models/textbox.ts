@@ -6,12 +6,16 @@ const TextBoxWidth = 816;
 const TextBoxCorruptedWidth = 900;
 const TextBoxY = 568;
 const NameboxHeight = 39;
+const NameboxWidth = 168;
 const NameboxXOffset = 34;
+const NameboxYTextOffset = 29;
 
 const TextBoxX = ScreenWidth / 2 - TextBoxWidth / 2;
 const TextBoxCorruptedX = ScreenWidth / 2 - TextBoxCorruptedWidth / 2;
 const NameboxY = TextBoxY - NameboxHeight;
 const NameboxX = TextBoxX + NameboxXOffset;
+const NameboxTextX = NameboxX + NameboxWidth / 2;
+const NameboxTextY = NameboxY + NameboxYTextOffset;
 
 export class Textbox {
 	public display: boolean = true;
@@ -49,8 +53,8 @@ export class Textbox {
 			});
 			rx.drawText(
 				name === 'other' ? this.customName : name,
-				266 + 84,
-				568 - 10,
+				NameboxTextX,
+				NameboxTextY,
 				'center',
 				3,
 				'white',
@@ -109,7 +113,7 @@ export class Textbox {
 			}
 		}
 
-		let y = 620;
+		let y = 618;
 		for (const line of text) {
 			let f = false;
 			if (line.length) {
@@ -142,7 +146,7 @@ export class Textbox {
 					x += rx.measureText(ct).width;
 				}
 			}
-			y += 26;
+			y += 29;
 		}
 	}
 }
