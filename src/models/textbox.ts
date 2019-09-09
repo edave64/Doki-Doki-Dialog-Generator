@@ -141,7 +141,7 @@ export class Textbox {
 						cb ? 8 : 2,
 						'#fff',
 						cb ? '#000' : '#523140',
-						'24px aller'
+						cb ? '24px verily' : '24px aller'
 					);
 					x += rx.measureText(ct).width;
 				}
