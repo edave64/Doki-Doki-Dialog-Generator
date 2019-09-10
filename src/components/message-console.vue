@@ -7,7 +7,10 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import EventBus, { AssetFailureEvent } from '../event-bus';
+import EventBus, {
+	AssetFailureEvent,
+	CustomAssetFailureEvent,
+} from '../event-bus';
 
 @Component({
 	components: {},
@@ -28,6 +31,15 @@ export default class DokiButton extends Vue {
 			setTimeout(() => {
 				this.messages.pop();
 			}, 5000);
+		});
+
+		EventBus.subscribe(CustomAssetFailureEvent, ev => {
+			this.messages.push(
+				`Failed to load custom asset. Try to download it manually and then upload it.`
+			);
+			setTimeout(() => {
+				this.messages.pop();
+			}, 50000);
 		});
 	}
 

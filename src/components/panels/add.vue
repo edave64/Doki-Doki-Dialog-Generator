@@ -11,9 +11,10 @@
 			<img :src="assetPath(character)" :alt="character.name" />
 		</div>
 		<div class="btn custom-sprite" @click="$refs.upload.click()">
-			Custom sprite
+			Custom sprite upload
 			<input type="file" ref="upload" @change="onFileUpload" />
 		</div>
+		<div class="btn custom-sprite" @click="uploadFromURL">Custom sprite from URL</div>
 	</div>
 </template>
 
@@ -24,6 +25,7 @@ import {
 	ICharacter,
 	characterOrder,
 	registerAsset,
+	registerAssetWithURL,
 } from '../../asset-manager';
 
 @Component({
@@ -59,6 +61,14 @@ export default class AddPanel extends Vue {
 				this.$emit('add-custom-asset', name);
 			})(++this.customAssetCount);
 		}
+	}
+
+	private async uploadFromURL() {
+		const url = prompt('Enter the URL of the image');
+		if (!url) return;
+		const name = 'customAsset' + ++this.customAssetCount;
+		await registerAssetWithURL(name, url);
+		this.$emit('add-custom-asset', name);
 	}
 }
 </script>

@@ -15,7 +15,10 @@ import MCClassic from './characters/mc_classic.json';
 import Amy from './characters/amy.json';
 import AmyClassic from './characters/amy_classic.json';
 import { VariantBackground } from './models/variant-background';
-import EventBus, { AssetFailureEvent } from './event-bus';
+import EventBus, {
+	AssetFailureEvent,
+	CustomAssetFailureEvent,
+} from './event-bus';
 import { ErrorAsset } from './models/error-asset';
 
 export const characterOrder = ([
@@ -109,7 +112,8 @@ export function registerAsset(asset: string, file: File): string {
 		img.addEventListener('load', () => {
 			resolve(img);
 		});
-		img.addEventListener('error', () => {
+		img.addEventListener('error', error => {
+			EventBus.fire(new CustomAssetFailureEvent(error));
 			reject(`Failed to load "${url}"`);
 		});
 		img.crossOrigin = 'Anonymous';
@@ -118,6 +122,26 @@ export function registerAsset(asset: string, file: File): string {
 		document.body.appendChild(img);
 	});
 	return url;
+}
+
+export function registerAssetWithURL(
+	asset: string,
+	url: string
+): Promise<HTMLImageElement> {
+	return (customAssets[asset] = new Promise((resolve, reject) => {
+		const img = new Image();
+		img.addEventListener('load', () => {
+			resolve(img);
+		});
+		img.addEventListener('error', error => {
+			EventBus.fire(new CustomAssetFailureEvent(error));
+			reject(`Failed to load "${url}"`);
+		});
+		img.crossOrigin = 'Anonymous';
+		img.src = url;
+		img.style.display = 'none';
+		document.body.appendChild(img);
+	}));
 }
 
 export const backgrounds: IBackground[] = [
