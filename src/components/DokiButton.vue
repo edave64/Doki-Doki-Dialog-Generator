@@ -19,7 +19,8 @@ export default class DokiButton extends Vue {}
 	border: 3px solid #ffbde1;
 
 	display: inline-block;
-	padding: 4px 4em;
+	padding: 4px 4px;
+	text-align: center;
 
 	cursor: pointer;
 }
