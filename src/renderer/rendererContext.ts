@@ -12,25 +12,73 @@ export class RenderContext {
 	) {}
 
 	public drawText(
-		text: string,
-		x: number,
-		y: number,
-		align: CanvasTextAlign,
-		w: number = 1,
-		col: string = 'white',
-		ocol: string | null = '#533643',
-		font: string = '20px aller'
+		params: { text: string; align?: CanvasTextAlign; font?: string } & IRPos &
+			IOOutline &
+			IOFill
 	) {
 		if (this.aborted) throw new RenderAbortedException();
-		this.fsCtx.fillStyle = col;
-		if (ocol) this.fsCtx.strokeStyle = ocol;
-		this.fsCtx.lineWidth = 2 * w;
+		this.fsCtx.save();
+
+		const { font, align, x = 0, y = 0, text = '' } = {
+			...{
+				font: '20px aller',
+				align: 'left' as CanvasTextAlign,
+			},
+			...params,
+		};
+
+		this.fsCtx.lineJoin = 'round';
 		this.fsCtx.textAlign = align;
 		this.fsCtx.font = font;
-		this.fsCtx.lineJoin = 'round';
 
-		if (ocol) this.fsCtx.strokeText(text, x, y);
-		this.fsCtx.fillText(text, x, y);
+		if (params.outline) {
+			this.fsCtx.strokeStyle = params.outline.style;
+			this.fsCtx.lineWidth = params.outline.width;
+			this.fsCtx.strokeText(text, x, y);
+		}
+
+		if (params.fill) {
+			this.fsCtx.fillStyle = params.fill.style;
+			this.fsCtx.fillText(text, x, y);
+		}
+
+		this.fsCtx.restore();
+	}
+
+	public measureText(
+		params: {
+			text: string;
+			align?: CanvasTextAlign;
+			font?: string;
+		} & IOOutline &
+			IOFill
+	): TextMetrics {
+		if (this.aborted) throw new RenderAbortedException();
+		this.fsCtx.save();
+
+		const { font, align, text = '' } = {
+			...{
+				font: '20px aller',
+				align: 'left' as CanvasTextAlign,
+			},
+			...params,
+		};
+
+		this.fsCtx.lineJoin = 'round';
+		this.fsCtx.textAlign = align;
+		this.fsCtx.font = font;
+
+		if (params.outline) {
+			this.fsCtx.strokeStyle = params.outline.style;
+			this.fsCtx.lineWidth = params.outline.width;
+		}
+
+		if (params.fill) {
+			this.fsCtx.fillStyle = params.fill.style;
+		}
+		const ret = this.fsCtx.measureText(text);
+		this.fsCtx.restore();
+		return ret;
 	}
 
 	public drawImage(
@@ -109,11 +157,6 @@ export class RenderContext {
 			this.fsCtx.stroke();
 		}
 		this.fsCtx.restore();
-	}
-
-	public measureText(str: string): TextMetrics {
-		if (this.aborted) throw new RenderAbortedException();
-		return this.fsCtx.measureText(str);
 	}
 
 	public abort(): void {

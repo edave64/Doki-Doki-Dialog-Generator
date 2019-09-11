@@ -2,20 +2,97 @@ import { RenderContext } from '../renderer/rendererContext';
 import { getAsset } from '../asset-manager';
 
 const ScreenWidth = 1280;
+
 const TextBoxWidth = 816;
 const TextBoxCorruptedWidth = 900;
 const TextBoxY = 568;
+const TextBoxKerning = 0;
+const TextBoxLineHeight = 29;
+const TextBoxCorruptedKerning = 8;
+const TextBoxTextXOffset = 38;
+const TextBoxTextYOffset = 50;
+
+const TextBoxTextCorruptedXOffset = 9;
+const TextBoxTextCorruptedYOffset = 9;
+
 const NameboxHeight = 39;
 const NameboxWidth = 168;
 const NameboxXOffset = 34;
-const NameboxYTextOffset = 29;
+const NameboxTextYOffset = 29;
 
-const TextBoxX = ScreenWidth / 2 - TextBoxWidth / 2;
+const ControlsYOffset = 134;
+const ControlsXHistoryOffset = 282;
+const ControlsXSkipOffset = 336;
+const ControlsXStuffOffset = 370;
+
+const ArrowX = 1017.25;
+const ArrowY = 688;
+
+const NameboxTextStyle = {
+	align: 'center' as CanvasTextAlign,
+	font: '24px riffic',
+	outline: {
+		style: '#b59',
+		width: 6,
+	},
+	fill: {
+		style: 'white',
+	},
+};
+
+const ControlsTextStyle = {
+	align: 'left' as CanvasTextAlign,
+	font: '13px aller',
+	fill: {
+		style: '#522',
+	},
+};
+
+const ControlsTextDisabledStyle = {
+	...ControlsTextStyle,
+	fill: {
+		style: '#a66',
+	},
+};
+
+const TextBoxStyle = {
+	align: 'left' as CanvasTextAlign,
+	font: '24px aller',
+	outline: {
+		style: '#523140',
+		width: 4,
+	},
+	fill: {
+		style: '#fff',
+	},
+};
+
+const TextBoxCorruptedStyle = {
+	align: 'left' as CanvasTextAlign,
+	font: '24px verily',
+	outline: {
+		style: '#000',
+		width: 20,
+	},
+	fill: {
+		style: '#fff',
+	},
+};
+
+const TextBoxX = ScreenWidth / 2 - TextBoxWidth / 2; // 232
 const TextBoxCorruptedX = ScreenWidth / 2 - TextBoxCorruptedWidth / 2;
+const TextBoxTextX = TextBoxX + TextBoxTextXOffset;
+const TextBoxTextY = TextBoxY + TextBoxTextYOffset;
+
 const NameboxY = TextBoxY - NameboxHeight;
 const NameboxX = TextBoxX + NameboxXOffset;
 const NameboxTextX = NameboxX + NameboxWidth / 2;
-const NameboxTextY = NameboxY + NameboxYTextOffset;
+const NameboxTextY = NameboxY + NameboxTextYOffset;
+
+const ControlsY = TextBoxY + ControlsYOffset;
+const ControlsXHistory = TextBoxX + ControlsXHistoryOffset;
+const ControlsXSkip = TextBoxX + ControlsXSkipOffset;
+const ControlsXStuff = TextBoxX + ControlsXStuffOffset;
 
 export class Textbox {
 	public display: boolean = true;
@@ -51,46 +128,39 @@ export class Textbox {
 				x: NameboxX,
 				y: NameboxY,
 			});
-			rx.drawText(
-				name === 'other' ? this.customName : name,
-				NameboxTextX,
-				NameboxTextY,
-				'center',
-				3,
-				'white',
-				'#b59',
-				'24px riffic'
-			);
+			rx.drawText({
+				x: NameboxTextX,
+				y: NameboxTextY,
+				text: name === 'other' ? this.customName : name,
+				...NameboxTextStyle,
+			});
 		}
 
 		this.renderText(rx);
 
 		if (this.showControls) {
-			rx.drawText(
-				'Skip',
-				566,
-				700,
-				'left',
-				1,
-				this.allowSkipping ? '#522' : '#a66',
-				null,
-				'13px aller'
-			);
-			rx.drawText('History', 512, 700, 'left', 1, '#522', null, '13px aller');
-			rx.drawText(
-				'Auto   Save   Load   Settings',
-				600,
-				700,
-				'left',
-				1,
-				'#522',
-				null,
-				'13px aller'
-			);
+			rx.drawText({
+				text: 'History',
+				x: ControlsXHistory,
+				y: ControlsY,
+				...ControlsTextStyle,
+			});
+			rx.drawText({
+				text: 'Skip',
+				x: ControlsXSkip,
+				y: ControlsY,
+				...(this.allowSkipping ? ControlsTextStyle : ControlsTextDisabledStyle),
+			});
+			rx.drawText({
+				text: 'Auto   Save   Load   Settings',
+				x: ControlsXStuff,
+				y: ControlsY,
+				...ControlsTextStyle,
+			});
 		}
 
 		if (this.showContinueArrow) {
-			rx.drawImage({ image: await getAsset('next'), x: 1020, y: 685 });
+			rx.drawImage({ image: await getAsset('next'), x: ArrowX, y: ArrowY });
 		}
 	}
 
@@ -113,40 +183,35 @@ export class Textbox {
 			}
 		}
 
-		let y = 618;
+		let y = TextBoxTextY;
+
+		if (text[0] && text[0][0] && text[0][0].b) {
+			y += TextBoxTextCorruptedYOffset;
+		}
+
 		for (const line of text) {
-			let f = false;
-			if (line.length) {
-				let x = 270;
-				let i = 0;
-				while (i < line.length) {
-					let ct = '';
-					const cb = line[i].b;
+			let x = TextBoxTextX;
 
-					f = f || cb;
-
-					while (i < line.length && line[i].b === cb) {
-						ct += line[i].l;
-						if (cb) {
-							ct += ' ';
-						}
-						i++;
-					}
-
-					rx.drawText(
-						ct,
-						x,
-						y,
-						'left',
-						cb ? 8 : 2,
-						'#fff',
-						cb ? '#000' : '#523140',
-						cb ? '24px verily' : '24px aller'
-					);
-					x += rx.measureText(ct).width;
-				}
+			if (line[0] && line[0].b) {
+				x += TextBoxTextCorruptedXOffset;
 			}
-			y += 29;
+			for (const letter of line) {
+				const ct = letter.l;
+				const cb = letter.b;
+
+				rx.drawText({
+					text: ct,
+					x,
+					y,
+					...(cb ? TextBoxCorruptedStyle : TextBoxStyle),
+				});
+				x += rx.measureText({
+					text: ct,
+					...(cb ? TextBoxCorruptedStyle : TextBoxStyle),
+				}).width;
+				x += cb ? TextBoxCorruptedKerning : TextBoxKerning;
+			}
+			y += TextBoxLineHeight;
 		}
 	}
 }

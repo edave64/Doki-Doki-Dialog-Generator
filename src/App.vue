@@ -202,16 +202,20 @@ export default class App extends Vue {
 		this.currentlyRendering = true;
 		try {
 			if (!this.loaded) {
-				rx.drawText(
-					'Starting...',
-					this.renderer.width / 2,
-					this.renderer.height / 2,
-					'center',
-					5,
-					'white',
-					'#b59',
-					'32px riffic'
-				);
+				rx.drawText({
+					text: 'Starting...',
+					x: this.renderer.width / 2,
+					y: this.renderer.height / 2,
+					align: 'center',
+					outline: {
+						width: 5,
+						style: '#b59',
+					},
+					font: '32px riffic',
+					fill: {
+						style: 'white',
+					},
+				});
 			} else {
 				if (rx.preview) {
 					rx.drawImage({
