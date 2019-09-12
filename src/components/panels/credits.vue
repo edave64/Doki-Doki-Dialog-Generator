@@ -41,4 +41,7 @@ export default class AddPanel extends Vue {
 </script>
 
 <style lang="scss" scoped>
+p {
+	margin: 4px;
+}
 </style>
