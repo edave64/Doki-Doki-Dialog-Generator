@@ -46,6 +46,11 @@
 				@click="$emit('shiftLayer', {object: sprite, move: 'Front'})"
 				title="Move to front"
 			>&#10514;</button>
+			<toggle
+				v-model="sprite.infront"
+				@input="$emit('invalidate-render')"
+				label="In front of textbox?"
+			/>
 		</fieldset>
 		<div>
 			<label for="characterOpacity">Opacity:</label>
@@ -59,11 +64,6 @@
 				@keydown.stop
 			/>
 		</div>
-		<toggle
-			v-model="sprite.infront"
-			@input="$emit('invalidate-render')"
-			label="In front of textbox?"
-		/>
 		<toggle v-model="sprite.flip" @input="$emit('invalidate-render')" label="Flip?" />
 
 		<button @click="$emit('shiftLayer', {object: sprite, move: 'Delete'});$emit('close')">Delete</button>
