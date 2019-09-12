@@ -32,7 +32,7 @@ When checked, every change in width or height will force the other size value to
 
 ## Layer
 
-These buttons allow you to move the sprite ahead or behind other sprites.
+These buttons allow you to move the sprite ahead or behind other objects.
 
 Note: Sprites that are in front of the textbox will always be in front of objects that are not, regardless of what you do with these buttons.
 
