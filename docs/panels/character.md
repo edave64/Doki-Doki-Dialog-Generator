@@ -1,10 +1,10 @@
-[Help](../index.md) / [Toolbox](../toolbox.md) / Sprite panel
+[Help](../index.md) / [Toolbox](../toolbox.md) / Character panel
 
 # The character panel
 
-![The character panel](characters.png 'The character panel')
+![The character panel](character.png 'The character panel')
 
-This panel allows you manipulate characters that have already been [added to scene](add.md). The panel is shown once a sprite is [selected](../selection.md).
+This panel allows you manipulate characters that have already been [added to scene](add.md). The panel is shown once a character is [selected](../selection.md).
 
 ## Pose
 
