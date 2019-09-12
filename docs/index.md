@@ -7,4 +7,5 @@
   - [Backgrounds panel](panels/backgrounds.md)
   - [Credits panel](panels/credits.md)
   - [Sprite panel](panel/sprite.md)
+  - [Character panel](panel/character.md)
 - [Selection](selection.md)
