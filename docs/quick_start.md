@@ -31,12 +31,12 @@
 - Click on the character (Afterwards, it should have a red glow around it, indicating that it is [selected](selection.md))
 - Either:
   - Click on the character and hold, move the character to the desired location, and release it.
-  - Click "left" or "right" in the [Character panel](panels/character_panel.md).
+  - Click "left" or "right" in the [Character panel](panels/character.md).
 
 ## How to change a characters pose and expression
 
 - Click on the character (Afterwards, it should have a red glow around it, indicating that it is [selected](selection.md))
-- In the [Character panel](panels/character_panel.md), you will see a section labeled "Pose:"
+- In the [Character panel](panels/character.md), you will see a section labeled "Pose:"
   Here, you can change the pose with the "<" and ">" next to the word "Pose".
   With the buttons next to the word "Head", you can select other facial expressions of the character.
   Many poses also allow you to select different variations of the poses with their left and right side (Like raising an arm, etc.)
