@@ -5,4 +5,5 @@
   - [General panel](panels/general.md)
   - [Add character panel](panels/add.md)
   - [Backgrounds panel](panels/backgrounds.md)
+  - [Credits panel](panels/credits.md)
 - [Selection](selection.md)
