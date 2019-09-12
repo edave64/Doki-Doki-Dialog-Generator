@@ -2,7 +2,7 @@
 
 # The sprite panel
 
-![The sprites panel](sprites.png 'The sprites panel')
+![The sprite panel](sprite.png 'The sprite panel')
 
 This panel allows you manipulate sprites that have already been [added to scene](add.md). The panel is shown once a sprite is [selected](../selection.md).
 
