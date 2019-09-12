@@ -6,4 +6,5 @@
   - [Add character panel](panels/add.md)
   - [Backgrounds panel](panels/backgrounds.md)
   - [Credits panel](panels/credits.md)
+  - [Sprite panel](panel/sprite.md)
 - [Selection](selection.md)
