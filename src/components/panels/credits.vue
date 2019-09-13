@@ -12,6 +12,7 @@
 		</p>
 		<p>
 			MC Sprite by Childish-N
+			<br />MC Casual Sprite by SlightlySimple
 			<br />MC Chibi by SlightlySimple
 		</p>
 		<p>
