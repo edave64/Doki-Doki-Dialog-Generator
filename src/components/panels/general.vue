@@ -1,6 +1,10 @@
 <template>
 	<div :class="{ panel: true, vertical }">
 		<h1>General</h1>
+		<a
+			class="btn_link"
+			href="https://github.com/edave64/Doki-Doki-Dialog-Generator/blob/master/docs/index.md"
+		>Help</a>
 		<toggle
 			label="Low quality preview?"
 			title="Reduces the quality of the preview images to speed up the user experience and consume less data. Does not effect final render."
@@ -97,5 +101,10 @@ textarea {
 
 textarea {
 	min-height: 148px;
+}
+
+.btn_link {
+	appearance: button;
+	text-align: center;
 }
 </style>
