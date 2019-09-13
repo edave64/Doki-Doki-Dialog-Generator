@@ -81,6 +81,15 @@
 			"static": "3"
 		},
 		{
+			"compatibleHeads": ["straight"],
+			"left": ["1bl", "2bl"],
+			"right": ["1br", "2br"]
+		},
+		{
+			"compatibleHeads": ["straight"],
+			"static": "3b"
+		},
+		{
 			"compatibleHeads": ["straight_red"],
 			"left": ["1l", "2l"],
 			"right": ["1r", "2r"]
@@ -88,6 +97,15 @@
 		{
 			"compatibleHeads": ["straight_red"],
 			"static": "3"
+		},
+		{
+			"compatibleHeads": ["straight_red"],
+			"left": ["1bl", "2bl"],
+			"right": ["1br", "2br"]
+		},
+		{
+			"compatibleHeads": ["straight_red"],
+			"static": "3b"
 		}
 	]
 }
