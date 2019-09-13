@@ -215,7 +215,8 @@ export class Character implements IRenderable, IDragable {
 			w: size,
 			h: size,
 			flip: this.flip,
-			shadow: this.selected ? { blur: 20, color: 'red' } : undefined,
+			shadow:
+				this.selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
 			opacity: this.opacity,
 		});
 	}

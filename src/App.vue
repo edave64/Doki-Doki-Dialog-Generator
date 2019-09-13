@@ -335,7 +335,6 @@ export default class App extends Vue {
 	}
 
 	private async download() {
-		this.selectedCharacter = null;
 		this.prevRender = await this.renderer.download(
 			this.renderCallback,
 			'panel.png'
