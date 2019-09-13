@@ -106,7 +106,6 @@ export default class SpritePanel extends Vue {
 	}
 
 	private setRatioLock(lock: boolean) {
-		debugger;
 		this.sprite.lockedRatio = lock;
 		if (lock) {
 			this.sprite.ratio = this.sprite.width / this.sprite.height;

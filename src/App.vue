@@ -273,7 +273,6 @@ export default class App extends Vue {
 
 		this.currentBackground = backgrounds[0];
 		this.invalidateRender();
-		debugger;
 		Promise.all([
 			getAsset((this.currentBackground as VariantBackground).path, false),
 			getAsset('textbox'),
