@@ -240,10 +240,15 @@ export const backgrounds: IBackground[] = [
 	),
 	new VariantBackground('The spaceroom', '/cg/monika/', [
 		['monika_room'],
+		['space', 'monika_room'],
 		['monika_room_highlight'],
+		['space', 'monika_room_highlight'],
 		['monika_bg'],
+		['space', 'monika_bg'],
 		['monika_bg_highlight'],
+		['space', 'monika_bg_highlight'],
 		['room'],
+		['space', 'room'],
 		['monika_bg_glitch'],
 		['monika_bg_glitch', 'monika_glitch1'],
 		['monika_bg_glitch', 'monika_glitch2'],
@@ -252,6 +257,10 @@ export const backgrounds: IBackground[] = [
 		{
 			nsfw: true,
 			images: ['monika_scare'],
+		},
+		{
+			nsfw: true,
+			images: ['space', 'monika_scare'],
 		},
 	]),
 	color,
