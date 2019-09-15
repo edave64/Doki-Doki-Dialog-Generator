@@ -4,9 +4,11 @@ import { IRenderable } from './renderable';
 import { IDragable } from './dragable';
 import { ErrorAsset } from './error-asset';
 
+const BaseXPosition = 640;
+
 export class Sprite implements IRenderable, IDragable {
 	public infront: boolean = false;
-	public x: number = 0;
+	public x: number = BaseXPosition;
 	public y: number = 0;
 	public width: number = 0;
 	public height: number = 0;
@@ -47,9 +49,10 @@ export class Sprite implements IRenderable, IDragable {
 
 	public async render(rx: RenderContext) {
 		if (!this.asset) return;
+		const x = this.x - this.width / 2;
 		rx.drawImage({
 			image: this.asset,
-			x: this.x,
+			x,
 			y: this.y,
 			w: this.width,
 			h: this.height,
