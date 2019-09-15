@@ -22,6 +22,9 @@ export type CharacterIds =
 	| 'ddlc.fan.femc';
 export type Part = 'variant' | 'left' | 'right' | 'head';
 
+const BaseCharacterYPos = -26;
+const CloseUpYOffset = -74;
+
 export class Character implements IRenderable, IDragable {
 	public infront: boolean = false;
 	public close: boolean = false;
@@ -44,7 +47,7 @@ export class Character implements IRenderable, IDragable {
 	private freeMove: boolean = false;
 	private pPos: number = 4;
 	private pX: number = characterPositions[4]!;
-	private pY: number = 0;
+	private pY: number = BaseCharacterYPos;
 
 	public constructor(
 		public readonly name: CharacterIds,
@@ -206,7 +209,7 @@ export class Character implements IRenderable, IDragable {
 		const zoom = this.close ? 1.6 : 0.8;
 		const size = 960 * zoom;
 		const x = this.pX - size / 2;
-		const y = (this.close ? -100 : -26.0) + this.pY;
+		const y = (this.close ? CloseUpYOffset : 0) + this.pY;
 
 		rx.drawImage({
 			image: this.localRenderer,
@@ -225,7 +228,7 @@ export class Character implements IRenderable, IDragable {
 		const zoom = this.close ? 1.6 : 0.8;
 		const size = 960 * zoom;
 		let x = (hx - this.pX + size / 2) / zoom;
-		const y = (hy - (this.close ? -100 : 0) - this.pY) / zoom;
+		const y = (hy - (this.close ? CloseUpYOffset : 0) - this.pY) / zoom;
 
 		if (this.flip) {
 			x = 960 - x;
@@ -316,7 +319,7 @@ export class Character implements IRenderable, IDragable {
 		} else {
 			this.freeMove = false;
 			this.pos = this.closestCharacterSlot(this.pX);
-			this.pY = 0;
+			this.pY = BaseCharacterYPos;
 		}
 	}
 
@@ -340,7 +343,7 @@ export class Character implements IRenderable, IDragable {
 		if (this.allowFreeMove) {
 			this.pY = pos;
 		} else {
-			this.pY = 0;
+			this.pY = BaseCharacterYPos;
 		}
 	}
 
