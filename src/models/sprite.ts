@@ -56,7 +56,8 @@ export class Sprite implements IRenderable, IDragable {
 			y: this.y,
 			w: this.width,
 			h: this.height,
-			shadow: this.selected ? { blur: 20, color: 'red' } : undefined,
+			shadow:
+				this.selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
 			flip: this.flip,
 			opacity: this.opacity,
 		});
