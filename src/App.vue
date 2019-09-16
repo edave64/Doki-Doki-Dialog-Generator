@@ -334,6 +334,9 @@ export default class App extends Vue {
 	}
 
 	private async download() {
+		if (this.prevRender && window.URL && window.URL.revokeObjectURL) {
+			URL.revokeObjectURL(this.prevRender);
+		}
 		this.prevRender = await this.renderer.download(
 			this.renderCallback,
 			'panel.png'

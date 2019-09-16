@@ -71,21 +71,48 @@ export class Renderer {
 		ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
 		await renderCallback(new RenderContext(ctx, true, false));
 
-		const url = downloadCanvas.toDataURL();
-
+		let url;
 		if (undefined === window.navigator.msSaveOrOpenBlob) {
-			const e = document.createElement('a');
-			e.setAttribute('href', url);
-			e.setAttribute('download', filename);
-			document.body.appendChild(e);
-			e.click();
-			document.body.removeChild(e);
+			const a = document.createElement('a');
+			a.setAttribute('download', filename);
+			url = await this.createObjectURL(downloadCanvas);
+			a.setAttribute('href', url);
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
 		} else {
+			url = downloadCanvas.toDataURL();
+			const blob = this.dataURItoBlob(url);
+
+			if (window.URL && window.URL.createObjectURL) {
+				url = URL.createObjectURL(blob);
+			}
+
 			// IE-specific code
-			window.navigator.msSaveBlob(this.dataURItoBlob(url), filename);
+			window.navigator.msSaveBlob(blob, filename);
 		}
 
 		return url;
+	}
+
+	public createObjectURL(canvas: HTMLCanvasElement): Promise<string> {
+		return new Promise((resolve, reject) => {
+			if (canvas.toBlob && window.URL && window.URL.createObjectURL) {
+				canvas.toBlob(blob => {
+					if (!blob) {
+						reject();
+						return;
+					}
+					resolve(URL.createObjectURL(blob));
+				}, 'image/png');
+			} else if (window.URL && window.URL.createObjectURL) {
+				const url = canvas.toDataURL();
+				const blob = this.dataURItoBlob(url);
+				resolve(URL.createObjectURL(blob));
+			} else {
+				resolve(canvas.toDataURL());
+			}
+		});
 	}
 
 	public getDataAt(x: number, y: number): Uint8ClampedArray {
@@ -95,11 +122,14 @@ export class Renderer {
 	}
 
 	private dataURItoBlob(dataURI: string) {
-		const binary = atob(dataURI.split(',')[1]);
-		const array = [];
-		for (let i = 0; i < binary.length; i++) {
-			array.push(binary.charCodeAt(i));
+		const binStr = atob(dataURI.split(',')[1]);
+		const len = binStr.length;
+		const arr = new Uint8Array(len);
+
+		for (let i = 0; i < len; i++) {
+			arr[i] = binStr.charCodeAt(i);
 		}
-		return new Blob([new Uint8Array(array)], { type: 'image/png' });
+
+		return new Blob([arr], { type: 'image/png' });
 	}
 }
