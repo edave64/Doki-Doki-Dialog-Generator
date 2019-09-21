@@ -64,7 +64,7 @@ export class Sprite implements IRenderable, IDragable {
 	}
 
 	public hitTest(hx: number, hy: number): boolean {
-		const hitX = hx - this.x;
+		const hitX = hx - this.x + this.width / 2;
 		const hitY = hy - this.y;
 		return hitX >= 0 && hitX <= this.width && hitY >= 0 && hitY <= this.height;
 	}
