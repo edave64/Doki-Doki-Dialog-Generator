@@ -315,8 +315,8 @@ export default class App extends Vue {
 
 	private updateArea(): void {
 		const [cw, ch, v] = this.optimizeWithMenu(
-			window.innerWidth,
-			window.innerHeight
+			document.documentElement.clientWidth,
+			document.documentElement.clientHeight
 		);
 
 		this.canvasWidth = cw;
