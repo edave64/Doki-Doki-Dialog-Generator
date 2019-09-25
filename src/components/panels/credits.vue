@@ -4,7 +4,11 @@
 		<p>All assets used are IP of Team Salvato and created by them, unless noted otherwise.</p>
 		<p>
 			Unused House Background by
-			<a href="https://www.deviantart.com/fatelogic/art/VN-Background-Practice-295671161">Fatelogic</a>
+			<a
+				target="_blank"
+				rel="noopener noreferrer"
+				href="https://www.deviantart.com/fatelogic/art/VN-Background-Practice-295671161"
+			>Fatelogic</a>
 		</p>
 		<p>
 			Doki Doki Dialog Generator developed by EDave64
