@@ -250,6 +250,12 @@ export default class App extends Vue {
 
 	private created(): void {
 		(window as any).cats = this;
+
+		// Moving this to the "mounted"-handler crashes safari over version 12.
+		// My best guess is because it runs in a microtask, which have been added in that Version.
+		this.updateArea();
+		window.addEventListener('resize', this.updateArea);
+
 		window.removeEventListener('keydown', this.onKeydown);
 		window.addEventListener('keydown', this.onKeydown);
 	}
@@ -262,8 +268,6 @@ export default class App extends Vue {
 		const sd = this.$refs.sd as HTMLCanvasElement;
 		this.sdCtx = sd.getContext('2d') || undefined;
 
-		this.updateArea();
-		window.addEventListener('resize', this.updateArea);
 		window.addEventListener('keypress', e => {
 			if (e.keyCode === 27) {
 				this.selectedCharacter = null;
