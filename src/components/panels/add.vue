@@ -1,5 +1,5 @@
 <template>
-	<div :class="{ panel: true, vertical }" v-if="isWebPSupported !== undefined">
+	<div :class="{ panel: true }" v-if="isWebPSupported !== undefined">
 		<h1>Add character</h1>
 		<div
 			class="character"
@@ -32,8 +32,6 @@ import {
 	components: {},
 })
 export default class AddPanel extends Vue {
-	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
-
 	private isWebPSupported: boolean | null = null;
 	private customAssetCount = 0;
 
@@ -78,18 +76,20 @@ textarea {
 	flex-grow: 1;
 }
 
-.panel {
-	flex-wrap: nowrap;
-
-	&:not(.vertical) {
+#panels {
+	&:not(.vertical) .panel {
 		justify-content: center;
 	}
 
-	&.vertical {
+	&.vertical .panel {
 		.character {
 			text-align: center;
 		}
 	}
+}
+
+.panel {
+	flex-wrap: nowrap;
 
 	.custom-sprite {
 		input {

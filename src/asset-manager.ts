@@ -18,7 +18,7 @@ import { VariantBackground } from './models/variant-background';
 import EventBus, {
 	AssetFailureEvent,
 	CustomAssetFailureEvent,
-} from './event-bus';
+} from './eventbus/event-bus';
 import { ErrorAsset } from './models/error-asset';
 
 export const characterOrder = ([

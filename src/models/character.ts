@@ -1,4 +1,4 @@
-import { characterPositions } from './constants';
+import { characterPositions, CharacterIds, Part } from './constants';
 import { RenderContext } from '../renderer/rendererContext';
 import {
 	characters,
@@ -12,21 +12,16 @@ import { Renderer } from '../renderer/renderer';
 import { IRenderable } from './renderable';
 import { IDragable } from './dragable';
 import { arraySeeker, nsfwArraySeeker } from './seekers';
+import { IObject } from '@/store/objectTypes/general';
 
-export type CharacterIds =
-	| 'ddlc.monika'
-	| 'ddlc.natsuki'
-	| 'ddlc.sayori'
-	| 'ddlc.yuri'
-	| 'ddlc.fan.mc_classic'
-	| 'ddlc.fan.femc';
-export type Part = 'variant' | 'left' | 'right' | 'head';
-
-const BaseCharacterYPos = -26;
 const CloseUpYOffset = -74;
 
 export class Character implements IRenderable, IDragable {
-	public infront: boolean = false;
+	public get infront(): boolean {
+		return this.obj.onTop;
+	}
+	public id: string = '';
+	public obj!: IObject;
 	public close: boolean = false;
 	public flip: boolean = false;
 	public opacity: number = 100;

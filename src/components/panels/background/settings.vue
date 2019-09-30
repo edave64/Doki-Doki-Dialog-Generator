@@ -31,13 +31,14 @@ import { IBackground, color, Background } from '../../../models/background';
 import { VariantBackground } from '../../../models/variant-background';
 import { isWebPSupported } from '../../../asset-manager';
 import Toggle from '../../Toggle.vue';
+import { State } from 'vuex-class-decorator';
 
 @Component({
 	components: { Toggle },
 })
 export default class BackgroundSettings extends Vue {
 	@Prop({ required: true }) private readonly value!: IBackground;
-	@Prop({ required: true, type: Boolean }) private readonly nsfw!: boolean;
+	@State('nsfw', { namespace: 'ui' }) private readonly nsfw!: boolean;
 
 	private get isVariant() {
 		return (
@@ -54,7 +55,6 @@ export default class BackgroundSettings extends Vue {
 
 <style lang="scss" scoped>
 fieldset {
-	border: 3px solid #ffbde1;
 	min-height: 135px;
 }
 </style>

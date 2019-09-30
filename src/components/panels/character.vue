@@ -1,5 +1,5 @@
 <template>
-	<div :class="{ panel: true, vertical }">
+	<div :class="{ panel: true }">
 		<h1>{{character.label}}</h1>
 		<fieldset v-if="hasMultiplePoses || parts.length > 0">
 			<legend>Pose:</legend>
@@ -113,6 +113,7 @@ import { Character } from '../../models/character';
 import Toggle from '../Toggle.vue';
 import { IRenderable } from '../../models/renderable';
 import { positions } from '../../models/constants';
+import { State } from 'vuex-class-decorator';
 
 @Component({
 	components: {
@@ -120,9 +121,8 @@ import { positions } from '../../models/constants';
 	},
 })
 export default class CharacterPanel extends Vue {
-	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
 	@Prop({ type: Character, required: true }) private character!: Character;
-	@Prop({ required: true, type: Boolean }) private readonly nsfw!: boolean;
+	@State('nsfw', { namespace: 'ui' }) private readonly nsfw!: boolean;
 
 	private isWebPSupported: boolean | null = null;
 
@@ -160,7 +160,6 @@ fieldset {
 
 .vertical {
 	fieldset {
-		box-sizing: border-box;
 		width: calc(100% - 4px);
 		input {
 			width: 60px;

@@ -1,10 +1,12 @@
 <template>
-	<div :class="{ panel: true, vertical }">
+	<div :class="{ panel: true }">
 		<h1>Credits</h1>
 		<p>All assets used are IP of Team Salvato and created by them, unless noted otherwise.</p>
 		<p>
 			Unused House Background by
-			<a href="https://www.deviantart.com/fatelogic/art/VN-Background-Practice-295671161">Fatelogic</a>
+			<a
+				href="https://www.deviantart.com/fatelogic/art/VN-Background-Practice-295671161"
+			>Fatelogic</a>
 		</p>
 		<p>
 			Doki Doki Dialog Generator developed by EDave64
@@ -40,9 +42,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 @Component({
 	components: {},
 })
-export default class AddPanel extends Vue {
-	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
-}
+export default class AddPanel extends Vue {}
 </script>
 
 <style lang="scss" scoped>

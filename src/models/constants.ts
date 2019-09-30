@@ -2,6 +2,16 @@ import { Background } from './background';
 
 export const backgrounds = [] as Background[];
 
+export type Part = 'variant' | 'left' | 'right' | 'head';
+
+export type CharacterIds =
+	| 'ddlc.monika'
+	| 'ddlc.natsuki'
+	| 'ddlc.sayori'
+	| 'ddlc.yuri'
+	| 'ddlc.fan.mc_classic'
+	| 'ddlc.fan.femc';
+
 export const positions = [
 	'4-1',
 	'3-1',

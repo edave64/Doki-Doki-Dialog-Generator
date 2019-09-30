@@ -1,56 +1,28 @@
 <template>
-	<div :class="{ panel: true, vertical }">
+	<div :class="{ panel: true }">
 		<h1>Custom Sprite</h1>
 		<fieldset>
 			<legend>Position/Size:</legend>
 			<label for="sprite_x">X:</label>
-			<input
-				id="sprite_x"
-				type="number"
-				v-model.number="sprite.x"
-				@input="$emit('invalidate-render')"
-				@keydown.stop
-			/>
+			<input ref="sprite_x" type="number" :value="sprite.x" @input="move" @keydown.stop />
 			<br />
 			<label for="sprite_y">Y:</label>
-			<input
-				id="sprite_y"
-				type="number"
-				v-model.number="sprite.y"
-				@input="$emit('invalidate-render')"
-				@keydown.stop
-			/>
+			<input ref="sprite_y" type="number" :value="sprite.y" @input="move" @keydown.stop />
 			<br />
 			<label for="sprite_w">Width:</label>
 			<input id="sprite_w" type="number" :value="sprite.width" @input="setWidth" @keydown.stop />
 			<br />
 			<label for="sprite_h">Height:</label>
 			<input id="sprite_h" type="number" :value="sprite.height" @input="setHeight" @keydown.stop />
-			<toggle :value="sprite.lockedRatio" @input="setRatioLock" label="Lock ratio?" />
+			<toggle :value="sprite.preserveRatio" @input="setRatioLock" label="Lock ratio?" />
 		</fieldset>
 		<fieldset id="layerfs">
 			<legend>Layer:</legend>
-			<button
-				@click="$emit('shiftLayer', {object: sprite, move: 'Back'})"
-				title="Move to back"
-			>&#10515;</button>
-			<button
-				@click="$emit('shiftLayer', {object: sprite, move: 'Backward'})"
-				title="Move backwards"
-			>&#8595;</button>
-			<button
-				@click="$emit('shiftLayer', {object: sprite, move: 'Forward'})"
-				title="Move forwards"
-			>&#8593;</button>
-			<button
-				@click="$emit('shiftLayer', {object: sprite, move: 'Front'})"
-				title="Move to front"
-			>&#10514;</button>
-			<toggle
-				v-model="sprite.infront"
-				@input="$emit('invalidate-render')"
-				label="In front of textbox?"
-			/>
+			<button @click="shiftLayer(-Infinity)" title="Move to back">&#10515;</button>
+			<button @click="shiftLayer(-1)" title="Move backwards">&#8595;</button>
+			<button @click="shiftLayer(1)" title="Move forwards">&#8593;</button>
+			<button @click="shiftLayer(Infinity)" title="Move to front">&#10514;</button>
+			<toggle @input="setInFront" :value="sprite.onTop" label="In front of textbox?" />
 		</fieldset>
 		<div>
 			<label for="characterOpacity">Opacity:</label>
@@ -59,12 +31,12 @@
 				max="100"
 				min="0"
 				id="characterOpacity"
-				v-model.number="sprite.opacity"
-				@input="$emit('invalidate-render')"
+				:value="sprite.opacity"
+				@input="setOpacity"
 				@keydown.stop
 			/>
 		</div>
-		<toggle v-model="sprite.flip" @input="$emit('invalidate-render')" label="Flip?" />
+		<toggle :value="sprite.flip" @input="setFlip" label="Flip?" />
 
 		<button @click="$emit('shiftLayer', {object: sprite, move: 'Delete'});$emit('close')">Delete</button>
 	</div>
@@ -77,6 +49,23 @@ import { Character } from '../../models/character';
 import Toggle from '../Toggle.vue';
 import { IRenderable } from '../../models/renderable';
 import { Sprite } from '../../models/sprite';
+import {
+	ISprite,
+	createRatioLockCommand,
+	createSetWidthCommand,
+	createSetHeightCommand,
+} from '../../store/objectTypes/sprite';
+import { ICommand } from '../../eventbus/command';
+import eventBus from '../../eventbus/event-bus';
+import {
+	createMoveLayerCommand,
+	createSetOnTopCommand,
+	createMoveCommand,
+	createFlipCommand,
+	setOpacityCommand,
+	IObjectShiftLayerAction,
+} from '../../store/objectTypes/general';
+import { IHistorySupport } from '../../plugins/vuex-history';
 
 @Component({
 	components: {
@@ -84,32 +73,63 @@ import { Sprite } from '../../models/sprite';
 	},
 })
 export default class SpritePanel extends Vue {
-	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
-	@Prop({ type: Sprite, required: true }) private sprite!: Sprite;
+	@Prop({ required: true }) private sprite!: ISprite;
+
+	private get history(): IHistorySupport {
+		return this.$root as any;
+	}
+
+	private shiftLayer(delta: number) {
+		this.history.transaction(() => {
+			this.$store.dispatch('objects/shiftLayer', {
+				type: 'shiftLayer',
+				id: this.sprite.id,
+				delta,
+			} as IObjectShiftLayerAction);
+		});
+	}
+
+	private setInFront(newValue: boolean) {
+		this.fire(
+			createSetOnTopCommand(this.$store, this.sprite.id, newValue, true, true)
+		);
+	}
+
+	private move() {
+		const xInput = this.$refs.sprite_x as HTMLInputElement;
+		const yInput = this.$refs.sprite_y as HTMLInputElement;
+
+		this.fire(
+			createMoveCommand(
+				this.$store,
+				this.sprite.id,
+				parseFloat(xInput.value),
+				parseFloat(yInput.value)
+			)
+		);
+	}
+
+	private setFlip(newValue: boolean) {
+		this.fire(createFlipCommand(this.$store, this.sprite.id));
+	}
+
+	private setOpacity(event: Event) {
+		const opacity = Number((event.target! as HTMLInputElement).value);
+		this.fire(setOpacityCommand(this.$store, this.sprite.id, opacity));
+	}
 
 	private setHeight(event: Event): void {
 		const height = Number((event.target! as HTMLInputElement).value);
-		if (this.sprite.lockedRatio) {
-			this.sprite.width = height * this.sprite.ratio;
-		}
-		this.sprite.height = height;
-		this.$emit('invalidate-render');
+		this.fire(createSetHeightCommand(this.$store, this.sprite.id, height));
 	}
 
 	private setWidth(event: Event): void {
 		const width = Number((event.target! as HTMLInputElement).value);
-		if (this.sprite.lockedRatio) {
-			this.sprite.height = width / this.sprite.ratio;
-		}
-		this.sprite.width = width;
-		this.$emit('invalidate-render');
+		this.fire(createSetWidthCommand(this.$store, this.sprite.id, width));
 	}
 
 	private setRatioLock(lock: boolean) {
-		this.sprite.lockedRatio = lock;
-		if (lock) {
-			this.sprite.ratio = this.sprite.width / this.sprite.height;
-		}
+		this.fire(createRatioLockCommand(this.$store, this.sprite.id, lock));
 	}
 }
 </script>

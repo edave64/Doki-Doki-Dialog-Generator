@@ -65,7 +65,8 @@ export default class BackgroundButton extends Vue {
 .background {
 	margin-top: 4px;
 	background-size: cover;
-	text-shadow: 0 0 2px black;
+	text-shadow: 0 0 4px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+		1px 1px 0 #000;
 	color: white;
 	display: flex;
 	align-items: center;

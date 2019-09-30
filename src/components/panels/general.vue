@@ -1,5 +1,5 @@
 <template>
-	<div :class="{ panel: true, vertical }">
+	<div :class="{ panel: true }">
 		<h1>General</h1>
 		<a
 			class="btn_link"
@@ -12,7 +12,7 @@
 			@input="$emit('update:lqRendering', $event)"
 		/>
 		<button :disabled="!hasPrevRender" @click="$emit('show-prev-render')">Compare to last download</button>
-		<toggle label="NSFW Mode?" :value="nsfw" @input="$emit('update:nsfw', $event)" />
+		<toggle label="NSFW Mode?" :value="nsfw" @input="setNsfw" />
 		<toggle label="Textbox visible?" v-model="options.display" />
 		<toggle label="Textbox corrupt?" v-model="options.corrupted" />
 		<div>
@@ -53,6 +53,7 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { Textbox } from '../../models/textbox';
 import Toggle from '../Toggle.vue';
+import { State } from 'vuex-class-decorator';
 
 @Component({
 	components: {
@@ -61,17 +62,19 @@ import Toggle from '../Toggle.vue';
 })
 export default class GeneralPanel extends Vue {
 	@Prop({ required: true }) private readonly options!: Textbox;
-	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
 	@Prop({ required: true, type: Boolean })
 	private readonly lqRendering!: boolean;
 	@Prop({ required: true, type: Boolean })
 	private readonly hasPrevRender!: boolean;
-	@Prop({ required: true, type: Boolean })
-	private readonly nsfw!: boolean;
+	@State('nsfw', { namespace: 'ui' }) private readonly nsfw!: boolean;
 
 	@Watch('options.customName')
 	private talkingChange(): void {
 		this.options.talking = 'other';
+	}
+
+	private setNsfw(value: boolean) {
+		this.$store.commit('ui/setNsfw', value);
 	}
 }
 </script>
@@ -81,7 +84,7 @@ textarea {
 	flex-grow: 1;
 }
 
-.panel {
+#panels {
 	&:not(.vertical) {
 		#dialog_text_wrapper {
 			height: calc(100% - 2px);

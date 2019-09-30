@@ -1,5 +1,5 @@
 <template>
-	<div :class="{ panel: true, vertical }">
+	<div :class="{ panel: true }">
 		<h1>Background</h1>
 		<background-settings :value="value" :nsfw="nsfw" @invalidate-render="$emit('invalidate-render')" />
 
@@ -30,6 +30,7 @@ import {
 import { VariantBackground } from '../../models/variant-background';
 import BackgroundButton from './background/button.vue';
 import BackgroundSettings from './background/settings.vue';
+import { State } from 'vuex-class-decorator';
 
 @Component({
 	components: {
@@ -38,9 +39,8 @@ import BackgroundSettings from './background/settings.vue';
 	},
 })
 export default class BackgroundsPanel extends Vue {
-	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
 	@Prop({ required: true }) private readonly value!: IBackground;
-	@Prop({ required: true, type: Boolean }) private readonly nsfw!: boolean;
+	@State('nsfw', { namespace: 'ui' }) private readonly nsfw!: boolean;
 
 	private customPathLookup: { [name: string]: string } = {};
 	private customBGCount = 0;
@@ -77,45 +77,41 @@ textarea {
 	flex-grow: 1;
 }
 
-.panel {
-	&:not(.vertical) {
-		> div {
-			width: 12rem;
-		}
+.upload-background {
+	margin-top: 4px;
+	background-size: cover;
+	text-shadow: 0 0 2px white;
+	color: black;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.5);
+	height: 48px;
+	min-height: 48px;
+	text-align: center;
+	user-select: none;
+	text-align: center;
+	user-select: none;
+
+	input {
+		display: none;
 	}
+}
 
-	&.vertical {
-		> div {
-			text-align: center;
-		}
+#panels:not(.vertical) > .panel {
+	> div {
+		width: 12rem;
 	}
+}
 
-	.upload-background {
-		margin-top: 4px;
-		background-size: cover;
-		text-shadow: 0 0 2px black;
-		color: white;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.5);
-		height: 48px;
-		min-height: 48px;
+#panels.vertical > .panel {
+	> div {
 		text-align: center;
-		user-select: none;
-		text-align: center;
-		user-select: none;
-		box-sizing: border-box;
-
-		input {
-			display: none;
-		}
 	}
 }
 
 .vertical {
 	fieldset {
-		box-sizing: border-box;
 		width: calc(100% - 4px);
 		input {
 			width: 60px;

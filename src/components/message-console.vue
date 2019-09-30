@@ -10,7 +10,7 @@ import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import EventBus, {
 	AssetFailureEvent,
 	CustomAssetFailureEvent,
-} from '../event-bus';
+} from '../eventbus/event-bus';
 
 @Component({
 	components: {},
@@ -45,17 +45,14 @@ export default class DokiButton extends Vue {
 
 	@Watch('loading')
 	private onLoadingChange(newValue: boolean) {
-		console.log('onLoadingChange', newValue);
 		if (newValue) {
 			if (this.hideLoadingTimeout) {
 				clearTimeout(this.hideLoadingTimeout);
 				this.hideLoadingTimeout = 0;
 			}
 			if (!this.showLoading && !this.showLoadingTimeout) {
-				console.log('setting show Timeout');
 				this.showLoadingTimeout = setTimeout(() => {
 					this.showLoading = true;
-					console.log('showingLoading');
 					this.showLoadingTimeout = 0;
 				}, 100);
 			}
@@ -65,10 +62,8 @@ export default class DokiButton extends Vue {
 				this.showLoadingTimeout = 0;
 			}
 			if (this.showLoading && !this.hideLoadingTimeout) {
-				console.log('setting hide Timeout');
 				this.hideLoadingTimeout = setTimeout(() => {
 					this.showLoading = false;
-					console.log('hideLoading');
 					this.hideLoadingTimeout = 0;
 				}, 100);
 			}

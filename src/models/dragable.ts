@@ -1,4 +1,5 @@
+import { IObject } from '@/store/objectTypes/general';
+
 export interface IDragable {
-	x: number;
-	y: number;
+	obj: IObject;
 }

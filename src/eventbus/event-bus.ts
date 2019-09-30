@@ -1,8 +1,16 @@
 import Vue from 'vue';
+import { ICommand } from './command';
 
 const eventBus = new Vue();
 
 export default {
+	fireCommand(command: ICommand) {
+		eventBus.$emit('command', command);
+	},
+	subscribeCommand(handler: (ev: ICommand) => void): void {
+		eventBus.$on('command', handler);
+	},
+
 	fire(event: IEvent) {
 		eventBus.$emit(event.kind, event);
 	},

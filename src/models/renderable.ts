@@ -1,7 +1,8 @@
 import { RenderContext } from '../renderer/rendererContext';
 
 export interface IRenderable {
-	infront: boolean;
+	id: string;
+	readonly infront: boolean;
 
 	render(rx: RenderContext): Promise<void>;
 	hitTest(hx: number, hy: number): boolean;
