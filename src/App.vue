@@ -79,6 +79,8 @@
 </template>
 
 <script lang="ts">
+// App.vue has currently so many responsiblities that it's best to break it into chunks
+// tslint:disable:member-ordering
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import DokiButton from './components/DokiButton.vue';
 import GeneralPanel from './components/panels/general.vue';
@@ -497,6 +499,8 @@ export default class App extends Vue {
 		if (this.draggedObject) {
 			e.preventDefault();
 
+			// Formatter quirk
+			// tslint:disable:indent
 			let [x, y] =
 				e instanceof MouseEvent
 					? this.toRendererCoordinate(e.clientX, e.clientY)
@@ -504,6 +508,7 @@ export default class App extends Vue {
 							e.touches[0].clientX,
 							e.touches[0].clientY
 					  );
+			// tslint:enable:indent
 			x -= this.dragXOffset;
 			y -= this.dragYOffset;
 
@@ -513,9 +518,6 @@ export default class App extends Vue {
 			if (deltaX + deltaY > 1) this.dropPreventClick = true;
 
 			if (e.shiftKey) {
-				const deltaX = Math.abs(x - this.dragXOriginal);
-				const deltaY = Math.abs(y - this.dragYOriginal);
-
 				if (deltaX > deltaY) {
 					y = this.dragYOriginal;
 				} else {
@@ -570,25 +572,21 @@ export default class App extends Vue {
 			if (target instanceof Character && !target.allowFreeMove) {
 				target.pos -= 1;
 			} else {
-				target.x -= e.shiftKey ? 1 : 20;
-				target.x |= 0;
+				target.x = Math.floor(target.x - (e.shiftKey ? 1 : 20));
 			}
 			this.invalidateRender();
 		} else if (target && e.key === 'ArrowRight') {
 			if (target instanceof Character && !target.allowFreeMove) {
 				target.pos += 1;
 			} else {
-				target.x += e.shiftKey ? 1 : 20;
-				target.x |= 0;
+				target.x = Math.floor(target.x + (e.shiftKey ? 1 : 20));
 			}
 			this.invalidateRender();
 		} else if (target && e.key === 'ArrowUp') {
-			target.y -= e.shiftKey ? 1 : 20;
-			target.y |= 0;
+			target.y = Math.floor(target.y - (e.shiftKey ? 1 : 20));
 			this.invalidateRender();
 		} else if (target && e.key === 'ArrowDown') {
-			target.y += e.shiftKey ? 1 : 20;
-			target.y |= 0;
+			target.y = Math.floor(target.y + (e.shiftKey ? 1 : 20));
 			this.invalidateRender();
 		} else {
 			console.log(e);
@@ -596,7 +594,7 @@ export default class App extends Vue {
 	}
 
 	@Watch('nsfw')
-	onNSFWChange(newNSFW: boolean) {
+	private onNSFWChange(newNSFW: boolean): void {
 		if (!this.currentBackground) return;
 		if (newNSFW) return;
 		if (this.currentBackground.nsfw) {

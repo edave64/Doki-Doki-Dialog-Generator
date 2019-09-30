@@ -15,14 +15,13 @@ import EventBus, {
 @Component({
 	components: {},
 })
-export default class DokiButton extends Vue {
+export default class MessageConsole extends Vue {
 	@Prop({ required: true, type: Boolean }) private readonly loading!: boolean;
 
+	private messages: string[] = [];
 	private showLoading: boolean = false;
 	private showLoadingTimeout: number = 0;
 	private hideLoadingTimeout: number = 0;
-
-	public messages: string[] = [];
 
 	private created() {
 		this.onLoadingChange(this.loading);
@@ -35,7 +34,7 @@ export default class DokiButton extends Vue {
 
 		EventBus.subscribe(CustomAssetFailureEvent, ev => {
 			this.messages.push(
-				`Failed to load custom asset. Try to download it manually and then upload it.`
+				'Failed to load custom asset. Try to download it manually and then upload it.'
 			);
 			setTimeout(() => {
 				this.messages.pop();
