@@ -79,23 +79,24 @@ export default class GeneralPanel extends Vue {
 </script>
 
 <style lang="scss" scoped>
-textarea {
-	flex-grow: 1;
-}
-
 .panel {
+	&.vertical {
+		#dialog_text_wrapper {
+			width: 173px;
+
+			textarea {
+				width: 100%;
+			}
+		}
+	}
+
 	&:not(.vertical) {
 		#dialog_text_wrapper {
-			height: calc(100% - 2px);
+			height: 181px;
 			display: table;
 
 			* {
 				display: table-row;
-				height: 100%;
-			}
-
-			label {
-				height: 0px;
 			}
 		}
 	}
