@@ -3,12 +3,15 @@ import { RenderContext } from '@/renderer/rendererContext';
 import { getAsset } from '@/asset-manager';
 import { nsfwArraySeeker } from './seekers';
 
+// Formatter quirk
+// tslint:disable:indent
 type VariantParam =
 	| string[]
 	| {
 			nsfw: boolean;
 			images: string[];
 	  };
+// tslint:enable:indent
 
 interface IVariant {
 	nsfw: boolean;

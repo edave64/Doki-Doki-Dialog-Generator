@@ -3,6 +3,8 @@
 		<h1>General</h1>
 		<a
 			class="btn_link"
+			target="_blank"
+			rel="noopener noreferrer"
 			href="https://github.com/edave64/Doki-Doki-Dialog-Generator/blob/v1/docs/index.md"
 		>Help</a>
 		<toggle
@@ -80,23 +82,24 @@ export default class GeneralPanel extends Vue {
 </script>
 
 <style lang="scss" scoped>
-textarea {
-	flex-grow: 1;
-}
+.panel {
+	&.vertical {
+		#dialog_text_wrapper {
+			width: 173px;
 
-#panels {
+			textarea {
+				width: 100%;
+			}
+		}
+	}
+
 	&:not(.vertical) {
 		#dialog_text_wrapper {
-			height: calc(100% - 2px);
+			height: 181px;
 			display: table;
 
 			* {
 				display: table-row;
-				height: 100%;
-			}
-
-			label {
-				height: 0px;
 			}
 		}
 	}

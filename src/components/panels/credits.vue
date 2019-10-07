@@ -5,6 +5,8 @@
 		<p>
 			Unused House Background by
 			<a
+				target="_blank"
+				rel="noopener noreferrer"
 				href="https://www.deviantart.com/fatelogic/art/VN-Background-Practice-295671161"
 			>Fatelogic</a>
 		</p>

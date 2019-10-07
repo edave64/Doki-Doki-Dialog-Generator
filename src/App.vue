@@ -57,6 +57,8 @@
 </template>
 
 <script lang="ts">
+// App.vue has currently so many responsiblities that it's best to break it into chunks
+// tslint:disable:member-ordering
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { State } from 'vuex-class-decorator';
 
@@ -248,6 +250,12 @@ export default class App extends Vue {
 
 	private created(): void {
 		(window as any).cats = this;
+
+		// Moving this to the "mounted"-handler crashes safari over version 12.
+		// My best guess is because it runs in a microtask, which have been added in that Version.
+		this.updateArea();
+		window.addEventListener('resize', this.updateArea);
+
 		window.removeEventListener('keydown', this.onKeydown);
 		window.addEventListener('keydown', this.onKeydown);
 		eventBus.subscribe(InvalidateRenderEvent, command => {
@@ -264,8 +272,6 @@ export default class App extends Vue {
 		const sd = this.$refs.sd as HTMLCanvasElement;
 		this.sdCtx = sd.getContext('2d') || undefined;
 
-		this.updateArea();
-		window.addEventListener('resize', this.updateArea);
 		window.addEventListener('keypress', e => {
 			if (e.keyCode === 27) {
 				this.selectedCharacter = null;
@@ -455,6 +461,8 @@ export default class App extends Vue {
 		if (this.draggedObject) {
 			e.preventDefault();
 
+			// Formatter quirk
+			// tslint:disable:indent
 			let [x, y] =
 				e instanceof MouseEvent
 					? this.toRendererCoordinate(e.clientX, e.clientY)
@@ -462,6 +470,7 @@ export default class App extends Vue {
 							e.touches[0].clientX,
 							e.touches[0].clientY
 					  );
+			// tslint:enable:indent
 			x -= this.dragXOffset;
 			y -= this.dragYOffset;
 
@@ -471,9 +480,6 @@ export default class App extends Vue {
 			if (deltaX + deltaY > 1) this.dropPreventClick = true;
 
 			if (e.shiftKey) {
-				const deltaX = Math.abs(x - this.dragXOriginal);
-				const deltaY = Math.abs(y - this.dragYOriginal);
-
 				if (deltaX > deltaY) {
 					y = this.dragYOriginal;
 				} else {
@@ -616,7 +622,7 @@ export default class App extends Vue {
 	}
 
 	@Watch('nsfw')
-	onNSFWChange(newNSFW: boolean) {
+	private onNSFWChange(newNSFW: boolean): void {
 		if (!this.currentBackground) return;
 		if (newNSFW) return;
 		if (this.currentBackground.nsfw) {
