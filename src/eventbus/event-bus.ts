@@ -52,3 +52,8 @@ export class CustomAssetFailureEvent implements IEvent {
 	public readonly kind = 'CustomAssetFailureEvent';
 	public constructor(public error: ErrorEvent) {}
 }
+
+export class InvalidateRenderEvent implements IEvent {
+	public static readonly kind = 'InvalidateRenderEvent';
+	public readonly kind = 'InvalidateRenderEvent';
+}

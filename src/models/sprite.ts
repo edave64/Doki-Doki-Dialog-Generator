@@ -4,6 +4,7 @@ import { IRenderable } from './renderable';
 import { IDragable } from './dragable';
 import { ErrorAsset } from './error-asset';
 import { ISprite } from '@/store/objectTypes/sprite';
+import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 
 const BaseXPosition = 640;
 
@@ -17,10 +18,7 @@ export class Sprite implements IRenderable, IDragable {
 	private asset: HTMLImageElement | null = null;
 	private selected: boolean = false;
 
-	public constructor(
-		public readonly obj: ISprite,
-		private readonly invalidator: Invalidator
-	) {
+	public constructor(public readonly obj: ISprite) {
 		this.id = obj.id;
 		getAsset(obj.assetName)
 			.then(asset => {
@@ -28,8 +26,7 @@ export class Sprite implements IRenderable, IDragable {
 					return;
 				}
 				this.asset = asset;
-				this.ratio = this.obj.width / this.obj.height;
-				this.invalidator();
+				eventBus.fire(new InvalidateRenderEvent());
 			})
 			.catch(err => {
 				console.error(`Failed to load asset: ${err}`);

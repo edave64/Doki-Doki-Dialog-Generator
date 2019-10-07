@@ -1,23 +1,23 @@
 import { Module } from 'vuex';
 import { ICommand } from '@/eventbus/command';
-import { characterCommandHandlers } from './objectTypes/character';
-import {
-	spriteCommandHandlers,
-	ISprite,
-	ICreateSpriteCommand,
-} from './objectTypes/sprite';
-import {
-	objectCommandHandlers,
-	IObject,
-	ICreateObjectCommand,
-	IDeleteObjectCommand,
-	IRestoreObjectCommand,
-} from './objectTypes/general';
+import { spriteMutations, spriteActions } from './objectTypes/sprite';
+import { characterActions, characterMutations } from './objectTypes/characters';
 
 export interface IObjectsState {
 	objects: { [id: string]: IObject };
 	order: string[];
 	onTopOrder: string[];
+}
+
+export interface IObject {
+	type: ObjectTypes;
+	id: string;
+	x: number;
+	y: number;
+	opacity: number;
+	version: number;
+	flip: boolean;
+	onTop: boolean;
 }
 
 export type ObjectTypes = 'sprite' | 'character';
@@ -45,8 +45,7 @@ export default {
 		},
 		addToList(state, command: IAddToListMutation) {
 			const collection = command.onTop ? state.onTopOrder : state.order;
-			const idx = collection.indexOf(command.id);
-			collection.splice(idx, 1);
+			collection.splice(command.position, 0, command.id);
 		},
 		setOnTop(state, command: ISetOnTopMutation) {
 			const obj = state.objects[command.id];
@@ -57,20 +56,38 @@ export default {
 			obj.x = command.x;
 			obj.y = command.y;
 		},
+		setFlip(state, command: ISetObjectFlipMutation) {
+			const obj = state.objects[command.id];
+			obj.flip = command.flip;
+		},
+		setOpacity(state, command: ISetObjectOpacityMutation) {
+			const obj = state.objects[command.id];
+			obj.opacity = command.opacity;
+		},
 		removeObject(state, command: IRemoveObjectMutation) {
 			delete state.objects[command.id];
 		},
+		...spriteMutations,
+		...characterMutations,
 	},
 	actions: {
 		removeObject({ state, commit }, command: IRemoveObjectAction) {
 			const obj = state.objects[command.id];
-			commit('objects/removeFromList', {
+			commit('removeFromList', {
 				id: command.id,
 				onTop: obj.onTop,
 			} as IRemoveFromListMutation);
-			commit('objects/removeObjects', {
+			commit('removeObjects', {
 				id: command.id,
 			} as IRemoveObjectMutation);
+		},
+		setPosition({ state, commit, dispatch }, command: ISetPositionAction) {
+			const obj = state.objects[command.id];
+			if (obj.type === 'sprite') {
+				commit('setPosition', command as ISetObjectPositionMutation);
+			} else {
+				dispatch('setCharacterPosition', command as ISetPositionAction);
+			}
 		},
 		setOnTop({ state, commit }, command: IObjectSetOnTopAction) {
 			const obj = state.objects[command.id];
@@ -84,6 +101,10 @@ export default {
 				position: (command.onTop ? state.onTopOrder : state.order).length,
 				onTop: command.onTop,
 			} as IRemoveFromListMutation);
+			commit('setOnTop', {
+				id: command.id,
+				onTop: command.onTop,
+			} as ISetOnTopMutation);
 		},
 		shiftLayer({ state, commit }, command: IObjectShiftLayerAction) {
 			const obj = state.objects[command.id];
@@ -107,6 +128,8 @@ export default {
 				onTop: obj.onTop,
 			} as IAddToListMutation);
 		},
+		...spriteActions,
+		...characterActions,
 	},
 } as Module<IObjectsState, never>;
 
@@ -125,6 +148,14 @@ export interface ISetObjectPositionMutation extends IObjectMutation {
 
 export interface ISetOnTopMutation extends IObjectMutation {
 	readonly onTop: boolean;
+}
+
+export interface ISetObjectFlipMutation extends IObjectMutation {
+	readonly flip: boolean;
+}
+
+export interface ISetObjectOpacityMutation extends IObjectMutation {
+	readonly opacity: number;
 }
 
 export interface IRemoveFromListMutation extends IObjectMutation {
@@ -147,38 +178,7 @@ export interface IObjectSetOnTopAction extends ICommand {
 export interface IRemoveObjectMutation extends ICommand {}
 export interface IRemoveObjectAction extends ICommand {}
 
-function create(state: IObjectsState, command: ICreateObjectCommand) {
-	const newObj: IObject = {
-		id: command.objId,
-		flip: false,
-		version: 0,
-		x: 640,
-		y: 0,
-		opacity: 100,
-		type: command.objType,
-		onTop: command.onTop,
-	};
-
-	switch (command.objType) {
-		case 'character':
-		// newObj = characterCommandHandlers.create(newObj);
-		// break;
-		case 'sprite':
-			spriteCommandHandlers.create(newObj as ISprite, command as any);
-			break;
-	}
-
-	state.objects[newObj.id] = newObj;
-
-	if (command.onTop) {
-		state.onTopOrder.push(newObj.id);
-	} else {
-		state.order.push(newObj.id);
-	}
-}
-
-function restore(state: IObjectsState, command: IRestoreObjectCommand) {
-	state.objects[command.object.id] = command.object;
-	const collection = command.object.onTop ? state.onTopOrder : state.order;
-	collection.splice(command.position, 0, command.object.id);
+export interface ISetPositionAction extends ICommand {
+	readonly x: number;
+	readonly y: number;
 }

@@ -7,127 +7,79 @@
 				<tbody>
 					<tr v-if="hasMultiplePoses">
 						<td>
-							<button @click="character.seekPose(-1, nsfw);">&lt;</button>
+							<button @click="seekPose(-1, nsfw);">&lt;</button>
 						</td>
 						<td>Pose</td>
 						<td>
-							<button @click="character.seekPose(1, nsfw);">&gt;</button>
+							<button @click="seekPose(1, nsfw);">&gt;</button>
 						</td>
 					</tr>
 					<tr v-for="part of parts" :key="part">
 						<td>
-							<button @click="character.seekPart(part, -1, nsfw);">&lt;</button>
+							<button @click="seekPart(part, -1, nsfw);">&lt;</button>
 						</td>
 						<td>{{captialize(part)}}</td>
 						<td>
-							<button @click="character.seekPart(part, 1, nsfw);">&gt;</button>
+							<button @click="seekPart(part, 1, nsfw);">&gt;</button>
 						</td>
 					</tr>
 				</tbody>
 			</table>
 		</fieldset>
-		<fieldset>
-			<legend>Position:</legend>
-			<toggle
-				v-model="character.allowFreeMove"
-				label="Move freely?"
-				@input="$emit('invalidate-render')"
-			/>
-			<div v-if="!character.allowFreeMove">
-				<button @click="--character.pos;$emit('invalidate-render')" :disabled="character.pos === 0">&lt;</button>
-				<select id="current_talking" v-model.number="character.pos" @input="$emit('invalidate-render')">
-					<option v-for="(val, key) of positionNames" :key="key" :value="key">{{val}}</option>
-				</select>
-				<button
-					@click="++character.pos;$emit('invalidate-render')"
-					:disabled="character.pos >= positionNames.length - 1"
-				>&gt;</button>
-			</div>
-			<div v-else>
-				<label for="sprite_x">X:</label>
-				<input
-					id="sprite_x"
-					type="number"
-					v-model.number="character.x"
-					@input="$emit('invalidate-render')"
-					@keydown.stop
-				/>
-				<br />
-				<label for="sprite_y">Y:</label>
-				<input
-					id="sprite_y"
-					type="number"
-					v-model.number="character.y"
-					@input="$emit('invalidate-render')"
-					@keydown.stop
-				/>
-			</div>
-		</fieldset>
-		<fieldset id="layerfs">
-			<legend>Layer:</legend>
-			<button
-				@click="$emit('shiftLayer', {object: character, move: 'Back'})"
-				title="Move to back"
-			>&#10515;</button>
-			<button
-				@click="$emit('shiftLayer', {object: character, move: 'Backward'})"
-				title="Move backwards"
-			>&#8595;</button>
-			<button
-				@click="$emit('shiftLayer', {object: character, move: 'Forward'})"
-				title="Move forwards"
-			>&#8593;</button>
-			<button
-				@click="$emit('shiftLayer', {object: character, move: 'Front'})"
-				title="Move to front"
-			>&#10514;</button>
-			<toggle
-				v-model="character.infront"
-				@input="$emit('invalidate-render')"
-				label="In front of textbox?"
-			/>
-		</fieldset>
-		<div>
-			<label for="characterOpacity">Opacity:</label>
-			<input
-				type="number"
-				max="100"
-				min="0"
-				id="characterOpacity"
-				v-model.number="character.opacity"
-				@input="$emit('invalidate-render')"
-				@keydown.stop
-			/>
-		</div>
-		<toggle v-model="character.close" @input="$emit('invalidate-render')" label="Close up?" />
-		<toggle v-model="character.flip" @input="$emit('invalidate-render')" label="Flipped?" />
-
-		<button @click="$emit('shiftLayer', {object: character, move: 'Delete'});$emit('close')">Delete</button>
+		<position-and-size :obj="character.obj" />
+		<layers :obj="character.obj" />
+		<opacity :obj="character.obj" />
+		<toggle v-model="closeUp" label="Close up?" />
+		<toggle v-model="flip" label="Flip?" />
+		<delete :obj="character.obj" />
 	</div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { isWebPSupported } from '../../asset-manager';
-import { Character } from '../../models/character';
-import Toggle from '../Toggle.vue';
-import { IRenderable } from '../../models/renderable';
-import { positions } from '../../models/constants';
 import { State } from 'vuex-class-decorator';
+import { isWebPSupported } from '@/asset-manager';
+import { IHistorySupport } from '../../plugins/vuex-history';
+import { Character } from '@/models/character';
+import { IRenderable } from '@/models/renderable';
+import { positions, characterPositions, Part } from '@/models/constants';
+import {
+	getData,
+	getParts,
+	closestCharacterSlot,
+	ISeekPoseAction,
+	ISetCloseMutation,
+	ISeekPosePartAction,
+} from '@/store/objectTypes/characters';
+import {
+	ISetPositionAction,
+	ISetObjectPositionMutation,
+	ISetObjectFlipMutation,
+} from '@/store/objects';
+import Toggle from '../Toggle.vue';
+import PositionAndSize from '../commonsFieldsets/positionAndSize.vue';
+import Layers from '../commonsFieldsets/layers.vue';
+import Opacity from '../commonsFieldsets/opacity.vue';
+import Delete from '../commonsFieldsets/delete.vue';
 
 @Component({
 	components: {
 		Toggle,
+		PositionAndSize,
+		Layers,
+		Opacity,
+		Delete,
 	},
 })
 export default class CharacterPanel extends Vue {
-	@Prop({ type: Character, required: true }) private character!: Character;
-	@State('nsfw', { namespace: 'ui' }) private readonly nsfw!: boolean;
+	@Prop({ type: Character, required: true })
+	private readonly character!: Character;
 
-	private isWebPSupported: boolean | null = null;
+	@State('nsfw', { namespace: 'ui' })
+	private readonly nsfw!: boolean;
 
-	private async created() {
-		this.isWebPSupported = await isWebPSupported();
+	private get history(): IHistorySupport {
+		return this.$root as any;
 	}
 
 	private get positionNames(): string[] {
@@ -135,21 +87,65 @@ export default class CharacterPanel extends Vue {
 	}
 
 	private get parts(): string[] {
-		return this.character.getParts();
+		return getParts(this.character.obj);
 	}
 
 	private get hasMultiplePoses(): boolean {
-		return this.character.data.poses.length > 1;
+		return getData(this.character.obj).poses.length > 1;
+	}
+
+	private seekPose(delta: number, nsfw: boolean): void {
+		debugger;
+		this.history.transaction(() => {
+			this.$store.dispatch('objects/seekPose', {
+				id: this.character.obj.id,
+				delta,
+				nsfw,
+			} as ISeekPoseAction);
+		});
+	}
+
+	private seekPart(part: Part, delta: number, nsfw: boolean): void {
+		debugger;
+		this.history.transaction(() => {
+			this.$store.dispatch('objects/seekPart', {
+				id: this.character.obj.id,
+				delta,
+				nsfw,
+				part,
+			} as ISeekPosePartAction);
+		});
 	}
 
 	private captialize(str: string) {
 		return str.charAt(0).toUpperCase() + str.substring(1);
 	}
-}
 
-export interface MoveObject {
-	object: IRenderable;
-	move: 'Forward' | 'Backward' | 'Back' | 'Front' | 'Delete';
+	private get flip() {
+		return this.character.obj.flip;
+	}
+
+	private set flip(newValue: boolean) {
+		this.history.transaction(() => {
+			this.$store.commit('objects/setFlip', {
+				id: this.character.obj.id,
+				flip: newValue,
+			} as ISetObjectFlipMutation);
+		});
+	}
+
+	private get closeUp() {
+		return this.character.obj.close;
+	}
+
+	private set closeUp(newValue: boolean) {
+		this.history.transaction(() => {
+			this.$store.commit('objects/setClose', {
+				id: this.character.obj.id,
+				close: newValue,
+			} as ISetCloseMutation);
+		});
+	}
 }
 </script>
 

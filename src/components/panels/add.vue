@@ -6,7 +6,7 @@
 			v-for="character of characters"
 			:key="character.id"
 			:title="character.name"
-			@click="$emit('chosen', character.id.toLowerCase())"
+			@click="onChosen(character.id.toLowerCase())"
 		>
 			<img :src="assetPath(character)" :alt="character.name" />
 		</div>
@@ -27,6 +27,7 @@ import {
 	registerAsset,
 	registerAssetWithURL,
 } from '../../asset-manager';
+import { ICreateCharacterAction } from '../../store/objectTypes/characters';
 
 @Component({
 	components: {},
@@ -67,6 +68,12 @@ export default class AddPanel extends Vue {
 		const name = 'customAsset' + ++this.customAssetCount;
 		await registerAssetWithURL(name, url);
 		this.$emit('add-custom-asset', name);
+	}
+
+	private onChosen(id: string) {
+		this.$store.dispatch('objects/createCharacters', {
+			characterType: id,
+		} as ICreateCharacterAction);
 	}
 }
 </script>

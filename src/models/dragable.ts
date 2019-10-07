@@ -1,4 +1,4 @@
-import { IObject } from '@/store/objectTypes/general';
+import { IObject } from '@/store/objects';
 
 export interface IDragable {
 	obj: IObject;

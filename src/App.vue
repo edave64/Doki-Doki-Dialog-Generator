@@ -42,7 +42,7 @@
 					:lqRendering.sync="lqRendering"
 					@show-prev-render="showPreviousRender"
 				/>
-				<add-panel v-if="panel === 'add'" @chosen="onCharacterCreate" />
+				<add-panel v-if="panel === 'add'" />
 				<backgrounds-panel
 					v-if="panel === 'backgrounds'"
 					v-model="currentBackground"
@@ -58,35 +58,41 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
+import { State } from 'vuex-class-decorator';
+
 import DokiButton from './components/DokiButton.vue';
 import GeneralPanel from './components/panels/general.vue';
 import AddPanel from './components/panels/add.vue';
-import CharacterPanel, { MoveObject } from './components/panels/character.vue';
+import CharacterPanel from './components/panels/character.vue';
 import SpritePanel from './components/panels/sprite.vue';
 import CreditsPanel from './components/panels/credits.vue';
 import BackgroundsPanel from './components/panels/backgrounds.vue';
 import MessageConsole from './components/message-console.vue';
 import { characterPositions } from './models/constants';
 import { Textbox } from './models/textbox';
-import { Character, CharacterIds } from './models/character';
-import { backgrounds, getAsset, registerAsset } from './asset-manager';
-import { Renderer } from './renderer/renderer';
-import { RenderContext } from './renderer/rendererContext';
-import { Background, IBackground, nsfwFilter } from './models/background';
-import { IRenderable } from './models/renderable';
+import { Character } from './models/character';
 import { Sprite } from './models/sprite';
 import { IDragable } from './models/dragable';
+import { Background, IBackground, nsfwFilter } from './models/background';
 import { VariantBackground } from './models/variant-background';
-import { State } from 'vuex-class-decorator';
+import { IRenderable } from './models/renderable';
+import { ISprite, ICreateSpriteAction } from './store/objectTypes/sprite';
 import {
+	IObjectsState,
 	IObject,
-	createMoveCommand,
-	createDeleteCommand,
-} from './store/objectTypes/general';
-import { ISprite, createSprite } from './store/objectTypes/sprite';
-import eventBus from './eventbus/event-bus';
-import { IObjectsState } from './store/objects';
+	ISetObjectPositionMutation,
+	IRemoveObjectAction,
+} from './store/objects';
 import { IHistorySupport } from './plugins/vuex-history';
+import {
+	ICharacter,
+	IShiftCharacterSlotAction,
+	INsfwCheckAction,
+} from './store/objectTypes/characters';
+import { Renderer } from './renderer/renderer';
+import { RenderContext } from './renderer/rendererContext';
+import { backgrounds, getAsset, registerAsset } from './asset-manager';
+import eventBus, { InvalidateRenderEvent } from './eventbus/event-bus';
 
 @Component({
 	components: {
@@ -244,10 +250,10 @@ export default class App extends Vue {
 		(window as any).cats = this;
 		window.removeEventListener('keydown', this.onKeydown);
 		window.addEventListener('keydown', this.onKeydown);
-		eventBus.subscribeCommand(command => {
-			this.$store.dispatch('runCommand', command);
+		eventBus.subscribe(InvalidateRenderEvent, command => {
 			this.invalidateRender();
 		});
+		this.$store.subscribe(this.invalidateRender);
 	}
 
 	private destroyed(): void {
@@ -475,9 +481,13 @@ export default class App extends Vue {
 				}
 			}
 
-			eventBus.fireCommand(
-				createMoveCommand(this.$store, this.draggedObject.id, x, y)
-			);
+			this.history.transaction(() => {
+				this.$store.dispatch('objects/setPosition', {
+					id: this.draggedObject!.id,
+					x,
+					y,
+				} as ISetObjectPositionMutation);
+			});
 		}
 	}
 
@@ -491,7 +501,12 @@ export default class App extends Vue {
 			if (item.kind === 'file' && item.type.match(/image.*/)) {
 				const name = 'dropCustomAsset' + ++this.dropSpriteCount;
 				const url = registerAsset(name, item.getAsFile()!);
-				eventBus.fireCommand(await createSprite(name));
+
+				this.history.transaction(async () => {
+					await this.$store.dispatch('objects/createSprite', {
+						assetName: name,
+					} as ICreateSpriteAction);
+				});
 			}
 		}
 	}
@@ -514,67 +529,65 @@ export default class App extends Vue {
 	private onKeydown(e: KeyboardEvent) {
 		const target = this.selectedCharacter || this.selectedSprite;
 		if (target && e.key === 'Delete') {
-			eventBus.fireCommand(createDeleteCommand(this.$store, target.id));
-		} else if (target && e.key === 'ArrowLeft') {
-			let x = target.obj.x;
-			if (target instanceof Character && !target.allowFreeMove) {
-				target.pos -= 1;
-			} else {
-				eventBus.fireCommand(
-					createMoveCommand(
-						this.$store,
-						target.id,
-						target.obj.x - (e.shiftKey ? 1 : 20),
-						target.obj.y
-					)
-				);
-			}
-		} else if (target && e.key === 'ArrowRight') {
-			if (target instanceof Character && !target.allowFreeMove) {
-				target.pos += 1;
-			} else {
-				eventBus.fireCommand(
-					createMoveCommand(
-						this.$store,
-						target.id,
-						target.obj.x + (e.shiftKey ? 1 : 20),
-						target.obj.y
-					)
-				);
-			}
-			this.invalidateRender();
-		} else if (target && e.key === 'ArrowUp') {
-			eventBus.fireCommand(
-				createMoveCommand(
-					this.$store,
-					target.id,
-					target.obj.x,
-					target.obj.y - (e.shiftKey ? 1 : 20)
-				)
-			);
-		} else if (target && e.key === 'ArrowDown') {
-			eventBus.fireCommand(
-				createMoveCommand(
-					this.$store,
-					target.id,
-					target.obj.x,
-					target.obj.y + (e.shiftKey ? 1 : 20)
-				)
-			);
-		} else if (e.key === 'z' && e.ctrlKey) {
+			this.$store.dispatch('objects/removeObject', {
+				id: target.obj.id,
+			} as IRemoveObjectAction);
+			return;
+		}
+		if (e.key === 'z' && e.ctrlKey) {
 			this.$store.commit('history/undo');
+			return;
 		} else if (e.key === 'y' && e.ctrlKey) {
 			this.$store.commit('history/redo');
-		} else {
-			console.log(e);
+			return;
 		}
+
+		if (target) {
+			if (target instanceof Character && false /* target.obj.moveFreely */) {
+				if (e.key === 'ArrowLeft') {
+					this.$store.dispatch('objects/shiftCharacterSlot', {
+						id: target!.obj.id,
+						delta: -1,
+					} as IShiftCharacterSlotAction);
+				}
+				if (e.key === 'ArrowRight') {
+					this.$store.dispatch('objects/shiftCharacterSlot', {
+						id: target!.obj.id,
+						delta: 1,
+					} as IShiftCharacterSlotAction);
+				}
+				return;
+			}
+			let x = target ? target.obj.x : 0;
+			let y = target ? target.obj.y : 0;
+			if (e.key === 'ArrowLeft') {
+				x -= e.shiftKey ? 1 : 20;
+			} else if (target && e.key === 'ArrowRight') {
+				x += e.shiftKey ? 1 : 20;
+			} else if (target && e.key === 'ArrowUp') {
+				y -= e.shiftKey ? 1 : 20;
+			} else if (target && e.key === 'ArrowDown') {
+				y += e.shiftKey ? 1 : 20;
+			} else {
+				console.log(e);
+				return;
+			}
+			this.$store.dispatch('objects/setPosition', {
+				id: target!.obj.id,
+				x,
+				y,
+			} as ISetObjectPositionMutation);
+		}
+		console.log(e);
+		return;
 	}
 
 	private renderObjectCache: { [id: string]: IRenderable } = {};
 	private get renderObjects() {
 		const objectsState = this.$store.state.objects as IObjectsState;
 		const order = [...objectsState.order, ...objectsState.onTopOrder];
-		const objects = this.$store.state.objects.objects;
+		const objects = this.$store.state.objects
+			.objects as IObjectsState['objects'];
 		const toUncache = Object.keys(this.renderObjectCache).filter(
 			id => !order.includes(id)
 		);
@@ -588,12 +601,16 @@ export default class App extends Vue {
 				const obj = objects[id];
 				switch (obj.type) {
 					case 'sprite':
-						this.renderObjectCache[id] = new Sprite(
-							(obj as any) as ISprite,
-							this.invalidateRender
+						this.renderObjectCache[id] = new Sprite((obj as any) as ISprite);
+						break;
+					case 'character':
+						this.renderObjectCache[id] = new Character(
+							(obj as any) as ICharacter
 						);
+						break;
 				}
 			}
+			this.renderObjectCache[id].obj = objects[id];
 			return this.renderObjectCache[id];
 		});
 	}
@@ -608,7 +625,9 @@ export default class App extends Vue {
 		nsfwFilter(this.currentBackground);
 		for (const character of this.renderObjects) {
 			if (character instanceof Character) {
-				character.nsfwCheck();
+				this.$store.dispatch('objects/nsfwCheck', {
+					id: character.obj.id,
+				} as INsfwCheckAction);
 			}
 		}
 		this.invalidateRender();

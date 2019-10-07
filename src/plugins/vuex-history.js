@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	/**
 	 *
 	 * @param {Vue} Vue
@@ -24,6 +24,7 @@ module.exports = {
 				};
 			},
 			created() {
+				window.historyStuff = this;
 				if (this.$store) {
 					this.$store.subscribe(mutation => {
 						const exec = () => {

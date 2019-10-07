@@ -1,7 +1,9 @@
 import { RenderContext } from '../renderer/rendererContext';
+import { IObject } from '@/store/objects';
 
 export interface IRenderable {
-	id: string;
+	readonly id: string;
+	obj: IObject;
 	readonly infront: boolean;
 
 	render(rx: RenderContext): Promise<void>;
