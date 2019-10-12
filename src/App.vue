@@ -24,16 +24,16 @@
 		<div id="panels" :class="{ vertical }">
 			<div id="toolbar">
 				<button :class="{ active: panel === 'add' }" @click="panel = panel === 'add' ? '' : 'add'">A</button>
-					<button
-						:class="{ active: panel === 'backgrounds' }"
-						@click="panel = panel === 'backgrounds' ? '' : 'backgrounds'"
+				<button
+					:class="{ active: panel === 'backgrounds' }"
+					@click="panel = panel === 'backgrounds' ? '' : 'backgrounds'"
 				>B</button>
 				<button
 					:class="{ active: panel === 'credits' }"
 					@click="panel = panel === 'credits' ? '' : 'credits'"
 				>C</button>
 				<button @click="download">D</button>
-				</div>
+			</div>
 			<keep-alive>
 				<general-panel
 					v-if="panel === ''"
@@ -63,13 +63,13 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import { State } from 'vuex-class-decorator';
 
 import DokiButton from './components/DokiButton.vue';
-import GeneralPanel from './components/panels/general.vue';
-import AddPanel from './components/panels/add.vue';
-import CharacterPanel from './components/panels/character.vue';
-import SpritePanel from './components/panels/sprite.vue';
-import TextBoxPanel from './components/panels/textbox.vue';
-import CreditsPanel from './components/panels/credits.vue';
-import BackgroundsPanel from './components/panels/backgrounds.vue';
+import GeneralPanel from './components/toolbox/panels/general.vue';
+import AddPanel from './components/toolbox/panels/add.vue';
+import CharacterPanel from './components/toolbox/panels/character.vue';
+import SpritePanel from './components/toolbox/panels/sprite.vue';
+import TextBoxPanel from './components/toolbox/panels/textbox.vue';
+import CreditsPanel from './components/toolbox/panels/credits.vue';
+import BackgroundsPanel from './components/toolbox/panels/backgrounds.vue';
 import MessageConsole from './components/message-console.vue';
 import { characterPositions } from './models/constants';
 import { TextBox } from './models/textbox';

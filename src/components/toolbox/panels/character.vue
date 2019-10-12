@@ -57,10 +57,10 @@ import {
 	ISetObjectFlipMutation,
 } from '@/store/objects';
 import Toggle from '@/components/Toggle.vue';
-import PositionAndSize from '@/components/commonsFieldsets/positionAndSize.vue';
-import Layers from '@/components/commonsFieldsets/layers.vue';
-import Opacity from '@/components/commonsFieldsets/opacity.vue';
-import Delete from '@/components/commonsFieldsets/delete.vue';
+import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
+import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
+import Opacity from '@/components/toolbox/commonsFieldsets/opacity.vue';
+import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
 
 @Component({
 	components: {

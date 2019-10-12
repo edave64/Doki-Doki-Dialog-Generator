@@ -54,10 +54,10 @@ import {
 import Toggle from '@/components/Toggle.vue';
 import { State } from 'vuex-class-decorator';
 import { IHistorySupport } from '@/plugins/vuex-history';
-import PositionAndSize from '@/components/commonsFieldsets/positionAndSize.vue';
-import Layers from '@/components/commonsFieldsets/layers.vue';
-import Opacity from '@/components/commonsFieldsets/opacity.vue';
-import Delete from '@/components/commonsFieldsets/delete.vue';
+import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
+import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
+import Opacity from '@/components/toolbox/commonsFieldsets/opacity.vue';
+import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
 import { ISetObjectFlipMutation } from '@/store/objects';
 
 @Component({
