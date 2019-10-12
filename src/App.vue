@@ -48,7 +48,7 @@
 					@invalidate-render="invalidateRender"
 				/>
 				<credits-panel v-if="panel === 'credits'" />
-				<character-panel v-if="panel === 'character'" :character="selected" />
+				<character-panel v-if="panel === 'character'" :character="selected.obj" />
 				<sprite-panel v-if="panel === 'sprite'" :sprite="selected.obj" />
 				<text-box-panel v-if="panel === 'textBox'" :textbox="selected.obj" />
 			</keep-alive>

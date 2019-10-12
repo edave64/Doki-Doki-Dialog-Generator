@@ -1,6 +1,6 @@
 <template>
 	<div :class="{ panel: true }">
-		<h1>{{character.label}}</h1>
+		<h1>{{label}}</h1>
 		<fieldset v-if="hasMultiplePoses || parts.length > 0">
 			<legend>Pose:</legend>
 			<table>
@@ -26,36 +26,29 @@
 				</tbody>
 			</table>
 		</fieldset>
-		<position-and-size :obj="character.obj" />
-		<layers :obj="character.obj" />
-		<opacity :obj="character.obj" />
+		<position-and-size :obj="character" />
+		<layers :obj="character" />
+		<opacity :obj="character" />
 		<toggle v-model="closeUp" label="Close up?" />
 		<toggle v-model="flip" label="Flip?" />
-		<delete :obj="character.obj" />
+		<delete :obj="character" />
 	</div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { State } from 'vuex-class-decorator';
-import { isWebPSupported } from '@/asset-manager';
 import { IHistorySupport } from '@/plugins/vuex-history';
-import { Character } from '@/models/character';
-import { IRenderable } from '@/models/renderable';
-import { positions, characterPositions, Part } from '@/models/constants';
+import { Part } from '@/models/constants';
 import {
 	getData,
 	getParts,
-	closestCharacterSlot,
 	ISeekPoseAction,
 	ISetCloseMutation,
 	ISeekPosePartAction,
+	ICharacter,
 } from '@/store/objectTypes/characters';
-import {
-	ISetPositionAction,
-	ISetObjectPositionMutation,
-	ISetObjectFlipMutation,
-} from '@/store/objects';
+import { ISetObjectFlipMutation } from '@/store/objects';
 import Toggle from '@/components/toggle.vue';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
@@ -72,8 +65,8 @@ import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
 	},
 })
 export default class CharacterPanel extends Vue {
-	@Prop({ type: Character, required: true })
-	private readonly character!: Character;
+	@Prop({ required: true })
+	private readonly character!: ICharacter;
 
 	@State('nsfw', { namespace: 'ui' })
 	private readonly nsfw!: boolean;
@@ -82,22 +75,22 @@ export default class CharacterPanel extends Vue {
 		return this.$root as any;
 	}
 
-	private get positionNames(): string[] {
-		return positions;
+	private get label(): string {
+		return getData(this.character).name;
 	}
 
 	private get parts(): string[] {
-		return getParts(this.character.obj);
+		return getParts(this.character);
 	}
 
 	private get hasMultiplePoses(): boolean {
-		return getData(this.character.obj).poses.length > 1;
+		return getData(this.character).poses.length > 1;
 	}
 
 	private seekPose(delta: number, nsfw: boolean): void {
 		this.history.transaction(() => {
 			this.$store.dispatch('objects/seekPose', {
-				id: this.character.obj.id,
+				id: this.character.id,
 				delta,
 				nsfw,
 			} as ISeekPoseAction);
@@ -107,7 +100,7 @@ export default class CharacterPanel extends Vue {
 	private seekPart(part: Part, delta: number, nsfw: boolean): void {
 		this.history.transaction(() => {
 			this.$store.dispatch('objects/seekPart', {
-				id: this.character.obj.id,
+				id: this.character.id,
 				delta,
 				nsfw,
 				part,
@@ -120,26 +113,26 @@ export default class CharacterPanel extends Vue {
 	}
 
 	private get flip() {
-		return this.character.obj.flip;
+		return this.character.flip;
 	}
 
 	private set flip(newValue: boolean) {
 		this.history.transaction(() => {
 			this.$store.commit('objects/setFlip', {
-				id: this.character.obj.id,
+				id: this.character.id,
 				flip: newValue,
 			} as ISetObjectFlipMutation);
 		});
 	}
 
 	private get closeUp() {
-		return this.character.obj.close;
+		return this.character.close;
 	}
 
 	private set closeUp(newValue: boolean) {
 		this.history.transaction(() => {
 			this.$store.commit('objects/setClose', {
-				id: this.character.obj.id,
+				id: this.character.id,
 				close: newValue,
 			} as ISetCloseMutation);
 		});
