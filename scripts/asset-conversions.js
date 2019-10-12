@@ -76,23 +76,25 @@ function queueAssetConversions(folder) {
 		png => !folder.files.includes(png + '.lq.png')
 	);
 	if (pngsWithoutLQ.length === allPNGs.length && pngsWithoutLQ > 0) {
-		ret.push(`pngquant -ext .lq.png ${folder.name}*.png`);
+		ret.push(() => runOnConsole(`pngquant -ext .lq.png ${folder.name}*.png`));
 	} else if (pngsWithoutLQ.length > 0) {
 		const files = pngsWithoutLQ
 			.map(png => path.join(folder.name, png) + '.png')
 			.join(' ');
-		ret.push(`pngquant -ext .lq.png ${files}`);
+		ret.push(() => runOnConsole(`pngquant -ext .lq.png ${files}`));
 	}
 
 	const pngsWithoutHQWebp = allPNGs.filter(
 		png => !folder.files.includes(png + '.webp')
 	);
 	for (const png of pngsWithoutHQWebp) {
-		ret.push(
-			`cwebp -lossless ${path.join(folder.name, png)}.png -o ${path.join(
-				folder.name,
-				png
-			)}.webp`
+		ret.push(() =>
+			runOnConsole(
+				`cwebp -lossless ${path.join(folder.name, png)}.png -o ${path.join(
+					folder.name,
+					png
+				)}.webp`
+			)
 		);
 	}
 
@@ -100,32 +102,41 @@ function queueAssetConversions(folder) {
 		png => !folder.files.includes(png + '.lq.webp')
 	);
 	for (const png of pngsWithoutLQWebp) {
-		ret.push(
-			`cwebp -near_lossless 50 ${path.join(
-				folder.name,
-				png
-			)}.png -o ${path.join(folder.name, png)}.lq.webp`
+		ret.push(() =>
+			runOnConsole(
+				`cwebp -near_lossless 50 ${path.join(
+					folder.name,
+					png
+				)}.png -o ${path.join(folder.name, png)}.lq.webp`
+			)
 		);
 	}
 
 	return ret;
 }
 
+function runOnConsole(command) {
+	return new Promise((resolve, reject) => {
+		console.log(command);
+		exec(command, (error, stdout) => {
+			if (error) {
+				console.error(error);
+				reject();
+			}
+			resolve();
+		});
+	});
+}
+
 /**
  * @param {string[]} queue
  */
-function runner(queue) {
+async function runner(queue) {
 	const next = queue.shift();
-
 	if (!next) return;
 
-	console.log(next);
-	exec(next, (error, stdout) => {
-		if (error) {
-			console.error(error);
-		}
-		runner(queue);
-	});
+	await next();
+	runner(queue);
 }
 
 async function run() {
