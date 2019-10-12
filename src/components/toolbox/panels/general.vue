@@ -15,13 +15,13 @@
 		/>
 		<button :disabled="!hasPrevRender" @click="$emit('show-prev-render')">Compare to last download</button>
 		<toggle label="NSFW Mode?" :value="nsfw" @input="setNsfw" />
-		</div>
+	</div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { TextBox } from '@/models/textbox';
-import Toggle from '@/components/Toggle.vue';
+import Toggle from '@/components/toggle.vue';
 import { State } from 'vuex-class-decorator';
 
 @Component({

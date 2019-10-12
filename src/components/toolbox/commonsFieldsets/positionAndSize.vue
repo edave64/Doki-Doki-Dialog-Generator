@@ -29,7 +29,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import Toggle from '@/components/Toggle.vue';
+import Toggle from '@/components/toggle.vue';
 import { IRenderable } from '@/models/renderable';
 import { positions, characterPositions } from '@/models/constants';
 import {

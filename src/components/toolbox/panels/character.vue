@@ -56,7 +56,7 @@ import {
 	ISetObjectPositionMutation,
 	ISetObjectFlipMutation,
 } from '@/store/objects';
-import Toggle from '@/components/Toggle.vue';
+import Toggle from '@/components/toggle.vue';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
 import Opacity from '@/components/toolbox/commonsFieldsets/opacity.vue';

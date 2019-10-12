@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import Toggle from '@/components/Toggle.vue';
+import Toggle from '@/components/toggle.vue';
 import { ICommand } from '@/eventbus/command';
 import eventBus from '@/eventbus/event-bus';
 import { IHistorySupport } from '@/plugins/vuex-history';

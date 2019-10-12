@@ -30,7 +30,7 @@ import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { IBackground, color, Background } from '@/models/background';
 import { VariantBackground } from '@/models/variant-background';
 import { isWebPSupported } from '@/asset-manager';
-import Toggle from '@/components/Toggle.vue';
+import Toggle from '@/components/toggle.vue';
 import { State } from 'vuex-class-decorator';
 
 @Component({

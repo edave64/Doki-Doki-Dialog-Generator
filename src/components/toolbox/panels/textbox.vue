@@ -51,7 +51,7 @@ import {
 	ISetTextBoxControlsContinueMutation,
 	ISetTextBoxTextMutation,
 } from '@/store/objectTypes/textbox';
-import Toggle from '@/components/Toggle.vue';
+import Toggle from '@/components/toggle.vue';
 import { State } from 'vuex-class-decorator';
 import { IHistorySupport } from '@/plugins/vuex-history';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';

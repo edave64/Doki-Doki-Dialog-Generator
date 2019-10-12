@@ -13,7 +13,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { isWebPSupported } from '@/asset-manager';
 import { Character } from '@/models/character';
-import Toggle from '@/components/Toggle.vue';
+import Toggle from '@/components/toggle.vue';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
 import Opacity from '@/components/toolbox/commonsFieldsets/opacity.vue';
