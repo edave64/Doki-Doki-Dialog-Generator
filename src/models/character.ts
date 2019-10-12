@@ -13,28 +13,19 @@ import {
 } from '@/store/objectTypes/characters';
 
 export class Character implements IRenderable, IDragable {
-	public get infront(): boolean {
-		return this.obj.onTop;
-	}
-	public id: string = '';
 	private lq: boolean = true;
-	private selected: boolean = false;
 	private localRenderer = new Renderer(960, 960);
 	private lastVersion = -1;
 	private hitDetectionFallback = false;
+
+	public get id(): string {
+		return this.obj.id;
+	}
 
 	public constructor(public readonly obj: ICharacter) {}
 
 	public get label() {
 		return getData(this.obj).name;
-	}
-
-	public select() {
-		this.selected = true;
-	}
-
-	public unselect() {
-		this.selected = false;
 	}
 
 	public async updateLocalCanvas() {
@@ -107,7 +98,7 @@ export class Character implements IRenderable, IDragable {
 		});
 	}
 
-	public async render(rx: RenderContext) {
+	public async render(selected: boolean, rx: RenderContext) {
 		if (this.lastVersion !== this.obj.version || this.lq !== !rx.hq) {
 			await this.updateLocalCanvas();
 		}
@@ -124,8 +115,7 @@ export class Character implements IRenderable, IDragable {
 			w: size,
 			h: size,
 			flip: this.obj.flip,
-			shadow:
-				this.selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
+			shadow: selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
 			opacity: this.obj.opacity,
 		});
 	}

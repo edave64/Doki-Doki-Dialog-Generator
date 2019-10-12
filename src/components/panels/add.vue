@@ -15,6 +15,7 @@
 			<input type="file" ref="upload" @change="onFileUpload" />
 		</div>
 		<div class="btn custom-sprite" @click="uploadFromURL">Custom sprite from URL</div>
+		<button @click="addTextBox">Textbox</button>
 	</div>
 </template>
 
@@ -28,6 +29,7 @@ import {
 	registerAssetWithURL,
 } from '../../asset-manager';
 import { ICreateCharacterAction } from '../../store/objectTypes/characters';
+import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
 
 @Component({
 	components: {},
@@ -68,6 +70,10 @@ export default class AddPanel extends Vue {
 		const name = 'customAsset' + ++this.customAssetCount;
 		await registerAssetWithURL(name, url);
 		this.$emit('add-custom-asset', name);
+	}
+
+	private addTextBox() {
+		this.$store.dispatch('objects/createTextBox', {} as ICreateTextBoxAction);
 	}
 
 	private onChosen(id: string) {

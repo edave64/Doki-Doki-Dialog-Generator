@@ -4,8 +4,7 @@ import { IObject } from '@/store/objects';
 export interface IRenderable {
 	readonly id: string;
 	obj: IObject;
-	readonly infront: boolean;
 
-	render(rx: RenderContext): Promise<void>;
+	render(selected: boolean, rx: RenderContext): Promise<void>;
 	hitTest(hx: number, hy: number): boolean;
 }

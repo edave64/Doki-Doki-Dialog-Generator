@@ -15,40 +15,7 @@
 		/>
 		<button :disabled="!hasPrevRender" @click="$emit('show-prev-render')">Compare to last download</button>
 		<toggle label="NSFW Mode?" :value="nsfw" @input="setNsfw" />
-		<toggle label="Textbox visible?" v-model="options.display" />
-		<toggle label="Textbox corrupt?" v-model="options.corrupted" />
-		<div>
-			<label for="current_talking">Person talking:</label>
-			<br />
-			<select id="current_talking" v-model="options.talking">
-				<option value>No-one</option>
-				<option value="Sayori">Sayori</option>
-				<option value="Yuri">Yuri</option>
-				<option value="Natsuki">Natsuki</option>
-				<option value="Monika">Monika</option>
-				<option value="FeMC">FeMC</option>
-				<option value="MC">MC</option>
-				<option value="Amy">Amy</option>
-				<option value="other">Other</option>
-			</select>
 		</div>
-		<div>
-			<label for="custom_name">Other name:</label>
-			<br />
-			<input id="custom_name" v-model="options.customName" />
-		</div>
-		<toggle label="Controls visible?" v-model="options.showControls" />
-		<toggle label="Able to skip?" v-model="options.allowSkipping" />
-		<toggle label="Continue arrow?" v-model="options.showContinueArrow" />
-		<div id="dialog_text_wrapper">
-			<label for="dialog_text">Dialog:</label>
-			<textarea v-model="options.dialog" id="dialog_text" />
-		</div>
-		<p>
-			Formatting:
-			<br />[In brackets] for editied style text
-		</p>
-	</div>
 </template>
 
 <script lang="ts">
@@ -63,17 +30,11 @@ import { State } from 'vuex-class-decorator';
 	},
 })
 export default class GeneralPanel extends Vue {
-	@Prop({ required: true }) private readonly options!: Textbox;
 	@Prop({ required: true, type: Boolean })
 	private readonly lqRendering!: boolean;
 	@Prop({ required: true, type: Boolean })
 	private readonly hasPrevRender!: boolean;
 	@State('nsfw', { namespace: 'ui' }) private readonly nsfw!: boolean;
-
-	@Watch('options.customName')
-	private talkingChange(): void {
-		this.options.talking = 'other';
-	}
 
 	private setNsfw(value: boolean) {
 		this.$store.commit('ui/setNsfw', value);

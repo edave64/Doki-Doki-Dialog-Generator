@@ -24,20 +24,19 @@
 		<div id="panels" :class="{ vertical }">
 			<div id="toolbar">
 				<button :class="{ active: panel === 'add' }" @click="panel = panel === 'add' ? '' : 'add'">A</button>
-				<button
-					:class="{ active: panel === 'backgrounds' }"
-					@click="panel = panel === 'backgrounds' ? '' : 'backgrounds'"
+					<button
+						:class="{ active: panel === 'backgrounds' }"
+						@click="panel = panel === 'backgrounds' ? '' : 'backgrounds'"
 				>B</button>
 				<button
 					:class="{ active: panel === 'credits' }"
 					@click="panel = panel === 'credits' ? '' : 'credits'"
 				>C</button>
 				<button @click="download">D</button>
-			</div>
+				</div>
 			<keep-alive>
 				<general-panel
 					v-if="panel === ''"
-					:options="textbox"
 					:has-prev-render="prevRender !== ''"
 					:lqRendering.sync="lqRendering"
 					@show-prev-render="showPreviousRender"
@@ -49,8 +48,9 @@
 					@invalidate-render="invalidateRender"
 				/>
 				<credits-panel v-if="panel === 'credits'" />
-				<character-panel v-if="panel === 'character'" :character="selectedCharacter" />
-				<sprite-panel v-if="panel === 'sprite'" :sprite="selectedSprite.obj" />
+				<character-panel v-if="panel === 'character'" :character="selected" />
+				<sprite-panel v-if="panel === 'sprite'" :sprite="selected.obj" />
+				<text-box-panel v-if="panel === 'textBox'" :textbox="selected.obj" />
 			</keep-alive>
 		</div>
 	</div>
@@ -67,11 +67,12 @@ import GeneralPanel from './components/panels/general.vue';
 import AddPanel from './components/panels/add.vue';
 import CharacterPanel from './components/panels/character.vue';
 import SpritePanel from './components/panels/sprite.vue';
+import TextBoxPanel from './components/panels/textbox.vue';
 import CreditsPanel from './components/panels/credits.vue';
 import BackgroundsPanel from './components/panels/backgrounds.vue';
 import MessageConsole from './components/message-console.vue';
 import { characterPositions } from './models/constants';
-import { Textbox } from './models/textbox';
+import { TextBox } from './models/textbox';
 import { Character } from './models/character';
 import { Sprite } from './models/sprite';
 import { IDragable } from './models/dragable';
@@ -79,6 +80,7 @@ import { Background, IBackground, nsfwFilter } from './models/background';
 import { VariantBackground } from './models/variant-background';
 import { IRenderable } from './models/renderable';
 import { ISprite, ICreateSpriteAction } from './store/objectTypes/sprite';
+import { ITextBox } from '@/store/objectTypes/textbox';
 import {
 	IObjectsState,
 	IObject,
@@ -98,12 +100,12 @@ import eventBus, { InvalidateRenderEvent } from './eventbus/event-bus';
 
 @Component({
 	components: {
-		DokiButton,
 		GeneralPanel,
 		AddPanel,
 		BackgroundsPanel,
 		CreditsPanel,
 		CharacterPanel,
+		TextBoxPanel,
 		SpritePanel,
 		MessageConsole,
 	},
@@ -114,13 +116,7 @@ export default class App extends Vue {
 	public currentBackground: IBackground | null = null;
 
 	private sdCtx: CanvasRenderingContext2D | undefined;
-	private selectedCharacter: Character | null = null;
-	private selectedSprite: Sprite | null = null;
-	private characterSelectorOpen: boolean = false;
-	private backgroundSelectorOpen: boolean = false;
-	private editDialog: boolean = false;
-
-	private textbox = new Textbox();
+	private selected: IRenderable | null = null;
 
 	private renderer: Renderer = new Renderer();
 	private showUI: boolean = true;
@@ -145,37 +141,16 @@ export default class App extends Vue {
 		return this.$root as any;
 	}
 
-	@Watch('selectedCharacter')
-	public onSelectedCharacterChange(
-		newCharacter: Character,
-		oldCharacter: Character
-	) {
-		if (oldCharacter) oldCharacter.unselect();
-		if (newCharacter) {
-			newCharacter.select();
-			this.panel = 'character';
+	@Watch('selected')
+	public onSelectedCChange(newObj: IRenderable, oldObj: IRenderable) {
+		if (newObj) {
+			this.panel = newObj.obj.type;
+		} else {
+			this.panel = '';
 		}
 		this.invalidateRender();
 	}
 
-	@Watch('selectedSprite')
-	public onSelectedSpriteChange(newSprite: Sprite, oldSprite: Sprite) {
-		if (oldSprite) oldSprite.unselect();
-		if (newSprite) {
-			newSprite.select();
-			this.panel = 'sprite';
-		}
-		this.invalidateRender();
-	}
-
-	@Watch('panel')
-	public onPanel(newPanel: string) {
-		if (newPanel !== 'character') {
-			this.selectedCharacter = null;
-		}
-	}
-
-	@Watch('textbox', { deep: true })
 	@Watch('lqRendering')
 	@Watch('currentBackground')
 	public invalidateRender() {
@@ -230,17 +205,7 @@ export default class App extends Vue {
 				}
 
 				for (const character of this.renderObjects) {
-					if (!character.infront) {
-						await character.render(rx);
-					}
-				}
-
-				await this.textbox.render(rx);
-
-				for (const character of this.renderObjects) {
-					if (character.infront) {
-						await character.render(rx);
-					}
+					await character.render(this.selected === character, rx);
 				}
 			}
 		} finally {
@@ -262,6 +227,9 @@ export default class App extends Vue {
 			this.invalidateRender();
 		});
 		this.$store.subscribe(this.invalidateRender);
+		if (Object.keys(this.$store.state.objects.objects).length === 0) {
+			this.$store.dispatch('objects/createTextBox', {} as ICreateTextBoxAction);
+		}
 	}
 
 	private destroyed(): void {
@@ -274,8 +242,7 @@ export default class App extends Vue {
 
 		window.addEventListener('keypress', e => {
 			if (e.keyCode === 27) {
-				this.selectedCharacter = null;
-				this.panel = '';
+				this.selected = null;
 			}
 		});
 
@@ -385,9 +352,7 @@ export default class App extends Vue {
 
 		const characters = this.objectsAt(sx, sy);
 
-		const currentCharacterIdx = characters.indexOf(
-			(this.selectedCharacter || this.selectedSprite)!
-		);
+		const currentCharacterIdx = characters.indexOf(this.selected!);
 		let selectedObject: IRenderable | null;
 
 		if (currentCharacterIdx === 0) {
@@ -400,16 +365,9 @@ export default class App extends Vue {
 		}
 
 		if (!selectedObject) {
-			this.selectedCharacter = null;
-			this.selectedSprite = null;
-		} else if (selectedObject instanceof Sprite) {
-			this.selectedCharacter = null;
-			this.selectedSprite = selectedObject;
-		} else if (selectedObject instanceof Character) {
-			this.selectedSprite = null;
-			this.selectedCharacter = selectedObject;
+			this.selected = null;
 		} else {
-			throw new Error('Unknown selected object');
+			this.selected = selectedObject;
 		}
 	}
 
@@ -427,7 +385,7 @@ export default class App extends Vue {
 
 	private onDragStart(e: DragEvent) {
 		e.preventDefault();
-		const selected = this.selectedCharacter || this.selectedSprite;
+		const selected = this.selected;
 		if (!selected) return;
 		this.draggedObject = selected.obj;
 		const [x, y] = this.toRendererCoordinate(e.clientX, e.clientY);
@@ -438,7 +396,7 @@ export default class App extends Vue {
 	}
 
 	private onTouchStart(e: TouchEvent) {
-		const selected = this.selectedCharacter || this.selectedSprite;
+		const selected = this.selected;
 		if (!selected) return;
 		this.draggedObject = selected.obj;
 		const [x, y] = this.toRendererCoordinate(
@@ -533,7 +491,7 @@ export default class App extends Vue {
 	}
 
 	private onKeydown(e: KeyboardEvent) {
-		const target = this.selectedCharacter || this.selectedSprite;
+		const target = this.selected;
 		if (target && e.key === 'Delete') {
 			this.$store.dispatch('objects/removeObject', {
 				id: target.obj.id,
@@ -599,6 +557,9 @@ export default class App extends Vue {
 		);
 
 		for (const id of toUncache) {
+			if (this.selected && this.selected.id === id) {
+				this.selected = null;
+			}
 			this.$delete(this.renderObjectCache, id);
 		}
 
@@ -613,6 +574,9 @@ export default class App extends Vue {
 						this.renderObjectCache[id] = new Character(
 							(obj as any) as ICharacter
 						);
+						break;
+					case 'textBox':
+						this.renderObjectCache[id] = new TextBox((obj as any) as ITextBox);
 						break;
 				}
 			}

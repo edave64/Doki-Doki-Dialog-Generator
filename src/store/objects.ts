@@ -2,6 +2,7 @@ import { Module } from 'vuex';
 import { ICommand } from '@/eventbus/command';
 import { spriteMutations, spriteActions } from './objectTypes/sprite';
 import { characterActions, characterMutations } from './objectTypes/characters';
+import { textBoxActions, textBoxMutations } from './objectTypes/textbox';
 
 export interface IObjectsState {
 	objects: { [id: string]: IObject };
@@ -20,7 +21,7 @@ export interface IObject {
 	onTop: boolean;
 }
 
-export type ObjectTypes = 'sprite' | 'character';
+export type ObjectTypes = 'sprite' | 'character' | 'textBox';
 
 export default {
 	namespaced: true,
@@ -69,6 +70,7 @@ export default {
 		},
 		...spriteMutations,
 		...characterMutations,
+		...textBoxMutations,
 	},
 	actions: {
 		removeObject({ state, commit }, command: IRemoveObjectAction) {
@@ -77,16 +79,16 @@ export default {
 				id: command.id,
 				onTop: obj.onTop,
 			} as IRemoveFromListMutation);
-			commit('removeObjects', {
+			commit('removeObject', {
 				id: command.id,
 			} as IRemoveObjectMutation);
 		},
 		setPosition({ state, commit, dispatch }, command: ISetPositionAction) {
 			const obj = state.objects[command.id];
-			if (obj.type === 'sprite') {
-				commit('setPosition', command as ISetObjectPositionMutation);
-			} else {
+			if (obj.type === 'character') {
 				dispatch('setCharacterPosition', command as ISetPositionAction);
+			} else {
+				commit('setPosition', command as ISetObjectPositionMutation);
 			}
 		},
 		setOnTop({ state, commit }, command: IObjectSetOnTopAction) {
@@ -130,6 +132,7 @@ export default {
 		},
 		...spriteActions,
 		...characterActions,
+		...textBoxActions,
 	},
 } as Module<IObjectsState, never>;
 

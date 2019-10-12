@@ -1,175 +1,173 @@
 import { RenderContext } from '../renderer/rendererContext';
 import { getAsset } from '../asset-manager';
+import { ITextBox } from '@/store/objectTypes/textbox';
+import { IRenderable } from './renderable';
+import {
+	TextBoxCorruptedX,
+	TextBoxY,
+	TextBoxX,
+	NameboxX,
+	NameboxY,
+	NameboxTextX,
+	NameboxTextY,
+	NameboxTextStyle,
+	ControlsXHistory,
+	ControlsY,
+	ControlsTextStyle,
+	ControlsXSkip,
+	ControlsXStuff,
+	ControlsTextDisabledStyle,
+	TextBoxTextY,
+	TextBoxTextCorruptedYOffset,
+	TextBoxTextX,
+	TextBoxTextCorruptedXOffset,
+	TextBoxCorruptedStyle,
+	TextBoxStyle,
+	TextBoxCorruptedKerning,
+	TextBoxKerning,
+	TextBoxLineHeight,
+	TextBoxWidth,
+	NameboxHeight,
+	TextBoxHeight,
+	TextBoxCorruptedWidth,
+	NameboxXOffset,
+	NameboxWidth,
+	NameboxTextYOffset,
+	ControlsYOffset,
+	ControlsXHistoryOffset,
+	ControlsXSkipOffset,
+	ControlsXStuffOffset,
+	ArrowXRightOffset,
+	ArrowYBottomOffset,
+	TextBoxTextYOffset,
+	TextBoxTextXOffset,
+} from './textBoxConstants';
+import { Renderer } from '@/renderer/renderer';
 
-const ScreenWidth = 1280;
-
-const TextBoxWidth = 816;
-const TextBoxCorruptedWidth = 900;
-const TextBoxY = 568;
-const TextBoxKerning = 0;
-const TextBoxLineHeight = 29;
-const TextBoxCorruptedKerning = 8;
-const TextBoxTextXOffset = 38;
-const TextBoxTextYOffset = 50;
-
-const TextBoxTextCorruptedXOffset = 9;
-const TextBoxTextCorruptedYOffset = 9;
-
-const NameboxHeight = 39;
-const NameboxWidth = 168;
-const NameboxXOffset = 34;
-const NameboxTextYOffset = 29;
-
-const ControlsYOffset = 134;
-const ControlsXHistoryOffset = 282;
-const ControlsXSkipOffset = 336;
-const ControlsXStuffOffset = 370;
-
-const ArrowX = 1017.25;
-const ArrowY = 688;
-
-const NameboxTextStyle = {
-	align: 'center' as CanvasTextAlign,
-	font: '24px riffic',
-	outline: {
-		style: '#b59',
-		width: 6,
-	},
-	fill: {
-		style: 'white',
-	},
-};
-
-const ControlsTextStyle = {
-	align: 'left' as CanvasTextAlign,
-	font: '13px aller',
-	fill: {
-		style: '#522',
-	},
-};
-
-const ControlsTextDisabledStyle = {
-	...ControlsTextStyle,
-	fill: {
-		style: '#a66',
-	},
-};
-
-const TextBoxStyle = {
-	align: 'left' as CanvasTextAlign,
-	font: '24px aller',
-	outline: {
-		style: '#523140',
-		width: 4,
-	},
-	fill: {
-		style: '#fff',
-	},
-};
-
-const TextBoxCorruptedStyle = {
-	align: 'left' as CanvasTextAlign,
-	font: '24px verily',
-	outline: {
-		style: '#000',
-		width: 20,
-	},
-	fill: {
-		style: '#fff',
-	},
-};
-
-const TextBoxX = ScreenWidth / 2 - TextBoxWidth / 2; // 232
-const TextBoxCorruptedX = ScreenWidth / 2 - TextBoxCorruptedWidth / 2;
-const TextBoxTextX = TextBoxX + TextBoxTextXOffset;
-const TextBoxTextY = TextBoxY + TextBoxTextYOffset;
-
-const NameboxY = TextBoxY - NameboxHeight;
-const NameboxX = TextBoxX + NameboxXOffset;
-const NameboxTextX = NameboxX + NameboxWidth / 2;
-const NameboxTextY = NameboxY + NameboxTextYOffset;
-
-const ControlsY = TextBoxY + ControlsYOffset;
-const ControlsXHistory = TextBoxX + ControlsXHistoryOffset;
-const ControlsXSkip = TextBoxX + ControlsXSkipOffset;
-const ControlsXStuff = TextBoxX + ControlsXStuffOffset;
-
-export class Textbox {
+export class TextBox implements IRenderable {
 	public display: boolean = true;
-	public corrupted: boolean = false;
-	public showControls: boolean = true;
-	public allowSkipping: boolean = true;
-	public showContinueArrow: boolean = true;
-	public talking: string = '';
-	public customName: string = '';
-	public dialog: string = '';
+	private lastVersion = -1;
+	private lastX = 0;
+	private lastY = 0;
+	private localRenderer = new Renderer(1280, 720);
 
-	public async render(rx: RenderContext) {
-		if (!this.display) return;
-
-		if (this.corrupted) {
-			rx.drawImage({
-				image: await getAsset('textbox_monika'),
-				x: TextBoxCorruptedX,
-				y: TextBoxY,
-			});
-		} else {
-			rx.drawImage({
-				image: await getAsset('textbox'),
-				x: TextBoxX,
-				y: TextBoxY,
-			});
-		}
-
-		const name = this.talking;
-		if (name) {
-			rx.drawImage({
-				image: await getAsset('namebox'),
-				x: NameboxX,
-				y: NameboxY,
-			});
-			rx.drawText({
-				x: NameboxTextX,
-				y: NameboxTextY,
-				text: name === 'other' ? this.customName : name,
-				...NameboxTextStyle,
-			});
-		}
-
-		this.renderText(rx);
-
-		if (this.showControls) {
-			rx.drawText({
-				text: 'History',
-				x: ControlsXHistory,
-				y: ControlsY,
-				...ControlsTextStyle,
-			});
-			rx.drawText({
-				text: 'Skip',
-				x: ControlsXSkip,
-				y: ControlsY,
-				...(this.allowSkipping ? ControlsTextStyle : ControlsTextDisabledStyle),
-			});
-			rx.drawText({
-				text: 'Auto   Save   Load   Settings',
-				x: ControlsXStuff,
-				y: ControlsY,
-				...ControlsTextStyle,
-			});
-		}
-
-		if (this.showContinueArrow) {
-			rx.drawImage({ image: await getAsset('next'), x: ArrowX, y: ArrowY });
-		}
+	public get id() {
+		return this.obj.id;
 	}
 
-	private renderText(rx: RenderContext): void {
+	public hitTest(hx: number, hy: number): boolean {
+		const w2 = TextBoxWidth / 2;
+		const x1 = this.obj.x - w2;
+		const x2 = x1 + TextBoxWidth;
+		const y1 = this.obj.y;
+		const y2 = y1 + NameboxHeight + TextBoxHeight;
+		return x1 <= hx && x2 >= hx && y1 <= hy && y2 >= hy;
+	}
+
+	public constructor(public obj: ITextBox) {}
+
+	public async render(selected: boolean, rx: RenderContext) {
+		if (
+			this.lastVersion !== this.obj.version ||
+			this.lastX !== this.obj.x ||
+			this.lastY !== this.obj.y
+		) {
+			await this.updateLocalCanvas();
+			this.lastVersion = this.obj.version;
+			this.lastX = this.obj.x;
+			this.lastY = this.obj.y;
+		}
+
+		rx.drawImage({
+			image: this.localRenderer,
+			x: 0,
+			y: 0,
+			flip: this.obj.flip,
+			shadow: selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
+			opacity: this.obj.opacity,
+		});
+	}
+
+	public async updateLocalCanvas() {
+		await this.localRenderer.render(async rx => {
+			const w =
+				this.obj.style === 'corrupt' ? TextBoxCorruptedWidth : TextBoxWidth;
+			const w2 = w / 2;
+			const x = this.obj.x - w2;
+			const y = this.obj.y;
+
+			if (this.obj.style === 'corrupt') {
+				rx.drawImage({
+					image: await getAsset('textbox_monika'),
+					x,
+					y: y + NameboxHeight,
+				});
+			} else {
+				rx.drawImage({
+					image: await getAsset('textbox'),
+					x,
+					y: y + NameboxHeight,
+				});
+			}
+
+			const name = this.obj.talking;
+			if (name) {
+				rx.drawImage({
+					image: await getAsset('namebox'),
+					x: x + NameboxXOffset,
+					y,
+				});
+				rx.drawText({
+					x: x + NameboxXOffset + NameboxWidth / 2,
+					y: y + NameboxTextYOffset,
+					text: name,
+					...NameboxTextStyle,
+				});
+			}
+
+			this.renderText(rx, x, y);
+
+			const controlsY = y + NameboxHeight + ControlsYOffset;
+
+			if (this.obj.controls) {
+				rx.drawText({
+					text: 'History',
+					x: x + ControlsXHistoryOffset,
+					y: controlsY,
+					...ControlsTextStyle,
+				});
+				rx.drawText({
+					text: 'Skip',
+					x: x + ControlsXSkipOffset,
+					y: controlsY,
+					...(this.obj.skip ? ControlsTextStyle : ControlsTextDisabledStyle),
+				});
+				rx.drawText({
+					text: 'Auto   Save   Load   Settings',
+					x: x + ControlsXStuffOffset,
+					y: controlsY,
+					...ControlsTextStyle,
+				});
+			}
+
+			if (this.obj.continue) {
+				const arrowX = x + TextBoxWidth - ArrowXRightOffset;
+				const arrowY = y + NameboxHeight + TextBoxHeight - ArrowYBottomOffset;
+				rx.drawImage({
+					image: await getAsset('next'),
+					x: arrowX,
+					y: arrowY,
+				});
+			}
+		});
+	}
+
+	private renderText(rx: RenderContext, baseX: number, baseY: number): void {
 		const text: DialogLetter[][] = [];
 
 		let b = false;
 
-		for (const line of this.dialog.split('\n')) {
+		for (const line of this.obj.text.split('\n')) {
 			let cl;
 			text.push((cl = []));
 			for (const l of line) {
@@ -183,14 +181,15 @@ export class Textbox {
 			}
 		}
 
-		let y = TextBoxTextY;
+		const startX = baseX + TextBoxTextXOffset;
+		let y = baseY + NameboxHeight + TextBoxTextYOffset;
 
 		if (text[0] && text[0][0] && text[0][0].b) {
 			y += TextBoxTextCorruptedYOffset;
 		}
 
 		for (const line of text) {
-			let x = TextBoxTextX;
+			let x = startX;
 
 			if (line[0] && line[0].b) {
 				x += TextBoxTextCorruptedXOffset;

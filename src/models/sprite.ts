@@ -9,17 +9,18 @@ import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 const BaseXPosition = 640;
 
 export class Sprite implements IRenderable, IDragable {
-	public readonly id: string;
-	public get infront(): boolean {
-		return this.obj.onTop;
-	}
 	public ratio: number = 0;
 	public lockedRatio: boolean = true;
 	private asset: HTMLImageElement | null = null;
-	private selected: boolean = false;
+
+	public get id(): string {
+		return this.obj.id;
+	}
+	public get infront(): boolean {
+		return this.obj.onTop;
+	}
 
 	public constructor(public readonly obj: ISprite) {
-		this.id = obj.id;
 		getAsset(obj.assetName)
 			.then(asset => {
 				if (asset instanceof ErrorAsset) {
@@ -33,15 +34,7 @@ export class Sprite implements IRenderable, IDragable {
 			});
 	}
 
-	public select() {
-		this.selected = true;
-	}
-
-	public unselect() {
-		this.selected = false;
-	}
-
-	public async render(rx: RenderContext) {
+	public async render(selected: boolean, rx: RenderContext) {
 		if (!this.asset) return;
 		const x = this.obj.x - this.obj.width / 2;
 		rx.drawImage({
@@ -50,8 +43,7 @@ export class Sprite implements IRenderable, IDragable {
 			y: this.obj.y,
 			w: this.obj.width,
 			h: this.obj.height,
-			shadow:
-				this.selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
+			shadow: selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
 			flip: this.obj.flip,
 			opacity: this.obj.opacity,
 		});
