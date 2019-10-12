@@ -21,38 +21,15 @@
 			>HTML5 is required to use the Doki Doki Dialog Generator.</canvas>
 		</div>
 		<message-console :loading="currentlyRendering" id="messages" />
-		<div id="panels" :class="{ vertical }">
-			<div id="toolbar">
-				<button :class="{ active: panel === 'add' }" @click="panel = panel === 'add' ? '' : 'add'">A</button>
-				<button
-					:class="{ active: panel === 'backgrounds' }"
-					@click="panel = panel === 'backgrounds' ? '' : 'backgrounds'"
-				>B</button>
-				<button
-					:class="{ active: panel === 'credits' }"
-					@click="panel = panel === 'credits' ? '' : 'credits'"
-				>C</button>
-				<button @click="download">D</button>
-			</div>
-			<keep-alive>
-				<general-panel
-					v-if="panel === ''"
-					:has-prev-render="prevRender !== ''"
-					:lqRendering.sync="lqRendering"
-					@show-prev-render="showPreviousRender"
-				/>
-				<add-panel v-if="panel === 'add'" />
-				<backgrounds-panel
-					v-if="panel === 'backgrounds'"
-					v-model="currentBackground"
-					@invalidate-render="invalidateRender"
-				/>
-				<credits-panel v-if="panel === 'credits'" />
-				<character-panel v-if="panel === 'character'" :character="selected.obj" />
-				<sprite-panel v-if="panel === 'sprite'" :sprite="selected.obj" />
-				<text-box-panel v-if="panel === 'textBox'" :textbox="selected.obj" />
-			</keep-alive>
-		</div>
+		<tool-box
+			:selected="selected ? selected.obj : null"
+			:lqRendering.sync="lqRendering"
+			:prevRender="prevRender"
+			:currentBackground.sync="currentBackground"
+			@download="download"
+			@clear-selection="selected = null"
+			@show-prev-render="showPreviousRender"
+		/>
 	</div>
 </template>
 
@@ -62,21 +39,12 @@
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { State } from 'vuex-class-decorator';
 
-import DokiButton from './components/DokiButton.vue';
-import GeneralPanel from './components/toolbox/panels/general.vue';
-import AddPanel from './components/toolbox/panels/add.vue';
-import CharacterPanel from './components/toolbox/panels/character.vue';
-import SpritePanel from './components/toolbox/panels/sprite.vue';
-import TextBoxPanel from './components/toolbox/panels/textbox.vue';
-import CreditsPanel from './components/toolbox/panels/credits.vue';
-import BackgroundsPanel from './components/toolbox/panels/backgrounds.vue';
+import ToolBox from './components/toolbox/toolbox.vue';
 import MessageConsole from './components/message-console.vue';
-import { characterPositions } from './models/constants';
 import { TextBox } from './models/textbox';
 import { Character } from './models/character';
 import { Sprite } from './models/sprite';
-import { IDragable } from './models/dragable';
-import { Background, IBackground, nsfwFilter } from './models/background';
+import { IBackground, nsfwFilter } from './models/background';
 import { VariantBackground } from './models/variant-background';
 import { IRenderable } from './models/renderable';
 import { ISprite, ICreateSpriteAction } from './store/objectTypes/sprite';
@@ -101,13 +69,7 @@ import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 
 @Component({
 	components: {
-		GeneralPanel,
-		AddPanel,
-		BackgroundsPanel,
-		CreditsPanel,
-		CharacterPanel,
-		TextBoxPanel,
-		SpritePanel,
+		ToolBox,
 		MessageConsole,
 	},
 })
@@ -143,15 +105,6 @@ export default class App extends Vue {
 	}
 
 	@Watch('selected')
-	public onSelectedCChange(newObj: IRenderable, oldObj: IRenderable) {
-		if (newObj) {
-			this.panel = newObj.obj.type;
-		} else {
-			this.panel = '';
-		}
-		this.invalidateRender();
-	}
-
 	@Watch('lqRendering')
 	@Watch('currentBackground')
 	public invalidateRender() {
@@ -629,106 +582,6 @@ h1 {
 	color: black;
 	font-family: riffic;
 	text-align: center;
-}
-
-#panels {
-	background-color: #ffffff;
-	border: 3px solid #ffbde1;
-	position: absolute;
-	display: flex;
-
-	.panel {
-		display: flex;
-		flex-direction: column;
-		padding: 4px;
-	}
-
-	&:not(.vertical) {
-		flex-direction: row;
-		left: 0;
-		bottom: 0;
-		height: 186px;
-		width: calc(100vw - 6px);
-
-		.panel {
-			flex-grow: 1;
-			flex-wrap: wrap;
-			align-content: flex-start;
-			overflow-x: auto;
-			overflow-y: hidden;
-
-			> * {
-				margin-right: 8px;
-			}
-		}
-
-		#toolbar {
-			width: 48px;
-			height: 100%;
-			float: left;
-
-			button {
-				border-bottom: none;
-
-				&:nth-child(4) {
-					border-bottom: 3px solid #ffbde1;
-				}
-
-				&.active {
-					border-right: 3px solid white;
-				}
-			}
-		}
-
-		h1 {
-			writing-mode: vertical-rl;
-			height: 100%;
-		}
-	}
-
-	&.vertical {
-		flex-direction: column;
-		top: 0;
-		right: 0;
-		height: calc(100vh - 6px);
-		width: 186px;
-
-		.panel {
-			overflow-x: hidden;
-			overflow-y: auto;
-		}
-
-		#toolbar {
-			width: calc(100% + 6px);
-			button {
-				border-right: none;
-
-				&:nth-child(4) {
-					border-right: 3px solid #ffbde1;
-				}
-
-				&.active {
-					border-bottom: 3px solid white;
-				}
-			}
-		}
-	}
-
-	#toolbar {
-		margin-top: -3px;
-		margin-left: -3px;
-		button {
-			outline: 0;
-			width: 48px;
-			height: 48px;
-			background-color: #ffe6f4;
-			border: 3px solid #ffbde1;
-
-			&.active {
-				background: white;
-			}
-		}
-	}
 }
 
 #messages {
