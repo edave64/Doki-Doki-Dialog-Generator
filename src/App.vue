@@ -20,7 +20,7 @@
 				@mouseenter="onMouseEnter"
 			>HTML5 is required to use the Doki Doki Dialog Generator.</canvas>
 		</div>
-		<message-console :loading="currentlyRendering" id="messages" />
+		<message-console :loading="currentlyRendering" />
 		<tool-box
 			:selected="selected ? selected.obj : null"
 			:lqRendering.sync="lqRendering"
@@ -582,19 +582,5 @@ h1 {
 	color: black;
 	font-family: riffic;
 	text-align: center;
-}
-
-#messages {
-	position: absolute;
-
-	&.vertical {
-		right: 200px;
-		top: 0;
-	}
-
-	&:not(.vertical) {
-		bottom: 200px;
-		left: 0;
-	}
 }
 </style>

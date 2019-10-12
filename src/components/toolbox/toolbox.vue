@@ -117,7 +117,7 @@ export default class ToolBox extends Vue {
 		flex-direction: row;
 		left: 0;
 		bottom: 0;
-		height: 186px;
+		height: 192px;
 		width: calc(100vw - 6px);
 
 		.panel {
@@ -160,8 +160,8 @@ export default class ToolBox extends Vue {
 		flex-direction: column;
 		top: 0;
 		right: 0;
-		height: calc(100vh - 6px);
-		width: 186px;
+		height: 100%;
+		width: 192px;
 
 		.panel {
 			overflow-x: hidden;

@@ -1,5 +1,5 @@
 <template>
-	<div class="messageConsole">
+	<div id="messageConsole" :class="{ vertical }">
 		<p v-if="showLoading">Loading...</p>
 		<p v-for="(message, i) in messages" :key="message + '_' + i">{{message}}</p>
 	</div>
@@ -7,6 +7,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
+import { State } from 'vuex-class-decorator';
 import EventBus, {
 	AssetFailureEvent,
 	CustomAssetFailureEvent,
@@ -18,6 +19,7 @@ import EventBus, {
 export default class MessageConsole extends Vue {
 	@Prop({ required: true, type: Boolean }) private readonly loading!: boolean;
 
+	@State('vertical', { namespace: 'ui' }) private readonly vertical!: boolean;
 	private messages: string[] = [];
 	private showLoading: boolean = false;
 	private showLoadingTimeout: number = 0;
@@ -72,8 +74,19 @@ export default class MessageConsole extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.messageConsole {
+#messageConsole {
 	font-family: monospace;
 	text-shadow: 0px 0px 4px #ffffff;
+	position: absolute;
+
+	&.vertical {
+		right: 200px;
+		top: 0;
+	}
+
+	&:not(.vertical) {
+		bottom: 200px;
+		left: 0;
+	}
 }
 </style>
