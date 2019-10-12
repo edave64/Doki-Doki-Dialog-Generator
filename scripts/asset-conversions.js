@@ -104,10 +104,10 @@ function queueAssetConversions(folder) {
 	for (const png of pngsWithoutLQWebp) {
 		ret.push(() =>
 			runOnConsole(
-				`cwebp -near_lossless 50 ${path.join(
+				`cwebp ${path.join(folder.name, png)}.png -o ${path.join(
 					folder.name,
 					png
-				)}.png -o ${path.join(folder.name, png)}.lq.webp`
+				)}.lq.webp`
 			)
 		);
 	}
