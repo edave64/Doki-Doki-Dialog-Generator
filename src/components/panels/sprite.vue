@@ -11,31 +11,31 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { isWebPSupported } from '../../asset-manager';
-import { Character } from '../../models/character';
-import Toggle from '../Toggle.vue';
-import PositionAndSize from '../commonsFieldsets/positionAndSize.vue';
-import Layers from '../commonsFieldsets/layers.vue';
-import Opacity from '../commonsFieldsets/opacity.vue';
-import Delete from '../commonsFieldsets/delete.vue';
-import { IRenderable } from '../../models/renderable';
-import { Sprite } from '../../models/sprite';
+import { isWebPSupported } from '@/asset-manager';
+import { Character } from '@/models/character';
+import Toggle from '@/components/Toggle.vue';
+import PositionAndSize from '@/components/commonsFieldsets/positionAndSize.vue';
+import Layers from '@/components/commonsFieldsets/layers.vue';
+import Opacity from '@/components/commonsFieldsets/opacity.vue';
+import Delete from '@/components/commonsFieldsets/delete.vue';
+import { IRenderable } from '@/models/renderable';
+import { Sprite } from '@/models/sprite';
 import {
 	ISprite,
 	ISetSpriteHeightAction,
 	ISetSpriteWidthAction,
 	ISetSpriteRatioAction,
-} from '../../store/objectTypes/sprite';
-import { ICommand } from '../../eventbus/command';
-import eventBus from '../../eventbus/event-bus';
-import { IHistorySupport } from '../../plugins/vuex-history';
+} from '@/store/objectTypes/sprite';
+import { ICommand } from '@/eventbus/command';
+import eventBus from '@/eventbus/event-bus';
+import { IHistorySupport } from '@/plugins/vuex-history';
 import {
 	IObjectSetOnTopAction,
 	ISetObjectFlipMutation,
 	ISetObjectPositionMutation,
 	ISetObjectOpacityMutation,
 	IObjectShiftLayerAction,
-} from '../../store/objects';
+} from '@/store/objects';
 
 @Component({
 	components: {

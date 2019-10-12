@@ -27,8 +27,8 @@ import {
 	characterOrder,
 	registerAsset,
 	registerAssetWithURL,
-} from '../../asset-manager';
-import { ICreateCharacterAction } from '../../store/objectTypes/characters';
+} from '@/asset-manager';
+import { ICreateCharacterAction } from '@/store/objectTypes/characters';
 import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
 
 @Component({

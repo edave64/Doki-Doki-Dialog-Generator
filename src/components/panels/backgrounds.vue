@@ -20,14 +20,14 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { backgrounds, registerAsset, getAsset } from '../../asset-manager';
+import { backgrounds, registerAsset, getAsset } from '@/asset-manager';
 import {
 	Background,
 	IBackground,
 	color,
 	nsfwFilter,
-} from '../../models/background';
-import { VariantBackground } from '../../models/variant-background';
+} from '@/models/background';
+import { VariantBackground } from '@/models/variant-background';
 import BackgroundButton from './background/button.vue';
 import BackgroundSettings from './background/settings.vue';
 import { State } from 'vuex-class-decorator';

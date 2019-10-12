@@ -14,10 +14,10 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { ICommand } from '../../eventbus/command';
-import eventBus from '../../eventbus/event-bus';
-import { IHistorySupport } from '../../plugins/vuex-history';
-import { IObject, ISetObjectOpacityMutation } from '../../store/objects';
+import { ICommand } from '@/eventbus/command';
+import eventBus from '@/eventbus/event-bus';
+import { IHistorySupport } from '@/plugins/vuex-history';
+import { IObject, ISetObjectOpacityMutation } from '@/store/objects';
 
 @Component({})
 export default class Opacity extends Vue {

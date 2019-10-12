@@ -39,7 +39,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { State } from 'vuex-class-decorator';
 import { isWebPSupported } from '@/asset-manager';
-import { IHistorySupport } from '../../plugins/vuex-history';
+import { IHistorySupport } from '@/plugins/vuex-history';
 import { Character } from '@/models/character';
 import { IRenderable } from '@/models/renderable';
 import { positions, characterPositions, Part } from '@/models/constants';
@@ -56,11 +56,11 @@ import {
 	ISetObjectPositionMutation,
 	ISetObjectFlipMutation,
 } from '@/store/objects';
-import Toggle from '../Toggle.vue';
-import PositionAndSize from '../commonsFieldsets/positionAndSize.vue';
-import Layers from '../commonsFieldsets/layers.vue';
-import Opacity from '../commonsFieldsets/opacity.vue';
-import Delete from '../commonsFieldsets/delete.vue';
+import Toggle from '@/components/Toggle.vue';
+import PositionAndSize from '@/components/commonsFieldsets/positionAndSize.vue';
+import Layers from '@/components/commonsFieldsets/layers.vue';
+import Opacity from '@/components/commonsFieldsets/opacity.vue';
+import Delete from '@/components/commonsFieldsets/delete.vue';
 
 @Component({
 	components: {

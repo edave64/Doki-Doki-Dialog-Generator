@@ -11,15 +11,15 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import Toggle from '../Toggle.vue';
-import { ICommand } from '../../eventbus/command';
-import eventBus from '../../eventbus/event-bus';
-import { IHistorySupport } from '../../plugins/vuex-history';
+import Toggle from '@/components/Toggle.vue';
+import { ICommand } from '@/eventbus/command';
+import eventBus from '@/eventbus/event-bus';
+import { IHistorySupport } from '@/plugins/vuex-history';
 import {
 	IObjectSetOnTopAction,
 	IObjectShiftLayerAction,
 	IObject,
-} from '../../store/objects';
+} from '@/store/objects';
 
 @Component({
 	components: {

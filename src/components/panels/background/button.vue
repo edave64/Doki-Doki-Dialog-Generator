@@ -9,9 +9,9 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import { IBackground, color, Background } from '../../../models/background';
-import { VariantBackground } from '../../../models/variant-background';
-import { isWebPSupported } from '../../../asset-manager';
+import { IBackground, color, Background } from '@/models/background';
+import { VariantBackground } from '@/models/variant-background';
+import { isWebPSupported } from '@/asset-manager';
 
 @Component({
 	components: {},

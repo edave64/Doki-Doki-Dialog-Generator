@@ -20,8 +20,8 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import { Textbox } from '../../models/textbox';
-import Toggle from '../Toggle.vue';
+import { TextBox } from '@/models/textbox';
+import Toggle from '@/components/Toggle.vue';
 import { State } from 'vuex-class-decorator';
 
 @Component({

@@ -6,7 +6,7 @@ import {
 	IObject,
 	ISetPositionAction,
 	ISetObjectPositionMutation,
-} from '../objects';
+} from '@/store/objects';
 import { MutationTree, ActionTree } from 'vuex';
 import { Part, characterPositions } from '@/models/constants';
 import { ICharacter as ICharacterData } from '@/asset-manager';

@@ -86,17 +86,18 @@ import {
 	IObject,
 	ISetObjectPositionMutation,
 	IRemoveObjectAction,
-} from './store/objects';
-import { IHistorySupport } from './plugins/vuex-history';
+} from '@/store/objects';
+import { IHistorySupport } from '@/plugins/vuex-history';
 import {
 	ICharacter,
 	IShiftCharacterSlotAction,
 	INsfwCheckAction,
-} from './store/objectTypes/characters';
-import { Renderer } from './renderer/renderer';
-import { RenderContext } from './renderer/rendererContext';
-import { backgrounds, getAsset, registerAsset } from './asset-manager';
-import eventBus, { InvalidateRenderEvent } from './eventbus/event-bus';
+} from '@/store/objectTypes/characters';
+import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
+import { Renderer } from '@/renderer/renderer';
+import { RenderContext } from '@/renderer/rendererContext';
+import { backgrounds, getAsset, registerAsset } from '@/asset-manager';
+import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 
 @Component({
 	components: {

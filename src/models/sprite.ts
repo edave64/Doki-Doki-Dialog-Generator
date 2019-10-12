@@ -1,5 +1,5 @@
-import { RenderContext } from '../renderer/rendererContext';
-import { getAsset } from '../asset-manager';
+import { RenderContext } from '@/renderer/rendererContext';
+import { getAsset } from '@/asset-manager';
 import { IRenderable } from './renderable';
 import { IDragable } from './dragable';
 import { ErrorAsset } from './error-asset';

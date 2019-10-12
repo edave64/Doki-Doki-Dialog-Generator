@@ -1,6 +1,6 @@
-import { RenderContext } from '../renderer/rendererContext';
-import { getAsset, Pose, INsfwAbleImg } from '../asset-manager';
-import { Renderer } from '../renderer/renderer';
+import { RenderContext } from '@/renderer/rendererContext';
+import { getAsset, Pose, INsfwAbleImg } from '@/asset-manager';
+import { Renderer } from '@/renderer/renderer';
 import { IRenderable } from './renderable';
 import { IDragable } from './dragable';
 import {

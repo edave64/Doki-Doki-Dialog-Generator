@@ -1,4 +1,4 @@
-import { RenderContext } from '../renderer/rendererContext';
+import { RenderContext } from '@/renderer/rendererContext';
 import { IObject } from '@/store/objects';
 
 export interface IRenderable {

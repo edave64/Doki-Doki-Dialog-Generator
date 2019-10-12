@@ -4,8 +4,8 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { IHistorySupport } from '../../plugins/vuex-history';
-import { IObject, IRemoveObjectAction } from '../../store/objects';
+import { IHistorySupport } from '@/plugins/vuex-history';
+import { IObject, IRemoveObjectAction } from '@/store/objects';
 
 @Component({})
 export default class Delete extends Vue {

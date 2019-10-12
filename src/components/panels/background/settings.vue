@@ -27,10 +27,10 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import { IBackground, color, Background } from '../../../models/background';
-import { VariantBackground } from '../../../models/variant-background';
-import { isWebPSupported } from '../../../asset-manager';
-import Toggle from '../../Toggle.vue';
+import { IBackground, color, Background } from '@/models/background';
+import { VariantBackground } from '@/models/variant-background';
+import { isWebPSupported } from '@/asset-manager';
+import Toggle from '@/components/Toggle.vue';
 import { State } from 'vuex-class-decorator';
 
 @Component({

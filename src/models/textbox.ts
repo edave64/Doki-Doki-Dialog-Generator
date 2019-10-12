@@ -1,25 +1,12 @@
-import { RenderContext } from '../renderer/rendererContext';
-import { getAsset } from '../asset-manager';
+import { RenderContext } from '@/renderer/rendererContext';
+import { getAsset } from '@/asset-manager';
 import { ITextBox } from '@/store/objectTypes/textbox';
 import { IRenderable } from './renderable';
 import {
-	TextBoxCorruptedX,
-	TextBoxY,
-	TextBoxX,
-	NameboxX,
-	NameboxY,
-	NameboxTextX,
-	NameboxTextY,
 	NameboxTextStyle,
-	ControlsXHistory,
-	ControlsY,
 	ControlsTextStyle,
-	ControlsXSkip,
-	ControlsXStuff,
 	ControlsTextDisabledStyle,
-	TextBoxTextY,
 	TextBoxTextCorruptedYOffset,
-	TextBoxTextX,
 	TextBoxTextCorruptedXOffset,
 	TextBoxCorruptedStyle,
 	TextBoxStyle,

@@ -1,11 +1,6 @@
 import { ICommand } from '@/eventbus/command';
 import { getAsset } from '@/asset-manager';
-import {
-	IObjectsState,
-	ICreateObjectMutation,
-	IAddToListMutation,
-	IObject,
-} from '../objects';
+import { IObjectsState, ICreateObjectMutation, IObject } from '@/store/objects';
 import { MutationTree, ActionTree } from 'vuex';
 
 export interface ISprite extends IObject {

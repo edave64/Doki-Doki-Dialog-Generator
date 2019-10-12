@@ -29,27 +29,27 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import Toggle from '../Toggle.vue';
-import { IRenderable } from '../../models/renderable';
-import { positions, characterPositions } from '../../models/constants';
+import Toggle from '@/components/Toggle.vue';
+import { IRenderable } from '@/models/renderable';
+import { positions, characterPositions } from '@/models/constants';
 import {
 	closestCharacterSlot,
 	ISetFreeMoveMutation,
 	ICharacter,
-} from '../../store/objectTypes/characters';
+} from '@/store/objectTypes/characters';
 import { State } from 'vuex-class-decorator';
 import {
 	ISetPositionAction,
 	ISetObjectPositionMutation,
 	IObject,
-} from '../../store/objects';
+} from '@/store/objects';
 import {
 	ISprite,
 	ISetSpriteHeightAction,
 	ISetSpriteWidthAction,
 	ISetSpriteRatioAction,
-} from '../../store/objectTypes/sprite';
-import { IHistorySupport } from '../../plugins/vuex-history';
+} from '@/store/objectTypes/sprite';
+import { IHistorySupport } from '@/plugins/vuex-history';
 
 @Component({
 	components: {

@@ -10,7 +10,7 @@ import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import EventBus, {
 	AssetFailureEvent,
 	CustomAssetFailureEvent,
-} from '../eventbus/event-bus';
+} from '@/eventbus/event-bus';
 
 @Component({
 	components: {},

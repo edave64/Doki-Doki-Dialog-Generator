@@ -1,5 +1,5 @@
 import { ICommand } from '@/eventbus/command';
-import { IObjectsState, ICreateObjectMutation, IObject } from '../objects';
+import { IObjectsState, ICreateObjectMutation, IObject } from '@/store/objects';
 import { MutationTree, ActionTree } from 'vuex';
 import { NameboxY } from '@/models/textBoxConstants';
 
