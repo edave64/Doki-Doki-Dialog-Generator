@@ -75,13 +75,19 @@ function queueAssetConversions(folder) {
 	const pngsWithoutLQ = allPNGs.filter(
 		png => !folder.files.includes(png + '.lq.png')
 	);
-	if (pngsWithoutLQ.length === allPNGs.length && pngsWithoutLQ > 0) {
-		ret.push(() => runOnConsole(`pngquant -ext .lq.png ${folder.name}*.png`));
-	} else if (pngsWithoutLQ.length > 0) {
-		const files = pngsWithoutLQ
-			.map(png => path.join(folder.name, png) + '.png')
-			.join(' ');
-		ret.push(() => runOnConsole(`pngquant -ext .lq.png ${files}`));
+	if (pngsWithoutLQ.length > 0) {
+		for (const pngWithoutLQ of pngsWithoutLQ) {
+			console.log(pngWithoutLQ);
+			ret.push(async () => {
+				await runOnConsole(
+					`pngquant -ext .lq.tmp.png ${folder.name}/${pngWithoutLQ}.png`
+				);
+				await runOnConsole(
+					`zopflipng ${folder.name}/${pngWithoutLQ}.lq.tmp.png ${folder.name}/${pngWithoutLQ}.lq.png`
+				);
+				await runOnConsole(`rm ${folder.name}/${pngWithoutLQ}.lq.tmp.png`);
+			});
+		}
 	}
 
 	const pngsWithoutHQWebp = allPNGs.filter(
