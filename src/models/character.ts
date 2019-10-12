@@ -24,10 +24,6 @@ export class Character implements IRenderable, IDragable {
 
 	public constructor(public readonly obj: ICharacter) {}
 
-	public get label() {
-		return getData(this.obj).name;
-	}
-
 	public async updateLocalCanvas() {
 		await this.localRenderer.render(async rx => {
 			const pose = getPose(this.obj) as Pose<any>;
