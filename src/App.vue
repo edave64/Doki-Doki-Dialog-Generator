@@ -508,7 +508,7 @@ export default class App extends Vue {
 		}
 
 		if (target) {
-			if (target instanceof Character && false /* target.obj.moveFreely */) {
+			if (target instanceof Character && !target.obj.freeMove) {
 				if (e.key === 'ArrowLeft') {
 					this.$store.dispatch('objects/shiftCharacterSlot', {
 						id: target!.obj.id,
