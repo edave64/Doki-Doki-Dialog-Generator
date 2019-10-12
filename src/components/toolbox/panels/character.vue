@@ -95,7 +95,6 @@ export default class CharacterPanel extends Vue {
 	}
 
 	private seekPose(delta: number, nsfw: boolean): void {
-		debugger;
 		this.history.transaction(() => {
 			this.$store.dispatch('objects/seekPose', {
 				id: this.character.obj.id,
@@ -106,7 +105,6 @@ export default class CharacterPanel extends Vue {
 	}
 
 	private seekPart(part: Part, delta: number, nsfw: boolean): void {
-		debugger;
 		this.history.transaction(() => {
 			this.$store.dispatch('objects/seekPart', {
 				id: this.character.obj.id,

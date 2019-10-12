@@ -38,6 +38,8 @@ export class TextBox implements IRenderable {
 	private lastY = 0;
 	private localRenderer = new Renderer(1280, 720);
 
+	public constructor(public obj: ITextBox) {}
+
 	public get id() {
 		return this.obj.id;
 	}
@@ -50,8 +52,6 @@ export class TextBox implements IRenderable {
 		const y2 = y1 + NameboxHeight + TextBoxHeight;
 		return x1 <= hx && x2 >= hx && y1 <= hy && y2 >= hy;
 	}
-
-	public constructor(public obj: ITextBox) {}
 
 	public async render(selected: boolean, rx: RenderContext) {
 		if (

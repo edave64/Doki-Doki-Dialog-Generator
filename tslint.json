@@ -2,7 +2,7 @@
 	"defaultSeverity": "warning",
 	"extends": ["tslint:recommended"],
 	"linterOptions": {
-		"exclude": ["node_modules/**", "*.json", "**/*.json"]
+		"exclude": ["node_modules/**", "*.json", "**/*.json", "tests/**"]
 	},
 	"rules": {
 		"indent": [true, "tabs"],
@@ -25,6 +25,9 @@
 				},
 				"esSpecCompliant": true
 			}
-		]
+		],
+		"object-literal-key-quotes": false,
+		"no-empty": false,
+		"no-empty-interface": false
 	}
 }
