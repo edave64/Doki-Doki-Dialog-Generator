@@ -5,7 +5,7 @@
 		<button @click="shiftLayer(-1)" title="Move backwards">&#8595;</button>
 		<button @click="shiftLayer(1)" title="Move forwards">&#8593;</button>
 		<button @click="shiftLayer(Infinity)" title="Move to front">&#10514;</button>
-		<toggle @input="setInFront" :value="obj.onTop" label="In front of textbox?" />
+		<toggle @input="setInFront" :value="obj.onTop" label="In front?" />
 	</fieldset>
 </template>
 
