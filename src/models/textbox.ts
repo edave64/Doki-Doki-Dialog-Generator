@@ -153,8 +153,8 @@ export class TextBox implements IRenderable {
 		y: number
 	): Promise<void> {
 		if (this.obj.style === 'custom') {
-			const dotKun = new Renderer(47, 47);
-			dotKun.render(async (rx: RenderContext) => {
+			const dotPattern = new Renderer(47, 47);
+			dotPattern.render(async (rx: RenderContext) => {
 				rx.drawPath({
 					path: ctx => {
 						ctx.ellipse(0, 0, 10, 10, 0, 0, 2 * Math.PI);
@@ -226,7 +226,7 @@ export class TextBox implements IRenderable {
 							ctx.translate(x, y);
 						},
 						subSubRx => {
-							const pattern = subRx.patternFrom(dotKun);
+							const pattern = subRx.patternFrom(dotPattern);
 							subRx.drawRect({
 								x: 0,
 								y: 0,
