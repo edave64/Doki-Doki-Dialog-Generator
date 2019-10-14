@@ -20,7 +20,6 @@ import {
 	NameboxXOffset,
 	NameboxWidth,
 	NameboxTextYOffset,
-	ControlsYOffset,
 	ControlsXHistoryOffset,
 	ControlsXSkipOffset,
 	ControlsXStuffOffset,
@@ -28,14 +27,20 @@ import {
 	ArrowYBottomOffset,
 	TextBoxTextYOffset,
 	TextBoxTextXOffset,
+	ControlsYBottomOffset,
+	GlowRY,
+	GlowRX,
 } from './textBoxConstants';
 import { Renderer } from '@/renderer/renderer';
+import { roundedRectangle } from '@/renderer/pathTools';
 
 export class TextBox implements IRenderable {
 	public display: boolean = true;
 	private lastVersion = -1;
 	private lastX = 0;
 	private lastY = 0;
+	private lastH = 0;
+	private lastW = 0;
 	private localRenderer = new Renderer(1280, 720);
 
 	public constructor(public obj: ITextBox) {}
@@ -57,7 +62,9 @@ export class TextBox implements IRenderable {
 		if (
 			this.lastVersion !== this.obj.version ||
 			this.lastX !== this.obj.x ||
-			this.lastY !== this.obj.y
+			this.lastY !== this.obj.y ||
+			this.lastH !== this.obj.height ||
+			this.lastW !== this.obj.width
 		) {
 			await this.updateLocalCanvas();
 			this.lastVersion = this.obj.version;
@@ -77,25 +84,16 @@ export class TextBox implements IRenderable {
 
 	public async updateLocalCanvas() {
 		await this.localRenderer.render(async rx => {
-			const w =
-				this.obj.style === 'corrupt' ? TextBoxCorruptedWidth : TextBoxWidth;
+			const w = this.obj.style === 'custom' ? this.obj.width : TextBoxWidth;
+			const h =
+				this.obj.style === 'custom'
+					? this.obj.height + NameboxHeight
+					: TextBoxHeight + NameboxHeight;
 			const w2 = w / 2;
 			const x = this.obj.x - w2;
 			const y = this.obj.y;
 
-			if (this.obj.style === 'corrupt') {
-				rx.drawImage({
-					image: await getAsset('textbox_monika'),
-					x,
-					y: y + NameboxHeight,
-				});
-			} else {
-				rx.drawImage({
-					image: await getAsset('textbox'),
-					x,
-					y: y + NameboxHeight,
-				});
-			}
+			await this.renderBackdrop(rx, x, y + NameboxHeight);
 
 			const name = this.obj.talking;
 			if (name) {
@@ -114,39 +112,178 @@ export class TextBox implements IRenderable {
 
 			this.renderText(rx, x, y);
 
-			const controlsY = y + NameboxHeight + ControlsYOffset;
+			const bottom = y + h;
+			const controlsY = bottom - ControlsYBottomOffset;
+			const controlsCenter = x + w / 2;
 
 			if (this.obj.controls) {
 				rx.drawText({
 					text: 'History',
-					x: x + ControlsXHistoryOffset,
+					x: controlsCenter + ControlsXHistoryOffset,
 					y: controlsY,
 					...ControlsTextStyle,
 				});
 				rx.drawText({
 					text: 'Skip',
-					x: x + ControlsXSkipOffset,
+					x: controlsCenter + ControlsXSkipOffset,
 					y: controlsY,
 					...(this.obj.skip ? ControlsTextStyle : ControlsTextDisabledStyle),
 				});
 				rx.drawText({
 					text: 'Auto   Save   Load   Settings',
-					x: x + ControlsXStuffOffset,
+					x: controlsCenter + ControlsXStuffOffset,
 					y: controlsY,
 					...ControlsTextStyle,
 				});
 			}
 
 			if (this.obj.continue) {
-				const arrowX = x + TextBoxWidth - ArrowXRightOffset;
-				const arrowY = y + NameboxHeight + TextBoxHeight - ArrowYBottomOffset;
 				rx.drawImage({
 					image: await getAsset('next'),
-					x: arrowX,
-					y: arrowY,
+					x: x + w - ArrowXRightOffset,
+					y: bottom - ArrowYBottomOffset,
 				});
 			}
 		});
+	}
+
+	private async renderBackdrop(
+		rx: RenderContext,
+		x: number,
+		y: number
+	): Promise<void> {
+		if (this.obj.style === 'custom') {
+			const dotKun = new Renderer(47, 47);
+			dotKun.render(async (rx: RenderContext) => {
+				rx.drawPath({
+					path: ctx => {
+						ctx.ellipse(0, 0, 10, 10, 0, 0, 2 * Math.PI);
+					},
+					fill: {
+						style: '#00000010',
+					},
+				});
+				rx.drawPath({
+					path: ctx => {
+						ctx.ellipse(47, 0, 10, 10, 0, 0, 2 * Math.PI);
+					},
+					fill: {
+						style: '#00000010',
+					},
+				});
+				rx.drawPath({
+					path: ctx => {
+						ctx.ellipse(0, 47, 10, 10, 0, 0, 2 * Math.PI);
+					},
+					fill: {
+						style: '#00000010',
+					},
+				});
+				rx.drawPath({
+					path: ctx => {
+						ctx.ellipse(47, 47, 10, 10, 0, 0, 2 * Math.PI);
+					},
+					fill: {
+						style: '#00000010',
+					},
+				});
+				rx.drawPath({
+					path: ctx => {
+						ctx.ellipse(23.5, 24.5, 10, 10, 0, 0, 2 * Math.PI);
+					},
+					fill: {
+						style: '#00000010',
+					},
+				});
+			}, true);
+			rx.customTransform(
+				ctx => {
+					ctx.beginPath();
+					roundedRectangle(ctx, x, y, this.obj.width, this.obj.height, 12);
+					ctx.clip();
+				},
+				subRx => {
+					const h = this.obj.height;
+					const w = this.obj.width;
+					const gradient = subRx.linearGradient(x, y, x, y + h);
+					gradient.addColorStop(0, this.obj.customColor + 'FF');
+					gradient.addColorStop(1, this.obj.customColor + 'AA');
+					subRx.drawRect({
+						x,
+						y,
+						w,
+						h,
+						fill: {
+							style: gradient,
+						},
+						outline: {
+							style: '#ffdfee',
+							width: 6,
+						},
+					});
+					subRx.customTransform(
+						ctx => {
+							ctx.translate(x, y);
+						},
+						subSubRx => {
+							const pattern = subRx.patternFrom(dotKun);
+							subRx.drawRect({
+								x: 0,
+								y: 0,
+								w,
+								h,
+								fill: {
+									style: pattern,
+								},
+								composition: 'multiply',
+							});
+						}
+					);
+					console.log('Glow:', y + h - GlowRY, y + h);
+					const glowGradient = subRx.linearGradient(
+						x,
+						y + h - GlowRY,
+						x,
+						y + h
+					);
+					glowGradient.addColorStop(0, '#FFFFFF50');
+					glowGradient.addColorStop(0.5, '#FFFFFF10');
+					glowGradient.addColorStop(1, '#FFFFFF00');
+					subRx.drawPath({
+						path: ctx => {
+							ctx.ellipse(x + w / 2, y + h, GlowRX, GlowRY, 0, 0, 2 * Math.PI);
+						},
+						fill: {
+							style: glowGradient,
+						},
+					});
+				}
+			);
+			rx.drawPath({
+				path: path => {
+					roundedRectangle(
+						path,
+						x + 1.5,
+						y + 1.5,
+						this.obj.width - 3,
+						this.obj.height - 3,
+						12
+					);
+				},
+				outline: {
+					style: '#ffdfee',
+					width: 3,
+				},
+			});
+		} else {
+			if (this.obj.style === 'corrupt') {
+				x += (TextBoxWidth - TextBoxCorruptedWidth) / 2;
+			}
+			const image = await getAsset(
+				this.obj.style === 'corrupt' ? 'textbox_monika' : 'textbox'
+			);
+			rx.drawImage({ image, x, y });
+		}
 	}
 
 	private renderText(rx: RenderContext, baseX: number, baseY: number): void {

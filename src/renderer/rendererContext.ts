@@ -141,11 +141,16 @@ export class RenderContext {
 		h,
 		outline,
 		fill,
-	}: IRPos & IRSize & IOOutline & IOFill) {
+		composition,
+	}: IRPos & IRSize & IOOutline & IOFill & IOComposition) {
 		if (this.aborted) throw new RenderAbortedException();
 		this.fsCtx.save();
 		this.fsCtx.beginPath();
 		this.fsCtx.rect(x, y, w, h);
+
+		if (composition) {
+			this.fsCtx.globalCompositeOperation = composition;
+		}
 
 		if (fill) {
 			this.fsCtx.fillStyle = fill.style;
@@ -157,6 +162,60 @@ export class RenderContext {
 			this.fsCtx.stroke();
 		}
 		this.fsCtx.restore();
+	}
+
+	public drawPath({
+		outline,
+		fill,
+		path,
+	}: { path: (ctx: CanvasPath) => void } & IOOutline & IOFill) {
+		if (this.aborted) throw new RenderAbortedException();
+		this.fsCtx.save();
+		this.fsCtx.beginPath();
+		path(this.fsCtx);
+
+		if (fill) {
+			this.fsCtx.fillStyle = fill.style;
+			this.fsCtx.fill();
+		}
+		if (outline) {
+			this.fsCtx.strokeStyle = outline.style;
+			this.fsCtx.lineWidth = outline.width;
+			this.fsCtx.stroke();
+		}
+		this.fsCtx.restore();
+	}
+
+	public patternFrom(
+		image: HTMLImageElement | Renderer,
+		repetition: 'repeat' | 'repeat-x' | 'repeat-y' | 'no-repeat' = 'repeat'
+	): CanvasPattern {
+		if (image instanceof Renderer) {
+			image = (image as any).previewCanvas;
+		}
+		return this.fsCtx.createPattern(
+			(image as any) as CanvasImageSource,
+			repetition
+		)!;
+	}
+
+	public customTransform(
+		transform: (transformContext: CanvasRenderingContext2D) => void,
+		render: (rx: RenderContext) => void
+	) {
+		this.fsCtx.save();
+		transform(this.fsCtx);
+		render(this);
+		this.fsCtx.restore();
+	}
+
+	public linearGradient(
+		x0: number,
+		y0: number,
+		x1: number,
+		y1: number
+	): CanvasGradient {
+		return this.fsCtx.createLinearGradient(x0, y0, x1, y1);
 	}
 
 	public abort(): void {
@@ -185,11 +244,15 @@ export interface IOutline {
 }
 
 export interface IFill {
-	style: string;
+	style: string | CanvasGradient | CanvasPattern;
 }
 
 interface IOShadow {
 	shadow?: IShadow;
+}
+
+interface IOComposition {
+	composition?: CanvasRenderingContext2D['globalCompositeOperation'];
 }
 
 interface IRPos {

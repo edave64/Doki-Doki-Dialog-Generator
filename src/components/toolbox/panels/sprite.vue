@@ -20,12 +20,7 @@ import Opacity from '@/components/toolbox/commonsFieldsets/opacity.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
 import { IRenderable } from '@/models/renderable';
 import { Sprite } from '@/models/sprite';
-import {
-	ISprite,
-	ISetSpriteHeightAction,
-	ISetSpriteWidthAction,
-	ISetSpriteRatioAction,
-} from '@/store/objectTypes/sprite';
+import { ISprite } from '@/store/objectTypes/sprite';
 import { ICommand } from '@/eventbus/command';
 import eventBus from '@/eventbus/event-bus';
 import { IHistorySupport } from '@/plugins/vuex-history';

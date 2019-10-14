@@ -1,13 +1,18 @@
 import { ICommand } from '@/eventbus/command';
 import { IObjectsState, ICreateObjectMutation, IObject } from '@/store/objects';
 import { MutationTree, ActionTree } from 'vuex';
-import { NameboxY } from '@/models/textBoxConstants';
+import {
+	NameboxY,
+	TextBoxWidth,
+	TextBoxHeight,
+} from '@/models/textBoxConstants';
 
 export interface ITextBox extends IObject {
 	type: 'textBox';
 	text: string;
 	talking: string | null;
 	style: 'normal' | 'corrupt' | 'custom';
+	customColor: string;
 	controls: boolean;
 	skip: boolean;
 	continue: boolean;
@@ -44,6 +49,11 @@ export const textBoxMutations: MutationTree<IObjectsState> = {
 		obj.continue = command.continue;
 		++obj.version;
 	},
+	setCustomColor(state, command: ISetTextBoxCustomColorMutation) {
+		const obj = state.objects[command.id] as ITextBox;
+		obj.customColor = command.color;
+		++obj.version;
+	},
 };
 
 let lastTextBoxId = 0;
@@ -60,10 +70,15 @@ export const textBoxActions: ActionTree<IObjectsState, never> = {
 				version: 0,
 				x: 640,
 				y: NameboxY,
+				width: TextBoxWidth,
+				height: TextBoxHeight,
+				preserveRatio: false,
+				ratio: TextBoxWidth / TextBoxHeight,
 				continue: true,
 				controls: true,
 				skip: true,
 				style: 'normal',
+				customColor: '#ffa8d2',
 				talking: null,
 				text: '',
 			} as ITextBox,
@@ -100,6 +115,10 @@ export interface ISetTextBoxControlsSkipMutation extends ICommand {
 
 export interface ISetTextBoxControlsContinueMutation extends ICommand {
 	readonly continue: boolean;
+}
+
+export interface ISetTextBoxCustomColorMutation extends ICommand {
+	readonly color: string;
 }
 
 export interface ICreateTextBoxAction extends ICommand {}

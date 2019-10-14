@@ -15,6 +15,10 @@ export interface IObject {
 	id: string;
 	x: number;
 	y: number;
+	width: number;
+	height: number;
+	preserveRatio: boolean;
+	ratio: number;
 	opacity: number;
 	version: number;
 	flip: boolean;
@@ -64,6 +68,16 @@ export default {
 		setOpacity(state, command: ISetObjectOpacityMutation) {
 			const obj = state.objects[command.id];
 			obj.opacity = command.opacity;
+		},
+		setSize(state, command: ISetSpriteSizeMutation) {
+			const obj = state.objects[command.id];
+			obj.width = command.width;
+			obj.height = command.height;
+		},
+		setRatio(state, command: ISetSpriteRatioMutation) {
+			const obj = state.objects[command.id];
+			obj.preserveRatio = command.preserveRatio;
+			obj.ratio = command.ratio;
 		},
 		removeObject(state, command: IRemoveObjectMutation) {
 			delete state.objects[command.id];
@@ -130,6 +144,35 @@ export default {
 				onTop: obj.onTop,
 			} as IAddToListMutation);
 		},
+		setPreserveRatio({ commit, state }, command: ISetRatioAction) {
+			const obj = state.objects[command.id];
+			const ratio = command.preserveRatio ? obj.width / obj.height : 0;
+			commit('setRatio', {
+				id: command.id,
+				preserveRatio: command.preserveRatio,
+				ratio,
+			} as ISetSpriteRatioMutation);
+		},
+		setWidth({ commit, state }, command: ISetWidthAction) {
+			const obj = state.objects[command.id];
+			const height = !obj.preserveRatio
+				? obj.height
+				: command.width / obj.ratio;
+			commit('setSize', {
+				id: command.id,
+				height,
+				width: command.width,
+			} as ISetSpriteSizeMutation);
+		},
+		setHeight({ commit, state }, command: ISetHeightAction) {
+			const obj = state.objects[command.id];
+			const width = !obj.preserveRatio ? obj.width : command.height * obj.ratio;
+			commit('setSize', {
+				id: command.id,
+				height: command.height,
+				width,
+			} as ISetSpriteSizeMutation);
+		},
 		...spriteActions,
 		...characterActions,
 		...textBoxActions,
@@ -142,6 +185,16 @@ export interface ICreateObjectMutation {
 
 export interface IObjectMutation {
 	readonly id: string;
+}
+
+export interface ISetSpriteSizeMutation extends ICommand {
+	readonly width: number;
+	readonly height: number;
+}
+
+export interface ISetSpriteRatioMutation extends ICommand {
+	readonly preserveRatio: boolean;
+	readonly ratio: number;
 }
 
 export interface ISetObjectPositionMutation extends IObjectMutation {
@@ -176,6 +229,18 @@ export interface IObjectShiftLayerAction extends ICommand {
 
 export interface IObjectSetOnTopAction extends ICommand {
 	readonly onTop: boolean;
+}
+
+export interface ISetWidthAction extends ICommand {
+	readonly width: number;
+}
+
+export interface ISetHeightAction extends ICommand {
+	readonly height: number;
+}
+
+export interface ISetRatioAction extends ICommand {
+	readonly preserveRatio: boolean;
 }
 
 export interface IRemoveObjectMutation extends ICommand {}

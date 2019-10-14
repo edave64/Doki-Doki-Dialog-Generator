@@ -1,11 +1,20 @@
 <template>
 	<div :class="{ panel: true }">
 		<h1>Textbox</h1>
+		<div>
+			<label for="text_style">Style:</label>
+			<br />
+			<select id="text_style" v-model="textBoxStyle" @keydown.stop>
+				<option value="normal">Normal</option>
+				<option value="corrupt">Corrupt</option>
+				<option value="custom">Custom</option>
+			</select>
+		</div>
 		<toggle label="Textbox corrupt?" v-model="textbox.corrupted" />
 		<div>
 			<label for="current_talking">Person talking:</label>
 			<br />
-			<select id="current_talking" v-model="talkingDefaults">
+			<select id="current_talking" v-model="talkingDefaults" @keydown.stop>
 				<option value="None">No-one</option>
 				<option value="Sayori">Sayori</option>
 				<option value="Yuri">Yuri</option>
@@ -37,6 +46,12 @@
 		<layers :obj="textbox" />
 		<opacity :obj="textbox" />
 		<toggle v-model="flip" label="Flip?" />
+
+		<fieldset>
+			<legend>Customization:</legend>
+			<label for="textbox_color">Color:</label>
+			<input id="textbox_color" type="color" v-model="textboxColor" />
+		</fieldset>
 		<delete :obj="textbox" />
 	</div>
 </template>
@@ -50,6 +65,8 @@ import {
 	ISetTextBoxControlsSkipMutation,
 	ISetTextBoxControlsContinueMutation,
 	ISetTextBoxTextMutation,
+	ISetTextBoxStyleAction,
+	ISetTextBoxCustomColorMutation,
 } from '@/store/objectTypes/textbox';
 import Toggle from '@/components/toggle.vue';
 import { State } from 'vuex-class-decorator';
@@ -179,6 +196,28 @@ export default class TextPanel extends Vue {
 				flip,
 			} as ISetObjectFlipMutation);
 		});
+	}
+
+	private get textBoxStyle(): ITextBox['style'] {
+		return this.textbox.style;
+	}
+
+	private set textBoxStyle(style: ITextBox['style']) {
+		this.$store.dispatch('objects/setStyle', {
+			id: this.textbox.id,
+			style,
+		} as ISetTextBoxStyleAction);
+	}
+
+	private get textboxColor(): string {
+		return this.textbox.customColor;
+	}
+
+	private set textboxColor(color: string) {
+		this.$store.commit('objects/setCustomColor', {
+			id: this.textbox.id,
+			color,
+		} as ISetTextBoxCustomColorMutation);
 	}
 }
 </script>

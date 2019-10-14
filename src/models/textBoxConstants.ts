@@ -18,13 +18,16 @@ export const NameboxWidth = 168;
 export const NameboxXOffset = 34;
 export const NameboxTextYOffset = 29;
 
-export const ControlsYOffset = 134;
-export const ControlsXHistoryOffset = 282;
-export const ControlsXSkipOffset = 336;
-export const ControlsXStuffOffset = 370;
+export const ControlsYBottomOffset = 12;
+export const ControlsXHistoryOffset = -126;
+export const ControlsXSkipOffset = -72;
+export const ControlsXStuffOffset = -38;
 
 export const ArrowXRightOffset = 30.75;
 export const ArrowYBottomOffset = 26;
+
+export const GlowRX = 426;
+export const GlowRY = 58;
 
 export const NameboxTextStyle = {
 	align: 'center' as CanvasTextAlign,
@@ -87,7 +90,6 @@ export const NameboxX = TextBoxX + NameboxXOffset;
 export const NameboxTextX = NameboxX + NameboxWidth / 2;
 export const NameboxTextY = NameboxY + NameboxTextYOffset;
 
-export const ControlsY = TextBoxY + ControlsYOffset;
 export const ControlsXHistory = TextBoxX + ControlsXHistoryOffset;
 export const ControlsXSkip = TextBoxX + ControlsXSkipOffset;
 export const ControlsXStuff = TextBoxX + ControlsXStuffOffset;

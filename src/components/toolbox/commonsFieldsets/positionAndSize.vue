@@ -42,14 +42,13 @@ import {
 	ISetPositionAction,
 	ISetObjectPositionMutation,
 	IObject,
+	ISetHeightAction,
+	ISetWidthAction,
+	ISetRatioAction,
 } from '@/store/objects';
-import {
-	ISprite,
-	ISetSpriteHeightAction,
-	ISetSpriteWidthAction,
-	ISetSpriteRatioAction,
-} from '@/store/objectTypes/sprite';
+import { ISprite } from '@/store/objectTypes/sprite';
 import { IHistorySupport } from '@/plugins/vuex-history';
+import { ITextBox } from '../../../store/objectTypes/textbox';
 
 @Component({
 	components: {
@@ -65,7 +64,17 @@ export default class PositionAndSize extends Vue {
 	}
 
 	private get allowSize() {
-		return 'width' in this.obj;
+		const obj = this.obj;
+		if (
+			this.obj.type === 'textBox' &&
+			(this.obj as ITextBox).style !== 'custom'
+		) {
+			return false;
+		}
+		if (this.obj.type === 'character' && !(this.obj as ICharacter).freeMove) {
+			return false;
+		}
+		return true;
 	}
 
 	private get allowStepMove() {
@@ -148,7 +157,7 @@ export default class PositionAndSize extends Vue {
 			this.$store.dispatch('objects/setHeight', {
 				id: this.obj.id,
 				height: val,
-			} as ISetSpriteHeightAction);
+			} as ISetHeightAction);
 		});
 	}
 
@@ -161,7 +170,7 @@ export default class PositionAndSize extends Vue {
 			this.$store.dispatch('objects/setWidth', {
 				id: this.obj.id,
 				width: val,
-			} as ISetSpriteWidthAction);
+			} as ISetWidthAction);
 		});
 	}
 
@@ -174,7 +183,7 @@ export default class PositionAndSize extends Vue {
 			this.$store.dispatch('objects/setPreserveRatio', {
 				id: this.obj.id,
 				preserveRatio: val,
-			} as ISetSpriteRatioAction);
+			} as ISetRatioAction);
 		});
 	}
 }

@@ -99,8 +99,8 @@ export class Character implements IRenderable, IDragable {
 			await this.updateLocalCanvas();
 		}
 
-		const zoom = this.obj.close ? 1.6 : 0.8;
-		const size = 960 * zoom;
+		const zoom = this.obj.close ? 2 : 1;
+		const size = this.obj.width * zoom;
 		const x = this.obj.x - size / 2;
 		const y = (this.obj.close ? CloseUpYOffset : 0) + this.obj.y;
 
@@ -108,8 +108,8 @@ export class Character implements IRenderable, IDragable {
 			image: this.localRenderer,
 			x,
 			y,
-			w: size,
-			h: size,
+			w: this.obj.width,
+			h: this.obj.height,
 			flip: this.obj.flip,
 			shadow: selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
 			opacity: this.obj.opacity,
