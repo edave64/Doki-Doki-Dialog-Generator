@@ -205,7 +205,14 @@ export class TextBox implements IRenderable {
 			rx.customTransform(
 				ctx => {
 					ctx.beginPath();
-					roundedRectangle(ctx, x, y, this.obj.width, this.obj.height, 12);
+					roundedRectangle(
+						ctx,
+						x + 1.5,
+						y + 1.5,
+						this.obj.width - 3,
+						this.obj.height - 3,
+						12
+					);
 					ctx.clip();
 				},
 				subRx => {
