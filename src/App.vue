@@ -583,4 +583,20 @@ h1 {
 	font-family: riffic;
 	text-align: center;
 }
+
+input,
+textarea {
+	border: 2px solid #ffbde1;
+}
+
+button,
+select {
+	border: 2px solid #ffbde1;
+	background: #ffe6f4;
+	padding: 1px;
+}
+
+button {
+	padding: 2px;
+}
 </style>
