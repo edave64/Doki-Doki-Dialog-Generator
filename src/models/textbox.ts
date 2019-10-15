@@ -33,6 +33,8 @@ import {
 } from './textBoxConstants';
 import { Renderer } from '@/renderer/renderer';
 import { roundedRectangle } from '@/renderer/pathTools';
+import { RGBAColor } from '@/util/colors/rgb';
+import { HSLAColor } from '@/util/colors/hsl';
 
 export class TextBox implements IRenderable {
 	public display: boolean = true;
@@ -153,47 +155,51 @@ export class TextBox implements IRenderable {
 		y: number
 	): Promise<void> {
 		if (this.obj.style === 'custom') {
+			const hslColor = RGBAColor.fromCss(this.obj.customColor).toHSL();
 			const dotPattern = new Renderer(47, 47);
 			dotPattern.render(async (rx: RenderContext) => {
+				const delta = new HSLAColor(
+					0.004269293924466178,
+					-0.01869158878504662,
+					-0.039215686274509665,
+					0
+				);
+				const fill = {
+					style: hslColor
+						.shift(delta)
+						.toRgb()
+						.toCss(),
+				};
+
 				rx.drawPath({
 					path: ctx => {
-						ctx.ellipse(0, 0, 10, 10, 0, 0, 2 * Math.PI);
+						ctx.ellipse(0, 0, 9.5, 9.5, 0, 0, 2 * Math.PI);
 					},
-					fill: {
-						style: '#00000010',
-					},
+					fill,
 				});
 				rx.drawPath({
 					path: ctx => {
-						ctx.ellipse(47, 0, 10, 10, 0, 0, 2 * Math.PI);
+						ctx.ellipse(47, 0, 9.5, 9.5, 0, 0, 2 * Math.PI);
 					},
-					fill: {
-						style: '#00000010',
-					},
+					fill,
 				});
 				rx.drawPath({
 					path: ctx => {
-						ctx.ellipse(0, 47, 10, 10, 0, 0, 2 * Math.PI);
+						ctx.ellipse(0, 47, 9.5, 9.5, 0, 0, 2 * Math.PI);
 					},
-					fill: {
-						style: '#00000010',
-					},
+					fill,
 				});
 				rx.drawPath({
 					path: ctx => {
-						ctx.ellipse(47, 47, 10, 10, 0, 0, 2 * Math.PI);
+						ctx.ellipse(47, 47, 9.5, 9.5, 0, 0, 2 * Math.PI);
 					},
-					fill: {
-						style: '#00000010',
-					},
+					fill,
 				});
 				rx.drawPath({
 					path: ctx => {
-						ctx.ellipse(23.5, 24.5, 10, 10, 0, 0, 2 * Math.PI);
+						ctx.ellipse(23.5, 24.5, 9.5, 9.5, 0, 0, 2 * Math.PI);
 					},
-					fill: {
-						style: '#00000010',
-					},
+					fill,
 				});
 			}, true);
 			rx.customTransform(
@@ -235,7 +241,7 @@ export class TextBox implements IRenderable {
 								fill: {
 									style: pattern,
 								},
-								composition: 'multiply',
+								composition: 'source-atop',
 							});
 						}
 					);
@@ -259,6 +265,16 @@ export class TextBox implements IRenderable {
 					});
 				}
 			);
+			const delta = new HSLAColor(
+				0.0023347701149424305,
+				0,
+				0.10784313725490202,
+				0
+			);
+			const outlineColor = hslColor
+				.shift(delta)
+				.toRgb()
+				.toCss();
 			rx.drawPath({
 				path: path => {
 					roundedRectangle(
@@ -271,7 +287,7 @@ export class TextBox implements IRenderable {
 					);
 				},
 				outline: {
-					style: '#ffdfee',
+					style: outlineColor,
 					width: 3,
 				},
 			});
