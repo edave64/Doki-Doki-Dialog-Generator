@@ -10,7 +10,6 @@
 				<option value="custom">Custom</option>
 			</select>
 		</div>
-		<toggle label="Textbox corrupt?" v-model="textbox.corrupted" />
 		<div>
 			<label for="current_talking">Person talking:</label>
 			<br />
