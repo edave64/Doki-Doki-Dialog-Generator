@@ -219,8 +219,12 @@ export class TextBox implements IRenderable {
 					const h = this.obj.height;
 					const w = this.obj.width;
 					const gradient = subRx.linearGradient(x, y, x, y + h);
-					gradient.addColorStop(0, this.obj.customColor + 'FF');
-					gradient.addColorStop(1, this.obj.customColor + 'AA');
+					const color = RGBAColor.fromHex(this.obj.customColor);
+					gradient.addColorStop(0, color.toCss());
+					gradient.addColorStop(
+						1,
+						`rgba(${color.r},${color.g},${color.b},0.6667)`
+					);
 					subRx.drawRect({
 						x,
 						y,
@@ -259,9 +263,9 @@ export class TextBox implements IRenderable {
 						x,
 						y + h
 					);
-					glowGradient.addColorStop(0, '#FFFFFF50');
-					glowGradient.addColorStop(0.5, '#FFFFFF10');
-					glowGradient.addColorStop(1, '#FFFFFF00');
+					glowGradient.addColorStop(0, 'rgba(255,255,255,0.3137)');
+					glowGradient.addColorStop(0.5, 'rgba(255,255,255,0.0627)');
+					glowGradient.addColorStop(1, 'rgba(255,255,255,0)');
 					subRx.drawPath({
 						path: ctx => {
 							ctx.ellipse(x + w / 2, y + h, GlowRX, GlowRY, 0, 0, 2 * Math.PI);
