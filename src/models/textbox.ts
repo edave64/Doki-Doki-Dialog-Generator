@@ -97,8 +97,11 @@ export class TextBox implements IRenderable {
 
 			await this.renderBackdrop(rx, x, y + NameboxHeight);
 
-			const name = this.obj.talking;
-			if (name) {
+			if (this.obj.talkingDefault !== 'No-one') {
+				const name =
+					this.obj.talkingDefault === 'Other'
+						? this.obj.talkingOther
+						: this.obj.talkingDefault;
 				rx.drawImage({
 					image: await getAsset('namebox'),
 					x: x + NameboxXOffset,

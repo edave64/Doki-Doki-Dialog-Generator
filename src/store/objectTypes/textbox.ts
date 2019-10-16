@@ -10,7 +10,18 @@ import {
 export interface ITextBox extends IObject {
 	type: 'textBox';
 	text: string;
-	talking: string | null;
+	talkingDefault:
+		| 'No-one'
+		| 'Sayori'
+		| 'Monika'
+		| 'Natsuki'
+		| 'Yuri'
+		| 'MC'
+		| 'FeMC'
+		| 'Chad'
+		| 'Amy'
+		| 'Other';
+	talkingOther: string;
 	style: 'normal' | 'corrupt' | 'custom';
 	customColor: string;
 	controls: boolean;
@@ -24,9 +35,15 @@ export const textBoxMutations: MutationTree<IObjectsState> = {
 		obj.text = command.text;
 		++obj.version;
 	},
-	setTalking(state, command: ISetTextBoxTalkingMutation) {
+	setTalkingDefault(state, command: ISetTextBoxTalkingDefaultMutation) {
 		const obj = state.objects[command.id] as ITextBox;
-		obj.talking = command.talking;
+		obj.talkingDefault = command.talkingDefault;
+		++obj.version;
+	},
+	setTalkingOther(state, command: ISetTextBoxTalkingOtherMutation) {
+		const obj = state.objects[command.id] as ITextBox;
+		obj.talkingOther = command.talkingOther;
+		obj.talkingDefault = 'Other';
 		++obj.version;
 	},
 	setStyle(state, command: ISetTextBoxStyleMutation) {
@@ -79,7 +96,8 @@ export const textBoxActions: ActionTree<IObjectsState, never> = {
 				skip: true,
 				style: 'normal',
 				customColor: '#ffa8d2',
-				talking: null,
+				talkingDefault: 'No-one',
+				talkingOther: '',
 				text: '',
 			} as ITextBox,
 		} as ICreateObjectMutation);
@@ -97,8 +115,12 @@ export interface ISetTextBoxTextMutation extends ICommand {
 	readonly text: string;
 }
 
-export interface ISetTextBoxTalkingMutation extends ICommand {
-	readonly talking: string;
+export interface ISetTextBoxTalkingDefaultMutation extends ICommand {
+	readonly talkingDefault: ITextBox['talkingDefault'];
+}
+
+export interface ISetTextBoxTalkingOtherMutation extends ICommand {
+	readonly talkingOther: string;
 }
 
 export interface ISetTextBoxStyleMutation extends ICommand {

@@ -14,13 +14,14 @@
 			<label for="current_talking">Person talking:</label>
 			<br />
 			<select id="current_talking" v-model="talkingDefaults" @keydown.stop>
-				<option value="None">No-one</option>
+				<option value="No-one">No-one</option>
 				<option value="Sayori">Sayori</option>
 				<option value="Yuri">Yuri</option>
 				<option value="Natsuki">Natsuki</option>
 				<option value="Monika">Monika</option>
 				<option value="FeMC">FeMC</option>
 				<option value="MC">MC</option>
+				<option value="Chad">Chad</option>
 				<option value="Amy">Amy</option>
 				<option value="Other">Other</option>
 			</select>
@@ -28,7 +29,7 @@
 		<div>
 			<label for="custom_name">Other name:</label>
 			<br />
-			<input id="custom_name" v-model="talking" @keydown.stop />
+			<input id="custom_name" v-model="talkingOther" @keydown.stop />
 		</div>
 		<toggle label="Controls visible?" v-model="showControls" />
 		<toggle label="Able to skip?" v-model="allowSkipping" />
@@ -59,13 +60,14 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import {
 	ITextBox,
-	ISetTextBoxTalkingMutation,
 	ISetTextBoxControlsVisibleMutation,
 	ISetTextBoxControlsSkipMutation,
 	ISetTextBoxControlsContinueMutation,
 	ISetTextBoxTextMutation,
 	ISetTextBoxStyleAction,
 	ISetTextBoxCustomColorMutation,
+	ISetTextBoxTalkingDefaultMutation,
+	ISetTextBoxTalkingOtherMutation,
 } from '@/store/objectTypes/textbox';
 import Toggle from '@/components/toggle.vue';
 import { State } from 'vuex-class-decorator';
@@ -92,43 +94,31 @@ export default class TextPanel extends Vue {
 		return this.$root as any;
 	}
 
-	private get talkingDefaults(): string {
-		switch (this.talking) {
-			case null:
-				return 'None';
-			case 'Sayori':
-			case 'Yuri':
-			case 'Natsuki':
-			case 'Monika':
-			case 'FeMC':
-			case 'MC':
-			case 'Amy':
-				return this.talking;
-			default:
-				return 'Other';
-		}
+	private get talkingDefaults(): ISetTextBoxTalkingDefaultMutation['talkingDefault'] {
+		return this.textbox.talkingDefault;
 	}
 
-	private set talkingDefaults(value: string) {
-		if (value === 'None') {
-			this.talking = null;
-		} else if (value === 'Other') {
-			this.talking = '';
-		} else {
-			this.talking = value;
-		}
-	}
-
-	private get talking(): string | null {
-		return this.textbox.talking;
-	}
-
-	private set talking(talking: string | null) {
+	private set talkingDefaults(
+		talkingDefault: ISetTextBoxTalkingDefaultMutation['talkingDefault']
+	) {
 		this.history.transaction(() => {
-			this.$store.commit('objects/setTalking', {
+			this.$store.commit('objects/setTalkingDefault', {
 				id: this.textbox.id,
-				talking,
-			} as ISetTextBoxTalkingMutation);
+				talkingDefault,
+			} as ISetTextBoxTalkingDefaultMutation);
+		});
+	}
+
+	private get talkingOther(): string {
+		return this.textbox.talkingOther;
+	}
+
+	private set talkingOther(talkingOther: string) {
+		this.history.transaction(() => {
+			this.$store.commit('objects/setTalkingOther', {
+				id: this.textbox.id,
+				talkingOther,
+			} as ISetTextBoxTalkingOtherMutation);
 		});
 	}
 
