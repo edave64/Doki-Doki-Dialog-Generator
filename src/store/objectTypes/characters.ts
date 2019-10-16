@@ -48,14 +48,13 @@ export const characterMutations: MutationTree<IObjectsState> = {
 	setClose(state, command: ISetCloseMutation) {
 		const obj = state.objects[command.id] as ICharacter;
 		obj.close = command.close;
-		obj.y += CloseUpYOffset * (obj.close ? 1 : -1);
 	},
 	setFreeMove(state, command: ISetFreeMoveMutation) {
 		const obj = state.objects[command.id] as ICharacter;
 		obj.freeMove = command.freeMove;
 		if (!obj.freeMove) {
 			obj.x = characterPositions[closestCharacterSlot(obj.x)];
-			obj.y = BaseCharacterYPos + CloseUpYOffset * (obj.close ? 1 : 0);
+			obj.y = BaseCharacterYPos;
 		}
 	},
 };

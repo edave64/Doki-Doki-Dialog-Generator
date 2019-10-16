@@ -94,22 +94,40 @@ export class Character implements IRenderable, IDragable {
 		});
 	}
 
+	public get width() {
+		const zoom = this.obj.close ? 2 : 1;
+		return this.obj.width * zoom;
+	}
+
+	public get height() {
+		const zoom = this.obj.close ? 2 : 1;
+		return this.obj.height * zoom;
+	}
+
+	public get x() {
+		return this.obj.x;
+	}
+
+	public get y() {
+		return (this.obj.close ? CloseUpYOffset : 0) + this.obj.y;
+	}
+
 	public async render(selected: boolean, rx: RenderContext) {
 		if (this.lastVersion !== this.obj.version || this.lq !== !rx.hq) {
 			await this.updateLocalCanvas();
 		}
 
-		const zoom = this.obj.close ? 2 : 1;
-		const size = this.obj.width * zoom;
-		const x = this.obj.x - size / 2;
-		const y = (this.obj.close ? CloseUpYOffset : 0) + this.obj.y;
+		const w = this.width;
+		const h = this.height;
+		const x = this.x - w / 2;
+		const y = this.y;
 
 		rx.drawImage({
 			image: this.localRenderer,
 			x,
 			y,
-			w: this.obj.width,
-			h: this.obj.height,
+			w,
+			h,
 			flip: this.obj.flip,
 			shadow: selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
 			opacity: this.obj.opacity,
