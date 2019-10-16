@@ -51,11 +51,21 @@ export class TextBox implements IRenderable {
 		return this.obj.id;
 	}
 
-	public hitTest(hx: number, hy: number): boolean {
-		const w = this.obj.style === 'custom' ? this.obj.width : TextBoxWidth;
-		const h =
+	public get width(): number {
+		return this.obj.style === 'custom' ? this.obj.width : TextBoxWidth;
+	}
+
+	public get height(): number {
+		return (
 			(this.obj.style === 'custom' ? this.obj.height : TextBoxHeight) +
-			NameboxHeight;
+			NameboxHeight
+		);
+	}
+
+	public hitTest(hx: number, hy: number): boolean {
+		const w = this.width;
+		const h = this.height;
+
 		const w2 = w / 2;
 		const x1 = this.obj.x - w2;
 		const x2 = x1 + w;
@@ -90,11 +100,8 @@ export class TextBox implements IRenderable {
 
 	public async updateLocalCanvas() {
 		await this.localRenderer.render(async rx => {
-			const w = this.obj.style === 'custom' ? this.obj.width : TextBoxWidth;
-			const h =
-				this.obj.style === 'custom'
-					? this.obj.height + NameboxHeight
-					: TextBoxHeight + NameboxHeight;
+			const w = this.width;
+			const h = this.height;
 			const w2 = w / 2;
 			const x = this.obj.x - w2;
 			const y = this.obj.y;

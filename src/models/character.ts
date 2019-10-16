@@ -135,17 +135,21 @@ export class Character implements IRenderable, IDragable {
 	}
 
 	public hitTest(hx: number, hy: number): boolean {
-		const zoom = this.obj.close ? 1.6 : 0.8;
-		const size = 960 * zoom;
-		let x = (hx - this.obj.x + size / 2) / zoom;
-		const y = (hy - this.obj.y) / zoom;
+		const scaledX = hx - (this.x - this.width / 2);
+		const scaledY = hy - this.y;
 
-		if (this.obj.flip) {
-			x = 960 - x;
-		}
+		if (scaledX < 0 || scaledX > this.width) return false;
+		if (scaledY < 0 || scaledY > this.height) return false;
+
 		if (!this.hitDetectionFallback) {
 			try {
-				const data = this.localRenderer.getDataAt(x, y);
+				const flippedX = this.obj.flip ? this.width - scaledX : scaledX;
+				const scaleX = 960 / this.width;
+				const scaleY = 960 / this.height;
+				const data = this.localRenderer.getDataAt(
+					Math.round(flippedX * scaleX),
+					Math.round(scaledY * scaleY)
+				);
 				return data[3] !== 0;
 			} catch (e) {
 				// On chrome for android, the hit test tends to fail because of cross-origin shenanigans, even though
@@ -160,7 +164,6 @@ export class Character implements IRenderable, IDragable {
 			}
 		}
 
-		if (y < 50 || y > 680) return false;
-		return Math.abs(x - 480) < 150;
+		return true;
 	}
 }
