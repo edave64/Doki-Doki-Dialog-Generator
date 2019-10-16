@@ -4,7 +4,7 @@
 		<toggle v-if="allowStepMove" v-model="freeMove" label="Move freely?" />
 		<div v-if="allowStepMove && !freeMove">
 			<button @click="--pos" :disabled="isFirstPos">&lt;</button>
-			<select id="current_talking" v-model.number="pos" @input="$emit('invalidate-render')">
+			<select id="current_talking" v-model.number="pos">
 				<option v-for="(val, key) of positionNames" :key="key" :value="key">{{val}}</option>
 			</select>
 			<button @click="++pos" :disabled="isLastPos">&gt;</button>

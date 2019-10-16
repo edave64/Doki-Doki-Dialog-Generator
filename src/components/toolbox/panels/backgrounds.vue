@@ -1,7 +1,7 @@
 <template>
 	<div :class="{ panel: true }">
 		<h1>Background</h1>
-		<background-settings :value="value" :nsfw="nsfw" @invalidate-render="$emit('invalidate-render')" />
+		<background-settings :value="value" :nsfw="nsfw" />
 
 		<background-button
 			v-for="background of backgrounds"
