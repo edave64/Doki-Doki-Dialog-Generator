@@ -52,11 +52,15 @@ export class TextBox implements IRenderable {
 	}
 
 	public hitTest(hx: number, hy: number): boolean {
-		const w2 = TextBoxWidth / 2;
+		const w = this.obj.style === 'custom' ? this.obj.width : TextBoxWidth;
+		const h =
+			(this.obj.style === 'custom' ? this.obj.height : TextBoxHeight) +
+			NameboxHeight;
+		const w2 = w / 2;
 		const x1 = this.obj.x - w2;
-		const x2 = x1 + TextBoxWidth;
+		const x2 = x1 + w;
 		const y1 = this.obj.y;
-		const y2 = y1 + NameboxHeight + TextBoxHeight;
+		const y2 = y1 + h;
 		return x1 <= hx && x2 >= hx && y1 <= hy && y2 >= hy;
 	}
 
