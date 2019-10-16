@@ -46,7 +46,7 @@
 		<opacity :obj="textbox" />
 		<toggle v-model="flip" label="Flip?" />
 
-		<fieldset>
+		<fieldset v-if="textBoxStyle === 'custom'">
 			<legend>Customization:</legend>
 			<label for="textbox_color">Color:</label>
 			<input id="textbox_color" type="color" v-model="textboxColor" />
