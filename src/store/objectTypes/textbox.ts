@@ -24,6 +24,11 @@ export interface ITextBox extends IObject {
 	talkingOther: string;
 	style: 'normal' | 'corrupt' | 'custom';
 	customColor: string;
+	deriveCustomColors: boolean;
+	customControlsColor: string;
+	customNameboxColor: string;
+	customNameboxStroke: string;
+	customNameboxWidth: number;
 	controls: boolean;
 	skip: boolean;
 	continue: boolean;
@@ -54,6 +59,31 @@ export const textBoxMutations: MutationTree<IObjectsState> = {
 	setControlsVisible(state, command: ISetTextBoxControlsVisibleMutation) {
 		const obj = state.objects[command.id] as ITextBox;
 		obj.controls = command.controls;
+		++obj.version;
+	},
+	setControlsColor(state, command: ISetTextBoxCustomControlsColorMutation) {
+		const obj = state.objects[command.id] as ITextBox;
+		obj.customControlsColor = command.customControlsColor;
+		++obj.version;
+	},
+	setDeriveCustomColors(state, command: ISetTextBoxDeriveCustomColorMutation) {
+		const obj = state.objects[command.id] as ITextBox;
+		obj.deriveCustomColors = command.deriveCustomColors;
+		++obj.version;
+	},
+	setNameboxColor(state, command: ISetTextBoxNameboxColorMutation) {
+		const obj = state.objects[command.id] as ITextBox;
+		obj.customNameboxColor = command.customNameboxColor;
+		++obj.version;
+	},
+	setNameboxStroke(state, command: ISetTextBoxNameboxStrokeMutation) {
+		const obj = state.objects[command.id] as ITextBox;
+		obj.customNameboxStroke = command.customNameboxStroke;
+		++obj.version;
+	},
+	setNameboxWidth(state, command: ISetTextBoxNameboxWidthMutation) {
+		const obj = state.objects[command.id] as ITextBox;
+		obj.customNameboxWidth = command.customNameboxWidth;
 		++obj.version;
 	},
 	setSkipable(state, command: ISetTextBoxControlsSkipMutation) {
@@ -96,6 +126,11 @@ export const textBoxActions: ActionTree<IObjectsState, never> = {
 				skip: true,
 				style: 'normal',
 				customColor: '#ffa8d2',
+				deriveCustomColors: true,
+				customControlsColor: '#552222',
+				customNameboxColor: '#ffeef6',
+				customNameboxWidth: 168,
+				customNameboxStroke: '#bb5599',
 				talkingDefault: 'No-one',
 				talkingOther: '',
 				text: '',
@@ -129,6 +164,26 @@ export interface ISetTextBoxStyleMutation extends ICommand {
 
 export interface ISetTextBoxControlsVisibleMutation extends ICommand {
 	readonly controls: boolean;
+}
+
+export interface ISetTextBoxDeriveCustomColorMutation extends ICommand {
+	readonly deriveCustomColors: boolean;
+}
+
+export interface ISetTextBoxCustomControlsColorMutation extends ICommand {
+	readonly customControlsColor: string;
+}
+
+export interface ISetTextBoxNameboxColorMutation extends ICommand {
+	readonly customNameboxColor: string;
+}
+
+export interface ISetTextBoxNameboxStrokeMutation extends ICommand {
+	readonly customNameboxStroke: string;
+}
+
+export interface ISetTextBoxNameboxWidthMutation extends ICommand {
+	readonly customNameboxWidth: number;
 }
 
 export interface ISetTextBoxControlsSkipMutation extends ICommand {

@@ -32,7 +32,7 @@ import {
 	GlowRX,
 } from './textBoxConstants';
 import { Renderer } from '@/renderer/renderer';
-import { roundedRectangle } from '@/renderer/pathTools';
+import { roundedRectangle, roundedTopRectangle } from '@/renderer/pathTools';
 import { RGBAColor } from '@/util/colors/rgb';
 import { HSLAColor } from '@/util/colors/hsl';
 
@@ -98,7 +98,56 @@ export class TextBox implements IRenderable {
 		});
 	}
 
+	public get controlColor(): string {
+		if (this.obj.deriveCustomColors) {
+			const base = RGBAColor.fromCss(this.obj.customColor).toHSL();
+			const delta = new HSLAColor(
+				0.08045977011494243,
+				-0.5714285714285714,
+				-0.5960784313725489,
+				0
+			);
+			return base
+				.shift(delta)
+				.toRgb()
+				.toCss();
+		}
+		return this.obj.customControlsColor;
+	}
+
+	public get controlsStyle() {
+		if (this.obj.style !== 'custom') return ControlsTextStyle;
+		return {
+			...ControlsTextStyle,
+			fill: {
+				style: this.controlColor,
+			},
+		};
+	}
+
+	public get controlsDisableStyle() {
+		if (this.obj.style !== 'custom') return ControlsTextDisabledStyle;
+
+		const col = RGBAColor.fromCss(this.controlColor).toHSL();
+		const delta = new HSLAColor(0, -0.14285714285714296, 0.3, 0);
+		const disColor = col
+			.shift(delta)
+			.toRgb()
+			.toCss();
+
+		return {
+			...ControlsTextStyle,
+
+			fill: {
+				style: disColor,
+			},
+		};
+	}
+
 	public async updateLocalCanvas() {
+		const base = RGBAColor.fromCss(this.obj.customColor).toHSL();
+		const target = RGBAColor.fromCss('#552222').toHSL();
+
 		await this.localRenderer.render(async rx => {
 			const w = this.width;
 			const h = this.height;
@@ -113,17 +162,7 @@ export class TextBox implements IRenderable {
 					this.obj.talkingDefault === 'Other'
 						? this.obj.talkingOther
 						: this.obj.talkingDefault;
-				rx.drawImage({
-					image: await getAsset('namebox'),
-					x: x + NameboxXOffset,
-					y,
-				});
-				rx.drawText({
-					x: x + NameboxXOffset + NameboxWidth / 2,
-					y: y + NameboxTextYOffset,
-					text: name,
-					...NameboxTextStyle,
-				});
+				await this.renderNamebox(rx, x + NameboxXOffset, y, name);
 			}
 
 			this.renderText(rx, x, y);
@@ -137,19 +176,19 @@ export class TextBox implements IRenderable {
 					text: 'History',
 					x: controlsCenter + ControlsXHistoryOffset,
 					y: controlsY,
-					...ControlsTextStyle,
+					...this.controlsStyle,
 				});
 				rx.drawText({
 					text: 'Skip',
 					x: controlsCenter + ControlsXSkipOffset,
 					y: controlsY,
-					...(this.obj.skip ? ControlsTextStyle : ControlsTextDisabledStyle),
+					...(this.obj.skip ? this.controlsStyle : this.controlsDisableStyle),
 				});
 				rx.drawText({
 					text: 'Auto   Save   Load   Settings',
 					x: controlsCenter + ControlsXStuffOffset,
 					y: controlsY,
-					...ControlsTextStyle,
+					...this.controlsStyle,
 				});
 			}
 
@@ -160,6 +199,115 @@ export class TextBox implements IRenderable {
 					y: bottom - ArrowYBottomOffset,
 				});
 			}
+		});
+	}
+
+	private get nameboxOutlineColor(): string {
+		if (this.obj.deriveCustomColors) {
+			const base = RGBAColor.fromCss(this.obj.customColor).toHSL();
+			const delta = new HSLAColor(
+				-0.03065134099616873,
+				-0.5714285714285714,
+				-0.29607843137254896,
+				0
+			);
+			return base
+				.shift(delta)
+				.toRgb()
+				.toCss();
+		}
+		return this.obj.customNameboxStroke;
+	}
+
+	private get nameboxBackgroundColor(): string {
+		if (this.obj.deriveCustomColors) {
+			const base = RGBAColor.fromCss(this.obj.customColor).toHSL();
+			const delta = new HSLAColor(
+				0.002028397565922768,
+				0,
+				0.13725490196078438,
+				0
+			);
+			return base
+				.shift(delta)
+				.toRgb()
+				.toCss();
+		}
+		return this.obj.customNameboxColor;
+	}
+
+	private async renderNamebox(
+		rx: RenderContext,
+		x: number,
+		y: number,
+		name: string
+	): Promise<void> {
+		let w: number;
+		const h = NameboxHeight;
+		let style: typeof NameboxTextStyle = NameboxTextStyle;
+		if (this.obj.style === 'custom') {
+			const hslOutline = RGBAColor.fromCss(this.nameboxOutlineColor).toHSL();
+			style = {
+				...style,
+
+				outline: {
+					style: this.nameboxOutlineColor,
+					width: 6,
+				},
+				fill: {
+					style: hslOutline.l > 0.6 ? '#000000' : '#FFFFFF',
+				},
+			};
+			w = this.obj.customNameboxWidth;
+			rx.customTransform(
+				ctx => {
+					ctx.beginPath();
+					roundedTopRectangle(ctx, x, y, w, h, 12);
+					ctx.clip();
+				},
+				subRx => {
+					const h = this.obj.height;
+					const w = this.obj.width;
+					const gradient = subRx.linearGradient(x, y, x, y + NameboxHeight);
+					const baseBG = RGBAColor.fromCss(this.nameboxBackgroundColor);
+					const color = new RGBAColor(baseBG.r, baseBG.g, baseBG.b, 244);
+					const delta = new HSLAColor(
+						-0.004901960784313708,
+						-0.8599999999999999,
+						-0.16274509803921566,
+						0
+					);
+					const targetColor = color
+						.toHSL()
+						.shift(delta)
+						.toRgb();
+					gradient.addColorStop(0, color.toCss());
+					gradient.addColorStop(0.82, color.toCss());
+					gradient.addColorStop(1, targetColor.toCss());
+					subRx.drawRect({
+						x,
+						y,
+						w,
+						h,
+						fill: {
+							style: gradient,
+						},
+					});
+				}
+			);
+		} else {
+			w = NameboxWidth;
+			rx.drawImage({
+				image: await getAsset('namebox'),
+				x,
+				y,
+			});
+		}
+		rx.drawText({
+			x: x + w / 2,
+			y: y + NameboxTextYOffset,
+			text: name,
+			...style,
 		});
 	}
 
@@ -270,7 +418,6 @@ export class TextBox implements IRenderable {
 							});
 						}
 					);
-					console.log('Glow:', y + h - GlowRY, y + h);
 					const glowGradient = subRx.linearGradient(
 						x,
 						y + h - GlowRY,

@@ -51,6 +51,22 @@
 			<legend>Customization:</legend>
 			<label for="textbox_color">Color:</label>
 			<input id="textbox_color" type="color" v-model="textboxColor" />
+			<br />
+			<label for="custom_namebox_width">Namebox width:</label>
+			<input id="custom_namebox_width" type="number" v-model.number="customNameboxWidth" />
+			<br />
+			<label for="derive_custom_colors">Derive other colors:</label>
+			<toggle id="derive_custom_colors" v-model="deriveCustomColors" />
+			<template v-if="!deriveCustomColors">
+				<label for="custom_controls_color">Controls Color:</label>
+				<input id="custom_controls_color" type="color" v-model="customControlsColor" />
+				<br />
+				<label for="custom_namebox_color">Namebox Color:</label>
+				<input id="custom_namebox_color" type="color" v-model="customNameboxColor" />
+				<br />
+				<label for="custom_namebox_stroke">Namebox text stroke:</label>
+				<input id="custom_namebox_stroke" type="color" v-model="customNameboxStroke" />
+			</template>
 		</fieldset>
 		<delete :obj="textbox" />
 	</div>
@@ -68,6 +84,11 @@ import {
 	ISetTextBoxCustomColorMutation,
 	ISetTextBoxTalkingDefaultMutation,
 	ISetTextBoxTalkingOtherMutation,
+	ISetTextBoxCustomControlsColorMutation,
+	ISetTextBoxNameboxColorMutation,
+	ISetTextBoxNameboxWidthMutation,
+	ISetTextBoxNameboxStrokeMutation,
+	ISetTextBoxDeriveCustomColorMutation,
 } from '@/store/objectTypes/textbox';
 import Toggle from '@/components/toggle.vue';
 import { State } from 'vuex-class-decorator';
@@ -208,6 +229,61 @@ export default class TextPanel extends Vue {
 			color,
 		} as ISetTextBoxCustomColorMutation);
 	}
+
+	private get deriveCustomColors(): boolean {
+		return this.textbox.deriveCustomColors;
+	}
+
+	private set deriveCustomColors(deriveCustomColors: boolean) {
+		this.$store.commit('objects/setDeriveCustomColors', {
+			id: this.textbox.id,
+			deriveCustomColors,
+		} as ISetTextBoxDeriveCustomColorMutation);
+	}
+
+	private get customControlsColor(): string {
+		return this.textbox.customControlsColor;
+	}
+
+	private set customControlsColor(customControlsColor: string) {
+		this.$store.commit('objects/setControlsColor', {
+			id: this.textbox.id,
+			customControlsColor,
+		} as ISetTextBoxCustomControlsColorMutation);
+	}
+
+	private get customNameboxColor(): string {
+		return this.textbox.customNameboxColor;
+	}
+
+	private set customNameboxColor(customNameboxColor: string) {
+		this.$store.commit('objects/setNameboxColor', {
+			id: this.textbox.id,
+			customNameboxColor,
+		} as ISetTextBoxNameboxColorMutation);
+	}
+
+	private get customNameboxWidth(): number {
+		return this.textbox.customNameboxWidth;
+	}
+
+	private set customNameboxWidth(customNameboxWidth: number) {
+		this.$store.commit('objects/setNameboxWidth', {
+			id: this.textbox.id,
+			customNameboxWidth,
+		} as ISetTextBoxNameboxWidthMutation);
+	}
+
+	private get customNameboxStroke(): string {
+		return this.textbox.customNameboxStroke;
+	}
+
+	private set customNameboxStroke(customNameboxStroke: string) {
+		this.$store.commit('objects/setNameboxStroke', {
+			id: this.textbox.id,
+			customNameboxStroke,
+		} as ISetTextBoxNameboxStrokeMutation);
+	}
 }
 </script>
 <style lang="scss" scoped>
@@ -234,8 +310,12 @@ export default class TextPanel extends Vue {
 	}
 }
 
-textarea {
-	min-height: 148px;
+:not(.vertical) fieldset {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-content: flex-start;
+	overflow: auto;
 }
 
 .btn_link {

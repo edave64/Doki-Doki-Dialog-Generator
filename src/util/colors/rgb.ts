@@ -23,7 +23,7 @@ export class RGBAColor {
 		if (!this.validCssRgb(str)) throw new Error('Invalid RGB color format');
 		const rgbHead = str.slice(0, -1);
 		const parentesisPos = rgbHead.indexOf('(');
-		const rbgTail = rgbHead.slice(parentesisPos);
+		const rbgTail = rgbHead.slice(parentesisPos + 1);
 		const elements = rbgTail.split(',').map(x => parseFloat(x.trim()));
 		return new RGBAColor(
 			elements[0],
@@ -75,8 +75,8 @@ export class RGBAColor {
 		throw new Error('Invalid Hex color format length');
 	}
 
-	private static rgbEx = /^rbg\((\d*?)\,(\d*?)\,(\d*?)\)$/i;
-	private static rgbaEx = /^rbg\((\d{1,3})\,(\d{1,3})\,(\d{1,3})\,([\d\.]+)\)$/i;
+	private static rgbEx = /^rgb\((\d*?)\,(\d*?)\,(\d*?)\)$/i;
+	private static rgbaEx = /^rgba\((\d{1,3})\,(\d{1,3})\,(\d{1,3})\,([\d\.]+)\)$/i;
 	private static hexShortEx = /^\#[0-9A-Z]{3,4}$/i;
 	private static hexLongEx = /^\#[0-9A-Z]{6,8}$/i;
 

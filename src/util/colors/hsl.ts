@@ -18,10 +18,11 @@ export class HSLAColor implements IColor {
 
 	public shift(deltas: HSLAColor): HSLAColor {
 		let { h, s, l, a } = this;
-		if (h + deltas.h > 1 || h + deltas.h < 0) {
-			h -= deltas.h;
-		} else {
-			h += deltas.h;
+		h += deltas.h;
+		if (h >= 1) {
+			h -= 1;
+		} else if (h < 0) {
+			h += 1;
 		}
 		if (s + deltas.s > 1 || s + deltas.s < 0) {
 			s -= deltas.s;
