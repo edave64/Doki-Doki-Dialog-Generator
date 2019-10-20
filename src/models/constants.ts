@@ -1,7 +1,3 @@
-import { Background } from './background';
-
-export const backgrounds = [] as Background[];
-
 export const positions = [
 	'4-1',
 	'3-1',
