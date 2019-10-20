@@ -9,6 +9,7 @@ import {
 	INsfwAbleImg,
 } from '@/asset-manager';
 import { Background } from '@/models/background';
+import eventBus, { ShowMessageEvent } from '@/event-bus';
 
 export class Electron implements IEnvironment {
 	public readonly allowLQ = false;
@@ -90,6 +91,9 @@ export class Electron implements IEnvironment {
 				backgrounds.push(new Background(name, filepath, false, true));
 			}
 		);
+		this.electron.ipcRenderer.on('push-message', async (e, message: string) => {
+			eventBus.fire(new ShowMessageEvent(message));
+		});
 		this.electron.ipcRenderer.send('find-customs');
 	}
 

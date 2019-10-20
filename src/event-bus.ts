@@ -44,3 +44,9 @@ export class CustomAssetFailureEvent implements IEvent {
 	public readonly kind = 'CustomAssetFailureEvent';
 	public constructor(public error: ErrorEvent) {}
 }
+
+export class ShowMessageEvent implements IEvent {
+	public static readonly kind = 'ShowMessageEvent';
+	public readonly kind = 'ShowMessageEvent';
+	public constructor(public message: string) {}
+}

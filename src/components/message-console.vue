@@ -10,6 +10,7 @@ import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import EventBus, {
 	AssetFailureEvent,
 	CustomAssetFailureEvent,
+	ShowMessageEvent,
 } from '../event-bus';
 
 @Component({
@@ -36,6 +37,13 @@ export default class MessageConsole extends Vue {
 			this.messages.push(
 				'Failed to load custom asset. Try to download it manually and then upload it.'
 			);
+			setTimeout(() => {
+				this.messages.pop();
+			}, 50000);
+		});
+
+		EventBus.subscribe(ShowMessageEvent, ev => {
+			this.messages.push(ev.message);
 			setTimeout(() => {
 				this.messages.pop();
 			}, 50000);
