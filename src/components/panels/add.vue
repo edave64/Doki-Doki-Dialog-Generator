@@ -47,6 +47,9 @@ export default class AddPanel extends Vue {
 	}
 
 	private assetPath(character: ICharacter<any>) {
+		if (character.chibi) {
+			return (character.folder || '') + character.chibi;
+		}
 		const lq = environment.allowLQ ? '.lq' : '';
 		return `${process.env.BASE_URL}/assets/chibis/${character.internalId +
 			lq}.${this.isWebPSupported ? 'webp' : 'png'}`.replace(/\/+/, '/');

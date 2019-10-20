@@ -317,6 +317,7 @@ export interface ICharacter<H extends Heads> {
 	name: string;
 	folder?: string;
 	nsfw?: boolean;
+	chibi?: string;
 	heads: H;
 	poses: Array<Pose<H>>;
 }
