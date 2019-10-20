@@ -101,6 +101,7 @@ import { IRenderable } from './models/renderable';
 import { Sprite } from './models/sprite';
 import { IDragable } from './models/dragable';
 import { VariantBackground } from './models/variant-background';
+import leftPad from 'left-pad';
 
 @Component({
 	components: {
@@ -343,9 +344,23 @@ export default class App extends Vue {
 		if (this.prevRender && window.URL && window.URL.revokeObjectURL) {
 			URL.revokeObjectURL(this.prevRender);
 		}
+		const date = new Date();
+		const filename = `panel-${date.getFullYear()}-${leftPad(
+			date.getMonth(),
+			2,
+			'0'
+		)}-${leftPad(date.getDate(), 2, '0')}-${leftPad(
+			date.getHours(),
+			2,
+			'0'
+		)}-${leftPad(date.getMinutes(), 2, '0')}-${leftPad(
+			date.getSeconds(),
+			2,
+			'0'
+		)}.png`;
 		this.prevRender = await this.renderer.download(
 			this.renderCallback,
-			'panel.png'
+			filename
 		);
 	}
 
