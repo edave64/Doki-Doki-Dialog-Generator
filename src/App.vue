@@ -101,6 +101,7 @@ import { IRenderable } from './models/renderable';
 import { Sprite } from './models/sprite';
 import { IDragable } from './models/dragable';
 import { VariantBackground } from './models/variant-background';
+import environment from './environments/environment';
 import leftPad from 'left-pad';
 
 @Component({
@@ -136,7 +137,7 @@ export default class App extends Vue {
 	private showUI: boolean = true;
 	private loaded: boolean = false;
 	private uiSize: number = 192;
-	private lqRendering: boolean = true;
+	private lqRendering: boolean = environment.allowLQ;
 	private currentlyRendering: boolean = false;
 
 	private panel: string = '';

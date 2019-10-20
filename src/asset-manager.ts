@@ -20,6 +20,7 @@ import EventBus, {
 	CustomAssetFailureEvent,
 } from './event-bus';
 import { ErrorAsset } from './models/error-asset';
+import environment from './environments/environment';
 
 export const characterOrder = ([
 	Monika,
@@ -79,6 +80,8 @@ export async function getAsset(
 	if (customAssets[asset]) {
 		return customAssets[asset];
 	}
+
+	if (!environment.allowLQ) hq = true;
 
 	const url = `${process.env.BASE_URL}/assets/${asset}${hq ? '' : '.lq'}${
 		(await isWebPSupported()) ? '.webp' : '.png'

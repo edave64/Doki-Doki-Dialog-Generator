@@ -8,6 +8,7 @@
 			href="https://github.com/edave64/Doki-Doki-Dialog-Generator/blob/v1/docs/index.md"
 		>Help</a>
 		<toggle
+			v-if="allowsLQ"
 			label="Low quality preview?"
 			title="Reduces the quality of the preview images to speed up the user experience and consume less data. Does not effect final render."
 			:value="lqRendering"
@@ -55,6 +56,7 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { Textbox } from '../../models/textbox';
 import Toggle from '../Toggle.vue';
+import environment from '../../environments/environment';
 
 @Component({
 	components: {
@@ -70,6 +72,10 @@ export default class GeneralPanel extends Vue {
 	private readonly hasPrevRender!: boolean;
 	@Prop({ required: true, type: Boolean })
 	private readonly nsfw!: boolean;
+
+	private get allowsLQ(): boolean {
+		return environment.allowLQ;
+	}
 
 	@Watch('options.customName')
 	private talkingChange(): void {

@@ -27,6 +27,7 @@ import {
 	registerAsset,
 	registerAssetWithURL,
 } from '../../asset-manager';
+import environment from '../../environments/environment';
 
 @Component({
 	components: {},
@@ -46,9 +47,9 @@ export default class AddPanel extends Vue {
 	}
 
 	private assetPath(character: ICharacter<any>) {
-		return `${process.env.BASE_URL}/assets/chibis/${character.internalId}.lq.${
-			this.isWebPSupported ? 'webp' : 'png'
-		}`.replace(/\/+/, '/');
+		const lq = environment.allowLQ ? '.lq' : '';
+		return `${process.env.BASE_URL}/assets/chibis/${character.internalId +
+			lq}.${this.isWebPSupported ? 'webp' : 'png'}`.replace(/\/+/, '/');
 	}
 
 	private onFileUpload(e: Event) {
