@@ -11,7 +11,9 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { IBackground, color, Background } from '../../../models/background';
 import { VariantBackground } from '../../../models/variant-background';
-import { isWebPSupported } from '../../../asset-manager';
+import { isWebPSupported, getAsset } from '../../../asset-manager';
+import environment from '../../../environments/environment';
+import { ErrorAsset } from '../../../models/error-asset';
 
 @Component({
 	components: {},
@@ -23,37 +25,26 @@ export default class BackgroundButton extends Vue {
 		[name: string]: string;
 	};
 
-	private isWebPSupported: boolean | null = null;
+	private lookup: HTMLImageElement | ErrorAsset | null = null;
+	private loaded = false;
 
 	private async created() {
-		this.isWebPSupported = await isWebPSupported();
+		if (
+			this.background instanceof Background ||
+			this.background instanceof VariantBackground
+		) {
+			this.lookup = await getAsset(this.background.path, false);
+		}
 	}
 
 	private get style(): { [id: string]: string } {
+		const lq = environment.allowLQ ? '.lq' : '';
 		if (this.background === color) {
 			return { backgroundColor: color.color };
 		}
-		if (this.background instanceof Background) {
-			if (this.background.custom) {
-				return {
-					backgroundImage: `url(${
-						this.customPathLookup[this.background.path]
-					})`,
-				};
-			}
-			if (this.isWebPSupported === undefined) return {};
+		if (this.lookup instanceof HTMLImageElement) {
 			return {
-				backgroundImage: `url(${process.env.BASE_URL}/assets/${
-					this.background.path
-				}.lq.${this.isWebPSupported ? 'webp' : 'png'})`.replace(/\/+/, '/'),
-			};
-		}
-		if (this.background instanceof VariantBackground) {
-			if (this.isWebPSupported === undefined) return {};
-			return {
-				backgroundImage: `url(${process.env.BASE_URL}/assets/${
-					this.background.path
-				}.lq.${this.isWebPSupported ? 'webp' : 'png'})`.replace(/\/+/, '/'),
+				backgroundImage: `url(${this.lookup.src})`,
 			};
 		}
 		return {};
