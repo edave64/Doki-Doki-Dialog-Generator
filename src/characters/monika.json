@@ -2,7 +2,7 @@
 	"id": "ddlc.monika",
 	"name": "Monika",
 	"internalId": "monika",
-	"folder": "monika",
+	"folder": "monika/",
 	"heads": {
 		"straight": [
 			"a",
@@ -29,20 +29,24 @@
 	"poses": [
 		{
 			"compatibleHeads": ["straight"],
+			"name": "normal",
 			"left": ["1l", "2l"],
 			"right": ["1r", "2r"]
 		},
 		{
 			"compatibleHeads": ["sideways"],
+			"name": "leaned",
 			"static": "3"
 		},
 		{
 			"compatibleHeads": [],
-			"folder": "/old/",
+			"name": "old",
+			"folder": "old/",
 			"variant": ["1", "2", "3", "4", "5"]
 		},
 		{
 			"compatibleHeads": [],
+			"name": "glitch",
 			"variant": ["g1_scaled", "g2", "g3", "g4"]
 		}
 	]

@@ -4,12 +4,12 @@ import {
 	ICharacter,
 	characterOrder,
 	backgrounds,
-	registerAsset,
 	registerAssetWithURL,
-	INsfwAbleImg,
 } from '@/asset-manager';
 import { Background } from '@/models/background';
 import eventBus, { ShowMessageEvent } from '@/event-bus';
+import { normalizeCharacter } from '@/models/json-config';
+import { mergeCharacters, freezeAssetUrls } from '@/models/merge-characters';
 
 export class Electron implements IEnvironment {
 	public readonly allowLQ = false;
@@ -21,65 +21,17 @@ export class Electron implements IEnvironment {
 			async (e, filepath: string) => {
 				console.log(filepath);
 				const response = await fetch(filepath);
-				const json = (await response.json()) as ICharacter<any>;
-				characters[json.id] = json;
-				characterOrder.push(json);
-
-				const baseFolder = json.folder + '/' || '';
-				for (const headGroupKey in json.heads) {
-					if (!json.heads.hasOwnProperty(headGroupKey)) continue;
-					const headGroup = json.heads[headGroupKey];
-					const headGroupFolder = headGroup.folder
-						? baseFolder + headGroup.folder + '/'
-						: baseFolder;
-					const collection = headGroup.all || headGroup;
-					for (const head of collection) {
-						const path = headGroupFolder + head;
-						registerAssetWithURL(path, path);
-					}
+				const json = normalizeCharacter(await response.json()) as ICharacter<
+					any
+				>;
+				if (characters[json.id]) {
+					const existing = characters[json.id];
+					mergeCharacters(existing, json);
+				} else {
+					characters[json.id] = json;
+					characterOrder.push(json);
 				}
-				for (const poseKey in json.poses) {
-					if (!json.poses.hasOwnProperty(poseKey)) continue;
-					const pose = json.poses[poseKey];
-					const poseFolder = pose.folder
-						? baseFolder + pose.folder + '/'
-						: baseFolder;
-					const collection: string[] = [];
-					if ('static' in pose) {
-						collection.push(pose.static);
-					}
-					if ('left' in pose) {
-						for (const left of pose.left) {
-							if (typeof left === 'string') {
-								collection.push(left);
-							} else {
-								collection.push(left.img);
-							}
-						}
-					}
-					if ('right' in pose) {
-						for (const right of pose.right) {
-							if (typeof right === 'string') {
-								collection.push(right);
-							} else {
-								collection.push(right.img);
-							}
-						}
-					}
-					if ('variant' in pose) {
-						for (const variant of pose.variant) {
-							if (typeof variant === 'string') {
-								collection.push(variant);
-							} else {
-								collection.push(variant.img);
-							}
-						}
-					}
-					for (const part of collection) {
-						const path = poseFolder + part;
-						registerAssetWithURL(path, path);
-					}
-				}
+				freezeAssetUrls(json);
 			}
 		);
 		this.electron.ipcRenderer.on(

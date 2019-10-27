@@ -21,32 +21,33 @@ import EventBus, {
 } from './event-bus';
 import { ErrorAsset } from './models/error-asset';
 import environment from './environments/environment';
-
-export const characterOrder = ([
-	Monika,
-	Natsuki,
-	Sayori,
-	Yuri,
-	FeMC,
-	MC,
-	MCChad,
-	MCClassic,
-	Amy,
-	AmyClassic,
-] as any) as Array<ICharacter<any>>;
+import { normalizeCharacter } from './models/json-config';
 
 export const characters: { [name: string]: ICharacter<any> } = {
-	[Sayori.id]: Sayori as any,
-	[Yuri.id]: Yuri as any,
-	[Natsuki.id]: Natsuki as any,
-	[Monika.id]: Monika as any,
-	[FeMC.id]: FeMC as any,
-	[MC.id]: MC as any,
-	[MCChad.id]: MCChad as any,
-	[MCClassic.id]: MCClassic as any,
-	[Amy.id]: Amy as any,
-	[AmyClassic.id]: AmyClassic as any,
+	[Sayori.id]: normalizeCharacter(Sayori as any),
+	[Yuri.id]: normalizeCharacter(Yuri as any),
+	[Natsuki.id]: normalizeCharacter(Natsuki as any),
+	[Monika.id]: normalizeCharacter(Monika as any),
+	[FeMC.id]: normalizeCharacter(FeMC as any),
+	[MC.id]: normalizeCharacter(MC as any),
+	[MCChad.id]: normalizeCharacter(MCChad as any),
+	[MCClassic.id]: normalizeCharacter(MCClassic as any),
+	[Amy.id]: normalizeCharacter(Amy as any),
+	[AmyClassic.id]: normalizeCharacter(AmyClassic as any),
 };
+
+export const characterOrder = ([
+	characters[Monika.id],
+	characters[Natsuki.id],
+	characters[Sayori.id],
+	characters[Yuri.id],
+	characters[FeMC.id],
+	characters[MC.id],
+	characters[MCChad.id],
+	characters[MCClassic.id],
+	characters[Amy.id],
+	characters[AmyClassic.id],
+] as any) as Array<ICharacter<any>>;
 
 let webpSupportPromise: Promise<boolean>;
 
@@ -274,18 +275,22 @@ export const backgrounds: IBackground[] = [
 ];
 
 export interface IHeads {
+	nsfw: boolean;
+	all: INsfwAbleImg[];
 	size: [number, number];
 	offset: [number, number];
 }
 
 export interface Heads {
-	[id: string]: IHeads | string[];
+	[id: string]: IHeads;
 }
 
 interface IPose<H> {
 	compatibleHeads: Array<keyof H>;
-	size: [number, number];
-	offset: [number, number];
+	headInForeground: boolean;
+	nsfw: boolean;
+	name: string;
+	headAnchor: [number, number];
 }
 
 interface IStaticPose<H> extends IPose<H> {
@@ -298,12 +303,12 @@ export interface INsfwAbleImg {
 }
 
 interface IVariantPose<H> extends IPose<H> {
-	variant: Array<string | INsfwAbleImg>;
+	variant: INsfwAbleImg[];
 }
 
 interface ITwoSidedPose<H> extends IPose<H> {
-	left: Array<string | INsfwAbleImg>;
-	right: Array<string | INsfwAbleImg>;
+	left: INsfwAbleImg[];
+	right: INsfwAbleImg[];
 }
 
 export type Pose<H extends Heads> =
@@ -315,8 +320,7 @@ export interface ICharacter<H extends Heads> {
 	id: string;
 	internalId: string;
 	name: string;
-	folder?: string;
-	nsfw?: boolean;
+	nsfw: boolean;
 	chibi?: string;
 	heads: H;
 	poses: Array<Pose<H>>;

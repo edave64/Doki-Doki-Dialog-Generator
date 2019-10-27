@@ -7,11 +7,12 @@ import {
 	ICharacter,
 	IHeads,
 	INsfwAbleImg,
+	Heads,
 } from '../asset-manager';
 import { Renderer } from '../renderer/renderer';
 import { IRenderable } from './renderable';
 import { IDragable } from './dragable';
-import { arraySeeker, nsfwArraySeeker } from './seekers';
+import { nsfwArraySeeker } from './seekers';
 
 export type CharacterIds =
 	| 'ddlc.monika'
@@ -66,11 +67,11 @@ export class Character implements IRenderable, IDragable {
 		this.selected = false;
 	}
 
-	public get data(): ICharacter<any> {
+	public get data(): ICharacter<Heads> {
 		return characters[this.name];
 	}
 
-	public get pose(): Pose<any> {
+	public get pose(): Pose<Heads> {
 		return this.data.poses[this.poseId];
 	}
 
@@ -133,11 +134,6 @@ export class Character implements IRenderable, IDragable {
 		const heads = this.data.heads[
 			this.pose.compatibleHeads[this.posePositions.headType]
 		];
-		if (heads instanceof Array) {
-			return {
-				all: heads,
-			};
-		}
 		return heads;
 	}
 
@@ -147,34 +143,21 @@ export class Character implements IRenderable, IDragable {
 			const assets: string[] = [];
 			const partKeys = this.getParts();
 
-			const poseFolder =
-				(this.data.folder ? this.data.folder + '/' : '') +
-				(this.pose.folder ? this.pose.folder + '/' : '');
-
-			const headFolder =
-				(this.data.folder ? this.data.folder + '/' : '') +
-				(this.currentHeads && this.currentHeads.folder
-					? this.currentHeads.folder + '/'
-					: '');
-
-			if ((pose as any).static) {
-				assets.push(poseFolder + (pose as any).static);
+			if ('static' in pose) {
+				assets.push(pose.static);
 			} else {
 				for (const key of partKeys) {
 					if (key === 'head') continue;
-					const image: string | INsfwAbleImg = (pose as any)[key][
+					const image: INsfwAbleImg = (pose as any)[key][
 						this.posePositions[key]
 					];
 
-					assets.push(
-						poseFolder +
-							(typeof image === 'string' ? image : (image as INsfwAbleImg).img)
-					);
+					assets.push(image.img);
 				}
 			}
 
 			const head = this.currentHeads
-				? headFolder + this.currentHeads.all[this.posePositions.head]
+				? this.currentHeads.all[this.posePositions.head].img
 				: null;
 
 			const [headAsset, ...bodyParts] = await Promise.all([

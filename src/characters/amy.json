@@ -2,7 +2,7 @@
 	"id": "ddlc.fan.amy2",
 	"name": "Amy",
 	"internalId": "amy",
-	"folder": "amy",
+	"folder": "amy/",
 	"heads": {
 		"straight": [
 			"a",
@@ -39,18 +39,22 @@
 			"compatibleHeads": ["straight", "straight_broken_glases"],
 			"left": ["1l", "2l", "3l"],
 			"right": ["1r", "2r"],
+			"name": "normal",
 			"headInForeground": true
 		},
 		{
 			"compatibleHeads": ["straight", "straight_broken_glases"],
+			"name": "folded_hands_up",
 			"static": "5"
 		},
 		{
 			"compatibleHeads": ["straight", "straight_broken_glases"],
+			"name": "folded_hands_down",
 			"static": "6"
 		},
 		{
 			"compatibleHeads": ["straight"],
+			"name": "hands_on_glasses",
 			"left": ["4l"],
 			"right": ["1r", "2r"]
 		}

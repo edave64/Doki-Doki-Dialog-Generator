@@ -2,7 +2,7 @@
 	"id": "ddlc.yuri",
 	"name": "Yuri",
 	"internalId": "yuri",
-	"folder": "yuri",
+	"folder": "yuri/",
 	"heads": {
 		"straight": [
 			"a",
@@ -46,6 +46,7 @@
 	"poses": [
 		{
 			"compatibleHeads": ["straight"],
+			"name": "normal",
 			"left": ["1l", "2l"],
 			"right": [
 				"1r",
@@ -58,20 +59,24 @@
 		},
 		{
 			"compatibleHeads": ["sideways"],
+			"name": "hairplay",
 			"static": "3"
 		},
 		{
 			"compatibleHeads": ["straight"],
+			"name": "normal_causal",
 			"left": ["1bl", "2bl"],
 			"right": ["1br", "2br"]
 		},
 		{
 			"compatibleHeads": ["sideways"],
+			"name": "hairplay_casual",
 			"static": "3b"
 		},
 		{
 			"compatibleHeads": [],
-			"folder": "/stab/",
+			"folder": "stab/",
+			"name": "stabbing",
 			"variant": ["1", "2", "3", "4", "5", "6-full"],
 			"nsfw": true
 		},
@@ -87,10 +92,12 @@
 				"glitch4",
 				"glitch5"
 			],
+			"name": "glitching",
 			"nsfw": true
 		},
 		{
 			"compatibleHeads": [],
+			"name": "dragon",
 			"variant": ["dragon1", "dragon2"]
 		}
 	]

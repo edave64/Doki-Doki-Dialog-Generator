@@ -2,13 +2,14 @@
 	"id": "ddlc.fan.mc1",
 	"name": "MC (Classic)",
 	"internalId": "classic_mc",
-	"folder": "classic_mc",
+	"folder": "classic_mc/",
 	"heads": {
 		"straight": ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
 	},
 	"poses": [
 		{
 			"compatibleHeads": ["straight"],
+			"name": "normal",
 			"static": "1"
 		}
 	]

@@ -4,7 +4,7 @@
 	"name": "FeMC",
 	"heads": {
 		"straight": {
-			"folder": "femc",
+			"folder": "femc/",
 			"all": [
 				"a",
 				"b",
@@ -52,7 +52,7 @@
 			]
 		},
 		"straight_lh": {
-			"folder": "femc_lh",
+			"folder": "femc_lh/",
 			"all": [
 				"a",
 				"b",
@@ -103,68 +103,80 @@
 	"poses": [
 		{
 			"compatibleHeads": ["straight"],
-			"folder": "femc",
+			"folder": "femc/",
+			"name": "normal",
 			"left": ["1l", "2l", "4l", "5l"],
 			"right": ["1r", "4r"]
 		},
 		{
 			"compatibleHeads": ["straight"],
-			"folder": "femc",
+			"folder": "femc/",
+			"name": "crossed_arms",
 			"static": "3"
 		},
 		{
 			"compatibleHeads": ["straight"],
-			"folder": "femc",
+			"folder": "femc/",
+			"name": "casual_normal",
 			"left": ["1bl", "2bl", "4bl", "5bl"],
 			"right": ["1br", "4br"]
 		},
 		{
 			"compatibleHeads": ["straight"],
-			"folder": "femc",
+			"name": "casual_crossed_arms",
+			"folder": "femc/",
 			"static": "3b"
 		},
 		{
 			"compatibleHeads": ["straight"],
 			"folder": "femc",
+			"name": "uniform_normal",
 			"left": ["1cl", "2cl", "4cl", "5cl"],
 			"right": ["1cr", "4cr"]
 		},
 		{
 			"compatibleHeads": ["straight"],
 			"folder": "femc",
+			"name": "uniform_crossed_arms",
 			"static": "3c"
 		},
 		{
 			"compatibleHeads": ["straight_lh"],
-			"folder": "femc_lh",
+			"folder": "femc_lh/",
+			"name": "normal_long_hair",
 			"left": ["1l", "2l", "4l", "5l"],
 			"right": ["1r", "4r"]
 		},
 		{
 			"compatibleHeads": ["straight_lh"],
-			"folder": "femc_lh",
+			"folder": "femc_lh/",
+			"name": "crossed_arms_long_hair",
 			"static": "3"
 		},
 		{
 			"compatibleHeads": ["straight_lh"],
-			"folder": "femc_lh",
+			"folder": "femc_lh/",
+			"name": "casual_normal_long_hair",
 			"left": ["1bl", "2bl", "4bl", "5bl"],
 			"right": ["1br", "4br"]
 		},
 		{
 			"compatibleHeads": ["straight_lh"],
-			"folder": "femc_lh",
+			"folder": "femc_lh/",
+			"name": "casual_crossed_arms_long_hair",
 			"static": "3b"
 		},
 		{
 			"compatibleHeads": ["straight_lh"],
-			"folder": "femc_lh",
+			"folder": "femc_lh/",
+			"name": "uniform_normal_long_hair",
 			"left": ["1cl", "2cl", "4cl", "5cl"],
 			"right": ["1cr", "4cr"]
 		},
 		{
 			"compatibleHeads": ["straight_lh"],
-			"folder": "femc_lh",
+			"folder": "femc_lh/",
+			"name": "uniform_crossed_arms_long_hair",
 			"static": "3c"
 		}
 	]

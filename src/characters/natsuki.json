@@ -2,7 +2,7 @@
 	"id": "ddlc.natsuki",
 	"name": "Natsuki",
 	"internalId": "natsuki",
-	"folder": "natsuki",
+	"folder": "natsuki/",
 	"heads": {
 		"straight": [
 			"a",
@@ -55,47 +55,56 @@
 	"poses": [
 		{
 			"compatibleHeads": ["straight", "straight_nsfw", "sideways"],
+			"name": "normal",
 			"headInForeground": true,
 			"left": ["1l", "2l"],
 			"right": ["1r", "2r"]
 		},
 		{
 			"compatibleHeads": ["straight", "straight_nsfw"],
+			"name": "crossed_arms",
 			"headAnchor": [18, 22],
 			"static": "3"
 		},
 		{
 			"compatibleHeads": [],
+			"name": "old_crossed_arms",
 			"static": "old2/5"
 		},
 		{
 			"compatibleHeads": [],
+			"name": "vomit",
 			"nsfw": true,
 			"static": "vomit"
 		},
 		{
 			"compatibleHeads": ["straight", "straight_nsfw", "sidewaysCasuals"],
+			"name": "normal_causal",
 			"headInForeground": true,
 			"left": ["1bl", "2bl"],
 			"right": ["1br", "2br"]
 		},
 		{
 			"compatibleHeads": ["straight", "straight_nsfw"],
+			"name": "crossed_arms_casual",
 			"headAnchor": [18, 22],
 			"static": "3b"
 		},
 		{
 			"compatibleHeads": [],
+			"name": "ghost",
 			"nsfw": true,
 			"variant": ["ghost1", "ghost2", "ghost3"]
 		},
 		{
 			"compatibleHeads": [],
-			"folder": "/old/",
+			"name": "old",
+			"folder": "old/",
 			"variant": ["1", "2", "3", "4", "5"]
 		},
 		{
 			"compatibleHeads": [],
+			"name": "glitch",
 			"static": "glitch1"
 		}
 	]
