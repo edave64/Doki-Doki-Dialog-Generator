@@ -30,16 +30,16 @@ export class Character implements IRenderable, IDragable {
 	public close: boolean = false;
 	public flip: boolean = false;
 	public opacity: number = 100;
-	private lq: boolean = true;
-	private selected: boolean = false;
-	private poseId: number = 0;
-	private posePositions = {
+	public posePositions = {
 		variant: 0,
 		left: 0,
 		right: 0,
 		head: 0,
 		headType: 0,
 	};
+	private lq: boolean = true;
+	private selected: boolean = false;
+	private poseId: number = 0;
 	private localRenderer = new Renderer(960, 960);
 	private dirty = true;
 	private hitDetectionFallback = false;
@@ -100,6 +100,16 @@ export class Character implements IRenderable, IDragable {
 				this.dirty = true;
 			}
 		}
+	}
+
+	public setPart(part: Part | 'headType' | 'pose', val: number): void {
+		if (part !== 'pose') {
+			this.posePositions[part] = val;
+		} else {
+			this.poseId = val;
+		}
+		this.dirty = true;
+		this.invalidator();
 	}
 
 	public getParts(): Part[] {

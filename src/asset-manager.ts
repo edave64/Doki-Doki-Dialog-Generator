@@ -274,9 +274,8 @@ export const backgrounds: IBackground[] = [
 ];
 
 export interface IHeads {
-	folder?: string;
-	nsfw?: boolean;
-	all: string[];
+	size: [number, number];
+	offset: [number, number];
 }
 
 export interface Heads {
@@ -285,10 +284,8 @@ export interface Heads {
 
 interface IPose<H> {
 	compatibleHeads: Array<keyof H>;
-	headInForeground?: boolean;
-	folder?: string;
-	nsfw?: boolean;
-	headAnchor?: [number, number];
+	size: [number, number];
+	offset: [number, number];
 }
 
 interface IStaticPose<H> extends IPose<H> {

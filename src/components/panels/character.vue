@@ -1,122 +1,147 @@
 <template>
 	<div :class="{ panel: true, vertical }">
 		<h1>{{character.label}}</h1>
-		<fieldset v-if="hasMultiplePoses || parts.length > 0">
-			<legend>Pose:</legend>
-			<table>
-				<tbody>
-					<tr v-if="hasMultiplePoses">
-						<td>
-							<button @click="character.seekPose(-1, nsfw);">&lt;</button>
-						</td>
-						<td>Pose</td>
-						<td>
-							<button @click="character.seekPose(1, nsfw);">&gt;</button>
-						</td>
-					</tr>
-					<tr v-for="part of parts" :key="part">
-						<td>
-							<button @click="character.seekPart(part, -1, nsfw);">&lt;</button>
-						</td>
-						<td>{{captialize(part)}}</td>
-						<td>
-							<button @click="character.seekPart(part, 1, nsfw);">&gt;</button>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</fieldset>
-		<fieldset>
-			<legend>Position:</legend>
-			<toggle
-				v-model="character.allowFreeMove"
-				label="Move freely?"
-				@input="$emit('invalidate-render')"
-			/>
-			<div v-if="!character.allowFreeMove">
-				<button @click="--character.pos;$emit('invalidate-render')" :disabled="character.pos === 0">&lt;</button>
-				<select id="current_talking" v-model.number="character.pos" @input="$emit('invalidate-render')">
-					<option v-for="(val, key) of positionNames" :key="key" :value="key">{{val}}</option>
-				</select>
+		<parts
+			v-if="panelForParts"
+			:vertical="vertical"
+			:character="character"
+			:part="panelForParts"
+			:nsfw="nsfw"
+			@leave="panelForParts = null"
+		/>
+		<template v-else>
+			<fieldset v-if="hasMultiplePoses || parts.length > 0">
+				<legend>Pose:</legend>
+				<table>
+					<tbody>
+						<tr v-if="hasMultiplePoses">
+							<td>
+								<button @click="character.seekPose(-1, nsfw);">&lt;</button>
+							</td>
+							<td>
+								<button @click="panelForParts = 'pose'">Pose</button>
+							</td>
+							<td>
+								<button @click="character.seekPose(1, nsfw);">&gt;</button>
+							</td>
+						</tr>
+						<tr v-for="part of parts" :key="part">
+							<td>
+								<button @click="character.seekPart(part, -1, nsfw);">&lt;</button>
+							</td>
+							<td>
+								<button @click="panelForParts = part">{{captialize(part)}}</button>
+							</td>
+							<td>
+								<button @click="character.seekPart(part, 1, nsfw);">&gt;</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</fieldset>
+			<fieldset>
+				<legend>Position:</legend>
+				<toggle
+					v-model="character.allowFreeMove"
+					label="Move freely?"
+					@input="$emit('invalidate-render')"
+				/>
+				<div v-if="!character.allowFreeMove">
+					<button
+						@click="--character.pos;$emit('invalidate-render')"
+						:disabled="character.pos === 0"
+					>&lt;</button>
+					<select
+						id="current_talking"
+						v-model.number="character.pos"
+						@input="$emit('invalidate-render')"
+					>
+						<option v-for="(val, key) of positionNames" :key="key" :value="key">{{val}}</option>
+					</select>
+					<button
+						@click="++character.pos;$emit('invalidate-render')"
+						:disabled="character.pos >= positionNames.length - 1"
+					>&gt;</button>
+				</div>
+				<div v-else>
+					<label for="sprite_x">X:</label>
+					<input
+						id="sprite_x"
+						type="number"
+						v-model.number="character.x"
+						@input="$emit('invalidate-render')"
+						@keydown.stop
+					/>
+					<br />
+					<label for="sprite_y">Y:</label>
+					<input
+						id="sprite_y"
+						type="number"
+						v-model.number="character.y"
+						@input="$emit('invalidate-render')"
+						@keydown.stop
+					/>
+				</div>
+			</fieldset>
+			<fieldset id="layerfs">
+				<legend>Layer:</legend>
 				<button
-					@click="++character.pos;$emit('invalidate-render')"
-					:disabled="character.pos >= positionNames.length - 1"
-				>&gt;</button>
-			</div>
-			<div v-else>
-				<label for="sprite_x">X:</label>
+					@click="$emit('shiftLayer', {object: character, move: 'Back'})"
+					title="Move to back"
+				>&#10515;</button>
+				<button
+					@click="$emit('shiftLayer', {object: character, move: 'Backward'})"
+					title="Move backwards"
+				>&#8595;</button>
+				<button
+					@click="$emit('shiftLayer', {object: character, move: 'Forward'})"
+					title="Move forwards"
+				>&#8593;</button>
+				<button
+					@click="$emit('shiftLayer', {object: character, move: 'Front'})"
+					title="Move to front"
+				>&#10514;</button>
+				<toggle
+					v-model="character.infront"
+					@input="$emit('invalidate-render')"
+					label="In front of textbox?"
+				/>
+			</fieldset>
+			<div>
+				<label for="characterOpacity">Opacity:</label>
 				<input
-					id="sprite_x"
 					type="number"
-					v-model.number="character.x"
+					max="100"
+					min="0"
+					id="characterOpacity"
+					v-model.number="character.opacity"
 					@input="$emit('invalidate-render')"
 					@keydown.stop
 				/>
-				<br />
-				<label for="sprite_y">Y:</label>
-				<input
-					id="sprite_y"
-					type="number"
-					v-model.number="character.y"
-					@input="$emit('invalidate-render')"
-					@keydown.stop
-				/>
 			</div>
-		</fieldset>
-		<fieldset id="layerfs">
-			<legend>Layer:</legend>
-			<button
-				@click="$emit('shiftLayer', {object: character, move: 'Back'})"
-				title="Move to back"
-			>&#10515;</button>
-			<button
-				@click="$emit('shiftLayer', {object: character, move: 'Backward'})"
-				title="Move backwards"
-			>&#8595;</button>
-			<button
-				@click="$emit('shiftLayer', {object: character, move: 'Forward'})"
-				title="Move forwards"
-			>&#8593;</button>
-			<button
-				@click="$emit('shiftLayer', {object: character, move: 'Front'})"
-				title="Move to front"
-			>&#10514;</button>
-			<toggle
-				v-model="character.infront"
-				@input="$emit('invalidate-render')"
-				label="In front of textbox?"
-			/>
-		</fieldset>
-		<div>
-			<label for="characterOpacity">Opacity:</label>
-			<input
-				type="number"
-				max="100"
-				min="0"
-				id="characterOpacity"
-				v-model.number="character.opacity"
-				@input="$emit('invalidate-render')"
-				@keydown.stop
-			/>
-		</div>
-		<toggle v-model="character.close" @input="$emit('invalidate-render')" label="Close up?" />
-		<toggle v-model="character.flip" @input="$emit('invalidate-render')" label="Flipped?" />
+			<toggle v-model="character.close" @input="$emit('invalidate-render')" label="Close up?" />
+			<toggle v-model="character.flip" @input="$emit('invalidate-render')" label="Flipped?" />
 
-		<button @click="$emit('shiftLayer', {object: character, move: 'Delete'});$emit('close')">Delete</button>
+			<button @click="$emit('shiftLayer', {object: character, move: 'Delete'});$emit('close')">Delete</button>
+		</template>
+	</div>
+</template>
 	</div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { isWebPSupported } from '../../asset-manager';
-import { Character } from '../../models/character';
-import Toggle from '../Toggle.vue';
+import { Character, Part } from '../../models/character';
 import { IRenderable } from '../../models/renderable';
 import { positions } from '../../models/constants';
+import Toggle from '../Toggle.vue';
+import Parts from './character/parts.vue';
 
 @Component({
 	components: {
 		Toggle,
+		Parts,
 	},
 })
 export default class CharacterPanel extends Vue {
@@ -124,7 +149,13 @@ export default class CharacterPanel extends Vue {
 	@Prop({ type: Character, required: true }) private character!: Character;
 	@Prop({ required: true, type: Boolean }) private readonly nsfw!: boolean;
 
+	private panelForParts: Part | null = null;
 	private isWebPSupported: boolean | null = null;
+
+	@Watch('character')
+	public reset() {
+		this.panelForParts = null;
+	}
 
 	private async created() {
 		this.isWebPSupported = await isWebPSupported();

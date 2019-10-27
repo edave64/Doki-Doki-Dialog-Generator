@@ -60,6 +60,7 @@
 				<credits-panel v-if="panel === 'credits'" :vertical="vertical" />
 				<character-panel
 					v-if="panel === 'character'"
+					ref="characters"
 					:vertical="vertical"
 					:character="selectedCharacter"
 					:nsfw="nsfw"
@@ -402,6 +403,8 @@ export default class App extends Vue {
 		this.panel = '';
 
 		const [sx, sy] = this.toRendererCoordinate(e.clientX, e.clientY);
+
+		if (this.$refs['characters']) (this.$refs['characters'] as any).reset();
 
 		const characters = this.objectsAt(sx, sy);
 
