@@ -3,6 +3,24 @@
 	"name": "MC",
 	"internalId": "mc",
 	"folder": "mc/",
+	"styles": [
+		{
+			"name": "uniform-yellow",
+			"label": "Uniform and yellow eyes"
+		},
+		{
+			"name": "casual-yellow",
+			"label": "Casual attire and yellow eyes"
+		},
+		{
+			"name": "uniform-red",
+			"label": "Uniform and red eyes"
+		},
+		{
+			"name": "casual-red",
+			"label": "Casual attire and red eyes"
+		}
+	],
 	"heads": {
 		"straight": [
 			"a",
@@ -72,47 +90,55 @@
 	},
 	"poses": [
 		{
-			"compatibleHeads": ["straight"],
 			"name": "normal",
+			"style": "uniform-yellow",
+			"compatibleHeads": ["straight"],
 			"left": ["1l", "2l"],
 			"right": ["1r", "2r"]
 		},
 		{
-			"compatibleHeads": ["straight"],
 			"name": "crossed_arms",
+			"style": "uniform-yellow",
+			"compatibleHeads": ["straight"],
 			"static": "3"
 		},
 		{
-			"compatibleHeads": ["straight"],
 			"name": "casual",
+			"style": "casual-yellow",
+			"compatibleHeads": ["straight"],
 			"left": ["1bl", "2bl"],
 			"right": ["1br", "2br"]
 		},
 		{
-			"compatibleHeads": ["straight"],
 			"name": "crossed_arms_casual",
+			"style": "casual-yellow",
+			"compatibleHeads": ["straight"],
 			"static": "3b"
 		},
 		{
-			"compatibleHeads": ["straight_red"],
 			"name": "normal_red",
+			"style": "uniform-red",
+			"compatibleHeads": ["straight_red"],
 			"left": ["1l", "2l"],
 			"right": ["1r", "2r"]
 		},
 		{
-			"compatibleHeads": ["straight_red"],
 			"name": "crossed_arms_red",
+			"style": "uniform-red",
+			"compatibleHeads": ["straight_red"],
 			"static": "3"
 		},
 		{
-			"compatibleHeads": ["straight_red"],
 			"name": "casual_red",
+			"style": "casual-red",
+			"compatibleHeads": ["straight_red"],
 			"left": ["1bl", "2bl"],
 			"right": ["1br", "2br"]
 		},
 		{
-			"compatibleHeads": ["straight_red"],
 			"name": "casual_crossed_arms_red",
+			"style": "casual-red",
+			"compatibleHeads": ["straight_red"],
 			"static": "3b"
 		}
 	]

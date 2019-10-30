@@ -1,4 +1,11 @@
-import { ICharacter, Heads, INsfwAbleImg, IHeads, Pose } from '@/asset-manager';
+import {
+	ICharacter,
+	Heads,
+	INsfwAbleImg,
+	IHeads,
+	Pose,
+	IStyle,
+} from '@/asset-manager';
 
 export function normalizeCharacter(
 	character: IJSONCharacter<JSONHeads>
@@ -9,6 +16,7 @@ export function normalizeCharacter(
 		name: character.name,
 		nsfw: !!character.nsfw,
 		chibi: character.chibi,
+		styles: normalizeStyles(character.styles),
 		heads: normalizeHeads(character.heads, character.folder || '/'),
 		poses: normalizePoses(character.poses, character.folder || '/'),
 	} as ICharacter<any>;
@@ -71,6 +79,7 @@ function normalizePoses(
 			headInForeground: !!pose.headInForeground,
 			name: pose.name,
 			nsfw: !!pose.nsfw,
+			style: pose.style,
 			offset: [0, 0],
 			size: [960, 960],
 		} as Pose<Heads>) as any;
@@ -114,6 +123,14 @@ function normalizeUrl(str: string) {
 	return str.replace(/\/{2,}/g, '/');
 }
 
+function normalizeStyles(styles: IJSONStyle[]): IStyle[] {
+	return styles.map(style => ({
+		name: style.name,
+		label: style.label,
+		nsfw: style.nsfw || false,
+	}));
+}
+
 export interface IJSONHeads {
 	folder?: string;
 	nsfw?: boolean;
@@ -132,6 +149,7 @@ interface IJSONPose<H> {
 	folder?: string;
 	nsfw?: boolean;
 	name: string;
+	style: string;
 	headAnchor?: [number, number];
 	size?: [number, number];
 	offset?: [number, number];
@@ -155,6 +173,12 @@ export type JSONPose<H extends JSONHeads> =
 	| IJSONVariantPose<H>
 	| IJSONTwoSidedPose<H>;
 
+export interface IJSONStyle {
+	name: string;
+	label: string;
+	nsfw?: boolean;
+}
+
 export interface IJSONCharacter<H extends JSONHeads> {
 	id: string;
 	internalId: string;
@@ -162,6 +186,7 @@ export interface IJSONCharacter<H extends JSONHeads> {
 	folder?: string;
 	nsfw?: boolean;
 	chibi?: string;
+	styles: IJSONStyle[];
 	heads: H;
 	poses: Array<JSONPose<H>>;
 }

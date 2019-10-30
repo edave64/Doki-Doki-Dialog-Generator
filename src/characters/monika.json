@@ -3,6 +3,20 @@
 	"name": "Monika",
 	"internalId": "monika",
 	"folder": "monika/",
+	"styles": [
+		{
+			"name": "uniform",
+			"label": "Uniform"
+		},
+		{
+			"name": "old",
+			"label": "Placeholder art"
+		},
+		{
+			"name": "glitch",
+			"label": "Glitchy"
+		}
+	],
 	"heads": {
 		"straight": [
 			"a",
@@ -28,25 +42,29 @@
 	},
 	"poses": [
 		{
-			"compatibleHeads": ["straight"],
 			"name": "normal",
+			"style": "uniform",
+			"compatibleHeads": ["straight"],
 			"left": ["1l", "2l"],
 			"right": ["1r", "2r"]
 		},
 		{
-			"compatibleHeads": ["sideways"],
 			"name": "leaned",
+			"style": "uniform",
+			"compatibleHeads": ["sideways"],
 			"static": "3"
 		},
 		{
-			"compatibleHeads": [],
 			"name": "old",
+			"style": "old",
+			"compatibleHeads": [],
 			"folder": "old/",
 			"variant": ["1", "2", "3", "4", "5"]
 		},
 		{
-			"compatibleHeads": [],
 			"name": "glitch",
+			"style": "glitch",
+			"compatibleHeads": [],
 			"variant": ["g1_scaled", "g2", "g3", "g4"]
 		}
 	]

@@ -32,6 +32,8 @@ export interface IPartButtonImage {
 export default class PartButton extends Vue {
 	@Prop({ required: true }) private readonly part!: IPartButtonImage;
 	@Prop({ required: true }) private readonly value!: number;
+	@Prop({ default: 150, type: Number })
+	private readonly size!: number;
 
 	private lookup: HTMLImageElement | ErrorAsset | null = null;
 	private lookup2: HTMLImageElement | ErrorAsset | null = null;
@@ -46,45 +48,50 @@ export default class PartButton extends Vue {
 	}
 
 	private get scaleX(): number {
-		return 162 / this.part.size[0];
+		return this.size / this.part.size[0];
 	}
 
 	private get scaleY(): number {
-		return 162 / this.part.size[1];
+		return this.size / this.part.size[1];
 	}
 
 	private get backgroundSize(): string {
-		return `${(960 * this.scaleX) | 0}px ${(960 * this.scaleY) | 0}px`;
+		return `${Math.floor(960 * this.scaleX)}px ${Math.floor(
+			960 * this.scaleY
+		)}px`;
 	}
 
 	private get backgroundPosition(): string {
 		return (
-			`${(this.part.offset[0] * -this.scaleX) | 0}px ` +
-			`${(this.part.offset[1] * -this.scaleY) | 0}px`
+			`${Math.floor(this.part.offset[0] * -this.scaleX)}px ` +
+			`${Math.floor(this.part.offset[1] * -this.scaleY)}px`
 		);
 	}
 
 	private get style(): { [id: string]: string } {
+		const baseStyle = {
+			height: this.size + 'px',
+			width: this.size + 'px',
+			backgroundPosition: this.backgroundPosition,
+			backgroundSize: this.backgroundSize,
+		};
 		const lq = environment.allowLQ ? '.lq' : '';
 		if (this.lookup instanceof HTMLImageElement) {
 			if (this.lookup2 instanceof HTMLImageElement) {
 				if (this.lookup3 instanceof HTMLImageElement) {
 					return {
 						backgroundImage: `url(${this.lookup.src}), url(${this.lookup2.src}), url(${this.lookup3.src})`,
-						backgroundPosition: this.backgroundPosition,
-						backgroundSize: this.backgroundSize,
+						...baseStyle,
 					};
 				}
 				return {
 					backgroundImage: `url(${this.lookup.src}), url(${this.lookup2.src})`,
-					backgroundPosition: this.backgroundPosition,
-					backgroundSize: this.backgroundSize,
+					...baseStyle,
 				};
 			}
 			return {
 				backgroundImage: `url(${this.lookup.src})`,
-				backgroundPosition: this.backgroundPosition,
-				backgroundSize: this.backgroundSize,
+				...baseStyle,
 			};
 		}
 		return {};
@@ -97,14 +104,11 @@ export default class PartButton extends Vue {
 	margin-top: 4px;
 	text-shadow: 0 0 2px black;
 	color: white;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	display: inline-block;
 	box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.5);
-	height: 162px;
-	width: 162px;
 	text-align: center;
 	user-select: none;
+	vertical-align: middle;
 
 	&.active {
 		box-shadow: inset 0 0 1px 3px rgba(255, 255, 255, 0.5);

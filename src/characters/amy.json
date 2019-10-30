@@ -3,6 +3,12 @@
 	"name": "Amy",
 	"internalId": "amy",
 	"folder": "amy/",
+	"styles": [
+		{
+			"name": "uniform",
+			"label": "Uniform"
+		}
+	],
 	"heads": {
 		"straight": [
 			"a",
@@ -36,25 +42,29 @@
 	},
 	"poses": [
 		{
+			"name": "normal",
+			"style": "uniform",
 			"compatibleHeads": ["straight", "straight_broken_glases"],
 			"left": ["1l", "2l", "3l"],
 			"right": ["1r", "2r"],
-			"name": "normal",
 			"headInForeground": true
 		},
 		{
-			"compatibleHeads": ["straight", "straight_broken_glases"],
 			"name": "folded_hands_up",
+			"style": "uniform",
+			"compatibleHeads": ["straight", "straight_broken_glases"],
 			"static": "5"
 		},
 		{
-			"compatibleHeads": ["straight", "straight_broken_glases"],
 			"name": "folded_hands_down",
+			"style": "uniform",
+			"compatibleHeads": ["straight", "straight_broken_glases"],
 			"static": "6"
 		},
 		{
-			"compatibleHeads": ["straight"],
 			"name": "hands_on_glasses",
+			"style": "uniform",
+			"compatibleHeads": ["straight"],
 			"left": ["4l"],
 			"right": ["1r", "2r"]
 		}

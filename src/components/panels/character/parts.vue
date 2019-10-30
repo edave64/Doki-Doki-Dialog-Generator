@@ -1,13 +1,37 @@
 <template>
 	<div :class="{ partList: true, vertical }">
 		<button @click="$emit('leave')">Back</button>
+
 		<part-button
 			v-for="(part, index) of parts"
 			:key="index"
 			:value="index"
 			:part="part"
-			@click="choose(index); $emit('leave')"
+			@click="choose(index);$emit('leave')"
 		/>
+		<fieldset v-if="eyes">
+			<legend>Eyes</legend>
+			<part-button
+				v-for="(part, index) of eyes"
+				:size="130"
+				:key="index"
+				:value="index"
+				:part="part"
+				@click="choose_eyes(index)"
+			/>
+		</fieldset>
+
+		<fieldset v-if="hairs">
+			<legend>Hairstyles</legend>
+			<part-button
+				v-for="(part, index) of hairs"
+				:size="130"
+				:key="index"
+				:value="index"
+				:part="part"
+				@click="choose_hairs(index)"
+			/>
+		</fieldset>
 	</div>
 </template>
 
@@ -20,11 +44,21 @@ import {
 	registerAsset,
 	registerAssetWithURL,
 	INsfwAbleImg,
+	Pose,
 } from '@/asset-manager';
 import environment from '@/environments/environment';
 import { Part, Character } from '@/models/character';
 import PartButton, { IPartButtonImage } from './partButton.vue';
 import { poses } from '../../../models/constants';
+
+interface IStyle {
+	fullName: string;
+	reducedName: string;
+	index: number;
+	label: string;
+	eyes: string | null;
+	hairs: string | null;
+}
 
 @Component({
 	components: {
@@ -34,7 +68,10 @@ import { poses } from '../../../models/constants';
 export default class PartsPanel extends Vue {
 	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
 	@Prop({ type: Character, required: true }) private character!: Character;
-	@Prop({ required: true, type: String }) private readonly part!: Part | 'pose';
+	@Prop({ required: true, type: String }) private readonly part!:
+		| Part
+		| 'pose'
+		| 'style';
 	@Prop({ required: true, type: Boolean }) private readonly nsfw!: boolean;
 
 	private isWebPSupported: boolean | null = null;
@@ -42,6 +79,80 @@ export default class PartsPanel extends Vue {
 
 	private async created() {
 		this.isWebPSupported = await isWebPSupported();
+		if (this.character.styleData.lastBase === '') {
+			const baseStyle = this.styleData[0];
+			this.character.styleData.lastBase = baseStyle.reducedName;
+			this.character.styleData.eyes = baseStyle.eyes || '';
+			this.character.styleData.hairs = baseStyle.hairs || '';
+		}
+	}
+
+	private get eyes(): { [id: string]: IPartButtonImage } | null {
+		if (this.part !== 'style') return null;
+		switch (this.character.data.id) {
+			case 'ddlc.fan.mc_chad':
+				return {
+					yellow: {
+						image1: 'parts/chad/yellow-eyes',
+						size: [960, 960],
+						offset: [0, 0],
+					},
+					red: {
+						image1: 'parts/chad/red-eyes',
+						size: [960, 960],
+						offset: [0, 0],
+					},
+				};
+			case 'ddlc.fan.mc2':
+				return {
+					yellow: {
+						image1: 'parts/mc/yellow-eyes',
+						size: [960, 960],
+						offset: [0, 0],
+					},
+					red: {
+						image1: 'parts/mc/red-eyes',
+						size: [960, 960],
+						offset: [0, 0],
+					},
+				};
+			case 'ddlc.fan.femc':
+				return {
+					yellow: {
+						image1: 'parts/femc/yellow-eyes',
+						size: [960, 960],
+						offset: [0, 0],
+					},
+					hetero: {
+						image1: 'parts/femc/hetero-eyes',
+						size: [960, 960],
+						offset: [0, 0],
+					},
+				};
+			default:
+				return null;
+		}
+	}
+
+	private get hairs(): { [id: string]: IPartButtonImage } | null {
+		if (this.part !== 'style') return null;
+		switch (this.character.data.id) {
+			case 'ddlc.fan.femc':
+				return {
+					sh: {
+						image1: 'parts/femc/short-hair',
+						size: [960, 960],
+						offset: [0, 0],
+					},
+					lh: {
+						image1: 'parts/femc/long-hair',
+						size: [960, 960],
+						offset: [0, 0],
+					},
+				};
+			default:
+				return null;
+		}
 	}
 
 	private get parts(): { [id: number]: IPartButtonImage } {
@@ -90,34 +201,37 @@ export default class PartsPanel extends Vue {
 				offset = this.character.pose.offset;
 				break;
 			case 'pose':
-				for (let poseIdx = 0; poseIdx < data.poses.length; ++poseIdx) {
-					const pose = data.poses[poseIdx];
+				for (
+					let poseIdx = 0;
+					poseIdx < this.character.poses.length;
+					++poseIdx
+				) {
+					const pose = this.character.poses[poseIdx];
 					if (pose.nsfw && !this.nsfw) continue;
-					if ('static' in pose) {
-						ret[poseIdx] = {
-							image1: pose.static,
-							size: pose.size,
-							offset: pose.offset,
-						};
-					} else if ('variant' in pose) {
-						ret[poseIdx] = {
-							image1: pose.variant[0].img,
-							size: pose.size,
-							offset: pose.offset,
-						};
-					} else if ('left' in pose) {
-						ret[poseIdx] = {
-							image1: pose.left[0].img,
-							image2: pose.right[0].img,
-							size: pose.size,
-							offset: pose.offset,
-						};
-					}
+					ret[poseIdx] = this.generatePosePreview(pose);
+				}
+				return ret;
+			case 'style':
+				const styles = data.styles;
+				const eyes = this.eyes ? Object.keys(this.eyes) : [];
+				const hairs = this.hairs ? Object.keys(this.hairs) : [];
+				const dedupedStyles = this.styleData
+					.map(style => style.reducedName)
+					.map((style, idx, all) => {
+						if (all.indexOf(style) !== idx) return null;
+						return style;
+					});
+
+				for (let styleIdx = 0; styleIdx < styles.length; ++styleIdx) {
+					if (dedupedStyles[styleIdx] === null) continue;
+					const style = styles[styleIdx];
+					const pose = data.poses.find(pose => pose.style === style.name)!;
+					ret[dedupedStyles[styleIdx]!] = this.generatePosePreview(pose);
 				}
 				return ret;
 
 			default:
-				throw new Error('Unrecognised pose part');
+				throw new Error('Unrecognised pose part: ' + this.part);
 		}
 		for (let partIdx = 0; partIdx < collection.length; ++partIdx) {
 			const part = collection[partIdx];
@@ -131,16 +245,111 @@ export default class PartsPanel extends Vue {
 		return ret;
 	}
 
+	private generatePosePreview(pose: Pose<any>): IPartButtonImage {
+		if ('static' in pose) {
+			return {
+				image1: pose.static,
+				size: pose.size,
+				offset: pose.offset,
+			};
+		} else if ('variant' in pose) {
+			return {
+				image1: pose.variant[0].img,
+				size: pose.size,
+				offset: pose.offset,
+			};
+		} else {
+			return {
+				image1: pose.left[0].img,
+				image2: pose.right[0].img,
+				size: pose.size,
+				offset: pose.offset,
+			};
+		}
+	}
+
+	private get styleData(): IStyle[] {
+		const styles = this.character.data.styles;
+		const eyesColl = Object.keys(this.eyes || {});
+		const hairsColl = Object.keys(this.hairs || {});
+
+		let ret = styles.map((value, index) => {
+			let reducedName = value.name;
+			let eyes = null;
+			for (const iEyes of eyesColl) {
+				const exp = new RegExp('-' + iEyes + '\\b');
+				if (reducedName.match(exp)) {
+					eyes = iEyes;
+					reducedName = reducedName.replace(exp, '');
+					break;
+				}
+			}
+			let hairs = null;
+			for (const iHair of hairsColl) {
+				const exp = new RegExp('-' + iHair + '\\b');
+				if (reducedName.match(exp)) {
+					hairs = iHair;
+					reducedName = reducedName.replace(exp, '');
+					break;
+				}
+			}
+
+			return {
+				fullName: value.name,
+				label: value.label,
+				nsfw: value.nsfw,
+				index,
+				reducedName,
+				eyes,
+				hairs,
+			};
+		});
+		if (!this.nsfw) {
+			ret = ret.filter(style => {
+				return !style.nsfw;
+			});
+		}
+		return ret;
+	}
+
+	private updatePose() {
+		let selection = this.styleData.filter(
+			style => style.reducedName === this.character.styleData.lastBase
+		);
+		const subEyes = selection.filter(
+			style => style.eyes === this.character.styleData.eyes
+		);
+		if (subEyes.length > 0) selection = subEyes;
+		const subHairs = selection.filter(
+			style => style.hairs === this.character.styleData.hairs
+		);
+		if (subHairs.length > 0) selection = subHairs;
+		this.character.setPart('style', selection[0].index);
+	}
+
 	private choose(index: string) {
-		if (this.part === 'head') {
+		if (this.part === 'style') {
+			this.character.styleData.lastBase = index;
+			this.updatePose();
+		} else if (this.part === 'head') {
 			const [headTypeIdx, headIdx] = index
 				.split('_', 2)
-				.map(part => parseInt(part));
+				.map(part => parseInt(part, 10));
 			this.character.setPart('headType', headTypeIdx);
 			this.character.setPart('head', headIdx);
 		} else {
-			this.character.setPart(this.part, parseInt(index));
+			this.character.setPart(this.part, parseInt(index, 10));
 		}
+	}
+
+	private choose_eyes(index: string) {
+		this.character.styleData.eyes = index;
+		this.updatePose();
+	}
+
+	private choose_hairs(index: string) {
+		this.character.styleData.hairs = index;
+		this.updatePose();
 	}
 
 	private assetPath(character: ICharacter<any>) {
@@ -176,24 +385,19 @@ export default class PartsPanel extends Vue {
 
 <style lang="scss" scoped>
 .partList {
-	display: flex;
+	white-space: nowrap;
+}
+
+button {
+	height: 100%;
+	vertical-align: middle;
+}
+
+fieldset {
 	flex-wrap: nowrap;
-
-	&:not(.vertical) {
-		justify-content: center;
-	}
-
-	&.vertical {
-		flex-direction: column;
-		.character {
-			text-align: center;
-		}
-	}
-
-	.custom-sprite {
-		input {
-			display: none;
-		}
-	}
+	border: 3px solid #ffbde1;
+	margin-bottom: 0;
+	display: inline-block;
+	vertical-align: middle;
 }
 </style>

@@ -404,7 +404,7 @@ export default class App extends Vue {
 
 		const [sx, sy] = this.toRendererCoordinate(e.clientX, e.clientY);
 
-		if (this.$refs['characters']) (this.$refs['characters'] as any).reset();
+		if (this.$refs.characters) (this.$refs.characters as any).reset();
 
 		const characters = this.objectsAt(sx, sy);
 
@@ -639,6 +639,17 @@ body {
 
 	font-family: aller;
 }
+
+button,
+input,
+select {
+	margin: 0px;
+	padding: 6px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	border-width: 1px;
+}
+
 #panels {
 	background-color: #ffffff;
 	border: 3px solid #ffbde1;

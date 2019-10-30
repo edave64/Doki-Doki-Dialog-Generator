@@ -3,6 +3,24 @@
 	"name": "MC (Chad)",
 	"internalId": "chad",
 	"folder": "chad/",
+	"styles": [
+		{
+			"name": "uniform-yellow",
+			"label": "Uniform and yellow eyes"
+		},
+		{
+			"name": "casual-yellow",
+			"label": "Casual attire and yellow eyes"
+		},
+		{
+			"name": "uniform-red",
+			"label": "Uniform and red eyes"
+		},
+		{
+			"name": "casual-red",
+			"label": "Casual attire and red eyes"
+		}
+	],
 	"heads": {
 		"straight": [
 			"a",
@@ -65,47 +83,55 @@
 	},
 	"poses": [
 		{
-			"compatibleHeads": ["straight", "straight_closed"],
 			"name": "normal",
+			"style": "uniform-yellow",
+			"compatibleHeads": ["straight", "straight_closed"],
 			"left": ["1l", "2l", "4l"],
 			"right": ["1r", "2r"]
 		},
 		{
-			"compatibleHeads": ["straight", "straight_closed"],
 			"name": "youknowihadto",
+			"style": "uniform-yellow",
+			"compatibleHeads": ["straight", "straight_closed"],
 			"static": "3"
 		},
 		{
-			"compatibleHeads": ["straight", "straight_closed"],
 			"name": "normal_casual",
+			"style": "casual-yellow",
+			"compatibleHeads": ["straight", "straight_closed"],
 			"left": ["1bl", "2bl", "4bl"],
 			"right": ["1br", "2br"]
 		},
 		{
-			"compatibleHeads": ["straight", "straight_closed"],
 			"name": "youknowihadto_casual",
+			"style": "casual-yellow",
+			"compatibleHeads": ["straight", "straight_closed"],
 			"static": "3b"
 		},
 		{
-			"compatibleHeads": ["straight_red", "straight_closed"],
 			"name": "normal_red",
+			"style": "uniform-red",
+			"compatibleHeads": ["straight_red", "straight_closed"],
 			"left": ["1l", "2l", "4l"],
 			"right": ["1r", "2r"]
 		},
 		{
-			"compatibleHeads": ["straight_red", "straight_closed"],
 			"name": "youknowihadto_red",
+			"style": "uniform-red",
+			"compatibleHeads": ["straight_red", "straight_closed"],
 			"static": "3"
 		},
 		{
-			"compatibleHeads": ["straight_red", "straight_closed"],
 			"name": "normal_casual_red",
+			"style": "casual-red",
+			"compatibleHeads": ["straight_red", "straight_closed"],
 			"left": ["1bl", "2bl", "4bl"],
 			"right": ["1br", "2br"]
 		},
 		{
-			"compatibleHeads": ["straight_red", "straight_closed"],
 			"name": "youknowihadto_casual_red",
+			"style": "casual-red",
+			"compatibleHeads": ["straight_red", "straight_closed"],
 			"static": "3b"
 		}
 	]

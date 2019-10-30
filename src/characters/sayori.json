@@ -3,6 +3,29 @@
 	"name": "Sayori",
 	"internalId": "sayori",
 	"folder": "sayori/",
+	"styles": [
+		{
+			"name": "uniform",
+			"label": "Uniform"
+		},
+		{
+			"name": "casual",
+			"label": "Casual attire"
+		},
+		{
+			"name": "old",
+			"label": "Placeholder art"
+		},
+		{
+			"name": "glitch",
+			"label": "Glitchy"
+		},
+		{
+			"name": "hanging",
+			"label": "Hanging",
+			"nsfw": true
+		}
+	],
 	"heads": {
 		"straight": [
 			"a",
@@ -35,36 +58,42 @@
 	},
 	"poses": [
 		{
-			"compatibleHeads": ["straight"],
 			"name": "normal",
+			"style": "uniform",
+			"compatibleHeads": ["straight"],
 			"left": ["1l", "2l"],
 			"right": ["1r", "2r"]
 		},
 		{
-			"compatibleHeads": ["sideways"],
 			"name": "sideways",
+			"style": "uniform",
+			"compatibleHeads": ["sideways"],
 			"static": "3"
 		},
 		{
-			"compatibleHeads": ["straight"],
 			"name": "normal_casual",
+			"style": "casual",
+			"compatibleHeads": ["straight"],
 			"left": ["1bl", "2bl"],
 			"right": ["1br", "2br"]
 		},
 		{
-			"compatibleHeads": [],
 			"name": "old",
+			"style": "old",
+			"compatibleHeads": [],
 			"folder": "old/",
 			"variant": ["1", "2", "3", "4", "5"]
 		},
 		{
-			"compatibleHeads": [],
 			"name": "glitch",
+			"style": "glitch",
+			"compatibleHeads": [],
 			"variant": ["glitch1", "glitch2", "end-glitch1", "end-glitch2"]
 		},
 		{
-			"compatibleHeads": [],
 			"name": "dead",
+			"style": "hanging",
+			"compatibleHeads": [],
 			"variant": ["dead1", "dead2"],
 			"nsfw": true
 		}

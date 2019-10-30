@@ -8,6 +8,7 @@ import {
 	IHeads,
 	INsfwAbleImg,
 	Heads,
+	IStyle,
 } from '../asset-manager';
 import { Renderer } from '../renderer/renderer';
 import { IRenderable } from './renderable';
@@ -31,6 +32,11 @@ export class Character implements IRenderable, IDragable {
 	public close: boolean = false;
 	public flip: boolean = false;
 	public opacity: number = 100;
+	public styleData = {
+		lastBase: '',
+		eyes: '',
+		hairs: '',
+	};
 	public posePositions = {
 		variant: 0,
 		left: 0,
@@ -41,6 +47,7 @@ export class Character implements IRenderable, IDragable {
 	private lq: boolean = true;
 	private selected: boolean = false;
 	private poseId: number = 0;
+	private styleId: number = 0;
 	private localRenderer = new Renderer(960, 960);
 	private dirty = true;
 	private hitDetectionFallback = false;
@@ -71,8 +78,16 @@ export class Character implements IRenderable, IDragable {
 		return characters[this.name];
 	}
 
+	public get style(): IStyle {
+		return this.data.styles[this.styleId];
+	}
+
+	public get poses(): Array<Pose<Heads>> {
+		return this.data.poses.filter(pose => pose.style === this.style.name);
+	}
+
 	public get pose(): Pose<Heads> {
-		return this.data.poses[this.poseId];
+		return this.poses[this.poseId];
 	}
 
 	public nsfwCheck(): void {
@@ -103,11 +118,21 @@ export class Character implements IRenderable, IDragable {
 		}
 	}
 
-	public setPart(part: Part | 'headType' | 'pose', val: number): void {
-		if (part !== 'pose') {
-			this.posePositions[part] = val;
+	public setPart(
+		part: Part | 'headType' | 'pose' | 'style',
+		val: number
+	): void {
+		if (part === 'pose') {
+			this.protectHeadGroup(() => {
+				this.poseId = val;
+			});
+		} else if (part === 'style') {
+			this.protectHeadGroup(() => {
+				this.styleId = val;
+				this.poseId = 0;
+			});
 		} else {
-			this.poseId = val;
+			this.posePositions[part] = val;
 		}
 		this.dirty = true;
 		this.invalidator();
@@ -281,20 +306,9 @@ export class Character implements IRenderable, IDragable {
 	}
 
 	public seekPose(delta: number, nsfw: boolean) {
-		const oldHeadCollection = this.pose.compatibleHeads[
-			this.posePositions.headType
-		];
-
-		this.poseId = nsfwArraySeeker(this.data.poses, this.poseId, delta, nsfw);
-		const newHeadCollectionNr = this.pose.compatibleHeads.indexOf(
-			oldHeadCollection
-		);
-		if (newHeadCollectionNr >= 0) {
-			this.posePositions.headType = newHeadCollectionNr;
-		} else {
-			this.posePositions.headType = 0;
-			this.posePositions.head = 0;
-		}
+		this.protectHeadGroup(() => {
+			this.poseId = nsfwArraySeeker(this.poses, this.poseId, delta, nsfw);
+		});
 		this.posePositions.left = 0;
 		this.posePositions.right = 0;
 		this.posePositions.variant = 0;
@@ -358,5 +372,23 @@ export class Character implements IRenderable, IDragable {
 			.map((x, idx) => ({ pos: Math.abs(pos - x), idx }))
 			.sort((a, b) => a.pos - b.pos);
 		return sorted[0].idx;
+	}
+
+	private protectHeadGroup(callback: () => void) {
+		const oldHeadCollection = this.pose.compatibleHeads[
+			this.posePositions.headType
+		];
+
+		callback();
+
+		const newHeadCollectionNr = this.pose.compatibleHeads.indexOf(
+			oldHeadCollection
+		);
+		if (newHeadCollectionNr >= 0) {
+			this.posePositions.headType = newHeadCollectionNr;
+		} else {
+			this.posePositions.headType = 0;
+			this.posePositions.head = 0;
+		}
 	}
 }

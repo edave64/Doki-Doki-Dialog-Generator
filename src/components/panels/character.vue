@@ -14,12 +14,23 @@
 				<legend>Pose:</legend>
 				<table>
 					<tbody>
+						<tr v-if="hasMultipleStyles">
+							<td>
+								<button @click="character.seekStyle(-1, nsfw);">&lt;</button>
+							</td>
+							<td>
+								<button class="middle-button" @click="panelForParts = 'style'">Style</button>
+							</td>
+							<td>
+								<button @click="character.seekStyle(1, nsfw);">&gt;</button>
+							</td>
+						</tr>
 						<tr v-if="hasMultiplePoses">
 							<td>
 								<button @click="character.seekPose(-1, nsfw);">&lt;</button>
 							</td>
 							<td>
-								<button @click="panelForParts = 'pose'">Pose</button>
+								<button class="middle-button" @click="panelForParts = 'pose'">Pose</button>
 							</td>
 							<td>
 								<button @click="character.seekPose(1, nsfw);">&gt;</button>
@@ -30,7 +41,7 @@
 								<button @click="character.seekPart(part, -1, nsfw);">&lt;</button>
 							</td>
 							<td>
-								<button @click="panelForParts = part">{{captialize(part)}}</button>
+								<button class="middle-button" @click="panelForParts = part">{{captialize(part)}}</button>
 							</td>
 							<td>
 								<button @click="character.seekPart(part, 1, nsfw);">&gt;</button>
@@ -170,8 +181,17 @@ export default class CharacterPanel extends Mixins(PanelMixin) {
 		return this.character.getParts();
 	}
 
+	private get hasMultipleStyles(): boolean {
+		return (
+			this.character.data.styles.filter(style => !style.nsfw || this.nsfw)
+				.length > 1
+		);
+	}
+
 	private get hasMultiplePoses(): boolean {
-		return this.character.data.poses.length > 1;
+		return (
+			this.character.poses.filter(style => !style.nsfw || this.nsfw).length > 1
+		);
 	}
 
 	private captialize(str: string) {
@@ -198,5 +218,9 @@ fieldset {
 			width: 60px;
 		}
 	}
+}
+
+.middle-button {
+	width: 100%;
 }
 </style>

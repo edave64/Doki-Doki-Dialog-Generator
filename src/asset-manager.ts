@@ -291,6 +291,9 @@ interface IPose<H> {
 	nsfw: boolean;
 	name: string;
 	headAnchor: [number, number];
+	size: [number, number];
+	offset: [number, number];
+	style: string;
 }
 
 interface IStaticPose<H> extends IPose<H> {
@@ -316,12 +319,19 @@ export type Pose<H extends Heads> =
 	| IVariantPose<H>
 	| ITwoSidedPose<H>;
 
+export interface IStyle {
+	name: string;
+	label: string;
+	nsfw: boolean;
+}
+
 export interface ICharacter<H extends Heads> {
 	id: string;
 	internalId: string;
 	name: string;
 	nsfw: boolean;
 	chibi?: string;
+	styles: IStyle[];
 	heads: H;
 	poses: Array<Pose<H>>;
 }

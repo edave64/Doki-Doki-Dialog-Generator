@@ -3,6 +3,20 @@
 	"name": "Yuri",
 	"internalId": "yuri",
 	"folder": "yuri/",
+	"styles": [
+		{
+			"name": "uniform",
+			"label": "Uniform"
+		},
+		{
+			"name": "casual",
+			"label": "Casual attire"
+		},
+		{
+			"name": "glitch",
+			"label": "Glitchy"
+		}
+	],
 	"heads": {
 		"straight": [
 			"a",
@@ -45,8 +59,9 @@
 	},
 	"poses": [
 		{
-			"compatibleHeads": ["straight"],
 			"name": "normal",
+			"style": "uniform",
+			"compatibleHeads": ["straight"],
 			"left": ["1l", "2l"],
 			"right": [
 				"1r",
@@ -58,29 +73,35 @@
 			]
 		},
 		{
-			"compatibleHeads": ["sideways"],
 			"name": "hairplay",
+			"style": "uniform",
+			"compatibleHeads": ["sideways"],
 			"static": "3"
 		},
 		{
-			"compatibleHeads": ["straight"],
 			"name": "normal_causal",
+			"style": "casual",
+			"compatibleHeads": ["straight"],
 			"left": ["1bl", "2bl"],
 			"right": ["1br", "2br"]
 		},
 		{
-			"compatibleHeads": ["sideways"],
 			"name": "hairplay_casual",
+			"style": "casual",
+			"compatibleHeads": ["sideways"],
 			"static": "3b"
 		},
 		{
+			"name": "stabbing",
+			"style": "uniform",
 			"compatibleHeads": [],
 			"folder": "stab/",
-			"name": "stabbing",
 			"variant": ["1", "2", "3", "4", "5", "6-full"],
 			"nsfw": true
 		},
 		{
+			"name": "glitching",
+			"style": "glitch",
 			"compatibleHeads": [],
 			"variant": [
 				"0a",
@@ -92,12 +113,12 @@
 				"glitch4",
 				"glitch5"
 			],
-			"name": "glitching",
 			"nsfw": true
 		},
 		{
-			"compatibleHeads": [],
 			"name": "dragon",
+			"style": "uniform",
+			"compatibleHeads": [],
 			"variant": ["dragon1", "dragon2"]
 		}
 	]
