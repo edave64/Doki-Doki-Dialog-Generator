@@ -98,6 +98,102 @@
 				"_13",
 				"_14"
 			]
+		},
+		"straight_hetero": {
+			"folder": "femc/hetero/",
+			"all": [
+				"a",
+				"b",
+				"c",
+				"d",
+				"e",
+				"f",
+				"g",
+				"h",
+				"i",
+				"j",
+				"k",
+				"l",
+				"m",
+				"n",
+				"o",
+				"p",
+				"q",
+				"r",
+				"s",
+				"/femc/t",
+				"/femc/u",
+				"/femc/v",
+				"/femc/w",
+				"x",
+				"y",
+				"z",
+				"glitch1",
+				"glitch2",
+				"_1",
+				"_2",
+				"/femc/_3",
+				"/femc/_4",
+				"/femc/_5",
+				"/femc/_6",
+				"_7",
+				"_8",
+				"/femc/_9",
+				"/femc/_10",
+				"/femc/_10alt",
+				"_11",
+				"_12",
+				"_13",
+				"_14"
+			]
+		},
+		"straight_hetero_lh": {
+			"folder": "femc_lh/hetero/",
+			"all": [
+				"a",
+				"b",
+				"c",
+				"d",
+				"e",
+				"f",
+				"g",
+				"h",
+				"i",
+				"j",
+				"k",
+				"l",
+				"m",
+				"n",
+				"o",
+				"p",
+				"q",
+				"r",
+				"s",
+				"/femc_lh/t",
+				"/femc_lh/u",
+				"/femc_lh/v",
+				"/femc_lh/w",
+				"x",
+				"y",
+				"z",
+				"glitch1",
+				"glitch2",
+				"_1",
+				"_2",
+				"/femc_lh/_3",
+				"/femc_lh/_4",
+				"/femc_lh/_5",
+				"/femc_lh/_6",
+				"_7",
+				"_8",
+				"/femc_lh/_9",
+				"/femc_lh/_10",
+				"/femc_lh/_10alt",
+				"_11",
+				"_12",
+				"_13",
+				"_14"
+			]
 		}
 	},
 	"poses": [
@@ -176,7 +272,96 @@
 		{
 			"compatibleHeads": ["straight_lh"],
 			"folder": "femc_lh/",
-			"name": "uniform_crossed_arms_long_hair",
+			"static": "3c"
+		},
+		{
+			"name": "normal_hetero",
+			"style": "uniform-sh-hetero",
+			"compatibleHeads": ["straight_hetero"],
+			"folder": "femc/",
+			"left": ["1l", "2l", "4l", "5l"],
+			"right": ["1r", "4r"]
+		},
+		{
+			"name": "crossed_arms_hetero",
+			"style": "uniform-sh-hetero",
+			"compatibleHeads": ["straight_hetero"],
+			"folder": "femc/",
+			"static": "3"
+		},
+		{
+			"name": "casual_normal_hetero",
+			"style": "casual-sh-hetero",
+			"compatibleHeads": ["straight_hetero"],
+			"folder": "femc/",
+			"left": ["1bl", "2bl", "4bl", "5bl"],
+			"right": ["1br", "4br"]
+		},
+		{
+			"name": "casual_crossed_arms_hetero",
+			"style": "casual-sh-hetero",
+			"compatibleHeads": ["straight_hetero"],
+			"folder": "femc/",
+			"static": "3b"
+		},
+		{
+			"name": "uniform_normal_hetero",
+			"style": "uniform_strict-sh-hetero",
+			"compatibleHeads": ["straight_hetero"],
+			"folder": "femc/",
+			"left": ["1cl", "2cl", "4cl", "5cl"],
+			"right": ["1cr", "4cr"]
+		},
+		{
+			"name": "uniform_crossed_arms_hetero",
+			"style": "uniform_strict-sh-hetero",
+			"compatibleHeads": ["straight_hetero"],
+			"folder": "femc/",
+			"static": "3c"
+		},
+		{
+			"name": "normal_long_hair_hetero",
+			"style": "uniform-lh-hetero",
+			"compatibleHeads": ["straight_hetero_lh"],
+			"folder": "femc_lh/",
+			"left": ["1l", "2l", "4l", "5l"],
+			"right": ["1r", "4r"]
+		},
+		{
+			"name": "crossed_arms_long_hair_hetero",
+			"style": "uniform-lh-hetero",
+			"compatibleHeads": ["straight_hetero_lh"],
+			"folder": "femc_lh/",
+			"static": "3"
+		},
+		{
+			"name": "casual_normal_long_hair_hetero",
+			"style": "casual-lh-hetero",
+			"compatibleHeads": ["straight_hetero_lh"],
+			"folder": "femc_lh/",
+			"left": ["1bl", "2bl", "4bl", "5bl"],
+			"right": ["1br", "4br"]
+		},
+		{
+			"name": "casual_crossed_arms_long_hair_hetero",
+			"style": "casual-lh-hetero",
+			"compatibleHeads": ["straight_hetero_lh"],
+			"folder": "femc_lh/",
+			"static": "3b"
+		},
+		{
+			"name": "uniform_normal_long_hair_hetero",
+			"style": "uniform_strict-lh-hetero",
+			"compatibleHeads": ["straight_hetero_lh"],
+			"folder": "femc_lh/",
+			"left": ["1cl", "2cl", "4cl", "5cl"],
+			"right": ["1cr", "4cr"]
+		},
+		{
+			"name": "uniform_crossed_arms_long_hair_hetero",
+			"style": "uniform_strict-lh-hetero",
+			"compatibleHeads": ["straight_hetero_lh"],
+			"folder": "femc_lh/",
 			"static": "3c"
 		}
 	]
