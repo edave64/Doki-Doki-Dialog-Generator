@@ -53,17 +53,18 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
+import { Component, Vue, Prop, Watch, Mixins } from 'vue-property-decorator';
 import { Textbox } from '../../models/textbox';
 import Toggle from '../Toggle.vue';
 import environment from '../../environments/environment';
+import { PanelMixin } from './panelMixin';
 
 @Component({
 	components: {
 		Toggle,
 	},
 })
-export default class GeneralPanel extends Vue {
+export default class GeneralPanel extends Mixins(PanelMixin) {
 	@Prop({ required: true }) private readonly options!: Textbox;
 	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
 	@Prop({ required: true, type: Boolean })

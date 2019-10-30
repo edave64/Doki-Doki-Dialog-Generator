@@ -71,19 +71,20 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
 import { isWebPSupported } from '../../asset-manager';
 import { Character } from '../../models/character';
 import Toggle from '../Toggle.vue';
 import { IRenderable } from '../../models/renderable';
 import { Sprite } from '../../models/sprite';
+import { PanelMixin } from './panelMixin';
 
 @Component({
 	components: {
 		Toggle,
 	},
 })
-export default class SpritePanel extends Vue {
+export default class SpritePanel extends Mixins(PanelMixin) {
 	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
 	@Prop({ type: Sprite, required: true }) private sprite!: Sprite;
 

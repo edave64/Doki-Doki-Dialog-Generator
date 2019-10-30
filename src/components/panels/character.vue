@@ -130,13 +130,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
+import { Component, Vue, Prop, Watch, Mixins } from 'vue-property-decorator';
 import { isWebPSupported } from '../../asset-manager';
 import { Character, Part } from '../../models/character';
 import { IRenderable } from '../../models/renderable';
 import { positions } from '../../models/constants';
 import Toggle from '../Toggle.vue';
 import Parts from './character/parts.vue';
+import { PanelMixin } from './panelMixin';
 
 @Component({
 	components: {
@@ -144,7 +145,7 @@ import Parts from './character/parts.vue';
 		Parts,
 	},
 })
-export default class CharacterPanel extends Vue {
+export default class CharacterPanel extends Mixins(PanelMixin) {
 	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
 	@Prop({ type: Character, required: true }) private character!: Character;
 	@Prop({ required: true, type: Boolean }) private readonly nsfw!: boolean;

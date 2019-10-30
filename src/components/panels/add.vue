@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
 import {
 	isWebPSupported,
 	ICharacter,
@@ -28,11 +28,12 @@ import {
 	registerAssetWithURL,
 } from '../../asset-manager';
 import environment from '../../environments/environment';
+import { PanelMixin } from './panelMixin';
 
 @Component({
 	components: {},
 })
-export default class AddPanel extends Vue {
+export default class AddPanel extends Mixins(PanelMixin) {
 	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
 
 	private isWebPSupported: boolean | null = null;

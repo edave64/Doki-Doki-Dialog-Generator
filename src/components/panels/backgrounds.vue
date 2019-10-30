@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
 import { backgrounds, registerAsset, getAsset } from '../../asset-manager';
 import {
 	Background,
@@ -30,6 +30,7 @@ import {
 import { VariantBackground } from '../../models/variant-background';
 import BackgroundButton from './background/button.vue';
 import BackgroundSettings from './background/settings.vue';
+import { PanelMixin } from './panelMixin';
 
 @Component({
 	components: {
@@ -37,7 +38,7 @@ import BackgroundSettings from './background/settings.vue';
 		BackgroundSettings,
 	},
 })
-export default class BackgroundsPanel extends Vue {
+export default class BackgroundsPanel extends Mixins(PanelMixin) {
 	@Prop({ required: true, type: Boolean }) private readonly vertical!: boolean;
 	@Prop({ required: true }) private readonly value!: IBackground;
 	@Prop({ required: true, type: Boolean }) private readonly nsfw!: boolean;
