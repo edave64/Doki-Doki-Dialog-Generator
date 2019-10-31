@@ -104,7 +104,6 @@ export default class PartButton extends Vue {
 	margin-top: 4px;
 	text-shadow: 0 0 2px black;
 	color: white;
-	display: inline-block;
 	box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.5);
 	text-align: center;
 	user-select: none;
@@ -113,5 +112,13 @@ export default class PartButton extends Vue {
 	&.active {
 		box-shadow: inset 0 0 1px 3px rgba(255, 255, 255, 0.5);
 	}
+}
+
+.partList:not(.vertical) .part {
+	display: inline-block;
+}
+
+.partList.vertical .part {
+	display: block;
 }
 </style>

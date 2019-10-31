@@ -385,11 +385,20 @@ export default class PartsPanel extends Vue {
 
 <style lang="scss" scoped>
 .partList {
-	white-space: nowrap;
+	&:not(.vertical) {
+		white-space: nowrap;
+		button {
+			height: 100%;
+		}
+	}
+	&.vertical {
+		button {
+			width: 100%;
+		}
+	}
 }
 
 button {
-	height: 100%;
 	vertical-align: middle;
 }
 
