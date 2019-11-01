@@ -91,6 +91,10 @@ export class Character implements IRenderable, IDragable {
 	}
 
 	public nsfwCheck(): void {
+		if (this.style.nsfw) {
+			this.seekStyle(1, false);
+		}
+
 		const pose = this.pose as Pose<any>;
 		const partKeys = this.getParts();
 
@@ -125,11 +129,15 @@ export class Character implements IRenderable, IDragable {
 		if (part === 'pose') {
 			this.protectHeadGroup(() => {
 				this.poseId = val;
+				this.ensurePoseIntegrity();
 			});
 		} else if (part === 'style') {
 			this.protectHeadGroup(() => {
 				this.styleId = val;
-				this.poseId = 0;
+				if (this.poses.length <= this.poseId) {
+					this.poseId = 0;
+				}
+				this.ensurePoseIntegrity();
 			});
 		} else {
 			this.posePositions[part] = val;
@@ -308,10 +316,25 @@ export class Character implements IRenderable, IDragable {
 	public seekPose(delta: number, nsfw: boolean) {
 		this.protectHeadGroup(() => {
 			this.poseId = nsfwArraySeeker(this.poses, this.poseId, delta, nsfw);
+			if (this.poses.length <= this.poseId) {
+				this.poseId = 0;
+			}
+			this.ensurePoseIntegrity();
 		});
-		this.posePositions.left = 0;
-		this.posePositions.right = 0;
-		this.posePositions.variant = 0;
+		this.dirty = true;
+		this.invalidator();
+	}
+
+	public seekStyle(delta: number, nsfw: boolean) {
+		this.protectHeadGroup(() => {
+			this.styleId = nsfwArraySeeker(
+				this.data.styles,
+				this.styleId,
+				delta,
+				nsfw
+			);
+			this.ensurePoseIntegrity();
+		});
 		this.dirty = true;
 		this.invalidator();
 	}
@@ -367,6 +390,31 @@ export class Character implements IRenderable, IDragable {
 		this.pX = characterPositions[pos];
 	}
 
+	public hasMultiple(part: Part, nsfw: boolean) {
+		if (part === 'head') {
+			let groupFound = false;
+			for (const compatibleHead of this.pose.compatibleHeads) {
+				const group = this.data.heads[compatibleHead];
+				if (groupFound) return true;
+				if (!nsfw) {
+					if (group.nsfw) continue;
+					if (group.all.filter(head => !head.nsfw).length > 1) return true;
+				} else {
+					if (group.all.length > 1) return true;
+				}
+				groupFound = true;
+			}
+			return false;
+		}
+		if (!(this.pose as any)[part]) return false;
+		const all = (this.pose as any)[part] as INsfwAbleImg[];
+		if (!nsfw) {
+			return all.filter(img => !img.nsfw).length > 1;
+		} else {
+			return all.length > 1;
+		}
+	}
+
 	private closestCharacterSlot(pos: number): number {
 		const sorted = characterPositions
 			.map((x, idx) => ({ pos: Math.abs(pos - x), idx }))
@@ -389,6 +437,25 @@ export class Character implements IRenderable, IDragable {
 		} else {
 			this.posePositions.headType = 0;
 			this.posePositions.head = 0;
+		}
+	}
+
+	private ensurePoseIntegrity() {
+		if (!this.pose) {
+			this.poseId = 0;
+		}
+		if ('left' in this.pose) {
+			if (!this.pose.left[this.posePositions.left]) {
+				this.posePositions.left = 0;
+			}
+			if (!this.pose.right[this.posePositions.right]) {
+				this.posePositions.right = 0;
+			}
+		}
+		if ('variant' in this.pose) {
+			if (!this.pose.variant[this.posePositions.variant]) {
+				this.posePositions.variant = 0;
+			}
 		}
 	}
 }

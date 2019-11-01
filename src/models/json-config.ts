@@ -10,15 +10,16 @@ import {
 export function normalizeCharacter(
 	character: IJSONCharacter<JSONHeads>
 ): ICharacter<any> {
+	const charFolder = character.folder || '/';
 	return {
 		id: character.id,
 		internalId: character.internalId,
 		name: character.name,
 		nsfw: !!character.nsfw,
-		chibi: character.chibi,
+		chibi: character.chibi ? appendUrl(charFolder, character.chibi) : undefined,
 		styles: normalizeStyles(character.styles),
-		heads: normalizeHeads(character.heads, character.folder || '/'),
-		poses: normalizePoses(character.poses, character.folder || '/'),
+		heads: normalizeHeads(character.heads, charFolder),
+		poses: normalizePoses(character.poses, charFolder),
 	} as ICharacter<any>;
 }
 
@@ -123,7 +124,8 @@ function normalizeUrl(str: string) {
 	return str.replace(/\/{2,}/g, '/');
 }
 
-function normalizeStyles(styles: IJSONStyle[]): IStyle[] {
+function normalizeStyles(styles?: IJSONStyle[]): IStyle[] {
+	if (!styles) return [];
 	return styles.map(style => ({
 		name: style.name,
 		label: style.label,
@@ -186,7 +188,7 @@ export interface IJSONCharacter<H extends JSONHeads> {
 	folder?: string;
 	nsfw?: boolean;
 	chibi?: string;
-	styles: IJSONStyle[];
+	styles?: IJSONStyle[];
 	heads: H;
 	poses: Array<JSONPose<H>>;
 }

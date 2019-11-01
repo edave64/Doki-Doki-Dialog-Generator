@@ -178,7 +178,9 @@ export default class CharacterPanel extends Mixins(PanelMixin) {
 	}
 
 	private get parts(): string[] {
-		return this.character.getParts();
+		return this.character
+			.getParts()
+			.filter(part => this.character.hasMultiple(part, this.nsfw));
 	}
 
 	private get hasMultipleStyles(): boolean {

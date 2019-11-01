@@ -5,6 +5,8 @@ import {
 	INsfwAbleImg,
 	Pose,
 	IHeads,
+	IStyle,
+	characters,
 } from '@/asset-manager';
 
 function moveCharacterNsfw(character: ICharacter<Heads>) {
@@ -42,6 +44,16 @@ function movePoseNsfw(pose: Pose<any>) {
 	}
 }
 
+function moveStyleNsfw(style: IStyle, character: ICharacter<Heads>) {
+	const matchingPoses = character.poses.filter(
+		pose => pose.style === style.name
+	);
+	for (const matchingPose of matchingPoses) {
+		matchingPose.nsfw = style.nsfw;
+	}
+	style.nsfw = false;
+}
+
 export function mergeCharacters(
 	characterA: ICharacter<Heads>,
 	characterB: ICharacter<Heads>
@@ -50,6 +62,17 @@ export function mergeCharacters(
 		moveCharacterNsfw(characterA);
 		moveCharacterNsfw(characterB);
 	}
+	for (const style of characterB.styles) {
+		const collidingStyle = characterA.styles.find(
+			oldStyle => oldStyle.name === style.name
+		);
+		if (collidingStyle && collidingStyle.nsfw !== style.nsfw) {
+			moveStyleNsfw(style, characterB);
+			moveStyleNsfw(collidingStyle, characterA);
+		}
+		characterA.styles.push(style);
+	}
+
 	for (const headGroupKey in characterB.heads) {
 		if (!characterB.heads.hasOwnProperty(headGroupKey)) continue;
 		const headGroup = characterB.heads[headGroupKey];
