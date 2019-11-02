@@ -1,4 +1,5 @@
 import { IEnvironment } from './environment';
+import { IBackground } from '@/models/background';
 
 export class Browser implements IEnvironment {
 	public readonly allowLQ = true;
@@ -15,6 +16,20 @@ export class Browser implements IEnvironment {
 		a.click();
 		document.body.removeChild(a);
 		return url;
+	}
+
+	public get isBackgroundInstallingSupported(): boolean {
+		return false;
+	}
+
+	public installBackground(background: IBackground): boolean {
+		throw new Error('This environment does not support installing backgrounds');
+	}
+
+	public uninstallBackground(background: IBackground): boolean {
+		throw new Error(
+			'This environment does not support uninstalling backgrounds'
+		);
 	}
 
 	public prompt(

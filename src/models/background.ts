@@ -15,7 +15,8 @@ export class Background implements IBackground {
 		path: string,
 		public readonly name: string,
 		public readonly nsfw: boolean = false,
-		public readonly custom: boolean = false
+		public readonly custom: boolean = false,
+		public installed: boolean = false
 	) {
 		this.path = (custom ? '' : '/backgrounds/') + path;
 	}

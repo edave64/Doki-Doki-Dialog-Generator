@@ -21,6 +21,16 @@
 					<button @click="value.seekVariant(1, nsfw);$emit('invalidate-render')">&gt;</button>
 				</td>
 			</tr>
+			<tr v-if="installable">
+				<td colspan="3">
+					<button @click="install">Install</button>
+				</td>
+			</tr>
+			<tr v-if="uninstallable">
+				<td colspan="3">
+					<button @click="uninstall">Uninstall</button>
+				</td>
+			</tr>
 		</table>
 	</fieldset>
 </template>
@@ -31,6 +41,7 @@ import { IBackground, color, Background } from '../../../models/background';
 import { VariantBackground } from '../../../models/variant-background';
 import { isWebPSupported } from '../../../asset-manager';
 import Toggle from '../../Toggle.vue';
+import environment from '../../../environments/environment';
 
 @Component({
 	components: { Toggle },
@@ -48,6 +59,28 @@ export default class BackgroundSettings extends Vue {
 
 	private get colorBackground() {
 		return color;
+	}
+
+	private get installable(): boolean {
+		if (!(this.value instanceof Background)) return false;
+		if (!this.value.custom) return false;
+		if (this.value.installed) return false;
+		return environment.isBackgroundInstallingSupported;
+	}
+
+	private get uninstallable(): boolean {
+		if (!(this.value instanceof Background)) return false;
+		if (!this.value.custom) return false;
+		if (!this.value.installed) return false;
+		return environment.isBackgroundInstallingSupported;
+	}
+
+	private install() {
+		environment.installBackground(this.value as Background);
+	}
+
+	private uninstall() {
+		environment.uninstallBackground(this.value as Background);
 	}
 }
 </script>

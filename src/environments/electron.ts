@@ -5,6 +5,7 @@ import {
 	characterOrder,
 	backgrounds,
 	registerAssetWithURL,
+	getAsset,
 } from '@/asset-manager';
 import { Background } from '@/models/background';
 import eventBus, { ShowMessageEvent } from '@/event-bus';
@@ -42,9 +43,12 @@ export class Electron implements IEnvironment {
 			'add-persistent-background',
 			async (e, filepath: string) => {
 				const name = 'persistentBg-' + filepath;
+				const parts = filepath.split('/');
 				registerAssetWithURL(name, filepath);
 				console.log(filepath);
-				backgrounds.push(new Background(name, filepath, false, true));
+				backgrounds.push(
+					new Background(name, parts[parts.length - 1], false, true, true)
+				);
 			}
 		);
 		this.electron.ipcRenderer.on('push-message', async (e, message: string) => {
@@ -78,6 +82,36 @@ export class Electron implements IEnvironment {
 				resolve(URL.createObjectURL(blob));
 			});
 		});
+	}
+
+	public get isBackgroundInstallingSupported(): boolean {
+		return true;
+	}
+
+	public async installBackground(background: Background): Promise<void> {
+		const asset = await getAsset(background.path, true);
+		if (!(asset instanceof HTMLImageElement)) return;
+		const img = await fetch(asset.src);
+		const array = new Uint8Array(await img.arrayBuffer());
+		this.electron.ipcRenderer.send(
+			'install-background',
+			background.name,
+			array
+		);
+		background.installed = true;
+	}
+
+	public async uninstallBackground(background: Background): Promise<void> {
+		const asset = await getAsset(background.path, true);
+		if (!(asset instanceof HTMLImageElement)) return;
+		if (!asset.src.startsWith('blob:')) {
+			const img = await fetch(asset.src);
+			const blob = await img.blob();
+			const newUrl = URL.createObjectURL(blob);
+			registerAssetWithURL(background.path, newUrl);
+		}
+		this.electron.ipcRenderer.send('uninstall-background', background.name);
+		background.installed = false;
 	}
 
 	public prompt(
