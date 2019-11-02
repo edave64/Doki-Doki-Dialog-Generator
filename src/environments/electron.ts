@@ -14,6 +14,10 @@ import { mergeCharacters, freezeAssetUrls } from '@/models/merge-characters';
 export class Electron implements IEnvironment {
 	public readonly allowLQ = false;
 	private electron = (window as any) as IElectronWindow;
+	private promptCache: {
+		[promptId: number]: (resolved: string | null) => void;
+	} = {};
+	private lastPrompt: number = 0;
 
 	constructor() {
 		this.electron.ipcRenderer.on(
@@ -46,6 +50,12 @@ export class Electron implements IEnvironment {
 		this.electron.ipcRenderer.on('push-message', async (e, message: string) => {
 			eventBus.fire(new ShowMessageEvent(message));
 		});
+		this.electron.ipcRenderer.on(
+			'prompt-answered',
+			(e, id: number, value: string | null) => {
+				this.promptCache[id](value);
+			}
+		);
 		this.electron.ipcRenderer.send('find-customs');
 	}
 
@@ -67,6 +77,21 @@ export class Electron implements IEnvironment {
 				);
 				resolve(URL.createObjectURL(blob));
 			});
+		});
+	}
+
+	public prompt(
+		message: string,
+		defaultValue?: string
+	): Promise<string | null> {
+		return new Promise((resolve, reject) => {
+			this.promptCache[++this.lastPrompt] = resolve;
+			this.electron.ipcRenderer.send(
+				'show-prompt',
+				this.lastPrompt,
+				message,
+				defaultValue
+			);
 		});
 	}
 }

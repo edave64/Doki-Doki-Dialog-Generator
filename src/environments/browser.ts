@@ -17,6 +17,15 @@ export class Browser implements IEnvironment {
 		return url;
 	}
 
+	public prompt(
+		message: string,
+		defaultValue?: string
+	): Promise<string | null> {
+		return new Promise((resolve, reject) => {
+			resolve(prompt(message, defaultValue));
+		});
+	}
+
 	protected createObjectURL(canvas: HTMLCanvasElement): Promise<string> {
 		return new Promise((resolve, reject) => {
 			if (canvas.toBlob && window.URL && window.URL.createObjectURL) {

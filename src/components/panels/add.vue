@@ -69,7 +69,7 @@ export default class AddPanel extends Mixins(PanelMixin) {
 	}
 
 	private async uploadFromURL() {
-		const url = prompt('Enter the URL of the image');
+		const url = await environment.prompt('Enter the URL of the image');
 		if (!url) return;
 		const name = 'customAsset' + ++this.customAssetCount;
 		await registerAssetWithURL(name, url);

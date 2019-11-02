@@ -5,6 +5,7 @@ import { Electron } from './electron';
 export interface IEnvironment {
 	readonly allowLQ: boolean;
 	saveToFile(canvas: HTMLCanvasElement, filename: string): Promise<string>;
+	prompt(message: string, defaultValue?: string): Promise<string | null>;
 }
 
 function chooseEnv(): IEnvironment {
