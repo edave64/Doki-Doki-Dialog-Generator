@@ -8,7 +8,8 @@ import {
 } from '@/asset-manager';
 
 export function normalizeCharacter(
-	character: IJSONCharacter<JSONHeads>
+	character: IJSONCharacter<JSONHeads>,
+	paths: IPaths
 ): ICharacter<any> {
 	const charFolder = character.folder || '/';
 	return {
@@ -16,16 +17,22 @@ export function normalizeCharacter(
 		internalId: character.internalId,
 		name: character.name,
 		nsfw: !!character.nsfw,
-		chibi: character.chibi ? appendUrl(charFolder, character.chibi) : undefined,
+		chibi: character.chibi
+			? normalizeUrl(appendUrl(charFolder, character.chibi), paths)
+			: undefined,
 		eyes: character.eyes || {},
 		hairs: character.hairs || {},
 		styles: normalizeStyles(character.styles),
-		heads: normalizeHeads(character.heads, charFolder),
-		poses: normalizePoses(character.poses, charFolder),
+		heads: normalizeHeads(character.heads, charFolder, paths),
+		poses: normalizePoses(character.poses, charFolder, paths),
 	} as ICharacter<any>;
 }
 
-function normalizeHeads(heads: JSONHeads, baseFolder: string): Heads {
+function normalizeHeads(
+	heads: JSONHeads,
+	baseFolder: string,
+	paths: IPaths
+): Heads {
 	const ret: Heads = {};
 
 	for (const headGroupKey in heads) {
@@ -34,7 +41,7 @@ function normalizeHeads(heads: JSONHeads, baseFolder: string): Heads {
 		let newHeadGroup: IHeads;
 		if (headGroup instanceof Array) {
 			newHeadGroup = {
-				all: normalizeNsfwAbleCollection(headGroup, baseFolder),
+				all: normalizeNsfwAbleCollection(headGroup, baseFolder, paths),
 				nsfw: false,
 				offset: [290, 70],
 				size: [380, 380],
@@ -42,7 +49,7 @@ function normalizeHeads(heads: JSONHeads, baseFolder: string): Heads {
 		} else {
 			const subFolder = appendUrl(baseFolder, headGroup.folder);
 			newHeadGroup = {
-				all: normalizeNsfwAbleCollection(headGroup.all, subFolder),
+				all: normalizeNsfwAbleCollection(headGroup.all, subFolder, paths),
 				nsfw: !!headGroup.nsfw,
 				offset: headGroup.offset || [290, 70],
 				size: headGroup.size || [380, 380],
@@ -64,6 +71,7 @@ function appendUrl(base: string, sub: string | undefined) {
 
 function isWebUrl(path: string) {
 	return (
+		path.startsWith('blob:') ||
 		path.startsWith('http://') ||
 		path.startsWith('https://') ||
 		path.startsWith('://')
@@ -72,7 +80,8 @@ function isWebUrl(path: string) {
 
 function normalizePoses(
 	poses: Array<JSONPose<JSONHeads>>,
-	baseFolder: string
+	baseFolder: string,
+	paths: IPaths
 ): Array<Pose<Heads>> {
 	return poses.map(pose => {
 		const poseFolder = appendUrl(baseFolder, pose.folder);
@@ -88,12 +97,16 @@ function normalizePoses(
 		} as Pose<Heads>) as any;
 
 		if ('static' in pose) {
-			ret.static = normalizeUrl(poseFolder + pose.static);
+			ret.static = normalizeUrl(poseFolder + pose.static, paths);
 		} else if ('variant' in pose) {
-			ret.variant = normalizeNsfwAbleCollection(pose.variant, poseFolder);
+			ret.variant = normalizeNsfwAbleCollection(
+				pose.variant,
+				poseFolder,
+				paths
+			);
 		} else if ('left' in pose) {
-			ret.left = normalizeNsfwAbleCollection(pose.left, poseFolder);
-			ret.right = normalizeNsfwAbleCollection(pose.right, poseFolder);
+			ret.left = normalizeNsfwAbleCollection(pose.left, poseFolder, paths);
+			ret.right = normalizeNsfwAbleCollection(pose.right, poseFolder, paths);
 		}
 
 		return ret as Pose<Heads>;
@@ -102,18 +115,19 @@ function normalizePoses(
 
 function normalizeNsfwAbleCollection(
 	collection: Array<string | INsfwAbleImg>,
-	poseFolder: string
+	poseFolder: string,
+	paths: IPaths
 ) {
 	return collection.map(
 		(variant): INsfwAbleImg => {
 			if (typeof variant === 'string') {
 				return {
-					img: normalizeUrl(appendUrl(poseFolder, variant)),
+					img: normalizeUrl(appendUrl(poseFolder, variant), paths),
 					nsfw: false,
 				};
 			} else {
 				return {
-					img: normalizeUrl(appendUrl(poseFolder, variant.img)),
+					img: normalizeUrl(appendUrl(poseFolder, variant.img), paths),
 					nsfw: variant.nsfw,
 				};
 			}
@@ -121,7 +135,12 @@ function normalizeNsfwAbleCollection(
 	);
 }
 
-function normalizeUrl(str: string) {
+function normalizeUrl(str: string, paths: IPaths) {
+	for (const path in paths) {
+		if (str.startsWith(path)) {
+			str = paths[path] + str.slice(path.length);
+		}
+	}
 	if (isWebUrl(str)) return str;
 	return str.replace(/\/{2,}/g, '/');
 }
@@ -199,4 +218,8 @@ export interface IJSONCharacter<H extends JSONHeads> {
 	styles?: IJSONStyle[];
 	heads: H;
 	poses: Array<JSONPose<H>>;
+}
+
+export interface IPaths {
+	[prefix: string]: string;
 }

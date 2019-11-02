@@ -24,16 +24,16 @@ import environment from './environments/environment';
 import { normalizeCharacter } from './models/json-config';
 
 export const characters: { [name: string]: ICharacter<any> } = {
-	[Sayori.id]: normalizeCharacter(Sayori as any),
-	[Yuri.id]: normalizeCharacter(Yuri as any),
-	[Natsuki.id]: normalizeCharacter(Natsuki as any),
-	[Monika.id]: normalizeCharacter(Monika as any),
-	[FeMC.id]: normalizeCharacter(FeMC as any),
-	[MC.id]: normalizeCharacter(MC as any),
-	[MCChad.id]: normalizeCharacter(MCChad as any),
-	[MCClassic.id]: normalizeCharacter(MCClassic as any),
-	[Amy.id]: normalizeCharacter(Amy as any),
-	[AmyClassic.id]: normalizeCharacter(AmyClassic as any),
+	[Sayori.id]: normalizeCharacter(Sayori as any, { './': '/' }),
+	[Yuri.id]: normalizeCharacter(Yuri as any, { './': '/' }),
+	[Natsuki.id]: normalizeCharacter(Natsuki as any, { './': '/' }),
+	[Monika.id]: normalizeCharacter(Monika as any, { './': '/' }),
+	[FeMC.id]: normalizeCharacter(FeMC as any, { './': '/' }),
+	[MC.id]: normalizeCharacter(MC as any, { './': '/' }),
+	[MCChad.id]: normalizeCharacter(MCChad as any, { './': '/' }),
+	[MCClassic.id]: normalizeCharacter(MCClassic as any, { './': '/' }),
+	[Amy.id]: normalizeCharacter(Amy as any, { './': '/' }),
+	[AmyClassic.id]: normalizeCharacter(AmyClassic as any, { './': '/' }),
 };
 
 export const characterOrder = ([

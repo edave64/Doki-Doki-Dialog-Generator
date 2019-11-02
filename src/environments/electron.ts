@@ -23,12 +23,15 @@ export class Electron implements IEnvironment {
 	constructor() {
 		this.electron.ipcRenderer.on(
 			'add-persistent-character',
-			async (e, filepath: string) => {
-				console.log(filepath);
-				const response = await fetch(filepath);
-				const json = normalizeCharacter(await response.json()) as ICharacter<
-					any
-				>;
+			async (e, filePath: string) => {
+				console.log(filePath);
+				const parts = filePath.split('/');
+				const baseDir = parts.slice(0, -1).join('/');
+
+				const response = await fetch(filePath);
+				const json = normalizeCharacter(await response.json(), {
+					'./': baseDir + '/',
+				}) as ICharacter<any>;
 				if (characters[json.id]) {
 					const existing = characters[json.id];
 					mergeCharacters(existing, json);
