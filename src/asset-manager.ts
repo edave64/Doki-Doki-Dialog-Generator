@@ -78,7 +78,6 @@ export async function getAsset(
 	asset: string,
 	hq: boolean = true
 ): Promise<HTMLImageElement | ErrorAsset> {
-	asset = asset.replace(/\/{2,}/g, '/');
 	if (customAssets[asset]) {
 		return customAssets[asset];
 	}
@@ -133,8 +132,6 @@ export function registerAssetWithURL(
 	asset: string,
 	url: string
 ): Promise<HTMLImageElement> {
-	url = url.replace(/\/{2,}/g, '/');
-	asset = asset.replace(/\/{2,}/g, '/');
 	return (customAssets[asset] = new Promise((resolve, reject) => {
 		const img = new Image();
 		img.addEventListener('load', () => {
