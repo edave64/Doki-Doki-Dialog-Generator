@@ -89,70 +89,32 @@ export default class PartsPanel extends Vue {
 
 	private get eyes(): { [id: string]: IPartButtonImage } | null {
 		if (this.part !== 'style') return null;
-		switch (this.character.data.id) {
-			case 'ddlc.fan.mc_chad':
-				return {
-					yellow: {
-						image1: 'parts/chad/yellow-eyes',
-						size: [960, 960],
-						offset: [0, 0],
-					},
-					red: {
-						image1: 'parts/chad/red-eyes',
-						size: [960, 960],
-						offset: [0, 0],
-					},
-				};
-			case 'ddlc.fan.mc2':
-				return {
-					yellow: {
-						image1: 'parts/mc/yellow-eyes',
-						size: [960, 960],
-						offset: [0, 0],
-					},
-					red: {
-						image1: 'parts/mc/red-eyes',
-						size: [960, 960],
-						offset: [0, 0],
-					},
-				};
-			case 'ddlc.fan.femc':
-				return {
-					yellow: {
-						image1: 'parts/femc/yellow-eyes',
-						size: [960, 960],
-						offset: [0, 0],
-					},
-					hetero: {
-						image1: 'parts/femc/hetero-eyes',
-						size: [960, 960],
-						offset: [0, 0],
-					},
-				};
-			default:
-				return null;
+		const keys = Object.keys(this.character.data.eyes);
+		if (keys.length < 2) return null;
+		const ret: { [id: string]: IPartButtonImage } = {};
+		for (const key of keys) {
+			ret[key] = {
+				image1: this.character.data.eyes[key],
+				size: [960, 960],
+				offset: [0, 0],
+			};
 		}
+		return ret;
 	}
 
 	private get hairs(): { [id: string]: IPartButtonImage } | null {
 		if (this.part !== 'style') return null;
-		switch (this.character.data.id) {
-			case 'ddlc.fan.femc':
-				return {
-					sh: {
-						image1: 'parts/femc/short-hair',
-						size: [960, 960],
-						offset: [0, 0],
-					},
-					lh: {
-						image1: 'parts/femc/long-hair',
-						size: [960, 960],
-						offset: [0, 0],
-					},
-				};
-			default:
-				return null;
+		const keys = Object.keys(this.character.data.hairs);
+		if (keys.length < 2) return null;
+		const ret: { [id: string]: IPartButtonImage } = {};
+		for (const key of keys) {
+			ret[key] = {
+				image1: this.character.data.hairs[key],
+				size: [960, 960],
+				offset: [0, 0],
+			};
 		}
+		return ret;
 	}
 
 	private get parts(): { [id: number]: IPartButtonImage } {

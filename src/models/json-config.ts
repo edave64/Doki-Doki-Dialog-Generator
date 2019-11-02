@@ -17,6 +17,8 @@ export function normalizeCharacter(
 		name: character.name,
 		nsfw: !!character.nsfw,
 		chibi: character.chibi ? appendUrl(charFolder, character.chibi) : undefined,
+		eyes: character.eyes || {},
+		hairs: character.hairs || {},
 		styles: normalizeStyles(character.styles),
 		heads: normalizeHeads(character.heads, charFolder),
 		poses: normalizePoses(character.poses, charFolder),
@@ -181,12 +183,18 @@ export interface IJSONStyle {
 	nsfw?: boolean;
 }
 
+export interface IJSONStyleClasses {
+	[name: string]: string;
+}
+
 export interface IJSONCharacter<H extends JSONHeads> {
 	id: string;
 	internalId: string;
 	name: string;
 	folder?: string;
 	nsfw?: boolean;
+	eyes?: IJSONStyleClasses;
+	hairs?: IJSONStyleClasses;
 	chibi?: string;
 	styles?: IJSONStyle[];
 	heads: H;

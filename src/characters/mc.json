@@ -3,6 +3,10 @@
 	"name": "MC",
 	"internalId": "mc",
 	"folder": "mc/",
+	"eyes": {
+		"yellow": "/parts/mc/yellow-eyes",
+		"red": "/parts/mc/red-eyes"
+	},
 	"styles": [
 		{
 			"name": "uniform-yellow",

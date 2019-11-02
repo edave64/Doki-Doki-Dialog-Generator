@@ -62,6 +62,17 @@ export function mergeCharacters(
 		moveCharacterNsfw(characterA);
 		moveCharacterNsfw(characterB);
 	}
+
+	characterA.hairs = {
+		...characterA.hairs,
+		...characterB.hairs,
+	};
+
+	characterB.eyes = {
+		...characterA.eyes,
+		...characterB.eyes,
+	};
+
 	for (const style of characterB.styles) {
 		const collidingStyle = characterA.styles.find(
 			oldStyle => oldStyle.name === style.name

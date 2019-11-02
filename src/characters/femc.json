@@ -2,6 +2,14 @@
 	"id": "ddlc.fan.femc",
 	"internalId": "femc",
 	"name": "FeMC",
+	"eyes": {
+		"yellow": "/parts/femc/yellow-eyes",
+		"hetero": "/parts/femc/hetero-eyes"
+	},
+	"hairs": {
+		"sh": "/parts/femc/short-hair",
+		"lh": "/parts/femc/long-hair"
+	},
 	"styles": [
 		{
 			"name": "uniform-sh-yellow",

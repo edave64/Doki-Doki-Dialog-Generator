@@ -3,6 +3,10 @@
 	"name": "MC (Chad)",
 	"internalId": "chad",
 	"folder": "chad/",
+	"eyes": {
+		"yellow": "/parts/chad/yellow-eyes",
+		"red": "/parts/chad/red-eyes"
+	},
 	"styles": [
 		{
 			"name": "uniform-yellow",

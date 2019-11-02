@@ -324,12 +324,17 @@ export interface IStyle {
 	label: string;
 	nsfw: boolean;
 }
+export interface IStyleClasses {
+	[name: string]: string;
+}
 
 export interface ICharacter<H extends Heads> {
 	id: string;
 	internalId: string;
 	name: string;
 	nsfw: boolean;
+	eyes: IStyleClasses;
+	hairs: IStyleClasses;
 	chibi?: string;
 	styles: IStyle[];
 	heads: H;
