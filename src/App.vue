@@ -42,6 +42,12 @@
 					:has-prev-render="prevRender !== ''"
 					:lqRendering.sync="lqRendering"
 					:nsfw.sync="nsfw"
+					@open-panel="panel = $event"
+					@show-prev-render="showPreviousRender"
+				/>
+				<character-pack
+					v-if="panel === 'character-packs'"
+					:vertical="vertical"
 					@show-prev-render="showPreviousRender"
 				/>
 				<add-panel
@@ -90,6 +96,7 @@ import CharacterPanel, { MoveObject } from './components/panels/character.vue';
 import SpritePanel from './components/panels/sprite.vue';
 import CreditsPanel from './components/panels/credits.vue';
 import BackgroundsPanel from './components/panels/backgrounds.vue';
+import CharacterPack from './components/panels/character-pack.vue';
 import MessageConsole from './components/message-console.vue';
 import { characterPositions } from './models/constants';
 import { Textbox } from './models/textbox';
@@ -115,6 +122,7 @@ import leftPad from 'left-pad';
 		CharacterPanel,
 		SpritePanel,
 		MessageConsole,
+		CharacterPack,
 	},
 })
 export default class App extends Vue {

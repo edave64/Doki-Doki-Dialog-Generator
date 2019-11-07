@@ -21,7 +21,12 @@ import EventBus, {
 } from './event-bus';
 import { ErrorAsset } from './models/error-asset';
 import environment from './environments/environment';
-import { normalizeCharacter } from './models/json-config';
+import {
+	normalizeCharacter,
+	IJSONCharacter,
+	JSONHeads,
+} from './models/json-config';
+import { mergeCharacters, freezeAssetUrls } from './models/merge-characters';
 
 export const characters: { [name: string]: ICharacter<any> } = {
 	[Sayori.id]: normalizeCharacter(Sayori as any, { './': '/' }),
@@ -336,4 +341,40 @@ export interface ICharacter<H extends Heads> {
 	styles: IStyle[];
 	heads: H;
 	poses: Array<Pose<H>>;
+}
+
+const installed: string[] = [];
+
+export async function loadCharacterPack(
+	filePath: string,
+	active: boolean = true
+): Promise<IJSONCharacter<any> | undefined> {
+	const parts = filePath.split('/');
+	const baseDir = parts.slice(0, -1).join('/');
+
+	const response = await fetch(filePath);
+	const json: IJSONCharacter<JSONHeads> = await response.json();
+	if (!active) {
+		return json;
+	}
+	if (json.packId) {
+		if (installed.indexOf(json.packId) >= 0) {
+			return;
+		}
+	}
+	const character = normalizeCharacter(json, {
+		'./': baseDir + '/',
+	}) as ICharacter<any>;
+	if (characters[character.id]) {
+		const existing = characters[character.id];
+		mergeCharacters(existing, character);
+	} else {
+		characters[character.id] = character;
+		characterOrder.push(character);
+	}
+	freezeAssetUrls(character);
+	if (json.packId) {
+		installed.push(json.packId);
+	}
+	return json;
 }

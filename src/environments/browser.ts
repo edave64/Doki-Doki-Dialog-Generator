@@ -1,4 +1,4 @@
-import { IEnvironment } from './environment';
+import { IEnvironment, IPack } from './environment';
 import { IBackground } from '@/models/background';
 
 export class Browser implements IEnvironment {
@@ -18,7 +18,15 @@ export class Browser implements IEnvironment {
 		return url;
 	}
 
+	public get installedCharacterPacks(): Readonly<Array<Readonly<IPack>>> {
+		return [];
+	}
+
 	public get isBackgroundInstallingSupported(): boolean {
+		return false;
+	}
+
+	public get isPackInstallingSupported(): boolean {
 		return false;
 	}
 
@@ -26,9 +34,32 @@ export class Browser implements IEnvironment {
 		throw new Error('This environment does not support installing backgrounds');
 	}
 
+	public installContentPack(url: string): boolean {
+		throw new Error(
+			'This environment does not support installing content packs'
+		);
+	}
+
 	public uninstallBackground(background: IBackground): boolean {
 		throw new Error(
 			'This environment does not support uninstalling backgrounds'
+		);
+	}
+
+	public uninstallContentPack(url: string): boolean {
+		throw new Error(
+			'This environment does not support uninstalling content packs'
+		);
+	}
+	public activateContentPack(url: string): boolean {
+		throw new Error(
+			'This environment does not support installing content packs'
+		);
+	}
+
+	public deactivateContentPack(url: string): boolean {
+		throw new Error(
+			'This environment does not support uninstalling content packs'
 		);
 	}
 

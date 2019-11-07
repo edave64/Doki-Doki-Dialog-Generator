@@ -15,6 +15,7 @@
 			@input="$emit('update:lqRendering', $event)"
 		/>
 		<button :disabled="!hasPrevRender" @click="$emit('show-prev-render')">Compare to last download</button>
+		<button @click="$emit('open-panel', 'character-packs')">Character Packs</button>
 		<toggle label="NSFW Mode?" :value="nsfw" @input="$emit('update:nsfw', $event)" />
 		<toggle label="Textbox visible?" v-model="options.display" />
 		<toggle label="Textbox corrupt?" v-model="options.corrupted" />

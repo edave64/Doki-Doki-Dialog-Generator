@@ -1,4 +1,4 @@
-import { IEnvironment } from './environment';
+import { IEnvironment, IPack } from './environment';
 import {
 	characters,
 	ICharacter,
@@ -6,11 +6,12 @@ import {
 	backgrounds,
 	registerAssetWithURL,
 	getAsset,
+	loadCharacterPack,
 } from '@/asset-manager';
 import { Background } from '@/models/background';
 import eventBus, { ShowMessageEvent } from '@/event-bus';
-import { normalizeCharacter } from '@/models/json-config';
-import { mergeCharacters, freezeAssetUrls } from '@/models/merge-characters';
+
+const packs: IPack[] = [];
 
 export class Electron implements IEnvironment {
 	public readonly allowLQ = false;
@@ -23,23 +24,16 @@ export class Electron implements IEnvironment {
 	constructor() {
 		this.electron.ipcRenderer.on(
 			'add-persistent-character',
-			async (e, filePath: string) => {
-				console.log(filePath);
-				const parts = filePath.split('/');
-				const baseDir = parts.slice(0, -1).join('/');
-
-				const response = await fetch(filePath);
-				const json = normalizeCharacter(await response.json(), {
-					'./': baseDir + '/',
-				}) as ICharacter<any>;
-				if (characters[json.id]) {
-					const existing = characters[json.id];
-					mergeCharacters(existing, json);
-				} else {
-					characters[json.id] = json;
-					characterOrder.push(json);
-				}
-				freezeAssetUrls(json);
+			async (e, filePath: string, active: boolean = true) => {
+				const json = await loadCharacterPack(filePath, active);
+				if (!json) return;
+				packs.push({
+					url: filePath,
+					queuedUninstall: false,
+					id: json.packId,
+					credits: json.packCredits,
+					active,
+				});
 			}
 		);
 		this.electron.ipcRenderer.on(
@@ -87,7 +81,15 @@ export class Electron implements IEnvironment {
 		});
 	}
 
+	public get installedCharacterPacks(): Readonly<Array<Readonly<IPack>>> {
+		return packs;
+	}
+
 	public get isBackgroundInstallingSupported(): boolean {
+		return true;
+	}
+
+	public get isPackInstallingSupported(): boolean {
 		return true;
 	}
 
@@ -115,6 +117,26 @@ export class Electron implements IEnvironment {
 		}
 		this.electron.ipcRenderer.send('uninstall-background', background.name);
 		background.installed = false;
+	}
+
+	public installContentPack(url: string): void {
+		console.log('installContentPack', url);
+		this.electron.ipcRenderer.send('install-content-pack', url);
+	}
+
+	public uninstallContentPack(url: string): void {
+		console.log('uninstallContentPack', url);
+		this.electron.ipcRenderer.send('uninstall-content-pack', url);
+	}
+
+	public activateContentPack(url: string): void {
+		console.log('activateContentPack', url);
+		this.electron.ipcRenderer.send('activate-content-pack', url);
+	}
+
+	public deactivateContentPack(url: string): void {
+		console.log('deactivateContentPack', url);
+		this.electron.ipcRenderer.send('deactivate-content-pack', url);
 	}
 
 	public prompt(
