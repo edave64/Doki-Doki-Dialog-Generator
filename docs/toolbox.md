@@ -30,6 +30,7 @@ Since clicking on 'A', 'B' or 'C' opens other panels, they forcefully clear the 
 This shows you a lot of options, depending on context. The following types of panels exist:
 
 - [General](panels/general.md): This panel is shown if no object is selected and panel is selected in the toolbar. You can force it to be displayed by clicking on an empty part of the preview image, or clicking twice on 'A', 'B' or 'C'
+- [Content Packs](panels/content_packs.md): This panel is shown when you click "Content Packs" in the [General Panel](panels/general.md)
 - [Add Character](panels/add.md): This panel is shown when you click on 'A'. It can be used to add objects to the scene.
 - [Backgrounds](panels/backgrounds.md): This panel is shown when you click on 'B'. Here, you can select and configure the background of the scene.
 - [Credits](panels/credits.md): This panel is shown when you click on 'C'. It shows the sources of all assets used.
