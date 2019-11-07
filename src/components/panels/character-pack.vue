@@ -1,6 +1,6 @@
 <template>
 	<div :class="{ panel: true, vertical }">
-		<h1>Packs</h1>
+		<h1>Content Packs</h1>
 		<button @click="addNew">Add new Pack</button>
 		<fieldset>
 			<legend>Installed Packs:</legend>
@@ -21,9 +21,9 @@
 		<button v-if="deactivatable" @click="deactivate">Deactivate</button>
 		<button v-if="installable" @click="install">Install</button>
 		<button v-if="uninstallable" @click="uninstall">Uninstall</button>
-		<div>
+		<div v-if="needRestart">
 			The tool need restart for changes to take effect.
-			<button></button>
+			<button @click="restart">Restart Now</button>
 		</div>
 	</div>
 </template>
@@ -54,6 +54,7 @@ export default class AddPanel extends Mixins(PanelMixin) {
 	private selectedPack: IPack | null = null;
 	private temporaryPacks: IPack[] = [];
 	private installedPacks: IPack[] = [];
+	private needRestart = false;
 
 	private created() {
 		const packs = environment.installedCharacterPacks;
@@ -97,6 +98,10 @@ export default class AddPanel extends Mixins(PanelMixin) {
 			url,
 			freshInstall: true,
 		});
+	}
+
+	private restart() {
+		location.reload(true);
 	}
 
 	private get name(): string {
@@ -149,18 +154,21 @@ export default class AddPanel extends Mixins(PanelMixin) {
 		if (!this.selectedPack) return;
 		environment.uninstallContentPack(this.selectedPack.url);
 		this.selectedPack.queuedUninstall = true;
+		this.needRestart = true;
 	}
 
 	private activate(): void {
 		if (!this.selectedPack) return;
 		environment.activateContentPack(this.selectedPack.url);
 		this.selectedPack.active = true;
+		this.needRestart = true;
 	}
 
 	private deactivate(): void {
 		if (!this.selectedPack) return;
 		environment.deactivateContentPack(this.selectedPack.url);
 		this.selectedPack.active = false;
+		this.needRestart = true;
 	}
 }
 </script>
