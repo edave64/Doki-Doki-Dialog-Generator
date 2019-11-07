@@ -18,7 +18,7 @@ export function normalizeCharacter(
 		name: character.name,
 		nsfw: !!character.nsfw,
 		chibi: character.chibi
-			? normalizeUrl(appendUrl(charFolder, character.chibi), paths)
+			? normalizeUrl(appendUrl(charFolder, character.chibi, paths), paths)
 			: undefined,
 		eyes: character.eyes || {},
 		hairs: character.hairs || {},
@@ -47,7 +47,7 @@ function normalizeHeads(
 				size: [380, 380],
 			};
 		} else {
-			const subFolder = appendUrl(baseFolder, headGroup.folder);
+			const subFolder = appendUrl(baseFolder, headGroup.folder, paths);
 			newHeadGroup = {
 				all: normalizeNsfwAbleCollection(headGroup.all, subFolder, paths),
 				nsfw: !!headGroup.nsfw,
@@ -61,8 +61,13 @@ function normalizeHeads(
 	return ret;
 }
 
-function appendUrl(base: string, sub: string | undefined) {
+function appendUrl(base: string, sub: string | undefined, paths: IPaths) {
 	if (!sub) return base;
+	for (const path in paths) {
+		if (sub.startsWith(path)) {
+			return sub;
+		}
+	}
 	if (sub[0] === '/' || isWebUrl(sub)) {
 		return sub;
 	}
@@ -84,7 +89,7 @@ function normalizePoses(
 	paths: IPaths
 ): Array<Pose<Heads>> {
 	return poses.map(pose => {
-		const poseFolder = appendUrl(baseFolder, pose.folder);
+		const poseFolder = appendUrl(baseFolder, pose.folder, paths);
 		const ret = ({
 			compatibleHeads: pose.compatibleHeads,
 			headAnchor: pose.headAnchor || [0, 0],
@@ -122,12 +127,12 @@ function normalizeNsfwAbleCollection(
 		(variant): INsfwAbleImg => {
 			if (typeof variant === 'string') {
 				return {
-					img: normalizeUrl(appendUrl(poseFolder, variant), paths),
+					img: normalizeUrl(appendUrl(poseFolder, variant, paths), paths),
 					nsfw: false,
 				};
 			} else {
 				return {
-					img: normalizeUrl(appendUrl(poseFolder, variant.img), paths),
+					img: normalizeUrl(appendUrl(poseFolder, variant.img, paths), paths),
 					nsfw: variant.nsfw,
 				};
 			}
@@ -208,6 +213,8 @@ export interface IJSONStyleClasses {
 
 export interface IJSONCharacter<H extends JSONHeads> {
 	id: string;
+	packId: string;
+	packCredits: string;
 	internalId: string;
 	name: string;
 	folder?: string;
