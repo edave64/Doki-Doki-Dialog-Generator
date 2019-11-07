@@ -24,6 +24,7 @@ export interface IEnvironment {
 	installContentPack(url: string): void;
 	uninstallContentPack(url: string): void;
 	prompt(message: string, defaultValue?: string): Promise<string | null>;
+	onPanelChange(handler: (panel: string) => void): void;
 }
 
 function chooseEnv(): IEnvironment {

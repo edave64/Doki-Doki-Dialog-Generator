@@ -72,6 +72,10 @@ export class Browser implements IEnvironment {
 		});
 	}
 
+	public onPanelChange(handler: (panel: string) => void): void {
+		return;
+	}
+
 	protected createObjectURL(canvas: HTMLCanvasElement): Promise<string> {
 		return new Promise((resolve, reject) => {
 			if (canvas.toBlob && window.URL && window.URL.createObjectURL) {

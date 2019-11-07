@@ -271,6 +271,10 @@ export default class App extends Vue {
 
 		window.removeEventListener('keydown', this.onKeydown);
 		window.addEventListener('keydown', this.onKeydown);
+
+		environment.onPanelChange((panel: string) => {
+			this.panel = panel;
+		});
 	}
 
 	private destroyed(): void {

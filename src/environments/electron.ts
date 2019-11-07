@@ -153,6 +153,12 @@ export class Electron implements IEnvironment {
 			);
 		});
 	}
+
+	public onPanelChange(handler: (panel: string) => void): void {
+		this.electron.ipcRenderer.on('open-panel', (e, panel: string) => {
+			handler(panel);
+		});
+	}
 }
 
 interface IElectronWindow {
