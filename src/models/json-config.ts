@@ -5,6 +5,7 @@ import {
 	IHeads,
 	Pose,
 	IStyle,
+	IStyleClasses,
 } from '@/asset-manager';
 
 export function normalizeCharacter(
@@ -20,12 +21,29 @@ export function normalizeCharacter(
 		chibi: character.chibi
 			? normalizeUrl(appendUrl(charFolder, character.chibi, paths), paths)
 			: undefined,
-		eyes: character.eyes || {},
-		hairs: character.hairs || {},
+		eyes: normalizeParts(character.eyes, charFolder, paths),
+		hairs: normalizeParts(character.hairs, charFolder, paths),
 		styles: normalizeStyles(character.styles),
 		heads: normalizeHeads(character.heads, charFolder, paths),
 		poses: normalizePoses(character.poses, charFolder, paths),
 	} as ICharacter<any>;
+}
+
+function normalizeParts(
+	styleClasses: IJSONStyleClasses | undefined,
+	baseFolder: string,
+	paths: IPaths
+): IStyleClasses {
+	if (!styleClasses) return {};
+	const ret: IStyleClasses = {};
+	for (const styleKey in styleClasses) {
+		if (!styleClasses.hasOwnProperty(styleKey)) continue;
+		ret[styleKey] = normalizeUrl(
+			appendUrl(baseFolder, styleClasses[styleKey], paths),
+			paths
+		);
+	}
+	return ret;
 }
 
 function normalizeHeads(

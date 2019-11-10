@@ -156,6 +156,14 @@ export function mergeCharacters(
 }
 
 export function freezeAssetUrls(character: ICharacter<Heads>) {
+	for (const eyeKey in character.eyes) {
+		if (!character.eyes.hasOwnProperty(eyeKey)) continue;
+		registerAssetWithURL(character.eyes[eyeKey], character.eyes[eyeKey]);
+	}
+	for (const hairKey in character.hairs) {
+		if (!character.hairs.hasOwnProperty(hairKey)) continue;
+		registerAssetWithURL(character.hairs[hairKey], character.hairs[hairKey]);
+	}
 	for (const headGroupKey in character.heads) {
 		if (!character.heads.hasOwnProperty(headGroupKey)) continue;
 		const headGroup = character.heads[headGroupKey];
