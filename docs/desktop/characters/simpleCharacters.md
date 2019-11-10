@@ -16,15 +16,51 @@ Images with filenames that start with letters or symbols will be heads.
 
 Images with filenames that start with numbers will be poses.
 
-Filenames for poses are structures like this:
+So a very simple character might look like this:
 
-- A number. This is just to indicate the order of the poses. Poses with lower numbers in the tool will appear before
-  those with higher numbers.
-- A text that identifies the style of the pose.
-- An l or r at the end, if these are part of a split pose. All poses with l or r at the end will be combined in the
-  tool into one pose with left and right sides. The poses with l at the end will be available for the left side, poses
-  with r at the end will be available for the right side.
-  If there is no l or r at the end, the pose will stand for itself, with no left or right halves.
+- a.png
+- b.png
+- c.png
+- 1.png
+- 2.png
+
+This will result in the following character:
+
+- 3 available heads (a.png, b.png, c.png)
+- No additional styles
+- One that doesn't have a name:
+- Has 2 static poses (1.png and 2.png)
+
+## Split poses
+
+A file that starts with a number and ends with either l or r will be part of a split pose. Files with l will be used for the left side, files with r for the right.
+
+So with a few split poses, our character might look like this:
+
+- a.png
+- b.png
+- c.png
+- 1.png
+- 2.png
+- 3l.png
+- 3r.png
+- 4l.png
+- 4r.png
+
+This will result in the following character:
+
+- 3 available heads (a.png, b.png, c.png)
+- No additional styles
+- One that doesn't have a name:
+- Has 2 static poses (1.png and 2.png)
+- Has one split pose, with 2 images for the left side (3l.png and 4l.png) and 2 on for the right (3r.png and 4r.png)
+
+# Outfits
+
+Poses can be separated into different styles, representing different outfits.
+
+To do this, just add some text after the number in the pose name. Keep in mind that if there is an l or an r at the
+end, that will be interpreted as indicating a split pose, so take care to avoid any conflicts there.
 
 For example, a character folder might look like this:
 
