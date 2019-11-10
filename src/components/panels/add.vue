@@ -26,6 +26,7 @@ import {
 	characterOrder,
 	registerAsset,
 	registerAssetWithURL,
+	baseUrl,
 } from '../../asset-manager';
 import environment from '../../environments/environment';
 import { PanelMixin } from './panelMixin';
@@ -52,8 +53,9 @@ export default class AddPanel extends Mixins(PanelMixin) {
 			return character.chibi;
 		}
 		const lq = environment.allowLQ ? '.lq' : '';
-		return `${process.env.BASE_URL}/assets/chibis/${character.internalId +
-			lq}.${this.isWebPSupported ? 'webp' : 'png'}`.replace(/\/+/, '/');
+		return `${baseUrl}/assets/chibis/${character.internalId + lq}.${
+			this.isWebPSupported ? 'webp' : 'png'
+		}`.replace(/\/+/, '/');
 	}
 
 	private onFileUpload(e: Event) {

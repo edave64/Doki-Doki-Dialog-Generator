@@ -50,6 +50,7 @@ import environment from '@/environments/environment';
 import { Part, Character } from '@/models/character';
 import PartButton, { IPartButtonImage } from './partButton.vue';
 import { poses } from '../../../models/constants';
+import { baseUrl } from '../../../asset-manager';
 
 interface IStyle {
 	fullName: string;
@@ -320,8 +321,9 @@ export default class PartsPanel extends Vue {
 			return character.chibi;
 		}
 		const lq = environment.allowLQ ? '.lq' : '';
-		return `${process.env.BASE_URL}/assets/chibis/${character.internalId +
-			lq}.${this.isWebPSupported ? 'webp' : 'png'}`.replace(/\/+/, '/');
+		return `${baseUrl}/assets/chibis/${character.internalId + lq}.${
+			this.isWebPSupported ? 'webp' : 'png'
+		}`.replace(/\/+/, '/');
 	}
 
 	private onFileUpload(e: Event) {
