@@ -16,6 +16,10 @@ This shows the last downloaded render in the preview. That can be useful for che
 
 If clicking the button again or doing changing any rendering option will revert back to the preview.
 
+### Content Packs
+
+Content Packs allow you to load addition content to the tool. Clicking this button opens the [Content Packs]() sub-panel
+
 ### NSFW mode
 
 If you have played DDLC, (which you really should before using this editor) you know that it contains several disturbing images. Those are are not very often used and not everyone wants to be constantly confronted by those images.
