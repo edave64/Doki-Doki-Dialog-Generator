@@ -7,7 +7,8 @@
 		"build": "vue-cli-service build",
 		"lint": "vue-cli-service lint",
 		"test:unit": "vue-cli-service test:unit",
-		"assetConversions": "node ./scripts/asset-conversions.js"
+		"assetConversions": "node ./scripts/asset-conversions.js",
+		"build:web": "cross-env vue-cli-service build"
 	},
 	"dependencies": {
 		"core-js": "^2.6.5",

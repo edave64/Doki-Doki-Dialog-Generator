@@ -78,6 +78,7 @@ const assetCache: {
 	[url: string]: Promise<HTMLImageElement | ErrorAsset> | undefined;
 } = {};
 const customAssets: { [id: string]: Promise<HTMLImageElement> } = {};
+export const baseUrl = process.env.BASE_URL === '' ? '.' : process.env.BASE_URL;
 
 export async function getAsset(
 	asset: string,
@@ -89,7 +90,7 @@ export async function getAsset(
 
 	if (!environment.allowLQ) hq = true;
 
-	const url = `${process.env.BASE_URL}/assets/${asset}${hq ? '' : '.lq'}${
+	const url = `${baseUrl}/assets/${asset}${hq ? '' : '.lq'}${
 		(await isWebPSupported()) ? '.webp' : '.png'
 	}`.replace(/\/+/, '/');
 
