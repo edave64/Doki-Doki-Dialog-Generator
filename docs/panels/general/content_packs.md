@@ -1,4 +1,4 @@
-[Help](../../index.md) / [Toolbox](../../toolbox.md) / [General panel](../general) / Content Packs panel
+[Help](../../index.md) / [Toolbox](../../toolbox.md) / [General panel](../general.md) / Content Packs panel
 
 # The Content Packs panel
 
