@@ -8,7 +8,19 @@ This panel allows you manipulate characters that have already been [added to sce
 
 ## Pose
 
-Here, you can customize the look of the character. For each of these options, the `<` button selects the previous and the `>` the next option. Each of the following options may or may not be visible, depending on context.
+Here, you can customize the look of the character. For each of these options, the `<` button selects the previous and the `>` the next option. Clicking the button in middle brings you to a list with preview image for each possible selection. For example, for heads, this list could look like this:
+
+![The head selection list](character_parts.png 'The head selection list')
+
+Clicking the back button in these lists brings you back to the character panel.
+
+Each of the following options may or may not be visible, depending on context:
+
+### Style
+
+Here, you can select different outfits, eye colors and hairstyles, for the characters that have them. That list view is slightly different than for the others. It looks like this:
+
+![The style selection list](character_styles.png 'The style selection list')
 
 ### Pose
 
