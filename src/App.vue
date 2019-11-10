@@ -134,9 +134,6 @@ export default class App extends Vue {
 	private characters: IRenderable[] = [];
 	private selectedCharacter: Character | null = null;
 	private selectedSprite: Sprite | null = null;
-	private characterSelectorOpen: boolean = false;
-	private backgroundSelectorOpen: boolean = false;
-	private editDialog: boolean = false;
 
 	private vertical: boolean = false;
 	private nsfw: boolean = false;
@@ -392,7 +389,6 @@ export default class App extends Vue {
 	}
 
 	private onCharacterCreate(character: CharacterIds): void {
-		this.characterSelectorOpen = false;
 		this.characters.push(new Character(character, this.invalidateRender));
 		this.invalidateRender();
 	}
