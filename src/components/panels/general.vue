@@ -5,7 +5,7 @@
 			class="btn_link"
 			target="_blank"
 			rel="noopener noreferrer"
-			href="https://github.com/edave64/Doki-Doki-Dialog-Generator/blob/v1/docs/index.md"
+			href="https://github.com/edave64/Doki-Doki-Dialog-Generator/blob/v-1.5/docs/index.md"
 		>Help</a>
 		<toggle
 			v-if="allowsLQ"
