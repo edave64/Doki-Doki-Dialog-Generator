@@ -98,6 +98,7 @@ export default class AddPanel extends Mixins(PanelMixin) {
 			url,
 			freshInstall: true,
 		});
+		this.$emit('change');
 	}
 
 	private restart() {
@@ -180,10 +181,20 @@ p {
 fieldset {
 	border: 3px solid #ffbde1;
 }
+
+.list {
+	overflow-y: auto;
+	overflow-x: hidden;
+	.active {
+		background-color: #ffbde1;
+	}
+}
+
 .panel.vertical {
 	fieldset {
 		> .list {
 			width: 146px;
+			max-height: 200px;
 
 			* {
 				width: 100%;
@@ -191,11 +202,13 @@ fieldset {
 				text-overflow: ellipsis;
 				padding: 2px;
 			}
-
-			.active {
-				background-color: #ffbde1;
-			}
 		}
+	}
+}
+
+.panel:not(.vertical) {
+	.list {
+		max-height: 140px;
 	}
 }
 </style>

@@ -41,6 +41,8 @@ export const characters: { [name: string]: ICharacter<any> } = {
 	[AmyClassic.id]: normalizeCharacter(AmyClassic as any, { './': '/' }),
 };
 
+export let version = 0;
+
 export const characterOrder = ([
 	characters[Monika.id],
 	characters[Natsuki.id],
@@ -377,5 +379,6 @@ export async function loadCharacterPack(
 	if (json.packId) {
 		installed.push(json.packId);
 	}
+	++version;
 	return json;
 }

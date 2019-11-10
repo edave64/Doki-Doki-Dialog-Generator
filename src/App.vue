@@ -49,10 +49,12 @@
 					v-if="panel === 'character-packs'"
 					:vertical="vertical"
 					@show-prev-render="showPreviousRender"
+					@change="++characterVersion"
 				/>
 				<add-panel
 					v-if="panel === 'add'"
 					:vertical="vertical"
+					:key="characterVersion"
 					@chosen="onCharacterCreate"
 					@add-custom-asset="onAssetCreate"
 				/>
@@ -134,6 +136,8 @@ export default class App extends Vue {
 	private characters: IRenderable[] = [];
 	private selectedCharacter: Character | null = null;
 	private selectedSprite: Sprite | null = null;
+
+	private characterVersion: number = 0;
 
 	private vertical: boolean = false;
 	private nsfw: boolean = false;
