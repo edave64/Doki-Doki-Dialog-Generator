@@ -18,7 +18,7 @@ If clicking the button again or doing changing any rendering option will revert 
 
 ### Content Packs
 
-Content Packs allow you to load addition content to the tool. Clicking this button opens the [Content Packs]() sub-panel
+Content Packs allow you to load addition content to the tool. Clicking this button opens the [Content Packs](general/content_packs.md) sub-panel
 
 ### NSFW mode
 
