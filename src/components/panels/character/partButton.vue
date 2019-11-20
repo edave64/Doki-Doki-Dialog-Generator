@@ -80,17 +80,26 @@ export default class PartButton extends Vue {
 			if (this.lookup2 instanceof HTMLImageElement) {
 				if (this.lookup3 instanceof HTMLImageElement) {
 					return {
-						backgroundImage: `url(${this.lookup.src}), url(${this.lookup2.src}), url(${this.lookup3.src})`,
+						backgroundImage: `url('${this.lookup.src.replace(
+							"'",
+							"\\'"
+						)}'), url('${this.lookup2.src.replace(
+							"'",
+							"\\'"
+						)}'), url('${this.lookup3.src.replace("'", "\\'")}')`,
 						...baseStyle,
 					};
 				}
 				return {
-					backgroundImage: `url(${this.lookup.src}), url(${this.lookup2.src})`,
+					backgroundImage: `url('${this.lookup.src.replace(
+						"'",
+						"\\'"
+					)}'), url('${this.lookup2.src.replace("'", "\\'")}')`,
 					...baseStyle,
 				};
 			}
 			return {
-				backgroundImage: `url(${this.lookup.src})`,
+				backgroundImage: `url('${this.lookup.src.replace("'", "\\'")}')`,
 				...baseStyle,
 			};
 		}
