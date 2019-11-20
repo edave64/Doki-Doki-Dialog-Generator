@@ -34,6 +34,7 @@ import { PanelMixin } from './panelMixin';
 import environment from '../../environments/environment';
 import { IJSONCharacter, JSONHeads } from '../../models/json-config';
 import { loadCharacterPack } from '../../asset-manager';
+import { sanitize } from './character-pack-sanitizer';
 
 interface IPack {
 	name: string;
@@ -111,7 +112,7 @@ export default class AddPanel extends Mixins(PanelMixin) {
 	}
 	private get credits(): string {
 		if (!this.selectedPack) return '';
-		return this.selectedPack.credits;
+		return sanitize(this.selectedPack.credits || '');
 	}
 	private get activatable(): boolean {
 		if (!environment.isPackInstallingSupported) return false;
