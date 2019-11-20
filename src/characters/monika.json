@@ -38,7 +38,10 @@
 			"q",
 			"r"
 		],
-		"sideways": ["a2", "b2"]
+		"sideways": {
+			"all": ["a2", "b2"],
+			"offset": [135, 75]
+		}
 	},
 	"poses": [
 		{
