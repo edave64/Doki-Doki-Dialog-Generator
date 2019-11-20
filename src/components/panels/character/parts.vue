@@ -316,16 +316,6 @@ export default class PartsPanel extends Vue {
 		this.updatePose();
 	}
 
-	private assetPath(character: ICharacter<any>) {
-		if (character.chibi) {
-			return character.chibi;
-		}
-		const lq = environment.allowLQ ? '.lq' : '';
-		return `${baseUrl}/assets/chibis/${character.internalId + lq}.${
-			this.isWebPSupported ? 'webp' : 'png'
-		}`.replace(/\/+/, '/');
-	}
-
 	private onFileUpload(e: Event) {
 		const uploadInput = this.$refs.upload as HTMLInputElement;
 		if (!uploadInput.files) return;
