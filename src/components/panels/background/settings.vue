@@ -21,6 +21,22 @@
 					<button @click="value.seekVariant(1, nsfw);$emit('invalidate-render')">&gt;</button>
 				</td>
 			</tr>
+			<template v-if="scaleable">
+				<tr>
+					<td colspan="3">
+						<label for="bgScaling">Scale:</label>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="3">
+						<select id="bgScaling" v-model="value.scale" @input="$emit('invalidate-render')">
+							<option value>None</option>
+							<option value="stretch">Stretch</option>
+							<option value="cover">Cover</option>
+						</select>
+					</td>
+				</tr>
+			</template>
 			<tr v-if="installable">
 				<td colspan="3">
 					<button @click="install">Install</button>
@@ -73,6 +89,11 @@ export default class BackgroundSettings extends Vue {
 		if (!this.value.custom) return false;
 		if (!this.value.installed) return false;
 		return environment.isBackgroundInstallingSupported;
+	}
+
+	private get scaleable(): boolean {
+		if (!(this.value instanceof Background)) return false;
+		return this.value.custom;
 	}
 
 	private install() {

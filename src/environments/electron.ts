@@ -44,7 +44,7 @@ export class Electron implements IEnvironment {
 				registerAssetWithURL(name, filepath);
 				console.log(filepath);
 				backgrounds.push(
-					new Background(name, parts[parts.length - 1], false, true, true)
+					new Background(name, parts[parts.length - 1], false, true, '', true)
 				);
 			}
 		);
