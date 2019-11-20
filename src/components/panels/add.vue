@@ -6,7 +6,7 @@
 			v-for="character of characters"
 			:key="character.id"
 			:title="character.name"
-			@click="$emit('chosen', character.id.toLowerCase())"
+			@click="$emit('chosen', character.id)"
 		>
 			<img :src="assetPath(character)" :alt="character.name" />
 		</div>
