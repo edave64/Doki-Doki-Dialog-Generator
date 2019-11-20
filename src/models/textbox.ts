@@ -100,6 +100,7 @@ export class Textbox {
 	public showControls: boolean = true;
 	public allowSkipping: boolean = true;
 	public showContinueArrow: boolean = true;
+	public autoQuote: boolean = true;
 	public talking: string = '';
 	public customName: string = '';
 	public dialog: string = '';
@@ -169,7 +170,13 @@ export class Textbox {
 
 		let b = false;
 
-		for (const line of this.dialog.split('\n')) {
+		let dialog = this.dialog;
+
+		if (this.autoQuote && this.talking) {
+			dialog = `"${dialog}"`;
+		}
+
+		for (const line of dialog.split('\n')) {
 			let cl;
 			text.push((cl = []));
 			for (const l of line) {

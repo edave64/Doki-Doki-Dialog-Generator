@@ -19,6 +19,7 @@
 		<toggle label="NSFW Mode?" :value="nsfw" @input="$emit('update:nsfw', $event)" />
 		<toggle label="Textbox visible?" v-model="options.display" />
 		<toggle label="Textbox corrupt?" v-model="options.corrupted" />
+		<toggle label="Auto quoting?" v-model="options.autoQuote" />
 		<div>
 			<label for="current_talking">Person talking:</label>
 			<br />
