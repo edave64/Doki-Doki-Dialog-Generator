@@ -175,7 +175,7 @@ export default class PartsPanel extends Vue {
 				}
 				return ret;
 			case 'style':
-				const styles = data.styles;
+				const styles = data.styles.filter(style => !style.nsfw || this.nsfw);
 				const eyes = this.eyes ? Object.keys(this.eyes) : [];
 				const hairs = this.hairs ? Object.keys(this.hairs) : [];
 				const dedupedStyles = this.styleData
@@ -190,6 +190,7 @@ export default class PartsPanel extends Vue {
 					const style = styles[styleIdx];
 					if (style.nsfw && !this.nsfw) continue;
 					const pose = data.poses.find(pose => pose.style === style.name)!;
+					debugger;
 					ret[dedupedStyles[styleIdx]!] = this.generatePosePreview(pose);
 				}
 				return ret;
