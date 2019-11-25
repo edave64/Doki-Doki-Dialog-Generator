@@ -190,7 +190,6 @@ export default class PartsPanel extends Vue {
 					const style = styles[styleIdx];
 					if (style.nsfw && !this.nsfw) continue;
 					const pose = data.poses.find(pose => pose.style === style.name)!;
-					debugger;
 					ret[dedupedStyles[styleIdx]!] = this.generatePosePreview(pose);
 				}
 				return ret;
