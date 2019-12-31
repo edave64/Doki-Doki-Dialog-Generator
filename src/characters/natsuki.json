@@ -2,7 +2,21 @@
 	"id": "ddlc.natsuki",
 	"name": "Natsuki",
 	"internalId": "natsuki",
-	"folder": "natsuki",
+	"folder": "natsuki/",
+	"styles": [
+		{
+			"name": "uniform",
+			"label": "Uniform"
+		},
+		{
+			"name": "casual",
+			"label": "Casual attire"
+		},
+		{
+			"name": "old",
+			"label": "Placeholder art"
+		}
+	],
 	"heads": {
 		"straight": [
 			"a",
@@ -39,62 +53,86 @@
 			"all": ["crying"],
 			"nsfw": true
 		},
-		"sideways": ["2ta", "2tb", "2tc", "2td", "2te", "2tf", "2tg", "2th", "2ti"],
-		"sidewaysCasuals": [
-			"2bta",
-			"2btb",
-			"2btc",
-			"2btd",
-			"2bte",
-			"2btf",
-			"2btg",
-			"2bth",
-			"2bti"
-		]
+		"sideways": ["ta", "tb", "tc", "td", "te", "tf", "tg", "th", "ti"],
+		"turnedAway": ["tj"]
 	},
 	"poses": [
 		{
-			"compatibleHeads": ["straight", "straight_nsfw", "sideways"],
+			"name": "normal",
+			"style": "uniform",
+			"compatibleHeads": [
+				"straight",
+				"straight_nsfw",
+				"sideways",
+				"turnedAway"
+			],
 			"headInForeground": true,
 			"left": ["1l", "2l"],
 			"right": ["1r", "2r"]
 		},
 		{
-			"compatibleHeads": ["straight", "straight_nsfw"],
+			"name": "crossed_arms",
+			"style": "uniform",
+			"compatibleHeads": [
+				"straight",
+				"straight_nsfw",
+				"sideways",
+				"turnedAway"
+			],
+			"headInForeground": true,
 			"headAnchor": [18, 22],
 			"static": "3"
 		},
 		{
-			"compatibleHeads": [],
-			"static": "old2/5"
-		},
-		{
+			"name": "vomit",
+			"style": "uniform",
 			"compatibleHeads": [],
 			"nsfw": true,
 			"static": "vomit"
 		},
 		{
-			"compatibleHeads": ["straight", "straight_nsfw", "sidewaysCasuals"],
+			"name": "normal_causal",
+			"style": "casual",
+			"compatibleHeads": [
+				"straight",
+				"straight_nsfw",
+				"sideways",
+				"turnedAway"
+			],
 			"headInForeground": true,
 			"left": ["1bl", "2bl"],
 			"right": ["1br", "2br"]
 		},
 		{
-			"compatibleHeads": ["straight", "straight_nsfw"],
+			"name": "crossed_arms_casual",
+			"style": "casual",
+			"compatibleHeads": [
+				"straight",
+				"straight_nsfw",
+				"sideways",
+				"turnedAway"
+			],
+			"headInForeground": true,
 			"headAnchor": [18, 22],
 			"static": "3b"
 		},
 		{
+			"name": "old",
+			"style": "old",
+			"compatibleHeads": [],
+			"folder": "old/",
+			"variant": ["1", "2", "3", "4", "5"]
+		},
+		{
+			"name": "ghost",
+			"style": "uniform",
 			"compatibleHeads": [],
 			"nsfw": true,
 			"variant": ["ghost1", "ghost2", "ghost3"]
 		},
 		{
-			"compatibleHeads": [],
-			"folder": "/old/",
-			"variant": ["1", "2", "3", "4", "5"]
-		},
-		{
+			"name": "glitch",
+			"style": "uniform",
 			"compatibleHeads": [],
 			"static": "glitch1"
 		}
