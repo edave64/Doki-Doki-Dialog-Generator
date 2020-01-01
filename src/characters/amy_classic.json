@@ -2,7 +2,13 @@
 	"id": "ddlc.fan.amy1",
 	"name": "Amy (classic)",
 	"internalId": "classic_amy",
-	"folder": "classic_amy",
+	"folder": "classic_amy/",
+	"styles": [
+		{
+			"name": "uniform",
+			"label": "Uniform"
+		}
+	],
 	"heads": {
 		"straight": [
 			"aa",
@@ -66,10 +72,14 @@
 			"compatibleHeads": ["straight"],
 			"left": ["1l", "2l"],
 			"right": ["1r"],
+			"name": "normal",
+			"style": "uniform",
 			"headInForeground": true
 		},
 		{
 			"compatibleHeads": ["straight"],
+			"name": "crossed_arms",
+			"style": "uniform",
 			"static": "3"
 		}
 	]

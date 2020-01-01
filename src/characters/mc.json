@@ -2,7 +2,29 @@
 	"id": "ddlc.fan.mc2",
 	"name": "MC",
 	"internalId": "mc",
-	"folder": "mc",
+	"folder": "mc/",
+	"eyes": {
+		"yellow": "/parts/mc/yellow-eyes",
+		"red": "/parts/mc/red-eyes"
+	},
+	"styles": [
+		{
+			"name": "uniform-yellow",
+			"label": "Uniform and yellow eyes"
+		},
+		{
+			"name": "casual-yellow",
+			"label": "Casual attire and yellow eyes"
+		},
+		{
+			"name": "uniform-red",
+			"label": "Uniform and red eyes"
+		},
+		{
+			"name": "casual-red",
+			"label": "Casual attire and red eyes"
+		}
+	],
 	"heads": {
 		"straight": [
 			"a",
@@ -36,7 +58,7 @@
 			"shock"
 		],
 		"straight_red": {
-			"folder": "red",
+			"folder": "red/",
 			"all": [
 				"a",
 				"b",
@@ -72,38 +94,54 @@
 	},
 	"poses": [
 		{
+			"name": "normal",
+			"style": "uniform-yellow",
 			"compatibleHeads": ["straight"],
 			"left": ["1l", "2l"],
 			"right": ["1r", "2r"]
 		},
 		{
+			"name": "crossed_arms",
+			"style": "uniform-yellow",
 			"compatibleHeads": ["straight"],
 			"static": "3"
 		},
 		{
+			"name": "casual",
+			"style": "casual-yellow",
 			"compatibleHeads": ["straight"],
 			"left": ["1bl", "2bl"],
 			"right": ["1br", "2br"]
 		},
 		{
+			"name": "crossed_arms_casual",
+			"style": "casual-yellow",
 			"compatibleHeads": ["straight"],
 			"static": "3b"
 		},
 		{
+			"name": "normal_red",
+			"style": "uniform-red",
 			"compatibleHeads": ["straight_red"],
 			"left": ["1l", "2l"],
 			"right": ["1r", "2r"]
 		},
 		{
+			"name": "crossed_arms_red",
+			"style": "uniform-red",
 			"compatibleHeads": ["straight_red"],
 			"static": "3"
 		},
 		{
+			"name": "casual_red",
+			"style": "casual-red",
 			"compatibleHeads": ["straight_red"],
 			"left": ["1bl", "2bl"],
 			"right": ["1br", "2br"]
 		},
 		{
+			"name": "casual_crossed_arms_red",
+			"style": "casual-red",
 			"compatibleHeads": ["straight_red"],
 			"static": "3b"
 		}

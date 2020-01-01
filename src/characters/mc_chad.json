@@ -2,7 +2,29 @@
 	"id": "ddlc.fan.mc_chad",
 	"name": "MC (Chad)",
 	"internalId": "chad",
-	"folder": "chad",
+	"folder": "chad/",
+	"eyes": {
+		"yellow": "/parts/chad/yellow-eyes",
+		"red": "/parts/chad/red-eyes"
+	},
+	"styles": [
+		{
+			"name": "uniform-yellow",
+			"label": "Uniform and yellow eyes"
+		},
+		{
+			"name": "casual-yellow",
+			"label": "Casual attire and yellow eyes"
+		},
+		{
+			"name": "uniform-red",
+			"label": "Uniform and red eyes"
+		},
+		{
+			"name": "casual-red",
+			"label": "Casual attire and red eyes"
+		}
+	],
 	"heads": {
 		"straight": [
 			"a",
@@ -33,7 +55,7 @@
 		],
 		"straight_closed": ["u", "w", "v", "x1", "x2", "x3", "x4"],
 		"straight_red": {
-			"folder": "red",
+			"folder": "red/",
 			"all": [
 				"a",
 				"b",
@@ -65,38 +87,54 @@
 	},
 	"poses": [
 		{
+			"name": "normal",
+			"style": "uniform-yellow",
 			"compatibleHeads": ["straight", "straight_closed"],
 			"left": ["1l", "2l", "4l"],
 			"right": ["1r", "2r"]
 		},
 		{
+			"name": "youknowihadto",
+			"style": "uniform-yellow",
 			"compatibleHeads": ["straight", "straight_closed"],
 			"static": "3"
 		},
 		{
+			"name": "normal_casual",
+			"style": "casual-yellow",
 			"compatibleHeads": ["straight", "straight_closed"],
 			"left": ["1bl", "2bl", "4bl"],
 			"right": ["1br", "2br"]
 		},
 		{
+			"name": "youknowihadto_casual",
+			"style": "casual-yellow",
 			"compatibleHeads": ["straight", "straight_closed"],
 			"static": "3b"
 		},
 		{
+			"name": "normal_red",
+			"style": "uniform-red",
 			"compatibleHeads": ["straight_red", "straight_closed"],
 			"left": ["1l", "2l", "4l"],
 			"right": ["1r", "2r"]
 		},
 		{
+			"name": "youknowihadto_red",
+			"style": "uniform-red",
 			"compatibleHeads": ["straight_red", "straight_closed"],
 			"static": "3"
 		},
 		{
+			"name": "normal_casual_red",
+			"style": "casual-red",
 			"compatibleHeads": ["straight_red", "straight_closed"],
 			"left": ["1bl", "2bl", "4bl"],
 			"right": ["1br", "2br"]
 		},
 		{
+			"name": "youknowihadto_casual_red",
+			"style": "casual-red",
 			"compatibleHeads": ["straight_red", "straight_closed"],
 			"static": "3b"
 		}
