@@ -1,0 +1,47 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.mc_classic",
+	"packCredits": "",
+	"folder": "/classic_mc/",
+	"characters": [
+		{
+			"id": "ddlc.fan.mc1",
+			"label": "MC (Classic)",
+			"styles": [
+				{
+					"name": "uniform-yellow",
+					"label": "Uniform and yellow eyes",
+					"styleGroup": "uniform-yellow",
+					"components": {}
+				}
+			],
+			"chibi": "/chibis/classic_mc{ext}",
+			"heads": {
+				"straight": {
+					"variants": [
+						["a{ext}"],
+						["b{ext}"],
+						["c{ext}"],
+						["d{ext}"],
+						["e{ext}"],
+						["f{ext}"],
+						["g{ext}"],
+						["h{ext}"],
+						["i{ext}"],
+						["j{ext}"]
+					]
+				}
+			},
+			"poses": [
+				{
+					"compatibleHeads": ["straight"],
+					"name": "normal",
+					"style": "uniform-yellow",
+					"static": ["1{ext}"]
+				}
+			],
+			"styleComponents": []
+		}
+	]
+}

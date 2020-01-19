@@ -1,0 +1,131 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.base.natsuki",
+	"packCredits": "",
+	"folder": "/natsuki/",
+	"characters": [
+		{
+			"id": "ddlc.natsuki",
+			"chibi": "/chibis/natsuki{ext}",
+			"label": "Natsuki",
+			"heads": {
+				"straight": [
+					["a{ext}"],
+					["b{ext}"],
+					["c{ext}"],
+					["d{ext}"],
+					["e{ext}"],
+					["f{ext}"],
+					["g{ext}"],
+					["h{ext}"],
+					["i{ext}"],
+					["j{ext}"],
+					["k{ext}"],
+					["l{ext}"],
+					["m{ext}"],
+					["n{ext}"],
+					["o{ext}"],
+					["p{ext}"],
+					["q{ext}"],
+					["r{ext}"],
+					["s{ext}"],
+					["t{ext}"],
+					["u{ext}"],
+					["v{ext}"],
+					["w{ext}"],
+					["x{ext}"],
+					["y{ext}"],
+					["z{ext}"],
+					["1t{ext}"],
+					["scream{ext}"],
+					["corrupt{ext}"]
+				],
+				"sideways": [
+					["ta{ext}"],
+					["tb{ext}"],
+					["tc{ext}"],
+					["td{ext}"],
+					["te{ext}"],
+					["tf{ext}"],
+					["tg{ext}"],
+					["th{ext}"],
+					["ti{ext}"]
+				],
+				"turnedAway": [["tj{ext}"]]
+			},
+			"poses": [
+				{
+					"compatibleHeads": ["straight", "sideways", "turnedAway"],
+					"name": "normal",
+					"renderOrder": "SVLRH",
+					"style": "uniform",
+					"left": [["1l{ext}"], ["2l{ext}"]],
+					"right": [["1r{ext}"], ["2r{ext}"]]
+				},
+				{
+					"compatibleHeads": ["straight", "sideways", "turnedAway"],
+					"headAnchor": [18, 22],
+					"name": "crossed_arms",
+					"renderOrder": "SVLRH",
+					"style": "uniform",
+					"static": ["3{ext}"]
+				},
+				{
+					"compatibleHeads": ["straight", "sideways", "turnedAway"],
+					"name": "normal_causal",
+					"renderOrder": "SVLRH",
+					"style": "casual",
+					"left": [["1bl{ext}"], ["2bl{ext}"]],
+					"right": [["1br{ext}"], ["2br{ext}"]]
+				},
+				{
+					"compatibleHeads": ["straight", "sideways", "turnedAway"],
+					"headAnchor": [18, 22],
+					"name": "crossed_arms_casual",
+					"renderOrder": "SVLRH",
+					"style": "casual",
+					"static": ["3b{ext}"]
+				},
+				{
+					"compatibleHeads": [],
+					"name": "old",
+					"style": "old",
+					"variant": [
+						["old/1{ext}"],
+						["old/2{ext}"],
+						["old/3{ext}"],
+						["old/4{ext}"],
+						["old/5{ext}"]
+					]
+				},
+				{
+					"compatibleHeads": [],
+					"name": "glitch",
+					"style": "uniform",
+					"static": ["glitch1{ext}"]
+				}
+			],
+			"styles": [
+				{
+					"name": "uniform",
+					"label": "Uniform",
+					"styleGroup": "uniform",
+					"components": {}
+				},
+				{
+					"name": "casual",
+					"label": "Casual attire",
+					"styleGroup": "casual",
+					"components": {}
+				},
+				{
+					"name": "old",
+					"label": "Placeholder art",
+					"styleGroup": "old",
+					"components": {}
+				}
+			]
+		}
+	]
+}
