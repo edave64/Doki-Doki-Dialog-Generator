@@ -1,30 +1,26 @@
 import { ICommand } from '@/eventbus/command';
-import { getAsset } from '@/asset-manager';
-import {
-	IObjectsState,
-	ICreateObjectMutation,
-	IObject,
-	ISetSpriteSizeMutation,
-	ISetSpriteRatioMutation,
-} from '@/store/objects';
+import { getAAsset } from '@/asset-manager';
+import { IObjectsState, ICreateObjectMutation, IObject } from '@/store/objects';
 import { MutationTree, ActionTree } from 'vuex';
+import { IRootState } from '..';
+import { IAsset } from '../content';
 
 export interface ISprite extends IObject {
 	type: 'sprite';
-	assetName: string;
+	asset: IAsset;
 }
 
 export const spriteMutations: MutationTree<IObjectsState> = {};
 
 let lastSpriteId = 0;
 
-export const spriteActions: ActionTree<IObjectsState, never> = {
+export const spriteActions: ActionTree<IObjectsState, IRootState> = {
 	async createSprite({ state, commit }, command: ICreateSpriteAction) {
-		const asset = await getAsset(command.assetName, false);
+		const asset = await getAAsset(command.asset, false);
 		if (!(asset instanceof HTMLImageElement)) return;
 		commit('create', {
 			object: {
-				assetName: command.assetName,
+				asset: command.asset,
 				flip: false,
 				height: asset.height,
 				width: asset.width,
@@ -43,5 +39,5 @@ export const spriteActions: ActionTree<IObjectsState, never> = {
 };
 
 export interface ICreateSpriteAction extends ICommand {
-	readonly assetName: string;
+	readonly asset: IAsset;
 }

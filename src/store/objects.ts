@@ -1,8 +1,15 @@
 import { Module } from 'vuex';
 import { ICommand } from '@/eventbus/command';
 import { spriteMutations, spriteActions } from './objectTypes/sprite';
-import { characterActions, characterMutations } from './objectTypes/characters';
+import {
+	characterActions,
+	characterMutations,
+	fixContentPackRemovalFromCharacter,
+} from './objectTypes/characters';
 import { textBoxActions, textBoxMutations } from './objectTypes/textbox';
+import { IRootState } from '.';
+import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { IAsset } from './content';
 
 export interface IObjectsState {
 	objects: { [id: string]: IObject };
@@ -173,11 +180,24 @@ export default {
 				width,
 			} as ISetSpriteSizeMutation);
 		},
+		fixContentPackRemoval(context, oldContent: ContentPack<IAsset>) {
+			Object.values(context.state.objects).map(obj => {
+				switch (obj.type) {
+					case 'character':
+						fixContentPackRemovalFromCharacter(context, obj.id, oldContent);
+						return;
+					case 'sprite':
+						return;
+					case 'textBox':
+						return;
+				}
+			});
+		},
 		...spriteActions,
 		...characterActions,
 		...textBoxActions,
 	},
-} as Module<IObjectsState, never>;
+} as Module<IObjectsState, IRootState>;
 
 export interface ICreateObjectMutation {
 	readonly object: IObject;
@@ -249,4 +269,8 @@ export interface IRemoveObjectAction extends ICommand {}
 export interface ISetPositionAction extends ICommand {
 	readonly x: number;
 	readonly y: number;
+}
+
+export interface IObjectContentPackRemovalAction extends ICommand {
+	readonly oldPack: ContentPack<IAsset>;
 }

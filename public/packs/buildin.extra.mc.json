@@ -1,0 +1,179 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.mc",
+	"packCredits": "",
+	"folder": "/mc/",
+	"characters": [
+		{
+			"id": "ddlc.fan.mc2",
+			"label": "MC",
+			"styles": [
+				{
+					"name": "uniform-yellow",
+					"label": "Uniform and yellow eyes",
+					"styleGroup": "uniform",
+					"components": {
+						"eyes": "yellow"
+					}
+				},
+				{
+					"name": "casual-yellow",
+					"label": "Casual attire and yellow eyes",
+					"styleGroup": "casual",
+					"components": {
+						"eyes": "yellow"
+					}
+				},
+				{
+					"name": "uniform-red",
+					"label": "Uniform and red eyes",
+					"styleGroup": "uniform",
+					"components": {
+						"eyes": "red"
+					}
+				},
+				{
+					"name": "casual-red",
+					"label": "Casual attire and red eyes",
+					"styleGroup": "casual",
+					"components": {
+						"eyes": "red"
+					}
+				}
+			],
+			"chibi": "/chibis/mc{ext}",
+			"heads": {
+				"straight": [
+					["a{ext}"],
+					["b{ext}"],
+					["c{ext}"],
+					["d{ext}"],
+					["e{ext}"],
+					["f{ext}"],
+					["g{ext}"],
+					["h{ext}"],
+					["i{ext}"],
+					["j{ext}"],
+					["k{ext}"],
+					["l{ext}"],
+					["m{ext}"],
+					["n{ext}"],
+					["o{ext}"],
+					["p{ext}"],
+					["q{ext}"],
+					["r{ext}"],
+					["s{ext}"],
+					["t{ext}"],
+					["u{ext}"],
+					["v{ext}"],
+					["w{ext}"],
+					["x{ext}"],
+					["y{ext}"],
+					["z{ext}"],
+					["error{ext}"],
+					["error1{ext}"],
+					["shock{ext}"]
+				],
+				"straight_red": {
+					"folder": "red/",
+					"variants": [
+						["a{ext}"],
+						["b{ext}"],
+						["c{ext}"],
+						["d{ext}"],
+						["e{ext}"],
+						["f{ext}"],
+						["g{ext}"],
+						["h{ext}"],
+						["i{ext}"],
+						["j{ext}"],
+						["k{ext}"],
+						["l{ext}"],
+						["m{ext}"],
+						["n{ext}"],
+						["o{ext}"],
+						["p{ext}"],
+						["q{ext}"],
+						["r{ext}"],
+						["s{ext}"],
+						["t{ext}"],
+						["u{ext}"],
+						["v{ext}"],
+						["w{ext}"],
+						["x{ext}"],
+						["y{ext}"],
+						["z{ext}"],
+						["error{ext}"],
+						["error1{ext}"],
+						["shock{ext}"]
+					]
+				}
+			},
+			"poses": [
+				{
+					"compatibleHeads": ["straight"],
+					"name": "normal",
+					"style": "uniform-yellow",
+					"left": [["1l{ext}"], ["2l{ext}"]],
+					"right": [["1r{ext}"], ["2r{ext}"]]
+				},
+				{
+					"compatibleHeads": ["straight"],
+					"name": "crossed_arms",
+					"style": "uniform-yellow",
+					"static": ["3{ext}"]
+				},
+				{
+					"compatibleHeads": ["straight"],
+					"name": "casual",
+					"style": "casual-yellow",
+					"left": [["1bl{ext}"], ["2bl{ext}"]],
+					"right": [["1br{ext}"], ["2br{ext}"]]
+				},
+				{
+					"compatibleHeads": ["straight"],
+					"name": "crossed_arms_casual",
+					"style": "casual-yellow",
+					"static": ["3b{ext}"]
+				},
+				{
+					"compatibleHeads": ["straight_red"],
+					"name": "normal_red",
+					"style": "uniform-red",
+					"left": [["1l{ext}"], ["2l{ext}"]],
+					"right": [["1r{ext}"], ["2r{ext}"]]
+				},
+				{
+					"compatibleHeads": ["straight_red"],
+					"name": "crossed_arms_red",
+					"style": "uniform-red",
+					"static": ["3{ext}"]
+				},
+				{
+					"compatibleHeads": ["straight_red"],
+					"name": "casual_red",
+					"style": "casual-red",
+					"left": [["1bl{ext}"], ["2bl{ext}"]],
+					"right": [["1br{ext}"], ["2br{ext}"]]
+				},
+				{
+					"compatibleHeads": ["straight_red"],
+					"name": "casual_crossed_arms_red",
+					"style": "casual-red",
+					"static": ["3b{ext}"]
+				}
+			],
+			"styleComponents": [
+				{
+					"label": "Eyes",
+					"name": "eyes",
+					"variants": {
+						"yellow": "/parts/mc/yellow-eyes{ext}",
+						"red": "/parts/mc/red-eyes{ext}"
+					}
+				}
+			]
+		}
+	]
+}

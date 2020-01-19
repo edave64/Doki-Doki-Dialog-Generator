@@ -6,25 +6,18 @@
 			<button :class="{ active: panel === 'credits' }" @click="setPanel('credits')">C</button>
 			<button @click="$emit('download')">D</button>
 		</div>
-		<keep-alive>
-			<general-panel
-				v-if="panel === ''"
-				:has-prev-render="prevRender !== ''"
-				:lqRendering="lqRendering"
-				@update:lqRendering="$emit('update:lqRendering', $event)"
-				@show-prev-render="$emit('show-prev-render')"
-			/>
-			<add-panel v-if="panel === 'add'" />
-			<backgrounds-panel
-				v-if="panel === 'backgrounds'"
-				:value="currentBackground"
-				@input="$emit('update:currentBackground', $event)"
-			/>
-			<credits-panel v-if="panel === 'credits'" />
-			<character-panel v-if="panel === 'character'" :character="selected" />
-			<sprite-panel v-if="panel === 'sprite'" :sprite="selected" />
-			<text-box-panel v-if="panel === 'textBox'" :textbox="selected" />
-		</keep-alive>
+		<general-panel
+			v-if="panel === ''"
+			@show-prev-render="$emit('show-prev-render')"
+			@show-content-packs="setPanel('content-packs')"
+		/>
+		<content-packs-panel v-if="panel === 'content-packs'" />
+		<add-panel v-if="panel === 'add'" />
+		<backgrounds-panel v-if="panel === 'backgrounds'" />
+		<credits-panel v-if="panel === 'credits'" />
+		<character-panel v-if="panel === 'character'" />
+		<sprite-panel v-if="panel === 'sprite'" />
+		<text-box-panel v-if="panel === 'textBox'" />
 	</div>
 </template>
 
@@ -41,8 +34,20 @@ import SpritePanel from './panels/sprite.vue';
 import TextBoxPanel from './panels/textbox.vue';
 import CreditsPanel from './panels/credits.vue';
 import BackgroundsPanel from './panels/backgrounds.vue';
+import ContentPacksPanel from './panels/content-pack.vue';
 import { IObject } from '@/store/objects';
-import { IBackground } from '../../models/background';
+import { IBackground } from '@/models/background';
+import { Store } from 'vuex';
+import { IRootState } from '@/store';
+import environment from '@/environments/environment';
+
+type PanelNames =
+	| 'add'
+	| 'backgrounds'
+	| 'credits'
+	| 'selection'
+	| 'content-packs'
+	| '';
 
 @Component({
 	components: {
@@ -53,41 +58,47 @@ import { IBackground } from '../../models/background';
 		CharacterPanel,
 		TextBoxPanel,
 		SpritePanel,
+		ContentPacksPanel,
 	},
 })
 export default class ToolBox extends Vue {
-	@Prop({ required: true })
-	private selected: IObject | null = null;
-	@Prop({ required: true, default: '' })
-	private prevRender!: string;
-	@Prop({ required: true })
-	private lqRendering!: boolean;
-	@Prop({ required: true })
-	private currentBackground: IBackground | null = null;
-	private panelSelection: 'add' | 'backgrounds' | 'credits' | 'selection' | '' =
-		'';
+	public $store!: Store<IRootState>;
+
 	@State('vertical', { namespace: 'ui' }) private readonly vertical!: boolean;
+
+	private create() {
+		environment.onPanelChange((panel: string) => {
+			this.panelSelection = panel as PanelNames;
+		});
+	}
+
+	private get selection(): string | null {
+		return this.$store.state.ui.selection;
+	}
+
+	private panelSelection: PanelNames = '';
 
 	private get panel() {
 		if (this.panelSelection === 'selection') {
-			if (this.selected === null) {
+			if (this.selection === null) {
 				this.panelSelection = '';
 			} else {
-				return this.selected.type;
+				const obj = this.$store.state.objects.objects[this.selection];
+				return obj.type;
 			}
 		}
 		return this.panelSelection;
 	}
 
-	private setPanel(name: 'add' | 'backgrounds' | 'credits' | 'selection' | '') {
+	private setPanel(name: PanelNames) {
 		if (name === this.panelSelection) name = '';
 		this.panelSelection = name;
-		if (this.selected) {
-			this.$emit('clear-selection');
+		if (this.selection) {
+			this.$store.commit('ui/setSelection', null);
 		}
 	}
 
-	@Watch('selected')
+	@Watch('selection')
 	private onSelectionChange(newSelection: IObject | null) {
 		if (newSelection) {
 			this.panelSelection = 'selection';

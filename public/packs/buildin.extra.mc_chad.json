@@ -1,0 +1,180 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.mc_chad",
+	"packCredits": "",
+	"folder": "/chad/",
+	"characters": [
+		{
+			"id": "ddlc.fan.mc_chad",
+			"label": "MC (Chad)",
+			"styles": [
+				{
+					"name": "uniform-yellow",
+					"label": "Uniform and yellow eyes",
+					"styleGroup": "uniform",
+					"components": {
+						"eyes": "yellow"
+					}
+				},
+				{
+					"name": "casual-yellow",
+					"label": "Casual attire and yellow eyes",
+					"styleGroup": "casual",
+					"components": {
+						"eyes": "yellow"
+					}
+				},
+				{
+					"name": "uniform-red",
+					"label": "Uniform and red eyes",
+					"styleGroup": "uniform",
+					"components": {
+						"eyes": "red"
+					}
+				},
+				{
+					"name": "casual-red",
+					"label": "Casual attire and red eyes",
+					"styleGroup": "casual",
+					"components": {
+						"eyes": "red"
+					}
+				}
+			],
+			"chibi": "/chibis/chad{ext}",
+			"heads": {
+				"straight": [
+					["a{ext}"],
+					["b{ext}"],
+					["c{ext}"],
+					["d{ext}"],
+					["e{ext}"],
+					["f{ext}"],
+					["g{ext}"],
+					["h{ext}"],
+					["i{ext}"],
+					["j{ext}"],
+					["k{ext}"],
+					["l{ext}"],
+					["m{ext}"],
+					["n{ext}"],
+					["o{ext}"],
+					["p{ext}"],
+					["q{ext}"],
+					["r{ext}"],
+					["s{ext}"],
+					["t{ext}"],
+					["y{ext}"],
+					["z{ext}"],
+					["error{ext}"],
+					["error1{ext}"],
+					["shock{ext}"]
+				],
+				"straight_closed": [
+					["u{ext}"],
+					["w{ext}"],
+					["v{ext}"],
+					["x1{ext}"],
+					["x2{ext}"],
+					["x3{ext}"],
+					["x4{ext}"]
+				],
+				"straight_red": {
+					"folder": "red/",
+					"variants": [
+						["a{ext}"],
+						["b{ext}"],
+						["c{ext}"],
+						["d{ext}"],
+						["e{ext}"],
+						["f{ext}"],
+						["g{ext}"],
+						["h{ext}"],
+						["i{ext}"],
+						["j{ext}"],
+						["k{ext}"],
+						["l{ext}"],
+						["m{ext}"],
+						["n{ext}"],
+						["o{ext}"],
+						["p{ext}"],
+						["q{ext}"],
+						["r{ext}"],
+						["s{ext}"],
+						["t{ext}"],
+						["y{ext}"],
+						["z{ext}"],
+						["error{ext}"],
+						["error1{ext}"],
+						["shock{ext}"]
+					]
+				}
+			},
+			"poses": [
+				{
+					"compatibleHeads": ["straight", "straight_closed"],
+					"name": "normal",
+					"style": "uniform-yellow",
+					"left": [["1l{ext}"], ["2l{ext}"], ["4l{ext}"]],
+					"right": [["1r{ext}"], ["2r{ext}"]]
+				},
+				{
+					"compatibleHeads": ["straight", "straight_closed"],
+					"name": "youknowihadto",
+					"style": "uniform-yellow",
+					"static": ["3{ext}"]
+				},
+				{
+					"compatibleHeads": ["straight", "straight_closed"],
+					"name": "normal_casual",
+					"style": "casual-yellow",
+					"left": [["1bl{ext}"], ["2bl{ext}"], ["4bl{ext}"]],
+					"right": [["1br{ext}"], ["2br{ext}"]]
+				},
+				{
+					"compatibleHeads": ["straight", "straight_closed"],
+					"name": "youknowihadto_casual",
+					"style": "casual-yellow",
+					"static": ["3b{ext}"]
+				},
+				{
+					"compatibleHeads": ["straight_red", "straight_closed"],
+					"name": "normal_red",
+					"style": "uniform-red",
+					"left": [["1l{ext}"], ["2l{ext}"], ["4l{ext}"]],
+					"right": [["1r{ext}"], ["2r{ext}"]]
+				},
+				{
+					"compatibleHeads": ["straight_red", "straight_closed"],
+					"name": "youknowihadto_red",
+					"style": "uniform-red",
+					"static": ["3{ext}"]
+				},
+				{
+					"compatibleHeads": ["straight_red", "straight_closed"],
+					"name": "normal_casual_red",
+					"style": "casual-red",
+					"left": [["1bl{ext}"], ["2bl{ext}"], ["4bl{ext}"]],
+					"right": [["1br{ext}"], ["2br{ext}"]]
+				},
+				{
+					"compatibleHeads": ["straight_red", "straight_closed"],
+					"name": "youknowihadto_casual_red",
+					"style": "casual-red",
+					"static": ["3b{ext}"]
+				}
+			],
+			"styleComponents": [
+				{
+					"label": "Eyes",
+					"name": "eyes",
+					"variants": {
+						"yellow": "/parts/yellow-eyes{ext}",
+						"red": "/parts/red-eyes{ext}"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,5 +1,5 @@
 <template>
-	<div :class="{ panel: true }">
+	<div class="panel">
 		<h1>Custom Sprite</h1>
 		<position-and-size :obj="sprite" />
 		<layers :obj="sprite" />
@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
 import { isWebPSupported } from '@/asset-manager';
 import { Character } from '@/models/character';
 import Toggle from '@/components/toggle.vue';
@@ -31,6 +31,9 @@ import {
 	ISetObjectOpacityMutation,
 	IObjectShiftLayerAction,
 } from '@/store/objects';
+import { PanelMixin } from './panelMixin';
+import { Store } from 'vuex';
+import { IRootState } from '../../../store';
 
 @Component({
 	components: {
@@ -41,8 +44,16 @@ import {
 		Delete,
 	},
 })
-export default class SpritePanel extends Vue {
-	@Prop({ required: true }) private sprite!: ISprite;
+export default class SpritePanel extends Mixins(PanelMixin) {
+	public $store!: Store<IRootState>;
+
+	private get sprite(): ISprite {
+		const obj = this.$store.state.objects.objects[
+			this.$store.state.ui.selection!
+		];
+		if (obj.type !== 'sprite') return undefined!;
+		return obj as ISprite;
+	}
 
 	private get history(): IHistorySupport {
 		return this.$root as any;

@@ -1,5 +1,5 @@
 import { RenderContext } from '@/renderer/rendererContext';
-import { getAsset } from '@/asset-manager';
+import { getAAsset } from '@/asset-manager';
 import { IRenderable } from './renderable';
 import { IDragable } from './dragable';
 import { ErrorAsset } from './error-asset';
@@ -21,7 +21,7 @@ export class Sprite implements IRenderable, IDragable {
 	}
 
 	public constructor(public readonly obj: ISprite) {
-		getAsset(obj.assetName)
+		getAAsset(obj.asset)
 			.then(asset => {
 				if (asset instanceof ErrorAsset) {
 					return;

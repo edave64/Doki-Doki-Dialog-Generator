@@ -4,6 +4,9 @@ export const backgrounds = [] as Background[];
 
 export type Part = 'variant' | 'left' | 'right' | 'head';
 
+export const screenWidth = 1280;
+export const screenHeight = 720;
+
 export type CharacterIds =
 	| 'ddlc.monika'
 	| 'ddlc.natsuki'

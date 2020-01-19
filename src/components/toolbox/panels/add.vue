@@ -1,5 +1,5 @@
 <template>
-	<div :class="{ panel: true }" v-if="isWebPSupported !== undefined">
+	<div class="panel" v-if="isWebPSupported !== undefined">
 		<h1>Add character</h1>
 		<div
 			class="character"
@@ -20,21 +20,25 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
 import {
 	isWebPSupported,
-	ICharacter,
-	characterOrder,
 	registerAsset,
 	registerAssetWithURL,
 } from '@/asset-manager';
 import { ICreateCharacterAction } from '@/store/objectTypes/characters';
 import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
+import { IAsset } from '../../../store/content';
+import { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { Store } from 'vuex';
+import { IRootState } from '../../../store';
+import { PanelMixin } from './panelMixin';
 
 @Component({
 	components: {},
 })
-export default class AddPanel extends Vue {
+export default class AddPanel extends Mixins(PanelMixin) {
+	public $store!: Store<IRootState>;
 	private isWebPSupported: boolean | null = null;
 	private customAssetCount = 0;
 
@@ -42,14 +46,12 @@ export default class AddPanel extends Vue {
 		this.isWebPSupported = await isWebPSupported();
 	}
 
-	private get characters(): Array<ICharacter<any>> {
-		return characterOrder;
+	private get characters(): Array<Character<IAsset>> {
+		return this.$store.state.content.current.characters;
 	}
 
-	private assetPath(character: ICharacter<any>) {
-		return `${process.env.BASE_URL}/assets/chibis/${character.internalId}.lq.${
-			this.isWebPSupported ? 'webp' : 'png'
-		}`.replace(/\/+/, '/');
+	private assetPath(character: Character<IAsset>) {
+		return character.chibi.lq;
 	}
 
 	private onFileUpload(e: Event) {

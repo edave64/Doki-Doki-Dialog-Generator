@@ -1,0 +1,88 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.base.monika",
+	"packCredits": "",
+	"characters": [
+		{
+			"id": "ddlc.monika",
+			"label": "Monika",
+			"chibi": "/chibis/monika{ext}",
+			"folder": "/monika/",
+			"styles": [
+				{
+					"name": "uniform",
+					"label": "Uniform"
+				},
+				{
+					"name": "old",
+					"label": "Placeholder art"
+				},
+				{
+					"name": "glitch",
+					"label": "Glitchy"
+				}
+			],
+			"heads": {
+				"straight": [
+					["a{ext}"],
+					["b{ext}"],
+					["c{ext}"],
+					["d{ext}"],
+					["e{ext}"],
+					["f{ext}"],
+					["g{ext}"],
+					["h{ext}"],
+					["i{ext}"],
+					["j{ext}"],
+					["k{ext}"],
+					["l{ext}"],
+					["m{ext}"],
+					["n{ext}"],
+					["o{ext}"],
+					["p{ext}"],
+					["q{ext}"],
+					["r{ext}"]
+				],
+				"sideways": {
+					"variants": [["a2{ext}"], ["b2{ext}"]],
+					"offset": [135, 75]
+				}
+			},
+			"poses": [
+				{
+					"name": "normal",
+					"style": "uniform",
+					"compatibleHeads": ["straight"],
+					"left": [["1l{ext}"], ["2l{ext}"]],
+					"right": [["1r{ext}"], ["2r{ext}"]]
+				},
+				{
+					"name": "leaned",
+					"style": "uniform",
+					"compatibleHeads": ["sideways"],
+					"static": ["3{ext}"]
+				},
+				{
+					"name": "old",
+					"style": "old",
+					"compatibleHeads": [],
+					"folder": "old/",
+					"variant": [
+						["1{ext}"],
+						["2{ext}"],
+						["3{ext}"],
+						["4{ext}"],
+						["5{ext}"]
+					]
+				},
+				{
+					"name": "glitch",
+					"style": "glitch",
+					"compatibleHeads": [],
+					"variant": [["g1_scaled{ext}"], ["g2{ext}"], ["g3{ext}"], ["g4{ext}"]]
+				}
+			]
+		}
+	]
+}

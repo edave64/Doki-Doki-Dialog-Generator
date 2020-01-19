@@ -1,7 +1,10 @@
 <template>
-	<div :class="{ panel: true }">
+	<div class="panel">
 		<h1>Credits</h1>
-		<p>All assets used are IP of Team Salvato and created by them, unless noted otherwise.</p>
+		<p>
+			All assets used are IP of Team Salvato and created by them, unless noted
+			otherwise.
+		</p>
 		<p>
 			Unused House Background by
 			<a
@@ -26,7 +29,8 @@
 		<p>
 			MC Chad Sprite by Cylent-Nite
 			<br />MC Chad Poses and expressions by SlightlySimple
-			<br />MC Chad Poses and chibi by Meddy-sin
+			<br />MC Chad Poses
+			and chibi by Meddy-sin
 		</p>
 		<p>
 			FeMC Sprite by Meddy-sin
@@ -39,12 +43,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
+import { PanelMixin } from './panelMixin';
 
 @Component({
 	components: {},
 })
-export default class AddPanel extends Vue {}
+export default class AddPanel extends Mixins(PanelMixin) {}
 </script>
 
 <style lang="scss" scoped>

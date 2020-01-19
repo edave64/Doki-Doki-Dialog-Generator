@@ -1,18 +1,30 @@
 import { RenderContext } from '@/renderer/rendererContext';
-import { getAsset, Pose, INsfwAbleImg } from '@/asset-manager';
+import { getAsset, getAAsset } from '@/asset-manager';
 import { Renderer } from '@/renderer/renderer';
 import { IRenderable } from './renderable';
 import { IDragable } from './dragable';
 import {
-	getData,
 	ICharacter,
 	getPose,
 	getParts,
 	getHeads,
 	CloseUpYOffset,
+	getDataG,
 } from '@/store/objectTypes/characters';
+import {
+	Pose,
+	Character as CharacterModel,
+} from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { IAsset } from '@/store/content';
+import { IRootState } from '@/store';
+import { Store } from 'vuex';
+import { ErrorAsset } from './error-asset';
 
 export class Character implements IRenderable, IDragable {
+	public styleData = {
+		lastBase: '',
+		components: {} as { [component: string]: string },
+	};
 	private lq: boolean = true;
 	private localRenderer = new Renderer(960, 960);
 	private lastVersion = -1;
@@ -22,74 +34,82 @@ export class Character implements IRenderable, IDragable {
 		return this.obj.id;
 	}
 
-	public constructor(public readonly obj: ICharacter) {}
+	public constructor(
+		public readonly obj: ICharacter,
+		private $store: Store<IRootState>
+	) {}
 
 	public async updateLocalCanvas() {
 		await this.localRenderer.render(async rx => {
-			const pose = getPose(this.obj) as Pose<any>;
-			const assets: string[] = [];
-			const partKeys = getParts(this.obj);
-			const data = getData(this.obj);
-			const currentHeads = getHeads(this.obj);
+			const data = this.getData();
+			const pose = getPose(data, this.obj) as Pose<IAsset>;
+			let assets: Array<IAsset | 'head'> = [];
+			let headAssets: IAsset[] = [];
+			const partKeys = getParts(data, this.obj);
+			const currentHeads = getHeads(data, this.obj);
 
-			const poseFolder =
-				(data.folder ? data.folder + '/' : '') +
-				(pose.folder ? pose.folder + '/' : '');
-
-			const headFolder =
-				(data.folder ? data.folder + '/' : '') +
-				(currentHeads && currentHeads.folder ? currentHeads.folder + '/' : '');
-
-			if ((pose as any).static) {
-				assets.push(poseFolder + (pose as any).static);
-			} else {
-				for (const key of partKeys) {
-					if (key === 'head') continue;
-					const image: string | INsfwAbleImg = (pose as any)[key][
-						this.obj.posePositions[key]
-					];
-
-					assets.push(
-						poseFolder +
-							(typeof image === 'string' ? image : (image as INsfwAbleImg).img)
-					);
+			console.log(pose.renderOrder);
+			for (const renderPart of pose.renderOrder.toLowerCase()) {
+				switch (renderPart) {
+					case 'l':
+						assets = ([] as Array<IAsset | 'head'>).concat(
+							assets,
+							pose.left[this.obj.posePositions.left]
+						);
+						break;
+					case 'r':
+						assets = ([] as Array<IAsset | 'head'>).concat(
+							assets,
+							pose.right[this.obj.posePositions.right]
+						);
+						break;
+					case 's':
+						assets = ([] as Array<IAsset | 'head'>).concat(assets, pose.static);
+						break;
+					case 'v':
+						assets = ([] as Array<IAsset | 'head'>).concat(
+							assets,
+							pose.variant[this.obj.posePositions.variant]
+						);
+						break;
+					case 'h':
+						headAssets = currentHeads
+							? currentHeads.variants[this.obj.posePositions.head]
+							: [];
+						assets.push('head');
+						break;
 				}
 			}
 
-			const head = currentHeads
-				? headFolder + currentHeads.all[this.obj.posePositions.head]
-				: null;
-
-			const [headAsset, ...bodyParts] = await Promise.all([
-				head ? getAsset(head, rx.hq) : Promise.resolve(null),
-				...assets.map(asset => getAsset(asset, rx.hq)),
+			assets = assets.filter(asset => asset);
+			const [loadedAssets, loadedHeadAssets]: [
+				Array<HTMLImageElement | ErrorAsset | string>,
+				Array<HTMLImageElement | ErrorAsset>
+			] = await Promise.all([
+				Promise.all(
+					assets.map(asset =>
+						typeof asset === 'string'
+							? Promise.resolve(asset)
+							: getAAsset(asset, rx.hq)
+					)
+				),
+				Promise.all(headAssets.map(asset => getAAsset(asset, rx.hq))),
 			]);
 
-			const drawHead = () => {
-				if (headAsset) {
-					const headAnchor = pose.headAnchor ? pose.headAnchor : [0, 0];
-
-					rx.drawImage({
-						image: headAsset,
-						x: headAnchor[0],
-						y:
-							(this.obj.characterType === 'ddlc.monika' ? 1 : 0) +
-							headAnchor[1],
-					});
+			for (const loadedAsset of loadedAssets) {
+				if (loadedAsset === 'head') {
+					for (const loadedheadAsset of loadedHeadAssets) {
+						rx.drawImage({
+							image: loadedheadAsset,
+							x: pose.headAnchor[0],
+							y: pose.headAnchor[1],
+						});
+					}
+				} else {
+					rx.drawImage({ image: loadedAsset, x: 0, y: 0 });
 				}
-			};
-
-			if (!pose.headInForeground) {
-				drawHead();
 			}
 
-			for (const bodyPart of bodyParts) {
-				rx.drawImage({ image: bodyPart!, x: 0, y: 0 });
-			}
-
-			if (pose.headInForeground) {
-				drawHead();
-			}
 			this.lastVersion = this.obj.version;
 		});
 	}
@@ -165,5 +185,9 @@ export class Character implements IRenderable, IDragable {
 		}
 
 		return true;
+	}
+
+	public getData(): CharacterModel<IAsset> {
+		return getDataG(this.$store.getters, this.obj);
 	}
 }

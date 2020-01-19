@@ -1,62 +1,81 @@
 <template>
 	<div
-		:class="{background: true, active: background === value}"
+		:class="{background: true, active: isActive}"
 		:title="background.name"
 		:style="style"
 		@click="$emit('input', background)"
-	>{{background.name}}</div>
+	>{{title}}</div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import { IBackground, color, Background } from '@/models/background';
+import { color } from '@/models/background';
 import { VariantBackground } from '@/models/variant-background';
-import { isWebPSupported } from '@/asset-manager';
+import { isWebPSupported, getAAsset } from '@/asset-manager';
+import { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { IAsset } from '@/store/content';
+import { ErrorAsset } from '../../../../models/error-asset';
+import { Store } from 'vuex';
+import { IRootState } from '../../../../store';
 
 @Component({
 	components: {},
 })
 export default class BackgroundButton extends Vue {
-	@Prop({ required: true }) private readonly background!: IBackground;
-	@Prop({ required: true }) private readonly value!: IBackground;
-	@Prop({ required: true }) private readonly customPathLookup!: {
-		[name: string]: string;
-	};
+	public $store!: Store<IRootState>;
+	@Prop({ required: true }) private readonly background!: string;
 
 	private isWebPSupported: boolean | null = null;
+	private assets: Array<HTMLImageElement | ErrorAsset> = [];
+
+	private get bgData(): Background<IAsset> | null {
+		const backgrounds: Map<
+			Background<IAsset>['label'],
+			Background<IAsset>
+		> = this.$store.getters['content/getBackgrounds'];
+		return backgrounds.get(this.background) || null;
+	}
+
+	private get isActive(): boolean {
+		return this.background === this.$store.state.background.current;
+	}
 
 	private async created() {
-		this.isWebPSupported = await isWebPSupported();
+		if (this.bgData) {
+			this.assets = await Promise.all(
+				this.bgData.variants[0].map(asset => getAAsset(asset, false))
+			);
+		}
+	}
+
+	private get title(): string {
+		switch (this.background) {
+			case 'buildin.static-color':
+				return 'Static color';
+			case 'buildin.transparent':
+				return 'Transparent';
+		}
+		return this.bgData!.label;
 	}
 
 	private get style(): { [id: string]: string } {
-		if (this.background === color) {
-			return { backgroundColor: color.color };
-		}
-		if (this.background instanceof Background) {
-			if (this.background.custom) {
+		switch (this.background) {
+			case 'buildin.static-color':
 				return {
-					backgroundImage: `url(${
-						this.customPathLookup[this.background.path]
-					})`,
+					'background-color': this.$store.state.background.color,
 				};
-			}
-			if (this.isWebPSupported === undefined) return {};
-			return {
-				backgroundImage: `url(${process.env.BASE_URL}/assets/${
-					this.background.path
-				}.lq.${this.isWebPSupported ? 'webp' : 'png'})`.replace(/\/+/, '/'),
-			};
+			case 'buildin.transparent':
+				return {};
 		}
-		if (this.background instanceof VariantBackground) {
-			if (this.isWebPSupported === undefined) return {};
-			return {
-				backgroundImage: `url(${process.env.BASE_URL}/assets/${
-					this.background.path
-				}.lq.${this.isWebPSupported ? 'webp' : 'png'})`.replace(/\/+/, '/'),
-			};
-		}
-		return {};
+		const variant = this.bgData!.variants[0];
+		const urls = (this.assets.filter(
+			img => img instanceof HTMLImageElement
+		) as HTMLImageElement[])
+			.map(img => `url('${img.src}')`)
+			.join(',');
+		return {
+			backgroundImage: urls,
+		};
 	}
 }
 </script>

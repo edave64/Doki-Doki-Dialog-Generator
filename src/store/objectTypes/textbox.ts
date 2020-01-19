@@ -1,11 +1,18 @@
 import { ICommand } from '@/eventbus/command';
-import { IObjectsState, ICreateObjectMutation, IObject } from '@/store/objects';
+import {
+	IObjectsState,
+	ICreateObjectMutation,
+	IObject,
+	ISetObjectPositionMutation,
+	ISetObjectFlipMutation,
+} from '@/store/objects';
 import { MutationTree, ActionTree } from 'vuex';
 import {
 	NameboxY,
 	TextBoxWidth,
 	TextBoxHeight,
 } from '@/models/textBoxConstants';
+import { ISetSpriteSizeMutation } from './characters';
 
 export interface ITextBox extends IObject {
 	type: 'textBox';
@@ -106,11 +113,12 @@ export const textBoxMutations: MutationTree<IObjectsState> = {
 let lastTextBoxId = 0;
 
 export const textBoxActions: ActionTree<IObjectsState, never> = {
-	async createTextBox({ state, commit }, command: ICreateTextBoxAction) {
+	createTextBox({ commit }, command: ICreateTextBoxAction): string {
+		const id = 'textBox_' + ++lastTextBoxId;
 		commit('create', {
 			object: {
 				flip: false,
-				id: 'textBox_' + ++lastTextBoxId,
+				id,
 				onTop: true,
 				opacity: 100,
 				type: 'textBox',
@@ -136,13 +144,57 @@ export const textBoxActions: ActionTree<IObjectsState, never> = {
 				text: '',
 			} as ITextBox,
 		} as ICreateObjectMutation);
+		return id;
 	},
 
-	setStyle({ state, commit }, command: ISetTextBoxStyleAction) {
+	setStyle({ commit }, command: ISetTextBoxStyleAction) {
 		commit('setStyle', {
 			id: command.id,
 			style: command.style,
 		} as ISetTextBoxStyleMutation);
+	},
+
+	async splitTextbox({ commit, state, dispatch }, command: ISplitTextbox) {
+		const obj = state.objects[command.id];
+		const newWidth = (obj.width - 4) / 2;
+		commit('setSize', {
+			id: command.id,
+			width: newWidth,
+			height: obj.height,
+		});
+		commit('setStyle', {
+			id: command.id,
+			style: 'custom',
+		} as ISetTextBoxStyleMutation);
+		commit('setPosition', {
+			id: command.id,
+			x: obj.x - newWidth / 2,
+			y: obj.y,
+		} as ISetObjectPositionMutation);
+		const id = (await dispatch(
+			'createTextBox',
+			{} as ICreateTextBoxAction
+		)) as string;
+		commit('setPosition', {
+			id,
+			x: obj.x + newWidth + 2,
+			y: obj.y,
+		} as ISetObjectPositionMutation);
+		commit('setSize', {
+			id,
+			width: newWidth,
+			height: obj.height,
+		} as ISetSpriteSizeMutation);
+		commit('setStyle', {
+			id,
+			style: 'custom',
+		} as ISetTextBoxStyleMutation);
+		if (obj.flip) {
+			commit('setFlip', {
+				id,
+				flip: obj.flip,
+			} as ISetObjectFlipMutation);
+		}
 	},
 };
 
@@ -203,3 +255,5 @@ export interface ICreateTextBoxAction extends ICommand {}
 export interface ISetTextBoxStyleAction extends ICommand {
 	readonly style: ITextBox['style'];
 }
+
+export interface ISplitTextbox extends ICommand {}

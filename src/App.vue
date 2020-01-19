@@ -1,189 +1,100 @@
 <template>
 	<div id="app">
 		<div id="container">
-			<canvas
-				id="scaled_display"
-				ref="sd"
-				height="720"
-				width="1280"
-				:style="{width: canvasWidth+ 'px', height: canvasHeight + 'px'}"
-				draggable
-				@click="onUiClick"
-				@touchstart="onTouchStart"
-				@dragstart="onDragStart"
-				@touchmove="onSpriteDragMove"
-				@mousemove="onSpriteDragMove"
-				@touchend="onSpriteDrop"
-				@mouseup="onSpriteDrop"
-				@dragover="onDragOver"
-				@drop="onDrop"
-				@mouseenter="onMouseEnter"
-			>HTML5 is required to use the Doki Doki Dialog Generator.</canvas>
+			<render ref="render" :canvasWidth="canvasWidth" :canvasHeight="canvasHeight" />
 		</div>
-		<message-console :loading="currentlyRendering" />
-		<tool-box
-			:selected="selected ? selected.obj : null"
-			:lqRendering.sync="lqRendering"
-			:prevRender="prevRender"
-			:currentBackground.sync="currentBackground"
-			@download="download"
-			@clear-selection="selected = null"
-			@show-prev-render="showPreviousRender"
-		/>
+		<message-console />
+		<tool-box @show-prev-render="drawLastDownload" @download="$refs.render.download()" />
 	</div>
 </template>
 
 <script lang="ts">
 // App.vue has currently so many responsiblities that it's best to break it into chunks
 // tslint:disable:member-ordering
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import { State } from 'vuex-class-decorator';
-
-import ToolBox from './components/toolbox/toolbox.vue';
-import MessageConsole from './components/message-console.vue';
-import { TextBox } from './models/textbox';
-import { Character } from './models/character';
-import { Sprite } from './models/sprite';
-import { IBackground, nsfwFilter } from './models/background';
-import { VariantBackground } from './models/variant-background';
-import { IRenderable } from './models/renderable';
-import { ISprite, ICreateSpriteAction } from './store/objectTypes/sprite';
-import { ITextBox } from '@/store/objectTypes/textbox';
+import { Store } from 'vuex';
+import { IRootState } from '@/store';
+import { IRenderable } from '@/models/renderable';
+import { IHistorySupport } from '@/plugins/vuex-history';
+import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
 import {
-	IObjectsState,
 	IObject,
 	ISetObjectPositionMutation,
 	IRemoveObjectAction,
 } from '@/store/objects';
-import { IHistorySupport } from '@/plugins/vuex-history';
+import { Character } from '@/models/character';
 import {
-	ICharacter,
 	IShiftCharacterSlotAction,
-	INsfwCheckAction,
+	ICharacter,
 } from '@/store/objectTypes/characters';
-import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
-import { Renderer } from '@/renderer/renderer';
-import { RenderContext } from '@/renderer/rendererContext';
-import { backgrounds, getAsset, registerAsset } from '@/asset-manager';
-import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
+import ToolBox from '@/components/toolbox/toolbox.vue';
+import MessageConsole from '@/components/message-console.vue';
+import Render from '@/components/render.vue';
+import { ISetCurrentMutation } from '@/store/background';
 
 @Component({
 	components: {
 		ToolBox,
 		MessageConsole,
+		Render,
 	},
 })
 export default class App extends Vue {
 	public canvasWidth: number = 0;
 	public canvasHeight: number = 0;
-	public currentBackground: IBackground | null = null;
+	public $store!: Store<IRootState>;
+	private blendOver: string | null = null;
 
-	private sdCtx: CanvasRenderingContext2D | undefined;
-	private selected: IRenderable | null = null;
-
-	private renderer: Renderer = new Renderer();
-	private showUI: boolean = true;
-	private loaded: boolean = false;
 	private uiSize: number = 192;
-	private lqRendering: boolean = true;
 	private currentlyRendering: boolean = false;
 
 	private panel: string = '';
 
-	private queuedRender: number | null = null;
-	private prevRender: string = '';
-	private showingLast: boolean = false;
-
-	private dropSpriteCount = 0;
-	private dropPreventClick = false;
-
-	@State('vertical', { namespace: 'ui' }) private readonly vertical!: boolean;
-	@State('nsfw', { namespace: 'ui' }) private readonly nsfw!: boolean;
+	private drawLastDownload(): void {
+		const last = this.$store.state.ui.lastDownload;
+		if (!last) return;
+		(this.$refs.render as Render).blendOver(last);
+	}
 
 	private get history(): IHistorySupport {
 		return this.$root as any;
 	}
 
-	@Watch('selected')
-	@Watch('lqRendering')
-	@Watch('currentBackground')
-	public invalidateRender() {
-		if (this.queuedRender) return;
-		this.queuedRender = requestAnimationFrame(() => this.render_());
+	private setBlendOver(): void {
+		this.blendOver = this.$store.state.ui.lastDownload;
 	}
 
-	public async render_(): Promise<void> {
-		if (this.queuedRender) {
-			cancelAnimationFrame(this.queuedRender);
-			this.queuedRender = null;
-		}
-
-		const completed = await this.renderer.render(
-			this.renderCallback,
-			!this.lqRendering
-		);
-		if (completed) {
-			this.display();
-		}
-	}
-
-	private async renderCallback(rx: RenderContext): Promise<void> {
-		this.currentlyRendering = true;
-		try {
-			if (!this.loaded) {
-				rx.drawText({
-					text: 'Starting...',
-					x: this.renderer.width / 2,
-					y: this.renderer.height / 2,
-					align: 'center',
-					outline: {
-						width: 5,
-						style: '#b59',
-					},
-					font: '32px riffic',
-					fill: {
-						style: 'white',
-					},
-				});
-			} else {
-				if (rx.preview) {
-					rx.drawImage({
-						x: 0,
-						y: 0,
-						image: await getAsset('backgrounds/transparent'),
-					});
-				}
-
-				if (this.currentBackground) {
-					await this.currentBackground.render(rx);
-				}
-
-				for (const character of this.renderObjects) {
-					await character.render(this.selected === character, rx);
-				}
-			}
-		} finally {
-			this.currentlyRendering = false;
-		}
-	}
-
-	private created(): void {
-		(window as any).cats = this;
-
+	private async created(): Promise<void> {
 		// Moving this to the "mounted"-handler crashes safari over version 12.
 		// My best guess is because it runs in a microtask, which have been added in that Version.
 		this.updateArea();
 		window.addEventListener('resize', this.updateArea);
-
 		window.removeEventListener('keydown', this.onKeydown);
 		window.addEventListener('keydown', this.onKeydown);
-		eventBus.subscribe(InvalidateRenderEvent, command => {
-			this.invalidateRender();
-		});
-		this.$store.subscribe(this.invalidateRender);
 		if (Object.keys(this.$store.state.objects.objects).length === 0) {
 			this.$store.dispatch('objects/createTextBox', {} as ICreateTextBoxAction);
 		}
+
+		this.history.transaction(async () => {
+			await this.$store.dispatch('content/loadContentPacks', [
+				`${process.env.BASE_URL}packs/buildin.base.backgrounds.json`,
+				`${process.env.BASE_URL}packs/buildin.base.monika.json`,
+				`${process.env.BASE_URL}packs/buildin.base.sayori.json`,
+				`${process.env.BASE_URL}packs/buildin.base.natsuki.json`,
+				`${process.env.BASE_URL}packs/buildin.base.yuri.json`,
+				`${process.env.BASE_URL}packs/buildin.extra.mc.json`,
+				`${process.env.BASE_URL}packs/buildin.extra.mc_chad.json`,
+				`${process.env.BASE_URL}packs/buildin.extra.mc_classic.json`,
+				`${process.env.BASE_URL}packs/buildin.extra.femc.json`,
+				`${process.env.BASE_URL}packs/buildin.extra.classic_amy.json`,
+				`${process.env.BASE_URL}packs/buildin.extra.amy.json`,
+			]);
+
+			await this.$store.commit('background/setCurrent', {
+				current: 'Clubroom',
+			} as ISetCurrentMutation);
+		});
 	}
 
 	private destroyed(): void {
@@ -191,31 +102,13 @@ export default class App extends Vue {
 	}
 
 	private mounted(): void {
-		const sd = this.$refs.sd as HTMLCanvasElement;
-		this.sdCtx = sd.getContext('2d') || undefined;
-
 		window.addEventListener('keypress', e => {
 			if (e.keyCode === 27) {
-				this.selected = null;
+				this.history.transaction(() => {
+					this.$store.commit('ui/setSelection', null);
+				});
 			}
 		});
-
-		this.currentBackground = backgrounds[0];
-		this.invalidateRender();
-		Promise.all([
-			getAsset((this.currentBackground as VariantBackground).path, false),
-			getAsset('textbox'),
-			getAsset('namebox'),
-			getAsset('next'),
-			getAsset('backgrounds/transparent'),
-		])
-			.then(() => {
-				this.loaded = true;
-				this.invalidateRender();
-			})
-			.catch(() => {
-				alert('Error while loading. Sorry :/');
-			});
 	}
 
 	private optimum(sw: number, sh: number): [number, number] {
@@ -251,310 +144,68 @@ export default class App extends Vue {
 		this.canvasWidth = cw;
 		this.canvasHeight = ch;
 		this.$store.commit('ui/setVertical', v);
-		this.$nextTick(() => {
-			this.display();
-		});
-	}
-
-	private display(): void {
-		if (!this.sdCtx) return;
-		this.showingLast = false;
-		this.renderer.paintOnto(this.sdCtx, 0, 0, 1280, 720);
-	}
-
-	private async download() {
-		if (this.prevRender && window.URL && window.URL.revokeObjectURL) {
-			URL.revokeObjectURL(this.prevRender);
-		}
-		this.prevRender = await this.renderer.download(
-			this.renderCallback,
-			'panel.png'
-		);
-	}
-
-	private async showPreviousRender() {
-		if (this.showingLast) {
-			this.display();
-			return;
-		}
-		this.showingLast = true;
-		const img = new Image();
-		img.onload = () => {
-			this.sdCtx!.drawImage(img, 0, 0, 1280, 720);
-		};
-		img.src = this.prevRender;
-	}
-
-	private toRendererCoordinate(x: number, y: number): [number, number] {
-		const sd = this.$refs.sd as HTMLCanvasElement;
-		const rx = x - sd.offsetLeft;
-		const ry = y - sd.offsetTop;
-		const sx = (rx / sd.offsetWidth) * sd.width;
-		const sy = (ry / sd.offsetWidth) * sd.width;
-		return [sx, sy];
-	}
-
-	private onUiClick(e: MouseEvent): void {
-		if (this.dropPreventClick) {
-			this.dropPreventClick = false;
-			return;
-		}
-
-		this.panel = '';
-
-		const [sx, sy] = this.toRendererCoordinate(e.clientX, e.clientY);
-
-		const characters = this.objectsAt(sx, sy);
-
-		const currentCharacterIdx = characters.indexOf(this.selected!);
-		let selectedObject: IRenderable | null;
-
-		if (currentCharacterIdx === 0) {
-			selectedObject = null;
-		} else if (currentCharacterIdx !== -1) {
-			// Select the next lower character
-			selectedObject = characters[currentCharacterIdx - 1];
-		} else {
-			selectedObject = characters[characters.length - 1] || null;
-		}
-
-		if (!selectedObject) {
-			this.selected = null;
-		} else {
-			this.selected = selectedObject;
-		}
-	}
-
-	private objectsAt(x: number, y: number): IRenderable[] {
-		return this.renderObjects.filter(renderObject =>
-			renderObject.hitTest(x, y)
-		);
-	}
-
-	private draggedObject: IObject | null = null;
-	private dragXOffset: number = 0;
-	private dragYOffset: number = 0;
-	private dragXOriginal: number = 0;
-	private dragYOriginal: number = 0;
-
-	private onDragStart(e: DragEvent) {
-		e.preventDefault();
-		const selected = this.selected;
-		if (!selected) return;
-		this.draggedObject = selected.obj;
-		const [x, y] = this.toRendererCoordinate(e.clientX, e.clientY);
-		this.dragXOffset = x - this.draggedObject.x;
-		this.dragYOffset = y - this.draggedObject.y;
-		this.dragXOriginal = this.draggedObject.x;
-		this.dragYOriginal = this.draggedObject.y;
-	}
-
-	private onTouchStart(e: TouchEvent) {
-		const selected = this.selected;
-		if (!selected) return;
-		this.draggedObject = selected.obj;
-		const [x, y] = this.toRendererCoordinate(
-			e.touches[0].clientX,
-			e.touches[0].clientY
-		);
-		this.dragXOffset = x - this.draggedObject.x;
-		this.dragYOffset = y - this.draggedObject.y;
-		this.dragXOriginal = this.draggedObject.x;
-		this.dragYOriginal = this.draggedObject.y;
-	}
-
-	private onDragOver(e: DragEvent) {
-		e.stopPropagation();
-		e.preventDefault();
-		e.dataTransfer!.dropEffect = 'copy';
-	}
-
-	private onSpriteDragMove(e: MouseEvent | TouchEvent) {
-		if (this.draggedObject) {
-			e.preventDefault();
-
-			// Formatter quirk
-			// tslint:disable:indent
-			let [x, y] =
-				e instanceof MouseEvent
-					? this.toRendererCoordinate(e.clientX, e.clientY)
-					: this.toRendererCoordinate(
-							e.touches[0].clientX,
-							e.touches[0].clientY
-					  );
-			// tslint:enable:indent
-			x -= this.dragXOffset;
-			y -= this.dragYOffset;
-
-			const deltaX = Math.abs(x - this.dragXOriginal);
-			const deltaY = Math.abs(y - this.dragYOriginal);
-
-			if (deltaX + deltaY > 1) this.dropPreventClick = true;
-
-			if (e.shiftKey) {
-				if (deltaX > deltaY) {
-					y = this.dragYOriginal;
-				} else {
-					x = this.dragXOriginal;
-				}
-			}
-
-			this.history.transaction(() => {
-				this.$store.dispatch('objects/setPosition', {
-					id: this.draggedObject!.id,
-					x,
-					y,
-				} as ISetObjectPositionMutation);
-			});
-		}
-	}
-
-	private async onDrop(e: DragEvent) {
-		e.stopPropagation();
-		e.preventDefault();
-
-		if (!e.dataTransfer) return;
-
-		for (const item of e.dataTransfer.items) {
-			if (item.kind === 'file' && item.type.match(/image.*/)) {
-				const name = 'dropCustomAsset' + ++this.dropSpriteCount;
-				const url = registerAsset(name, item.getAsFile()!);
-
-				this.history.transaction(async () => {
-					await this.$store.dispatch('objects/createSprite', {
-						assetName: name,
-					} as ICreateSpriteAction);
-				});
-			}
-		}
-	}
-
-	private onSpriteDrop(e: MouseEvent | TouchEvent) {
-		if (this.draggedObject) {
-			if ('TouchEvent' in window && e instanceof TouchEvent) {
-				this.dropPreventClick = false;
-			}
-			this.draggedObject = null;
-		}
-	}
-
-	private onMouseEnter(e: MouseEvent) {
-		if (e.buttons !== 1) {
-			this.draggedObject = null;
-		}
 	}
 
 	private onKeydown(e: KeyboardEvent) {
-		const target = this.selected;
-		if (target && e.key === 'Delete') {
-			this.$store.dispatch('objects/removeObject', {
-				id: target.obj.id,
-			} as IRemoveObjectAction);
-			return;
-		}
-		if (e.key === 'z' && e.ctrlKey) {
-			this.$store.commit('history/undo');
-			return;
-		} else if (e.key === 'y' && e.ctrlKey) {
-			this.$store.commit('history/redo');
-			return;
-		}
-
-		if (target) {
-			if (target instanceof Character && !target.obj.freeMove) {
-				if (e.key === 'ArrowLeft') {
-					this.$store.dispatch('objects/shiftCharacterSlot', {
-						id: target!.obj.id,
-						delta: -1,
-					} as IShiftCharacterSlotAction);
-				}
-				if (e.key === 'ArrowRight') {
-					this.$store.dispatch('objects/shiftCharacterSlot', {
-						id: target!.obj.id,
-						delta: 1,
-					} as IShiftCharacterSlotAction);
-				}
+		this.history.transaction(() => {
+			const selection = this.$store.state.objects.objects[
+				this.$store.state.ui.selection!
+			];
+			if (!selection) return;
+			if (e.key === 'Delete') {
+				this.$store.dispatch('objects/removeObject', {
+					id: selection.id,
+				} as IRemoveObjectAction);
 				return;
 			}
-			let x = target ? target.obj.x : 0;
-			let y = target ? target.obj.y : 0;
+			if (e.key === 'z' && e.ctrlKey) {
+				this.$store.commit('history/undo');
+				return;
+			} else if (e.key === 'y' && e.ctrlKey) {
+				this.$store.commit('history/redo');
+				return;
+			}
+
+			if (selection.type === 'character') {
+				const character = selection as ICharacter;
+				if (character.freeMove) {
+					if (e.key === 'ArrowLeft') {
+						this.$store.dispatch('objects/shiftCharacterSlot', {
+							id: character.id,
+							delta: -1,
+						} as IShiftCharacterSlotAction);
+						return;
+					}
+					if (e.key === 'ArrowRight') {
+						this.$store.dispatch('objects/shiftCharacterSlot', {
+							id: character.id,
+							delta: 1,
+						} as IShiftCharacterSlotAction);
+						return;
+					}
+				}
+			}
+			let { x, y } = selection;
 			if (e.key === 'ArrowLeft') {
 				x -= e.shiftKey ? 1 : 20;
-			} else if (target && e.key === 'ArrowRight') {
+			} else if (selection && e.key === 'ArrowRight') {
 				x += e.shiftKey ? 1 : 20;
-			} else if (target && e.key === 'ArrowUp') {
+			} else if (selection && e.key === 'ArrowUp') {
 				y -= e.shiftKey ? 1 : 20;
-			} else if (target && e.key === 'ArrowDown') {
+			} else if (selection && e.key === 'ArrowDown') {
 				y += e.shiftKey ? 1 : 20;
 			} else {
 				console.log(e);
 				return;
 			}
 			this.$store.dispatch('objects/setPosition', {
-				id: target!.obj.id,
+				id: selection.id,
 				x,
 				y,
 			} as ISetObjectPositionMutation);
-		}
-		console.log(e);
-		return;
-	}
-
-	private renderObjectCache: { [id: string]: IRenderable } = {};
-	private get renderObjects() {
-		const objectsState = this.$store.state.objects as IObjectsState;
-		const order = [...objectsState.order, ...objectsState.onTopOrder];
-		const objects = this.$store.state.objects
-			.objects as IObjectsState['objects'];
-		const toUncache = Object.keys(this.renderObjectCache).filter(
-			id => !order.includes(id)
-		);
-
-		for (const id of toUncache) {
-			if (this.selected && this.selected.id === id) {
-				this.selected = null;
-			}
-			this.$delete(this.renderObjectCache, id);
-		}
-
-		return order.map(id => {
-			if (!this.renderObjectCache[id]) {
-				const obj = objects[id];
-				switch (obj.type) {
-					case 'sprite':
-						this.renderObjectCache[id] = new Sprite((obj as any) as ISprite);
-						break;
-					case 'character':
-						this.renderObjectCache[id] = new Character(
-							(obj as any) as ICharacter
-						);
-						break;
-					case 'textBox':
-						this.renderObjectCache[id] = new TextBox((obj as any) as ITextBox);
-						break;
-				}
-			}
-			this.renderObjectCache[id].obj = objects[id];
-			return this.renderObjectCache[id];
+			console.log(e);
+			return;
 		});
-	}
-
-	@Watch('nsfw')
-	private onNSFWChange(newNSFW: boolean): void {
-		if (!this.currentBackground) return;
-		if (newNSFW) return;
-		if (this.currentBackground.nsfw) {
-			this.currentBackground = backgrounds[0];
-		}
-		nsfwFilter(this.currentBackground);
-		for (const character of this.renderObjects) {
-			if (character instanceof Character) {
-				this.$store.dispatch('objects/nsfwCheck', {
-					id: character.obj.id,
-				} as INsfwCheckAction);
-			}
-		}
-		this.invalidateRender();
 	}
 }
 </script>
@@ -564,6 +215,7 @@ html,
 body {
 	overflow: hidden;
 	font-family: aller;
+	font-size: 16px;
 }
 
 * {
@@ -571,6 +223,8 @@ body {
 	padding: 0;
 	border: 0;
 	box-sizing: border-box;
+	font-family: aller;
+	font-size: 16px;
 }
 
 fieldset {
@@ -590,13 +244,17 @@ textarea {
 }
 
 button,
-select {
+select,
+.btn {
 	border: 2px solid #ffbde1;
 	background: #ffe6f4;
 	padding: 1px;
 }
 
-button {
+button,
+.btn {
 	padding: 2px;
+	text-align: center;
+	text-decoration: none;
 }
 </style>

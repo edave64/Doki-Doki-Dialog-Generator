@@ -143,7 +143,7 @@ describe('plugin', () => {
 });
 
 function commonVuex(
-	createdCallback: (this: Vue.default & ICommonInterface) => void,
+	createdCallback: (this: Vue & ICommonInterface) => void,
 	pluginOptions: IHistoryOptions = {}
 ): void {
 	const localVue = createLocalVue();

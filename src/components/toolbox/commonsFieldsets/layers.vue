@@ -1,10 +1,25 @@
 <template>
 	<fieldset id="layerfs">
 		<legend>Layer:</legend>
-		<button @click="shiftLayer(-Infinity)" title="Move to back">&#10515;</button>
-		<button @click="shiftLayer(-1)" title="Move backwards">&#8595;</button>
-		<button @click="shiftLayer(1)" title="Move forwards">&#8593;</button>
-		<button @click="shiftLayer(Infinity)" title="Move to front">&#10514;</button>
+
+		<table>
+			<tbody>
+				<tr>
+					<td>
+						<button @click="shiftLayer(-Infinity)" title="Move to back">&#10515;</button>
+					</td>
+					<td>
+						<button @click="shiftLayer(-1)" title="Move backwards">&#8595;</button>
+					</td>
+					<td>
+						<button @click="shiftLayer(1)" title="Move forwards">&#8593;</button>
+					</td>
+					<td>
+						<button @click="shiftLayer(Infinity)" title="Move to front">&#10514;</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
 		<toggle @input="setInFront" :value="obj.onTop" label="In front?" />
 	</fieldset>
 </template>
@@ -56,5 +71,13 @@ export default class Layers extends Vue {
 <style lang="scss" scoped>
 fieldset {
 	border: 3px solid #ffbde1;
+}
+
+table {
+	width: 100%;
+
+	button {
+		width: 100%;
+	}
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-	<div :class="{ panel: true }">
+	<div class="panel">
 		<h1>Textbox</h1>
 		<div>
 			<label for="text_style">Style:</label>
@@ -38,11 +38,8 @@
 			<label for="dialog_text">Dialog:</label>
 			<textarea v-model="dialog" id="dialog_text" @keydown.stop />
 		</div>
-		<p>
-			Formatting:
-			<br />[In brackets] for editied style text
-		</p>
 		<position-and-size :obj="textbox" />
+		<button @click="splitTextbox">Split textbox</button>
 		<layers :obj="textbox" />
 		<opacity :obj="textbox" />
 		<toggle v-model="flip" label="Flip?" />
@@ -73,7 +70,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
+import { Component, Vue, Prop, Watch, Mixins } from 'vue-property-decorator';
 import {
 	ITextBox,
 	ISetTextBoxControlsVisibleMutation,
@@ -89,6 +86,7 @@ import {
 	ISetTextBoxNameboxWidthMutation,
 	ISetTextBoxNameboxStrokeMutation,
 	ISetTextBoxDeriveCustomColorMutation,
+	ISplitTextbox,
 } from '@/store/objectTypes/textbox';
 import Toggle from '@/components/toggle.vue';
 import { State } from 'vuex-class-decorator';
@@ -98,6 +96,9 @@ import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
 import Opacity from '@/components/toolbox/commonsFieldsets/opacity.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
 import { ISetObjectFlipMutation } from '@/store/objects';
+import { PanelMixin } from './panelMixin';
+import { Store } from 'vuex';
+import { IRootState } from '../../../store';
 
 @Component({
 	components: {
@@ -108,11 +109,27 @@ import { ISetObjectFlipMutation } from '@/store/objects';
 		Delete,
 	},
 })
-export default class TextPanel extends Vue {
-	@Prop({ required: true }) private readonly textbox!: ITextBox;
+export default class TextPanel extends Mixins(PanelMixin) {
+	public $store!: Store<IRootState>;
+
+	private get textbox(): ITextBox {
+		const obj = this.$store.state.objects.objects[
+			this.$store.state.ui.selection!
+		];
+		if (obj.type !== 'textBox') return undefined!;
+		return obj as ITextBox;
+	}
 
 	private get history(): IHistorySupport {
 		return this.$root as any;
+	}
+
+	private splitTextbox(): void {
+		this.history.transaction(() => {
+			this.$store.dispatch('objects/splitTextbox', {
+				id: this.textbox.id,
+			} as ISplitTextbox);
+		});
 	}
 
 	private get talkingDefaults(): ISetTextBoxTalkingDefaultMutation['talkingDefault'] {

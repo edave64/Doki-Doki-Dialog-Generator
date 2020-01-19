@@ -1,18 +1,111 @@
 import { Module } from 'vuex';
+import {
+	Background,
+	ContentPack,
+} from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { IAsset } from './content';
+import { IRootState } from '.';
+import { arraySeeker } from '@/models/seekers';
 
-export interface IUiState {
-	vertical: boolean;
+export interface IBackground {
+	current: string;
+	color: string;
+	flipped: boolean;
+	variant: number;
 }
 
 export default {
 	namespaced: true,
 	state: {
-		vertical: false,
-		selection: '',
+		current: '',
+		color: '#000000',
+		flipped: false,
+		variant: 0,
 	},
 	mutations: {
-		setVertical(state, vertical: boolean) {
-			state.vertical = vertical;
+		setCurrent(state, { current }: ISetCurrentMutation) {
+			state.current = current;
+			state.variant = 0;
+		},
+		setColor(state, { color }: ISetColorMutation) {
+			state.color = color;
+		},
+		setFlipped(state, { flipped }: ISetFlipMutation) {
+			state.flipped = flipped;
+		},
+		setVariant(state, { variant }: ISetVariantMutation) {
+			state.variant = variant;
 		},
 	},
-} as Module<IUiState, never>;
+	actions: {
+		seekVariant({ state, rootGetters, commit }, { delta }: ISeekVariantAction) {
+			const backgrounds = rootGetters['content/getBackgrounds'] as Map<
+				Background<IAsset>['label'],
+				Background<IAsset>
+			>;
+			const background = backgrounds.get(state.current);
+			if (!background) return;
+			commit('setVariant', {
+				variant: arraySeeker(background.variants, state.variant, delta),
+			} as ISetVariantMutation);
+		},
+		async fixContentPackRemoval(
+			{ state, rootGetters, commit, rootState },
+			oldContent: ContentPack<IAsset>
+		) {
+			const oldBackground = oldContent.backgrounds.find(
+				x => x.label === state.current
+			);
+			// Probably build in?
+			if (!oldBackground) return;
+
+			const newBackground = (rootGetters['content/getBackgrounds'] as Map<
+				Background<IAsset>['label'],
+				Background<IAsset>
+			>).get(state.current);
+
+			if (!newBackground) {
+				if (rootState.content.current.backgrounds[0]) {
+					commit('setCurrent', {
+						current: rootState.content.current.backgrounds[0].label,
+					} as ISetCurrentMutation);
+				} else {
+					commit('setCurrent', {
+						current: 'buildin.transparent',
+					} as ISetCurrentMutation);
+				}
+				return;
+			}
+
+			const oldVariantJSON = JSON.stringify(
+				oldBackground.variants[state.variant]
+			);
+			const newVariantIdx = newBackground.variants.findIndex(
+				variant => JSON.stringify(variant) === oldVariantJSON
+			);
+			if (newVariantIdx !== state.variant) {
+				commit('setVariant', newVariantIdx === -1 ? 0 : newVariantIdx);
+			}
+		},
+	},
+} as Module<IBackground, IRootState>;
+
+export interface ISetCurrentMutation {
+	current: string;
+}
+
+export interface ISetColorMutation {
+	color: string;
+}
+
+export interface ISetFlipMutation {
+	flipped: boolean;
+}
+
+export interface ISetVariantMutation {
+	variant: number;
+}
+
+export interface ISeekVariantAction {
+	delta: 1 | -1;
+}

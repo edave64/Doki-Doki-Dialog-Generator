@@ -266,8 +266,6 @@ export class TextBox implements IRenderable {
 					ctx.clip();
 				},
 				subRx => {
-					const h = this.obj.height;
-					const w = this.obj.width;
 					const gradient = subRx.linearGradient(x, y, x, y + NameboxHeight);
 					const baseBG = RGBAColor.fromCss(this.nameboxBackgroundColor);
 					const color = new RGBAColor(baseBG.r, baseBG.g, baseBG.b, 244);
@@ -287,8 +285,8 @@ export class TextBox implements IRenderable {
 					subRx.drawRect({
 						x,
 						y,
-						w,
-						h,
+						w: this.obj.width,
+						h: this.obj.height,
 						fill: {
 							style: gradient,
 						},
@@ -319,8 +317,8 @@ export class TextBox implements IRenderable {
 		if (this.obj.style === 'custom') {
 			const hslColor = RGBAColor.fromCss(this.obj.customColor).toHSL();
 			const dotPattern = new Renderer(47, 47);
-			dotPattern.render(async (rx: RenderContext) => {
-				const delta = new HSLAColor(
+			dotPattern.render(async (dotRx: RenderContext) => {
+				const fillDelta = new HSLAColor(
 					0.004269293924466178,
 					-0.01869158878504662,
 					-0.039215686274509665,
@@ -328,36 +326,36 @@ export class TextBox implements IRenderable {
 				);
 				const fill = {
 					style: hslColor
-						.shift(delta)
+						.shift(fillDelta)
 						.toRgb()
 						.toCss(),
 				};
 
-				rx.drawPath({
+				dotRx.drawPath({
 					path: ctx => {
 						ctx.ellipse(0, 0, 9.5, 9.5, 0, 0, 2 * Math.PI);
 					},
 					fill,
 				});
-				rx.drawPath({
+				dotRx.drawPath({
 					path: ctx => {
 						ctx.ellipse(47, 0, 9.5, 9.5, 0, 0, 2 * Math.PI);
 					},
 					fill,
 				});
-				rx.drawPath({
+				dotRx.drawPath({
 					path: ctx => {
 						ctx.ellipse(0, 47, 9.5, 9.5, 0, 0, 2 * Math.PI);
 					},
 					fill,
 				});
-				rx.drawPath({
+				dotRx.drawPath({
 					path: ctx => {
 						ctx.ellipse(47, 47, 9.5, 9.5, 0, 0, 2 * Math.PI);
 					},
 					fill,
 				});
-				rx.drawPath({
+				dotRx.drawPath({
 					path: ctx => {
 						ctx.ellipse(23.5, 24.5, 9.5, 9.5, 0, 0, 2 * Math.PI);
 					},
@@ -437,14 +435,14 @@ export class TextBox implements IRenderable {
 					});
 				}
 			);
-			const delta = new HSLAColor(
+			const outlineDelta = new HSLAColor(
 				0.0023347701149424305,
 				0,
 				0.10784313725490202,
 				0
 			);
 			const outlineColor = hslColor
-				.shift(delta)
+				.shift(outlineDelta)
 				.toRgb()
 				.toCss();
 			rx.drawPath({

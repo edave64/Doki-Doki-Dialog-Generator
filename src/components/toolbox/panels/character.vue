@@ -1,42 +1,65 @@
 <template>
-	<div :class="{ panel: true }">
-		<h1>{{label}}</h1>
-		<fieldset v-if="hasMultiplePoses || parts.length > 0">
-			<legend>Pose:</legend>
-			<table>
-				<tbody>
-					<tr v-if="hasMultiplePoses">
-						<td>
-							<button @click="seekPose(-1, nsfw);">&lt;</button>
-						</td>
-						<td>Pose</td>
-						<td>
-							<button @click="seekPose(1, nsfw);">&gt;</button>
-						</td>
-					</tr>
-					<tr v-for="part of parts" :key="part">
-						<td>
-							<button @click="seekPart(part, -1, nsfw);">&lt;</button>
-						</td>
-						<td>{{captialize(part)}}</td>
-						<td>
-							<button @click="seekPart(part, 1, nsfw);">&gt;</button>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</fieldset>
-		<position-and-size :obj="character" />
-		<layers :obj="character" />
-		<opacity :obj="character" />
-		<toggle v-model="closeUp" label="Close up?" />
-		<toggle v-model="flip" label="Flip?" />
-		<delete :obj="character" />
+	<div class="panel">
+		<h1>{{ label }}</h1>
+		<parts
+			v-if="panelForParts"
+			:character="character"
+			:part="panelForParts"
+			@leave="panelForParts = null"
+		/>
+		<template v-else>
+			<fieldset v-if="hasMultiplePoses || parts.length > 0">
+				<legend>Pose:</legend>
+				<table>
+					<tbody>
+						<tr v-if="hasMultipleStyles">
+							<td>
+								<button @click="seekStyle(-1)">&lt;</button>
+							</td>
+							<td>
+								<button class="middle-button" @click="panelForParts = 'style'">Style</button>
+							</td>
+							<td>
+								<button @click="seekStyle(1)">&gt;</button>
+							</td>
+						</tr>
+						<tr v-if="hasMultiplePoses">
+							<td>
+								<button @click="seekPose(-1)">&lt;</button>
+							</td>
+							<td>
+								<button class="middle-button" @click="panelForParts = 'pose'">Pose</button>
+							</td>
+							<td>
+								<button @click="seekPose(1)">&gt;</button>
+							</td>
+						</tr>
+						<tr v-for="part of parts" :key="part">
+							<td>
+								<button @click="seekPart(part, -1)">&lt;</button>
+							</td>
+							<td>
+								<button class="middle-button" @click="panelForParts = part">{{ captialize(part) }}</button>
+							</td>
+							<td>
+								<button @click="seekPart(part, 1)">&gt;</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</fieldset>
+			<position-and-size :obj="character" />
+			<layers :obj="character" />
+			<opacity :obj="character" />
+			<toggle v-model="closeUp" label="Close up?" />
+			<toggle v-model="flip" label="Flip?" />
+			<delete :obj="character" />
+		</template>
 	</div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
 import { State } from 'vuex-class-decorator';
 import { IHistorySupport } from '@/plugins/vuex-history';
 import { Part } from '@/models/constants';
@@ -47,6 +70,7 @@ import {
 	ISetCloseMutation,
 	ISeekPosePartAction,
 	ICharacter,
+	ISeekStyleAction,
 } from '@/store/objectTypes/characters';
 import { ISetObjectFlipMutation } from '@/store/objects';
 import Toggle from '@/components/toggle.vue';
@@ -54,6 +78,12 @@ import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSi
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
 import Opacity from '@/components/toolbox/commonsFieldsets/opacity.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
+import Parts from './character/parts.vue';
+import { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { IAsset } from '../../../store/content';
+import { PanelMixin } from './panelMixin';
+import { Store } from 'vuex';
+import { IRootState } from '../../../store';
 
 @Component({
 	components: {
@@ -62,47 +92,70 @@ import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
 		Layers,
 		Opacity,
 		Delete,
+		Parts,
 	},
 })
-export default class CharacterPanel extends Vue {
-	@Prop({ required: true })
-	private readonly character!: ICharacter;
+export default class CharacterPanel extends Mixins(PanelMixin) {
+	public $store!: Store<IRootState>;
 
-	@State('nsfw', { namespace: 'ui' })
-	private readonly nsfw!: boolean;
+	private get character(): ICharacter {
+		const obj = this.$store.state.objects.objects[
+			this.$store.state.ui.selection!
+		];
+		if (obj.type !== 'character') return undefined!;
+		return obj as ICharacter;
+	}
+
+	private panelForParts: Part | null = null;
 
 	private get history(): IHistorySupport {
 		return this.$root as any;
 	}
 
+	private get charData(): Readonly<Character<IAsset>> {
+		return getData(this.$store, this.character);
+	}
+
 	private get label(): string {
-		return getData(this.character).name;
+		return this.charData.label;
 	}
 
 	private get parts(): string[] {
-		return getParts(this.character);
+		return getParts(this.charData, this.character);
+	}
+
+	private get hasMultipleStyles(): boolean {
+		return this.charData.styles.length > 1;
 	}
 
 	private get hasMultiplePoses(): boolean {
-		return getData(this.character).poses.length > 1;
+		const style = this.charData.styles[this.character.styleId];
+		return this.charData.poses.filter(x => x.style === style.name).length > 1;
 	}
 
-	private seekPose(delta: number, nsfw: boolean): void {
+	private seekPose(delta: number): void {
 		this.history.transaction(() => {
 			this.$store.dispatch('objects/seekPose', {
 				id: this.character.id,
 				delta,
-				nsfw,
 			} as ISeekPoseAction);
 		});
 	}
 
-	private seekPart(part: Part, delta: number, nsfw: boolean): void {
+	private seekStyle(delta: number): void {
+		this.history.transaction(() => {
+			this.$store.dispatch('objects/seekStyle', {
+				id: this.character.id,
+				delta,
+			} as ISeekStyleAction);
+		});
+	}
+
+	private seekPart(part: Part, delta: number): void {
 		this.history.transaction(() => {
 			this.$store.dispatch('objects/seekPart', {
 				id: this.character.id,
 				delta,
-				nsfw,
 				part,
 			} as ISeekPosePartAction);
 		});
@@ -152,5 +205,9 @@ fieldset {
 			width: 60px;
 		}
 	}
+}
+
+.middle-button {
+	width: 100%;
 }
 </style>
