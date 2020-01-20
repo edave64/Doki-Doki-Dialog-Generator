@@ -13,35 +13,35 @@
 				<table>
 					<tbody>
 						<tr v-if="hasMultipleStyles">
-							<td>
+							<td class="arrow-col">
 								<button @click="seekStyle(-1)">&lt;</button>
 							</td>
 							<td>
 								<button class="middle-button" @click="panelForParts = 'style'">Style</button>
 							</td>
-							<td>
+							<td class="arrow-col">
 								<button @click="seekStyle(1)">&gt;</button>
 							</td>
 						</tr>
 						<tr v-if="hasMultiplePoses">
-							<td>
+							<td class="arrow-col">
 								<button @click="seekPose(-1)">&lt;</button>
 							</td>
 							<td>
 								<button class="middle-button" @click="panelForParts = 'pose'">Pose</button>
 							</td>
-							<td>
+							<td class="arrow-col">
 								<button @click="seekPose(1)">&gt;</button>
 							</td>
 						</tr>
 						<tr v-for="part of parts" :key="part">
-							<td>
+							<td class="arrow-col">
 								<button @click="seekPart(part, -1)">&lt;</button>
 							</td>
 							<td>
 								<button class="middle-button" @click="panelForParts = part">{{ captialize(part) }}</button>
 							</td>
-							<td>
+							<td class="arrow-col">
 								<button @click="seekPart(part, 1)">&gt;</button>
 							</td>
 						</tr>
@@ -196,6 +196,10 @@ export default class CharacterPanel extends Mixins(PanelMixin) {
 <style lang="scss" scoped>
 fieldset {
 	border: 3px solid #ffbde1;
+
+	table {
+		width: 100%;
+	}
 }
 
 .vertical {
@@ -209,5 +213,13 @@ fieldset {
 
 .middle-button {
 	width: 100%;
+}
+
+.arrow-col {
+	width: 24px;
+
+	button {
+		width: 24px;
+	}
 }
 </style>
