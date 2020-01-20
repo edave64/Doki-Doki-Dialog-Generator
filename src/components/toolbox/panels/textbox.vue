@@ -1,36 +1,47 @@
 <template>
 	<div class="panel">
 		<h1>Textbox</h1>
-		<div>
-			<label for="text_style">Style:</label>
-			<br />
-			<select id="text_style" v-model="textBoxStyle" @keydown.stop>
-				<option value="normal">Normal</option>
-				<option value="corrupt">Corrupt</option>
-				<option value="custom">Custom</option>
-			</select>
-		</div>
-		<div>
-			<label for="current_talking">Person talking:</label>
-			<br />
-			<select id="current_talking" v-model="talkingDefaults" @keydown.stop>
-				<option value="No-one">No-one</option>
-				<option value="Sayori">Sayori</option>
-				<option value="Yuri">Yuri</option>
-				<option value="Natsuki">Natsuki</option>
-				<option value="Monika">Monika</option>
-				<option value="FeMC">FeMC</option>
-				<option value="MC">MC</option>
-				<option value="Chad">Chad</option>
-				<option value="Amy">Amy</option>
-				<option value="Other">Other</option>
-			</select>
-		</div>
-		<div>
-			<label for="custom_name">Other name:</label>
-			<br />
-			<input id="custom_name" v-model="talkingOther" @keydown.stop />
-		</div>
+		<table>
+			<tr>
+				<td>
+					<label for="text_style">Style:</label>
+				</td>
+				<td>
+					<select id="text_style" v-model="textBoxStyle" @keydown.stop>
+						<option value="normal">Normal</option>
+						<option value="corrupt">Corrupt</option>
+						<option value="custom">Custom</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="current_talking">Person talking:</label>
+				</td>
+				<td>
+					<select id="current_talking" v-model="talkingDefaults" @keydown.stop>
+						<option value="No-one">No-one</option>
+						<option value="Sayori">Sayori</option>
+						<option value="Yuri">Yuri</option>
+						<option value="Natsuki">Natsuki</option>
+						<option value="Monika">Monika</option>
+						<option value="FeMC">FeMC</option>
+						<option value="MC">MC</option>
+						<option value="Chad">Chad</option>
+						<option value="Amy">Amy</option>
+						<option value="Other">Other</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="custom_name">Other name:</label>
+				</td>
+				<td>
+					<input id="custom_name" v-model="talkingOther" @keydown.stop />
+				</td>
+			</tr>
+		</table>
 		<toggle label="Controls visible?" v-model="showControls" />
 		<toggle label="Able to skip?" v-model="allowSkipping" />
 		<toggle label="Continue arrow?" v-model="showContinueArrow" />
@@ -313,6 +324,15 @@ export default class TextPanel extends Mixins(PanelMixin) {
 				width: 100%;
 			}
 		}
+
+		table {
+			width: 100%;
+
+			input,
+			select {
+				width: 100px;
+			}
+		}
 	}
 
 	&:not(.vertical) {
@@ -322,6 +342,15 @@ export default class TextPanel extends Mixins(PanelMixin) {
 
 			* {
 				display: table-row;
+			}
+		}
+
+		table {
+			width: 256px;
+
+			input,
+			select {
+				width: 100px;
 			}
 		}
 	}
