@@ -120,7 +120,6 @@ export default {
 					} catch (e) {
 						error('Content pack is not valid json!');
 					}
-					console.log(url, json);
 
 					let contentPack: ContentPack;
 					try {
