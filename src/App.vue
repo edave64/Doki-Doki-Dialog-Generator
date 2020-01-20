@@ -257,4 +257,8 @@ button,
 	text-align: center;
 	text-decoration: none;
 }
+
+input[type='number'] {
+	text-align: right;
+}
 </style>
