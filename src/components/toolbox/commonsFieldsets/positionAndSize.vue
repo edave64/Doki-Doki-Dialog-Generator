@@ -1,29 +1,63 @@
 <template>
 	<fieldset>
 		<legend>Position{{allowSize ? "/Size" : ""}}:</legend>
-		<toggle v-if="allowStepMove" v-model="freeMove" label="Move freely?" />
-		<div v-if="allowStepMove && !freeMove">
-			<button @click="--pos" :disabled="isFirstPos">&lt;</button>
-			<select id="current_talking" v-model.number="pos">
-				<option v-for="(val, key) of positionNames" :key="key" :value="key">{{val}}</option>
-			</select>
-			<button @click="++pos" :disabled="isLastPos">&gt;</button>
-		</div>
-		<div v-else>
-			<label for="sprite_x">X:</label>
-			<input id="sprite_x" type="number" v-model.number="x" @keydown.stop />
-			<br />
-			<label for="sprite_y">Y:</label>
-			<input id="sprite_y" type="number" v-model.number="y" @keydown.stop />
-		</div>
-		<div v-if="allowSize">
-			<label for="sprite_w">Width:</label>
-			<input id="sprite_w" type="number" v-model.number="width" @keydown.stop />
-			<br />
-			<label for="sprite_h">Height:</label>
-			<input id="sprite_h" type="number" v-model.number="height" @keydown.stop />
-			<toggle v-model="preserveRatio" label="Lock ratio?" />
-		</div>
+		<table>
+			<tr>
+				<td colspan="2">
+					<toggle v-if="allowStepMove" v-model="freeMove" label="Move freely?" />
+				</td>
+			</tr>
+			<tr v-if="allowStepMove && !freeMove">
+				<td colspan="2">
+					<button @click="--pos" :disabled="isFirstPos">&lt;</button>
+					<select id="current_talking" v-model.number="pos">
+						<option v-for="(val, key) of positionNames" :key="key" :value="key">{{val}}</option>
+					</select>
+					<button @click="++pos" :disabled="isLastPos">&gt;</button>
+				</td>
+			</tr>
+			<template v-else>
+				<tr>
+					<td>
+						<label for="sprite_x">X:</label>
+					</td>
+					<td>
+						<input id="sprite_x" type="number" v-model.number="x" @keydown.stop />
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="sprite_y">Y:</label>
+					</td>
+					<td>
+						<input id="sprite_y" type="number" v-model.number="y" @keydown.stop />
+					</td>
+				</tr>
+			</template>
+			<template v-if="allowSize">
+				<tr>
+					<td>
+						<label for="sprite_w">Width:</label>
+					</td>
+					<td>
+						<input id="sprite_w" type="number" v-model.number="width" @keydown.stop />
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="sprite_h">Height:</label>
+					</td>
+					<td>
+						<input id="sprite_h" type="number" v-model.number="height" @keydown.stop />
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<toggle v-model="preserveRatio" label="Lock ratio?" />
+					</td>
+				</tr>
+			</template>
+		</table>
 	</fieldset>
 </template>
 
@@ -197,14 +231,26 @@ export interface MoveObject {
 <style lang="scss" scoped>
 fieldset {
 	border: 3px solid #ffbde1;
+
+	table {
+		width: 100%;
+
+		tr td:nth-child(2) {
+			width: 64px;
+		}
+	}
 }
 
 .vertical {
 	fieldset {
 		width: calc(100% - 4px);
 		input {
-			width: 60px;
+			width: 64px;
 		}
 	}
+}
+
+input {
+	width: 80px;
 }
 </style>
