@@ -1,6 +1,7 @@
 <template>
 	<div>
-		<input ref="checkbox" :id="_uid" type="checkbox" @change="onChange" :checked="value" />
+		<input :id="_uid" type="checkbox" ref="checkbox" @change="onChange" :checked="value" />
+		<label :for="_uid" class="switch"></label>
 		<label :for="_uid">{{label}}</label>
 	</div>
 </template>
@@ -26,7 +27,29 @@ export default class Toggle extends Vue {
 </script>
 
 <style lang="scss" scoped>
-label {
-	user-select: none;
+div {
+	overflow: visible;
+}
+
+/* The switch - the box around the slider */
+.switch {
+	height: 20px;
+	width: 20px;
+	display: inline-block;
+	background: url('./toggle/inactive.svg');
+	background-size: cover;
+	vertical-align: text-bottom;
+}
+
+/* Hide default HTML checkbox */
+input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+input:checked + .switch {
+	background: url('./toggle/active.svg');
+	background-size: cover;
 }
 </style>
