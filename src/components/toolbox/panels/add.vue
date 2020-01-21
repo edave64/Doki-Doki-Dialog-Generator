@@ -111,7 +111,6 @@ textarea {
 }
 
 .characterGrid {
-	overflow: hidden;
 	display: grid;
 	place-items: center;
 
