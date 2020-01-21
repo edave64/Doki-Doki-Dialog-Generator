@@ -214,7 +214,7 @@ export default class App extends Vue {
 html,
 body {
 	overflow: hidden;
-	font-family: aller;
+	font-family: aller, sans-serif;
 	font-size: 16px;
 }
 
@@ -223,7 +223,7 @@ body {
 	padding: 0;
 	border: 0;
 	box-sizing: border-box;
-	font-family: aller;
+	font-family: aller, sans-serif;
 	font-size: 16px;
 }
 
@@ -234,7 +234,7 @@ fieldset {
 h1 {
 	font-size: 24px;
 	color: black;
-	font-family: riffic;
+	font-family: riffic, sans-serif;
 	text-align: center;
 }
 
