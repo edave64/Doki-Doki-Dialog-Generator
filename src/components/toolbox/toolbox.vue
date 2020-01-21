@@ -129,7 +129,7 @@ export default class ToolBox extends Vue {
 		left: 0;
 		bottom: 0;
 		height: 192px;
-		width: calc(100vw - 6px);
+		width: 100vw;
 
 		.panel {
 			flex-grow: 1;
