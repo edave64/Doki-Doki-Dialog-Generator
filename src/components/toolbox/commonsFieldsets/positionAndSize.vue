@@ -9,11 +9,21 @@
 			</tr>
 			<tr v-if="allowStepMove && !freeMove">
 				<td colspan="2">
-					<button @click="--pos" :disabled="isFirstPos">&lt;</button>
-					<select id="current_talking" v-model.number="pos">
-						<option v-for="(val, key) of positionNames" :key="key" :value="key">{{val}}</option>
-					</select>
-					<button @click="++pos" :disabled="isLastPos">&gt;</button>
+					<table>
+						<tr>
+							<td class="arrow-col">
+								<button @click="--pos" :disabled="isFirstPos">&lt;</button>
+							</td>
+							<td>
+								<select id="current_talking" v-model.number="pos">
+									<option v-for="(val, key) of positionNames" :key="key" :value="key">{{val}}</option>
+								</select>
+							</td>
+							<td class="arrow-col">
+								<button @click="++pos" :disabled="isLastPos">&gt;</button>
+							</td>
+						</tr>
+					</table>
 				</td>
 			</tr>
 			<template v-else>
@@ -231,12 +241,20 @@ export interface MoveObject {
 <style lang="scss" scoped>
 fieldset {
 	border: 3px solid #ffbde1;
+	overflow: hidden;
 
-	table {
+	> table {
 		width: 100%;
 
-		tr td:nth-child(2) {
+		> tr > td:nth-child(2) {
 			width: 64px;
+		}
+
+		table {
+			width: 100%;
+			select {
+				width: 100%;
+			}
 		}
 	}
 }
@@ -252,5 +270,13 @@ fieldset {
 
 input {
 	width: 80px;
+}
+
+.arrow-col {
+	width: 24px;
+
+	button {
+		width: 24px;
+	}
 }
 </style>

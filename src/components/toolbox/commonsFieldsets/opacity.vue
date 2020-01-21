@@ -1,15 +1,21 @@
 <template>
-	<div>
-		<label for="characterOpacity">Opacity:</label>
-		<input
-			type="number"
-			max="100"
-			min="0"
-			id="characterOpacity"
-			v-model.number="opacity"
-			@keydown.stop
-		/>
-	</div>
+	<table>
+		<tr>
+			<td>
+				<label for="characterOpacity">Opacity:</label>
+			</td>
+			<td>
+				<input
+					type="number"
+					max="100"
+					min="0"
+					id="characterOpacity"
+					v-model.number="opacity"
+					@keydown.stop
+				/>
+			</td>
+		</tr>
+	</table>
 </template>
 
 <script lang="ts">
@@ -43,7 +49,13 @@ export default class Opacity extends Vue {
 </script>
 
 <style lang="scss" scoped>
-fieldset {
-	border: 3px solid #ffbde1;
+input {
+	width: 80px;
+}
+
+table {
+	td:nth-child(2) {
+		width: 80px;
+	}
 }
 </style>

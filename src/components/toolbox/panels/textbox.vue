@@ -1,7 +1,7 @@
 <template>
 	<div class="panel">
 		<h1>Textbox</h1>
-		<table>
+		<table class="upper-combos">
 			<tr>
 				<td>
 					<label for="text_style">Style:</label>
@@ -335,17 +335,13 @@ export default class TextPanel extends Mixins(PanelMixin) {
 		}
 	}
 
+	textarea {
+		display: block;
+		height: 140px;
+	}
+
 	&:not(.vertical) {
-		#dialog_text_wrapper {
-			height: 181px;
-			display: table;
-
-			* {
-				display: table-row;
-			}
-		}
-
-		table {
+		table.upper-combos {
 			width: 256px;
 
 			input,
