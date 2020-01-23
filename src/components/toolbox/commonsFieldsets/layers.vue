@@ -6,16 +6,24 @@
 			<tbody>
 				<tr>
 					<td>
-						<button @click="shiftLayer(-Infinity)" title="Move to back">&#10515;</button>
+						<button @click="shiftLayer(-Infinity)" title="Move to back">
+							<i class="material-icons">vertical_align_bottom</i>
+						</button>
 					</td>
 					<td>
-						<button @click="shiftLayer(-1)" title="Move backwards">&#8595;</button>
+						<button @click="shiftLayer(-1)" title="Move backwards">
+							<i class="material-icons">arrow_downward</i>
+						</button>
 					</td>
 					<td>
-						<button @click="shiftLayer(1)" title="Move forwards">&#8593;</button>
+						<button @click="shiftLayer(1)" title="Move forwards">
+							<i class="material-icons">arrow_upward</i>
+						</button>
 					</td>
 					<td>
-						<button @click="shiftLayer(Infinity)" title="Move to front">&#10514;</button>
+						<button @click="shiftLayer(Infinity)" title="Move to front">
+							<i class="material-icons">vertical_align_top</i>
+						</button>
 					</td>
 				</tr>
 			</tbody>

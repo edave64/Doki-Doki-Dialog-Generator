@@ -1,10 +1,30 @@
 <template>
 	<div id="panels" :class="{ vertical }">
 		<div id="toolbar">
-			<button :class="{ active: panel === 'add' }" @click="setPanel('add')">A</button>
-			<button :class="{ active: panel === 'backgrounds' }" @click="setPanel('backgrounds')">B</button>
-			<button :class="{ active: panel === 'credits' }" @click="setPanel('credits')">C</button>
-			<button @click="$emit('download')">D</button>
+			<button
+				:class="{ active: panel === 'add' }"
+				@click="setPanel('add')"
+				title="Add new objects to the scene"
+			>
+				<i class="material-icons">add_box</i>
+			</button>
+			<button
+				:class="{ active: panel === 'backgrounds' }"
+				@click="setPanel('backgrounds')"
+				title="Change the current background"
+			>
+				<i class="material-icons">panorama</i>
+			</button>
+			<button
+				:class="{ active: panel === 'credits' }"
+				title="Show credits"
+				@click="setPanel('credits')"
+			>
+				<i class="material-icons">subject</i>
+			</button>
+			<button title="Take a screenshot of the current scene" @click="$emit('download')">
+				<i class="material-icons">photo_camera</i>
+			</button>
 		</div>
 		<general-panel
 			v-if="panel === ''"
@@ -202,8 +222,13 @@ export default class ToolBox extends Vue {
 			outline: 0;
 			width: 48px;
 			height: 48px;
+			line-height: 48px;
 			background-color: #ffe6f4;
 			border: 3px solid #ffbde1;
+
+			i {
+				vertical-align: sub;
+			}
 
 			&.active {
 				background: white;
