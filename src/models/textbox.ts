@@ -62,6 +62,23 @@ export class TextBox implements IRenderable {
 		);
 	}
 
+	private get text(): string {
+		let text = this.obj.text;
+		if (this.obj.autoQuoting && this.obj.talkingDefault !== 'No-one') {
+			if (text[0] === '[') {
+				text = '["' + text.slice(1);
+			} else {
+				text = '"' + text;
+			}
+			if (text[text.length - 1] === ']') {
+				text = text.slice(0, -1) + '"]';
+			} else {
+				text = text + '"';
+			}
+		}
+		return text;
+	}
+
 	public hitTest(hx: number, hy: number): boolean {
 		const w = this.width;
 		const h = this.height;
@@ -477,7 +494,7 @@ export class TextBox implements IRenderable {
 
 		let b = false;
 
-		for (const line of this.obj.text.split('\n')) {
+		for (const line of this.text.split('\n')) {
 			let cl;
 			text.push((cl = []));
 			for (const l of line) {

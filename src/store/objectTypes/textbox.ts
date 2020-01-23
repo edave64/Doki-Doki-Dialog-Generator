@@ -38,6 +38,7 @@ export interface ITextBox extends IObject {
 	customNameboxWidth: number;
 	controls: boolean;
 	skip: boolean;
+	autoQuoting: boolean;
 	continue: boolean;
 }
 
@@ -108,6 +109,11 @@ export const textBoxMutations: MutationTree<IObjectsState> = {
 		obj.customColor = command.color;
 		++obj.version;
 	},
+	setAutoQuoting(state, command: ISetTextBoxAutoQuotingMutation) {
+		const obj = state.objects[command.id] as ITextBox;
+		obj.autoQuoting = command.autoQuoting;
+		++obj.version;
+	},
 };
 
 let lastTextBoxId = 0;
@@ -132,6 +138,7 @@ export const textBoxActions: ActionTree<IObjectsState, never> = {
 				continue: true,
 				controls: true,
 				skip: true,
+				autoQuoting: true,
 				style: 'normal',
 				customColor: '#ffa8d2',
 				deriveCustomColors: true,
@@ -236,6 +243,10 @@ export interface ISetTextBoxNameboxStrokeMutation extends ICommand {
 
 export interface ISetTextBoxNameboxWidthMutation extends ICommand {
 	readonly customNameboxWidth: number;
+}
+
+export interface ISetTextBoxAutoQuotingMutation extends ICommand {
+	readonly autoQuoting: boolean;
 }
 
 export interface ISetTextBoxControlsSkipMutation extends ICommand {

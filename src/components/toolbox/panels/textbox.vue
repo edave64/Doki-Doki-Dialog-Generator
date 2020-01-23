@@ -45,6 +45,7 @@
 		<toggle label="Controls visible?" v-model="showControls" />
 		<toggle label="Able to skip?" v-model="allowSkipping" />
 		<toggle label="Continue arrow?" v-model="showContinueArrow" />
+		<toggle label="Auto quoting?" v-model="autoQuoting" />
 		<div id="dialog_text_wrapper">
 			<label for="dialog_text">Dialog:</label>
 			<textarea v-model="dialog" id="dialog_text" @keydown.stop />
@@ -98,6 +99,7 @@ import {
 	ISetTextBoxNameboxStrokeMutation,
 	ISetTextBoxDeriveCustomColorMutation,
 	ISplitTextbox,
+	ISetTextBoxAutoQuotingMutation,
 } from '@/store/objectTypes/textbox';
 import Toggle from '@/components/toggle.vue';
 import { State } from 'vuex-class-decorator';
@@ -194,6 +196,19 @@ export default class TextPanel extends Mixins(PanelMixin) {
 				id: this.textbox.id,
 				skip,
 			} as ISetTextBoxControlsSkipMutation);
+		});
+	}
+
+	private get autoQuoting(): boolean {
+		return this.textbox.autoQuoting;
+	}
+
+	private set autoQuoting(autoQuoting: boolean) {
+		this.history.transaction(() => {
+			this.$store.commit('objects/setAutoQuoting', {
+				id: this.textbox.id,
+				autoQuoting,
+			} as ISetTextBoxAutoQuotingMutation);
 		});
 	}
 
