@@ -7,13 +7,13 @@
 			rel="noopener noreferrer"
 			href="https://github.com/edave64/Doki-Doki-Dialog-Generator/blob/v1/docs/index.md"
 		>Help</a>
+		<button :disabled="!hasPrevRender" @click="$emit('show-prev-render')">Compare to last download</button>
+		<button @click="$emit('show-content-packs')">Content Packs</button>
 		<toggle
 			label="Low quality preview?"
 			title="Reduces the quality of the preview images to speed up the user experience and consume less data. Does not effect final render."
 			v-model="lqRendering"
 		/>
-		<button :disabled="!hasPrevRender" @click="$emit('show-prev-render')">Compare to last download</button>
-		<button @click="$emit('show-content-packs')">Content Packs</button>
 		<toggle label="NSFW Mode?" v-model="nsfw" />
 	</div>
 </template>
