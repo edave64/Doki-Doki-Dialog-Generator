@@ -1,7 +1,7 @@
 <template>
 	<div
 		:class="{background: true, active: isActive}"
-		:title="background.name"
+		:title="title"
 		:style="style"
 		@click="$emit('input', background)"
 	>{{title}}</div>
@@ -10,7 +10,6 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { color } from '@/models/background';
-import { VariantBackground } from '@/models/variant-background';
 import { isWebPSupported, getAAsset } from '@/asset-manager';
 import { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset } from '@/store/content';

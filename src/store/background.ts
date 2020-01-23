@@ -12,6 +12,13 @@ export interface IBackground {
 	color: string;
 	flipped: boolean;
 	variant: number;
+	scaling: ScalingModes;
+}
+
+export enum ScalingModes {
+	None = 0,
+	Stretch = 1,
+	Cover = 2,
 }
 
 export default {
@@ -20,6 +27,7 @@ export default {
 		current: '',
 		color: '#000000',
 		flipped: false,
+		scaling: ScalingModes.None,
 		variant: 0,
 	},
 	mutations: {
@@ -35,6 +43,9 @@ export default {
 		},
 		setVariant(state, { variant }: ISetVariantMutation) {
 			state.variant = variant;
+		},
+		setScaling(state, { scaling }: ISetScalingMutation) {
+			state.scaling = scaling;
 		},
 	},
 	actions: {
@@ -104,6 +115,10 @@ export interface ISetFlipMutation {
 
 export interface ISetVariantMutation {
 	variant: number;
+}
+
+export interface ISetScalingMutation {
+	scaling: ScalingModes;
 }
 
 export interface ISeekVariantAction {

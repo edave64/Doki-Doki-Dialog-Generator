@@ -24,12 +24,11 @@
 // tslint:disable:member-ordering
 import { Component, Vue, Watch, Prop } from 'vue-property-decorator';
 import { State } from 'vuex-class-decorator';
-import { VariantBackground } from '../models/variant-background';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { Renderer } from '@/renderer/renderer';
 import { IRenderable } from '@/models/renderable';
-import { IBackground, color } from '@/models/background';
+import { IBackground, color, Background } from '@/models/background';
 import { IHistorySupport } from '@/plugins/vuex-history';
 import { RenderContext } from '@/renderer/rendererContext';
 import { getAsset, registerAsset } from '@/asset-manager';
@@ -127,10 +126,10 @@ export default class Render extends Vue {
 				if (!current) return null;
 				const variant = current.variants[this.$store.state.background.variant];
 				if (!variant) return null;
-				return new VariantBackground(
-					current.label,
+				return new Background(
 					variant,
-					this.$store.state.background.flipped
+					this.$store.state.background.flipped,
+					this.$store.state.background.scaling
 				);
 		}
 	}

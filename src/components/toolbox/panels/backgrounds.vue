@@ -20,7 +20,6 @@
 import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
 import { registerAsset, getAsset } from '@/asset-manager';
 import { IBackground, color } from '@/models/background';
-import { VariantBackground } from '@/models/variant-background';
 import BackgroundButton from './background/button.vue';
 import BackgroundSettings from './background/settings.vue';
 import { State } from 'vuex-class-decorator';

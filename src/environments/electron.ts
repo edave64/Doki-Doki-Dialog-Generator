@@ -92,19 +92,17 @@ export class Electron implements IEnvironment {
 	}
 
 	public async installBackground(background: Background): Promise<void> {
+		/*
 		const asset = await getAsset(background.path, true);
 		if (!(asset instanceof HTMLImageElement)) return;
 		const img = await fetch(asset.src);
 		const array = new Uint8Array(await img.arrayBuffer());
-		this.electron.ipcRenderer.send(
-			'install-background',
-			background.name,
-			array
-		);
-		background.installed = true;
+		this.electron.ipcRenderer.send('install-background', array);
+		*/
 	}
 
 	public async uninstallBackground(background: Background): Promise<void> {
+		/*
 		const asset = await getAsset(background.path, true);
 		if (!(asset instanceof HTMLImageElement)) return;
 		if (!asset.src.startsWith('blob:')) {
@@ -115,6 +113,7 @@ export class Electron implements IEnvironment {
 		}
 		this.electron.ipcRenderer.send('uninstall-background', background.name);
 		background.installed = false;
+		*/
 	}
 
 	public installContentPack(url: string): void {

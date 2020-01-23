@@ -6,10 +6,10 @@
 				class="character"
 				v-for="character of characters"
 				:key="character.id"
-				:title="character.name"
+				:title="character.label"
 				@click="onChosen(character.id.toLowerCase())"
 			>
-				<img :src="assetPath(character)" :alt="character.name" />
+				<img :src="assetPath(character)" :alt="character.label" />
 			</div>
 		</div>
 		<div class="btn custom-sprite" @click="$refs.upload.click()">

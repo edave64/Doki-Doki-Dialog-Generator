@@ -5,30 +5,36 @@
 			<label for="bg_color">Color:</label>
 			<input id="bg_color" type="color" v-model="color" />
 		</template>
-		<template v-if="isVariant">
-			<table>
-				<tr>
-					<td colspan="3">
-						<toggle v-model="flipped" label="Flipped?" />
-					</td>
-				</tr>
-				<tr v-if="hasVariants">
-					<td>
-						<button @click="seekVariant(-1)">&lt;</button>
-					</td>
-					<td>Variant</td>
-					<td>
-						<button @click="seekVariant(1)">&gt;</button>
-					</td>
-				</tr>
-			</table>
-		</template>
+		<table v-if="isVariant">
+			<tr>
+				<td colspan="3">
+					<toggle v-model="flipped" label="Flipped?" />
+				</td>
+			</tr>
+			<tr v-if="hasVariants">
+				<td>
+					<button @click="seekVariant(-1)">&lt;</button>
+				</td>
+				<td>Variant</td>
+				<td>
+					<button @click="seekVariant(1)">&gt;</button>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<select v-model="scaling" @keydown.stop>
+						<option value="0">None</option>
+						<option value="1">Stretch</option>
+						<option value="2">Cover</option>
+					</select>
+				</td>
+			</tr>
+		</table>
 	</fieldset>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import { VariantBackground } from '@/models/variant-background';
 import { isWebPSupported } from '@/asset-manager';
 import Toggle from '@/components/toggle.vue';
 import { State } from 'vuex-class-decorator';
@@ -41,6 +47,8 @@ import {
 	ISetColorMutation,
 	ISetFlipMutation,
 	ISeekVariantAction,
+	ScalingModes,
+	ISetScalingMutation,
 } from '@/store/background';
 
 @Component({
@@ -88,6 +96,18 @@ export default class BackgroundSettings extends Vue {
 			this.$store.commit('background/setFlipped', {
 				flipped,
 			} as ISetFlipMutation);
+		});
+	}
+
+	private get scaling(): ScalingModes {
+		return this.$store.state.background.scaling;
+	}
+
+	private set scaling(scaling: ScalingModes) {
+		this.history.transaction(() => {
+			this.$store.commit('background/setScaling', {
+				scaling,
+			} as ISetScalingMutation);
 		});
 	}
 

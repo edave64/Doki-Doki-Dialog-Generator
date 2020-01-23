@@ -1,67 +1,65 @@
 import { RenderContext } from '@/renderer/rendererContext';
-import { getAsset } from '@/asset-manager';
+import { getAsset, getAAsset } from '@/asset-manager';
 import { screenWidth, screenHeight } from './constants';
+import { IAsset } from '@/store/content';
+import { ScalingModes } from '@/store/background';
 
 export interface IBackground {
-	name: string;
-	nsfw?: boolean;
 	render(rx: RenderContext): Promise<void>;
 }
 
 export class Background implements IBackground {
-	public readonly path: string;
-	public flip: boolean = false;
 	public constructor(
-		path: string,
-		public readonly name: string,
-		public readonly custom: boolean = false,
-		public readonly scale: string = '',
-		public installed: boolean = false
-	) {
-		this.path = (custom ? '' : '/backgrounds/') + path;
-	}
+		public readonly assets: IAsset[],
+		public readonly flip: boolean,
+		public readonly scale: ScalingModes
+	) {}
 
 	public async render(rx: RenderContext): Promise<void> {
-		const image = await getAsset(this.path, rx.hq);
-		if (!(image instanceof HTMLImageElement)) return;
-		let x = 0;
-		let y = 0;
-		let w = image.width;
-		let h = image.height;
+		const images = await Promise.all(
+			this.assets.map(asset => getAAsset(asset, rx.hq))
+		);
+		for (const image of images) {
+			if (!(image instanceof HTMLImageElement)) return;
+			let x = 0;
+			let y = 0;
+			let w = image.width;
+			let h = image.height;
 
-		switch (this.scale) {
-			case '':
-				x = screenWidth / 2 - w / 2;
-				y = screenHeight / 2 - h / 2;
-				break;
-			case 'stretch':
-				w = screenWidth;
-				h = screenHeight;
-				break;
-			case 'cover':
-				const ratio = w / h;
-				const screenRatio = screenWidth / screenHeight;
-
-				if (ratio > screenRatio) {
-					h = screenHeight;
-					w = h * ratio;
-				} else {
+			switch (this.scale) {
+				case ScalingModes.None:
+					x = screenWidth / 2 - w / 2;
+					y = screenHeight / 2 - h / 2;
+					break;
+				case ScalingModes.Stretch:
 					w = screenWidth;
-					h = w / ratio;
-				}
+					h = screenHeight;
+					break;
+				case ScalingModes.Cover:
+					const ratio = w / h;
+					const screenRatio = screenWidth / screenHeight;
 
-				x = screenWidth / 2 - w / 2;
-				y = screenHeight / 2 - h / 2;
+					if (ratio > screenRatio) {
+						h = screenHeight;
+						w = h * ratio;
+					} else {
+						w = screenWidth;
+						h = w / ratio;
+					}
+
+					x = screenWidth / 2 - w / 2;
+					y = screenHeight / 2 - h / 2;
+			}
+
+			rx.drawImage({
+				image,
+				x,
+				y,
+				w,
+				h,
+				flip: this.flip,
+			});
 		}
-
-		rx.drawImage({
-			image,
-			x,
-			y,
-			w,
-			h,
-			flip: this.flip,
-		});
 	}
 }
 
