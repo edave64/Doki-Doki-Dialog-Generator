@@ -7,14 +7,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import { IBackground, color, Background } from '../../../../models/background';
-import { VariantBackground } from '../../../../models/variant-background';
-import {
-	isWebPSupported,
-	getAAsset,
-	getAsset,
-} from '../../../../asset-manager';
+import { Component, Vue, Prop } from 'vue-property-decorator';
+import { getAAsset, getAsset } from '../../../../asset-manager';
 import environment from '../../../../environments/environment';
 import { ErrorAsset } from '../../../../models/error-asset';
 import { IAsset } from '../../../../store/content';
