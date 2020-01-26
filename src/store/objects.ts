@@ -94,8 +94,11 @@ export default {
 		...textBoxMutations,
 	},
 	actions: {
-		removeObject({ state, commit }, command: IRemoveObjectAction) {
+		removeObject({ state, commit, rootState }, command: IRemoveObjectAction) {
 			const obj = state.objects[command.id];
+			if (rootState.ui.selection === command.id) {
+				commit('ui/setSelection', null, { root: true });
+			}
 			commit('removeFromList', {
 				id: command.id,
 				onTop: obj.onTop,
