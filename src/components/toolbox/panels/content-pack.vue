@@ -179,9 +179,11 @@ fieldset {
 
 .panel.vertical {
 	fieldset {
+		width: 100%;
+
 		> .list {
-			width: 146px;
 			max-height: 200px;
+			width: 172px;
 
 			* {
 				width: 100%;
