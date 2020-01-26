@@ -13,6 +13,7 @@
 			Upload
 			<input type="file" ref="upload" @change="onFileUpload" />
 		</div>
+		<button class="upload-background" @click="addByUrl">Add by URL</button>
 	</div>
 </template>
 
@@ -76,20 +77,30 @@ export default class BackgroundsPanel extends Mixins(PanelMixin) {
 		const uploadInput = this.$refs.upload as HTMLInputElement;
 		if (!uploadInput.files) return;
 		for (const file of uploadInput.files) {
-			(nr => {
-				const name = 'customBg' + nr;
-				const url = registerAsset(name, file);
-				this.uploadedBackgroundsPack.backgrounds.push({
-					label: '',
-					variants: [[url]],
-				});
-				this.$store.dispatch('content/replaceContentPack', {
-					contentPack: this.uploadedBackgroundsPack,
-				} as IReplaceContentPackAction);
-				// backgrounds.push(new Background(name, file.name, true));
-				this.$set(this.customPathLookup, name, url);
-			})(++this.customBGCount);
+			const url = URL.createObjectURL(file);
+			this.uploadedBackgroundsPack.backgrounds.push({
+				label: file.name,
+				variants: [[url]],
+			});
+			this.$store.dispatch('content/replaceContentPack', {
+				contentPack: this.uploadedBackgroundsPack,
+			} as IReplaceContentPackAction);
 		}
+	}
+
+	private addByUrl() {
+		const url = prompt('Enter the URL of the image');
+		if (!url) return;
+
+		const name = 'customBg' + ++this.customBGCount;
+		const lastSegment = url.split('/').slice(-1)[0];
+		this.uploadedBackgroundsPack.backgrounds.push({
+			label: lastSegment,
+			variants: [[url]],
+		});
+		this.$store.dispatch('content/replaceContentPack', {
+			contentPack: this.uploadedBackgroundsPack,
+		} as IReplaceContentPackAction);
 	}
 }
 </script>
@@ -121,7 +132,8 @@ textarea {
 }
 
 #panels:not(.vertical) > .panel {
-	> div {
+	> div,
+	button {
 		width: 12rem;
 	}
 }
