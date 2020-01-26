@@ -25,11 +25,14 @@
 				</div>
 			</template>
 			<template v-if="group === 'sprites'">
-				<div class="btn custom-sprite" @click="$refs.upload.click()">
-					Custom sprite upload
+				<button class="btn custom-sprite" @click="$refs.upload.click()">
+					<i class="material-icons">publish</i>
+					Upload new sprite
 					<input type="file" ref="upload" @change="onFileUpload" />
-				</div>
-				<div class="btn custom-sprite" @click="uploadFromURL">Custom sprite from URL</div>
+				</button>
+				<button @click="uploadFromURL">
+					<i class="material-icons">insert_link</i> New sprite from URL
+				</button>
 			</template>
 			<template v-if="group === 'ui'">
 				<button @click="addTextBox">Textbox</button>
