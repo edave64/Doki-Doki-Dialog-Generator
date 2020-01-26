@@ -1,23 +1,40 @@
 <template>
 	<div class="panel" v-if="isWebPSupported !== undefined">
-		<h1>Add character</h1>
-		<div :class="{characterGrid: true, vertical }">
-			<div
-				class="character"
-				v-for="character of characters"
-				:key="character.id"
-				:title="character.label"
-				@click="onChosen(character.id.toLowerCase())"
-			>
-				<img :src="assetPath(character)" :alt="character.label" />
-			</div>
+		<h1>Add</h1>
+		<div :class="{'group-selector': true, vertical }">
+			<button :class="{active: group === 'characters'}" @click="group = 'characters'">
+				<i class="material-icons">emoji_people</i> Characters
+			</button>
+			<button :class="{active: group === 'sprites'}" @click="group = 'sprites'">
+				<i class="material-icons">change_history</i> Sprites
+			</button>
+			<button :class="{active: group === 'ui'}" @click="group = 'ui'">
+				<i class="material-icons">view_quilt</i> UI
+			</button>
 		</div>
-		<div class="btn custom-sprite" @click="$refs.upload.click()">
-			Custom sprite upload
-			<input type="file" ref="upload" @change="onFileUpload" />
+		<div :class="{'item-grid': true, vertical }">
+			<template v-if="group === 'characters'">
+				<div
+					class="character"
+					v-for="character of characters"
+					:key="character.id"
+					:title="character.label"
+					@click="onChosen(character.id.toLowerCase())"
+				>
+					<img :src="assetPath(character)" :alt="character.label" />
+				</div>
+			</template>
+			<template v-if="group === 'sprites'">
+				<div class="btn custom-sprite" @click="$refs.upload.click()">
+					Custom sprite upload
+					<input type="file" ref="upload" @change="onFileUpload" />
+				</div>
+				<div class="btn custom-sprite" @click="uploadFromURL">Custom sprite from URL</div>
+			</template>
+			<template v-if="group === 'ui'">
+				<button @click="addTextBox">Textbox</button>
+			</template>
 		</div>
-		<div class="btn custom-sprite" @click="uploadFromURL">Custom sprite from URL</div>
-		<button @click="addTextBox">Textbox</button>
 	</div>
 </template>
 
@@ -44,6 +61,7 @@ export default class AddPanel extends Mixins(PanelMixin) {
 	public $store!: Store<IRootState>;
 	private isWebPSupported: boolean | null = null;
 	private customAssetCount = 0;
+	private group: 'characters' | 'sprites' | 'ui' = 'characters';
 
 	private async created() {
 		this.isWebPSupported = await isWebPSupported();
@@ -64,7 +82,6 @@ export default class AddPanel extends Mixins(PanelMixin) {
 			(nr => {
 				const name = 'customAsset' + nr;
 				const url = registerAsset(name, file);
-				this.$emit('add-custom-asset', name);
 			})(++this.customAssetCount);
 		}
 	}
@@ -74,7 +91,6 @@ export default class AddPanel extends Mixins(PanelMixin) {
 		if (!url) return;
 		const name = 'customAsset' + ++this.customAssetCount;
 		await registerAssetWithURL(name, url);
-		this.$emit('add-custom-asset', name);
 	}
 
 	private addTextBox() {
@@ -110,27 +126,46 @@ textarea {
 	}
 }
 
-.characterGrid {
-	display: grid;
-	place-items: center;
+.group-selector {
+	display: flex;
 
 	&.vertical {
 		width: 100%;
-		grid-template-columns: 1fr 1fr 1fr;
-		grid-auto-rows: 72px;
-		grid-auto-flow: row;
+		flex-direction: row;
 	}
 
 	&:not(.vertical) {
 		height: 100%;
-		grid-template-rows: 1fr 1fr;
-		grid-auto-columns: 72px;
-		grid-auto-flow: column;
+
+		flex-direction: column;
 	}
 
-	.character {
-		align-self: center;
-		justify-self: center;
+	button {
+		flex-grow: 1;
+		&.active {
+			background: white;
+		}
+		.material-icons {
+			display: block;
+		}
+	}
+}
+
+.item-grid {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-evenly;
+
+	&.vertical {
+		margin-top: 4px;
+		width: 100%;
+		flex-direction: row;
+	}
+
+	&:not(.vertical) {
+		margin-left: 4px;
+		height: 100%;
+		flex-direction: column;
 	}
 
 	.character img {
