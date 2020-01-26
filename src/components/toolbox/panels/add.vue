@@ -23,6 +23,9 @@
 				>
 					<img :src="assetPath(character)" :alt="character.label" />
 				</div>
+				<div class="btn custom-sprite disabled" title="Not yet implemented">
+					<i class="material-icons">extension</i> Search in content packs
+				</div>
 			</template>
 			<template v-if="group === 'sprites'">
 				<button class="btn custom-sprite" @click="$refs.upload.click()">
@@ -33,9 +36,16 @@
 				<button @click="uploadFromURL">
 					<i class="material-icons">insert_link</i> New sprite from URL
 				</button>
+				<button title="Not yet implemented" disabled="disabled">
+					<i class="material-icons">extension</i> Search in content packs
+				</button>
 			</template>
 			<template v-if="group === 'ui'">
 				<button @click="addTextBox">Textbox</button>
+				<button disabled="disabled">Poem</button>
+				<button disabled="disabled">Dialog box</button>
+				<button disabled="disabled">Choice</button>
+				<button disabled="disabled">Console</button>
 			</template>
 		</div>
 	</div>
@@ -163,6 +173,10 @@ textarea {
 		margin-top: 4px;
 		width: 100%;
 		flex-direction: row;
+
+		button {
+			width: 100%;
+		}
 	}
 
 	&:not(.vertical) {

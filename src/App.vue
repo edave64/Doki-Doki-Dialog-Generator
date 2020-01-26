@@ -256,6 +256,16 @@ button,
 	padding: 2px;
 	text-align: center;
 	text-decoration: none;
+	user-select: none;
+
+	i {
+		vertical-align: middle;
+	}
+
+	&.disabled {
+		color: gray;
+		pointer-events: none;
+	}
 }
 
 input[type='number'] {

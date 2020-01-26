@@ -14,6 +14,9 @@
 			<input type="file" ref="upload" @change="onFileUpload" />
 		</div>
 		<button class="upload-background" @click="addByUrl">Add by URL</button>
+		<button class="upload-background" title="Not yet implemented" disabled="disabled">
+			<i class="material-icons">extension</i> Search in content packs
+		</button>
 	</div>
 </template>
 
@@ -114,7 +117,6 @@ textarea {
 	margin-top: 4px;
 	background-size: cover;
 	text-shadow: 0 0 2px white;
-	color: black;
 	display: flex;
 	align-items: center;
 	justify-content: center;
