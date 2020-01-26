@@ -348,36 +348,20 @@ export class TextBox implements IRenderable {
 						.toCss(),
 				};
 
-				dotRx.drawPath({
-					path: ctx => {
-						ctx.ellipse(0, 0, 9.5, 9.5, 0, 0, 2 * Math.PI);
-					},
-					fill,
-				});
-				dotRx.drawPath({
-					path: ctx => {
-						ctx.ellipse(47, 0, 9.5, 9.5, 0, 0, 2 * Math.PI);
-					},
-					fill,
-				});
-				dotRx.drawPath({
-					path: ctx => {
-						ctx.ellipse(0, 47, 9.5, 9.5, 0, 0, 2 * Math.PI);
-					},
-					fill,
-				});
-				dotRx.drawPath({
-					path: ctx => {
-						ctx.ellipse(47, 47, 9.5, 9.5, 0, 0, 2 * Math.PI);
-					},
-					fill,
-				});
-				dotRx.drawPath({
-					path: ctx => {
-						ctx.ellipse(23.5, 24.5, 9.5, 9.5, 0, 0, 2 * Math.PI);
-					},
-					fill,
-				});
+				function drawDot(dotX: number, dotY: number) {
+					dotRx.drawPath({
+						path: ctx => {
+							ctx.ellipse(dotX, dotY, 9.5, 9.5, 0, 0, 2 * Math.PI);
+						},
+						fill,
+					});
+				}
+
+				drawDot(0, 0);
+				drawDot(47, 0);
+				drawDot(0, 47);
+				drawDot(47, 47);
+				drawDot(23.5, 24.5);
 			}, true);
 			rx.customTransform(
 				ctx => {

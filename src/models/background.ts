@@ -1,5 +1,5 @@
 import { RenderContext } from '@/renderer/rendererContext';
-import { getAsset, getAAsset } from '@/asset-manager';
+import { getAAsset } from '@/asset-manager';
 import { screenWidth, screenHeight } from './constants';
 import { IAsset } from '@/store/content';
 import { ScalingModes } from '@/store/background';

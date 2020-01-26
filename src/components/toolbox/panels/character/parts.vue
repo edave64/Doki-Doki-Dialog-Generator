@@ -279,30 +279,6 @@ export default class PartsPanel extends Vue {
 		this.updatePose();
 	}
 
-	private onFileUpload(e: Event) {
-		/*
-		const uploadInput = this.$refs.upload as HTMLInputElement;
-		if (!uploadInput.files) return;
-		for (const file of uploadInput.files) {
-			(nr => {
-				const name = 'customAsset' + nr;
-				const url = registerAsset(name, file);
-				this.$emit('add-custom-asset', name);
-			})(++this.customAssetCount);
-		}
-		*/
-	}
-
-	private async uploadFromURL() {
-		/*
-		const url = prompt('Enter the URL of the image');
-		if (!url) return;
-		const name = 'customAsset' + ++this.customAssetCount;
-		await registerAssetWithURL(name, url);
-		this.$emit('add-custom-asset', name);
-		*/
-	}
-
 	private setPart(part: ISetPartAction['part'], index: number): void {
 		this.history.transaction(() => {
 			this.$store.dispatch('objects/setPart', {
