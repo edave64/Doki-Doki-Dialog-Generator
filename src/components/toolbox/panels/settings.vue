@@ -1,14 +1,6 @@
 <template>
 	<div class="panel">
-		<h1>General</h1>
-		<a
-			class="btn"
-			target="_blank"
-			rel="noopener noreferrer"
-			href="https://github.com/edave64/Doki-Doki-Dialog-Generator/blob/v1/docs/index.md"
-		>Help</a>
-		<button :disabled="!hasPrevRender" @click="$emit('show-prev-render')">Compare to last download</button>
-		<button @click="$emit('show-content-packs')">Content Packs</button>
+		<h1>Settings</h1>
 		<toggle
 			label="Low quality preview?"
 			title="Reduces the quality of the preview images to speed up the user experience and consume less data. Does not effect final render."
@@ -43,7 +35,7 @@ const paths = Object.values(nsfwPacks);
 		Toggle,
 	},
 })
-export default class GeneralPanel extends Mixins(PanelMixin) {
+export default class SettingsPanel extends Mixins(PanelMixin) {
 	public $store!: Store<IRootState>;
 
 	private get lqRendering(): boolean {
@@ -53,10 +45,6 @@ export default class GeneralPanel extends Mixins(PanelMixin) {
 		this.history.transaction(async () => {
 			await this.$store.commit('ui/setLqRendering', lqRendering);
 		});
-	}
-
-	private get hasPrevRender(): boolean {
-		return this.$store.state.ui.lastDownload !== null;
 	}
 
 	private get history(): IHistorySupport {

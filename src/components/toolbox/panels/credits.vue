@@ -1,6 +1,18 @@
 <template>
 	<div class="panel">
-		<h1>Credits</h1>
+		<h1>Help and Credits</h1>
+		<a
+			class="btn"
+			target="_blank"
+			rel="noopener noreferrer"
+			href="https://github.com/edave64/Doki-Doki-Dialog-Generator/blob/v1/docs/index.md"
+		>Help</a>
+		<a
+			class="btn"
+			target="_blank"
+			rel="noopener noreferrer"
+			href="https://github.com/edave64/Doki-Doki-Dialog-Generator/"
+		>Fork me on GitHub</a>
 		<p>
 			All assets used are IP of Team Salvato and created by them, unless noted
 			otherwise.
@@ -55,5 +67,6 @@ export default class AddPanel extends Mixins(PanelMixin) {}
 <style lang="scss" scoped>
 p {
 	margin: 4px;
+	max-width: 256px;
 }
 </style>

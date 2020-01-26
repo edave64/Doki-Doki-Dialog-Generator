@@ -15,29 +15,44 @@
 			>
 				<i class="material-icons">panorama</i>
 			</button>
+			<button :class="{ active: panel === 'panels' }" title="Panels" @click="setPanel('panels')">
+				<i class="material-icons">view_module</i>
+			</button>
+			<button :class="{ active: panel === 'settings' }" title="Settings" @click="setPanel('settings')">
+				<i class="material-icons">settings_applications</i>
+			</button>
+		</div>
+		<settings-panel v-if="panel === 'settings'" />
+		<content-packs-panel v-else-if="panel === 'packs'" />
+		<backgrounds-panel v-else-if="panel === 'backgrounds'" />
+		<credits-panel v-else-if="panel === 'help_credits'" />
+		<character-panel v-else-if="panel === 'character'" />
+		<sprite-panel v-else-if="panel === 'sprite'" />
+		<text-box-panel v-else-if="panel === 'textBox'" />
+		<panels-panel v-else-if="panel === 'panels'" />
+		<add-panel v-else />
+		<div id="toolbar-end">
 			<button
-				:class="{ active: panel === 'credits' }"
-				title="Show credits"
-				@click="setPanel('credits')"
+				:class="{ active: panel === 'help_credits' }"
+				@click="setPanel('help_credits')"
+				title="Help &amp; Credits"
 			>
-				<i class="material-icons">subject</i>
+				<i class="material-icons">help</i>
+			</button>
+			<button :class="{ active: panel === 'packs' }" @click="setPanel('packs')" title="Content packs">
+				<i class="material-icons">extension</i>
+			</button>
+			<button
+				@click="$emit('show-prev-render')"
+				title="Show last downloaded panel"
+				:disabled="!hasPrevRender"
+			>
+				<i class="material-icons">flip_to_back</i>
 			</button>
 			<button title="Take a screenshot of the current scene" @click="$emit('download')">
 				<i class="material-icons">photo_camera</i>
 			</button>
 		</div>
-		<general-panel
-			v-if="panel === ''"
-			@show-prev-render="$emit('show-prev-render')"
-			@show-content-packs="setPanel('content-packs')"
-		/>
-		<content-packs-panel v-if="panel === 'content-packs'" />
-		<add-panel v-if="panel === 'add'" />
-		<backgrounds-panel v-if="panel === 'backgrounds'" />
-		<credits-panel v-if="panel === 'credits'" />
-		<character-panel v-if="panel === 'character'" />
-		<sprite-panel v-if="panel === 'sprite'" />
-		<text-box-panel v-if="panel === 'textBox'" />
 	</div>
 </template>
 
@@ -47,7 +62,7 @@
 import { Component, Vue, Watch, Prop } from 'vue-property-decorator';
 import { State } from 'vuex-class-decorator';
 
-import GeneralPanel from './panels/general.vue';
+import SettingsPanel from './panels/settings.vue';
 import AddPanel from './panels/add.vue';
 import CharacterPanel from './panels/character.vue';
 import SpritePanel from './panels/sprite.vue';
@@ -55,6 +70,7 @@ import TextBoxPanel from './panels/textbox.vue';
 import CreditsPanel from './panels/credits.vue';
 import BackgroundsPanel from './panels/backgrounds.vue';
 import ContentPacksPanel from './panels/content-pack.vue';
+import PanelsPanel from './panels/panels.vue';
 import { IObject } from '@/store/objects';
 import { IBackground } from '@/models/background';
 import { Store } from 'vuex';
@@ -64,14 +80,15 @@ import environment from '@/environments/environment';
 type PanelNames =
 	| 'add'
 	| 'backgrounds'
-	| 'credits'
+	| 'help_credits'
 	| 'selection'
-	| 'content-packs'
-	| '';
+	| 'packs'
+	| 'settings'
+	| 'panels';
 
 @Component({
 	components: {
-		GeneralPanel,
+		SettingsPanel,
 		AddPanel,
 		BackgroundsPanel,
 		CreditsPanel,
@@ -79,6 +96,7 @@ type PanelNames =
 		TextBoxPanel,
 		SpritePanel,
 		ContentPacksPanel,
+		PanelsPanel,
 	},
 })
 export default class ToolBox extends Vue {
@@ -96,12 +114,12 @@ export default class ToolBox extends Vue {
 		return this.$store.state.ui.selection;
 	}
 
-	private panelSelection: PanelNames = '';
+	private panelSelection: PanelNames = 'add';
 
 	private get panel() {
 		if (this.panelSelection === 'selection') {
 			if (this.selection === null) {
-				this.panelSelection = '';
+				this.panelSelection = 'add';
 			} else {
 				const obj = this.$store.state.objects.objects[this.selection];
 				return obj.type;
@@ -110,8 +128,12 @@ export default class ToolBox extends Vue {
 		return this.panelSelection;
 	}
 
+	private get hasPrevRender(): boolean {
+		return this.$store.state.ui.lastDownload !== null;
+	}
+
 	private setPanel(name: PanelNames) {
-		if (name === this.panelSelection) name = '';
+		if (name === this.panelSelection) name = 'add';
 		this.panelSelection = name;
 		if (this.selection) {
 			this.$store.commit('ui/setSelection', null);
@@ -125,7 +147,7 @@ export default class ToolBox extends Vue {
 			return;
 		}
 		if (this.panelSelection === 'selection') {
-			this.panelSelection = '';
+			this.panelSelection = 'add';
 		}
 	}
 }
@@ -140,6 +162,7 @@ export default class ToolBox extends Vue {
 
 	.panel {
 		display: flex;
+		flex-grow: 1;
 		flex-direction: column;
 		padding: 4px;
 	}
@@ -163,11 +186,15 @@ export default class ToolBox extends Vue {
 			}
 		}
 
-		#toolbar {
+		#toolbar,
+		#toolbar-end {
 			width: 48px;
 			height: 100%;
 			float: left;
+			margin-top: -3px;
+		}
 
+		#toolbar {
 			button {
 				border-bottom: none;
 
@@ -177,6 +204,19 @@ export default class ToolBox extends Vue {
 
 				&.active {
 					border-right: 3px solid white;
+				}
+			}
+		}
+
+		#toolbar-end {
+			button {
+				border-bottom: none;
+				&:nth-child(4) {
+					border-top: 3px solid #ffbde1;
+				}
+
+				&.active {
+					border-left: 3px solid white;
 				}
 			}
 		}
@@ -199,11 +239,14 @@ export default class ToolBox extends Vue {
 			overflow-y: auto;
 		}
 
-		#toolbar {
+		#toolbar,
+		#toolbar-end {
 			width: calc(100% + 6px);
+		}
+
+		#toolbar {
 			button {
 				border-right: none;
-
 				&:nth-child(4) {
 					border-right: 3px solid #ffbde1;
 				}
@@ -213,11 +256,46 @@ export default class ToolBox extends Vue {
 				}
 			}
 		}
+
+		#toolbar-end {
+			margin-bottom: -3px;
+			button {
+				border-left: none;
+
+				&:nth-child(4) {
+					border-right: 3px solid #ffbde1;
+				}
+
+				&.active {
+					border-top: 3px solid white;
+				}
+			}
+		}
 	}
 
 	#toolbar {
 		margin-top: -3px;
 		margin-left: -3px;
+		button {
+			outline: 0;
+			width: 48px;
+			height: 48px;
+			line-height: 48px;
+			background-color: #ffe6f4;
+			border: 3px solid #ffbde1;
+
+			i {
+				vertical-align: sub;
+			}
+
+			&.active {
+				background: white;
+			}
+		}
+	}
+
+	#toolbar-end {
+		margin-right: -3px;
 		button {
 			outline: 0;
 			width: 48px;
