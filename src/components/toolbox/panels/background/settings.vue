@@ -12,11 +12,11 @@
 				</td>
 			</tr>
 			<tr v-if="hasVariants">
-				<td>
+				<td class="arrow-col">
 					<button @click="seekVariant(-1)">&lt;</button>
 				</td>
-				<td>Variant</td>
-				<td>
+				<td style="text-align:center">Variant</td>
+				<td class="arrow-col">
 					<button @click="seekVariant(1)">&gt;</button>
 				</td>
 			</tr>
@@ -140,5 +140,17 @@ button {
 
 select {
 	width: 100%;
+}
+
+table {
+	width: 100%;
+}
+
+.arrow-col {
+	width: 24px;
+
+	button {
+		width: 24px;
+	}
 }
 </style>
