@@ -99,14 +99,14 @@ export default class BackgroundSettings extends Vue {
 		});
 	}
 
-	private get scaling(): ScalingModes {
-		return this.$store.state.background.scaling;
+	private get scaling(): string {
+		return this.$store.state.background.scaling.toString();
 	}
 
-	private set scaling(scaling: ScalingModes) {
+	private set scaling(scaling: string) {
 		this.history.transaction(() => {
 			this.$store.commit('background/setScaling', {
-				scaling,
+				scaling: parseInt(scaling),
 			} as ISetScalingMutation);
 		});
 	}
@@ -132,5 +132,13 @@ export default class BackgroundSettings extends Vue {
 <style lang="scss" scoped>
 fieldset {
 	min-height: 135px;
+}
+
+button {
+	width: 24px;
+}
+
+select {
+	width: 100%;
 }
 </style>
