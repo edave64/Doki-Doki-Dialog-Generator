@@ -72,6 +72,20 @@ export default class App extends Vue {
 		window.addEventListener('resize', this.updateArea);
 		window.removeEventListener('keydown', this.onKeydown);
 		window.addEventListener('keydown', this.onKeydown);
+		document.body.addEventListener(
+			'drop',
+			(event: Event) => {
+				event.preventDefault();
+			},
+			true
+		);
+		document.body.addEventListener(
+			'dragover',
+			(event: Event) => {
+				event.preventDefault();
+			},
+			true
+		);
 		if (Object.keys(this.$store.state.objects.objects).length === 0) {
 			this.$store.dispatch('objects/createTextBox', {} as ICreateTextBoxAction);
 		}
@@ -213,6 +227,8 @@ export default class App extends Vue {
 <style lang="scss">
 html,
 body {
+	width: 100vw;
+	height: 100vh;
 	overflow: hidden;
 	font-family: aller, sans-serif;
 	font-size: 16px;

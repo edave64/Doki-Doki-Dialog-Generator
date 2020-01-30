@@ -1,5 +1,8 @@
 <template>
-	<div class="panel">
+	<div class="panel" @dragenter="$refs.dt.show()" @mouseleave="$refs.dt.hide()">
+		<drop-target ref="dt" class="drop-target" @drop="addImageFile"
+			>Drop here to add as a new background</drop-target
+		>
 		<h1>Background</h1>
 		<background-settings :value="value" />
 
@@ -14,7 +17,11 @@
 			<input type="file" ref="upload" @change="onFileUpload" />
 		</div>
 		<button class="upload-background" @click="addByUrl">Add by URL</button>
-		<button class="upload-background" title="Not yet implemented" disabled="disabled">
+		<button
+			class="upload-background"
+			title="Not yet implemented"
+			disabled="disabled"
+		>
 			<i class="material-icons">extension</i> Search in content packs
 		</button>
 	</div>
@@ -26,6 +33,7 @@ import { registerAsset, getAsset } from '@/asset-manager';
 import { IBackground, color } from '@/models/background';
 import BackgroundButton from './background/button.vue';
 import BackgroundSettings from './background/settings.vue';
+import DropTarget from '../drop-target.vue';
 import { State } from 'vuex-class-decorator';
 import { Store } from 'vuex';
 import { IRootState } from '../../../store';
@@ -36,17 +44,21 @@ import {
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { ISetCurrentMutation } from '../../../store/background';
 import { PanelMixin } from './panelMixin';
+import { IHistorySupport } from '../../../plugins/vuex-history';
 
 @Component({
 	components: {
 		BackgroundButton,
 		BackgroundSettings,
+		DropTarget,
 	},
 })
 export default class BackgroundsPanel extends Mixins(PanelMixin) {
 	public $store!: Store<IRootState>;
 
-	@Prop({ required: true }) private readonly value!: IBackground;
+	private get history(): IHistorySupport {
+		return this.$root as any;
+	}
 
 	private uploadedBackgroundsPack: ContentPack<string> = {
 		packId: 'dddg.buildin.uploadedBackgrounds',
@@ -139,7 +151,9 @@ textarea {
 #panels:not(.vertical) > .panel {
 	> div,
 	button {
-		width: 12rem;
+		&:not(.drop-target) {
+			width: 12rem;
+		}
 	}
 }
 
