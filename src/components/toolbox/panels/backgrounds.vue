@@ -46,6 +46,16 @@ import { ISetCurrentMutation } from '../../../store/background';
 import { PanelMixin } from './panelMixin';
 import { IHistorySupport } from '../../../plugins/vuex-history';
 
+const uploadedBackgroundsPack: ContentPack<string> = {
+	packId: 'dddg.buildin.uploadedBackgrounds',
+	packCredits: '',
+	characters: [],
+	fonts: [],
+	sprites: [],
+	poemStyles: [],
+	backgrounds: [],
+};
+
 @Component({
 	components: {
 		BackgroundButton,
@@ -59,18 +69,6 @@ export default class BackgroundsPanel extends Mixins(PanelMixin) {
 	private get history(): IHistorySupport {
 		return this.$root as any;
 	}
-
-	private uploadedBackgroundsPack: ContentPack<string> = {
-		packId: 'dddg.buildin.uploadedBackgrounds',
-		packCredits: '',
-		characters: [],
-		fonts: [],
-		sprites: [],
-		poemStyles: [],
-		backgrounds: [],
-	};
-	private customPathLookup: { [name: string]: string } = {};
-	private customBGCount = 0;
 
 	private get backgrounds(): string[] {
 		return [
@@ -109,13 +107,13 @@ export default class BackgroundsPanel extends Mixins(PanelMixin) {
 	}
 
 	private addNewCustomBackground(label: string, url: string) {
-		this.uploadedBackgroundsPack.backgrounds.push({
+		uploadedBackgroundsPack.backgrounds.push({
 			label,
 			variants: [[url]],
 		});
 		this.history.transaction(() => {
 			this.$store.dispatch('content/replaceContentPack', {
-				contentPack: this.uploadedBackgroundsPack,
+				contentPack: uploadedBackgroundsPack,
 			} as IReplaceContentPackAction);
 			this.setBackground(label);
 		});
