@@ -1,18 +1,32 @@
 <template>
-	<div class="panel" v-if="isWebPSupported !== undefined">
+	<div
+		class="panel"
+		v-if="isWebPSupported !== undefined"
+		@dragenter="showDropTarget"
+		@mouseleave="hideDropTarget"
+	>
+		<drop-target ref="spriteDt" class="drop-target" @drop="addCustomSpriteFile"
+			>Drop here to add as a new sprite</drop-target
+		>
 		<h1>Add</h1>
-		<div :class="{'group-selector': true, vertical }">
-			<button :class="{active: group === 'characters'}" @click="group = 'characters'">
+		<div :class="{ 'group-selector': true, vertical }">
+			<button
+				:class="{ active: group === 'characters' }"
+				@click="group = 'characters'"
+			>
 				<i class="material-icons">emoji_people</i> Characters
 			</button>
-			<button :class="{active: group === 'sprites'}" @click="group = 'sprites'">
+			<button
+				:class="{ active: group === 'sprites' }"
+				@click="group = 'sprites'"
+			>
 				<i class="material-icons">change_history</i> Sprites
 			</button>
-			<button :class="{active: group === 'ui'}" @click="group = 'ui'">
+			<button :class="{ active: group === 'ui' }" @click="group = 'ui'">
 				<i class="material-icons">view_quilt</i> UI
 			</button>
 		</div>
-		<div :class="{'item-grid': true, vertical }">
+		<div :class="{ 'item-grid': true, vertical }">
 			<template v-if="group === 'characters'">
 				<div
 					class="character"
@@ -28,10 +42,20 @@
 				</div>
 			</template>
 			<template v-if="group === 'sprites'">
-				<button class="btn custom-sprite" @click="$refs.upload.click()">
+				<div
+					class="sprite"
+					v-for="sprite of sprites"
+					:key="sprite.label"
+					:title="sprite.label"
+					:style="{ background: assetSpriteBackground(sprite) }"
+					@click="addSpriteToScene(sprite)"
+				>
+					{{ sprite.label }}
+				</div>
+				<button class="btn custom-sprite" @click="$refs.spriteUpload.click()">
 					<i class="material-icons">publish</i>
 					Upload new sprite
-					<input type="file" ref="upload" @change="onFileUpload" />
+					<input type="file" ref="spriteUpload" @change="onSpriteFileUpload" />
 				</button>
 				<button @click="uploadFromURL">
 					<i class="material-icons">insert_link</i> New sprite from URL
@@ -60,21 +84,42 @@ import {
 } from '@/asset-manager';
 import { ICreateCharacterAction } from '@/store/objectTypes/characters';
 import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
-import { IAsset } from '../../../store/content';
-import { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { IAsset, IReplaceContentPackAction } from '../../../store/content';
+import {
+	Character,
+	ContentPack,
+	Sprite,
+} from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { Store } from 'vuex';
 import { IRootState } from '../../../store';
 import { PanelMixin } from './panelMixin';
 import { State } from 'vuex-class-decorator';
+import { IHistorySupport } from '../../../plugins/vuex-history';
+import DropTarget from '../drop-target.vue';
+import { ICreateSpriteAction } from '../../../store/objectTypes/sprite';
+
+const uploadedSpritesPack: ContentPack<string> = {
+	packId: 'dddg.buildin.uploadedSprites',
+	packCredits: '',
+	characters: [],
+	fonts: [],
+	sprites: [],
+	poemStyles: [],
+	backgrounds: [],
+};
 
 @Component({
-	components: {},
+	components: { DropTarget },
 })
 export default class AddPanel extends Mixins(PanelMixin) {
 	public $store!: Store<IRootState>;
 	private isWebPSupported: boolean | null = null;
 	private customAssetCount = 0;
 	private group: 'characters' | 'sprites' | 'ui' = 'characters';
+
+	private get history(): IHistorySupport {
+		return this.$root as any;
+	}
 
 	private async created() {
 		this.isWebPSupported = await isWebPSupported();
@@ -84,26 +129,52 @@ export default class AddPanel extends Mixins(PanelMixin) {
 		return this.$store.state.content.current.characters;
 	}
 
+	private get sprites(): Array<Sprite<IAsset>> {
+		return this.$store.state.content.current.sprites;
+	}
+
+	private assetSpriteBackground(sprite: Sprite<IAsset>) {
+		return sprite.variants[0].map(variant => `url('${variant.lq}')`).join(',');
+	}
+
 	private assetPath(character: Character<IAsset>) {
 		return character.chibi ? character.chibi.lq : '';
 	}
 
-	private onFileUpload(e: Event) {
-		const uploadInput = this.$refs.upload as HTMLInputElement;
+	private showDropTarget() {
+		console.log('Show target');
+		if (this.group === 'sprites') {
+			(this.$refs.spriteDt as DropTarget).show();
+		}
+	}
+
+	private hideDropTarget() {
+		if (this.group === 'sprites') {
+			(this.$refs.spriteDt as DropTarget).hide();
+		}
+	}
+
+	private onSpriteFileUpload(e: Event) {
+		const uploadInput = this.$refs.spriteUpload as HTMLInputElement;
 		if (!uploadInput.files) return;
 		for (const file of uploadInput.files) {
-			(nr => {
-				const name = 'customAsset' + nr;
-				const url = registerAsset(name, file);
-			})(++this.customAssetCount);
+			this.addCustomSpriteFile(file);
 		}
 	}
 
 	private async uploadFromURL() {
 		const url = prompt('Enter the URL of the image');
 		if (!url) return;
-		const name = 'customAsset' + ++this.customAssetCount;
-		await registerAssetWithURL(name, url);
+		const lastSegment = url.split('/').slice(-1)[0];
+		this.addNewCustomSprite(lastSegment, url);
+	}
+
+	private async addSpriteToScene(sprite: Sprite<IAsset>) {
+		this.history.transaction(async () => {
+			await this.$store.dispatch('objects/createSprite', {
+				assets: sprite.variants[0],
+			} as ICreateSpriteAction);
+		});
 	}
 
 	private addTextBox() {
@@ -114,6 +185,23 @@ export default class AddPanel extends Mixins(PanelMixin) {
 		this.$store.dispatch('objects/createCharacters', {
 			characterType: id,
 		} as ICreateCharacterAction);
+	}
+
+	private addCustomSpriteFile(file: File) {
+		const url = URL.createObjectURL(file);
+		this.addNewCustomSprite(file.name, url);
+	}
+
+	private addNewCustomSprite(label: string, url: string) {
+		uploadedSpritesPack.sprites.push({
+			label,
+			variants: [[url]],
+		});
+		this.history.transaction(() => {
+			this.$store.dispatch('content/replaceContentPack', {
+				contentPack: uploadedSpritesPack,
+			} as IReplaceContentPackAction);
+		});
 	}
 }
 </script>
@@ -188,6 +276,24 @@ textarea {
 	.character img {
 		max-height: 72px;
 		max-width: 72px;
+	}
+}
+
+.item-grid {
+	.sprite {
+		box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.5);
+		height: 256px;
+		width: 256px;
+		background-size: contain !important;
+		background-repeat: no-repeat !important;
+		background-position: center center !important;
+		margin-right: 4px;
+		text-shadow: 0 0 4px #000, -1px -1px 0 #000, 1px -1px 0 #000,
+			-1px 1px 0 #000, 1px 1px 0 #000;
+		color: white;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 }
 </style>

@@ -7,7 +7,7 @@ import { IAsset } from '../content';
 
 export interface ISprite extends IObject {
 	type: 'sprite';
-	asset: IAsset;
+	assets: IAsset[];
 }
 
 export const spriteMutations: MutationTree<IObjectsState> = {};
@@ -16,11 +16,11 @@ let lastSpriteId = 0;
 
 export const spriteActions: ActionTree<IObjectsState, IRootState> = {
 	async createSprite({ state, commit }, command: ICreateSpriteAction) {
-		const asset = await getAAsset(command.asset, false);
+		const asset = await getAAsset(command.assets[0], false);
 		if (!(asset instanceof HTMLImageElement)) return;
 		commit('create', {
 			object: {
-				asset: command.asset,
+				assets: command.assets,
 				flip: false,
 				height: asset.height,
 				width: asset.width,
@@ -39,5 +39,5 @@ export const spriteActions: ActionTree<IObjectsState, IRootState> = {
 };
 
 export interface ICreateSpriteAction extends ICommand {
-	readonly asset: IAsset;
+	readonly assets: IAsset[];
 }

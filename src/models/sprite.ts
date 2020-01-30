@@ -20,33 +20,25 @@ export class Sprite implements IRenderable, IDragable {
 		return this.obj.onTop;
 	}
 
-	public constructor(public readonly obj: ISprite) {
-		getAAsset(obj.asset)
-			.then(asset => {
-				if (asset instanceof ErrorAsset) {
-					return;
-				}
-				this.asset = asset;
-				eventBus.fire(new InvalidateRenderEvent());
-			})
-			.catch(err => {
-				console.error(`Failed to load asset: ${err}`);
-			});
-	}
+	public constructor(public readonly obj: ISprite) {}
 
 	public async render(selected: boolean, rx: RenderContext) {
-		if (!this.asset) return;
+		const assets = await Promise.all(
+			this.obj.assets.map(asset => getAAsset(asset))
+		);
 		const x = this.obj.x - this.obj.width / 2;
-		rx.drawImage({
-			image: this.asset,
-			x,
-			y: this.obj.y,
-			w: this.obj.width,
-			h: this.obj.height,
-			shadow: selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
-			flip: this.obj.flip,
-			opacity: this.obj.opacity,
-		});
+		for (const asset of assets) {
+			rx.drawImage({
+				image: asset,
+				x,
+				y: this.obj.y,
+				w: this.obj.width,
+				h: this.obj.height,
+				shadow: selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
+				flip: this.obj.flip,
+				opacity: this.obj.opacity,
+			});
+		}
 	}
 
 	public hitTest(hx: number, hy: number): boolean {

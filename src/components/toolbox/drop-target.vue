@@ -22,11 +22,11 @@ export default class Drop extends Vue {
 
 	private visible = false;
 
-	private show(): void {
+	public show(): void {
 		this.visible = true;
 	}
 
-	private hide(): void {
+	public hide(): void {
 		this.visible = false;
 	}
 

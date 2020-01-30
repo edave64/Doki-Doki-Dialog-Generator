@@ -16,7 +16,8 @@
 		@dragover="onDragOver"
 		@drop="onDrop"
 		@mouseenter="onMouseEnter"
-	>HTML5 is required to use the Doki Doki Dialog Generator.</canvas>
+		>HTML5 is required to use the Doki Doki Dialog Generator.</canvas
+	>
 </template>
 
 <script lang="ts">
@@ -354,11 +355,13 @@ export default class Render extends Vue {
 
 				this.history.transaction(async () => {
 					await this.$store.dispatch('objects/createSprite', {
-						asset: {
-							hq: url,
-							lq: url,
-							sourcePack: 'dddg.generated.uploaded-sprites',
-						},
+						assets: [
+							{
+								hq: url,
+								lq: url,
+								sourcePack: 'dddg.generated.uploaded-sprites',
+							},
+						],
 					} as ICreateSpriteAction);
 				});
 			}
