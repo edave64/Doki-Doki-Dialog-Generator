@@ -49,7 +49,7 @@ export default class BackgroundsPanel extends Mixins(PanelMixin) {
 	@Prop({ required: true }) private readonly value!: IBackground;
 
 	private uploadedBackgroundsPack: ContentPack<string> = {
-		packId: 'buildin.uploadedBackgrounds',
+		packId: 'dddg.buildin.uploadedBackgrounds',
 		packCredits: '',
 		characters: [],
 		fonts: [],
@@ -80,30 +80,33 @@ export default class BackgroundsPanel extends Mixins(PanelMixin) {
 		const uploadInput = this.$refs.upload as HTMLInputElement;
 		if (!uploadInput.files) return;
 		for (const file of uploadInput.files) {
-			const url = URL.createObjectURL(file);
-			this.uploadedBackgroundsPack.backgrounds.push({
-				label: file.name,
-				variants: [[url]],
-			});
-			this.$store.dispatch('content/replaceContentPack', {
-				contentPack: this.uploadedBackgroundsPack,
-			} as IReplaceContentPackAction);
+			this.addImageFile(file);
 		}
+	}
+
+	private addImageFile(file: File) {
+		const url = URL.createObjectURL(file);
+		this.addNewCustomBackground(file.name, url);
 	}
 
 	private addByUrl() {
 		const url = prompt('Enter the URL of the image');
 		if (!url) return;
-
-		const name = 'customBg' + ++this.customBGCount;
 		const lastSegment = url.split('/').slice(-1)[0];
+		this.addNewCustomBackground(lastSegment, url);
+	}
+
+	private addNewCustomBackground(label: string, url: string) {
 		this.uploadedBackgroundsPack.backgrounds.push({
-			label: lastSegment,
+			label,
 			variants: [[url]],
 		});
-		this.$store.dispatch('content/replaceContentPack', {
-			contentPack: this.uploadedBackgroundsPack,
-		} as IReplaceContentPackAction);
+		this.history.transaction(() => {
+			this.$store.dispatch('content/replaceContentPack', {
+				contentPack: this.uploadedBackgroundsPack,
+			} as IReplaceContentPackAction);
+			this.setBackground(label);
+		});
 	}
 }
 </script>

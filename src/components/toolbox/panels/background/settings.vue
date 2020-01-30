@@ -106,7 +106,7 @@ export default class BackgroundSettings extends Vue {
 	private set scaling(scaling: string) {
 		this.history.transaction(() => {
 			this.$store.commit('background/setScaling', {
-				scaling: parseInt(scaling),
+				scaling: parseInt(scaling, 10),
 			} as ISetScalingMutation);
 		});
 	}

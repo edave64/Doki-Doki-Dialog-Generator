@@ -6,14 +6,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
+import { Component, Mixins } from 'vue-property-decorator';
 import { Store } from 'vuex';
 import { IRootState } from '../../../store';
 import { PanelMixin } from './panelMixin';
 
-@Component({
-	components: {},
-})
+@Component({})
 export default class PanelsPanel extends Mixins(PanelMixin) {
 	public $store!: Store<IRootState>;
 }

@@ -117,7 +117,7 @@ export default class CharacterPanel extends Mixins(PanelMixin) {
 	}
 
 	private get label(): string {
-		return this.charData.label;
+		return this.charData.label || '';
 	}
 
 	private get parts(): string[] {

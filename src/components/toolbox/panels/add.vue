@@ -85,7 +85,7 @@ export default class AddPanel extends Mixins(PanelMixin) {
 	}
 
 	private assetPath(character: Character<IAsset>) {
-		return character.chibi.lq;
+		return character.chibi ? character.chibi.lq : '';
 	}
 
 	private onFileUpload(e: Event) {
