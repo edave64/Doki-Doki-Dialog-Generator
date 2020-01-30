@@ -62,18 +62,20 @@ export default class CharacterPackPanel extends Mixins(PanelMixin) {
 
 	private get packs(): IPack[] {
 		const packs = this.$store.state.content.contentPacks;
-		return packs.map(
-			pack =>
-				({
-					name: pack.packId,
-					credits: pack.packCredits,
-					installed: true,
-					active: true,
-					queuedUninstall: false,
-					freshInstall: false,
-					url: '',
-				} as IPack)
-		);
+		return packs
+			.filter(pack => pack.packId && !pack.packId.startsWith('dddg.buildin.'))
+			.map(
+				pack =>
+					({
+						name: pack.packId,
+						credits: pack.packCredits,
+						installed: true,
+						active: true,
+						queuedUninstall: false,
+						freshInstall: false,
+						url: '',
+					} as IPack)
+			);
 	}
 
 	private select(name: string) {
