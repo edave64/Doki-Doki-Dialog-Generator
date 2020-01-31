@@ -3,7 +3,12 @@
 		<legend>Settings:</legend>
 		<template v-if="isColor">
 			<label for="bg_color">Color:</label>
-			<input id="bg_color" type="color" v-model="color" />
+			<button
+				id="bg_color"
+				class="color-button"
+				:style="{background: color}"
+				@click="$emit('change-color')"
+			/>
 		</template>
 		<table v-if="isVariant">
 			<tr>
@@ -152,5 +157,11 @@ table {
 	button {
 		width: 24px;
 	}
+}
+
+.color-button {
+	height: 24px;
+	width: 48px;
+	vertical-align: middle;
 }
 </style>

@@ -1,83 +1,142 @@
 <template>
 	<div class="panel">
 		<h1>Textbox</h1>
-		<table class="upper-combos">
-			<tr>
-				<td>
-					<label for="text_style">Style:</label>
-				</td>
-				<td>
-					<select id="text_style" v-model="textBoxStyle" @keydown.stop>
-						<option value="normal">Normal</option>
-						<option value="corrupt">Corrupt</option>
-						<option value="custom">Custom</option>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label for="current_talking">Person talking:</label>
-				</td>
-				<td>
-					<select id="current_talking" v-model="talkingDefaults" @keydown.stop>
-						<option value="No-one">No-one</option>
-						<option value="Sayori">Sayori</option>
-						<option value="Yuri">Yuri</option>
-						<option value="Natsuki">Natsuki</option>
-						<option value="Monika">Monika</option>
-						<option value="FeMC">FeMC</option>
-						<option value="MC">MC</option>
-						<option value="Chad">Chad</option>
-						<option value="Amy">Amy</option>
-						<option value="Other">Other</option>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<label for="custom_name">Other name:</label>
-				</td>
-				<td>
-					<input id="custom_name" v-model="talkingOther" @keydown.stop />
-				</td>
-			</tr>
-		</table>
-		<toggle label="Controls visible?" v-model="showControls" />
-		<toggle label="Able to skip?" v-model="allowSkipping" />
-		<toggle label="Continue arrow?" v-model="showContinueArrow" />
-		<toggle label="Auto quoting?" v-model="autoQuoting" />
-		<div id="dialog_text_wrapper">
-			<label for="dialog_text">Dialog:</label>
-			<textarea v-model="dialog" id="dialog_text" @keydown.stop />
-		</div>
-		<position-and-size :obj="textbox" />
-		<button @click="splitTextbox">Split textbox</button>
-		<layers :obj="textbox" />
-		<opacity :obj="textbox" />
-		<toggle v-model="flip" label="Flip?" />
+		<color v-if="colorSelect !== ''" :title="colorName" v-model="color" @leave="colorSelect = ''" />
+		<template v-else>
+			<table class="upper-combos">
+				<tr>
+					<td>
+						<label for="text_style">Style:</label>
+					</td>
+					<td>
+						<select id="text_style" v-model="textBoxStyle" @keydown.stop>
+							<option value="normal">Normal</option>
+							<option value="corrupt">Corrupt</option>
+							<option value="custom">Custom</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="current_talking">Person talking:</label>
+					</td>
+					<td>
+						<select id="current_talking" v-model="talkingDefaults" @keydown.stop>
+							<option value="No-one">No-one</option>
+							<option value="Sayori">Sayori</option>
+							<option value="Yuri">Yuri</option>
+							<option value="Natsuki">Natsuki</option>
+							<option value="Monika">Monika</option>
+							<option value="FeMC">FeMC</option>
+							<option value="MC">MC</option>
+							<option value="Chad">Chad</option>
+							<option value="Amy">Amy</option>
+							<option value="Other">Other</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="custom_name">Other name:</label>
+					</td>
+					<td>
+						<input id="custom_name" v-model="talkingOther" @keydown.stop />
+					</td>
+				</tr>
+			</table>
+			<toggle label="Controls visible?" v-model="showControls" />
+			<toggle label="Able to skip?" v-model="allowSkipping" />
+			<toggle label="Continue arrow?" v-model="showContinueArrow" />
+			<toggle label="Auto quoting?" v-model="autoQuoting" />
+			<div id="dialog_text_wrapper">
+				<label for="dialog_text">Dialog:</label>
+				<textarea v-model="dialog" id="dialog_text" @keydown.stop />
+			</div>
+			<position-and-size :obj="textbox" />
+			<button @click="splitTextbox">Split textbox</button>
+			<layers :obj="textbox" />
+			<opacity :obj="textbox" />
+			<toggle v-model="flip" label="Flip?" />
 
-		<fieldset v-if="textBoxStyle === 'custom'">
-			<legend>Customization:</legend>
-			<label for="textbox_color">Color:</label>
-			<input id="textbox_color" type="color" v-model="textboxColor" />
-			<br />
-			<label for="custom_namebox_width">Namebox width:</label>
-			<input id="custom_namebox_width" type="number" v-model.number="customNameboxWidth" />
-			<br />
-			<label for="derive_custom_colors">Derive other colors:</label>
-			<toggle id="derive_custom_colors" v-model="deriveCustomColors" />
-			<template v-if="!deriveCustomColors">
-				<label for="custom_controls_color">Controls Color:</label>
-				<input id="custom_controls_color" type="color" v-model="customControlsColor" />
-				<br />
-				<label for="custom_namebox_color">Namebox Color:</label>
-				<input id="custom_namebox_color" type="color" v-model="customNameboxColor" />
-				<br />
-				<label for="custom_namebox_stroke">Namebox text stroke:</label>
-				<input id="custom_namebox_stroke" type="color" v-model="customNameboxStroke" />
-			</template>
-		</fieldset>
-		<delete :obj="textbox" />
+			<fieldset v-if="textBoxStyle === 'custom'">
+				<legend>Customization:</legend>
+				<table>
+					<tr>
+						<td>
+							<label for="textbox_color">Color:</label>
+						</td>
+						<td>
+							<button
+								id="textbox_color"
+								class="color-button"
+								:style="{background: textbox.customColor}"
+								@click="colorSelect = 'base'"
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="custom_namebox_width">Namebox width:</label>
+						</td>
+						<td>
+							<input
+								id="custom_namebox_width"
+								type="number"
+								style="width: 48px"
+								v-model.number="customNameboxWidth"
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<toggle id="derive_custom_colors" v-model="deriveCustomColors" label="Derive other colors" />
+						</td>
+					</tr>
+					<template v-if="!deriveCustomColors">
+						<tr>
+							<td>
+								<label for="custom_controls_color">Controls Color:</label>
+							</td>
+							<td>
+								<button
+									id="custom_controls_color"
+									class="color-button"
+									:style="{background: textbox.customControlsColor}"
+									@click="colorSelect = 'controls'"
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label for="custom_namebox_color">Namebox Color:</label>
+							</td>
+							<td>
+								<button
+									id="custom_namebox_color"
+									class="color-button"
+									:style="{background: textbox.customNameboxColor}"
+									@click="colorSelect = 'namebox'"
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label for="custom_namebox_stroke">Namebox text stroke:</label>
+							</td>
+							<td>
+								<button
+									id="custom_namebox_stroke"
+									class="color-button"
+									:style="{background: textbox.customNameboxStroke}"
+									@click="colorSelect = 'nameboxStroke'"
+								/>
+							</td>
+						</tr>
+					</template>
+				</table>
+			</fieldset>
+			<delete :obj="textbox" />
+		</template>
 	</div>
 </template>
 
@@ -112,6 +171,7 @@ import { ISetObjectFlipMutation } from '@/store/objects';
 import { PanelMixin } from './panelMixin';
 import { Store } from 'vuex';
 import { IRootState } from '../../../store';
+import Color from '../subpanels/color.vue';
 
 @Component({
 	components: {
@@ -120,10 +180,18 @@ import { IRootState } from '../../../store';
 		Layers,
 		Opacity,
 		Delete,
+		Color,
 	},
 })
 export default class TextPanel extends Mixins(PanelMixin) {
 	public $store!: Store<IRootState>;
+
+	private readonly colorSelect:
+		| ''
+		| 'base'
+		| 'controls'
+		| 'namebox'
+		| 'nameboxStroke' = '';
 
 	private get textbox(): ITextBox {
 		const obj = this.$store.state.objects.objects[
@@ -262,17 +330,6 @@ export default class TextPanel extends Mixins(PanelMixin) {
 		} as ISetTextBoxStyleAction);
 	}
 
-	private get textboxColor(): string {
-		return this.textbox.customColor;
-	}
-
-	private set textboxColor(color: string) {
-		this.$store.commit('objects/setCustomColor', {
-			id: this.textbox.id,
-			color,
-		} as ISetTextBoxCustomColorMutation);
-	}
-
 	private get deriveCustomColors(): boolean {
 		return this.textbox.deriveCustomColors;
 	}
@@ -288,24 +345,6 @@ export default class TextPanel extends Mixins(PanelMixin) {
 		return this.textbox.customControlsColor;
 	}
 
-	private set customControlsColor(customControlsColor: string) {
-		this.$store.commit('objects/setControlsColor', {
-			id: this.textbox.id,
-			customControlsColor,
-		} as ISetTextBoxCustomControlsColorMutation);
-	}
-
-	private get customNameboxColor(): string {
-		return this.textbox.customNameboxColor;
-	}
-
-	private set customNameboxColor(customNameboxColor: string) {
-		this.$store.commit('objects/setNameboxColor', {
-			id: this.textbox.id,
-			customNameboxColor,
-		} as ISetTextBoxNameboxColorMutation);
-	}
-
 	private get customNameboxWidth(): number {
 		return this.textbox.customNameboxWidth;
 	}
@@ -317,15 +356,61 @@ export default class TextPanel extends Mixins(PanelMixin) {
 		} as ISetTextBoxNameboxWidthMutation);
 	}
 
-	private get customNameboxStroke(): string {
-		return this.textbox.customNameboxStroke;
+	private get colorName(): string {
+		switch (this.colorSelect) {
+			case '':
+				return '';
+			case 'base':
+				return 'Base color';
+			case 'controls':
+				return 'Controls color';
+			case 'namebox':
+				return 'Namebox color';
+			case 'nameboxStroke':
+				return 'Namebox text stroke';
+		}
 	}
 
-	private set customNameboxStroke(customNameboxStroke: string) {
-		this.$store.commit('objects/setNameboxStroke', {
-			id: this.textbox.id,
-			customNameboxStroke,
-		} as ISetTextBoxNameboxStrokeMutation);
+	private get color(): string {
+		switch (this.colorSelect) {
+			case '':
+				return '#000000';
+			case 'base':
+				return this.textbox.customColor;
+			case 'controls':
+				return this.textbox.customControlsColor;
+			case 'namebox':
+				return this.textbox.customNameboxColor;
+			case 'nameboxStroke':
+				return this.textbox.customNameboxStroke;
+		}
+	}
+
+	private set color(color: string) {
+		switch (this.colorSelect) {
+			case '':
+				return;
+			case 'base':
+				this.$store.commit('objects/setCustomColor', {
+					id: this.textbox.id,
+					color,
+				} as ISetTextBoxCustomColorMutation);
+			case 'controls':
+				this.$store.commit('objects/setControlsColor', {
+					id: this.textbox.id,
+					customControlsColor: color,
+				} as ISetTextBoxCustomControlsColorMutation);
+			case 'namebox':
+				this.$store.commit('objects/setNameboxColor', {
+					id: this.textbox.id,
+					customNameboxColor: color,
+				} as ISetTextBoxNameboxColorMutation);
+			case 'nameboxStroke':
+				this.$store.commit('objects/setNameboxStroke', {
+					id: this.textbox.id,
+					customNameboxStroke: color,
+				} as ISetTextBoxNameboxStrokeMutation);
+		}
 	}
 }
 </script>
@@ -382,5 +467,11 @@ export default class TextPanel extends Mixins(PanelMixin) {
 
 p {
 	max-width: 148px;
+}
+
+.color-button {
+	height: 24px;
+	width: 48px;
+	vertical-align: middle;
 }
 </style>

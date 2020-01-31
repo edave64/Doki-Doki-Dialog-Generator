@@ -1,36 +1,37 @@
 <template>
 	<div class="panel" @dragenter="$refs.dt.show()" @mouseleave="$refs.dt.hide()">
-		<drop-target ref="dt" class="drop-target" @drop="addImageFile"
-			>Drop here to add as a new background</drop-target
-		>
+		<drop-target
+			ref="dt"
+			class="drop-target"
+			@drop="addImageFile"
+		>Drop here to add as a new background</drop-target>
 		<h1>Background</h1>
-		<background-settings :value="value" />
+		<color v-if="colorSelect" v-model="bgColor" @leave="colorSelect = false" />
+		<template v-else>
+			<background-settings :value="value" @change-color="colorSelect = true" />
 
-		<background-button
-			v-for="background of backgrounds"
-			:key="background"
-			:background="background"
-			@input="setBackground(background)"
-		/>
-		<div class="btn upload-background" @click="$refs.upload.click()">
-			Upload
-			<input type="file" ref="upload" @change="onFileUpload" />
-		</div>
-		<button class="upload-background" @click="addByUrl">Add by URL</button>
-		<button
-			class="upload-background"
-			title="Not yet implemented"
-			disabled="disabled"
-		>
-			<i class="material-icons">extension</i> Search in content packs
-		</button>
+			<background-button
+				v-for="background of backgrounds"
+				:key="background"
+				:background="background"
+				@input="setBackground(background)"
+			/>
+			<div class="btn upload-background" @click="$refs.upload.click()">
+				Upload
+				<input type="file" ref="upload" @change="onFileUpload" />
+			</div>
+			<button class="upload-background" @click="addByUrl">Add by URL</button>
+			<button class="upload-background" title="Not yet implemented" disabled="disabled">
+				<i class="material-icons">extension</i> Search in content packs
+			</button>
+		</template>
 	</div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
 import { registerAsset, getAsset } from '@/asset-manager';
-import { IBackground, color } from '@/models/background';
+import { IBackground } from '@/models/background';
 import BackgroundButton from './background/button.vue';
 import BackgroundSettings from './background/settings.vue';
 import DropTarget from '../drop-target.vue';
@@ -42,9 +43,13 @@ import {
 	Background,
 	ContentPack,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { ISetCurrentMutation } from '../../../store/background';
+import {
+	ISetCurrentMutation,
+	ISetColorMutation,
+} from '../../../store/background';
 import { PanelMixin } from './panelMixin';
 import { IHistorySupport } from '../../../plugins/vuex-history';
+import Color from '../subpanels/color.vue';
 
 const uploadedBackgroundsPack: ContentPack<string> = {
 	packId: 'dddg.buildin.uploadedBackgrounds',
@@ -61,10 +66,13 @@ const uploadedBackgroundsPack: ContentPack<string> = {
 		BackgroundButton,
 		BackgroundSettings,
 		DropTarget,
+		Color,
 	},
 })
 export default class BackgroundsPanel extends Mixins(PanelMixin) {
 	public $store!: Store<IRootState>;
+
+	private colorSelect: boolean = false;
 
 	private get history(): IHistorySupport {
 		return this.$root as any;
@@ -84,6 +92,18 @@ export default class BackgroundsPanel extends Mixins(PanelMixin) {
 		this.$store.commit('background/setCurrent', {
 			current: id,
 		} as ISetCurrentMutation);
+	}
+
+	private get bgColor(): string {
+		return this.$store.state.background.color;
+	}
+
+	private set bgColor(color: string) {
+		this.history.transaction(() => {
+			this.$store.commit('background/setColor', {
+				color,
+			} as ISetColorMutation);
+		});
 	}
 
 	private onFileUpload(e: Event) {
