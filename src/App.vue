@@ -245,6 +245,7 @@ body {
 
 fieldset {
 	border: 3px solid #ffbde1;
+	overflow: visible;
 }
 
 h1 {

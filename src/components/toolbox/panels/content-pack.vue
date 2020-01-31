@@ -189,7 +189,6 @@ fieldset {
 
 			* {
 				width: 100%;
-				overflow: hidden;
 				text-overflow: ellipsis;
 				padding: 2px;
 			}

@@ -241,7 +241,6 @@ export interface MoveObject {
 <style lang="scss" scoped>
 fieldset {
 	border: 3px solid #ffbde1;
-	overflow: hidden;
 
 	> table {
 		width: 100%;
