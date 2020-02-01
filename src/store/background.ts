@@ -61,7 +61,7 @@ export default {
 			oldContent: ContentPack<IAsset>
 		) {
 			const oldBackground = oldContent.backgrounds.find(
-				x => x.label === state.current
+				x => x.id === state.current
 			);
 			// Probably build in?
 			if (!oldBackground) return;
@@ -73,7 +73,7 @@ export default {
 			if (!newBackground) {
 				if (rootState.content.current.backgrounds[0]) {
 					commit('setCurrent', {
-						current: rootState.content.current.backgrounds[0].label,
+						current: rootState.content.current.backgrounds[0].id,
 					} as ISetCurrentMutation);
 				} else {
 					commit('setCurrent', {

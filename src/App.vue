@@ -106,7 +106,7 @@ export default class App extends Vue {
 			]);
 
 			await this.$store.commit('background/setCurrent', {
-				current: 'Clubroom',
+				current: 'ddlc.clubroom',
 			} as ISetCurrentMutation);
 		});
 	}
