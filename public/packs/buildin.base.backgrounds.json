@@ -8,7 +8,7 @@
 			"id": "ddlc.clubroom",
 			"label": "Clubroom",
 			"folder": "/backgrounds/",
-			"variants": [["club{ext}"], ["club-skill{ext}"]]
+			"variants": [["club{ext}"]]
 		},
 		{
 			"id": "ddlc.closet",
@@ -220,9 +220,7 @@
 				["monika_bg_glitch{ext}", "monika_glitch1{ext}"],
 				["monika_bg_glitch{ext}", "monika_glitch2{ext}"],
 				["monika_bg_glitch{ext}", "monika_glitch3{ext}"],
-				["monika_bg_glitch{ext}", "monika_glitch4{ext}"],
-				["monika_scare{ext}"],
-				["space{ext}", "monika_scare{ext}"]
+				["monika_bg_glitch{ext}", "monika_glitch4{ext}"]
 			]
 		}
 	]
