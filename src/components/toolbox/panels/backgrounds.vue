@@ -1,5 +1,5 @@
 <template>
-	<div class="panel" @dragenter="$refs.dt.show()" @mouseleave="$refs.dt.hide()">
+	<div class="panel" @dragenter="dragEnter" @mouseleave="$refs.dt.hide()">
 		<drop-target
 			ref="dt"
 			class="drop-target"
@@ -139,6 +139,20 @@ export default class BackgroundsPanel extends Mixins(PanelMixin) {
 			} as IReplaceContentPackAction);
 			this.setBackground(id);
 		});
+	}
+
+	private dragEnter(e: DragEvent) {
+		if (!e.dataTransfer) return;
+		e.dataTransfer.effectAllowed = 'none';
+		if (
+			!Array.from(e.dataTransfer.items).find(item =>
+				item.type.match(/^image.*$/)
+			)
+		) {
+			return;
+		}
+		e.dataTransfer.effectAllowed = 'link';
+		(this.$refs.dt as DropTarget).show();
 	}
 }
 </script>

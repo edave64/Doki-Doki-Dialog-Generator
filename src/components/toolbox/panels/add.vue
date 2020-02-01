@@ -135,8 +135,17 @@ export default class AddPanel extends Mixins(PanelMixin) {
 		return character.chibi ? character.chibi.lq : '';
 	}
 
-	private showDropTarget() {
-		console.log('Show target');
+	private showDropTarget(e: DragEvent) {
+		if (!e.dataTransfer) return;
+		e.dataTransfer.effectAllowed = 'none';
+		if (
+			!Array.from(e.dataTransfer.items).find(item =>
+				item.type.match(/^image.*$/)
+			)
+		) {
+			return;
+		}
+		e.dataTransfer.effectAllowed = 'link';
 		if (this.group === 'sprites') {
 			(this.$refs.spriteDt as DropTarget).show();
 		}
