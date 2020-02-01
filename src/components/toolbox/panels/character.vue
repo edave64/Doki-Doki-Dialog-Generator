@@ -80,10 +80,10 @@ import Opacity from '@/components/toolbox/commonsFieldsets/opacity.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
 import Parts from './character/parts.vue';
 import { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAsset } from '../../../store/content';
+import { IAsset } from '@/store/content';
 import { PanelMixin } from './panelMixin';
 import { Store } from 'vuex';
-import { IRootState } from '../../../store';
+import { IRootState } from '@/store';
 
 @Component({
 	components: {

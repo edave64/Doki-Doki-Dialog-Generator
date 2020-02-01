@@ -92,7 +92,7 @@ import {
 } from '@/store/objects';
 import { ISprite } from '@/store/objectTypes/sprite';
 import { IHistorySupport } from '@/plugins/vuex-history';
-import { ITextBox } from '../../../store/objectTypes/textbox';
+import { ITextBox } from '@/store/objectTypes/textbox';
 
 @Component({
 	components: {

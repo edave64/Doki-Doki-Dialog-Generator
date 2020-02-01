@@ -16,8 +16,8 @@ import { TextBox } from '@/models/textbox';
 import Toggle from '@/components/toggle.vue';
 import { State } from 'vuex-class-decorator';
 import { PanelMixin } from './panelMixin';
-import { IHistorySupport } from '../../../plugins/vuex-history';
-import { IRemovePacksAction, IRootState } from '../../../store';
+import { IHistorySupport } from '@/plugins/vuex-history';
+import { IRemovePacksAction, IRootState } from '@/store';
 import { Store } from 'vuex';
 
 const nsfwPacks = {

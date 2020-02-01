@@ -31,11 +31,11 @@
 <script lang="ts">
 import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
 import { PanelMixin } from './panelMixin';
-import environment from '../../../environments/environment';
+import environment from '@/environments/environment';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { sanitize } from './character-pack-sanitizer';
 import { Store } from 'vuex';
-import { IRootState } from '../../../store';
+import { IRootState } from '@/store';
 
 interface IPack {
 	name: string;

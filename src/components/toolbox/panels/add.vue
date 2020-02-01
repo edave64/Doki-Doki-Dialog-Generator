@@ -5,21 +5,17 @@
 		@dragenter="showDropTarget"
 		@mouseleave="hideDropTarget"
 	>
-		<drop-target ref="spriteDt" class="drop-target" @drop="addCustomSpriteFile"
-			>Drop here to add as a new sprite</drop-target
-		>
+		<drop-target
+			ref="spriteDt"
+			class="drop-target"
+			@drop="addCustomSpriteFile"
+		>Drop here to add as a new sprite</drop-target>
 		<h1>Add</h1>
 		<div :class="{ 'group-selector': true, vertical }">
-			<button
-				:class="{ active: group === 'characters' }"
-				@click="group = 'characters'"
-			>
+			<button :class="{ active: group === 'characters' }" @click="group = 'characters'">
 				<i class="material-icons">emoji_people</i> Characters
 			</button>
-			<button
-				:class="{ active: group === 'sprites' }"
-				@click="group = 'sprites'"
-			>
+			<button :class="{ active: group === 'sprites' }" @click="group = 'sprites'">
 				<i class="material-icons">change_history</i> Sprites
 			</button>
 			<button :class="{ active: group === 'ui' }" @click="group = 'ui'">
@@ -49,9 +45,7 @@
 					:title="sprite.label"
 					:style="{ background: assetSpriteBackground(sprite) }"
 					@click="addSpriteToScene(sprite)"
-				>
-					{{ sprite.label }}
-				</div>
+				>{{ sprite.label }}</div>
 				<button class="btn custom-sprite" @click="$refs.spriteUpload.click()">
 					<i class="material-icons">publish</i>
 					Upload new sprite
@@ -84,19 +78,19 @@ import {
 } from '@/asset-manager';
 import { ICreateCharacterAction } from '@/store/objectTypes/characters';
 import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
-import { IAsset, IReplaceContentPackAction } from '../../../store/content';
+import { IAsset, IReplaceContentPackAction } from '@/store/content';
 import {
 	Character,
 	ContentPack,
 	Sprite,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { Store } from 'vuex';
-import { IRootState } from '../../../store';
+import { IRootState } from '@/store';
 import { PanelMixin } from './panelMixin';
 import { State } from 'vuex-class-decorator';
-import { IHistorySupport } from '../../../plugins/vuex-history';
+import { IHistorySupport } from '@/plugins/vuex-history';
 import DropTarget from '../drop-target.vue';
-import { ICreateSpriteAction } from '../../../store/objectTypes/sprite';
+import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
 
 const uploadedSpritesPack: ContentPack<string> = {
 	packId: 'dddg.buildin.uploadedSprites',

@@ -33,7 +33,7 @@ import {
 } from '@/store/objects';
 import { PanelMixin } from './panelMixin';
 import { Store } from 'vuex';
-import { IRootState } from '../../../store';
+import { IRootState } from '@/store';
 
 @Component({
 	components: {

@@ -37,18 +37,15 @@ import BackgroundSettings from './background/settings.vue';
 import DropTarget from '../drop-target.vue';
 import { State } from 'vuex-class-decorator';
 import { Store } from 'vuex';
-import { IRootState } from '../../../store';
-import { IAsset, IReplaceContentPackAction } from '../../../store/content';
+import { IRootState } from '@/store';
+import { IAsset, IReplaceContentPackAction } from '@/store/content';
 import {
 	Background,
 	ContentPack,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import {
-	ISetCurrentMutation,
-	ISetColorMutation,
-} from '../../../store/background';
+import { ISetCurrentMutation, ISetColorMutation } from '@/store/background';
 import { PanelMixin } from './panelMixin';
-import { IHistorySupport } from '../../../plugins/vuex-history';
+import { IHistorySupport } from '@/plugins/vuex-history';
 import Color from '../subpanels/color.vue';
 
 const uploadedBackgroundsPack: ContentPack<string> = {

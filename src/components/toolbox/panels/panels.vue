@@ -8,7 +8,7 @@
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator';
 import { Store } from 'vuex';
-import { IRootState } from '../../../store';
+import { IRootState } from '@/store';
 import { PanelMixin } from './panelMixin';
 
 @Component({})

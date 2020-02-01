@@ -170,7 +170,7 @@ import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
 import { ISetObjectFlipMutation } from '@/store/objects';
 import { PanelMixin } from './panelMixin';
 import { Store } from 'vuex';
-import { IRootState } from '../../../store';
+import { IRootState } from '@/store';
 import Color from '../subpanels/color.vue';
 
 @Component({

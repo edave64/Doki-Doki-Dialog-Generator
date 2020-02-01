@@ -8,10 +8,10 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { getAAsset, getAsset } from '../../../../asset-manager';
-import environment from '../../../../environments/environment';
-import { ErrorAsset } from '../../../../models/error-asset';
-import { IAsset } from '../../../../store/content';
+import { getAAsset, getAsset } from '@/asset-manager';
+import environment from '@/environments/environment';
+import { ErrorAsset } from '@/models/error-asset';
+import { IAsset } from '@/store/content';
 
 export interface IPartButtonImage {
 	images: Array<IAsset | string>;

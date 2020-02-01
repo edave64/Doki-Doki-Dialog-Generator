@@ -13,9 +13,9 @@ import { color } from '@/models/background';
 import { isWebPSupported, getAAsset } from '@/asset-manager';
 import { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset, BackgroundLookup } from '@/store/content';
-import { ErrorAsset } from '../../../../models/error-asset';
+import { ErrorAsset } from '@/models/error-asset';
 import { Store } from 'vuex';
-import { IRootState } from '../../../../store';
+import { IRootState } from '@/store';
 
 @Component({
 	components: {},
