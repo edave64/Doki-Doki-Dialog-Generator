@@ -71,7 +71,7 @@ export default class BackgroundSettings extends Vue {
 	private get bgData(): Background<IAsset> | null {
 		return (
 			this.$store.state.content.current.backgrounds.find(
-				background => background.label === this.currentBackgroundId
+				background => background.id === this.currentBackgroundId
 			) || null
 		);
 	}

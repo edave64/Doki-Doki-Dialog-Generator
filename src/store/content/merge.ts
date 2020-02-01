@@ -47,12 +47,13 @@ function mergeBackgrounds<A>(
 	x: Array<Background<A>>,
 	y: Array<Background<A>>
 ): Array<Background<A>> {
-	return mergeIdArrays(x, y, obj => obj.label, mergeBackground);
+	return mergeIdArrays(x, y, obj => obj.id, mergeBackground);
 }
 
-function mergeBackground<A>(x: Background<A>, y: Background<A>) {
+function mergeBackground<A>(x: Background<A>, y: Background<A>): Background<A> {
 	return {
-		label: y.label,
+		id: x.id,
+		label: x.label,
 		variants: [...x.variants, ...y.variants],
 	};
 }

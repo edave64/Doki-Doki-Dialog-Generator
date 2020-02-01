@@ -39,6 +39,11 @@ function baseDir(url: string): string {
 // These types are assumed to always be supported
 const baseTypes = new Set(['png', 'gif', 'bmp', 'svg']);
 
+export type BackgroundLookup = Map<
+	Background<IAsset>['id'],
+	Background<IAsset>
+>;
+
 export default {
 	namespaced: true,
 	state: {
@@ -154,12 +159,10 @@ export default {
 			}
 			return ret;
 		},
-		getBackgrounds({
-			current,
-		}): Map<Background<IAsset>['label'], Background<IAsset>> {
-			const ret = new Map<Background<IAsset>['label'], Background<IAsset>>();
+		getBackgrounds({ current }): BackgroundLookup {
+			const ret = new Map<Background<IAsset>['id'], Background<IAsset>>();
 			for (const background of current.backgrounds) {
-				ret.set(background.label, background);
+				ret.set(background.id, background);
 			}
 			return ret;
 		},

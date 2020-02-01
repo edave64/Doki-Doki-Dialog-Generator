@@ -8,12 +8,12 @@
 		<h1>Background</h1>
 		<color v-if="colorSelect" v-model="bgColor" @leave="colorSelect = false" />
 		<template v-else>
-			<background-settings :value="value" @change-color="colorSelect = true" />
+			<background-settings @change-color="colorSelect = true" />
 
 			<background-button
 				v-for="background of backgrounds"
 				:key="background"
-				:background="background"
+				:backgroundId="background"
 				@input="setBackground(background)"
 			/>
 			<div class="btn upload-background" @click="$refs.upload.click()">
@@ -78,17 +78,17 @@ export default class BackgroundsPanel extends Mixins(PanelMixin) {
 		return this.$root as any;
 	}
 
-	private get backgrounds(): string[] {
+	private get backgrounds(): Array<Background<IAsset>['id']> {
 		return [
 			...this.$store.state.content.current.backgrounds.map(
-				background => background.label
+				background => background.id
 			),
 			'buildin.static-color',
 			'buildin.transparent',
 		];
 	}
 
-	private setBackground(id: string) {
+	private setBackground(id: Background<IAsset>['id']) {
 		this.$store.commit('background/setCurrent', {
 			current: id,
 		} as ISetCurrentMutation);
@@ -116,18 +116,23 @@ export default class BackgroundsPanel extends Mixins(PanelMixin) {
 
 	private addImageFile(file: File) {
 		const url = URL.createObjectURL(file);
-		this.addNewCustomBackground(file.name, url);
+		this.addNewCustomBackground(file.name, file.name, url);
 	}
 
 	private addByUrl() {
 		const url = prompt('Enter the URL of the image');
 		if (!url) return;
 		const lastSegment = url.split('/').slice(-1)[0];
-		this.addNewCustomBackground(lastSegment, url);
+		this.addNewCustomBackground(lastSegment, lastSegment, url);
 	}
 
-	private addNewCustomBackground(label: string, url: string) {
+	private addNewCustomBackground(
+		id: Background<IAsset>['id'],
+		label: string,
+		url: string
+	) {
 		uploadedBackgroundsPack.backgrounds.push({
+			id,
 			label,
 			variants: [[url]],
 		});
@@ -135,7 +140,7 @@ export default class BackgroundsPanel extends Mixins(PanelMixin) {
 			this.$store.dispatch('content/replaceContentPack', {
 				contentPack: uploadedBackgroundsPack,
 			} as IReplaceContentPackAction);
-			this.setBackground(label);
+			this.setBackground(id);
 		});
 	}
 }

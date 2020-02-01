@@ -16,8 +16,7 @@
 		@dragover="onDragOver"
 		@drop="onDrop"
 		@mouseenter="onMouseEnter"
-		>HTML5 is required to use the Doki Doki Dialog Generator.</canvas
-	>
+	>HTML5 is required to use the Doki Doki Dialog Generator.</canvas>
 </template>
 
 <script lang="ts">
@@ -121,8 +120,7 @@ export default class Render extends Vue {
 				return color;
 			default:
 				const current = this.$store.state.content.current.backgrounds.find(
-					background =>
-						background.label === this.$store.state.background.current
+					background => background.id === this.$store.state.background.current
 				)!;
 				if (!current) return null;
 				const variant = current.variants[this.$store.state.background.variant];

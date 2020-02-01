@@ -1,9 +1,6 @@
 import { Module } from 'vuex';
-import {
-	Background,
-	ContentPack,
-} from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAsset } from './content';
+import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { IAsset, BackgroundLookup } from './content';
 import { IRootState } from '.';
 import { arraySeeker } from '@/models/seekers';
 
@@ -50,10 +47,9 @@ export default {
 	},
 	actions: {
 		seekVariant({ state, rootGetters, commit }, { delta }: ISeekVariantAction) {
-			const backgrounds = rootGetters['content/getBackgrounds'] as Map<
-				Background<IAsset>['label'],
-				Background<IAsset>
-			>;
+			const backgrounds = rootGetters[
+				'content/getBackgrounds'
+			] as BackgroundLookup;
 			const background = backgrounds.get(state.current);
 			if (!background) return;
 			commit('setVariant', {
@@ -70,10 +66,9 @@ export default {
 			// Probably build in?
 			if (!oldBackground) return;
 
-			const newBackground = (rootGetters['content/getBackgrounds'] as Map<
-				Background<IAsset>['label'],
-				Background<IAsset>
-			>).get(state.current);
+			const newBackground = (rootGetters[
+				'content/getBackgrounds'
+			] as BackgroundLookup).get(state.current);
 
 			if (!newBackground) {
 				if (rootState.content.current.backgrounds[0]) {
@@ -95,7 +90,9 @@ export default {
 				variant => JSON.stringify(variant) === oldVariantJSON
 			);
 			if (newVariantIdx !== state.variant) {
-				commit('setVariant', newVariantIdx === -1 ? 0 : newVariantIdx);
+				commit('setVariant', {
+					variant: newVariantIdx === -1 ? 0 : newVariantIdx,
+				} as ISetVariantMutation);
 			}
 		},
 	},

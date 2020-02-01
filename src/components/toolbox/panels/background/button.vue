@@ -1,10 +1,10 @@
 <template>
 	<div
-		:class="{background: true, active: isActive}"
+		:class="{ background: true, active: isActive }"
 		:title="title"
 		:style="style"
-		@click="$emit('input', background)"
-	>{{title}}</div>
+		@click="$emit('input', backgroundId)"
+	>{{ title }}</div>
 </template>
 
 <script lang="ts">
@@ -12,7 +12,7 @@ import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { color } from '@/models/background';
 import { isWebPSupported, getAAsset } from '@/asset-manager';
 import { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAsset } from '@/store/content';
+import { IAsset, BackgroundLookup } from '@/store/content';
 import { ErrorAsset } from '../../../../models/error-asset';
 import { Store } from 'vuex';
 import { IRootState } from '../../../../store';
@@ -22,21 +22,20 @@ import { IRootState } from '../../../../store';
 })
 export default class BackgroundButton extends Vue {
 	public $store!: Store<IRootState>;
-	@Prop({ required: true }) private readonly background!: string;
+	@Prop({ required: true }) private readonly backgroundId!: string;
 
 	private isWebPSupported: boolean | null = null;
 	private assets: Array<HTMLImageElement | ErrorAsset> = [];
 
 	private get bgData(): Background<IAsset> | null {
-		const backgrounds: Map<
-			Background<IAsset>['label'],
-			Background<IAsset>
-		> = this.$store.getters['content/getBackgrounds'];
-		return backgrounds.get(this.background) || null;
+		const backgrounds: BackgroundLookup = this.$store.getters[
+			'content/getBackgrounds'
+		];
+		return backgrounds.get(this.backgroundId) || null;
 	}
 
 	private get isActive(): boolean {
-		return this.background === this.$store.state.background.current;
+		return this.backgroundId === this.$store.state.background.current;
 	}
 
 	private async created() {
@@ -48,17 +47,17 @@ export default class BackgroundButton extends Vue {
 	}
 
 	private get title(): string {
-		switch (this.background) {
+		switch (this.backgroundId) {
 			case 'buildin.static-color':
 				return 'Static color';
 			case 'buildin.transparent':
 				return 'Transparent';
 		}
-		return this.bgData!.label;
+		return this.bgData!.label || '';
 	}
 
 	private get style(): { [id: string]: string } {
-		switch (this.background) {
+		switch (this.backgroundId) {
 			case 'buildin.static-color':
 				return {
 					'background-color': this.$store.state.background.color,
