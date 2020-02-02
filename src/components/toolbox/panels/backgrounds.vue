@@ -38,7 +38,7 @@ import DropTarget from '../drop-target.vue';
 import { State } from 'vuex-class-decorator';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
-import { IAsset, IReplaceContentPackAction } from '@/store/content';
+import { IAsset, ReplaceContentPackAction } from '@/store/content';
 import {
 	Background,
 	ContentPack,
@@ -56,6 +56,7 @@ const uploadedBackgroundsPack: ContentPack<string> = {
 	sprites: [],
 	poemStyles: [],
 	backgrounds: [],
+	colors: [],
 };
 
 @Component({
@@ -136,7 +137,7 @@ export default class BackgroundsPanel extends Mixins(PanelMixin) {
 		this.history.transaction(() => {
 			this.$store.dispatch('content/replaceContentPack', {
 				contentPack: uploadedBackgroundsPack,
-			} as IReplaceContentPackAction);
+			} as ReplaceContentPackAction);
 			this.setBackground(id);
 		});
 	}

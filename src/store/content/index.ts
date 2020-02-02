@@ -54,6 +54,7 @@ export default {
 			fonts: [],
 			poemStyles: [],
 			sprites: [],
+			colors: [],
 		},
 	},
 	mutations: {
@@ -87,12 +88,14 @@ export default {
 
 		async replaceContentPack(
 			{ commit, state },
-			{ contentPack }: IReplaceContentPackAction
+			action: ReplaceContentPackAction
 		) {
-			const convertedPack = await convertContentPack(contentPack);
+			const convertedPack = action.processed
+				? action.contentPack
+				: await convertContentPack(action.contentPack);
 			const packs = state.contentPacks;
 			const packIdx = packs.findIndex(
-				pack => pack.packId === contentPack.packId
+				pack => pack.packId === action.contentPack.packId
 			);
 			if (packIdx === -1) {
 				packs.push(convertedPack);
@@ -199,6 +202,14 @@ function error(msg: string, payload?: any): never {
 	throw new Error(msg);
 }
 
-export interface IReplaceContentPackAction {
-	contentPack: ContentPack;
-}
+// tslint:disable: indent
+export type ReplaceContentPackAction =
+	| {
+			contentPack: ContentPack<string>;
+			processed: false;
+	  }
+	| {
+			contentPack: ContentPack<IAsset>;
+			processed: true;
+	  };
+// tslint:enable: indent

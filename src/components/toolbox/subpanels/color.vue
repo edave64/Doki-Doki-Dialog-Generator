@@ -63,8 +63,10 @@ import {
 	StyleComponent,
 	Pose,
 	Character,
+	Color,
+	ContentPack,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAsset } from '@/store/content';
+import { IAsset, ReplaceContentPackAction } from '@/store/content';
 import {
 	getPose,
 	getDataG,
@@ -77,66 +79,10 @@ import {
 import { IHistorySupport } from '@/plugins/vuex-history';
 import { State } from 'vuex-class-decorator';
 import Toggle from '../../toggle.vue';
+import { Store } from 'vuex';
+import { IRootState } from '@/store';
 
-interface IColorSwatch {
-	color: string;
-	label: string;
-}
-
-const swatches: IColorSwatch[] = [
-	{
-		color: '#FFA8D2',
-		label: 'Textbox Color',
-	},
-	{
-		color: '#8CD63A',
-		label: "Monika's eyes green",
-	},
-	{
-		color: '#D1897E',
-		label: "Monika's hair brown",
-	},
-	{
-		color: '#FFBBC3',
-		label: 'Natsuki pink',
-	},
-	{
-		color: '#D98EFE',
-		label: "Yuri's eye lavender",
-	},
-	{
-		color: '#6C4681',
-		label: "Yuri's hair purple",
-	},
-	{
-		color: '#72D0FA',
-		label: "Sayori's eye blue",
-	},
-	{
-		color: '#F1A796',
-		label: "Sayori's hair coral",
-	},
-	{
-		color: '#EE4228',
-		label: "MC's eye red",
-	},
-	{
-		color: '#FFD017',
-		label: "MC's eye yellow",
-	},
-	{
-		color: '#79595A',
-		label: "MC's hair brown",
-	},
-	{
-		color: '#DE9437',
-		label: "Amy's eye yellow",
-	},
-	{
-		color: '#850710',
-		label: "Amy's hair red",
-	},
-];
+const generatedPackId = 'dddg.generated.colors';
 
 @Component({
 	components: {
@@ -144,20 +90,19 @@ const swatches: IColorSwatch[] = [
 	},
 })
 export default class PartsPanel extends Vue {
+	public $store!: Store<IRootState>;
+
 	@State('vertical', { namespace: 'ui' }) private readonly vertical!: boolean;
 
 	@Prop({ required: true, type: String }) private readonly value!: string;
 	@Prop({ type: String, default: '' }) private readonly title!: string;
 
-	private i: number = 0;
-
 	private get history(): IHistorySupport {
 		return this.$root as any;
 	}
 
-	private get swatches(): IColorSwatch[] {
-		this.i;
-		return swatches;
+	private get swatches(): Color[] {
+		return this.$store.state.content.current.colors;
 	}
 
 	private get color(): string {
@@ -169,9 +114,38 @@ export default class PartsPanel extends Vue {
 	}
 
 	private addSwatch() {
-		if (swatches.find(swatch => swatch.color === this.color)) return;
-		swatches.push({ color: this.color, label: '' });
-		++this.i;
+		if (this.swatches.find(swatch => swatch.color === this.color)) return;
+
+		const existingPack = this.$store.state.content.contentPacks.find(
+			pack => pack.packId === 'generatedPackId'
+		) || {
+			packId: generatedPackId,
+			packCredits: '',
+			characters: [],
+			fonts: [],
+			backgrounds: [],
+			sprites: [],
+			poemStyles: [],
+			colors: [],
+		};
+
+		const newPack: ContentPack<IAsset> = {
+			...existingPack,
+			colors: [
+				...existingPack.colors,
+				{
+					label: this.color,
+					color: this.color,
+				},
+			],
+		};
+
+		this.history.transaction(() => {
+			this.$store.dispatch('content/replaceContentPack', {
+				contentPack: newPack,
+				processed: true,
+			} as ReplaceContentPackAction);
+		});
 	}
 }
 </script>

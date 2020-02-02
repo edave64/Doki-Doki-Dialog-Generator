@@ -113,5 +113,15 @@
 				}
 			]
 		}
+	],
+	"colors": [
+		{
+			"label": "Amy's eye yellow",
+			"color": "#DE9437"
+		},
+		{
+			"label": "Amy's hair red",
+			"color": "#850710"
+		}
 	]
 }

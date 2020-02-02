@@ -40,6 +40,12 @@ export function mergeContentPacks(
 				variants: [...xObj.variants, ...yObj.variants],
 			})
 		),
+		colors: mergeIdArrays(
+			x.colors,
+			y.colors,
+			obj => obj.color,
+			xObj => xObj
+		),
 	};
 }
 

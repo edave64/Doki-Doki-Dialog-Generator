@@ -223,5 +223,19 @@
 				["monika_bg_glitch{ext}", "monika_glitch4{ext}"]
 			]
 		}
+	],
+	"colors": [
+		{
+			"label": "White",
+			"color": "#FFFFFF"
+		},
+		{
+			"label": "Black",
+			"color": "#000000"
+		},
+		{
+			"label": "Textbox Color",
+			"color": "#FFA8D2"
+		}
 	]
 }

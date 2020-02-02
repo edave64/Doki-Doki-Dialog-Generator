@@ -78,7 +78,7 @@ import {
 } from '@/asset-manager';
 import { ICreateCharacterAction } from '@/store/objectTypes/characters';
 import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
-import { IAsset, IReplaceContentPackAction } from '@/store/content';
+import { IAsset, ReplaceContentPackAction } from '@/store/content';
 import {
 	Character,
 	ContentPack,
@@ -100,6 +100,7 @@ const uploadedSpritesPack: ContentPack<string> = {
 	sprites: [],
 	poemStyles: [],
 	backgrounds: [],
+	colors: [],
 };
 
 @Component({
@@ -203,7 +204,8 @@ export default class AddPanel extends Mixins(PanelMixin) {
 		this.history.transaction(() => {
 			this.$store.dispatch('content/replaceContentPack', {
 				contentPack: uploadedSpritesPack,
-			} as IReplaceContentPackAction);
+				processed: false,
+			} as ReplaceContentPackAction);
 		});
 	}
 }

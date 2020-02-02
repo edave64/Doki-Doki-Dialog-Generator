@@ -125,5 +125,15 @@
 				}
 			]
 		}
+	],
+	"colors": [
+		{
+			"label": "Yuri's eye lavender",
+			"color": "#D98EFE"
+		},
+		{
+			"label": "Yuri's hair purple",
+			"color": "#6C4681"
+		}
 	]
 }
