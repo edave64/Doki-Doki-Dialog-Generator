@@ -84,5 +84,15 @@
 				}
 			]
 		}
+	],
+	"colors": [
+		{
+			"label": "Monika's eyes green",
+			"color": "#8CD63A"
+		},
+		{
+			"label": "Monika's hair brown",
+			"color": "#D1897E"
+		}
 	]
 }

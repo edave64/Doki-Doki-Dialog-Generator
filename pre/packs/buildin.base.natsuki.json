@@ -127,5 +127,11 @@
 				}
 			]
 		}
+	],
+	"colors": [
+		{
+			"label": "Natsuki pink",
+			"color": "#FFBBC3"
+		}
 	]
 }

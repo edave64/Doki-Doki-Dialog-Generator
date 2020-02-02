@@ -175,5 +175,19 @@
 				}
 			]
 		}
+	],
+	"colors": [
+		{
+			"label": "MC's eye red",
+			"color": "#EE4228"
+		},
+		{
+			"label": "MC's eye yellow",
+			"color": "#FFD017"
+		},
+		{
+			"label": "MC's hair brown",
+			"color": "#79595A"
+		}
 	]
 }

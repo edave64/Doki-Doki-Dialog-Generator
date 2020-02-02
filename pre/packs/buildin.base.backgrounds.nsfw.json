@@ -5,11 +5,12 @@
 	"packCredits": "",
 	"backgrounds": [
 		{
-			"label": "Clubroom",
+			"id": "ddlc.clubroom",
 			"folder": "/backgrounds/",
 			"variants": [["club-skill{ext}"]]
 		},
 		{
+			"id": "ddlc.yuri.death",
 			"label": "Yuri's death",
 			"folder": "/cg/yuri_kill/",
 			"variants": [
@@ -25,7 +26,7 @@
 			]
 		},
 		{
-			"label": "The spaceroom",
+			"id": "ddlc.spaceroom",
 			"folder": "/cg/monika/",
 			"variants": [["monika_scare{ext}"], ["space{ext}", "monika_scare{ext}"]]
 		}

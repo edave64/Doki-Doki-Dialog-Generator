@@ -5,46 +5,55 @@
 	"packCredits": "",
 	"backgrounds": [
 		{
+			"id": "ddlc.clubroom",
 			"label": "Clubroom",
 			"folder": "/backgrounds/",
-			"variants": [["club{ext}"], ["club-skill{ext}"]]
+			"variants": [["club{ext}"]]
 		},
 		{
+			"id": "ddlc.closet",
 			"label": "Closet",
 			"folder": "/backgrounds/",
 			"variants": [["closet{ext}"]]
 		},
 		{
+			"id": "ddlc.corridor",
 			"label": "Corridor",
 			"folder": "/backgrounds/",
 			"variants": [["corridor{ext}"]]
 		},
 		{
+			"id": "ddlc.classroom",
 			"label": "Classroom",
 			"folder": "/backgrounds/",
 			"variants": [["class{ext}"]]
 		},
 		{
+			"id": "ddlc.street",
 			"label": "Street",
 			"folder": "/backgrounds/",
 			"variants": [["residential{ext}"]]
 		},
 		{
+			"id": "ddlc.house",
 			"label": "House",
 			"folder": "/backgrounds/",
 			"variants": [["house{ext}"]]
 		},
 		{
+			"id": "ddlc.bedroom",
 			"label": "Bedroom",
 			"folder": "/backgrounds/",
 			"variants": [["bedroom{ext}"]]
 		},
 		{
+			"id": "ddlc.kitchen",
 			"label": "Kitchen",
 			"folder": "/backgrounds/",
 			"variants": [["kitchen{ext}"]]
 		},
 		{
+			"id": "ddlc.sayoris",
 			"label": "Sayori's bedroom",
 			"variants": [
 				["/backgrounds/sayori_bedroom{ext}"],
@@ -53,16 +62,19 @@
 			]
 		},
 		{
+			"id": "ddlc.bosd",
 			"label": "Blue screen of death",
 			"folder": "/backgrounds/",
 			"variants": [["bsod{ext}"]]
 		},
 		{
+			"id": "ddlc.unused_house",
 			"label": "Unused house found in game files",
 			"folder": "/backgrounds/",
 			"variants": [["unused-house.jpg"]]
 		},
 		{
+			"id": "ddlc.natsuki.reading",
 			"label": "Natsuki reading manga",
 			"folder": "/cg/natsuki_1/",
 			"variants": [
@@ -76,6 +88,7 @@
 			]
 		},
 		{
+			"id": "ddlc.natsuki.closet",
 			"label": "Natsuki in the closet",
 			"folder": "/cg/natsuki_2/",
 			"variants": [
@@ -86,6 +99,7 @@
 			]
 		},
 		{
+			"id": "ddlc.natsuki.wall",
 			"label": "Natsuki against the wall",
 			"folder": "/cg/natsuki_3/",
 			"variants": [
@@ -98,11 +112,13 @@
 			]
 		},
 		{
+			"id": "ddlc.sayori.dressing",
 			"label": "Sayori dressing",
 			"folder": "/cg/sayori_1/",
 			"variants": [["s_cg1{ext}"]]
 		},
 		{
+			"id": "ddlc.sayori.bumped_head",
 			"label": "Sayori bumped head",
 			"folder": "/cg/sayori_2/",
 			"variants": [
@@ -121,11 +137,13 @@
 			]
 		},
 		{
+			"id": "ddlc.sayori.hug",
 			"label": "Sayori hug",
 			"folder": "/cg/sayori_3/",
 			"variants": [["s_cg3{ext}"]]
 		},
 		{
+			"id": "ddlc.yuri.reading",
 			"label": "Yuri reading",
 			"folder": "/cg/yuri_1/",
 			"variants": [
@@ -137,6 +155,7 @@
 			]
 		},
 		{
+			"id": "ddlc.yuri.wall",
 			"label": "Yuri against the wall",
 			"folder": "/cg/yuri_2/",
 			"variants": [
@@ -177,11 +196,13 @@
 			]
 		},
 		{
+			"id": "ddlc.yuri.towel",
 			"label": "Yuri with towel",
 			"folder": "/cg/yuri_3/",
 			"variants": [["y_cg3_base{ext}"], ["y_cg3_base{ext}", "y_cg3_exp1{ext}"]]
 		},
 		{
+			"id": "ddlc.spaceroom",
 			"label": "The spaceroom",
 			"folder": "/cg/monika/",
 			"variants": [
@@ -199,10 +220,22 @@
 				["monika_bg_glitch{ext}", "monika_glitch1{ext}"],
 				["monika_bg_glitch{ext}", "monika_glitch2{ext}"],
 				["monika_bg_glitch{ext}", "monika_glitch3{ext}"],
-				["monika_bg_glitch{ext}", "monika_glitch4{ext}"],
-				["monika_scare{ext}"],
-				["space{ext}", "monika_scare{ext}"]
+				["monika_bg_glitch{ext}", "monika_glitch4{ext}"]
 			]
+		}
+	],
+	"colors": [
+		{
+			"label": "White",
+			"color": "#FFFFFF"
+		},
+		{
+			"label": "Black",
+			"color": "#000000"
+		},
+		{
+			"label": "Textbox Color",
+			"color": "#FFA8D2"
 		}
 	]
 }

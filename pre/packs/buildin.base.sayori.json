@@ -117,5 +117,15 @@
 				}
 			]
 		}
+	],
+	"colors": [
+		{
+			"label": "Sayori's eye blue",
+			"color": "#72D0FA"
+		},
+		{
+			"label": "Sayori's hair coral",
+			"color": "#F1A796"
+		}
 	]
 }
