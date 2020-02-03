@@ -12,55 +12,46 @@ export default {
 		}
 		if (!options.resetStateMutation) options.resetStateMutation = 'emptyState';
 		if (!options.mutations) options.mutations = {};
-		let registed = false;
-		Vue.mixin({
+		
+		const history = new Vue({
 			data() {
 				return {
-					vxhDone: [],
-					vxhUndone: [],
-					vxhNewMutation: true,
-					vxhIgnoreMutations: options.ignoreMutations || [],
-					vxhCurrentTransaction: null,
-					vxhTransactionQueue: [],
+					done: [],
+					undone: [],
+					newMutation: true,
+					ignoreMutations: options.ignoreMutations || [],
+					currentTransaction: null,
+					transactionQueue: [],
 				};
 			},
+			
 			created() {
 				window.historyStuff = this;
-				if (this.$store) {
-					if (registed) return;
-					registed = true;
-					this.$store.subscribe(mutation => {
-						const exec = () => {
-							if (
-								mutation.type === options.resetStateMutation ||
-								getMutationProperties(mutation.type).ignore(mutation)
-							) {
-								return;
-							}
-							this.vxhCurrentTransaction.push(mutation);
-							if (this.vxhNewMutation) {
-								this.vxhUndone = [];
-							}
-						};
-						if (this.vxhCurrentTransaction) {
-							exec();
-						} else {
-							// If a mutation triggers outside of any transaction, it gets it's own transaction
-							this.transaction(() => {
-								exec();
-							});
+				if (!this.$store) throw new Error('No store available!');
+				this.$store.subscribe(mutation => {
+					const exec = () => {
+						if (
+							mutation.type === options.resetStateMutation ||
+							getMutationProperties(mutation.type).ignore(mutation)
+						) {
+							return;
 						}
-					});
-				}
+						this.vxhCurrentTransaction.push(mutation);
+						if (this.newMutation) {
+							this.undone = [];
+						}
+					};
+					if (this.currentTransaction) {
+						exec();
+					} else {
+						// If a mutation triggers outside of any transaction, it gets it's own transaction
+						this.transaction(() => {
+							exec();
+						});
+					}
+				});
 			},
-			computed: {
-				canRedo() {
-					return this.vxhUndone.length;
-				},
-				canUndo() {
-					return this.vxhDone.length;
-				},
-			},
+			
 			methods: {
 				redo() {
 					if (this.vxhUndone.length <= 0) return;
@@ -136,6 +127,14 @@ export default {
 							exec();
 						}
 					});
+				},
+			},
+		})
+		
+		Vue.mixin({
+			computed: {
+				vuexHistory() {
+					return this.history;
 				},
 			},
 		});
