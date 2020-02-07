@@ -6,7 +6,7 @@ export class RenderContext {
 	private aborted: boolean = false;
 
 	public constructor(
-		private fsCtx: CanvasRenderingContext2D,
+		public fsCtx: CanvasRenderingContext2D,
 		public readonly hq: boolean,
 		public readonly preview: boolean
 	) {}

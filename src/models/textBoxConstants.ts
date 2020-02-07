@@ -1,3 +1,5 @@
+import { ITextStyle } from '@/renderer/textRenderer/textRenderer';
+
 export const ScreenWidth = 1280;
 
 export const TextBoxWidth = 816;
@@ -29,16 +31,28 @@ export const ArrowYBottomOffset = 26;
 export const GlowRX = 426;
 export const GlowRY = 58;
 
-export const NameboxTextStyle = {
-	align: 'center' as CanvasTextAlign,
-	font: '24px riffic',
-	outline: {
-		style: '#b59',
-		width: 6,
-	},
-	fill: {
-		style: 'white',
-	},
+export const BaseTextStyle: ITextStyle = {
+	alpha: 1,
+	color: 'black',
+	fontName: 'aller',
+	fontSize: 24,
+	isBold: false,
+	isItalic: false,
+	isStrikethrough: false,
+	isUnderlined: false,
+	letterSpacing: 0,
+	lineSpacing: 1,
+	strokeColor: '',
+	strokeWidth: 0,
+};
+
+export const NameboxTextStyle: ITextStyle = {
+	...BaseTextStyle,
+	fontName: 'riffic',
+	fontSize: 24,
+	strokeColor: '#bb5599',
+	strokeWidth: 6,
+	color: 'white',
 };
 
 export const ControlsTextStyle = {

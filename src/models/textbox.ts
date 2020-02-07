@@ -35,6 +35,7 @@ import { Renderer } from '@/renderer/renderer';
 import { roundedRectangle, roundedTopRectangle } from '@/renderer/pathTools';
 import { RGBAColor } from '@/util/colors/rgb';
 import { HSLAColor } from '@/util/colors/hsl';
+import { TextRenderer, ITextStyle } from '@/renderer/textRenderer/textRenderer';
 
 export class TextBox implements IRenderable {
 	public display: boolean = true;
@@ -261,19 +262,14 @@ export class TextBox implements IRenderable {
 	): Promise<void> {
 		let w: number;
 		const h = NameboxHeight;
-		let style: typeof NameboxTextStyle = NameboxTextStyle;
+		let style: ITextStyle = NameboxTextStyle;
 		if (this.obj.style === 'custom') {
 			const hslOutline = RGBAColor.fromCss(this.nameboxOutlineColor).toHSL();
 			style = {
 				...style,
-
-				outline: {
-					style: this.nameboxOutlineColor,
-					width: 6,
-				},
-				fill: {
-					style: hslOutline.l > 0.6 ? '#000000' : '#FFFFFF',
-				},
+				strokeColor: this.nameboxOutlineColor,
+				strokeWidth: 6,
+				color: hslOutline.l > 0.6 ? '#000000' : '#FFFFFF',
 			};
 			w = this.obj.customNameboxWidth;
 			rx.customTransform(
@@ -318,12 +314,12 @@ export class TextBox implements IRenderable {
 				y,
 			});
 		}
-		rx.drawText({
-			x: x + w / 2,
-			y: y + NameboxTextYOffset,
-			text: name,
-			...style,
-		});
+
+		const render = new TextRenderer(name, style);
+
+		render.fixAlignment('center', x, x + w, y + NameboxTextYOffset);
+
+		render.render(rx.fsCtx);
 	}
 
 	private async renderBackdrop(
@@ -474,55 +470,29 @@ export class TextBox implements IRenderable {
 	}
 
 	private renderText(rx: RenderContext, baseX: number, baseY: number): void {
-		const text: DialogLetter[][] = [];
+		const render = new TextRenderer(this.text, {
+			alpha: 1,
+			color: '#ffffff',
+			fontName: 'aller',
+			fontSize: 24,
+			isBold: false,
+			isItalic: false,
+			isStrikethrough: false,
+			isUnderlined: false,
+			letterSpacing: 0,
+			strokeColor: '#523140',
+			strokeWidth: 4,
+			lineSpacing: 1.5,
+		});
 
-		let b = false;
+		render.fixAlignment(
+			'left',
+			baseX + TextBoxTextXOffset,
+			0,
+			baseY + NameboxHeight + TextBoxTextYOffset
+		);
 
-		for (const line of this.text.split('\n')) {
-			let cl;
-			text.push((cl = []));
-			for (const l of line) {
-				if (l === '[') {
-					b = true;
-				} else if (l === ']') {
-					b = false;
-				} else {
-					cl.push({ l, b });
-				}
-			}
-		}
-
-		const startX = baseX + TextBoxTextXOffset;
-		let y = baseY + NameboxHeight + TextBoxTextYOffset;
-
-		if (text[0] && text[0][0] && text[0][0].b) {
-			y += TextBoxTextCorruptedYOffset;
-		}
-
-		for (const line of text) {
-			let x = startX;
-
-			if (line[0] && line[0].b) {
-				x += TextBoxTextCorruptedXOffset;
-			}
-			for (const letter of line) {
-				const ct = letter.l;
-				const cb = letter.b;
-
-				rx.drawText({
-					text: ct,
-					x,
-					y,
-					...(cb ? TextBoxCorruptedStyle : TextBoxStyle),
-				});
-				x += rx.measureText({
-					text: ct,
-					...(cb ? TextBoxCorruptedStyle : TextBoxStyle),
-				}).width;
-				x += cb ? TextBoxCorruptedKerning : TextBoxKerning;
-			}
-			y += TextBoxLineHeight;
-		}
+		render.render(rx.fsCtx);
 	}
 }
 
