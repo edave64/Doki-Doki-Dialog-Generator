@@ -112,9 +112,7 @@ export default class AddPanel extends Mixins(PanelMixin) {
 	private customAssetCount = 0;
 	private group: 'characters' | 'sprites' | 'ui' = 'characters';
 
-	private get history(): IHistorySupport {
-		return this.$root as any;
-	}
+	private vuexHistory!: IHistorySupport;
 
 	private async created() {
 		this.isWebPSupported = await isWebPSupported();
@@ -174,7 +172,7 @@ export default class AddPanel extends Mixins(PanelMixin) {
 	}
 
 	private async addSpriteToScene(sprite: Sprite<IAsset>) {
-		this.history.transaction(async () => {
+		this.vuexHistory.transaction(async () => {
 			await this.$store.dispatch('objects/createSprite', {
 				assets: sprite.variants[0],
 			} as ICreateSpriteAction);
@@ -201,7 +199,7 @@ export default class AddPanel extends Mixins(PanelMixin) {
 			label,
 			variants: [[url]],
 		});
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.dispatch('content/replaceContentPack', {
 				contentPack: uploadedSpritesPack,
 				processed: false,

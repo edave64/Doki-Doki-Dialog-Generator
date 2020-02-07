@@ -85,9 +85,7 @@ export default class PartsPanel extends Vue {
 		components: {},
 	};
 
-	private get history(): IHistorySupport {
-		return this.$root as any;
-	}
+	private vuexHistory!: IHistorySupport;
 
 	private get charData(): Character<IAsset> {
 		return getData(this.$store, this.character);
@@ -280,7 +278,7 @@ export default class PartsPanel extends Vue {
 	}
 
 	private setPart(part: ISetPartAction['part'], index: number): void {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.dispatch('objects/setPart', {
 				id: this.character.id,
 				part,

@@ -97,9 +97,7 @@ export default class PartsPanel extends Vue {
 	@Prop({ required: true, type: String }) private readonly value!: string;
 	@Prop({ type: String, default: '' }) private readonly title!: string;
 
-	private get history(): IHistorySupport {
-		return this.$root as any;
-	}
+	private vuexHistory!: IHistorySupport;
 
 	private get swatches(): Color[] {
 		return this.$store.state.content.current.colors;
@@ -140,7 +138,7 @@ export default class PartsPanel extends Vue {
 			],
 		};
 
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.dispatch('content/replaceContentPack', {
 				contentPack: newPack,
 				processed: true,

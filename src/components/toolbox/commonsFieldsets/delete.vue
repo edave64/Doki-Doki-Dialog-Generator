@@ -11,12 +11,10 @@ import { IObject, IRemoveObjectAction } from '@/store/objects';
 export default class Delete extends Vue {
 	@Prop({ required: true }) private obj!: IObject;
 
-	private get history(): IHistorySupport {
-		return this.$root as any;
-	}
+	private vuexHistory!: IHistorySupport;
 
 	private onClick() {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.dispatch('objects/removeObject', {
 				id: this.obj.id,
 			} as IRemoveObjectAction);

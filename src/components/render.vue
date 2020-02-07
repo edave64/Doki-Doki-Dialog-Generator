@@ -76,6 +76,8 @@ export default class Render extends Vue {
 	@State('lqRendering', { namespace: 'ui' })
 	private readonly lqRendering!: boolean;
 
+	private vuexHistory!: IHistorySupport;
+
 	public async blendOver(imageUrl: string): Promise<void> {
 		const completed = await this.renderer.render(rc => {
 			return new Promise((resolve, reject) => {
@@ -99,7 +101,7 @@ export default class Render extends Vue {
 	public async download(): Promise<void> {
 		const url = await this.renderer.download(this.renderCallback, 'panel.png');
 
-		this.history.transaction(async () => {
+		this.vuexHistory.transaction(async () => {
 			const oldUrl = this.$store.state.ui.lastDownload;
 
 			this.$store.commit('ui/setLastDownload', url);
@@ -107,10 +109,6 @@ export default class Render extends Vue {
 				URL.revokeObjectURL(oldUrl);
 			}
 		});
-	}
-
-	private get history(): IHistorySupport {
-		return this.$root as any;
 	}
 
 	private get currentBackground(): IBackground | null {
@@ -330,7 +328,7 @@ export default class Render extends Vue {
 				}
 			}
 
-			this.history.transaction(() => {
+			this.vuexHistory.transaction(() => {
 				this.$store.dispatch('objects/setPosition', {
 					id: this.draggedObject!.id,
 					x,
@@ -351,7 +349,7 @@ export default class Render extends Vue {
 				const name = 'dropCustomAsset' + ++this.dropSpriteCount;
 				const url = registerAsset(name, item.getAsFile()!);
 
-				this.history.transaction(async () => {
+				this.vuexHistory.transaction(async () => {
 					await this.$store.dispatch('objects/createSprite', {
 						assets: [
 							{
@@ -392,7 +390,7 @@ export default class Render extends Vue {
 
 		for (const id of toUncache) {
 			if (this.selection === id) {
-				this.history.transaction(() => {
+				this.vuexHistory.transaction(() => {
 					this.$store.commit('ui/setSelection', id);
 				});
 			}

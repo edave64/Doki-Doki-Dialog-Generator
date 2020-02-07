@@ -64,9 +64,7 @@ export default class BackgroundSettings extends Vue {
 	@State('current', { namespace: 'background' })
 	private currentBackgroundId!: string;
 
-	private get history(): IHistorySupport {
-		return this.$root as any;
-	}
+	private vuexHistory!: IHistorySupport;
 
 	private get bgData(): Background<IAsset> | null {
 		return (
@@ -85,7 +83,7 @@ export default class BackgroundSettings extends Vue {
 	}
 
 	private set color(color: string) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.commit('background/setColor', {
 				color,
 			} as ISetColorMutation);
@@ -97,7 +95,7 @@ export default class BackgroundSettings extends Vue {
 	}
 
 	private set flipped(flipped: boolean) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.commit('background/setFlipped', {
 				flipped,
 			} as ISetFlipMutation);
@@ -109,7 +107,7 @@ export default class BackgroundSettings extends Vue {
 	}
 
 	private set scaling(scaling: string) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.commit('background/setScaling', {
 				scaling: parseInt(scaling, 10),
 			} as ISetScalingMutation);
@@ -125,7 +123,7 @@ export default class BackgroundSettings extends Vue {
 	}
 
 	private seekVariant(delta: 1 | -1) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.dispatch('background/seekVariant', {
 				delta,
 			} as ISeekVariantAction);

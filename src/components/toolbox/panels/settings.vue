@@ -38,17 +38,15 @@ const paths = Object.values(nsfwPacks);
 export default class SettingsPanel extends Mixins(PanelMixin) {
 	public $store!: Store<IRootState>;
 
+	private vuexHistory!: IHistorySupport;
+
 	private get lqRendering(): boolean {
 		return this.$store.state.ui.lqRendering;
 	}
 	private set lqRendering(lqRendering: boolean) {
-		this.history.transaction(async () => {
+		this.vuexHistory.transaction(async () => {
 			await this.$store.commit('ui/setLqRendering', lqRendering);
 		});
-	}
-
-	private get history(): IHistorySupport {
-		return this.$root as any;
 	}
 
 	private get nsfw(): boolean {
@@ -59,7 +57,7 @@ export default class SettingsPanel extends Mixins(PanelMixin) {
 	}
 
 	private set nsfw(value: boolean) {
-		this.history.transaction(async () => {
+		this.vuexHistory.transaction(async () => {
 			if (value) {
 				await this.$store.dispatch('content/loadContentPacks', paths);
 			} else {

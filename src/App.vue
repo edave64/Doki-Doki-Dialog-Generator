@@ -44,6 +44,7 @@ export default class App extends Vue {
 	public canvasWidth: number = 0;
 	public canvasHeight: number = 0;
 	public $store!: Store<IRootState>;
+	private vuexHistory!: IHistorySupport;
 	private blendOver: string | null = null;
 
 	private uiSize: number = 192;
@@ -55,10 +56,6 @@ export default class App extends Vue {
 		const last = this.$store.state.ui.lastDownload;
 		if (!last) return;
 		(this.$refs.render as Render).blendOver(last);
-	}
-
-	private get history(): IHistorySupport {
-		return this.$root as any;
 	}
 
 	private setBlendOver(): void {
@@ -90,7 +87,7 @@ export default class App extends Vue {
 			this.$store.dispatch('objects/createTextBox', {} as ICreateTextBoxAction);
 		}
 
-		this.history.transaction(async () => {
+		this.vuexHistory.transaction(async () => {
 			await this.$store.dispatch('content/loadContentPacks', [
 				`${process.env.BASE_URL}packs/buildin.base.backgrounds.json`,
 				`${process.env.BASE_URL}packs/buildin.base.monika.json`,
@@ -118,7 +115,7 @@ export default class App extends Vue {
 	private mounted(): void {
 		window.addEventListener('keypress', e => {
 			if (e.keyCode === 27) {
-				this.history.transaction(() => {
+				this.vuexHistory.transaction(() => {
 					this.$store.commit('ui/setSelection', null);
 				});
 			}
@@ -161,7 +158,7 @@ export default class App extends Vue {
 	}
 
 	private onKeydown(e: KeyboardEvent) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			const selection = this.$store.state.objects.objects[
 				this.$store.state.ui.selection!
 			];

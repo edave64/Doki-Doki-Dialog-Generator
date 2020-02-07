@@ -29,16 +29,14 @@ import { IObject, ISetObjectOpacityMutation } from '@/store/objects';
 export default class Opacity extends Vue {
 	@Prop({ required: true }) private obj!: IObject;
 
-	private get history(): IHistorySupport {
-		return this.$root as any;
-	}
+	private vuexHistory!: IHistorySupport;
 
 	private get opacity() {
 		return this.obj.opacity;
 	}
 
 	private set opacity(opacity: number) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.commit('objects/setOpacity', {
 				id: this.obj.id,
 				opacity,

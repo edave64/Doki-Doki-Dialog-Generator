@@ -12,7 +12,7 @@ export default {
 		}
 		if (!options.resetStateMutation) options.resetStateMutation = 'emptyState';
 		if (!options.mutations) options.mutations = {};
-		
+
 		const history = new Vue({
 			data() {
 				return {
@@ -22,50 +22,57 @@ export default {
 					ignoreMutations: options.ignoreMutations || [],
 					currentTransaction: null,
 					transactionQueue: [],
+					initialized: false,
 				};
 			},
-			
+
 			created() {
 				window.historyStuff = this;
-				if (!this.$store) throw new Error('No store available!');
-				this.$store.subscribe(mutation => {
-					const exec = () => {
-						if (
-							mutation.type === options.resetStateMutation ||
-							getMutationProperties(mutation.type).ignore(mutation)
-						) {
-							return;
-						}
-						this.vxhCurrentTransaction.push(mutation);
-						if (this.newMutation) {
-							this.undone = [];
-						}
-					};
-					if (this.currentTransaction) {
-						exec();
-					} else {
-						// If a mutation triggers outside of any transaction, it gets it's own transaction
-						this.transaction(() => {
-							exec();
-						});
-					}
-				});
 			},
-			
+
 			methods: {
+				initialize(store) {
+					if (!this.$store) this.$store = store;
+					if (!this.$store) return;
+					if (this.initialized) return;
+					debugger;
+					this.initialized = true;
+					this.$store.subscribe(mutation => {
+						const exec = () => {
+							if (
+								mutation.type === options.resetStateMutation ||
+								getMutationProperties(mutation.type).ignore(mutation)
+							) {
+								return;
+							}
+							this.currentTransaction.push(mutation);
+							if (this.newMutation) {
+								this.undone = [];
+							}
+						};
+						if (this.currentTransaction) {
+							exec();
+						} else {
+							// If a mutation triggers outside of any transaction, it gets it's own transaction
+							this.transaction(() => {
+								exec();
+							});
+						}
+					});
+				},
 				redo() {
-					if (this.vxhUndone.length <= 0) return;
-					let commit = this.vxhUndone.pop();
-					this.vxhNewMutation = false;
+					if (this.undone.length <= 0) return;
+					let commit = this.undone.pop();
+					this.newMutation = false;
 					replayTransaction(this, commit);
-					this.vxhNewMutation = true;
+					this.newMutation = true;
 				},
 				async undo() {
-					if (this.vxhDone.length <= 0) return;
-					this.vxhUndone.push(this.vxhDone.pop());
-					this.vxhNewMutation = false;
+					if (this.done.length <= 0) return;
+					this.undone.push(this.done.pop());
+					this.newMutation = false;
 					await replayAll(this);
-					this.vxhNewMutation = true;
+					this.newMutation = true;
 				},
 				/**
 				 * @param {transactionCallback} callback
@@ -73,69 +80,73 @@ export default {
 				transaction(callback) {
 					return new Promise((resolve, reject) => {
 						const exec = async () => {
-							this.vxhCurrentTransaction = [];
+							this.currentTransaction = [];
 							try {
 								await callback();
 							} catch (e) {
 								console.log('Error during transaction!: ', e);
 								reject(e);
-								this.vxhCurrentTransaction = [];
+								this.currentTransaction = [];
 								// The transaction that just failed is not in the undo history yet.
 								// So replaying that is equivalent to undoing the transaction.
 								replayAll(this);
 							}
-							const lastUndo = this.vxhDone[this.vxhDone.length - 1];
+							const lastUndo = this.done[this.done.length - 1];
 							if (
-								this.vxhCurrentTransaction.length === 1 &&
+								this.currentTransaction.length === 1 &&
 								lastUndo &&
 								lastUndo.length === 1
 							) {
 								const options = getMutationProperties(
-									this.vxhCurrentTransaction[0].type
+									this.currentTransaction[0].type
 								);
 								if (
-									options.combinable(lastUndo[0], this.vxhCurrentTransaction[0])
+									options.combinable(lastUndo[0], this.currentTransaction[0])
 								) {
 									const combination = options.combinator(
 										lastUndo[0],
-										this.vxhCurrentTransaction[0]
+										this.currentTransaction[0]
 									);
-									this.vxhDone.pop();
+									this.done.pop();
 									if (combination) {
-										this.vxhCurrentTransaction = [combination];
+										this.currentTransaction = [combination];
 									} else {
 										// Returning a non-truthy value in the combinator simply eliminates both transactions.
 										// So if the user manually undoes an action, you can just pretend it never happened.
-										this.vxhCurrentTransaction = [];
+										this.currentTransaction = [];
 									}
 								}
 							}
-							if (this.vxhCurrentTransaction.length > 0) {
-								this.vxhDone.push(this.vxhCurrentTransaction);
+							if (this.currentTransaction.length > 0) {
+								this.done.push(this.currentTransaction);
 							}
 
-							this.vxhCurrentTransaction = null;
-							if (this.vxhTransactionQueue.length > 0) {
-								this.vxhTransactionQueue.pop()();
+							this.currentTransaction = null;
+							if (this.transactionQueue.length > 0) {
+								this.transactionQueue.pop()();
 							}
 
 							resolve();
 						};
-						if (this.vxhCurrentTransaction) {
-							this.vxhTransactionQueue.push(exec);
+						if (this.currentTransaction) {
+							this.transactionQueue.push(exec);
 						} else {
 							exec();
 						}
 					});
 				},
 			},
-		})
-		
+		});
+
 		Vue.mixin({
 			computed: {
 				vuexHistory() {
-					return this.history;
+					return history;
 				},
+			},
+
+			created() {
+				history.initialize(this.$store);
 			},
 		});
 
@@ -144,8 +155,8 @@ export default {
 		 * @param {*} mutation
 		 */
 		async function replayAll(vm) {
-			const oldTransactions = vm.vxhDone.slice(0);
-			vm.vxhDone = [];
+			const oldTransactions = vm.done.slice(0);
+			vm.done = [];
 			vm.$store.commit(options.resetStateMutation);
 			for (let i = 0; i < oldTransactions.length; ++i) {
 				await replayTransaction(vm, oldTransactions[i]);

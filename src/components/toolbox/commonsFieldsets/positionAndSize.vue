@@ -103,9 +103,7 @@ export default class PositionAndSize extends Vue {
 	@Prop({ required: true })
 	private readonly obj!: IObject;
 
-	private get history(): IHistorySupport {
-		return this.$root as any;
-	}
+	private vuexHistory!: IHistorySupport;
 
 	private get allowSize() {
 		const obj = this.obj;
@@ -130,7 +128,7 @@ export default class PositionAndSize extends Vue {
 	}
 
 	private set freeMove(val: boolean) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.commit('objects/setFreeMove', {
 				id: this.obj.id,
 				freeMove: val,
@@ -147,7 +145,7 @@ export default class PositionAndSize extends Vue {
 	}
 
 	private set pos(value: number) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.dispatch('objects/setPosition', {
 				id: this.obj.id,
 				x: characterPositions[value],
@@ -169,7 +167,7 @@ export default class PositionAndSize extends Vue {
 	}
 
 	private set x(val: number) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.dispatch('objects/setPosition', {
 				id: this.obj.id,
 				x: val,
@@ -183,7 +181,7 @@ export default class PositionAndSize extends Vue {
 	}
 
 	private set y(val: number) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.dispatch('objects/setPosition', {
 				id: this.obj.id,
 				x: this.x,
@@ -197,7 +195,7 @@ export default class PositionAndSize extends Vue {
 	}
 
 	private set height(val: number) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.dispatch('objects/setHeight', {
 				id: this.obj.id,
 				height: val,
@@ -210,7 +208,7 @@ export default class PositionAndSize extends Vue {
 	}
 
 	private set width(val: number) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.dispatch('objects/setWidth', {
 				id: this.obj.id,
 				width: val,
@@ -223,7 +221,7 @@ export default class PositionAndSize extends Vue {
 	}
 
 	private set preserveRatio(val: boolean) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.dispatch('objects/setPreserveRatio', {
 				id: this.obj.id,
 				preserveRatio: val,

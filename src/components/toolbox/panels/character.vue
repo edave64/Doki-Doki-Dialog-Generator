@@ -108,9 +108,7 @@ export default class CharacterPanel extends Mixins(PanelMixin) {
 
 	private panelForParts: Part | null = null;
 
-	private get history(): IHistorySupport {
-		return this.$root as any;
-	}
+	private vuexHistory!: IHistorySupport;
 
 	private get charData(): Readonly<Character<IAsset>> {
 		return getData(this.$store, this.character);
@@ -134,7 +132,7 @@ export default class CharacterPanel extends Mixins(PanelMixin) {
 	}
 
 	private seekPose(delta: number): void {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.dispatch('objects/seekPose', {
 				id: this.character.id,
 				delta,
@@ -143,7 +141,7 @@ export default class CharacterPanel extends Mixins(PanelMixin) {
 	}
 
 	private seekStyle(delta: number): void {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.dispatch('objects/seekStyle', {
 				id: this.character.id,
 				delta,
@@ -152,7 +150,7 @@ export default class CharacterPanel extends Mixins(PanelMixin) {
 	}
 
 	private seekPart(part: Part, delta: number): void {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.dispatch('objects/seekPart', {
 				id: this.character.id,
 				delta,
@@ -170,7 +168,7 @@ export default class CharacterPanel extends Mixins(PanelMixin) {
 	}
 
 	private set flip(newValue: boolean) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.commit('objects/setFlip', {
 				id: this.character.id,
 				flip: newValue,
@@ -183,7 +181,7 @@ export default class CharacterPanel extends Mixins(PanelMixin) {
 	}
 
 	private set closeUp(newValue: boolean) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.commit('objects/setClose', {
 				id: this.character.id,
 				close: newValue,

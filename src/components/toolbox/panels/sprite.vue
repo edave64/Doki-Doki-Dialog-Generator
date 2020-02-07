@@ -47,6 +47,8 @@ import { IRootState } from '@/store';
 export default class SpritePanel extends Mixins(PanelMixin) {
 	public $store!: Store<IRootState>;
 
+	private vuexHistory!: IHistorySupport;
+
 	private get sprite(): ISprite {
 		const obj = this.$store.state.objects.objects[
 			this.$store.state.ui.selection!
@@ -55,16 +57,12 @@ export default class SpritePanel extends Mixins(PanelMixin) {
 		return obj as ISprite;
 	}
 
-	private get history(): IHistorySupport {
-		return this.$root as any;
-	}
-
 	private get flip() {
 		return this.sprite.flip;
 	}
 
 	private set flip(newValue: boolean) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.commit('objects/setFlip', {
 				id: this.sprite.id,
 				flip: newValue,

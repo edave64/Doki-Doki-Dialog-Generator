@@ -72,9 +72,7 @@ export default class BackgroundsPanel extends Mixins(PanelMixin) {
 
 	private colorSelect: boolean = false;
 
-	private get history(): IHistorySupport {
-		return this.$root as any;
-	}
+	private vuexHistory!: IHistorySupport;
 
 	private get backgrounds(): Array<Background<IAsset>['id']> {
 		return [
@@ -97,7 +95,7 @@ export default class BackgroundsPanel extends Mixins(PanelMixin) {
 	}
 
 	private set bgColor(color: string) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.commit('background/setColor', {
 				color,
 			} as ISetColorMutation);
@@ -134,7 +132,7 @@ export default class BackgroundsPanel extends Mixins(PanelMixin) {
 			label,
 			variants: [[url]],
 		});
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.dispatch('content/replaceContentPack', {
 				contentPack: uploadedBackgroundsPack,
 			} as ReplaceContentPackAction);

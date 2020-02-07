@@ -52,12 +52,10 @@ import {
 export default class Layers extends Vue {
 	@Prop({ required: true }) private obj!: IObject;
 
-	private get history(): IHistorySupport {
-		return this.$root as any;
-	}
+	private vuexHistory!: IHistorySupport;
 
 	private shiftLayer(delta: number) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.dispatch('objects/shiftLayer', {
 				id: this.obj.id,
 				delta,
@@ -66,7 +64,7 @@ export default class Layers extends Vue {
 	}
 
 	private setInFront(newValue: boolean) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.dispatch('objects/setOnTop', {
 				id: this.obj.id,
 				onTop: newValue,

@@ -186,6 +186,8 @@ import Color from '../subpanels/color.vue';
 export default class TextPanel extends Mixins(PanelMixin) {
 	public $store!: Store<IRootState>;
 
+	private vuexHistory!: IHistorySupport;
+
 	private readonly colorSelect:
 		| ''
 		| 'base'
@@ -201,12 +203,8 @@ export default class TextPanel extends Mixins(PanelMixin) {
 		return obj as ITextBox;
 	}
 
-	private get history(): IHistorySupport {
-		return this.$root as any;
-	}
-
 	private splitTextbox(): void {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.dispatch('objects/splitTextbox', {
 				id: this.textbox.id,
 			} as ISplitTextbox);
@@ -220,7 +218,7 @@ export default class TextPanel extends Mixins(PanelMixin) {
 	private set talkingDefaults(
 		talkingDefault: ISetTextBoxTalkingDefaultMutation['talkingDefault']
 	) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.commit('objects/setTalkingDefault', {
 				id: this.textbox.id,
 				talkingDefault,
@@ -233,7 +231,7 @@ export default class TextPanel extends Mixins(PanelMixin) {
 	}
 
 	private set talkingOther(talkingOther: string) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.commit('objects/setTalkingOther', {
 				id: this.textbox.id,
 				talkingOther,
@@ -246,7 +244,7 @@ export default class TextPanel extends Mixins(PanelMixin) {
 	}
 
 	private set showControls(controls: boolean) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.commit('objects/setControlsVisible', {
 				id: this.textbox.id,
 				controls,
@@ -259,7 +257,7 @@ export default class TextPanel extends Mixins(PanelMixin) {
 	}
 
 	private set allowSkipping(skip: boolean) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.commit('objects/setSkipable', {
 				id: this.textbox.id,
 				skip,
@@ -272,7 +270,7 @@ export default class TextPanel extends Mixins(PanelMixin) {
 	}
 
 	private set autoQuoting(autoQuoting: boolean) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.commit('objects/setAutoQuoting', {
 				id: this.textbox.id,
 				autoQuoting,
@@ -285,7 +283,7 @@ export default class TextPanel extends Mixins(PanelMixin) {
 	}
 
 	private set showContinueArrow(value: boolean) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.commit('objects/setContinueArrow', {
 				id: this.textbox.id,
 				continue: value,
@@ -298,7 +296,7 @@ export default class TextPanel extends Mixins(PanelMixin) {
 	}
 
 	private set dialog(text: string) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.commit('objects/setText', {
 				id: this.textbox.id,
 				text,
@@ -311,7 +309,7 @@ export default class TextPanel extends Mixins(PanelMixin) {
 	}
 
 	private set flip(flip: boolean) {
-		this.history.transaction(() => {
+		this.vuexHistory.transaction(() => {
 			this.$store.commit('objects/setFlip', {
 				id: this.textbox.id,
 				flip,
