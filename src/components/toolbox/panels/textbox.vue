@@ -447,20 +447,15 @@ export default class TextPanel extends Mixins(PanelMixin) {
 				width: 100px;
 			}
 		}
+		fieldset {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			align-content: flex-start;
+			max-height: 100%;
+			overflow: auto;
+		}
 	}
-}
-
-:not(.vertical) fieldset {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	align-content: flex-start;
-	overflow: auto;
-}
-
-.btn_link {
-	appearance: button;
-	text-align: center;
 }
 
 p {

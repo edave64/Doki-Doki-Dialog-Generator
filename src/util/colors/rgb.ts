@@ -94,6 +94,18 @@ export class RGBAColor {
 		return `rgba(${this.r},${this.g},${this.b},${this.a})`;
 	}
 
+	public toHex(): string {
+		return `#${Math.round(this.r)
+			.toString(16)
+			.padStart(2, '0')}${Math.round(this.g)
+			.toString(16)
+			.padStart(2, '0')}${Math.round(this.b)
+			.toString(16)
+			.padStart(2, '0')}${Math.round(this.a * 255)
+			.toString(16)
+			.padStart(2, '0')}`;
+	}
+
 	public toRgb(): RGBAColor {
 		return this;
 	}

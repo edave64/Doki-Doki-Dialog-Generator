@@ -2,42 +2,25 @@
 	<div :class="{ color: true, vertical }">
 		<h2>{{title}}</h2>
 		<button @click="$emit('leave')">OK</button>
-		<!--
-		<toggle
-			label="Relative color preview?"
-			title="Reduces the quality of the preview images to speed up the user experience and consume less data. Does not effect final render."
-			v-model="lqRendering"
-		/>
-		<button>HSLA</button>
-		<button>RGBA</button>
-		<template v-if="mode === 'hsla'">
-			<color-slider min="0" max="360" v-model="h" :gradient="hGradient" />
-			<color-slider min="0" max="360" v-model="s" :gradient="sGradient" />
-			<color-slider min="0" max="360" v-model="l" :gradient="lGradient" />
-		</template>
-		<template v-else>
-			<color-slider min="0" max="255" v-model="r" :gradient="rGradient" />
-			<color-slider min="0" max="255" v-model="g" :gradient="gGradient" />
-			<color-slider min="0" max="255" v-model="b" :gradient="bGradient" />
-		</template>
-		<color-slider min="0" max="1" v-model="a" :gradient="aGradient" transparency-mode />
-		-->
 		<table>
 			<tr>
 				<td>
-					<label>Color:</label>
+					<button @click="mode = 'hsla'">HSLA</button>
 				</td>
 				<td>
-					<input type="color" v-model="color" />
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-					<button @click="addSwatch">Add as swatch</button>
+					<button @click="mode = 'rgba'">RGBA</button>
 				</td>
 			</tr>
 		</table>
-		<div id="color-swatches">
+		<div class="column">
+			<slider-group :mode="mode" v-model="color" :relative="true" />
+			<div class="hex-selector">
+				<label class="hex-label" :for="`hex_${_uid}`">Hex</label>
+				<input :id="`hex_${_uid}`" :value="color" @input="updateHex" />
+			</div>
+			<button @click="addSwatch">Add as swatch</button>
+		</div>
+		<div id="color-swatches" :class="{ vertical }">
 			<button
 				v-for="swatch of swatches"
 				class="swatch"
@@ -79,14 +62,17 @@ import {
 import { IHistorySupport } from '@/plugins/vuex-history';
 import { State } from 'vuex-class-decorator';
 import Toggle from '../../toggle.vue';
+import SliderGroup from './color/sliderGroup.vue';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
+import { RGBAColor } from '../../../util/colors/rgb';
 
 const generatedPackId = 'dddg.generated.colors';
 
 @Component({
 	components: {
 		Toggle,
+		SliderGroup,
 	},
 })
 export default class PartsPanel extends Vue {
@@ -99,6 +85,9 @@ export default class PartsPanel extends Vue {
 
 	private vuexHistory!: IHistorySupport;
 
+	private mode: string = 'hsla';
+	private relative: boolean = true;
+
 	private get swatches(): Color[] {
 		return this.$store.state.content.current.colors;
 	}
@@ -109,6 +98,14 @@ export default class PartsPanel extends Vue {
 
 	private set color(newColor: string) {
 		this.$emit('input', newColor);
+	}
+
+	private updateHex(event: Event) {
+		const hex = (event.target as HTMLInputElement).value;
+		if (RGBAColor.validHex(hex) && (hex.length === 7 || hex.length === 9)) {
+			console.log('setting updateHex', hex);
+			this.$emit('input', hex);
+		}
 	}
 
 	private addSwatch() {
@@ -151,6 +148,7 @@ export default class PartsPanel extends Vue {
 <style lang="scss" scoped>
 .color {
 	display: flex;
+	flex-wrap: wrap;
 
 	h2 {
 		font-size: 20px;
@@ -160,17 +158,50 @@ export default class PartsPanel extends Vue {
 	}
 
 	&.vertical {
-		flex-direction: column;
+		flex-direction: row;
 		width: 100%;
+
+		.column {
+			width: 100%;
+		}
 	}
 
 	&:not(.vertical) {
-		flex-direction: row;
+		flex-direction: column;
 		height: 100%;
 
 		h2 {
 			writing-mode: vertical-rl;
 			height: 100%;
+		}
+
+		.column {
+			height: 100%;
+		}
+	}
+}
+
+.hex-selector {
+	display: table;
+	label {
+		text-align: right;
+		width: 100px;
+	}
+
+	input {
+		margin-left: 7px;
+	}
+
+	&.vertical {
+		> * {
+			display: table-row;
+		}
+	}
+
+	&:not(.vertical) {
+		> * {
+			display: table-cell;
+			vertical-align: middle;
 		}
 	}
 }
@@ -184,10 +215,6 @@ export default class PartsPanel extends Vue {
 		margin-top: 4px;
 		width: 100%;
 		flex-direction: row;
-
-		button {
-			width: 100%;
-		}
 	}
 
 	&:not(.vertical) {
