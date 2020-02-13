@@ -17,7 +17,7 @@ import EventBus, {
 	components: {},
 })
 export default class MessageConsole extends Vue {
-	@Prop({ required: true, type: Boolean }) private readonly loading!: boolean;
+	@Prop({ default: false, type: Boolean }) private readonly loading!: boolean;
 
 	@State('vertical', { namespace: 'ui' }) private readonly vertical!: boolean;
 	private messages: string[] = [];

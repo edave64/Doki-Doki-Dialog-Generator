@@ -46,7 +46,7 @@ import {
 import { ISetCurrentMutation, ISetColorMutation } from '@/store/background';
 import { PanelMixin } from './panelMixin';
 import { IHistorySupport } from '@/plugins/vuex-history';
-import Color from '../subpanels/color.vue';
+import Color from '../subpanels/color/color.vue';
 
 const uploadedBackgroundsPack: ContentPack<string> = {
 	packId: 'dddg.buildin.uploadedBackgrounds',

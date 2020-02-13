@@ -51,6 +51,8 @@
 		<p>Classic Amy Sprite by Meddy-sin</p>
 		<p>Amy Sprite by Meddy-sin and SlightlySimple</p>
 		<p>Special thanks to SlightlySimple for testing and technical help</p>
+		<p>Atlas421 for suggestions and testing</p>
+		<p>T-Rex Harris for suggestions and testing</p>
 	</div>
 </template>
 

@@ -2,6 +2,12 @@
 	<div class="panel">
 		<h1>Textbox</h1>
 		<color v-if="colorSelect !== ''" :title="colorName" v-model="color" @leave="colorSelect = ''" />
+		<text-editor
+			v-else-if="textEditor !== ''"
+			:title="textEditorName"
+			v-model="textEditorText"
+			@leave="textEditor = ''"
+		/>
 		<template v-else>
 			<table class="upper-combos">
 				<tr>
@@ -41,6 +47,7 @@
 					</td>
 					<td>
 						<input id="custom_name" v-model="talkingOther" @keydown.stop />
+						<button @click="textEditor = 'name'">...</button>
 					</td>
 				</tr>
 			</table>
@@ -51,6 +58,7 @@
 			<div id="dialog_text_wrapper">
 				<label for="dialog_text">Dialog:</label>
 				<textarea v-model="dialog" id="dialog_text" @keydown.stop />
+				<button @click="textEditor = 'body'">Formatting</button>
 			</div>
 			<position-and-size :obj="textbox" />
 			<button @click="splitTextbox">Split textbox</button>
@@ -171,7 +179,8 @@ import { ISetObjectFlipMutation } from '@/store/objects';
 import { PanelMixin } from './panelMixin';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
-import Color from '../subpanels/color.vue';
+import Color from '../subpanels/color/color.vue';
+import TextEditor from '../subpanels/text/text.vue';
 
 @Component({
 	components: {
@@ -181,12 +190,15 @@ import Color from '../subpanels/color.vue';
 		Opacity,
 		Delete,
 		Color,
+		TextEditor,
 	},
 })
 export default class TextPanel extends Mixins(PanelMixin) {
 	public $store!: Store<IRootState>;
 
 	private vuexHistory!: IHistorySupport;
+
+	private readonly textEditor: '' | 'name' | 'body' = '';
 
 	private readonly colorSelect:
 		| ''
@@ -201,6 +213,23 @@ export default class TextPanel extends Mixins(PanelMixin) {
 		];
 		if (obj.type !== 'textBox') return undefined!;
 		return obj as ITextBox;
+	}
+
+	private get textEditorName(): string {
+		if (this.textEditor === 'name') return 'Name';
+		if (this.textEditor === 'body') return 'Dialog';
+		return '';
+	}
+
+	private get textEditorText(): string {
+		if (this.textEditor === 'name') return this.textbox.talkingOther;
+		if (this.textEditor === 'body') return this.dialog;
+		return '';
+	}
+
+	private set textEditorText(value: string) {
+		if (this.textEditor === 'name') this.talkingOther = value;
+		else if (this.textEditor === 'body') this.dialog = value;
 	}
 
 	private splitTextbox(): void {
@@ -435,16 +464,21 @@ export default class TextPanel extends Mixins(PanelMixin) {
 
 	textarea {
 		display: block;
-		height: 140px;
+		height: 114px;
 	}
 
 	&:not(.vertical) {
 		table.upper-combos {
 			width: 256px;
 
-			input,
 			select {
 				width: 100px;
+			}
+			input {
+				width: 75px;
+			}
+			button {
+				width: 25px;
 			}
 		}
 		fieldset {

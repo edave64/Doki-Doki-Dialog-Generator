@@ -61,17 +61,15 @@ import {
 } from '@/store/objectTypes/characters';
 import { IHistorySupport } from '@/plugins/vuex-history';
 import { State } from 'vuex-class-decorator';
-import Toggle from '../../toggle.vue';
-import SliderGroup from './color/sliderGroup.vue';
+import SliderGroup from './sliderGroup.vue';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
-import { RGBAColor } from '../../../util/colors/rgb';
+import { RGBAColor } from '@/util/colors/rgb';
 
 const generatedPackId = 'dddg.generated.colors';
 
 @Component({
 	components: {
-		Toggle,
 		SliderGroup,
 	},
 })
