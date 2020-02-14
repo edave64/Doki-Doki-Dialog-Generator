@@ -1,33 +1,83 @@
 <template>
 	<color v-if="colorSelector" v-model="selectedColor" @leave="applyColor" />
 	<div v-else :class="{ 'text-subpanel': true, vertical }">
-		<h2>{{title}}</h2>
-		<button @click="$emit('leave')">OK</button>
-		<div class="column">
-			<textarea ref="textArea" :value="value" @input="onValueChanged" @keydown.stop @keypress.stop />
+		<h2>{{ title }}</h2>
+		<div class="column ok-col">
+			<button @click="$emit('leave')">OK</button>
 		</div>
+		<div class="column">
+			<textarea
+				ref="textArea"
+				:value="value"
+				@input="onValueChanged"
+				@keydown.stop
+				@keypress.stop
+			/>
+		</div>
+		<div class="column error-col" v-if="error">{{ error }}</div>
 		<div class="column">
 			<button @click="insertText('\\\\')" class="style-button">Insert \</button>
 			<button @click="insertText('\\{')" class="style-button">Insert {</button>
 			<button @click="insertText('\\}')" class="style-button">Insert }</button>
 		</div>
 		<div class="column">
-			<button @click="insertCommand('b')" class="style-button" style="font-weight: bold">Bold</button>
-			<button @click="insertCommand('i')" class="style-button" style="font-style: italic">Italics</button>
-			<button @click="insertCommand('plain')" class="style-button">Plain</button>
-			<button @click="insertCommand('edited')" class="style-button edited-style">Edited</button>
-			<button @click="insertCommand('k', 2)" class="style-button" style="letter-spacing: 5px;">Kerning</button>
-			<button @click="insertCommand('alpha', 0.5)" class="style-button">Alpha</button>
+			<button
+				@click="insertCommand('b')"
+				class="style-button"
+				style="font-weight: bold"
+			>
+				Bold
+			</button>
+			<button
+				@click="insertCommand('i')"
+				class="style-button"
+				style="font-style: italic"
+			>
+				Italics
+			</button>
+			<button @click="insertCommand('plain')" class="style-button">
+				Plain
+			</button>
+			<button
+				@click="insertCommand('edited')"
+				class="style-button edited-style"
+			>
+				Edited
+			</button>
+			<button
+				@click="insertCommand('k', 2)"
+				class="style-button"
+				style="letter-spacing: 5px;"
+			>
+				Kerning
+			</button>
+			<button @click="insertCommand('alpha', 0.5)" class="style-button">
+				Alpha
+			</button>
 		</div>
 		<div class="column">
-			<button @click="insertCommand('size', 12)" class="style-button" style="font-size: 20px">Font size</button>
+			<button
+				@click="insertCommand('size', 12)"
+				class="style-button"
+				style="font-size: 20px"
+			>
+				Font size
+			</button>
 			<select v-model="selectedFont" class="style-button">
 				<option value>Font</option>
-				<option value="aller" style="font-family: aller">Aller (Textbox)</option>
-				<option value="riffic" style="font-family: riffic">Riffic (Bold text)</option>
+				<option value="aller" style="font-family: aller"
+					>Aller (Textbox)</option
+				>
+				<option value="riffic" style="font-family: riffic"
+					>Riffic (Bold text)</option
+				>
 			</select>
-			<button @click="selectColor('text')" class="style-button">Text color</button>
-			<button @click="selectColor('outline')" class="style-button">Outline color</button>
+			<button @click="selectColor('text')" class="style-button">
+				Text color
+			</button>
+			<button @click="selectColor('outline')" class="style-button">
+				Outline color
+			</button>
 		</div>
 	</div>
 </template>
@@ -42,6 +92,8 @@ import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { RGBAColor } from '@/util/colors/rgb';
 import Color from '../color/color.vue';
+import { TextRenderer } from '../../../../renderer/textRenderer/textRenderer';
+import { NameboxTextStyle } from '../../../../models/textBoxConstants';
 
 @Component({
 	components: { Color },
@@ -59,6 +111,7 @@ export default class TextPanel extends Vue {
 	private selectedColor: string = '#000000';
 	private rememberedStart: number = 0;
 	private rememberedEnd: number = 0;
+	private error: string = '';
 
 	@Watch('selectedFont')
 	private onSelectedFontChange() {
@@ -69,7 +122,15 @@ export default class TextPanel extends Vue {
 	}
 
 	private onValueChanged() {
-		this.$emit('input', (this.$refs.textArea as HTMLTextAreaElement).value);
+		const val = (this.$refs.textArea as HTMLTextAreaElement).value;
+		try {
+			new TextRenderer(val, NameboxTextStyle);
+			this.error = '';
+		} catch (e) {
+			this.error = (e as Error).message;
+			console.error(e);
+		}
+		this.$emit('input', val);
 	}
 
 	private selectColor(colorSelector: '' | 'text' | 'outline') {
@@ -86,8 +147,9 @@ export default class TextPanel extends Vue {
 			const el = this.$refs.textArea as HTMLTextAreaElement;
 			el.selectionStart = this.rememberedStart;
 			el.selectionEnd = this.rememberedEnd;
-			if (colorSelector === 'text') this.insertCommand('color', color);
-			else if (colorSelector === 'outline')
+			if (colorSelector === 'text') {
+				this.insertCommand('color', color);
+			} else if (colorSelector === 'outline')
 				this.insertCommand('outlinecolor', color);
 		});
 		this.selectedColor = '#000000';
@@ -144,7 +206,20 @@ export default class TextPanel extends Vue {
 
 		.column {
 			width: 100%;
+
+			button,
+			select {
+				width: 100%;
+			}
 		}
+
+		textarea {
+			height: 128px;
+		}
+	}
+
+	.error-col {
+		color: #880000;
 	}
 
 	&:not(.vertical) {
@@ -164,6 +239,17 @@ export default class TextPanel extends Vue {
 			width: -webkit-fill-available;
 
 			textarea {
+				height: 100%;
+			}
+		}
+
+		.error-col {
+			height: 100%;
+			width: 168px;
+		}
+		.ok-col {
+			width: 32px;
+			button {
 				height: 100%;
 			}
 		}

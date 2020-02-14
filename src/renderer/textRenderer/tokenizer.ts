@@ -1,18 +1,24 @@
+import { StringWalker } from './string-walker';
+
 interface ITextToken {
 	content: string;
+	pos: number;
 	type: 'text';
 }
-interface ICommandToken {
+export interface ICommandToken {
 	commandName: string;
 	argument: string;
+	pos: number;
 	type: 'command';
 }
 interface ICommandCloseToken {
 	commandName: string;
+	pos: number;
 	type: 'commandClose';
 }
 interface INewlineToken {
 	type: 'newline';
+	pos: number;
 }
 
 export type Token =
@@ -23,75 +29,130 @@ export type Token =
 
 export function tokenize(str: string): Token[] {
 	const tokens: Token[] = [];
+	const stringWalker = new StringWalker(str);
 	let currentTokenState: TokenizerState = tokenStateNormal;
 	while (currentTokenState !== tokenStateEnd) {
-		[str, currentTokenState] = currentTokenState(tokens, str);
+		currentTokenState = currentTokenState(tokens, stringWalker);
 	}
 	return tokens;
 }
 
 type TokenizerState = (
 	contents: Token[],
-	str: string
-) => [string, TokenizerState];
+	walker: StringWalker
+) => TokenizerState;
 
 function tokenStateNormal(
 	contents: Token[],
-	str: string
-): [string, TokenizerState] {
-	if (str.length === 0) {
-		return ['', tokenStateEnd];
+	walker: StringWalker
+): TokenizerState {
+	if (walker.current() === undefined) return tokenStateEnd;
+	if (walker.current() === '{') return tokenStateCommand;
+	if (walker.current() === '\n') return tokenStateNewLine;
+	return tokenText;
+}
+
+function tokenStateEnd(): TokenizerState {
+	return tokenStateEnd;
+}
+
+function tokenText(contents: Token[], walker: StringWalker): TokenizerState {
+	const { pos } = walker;
+	let textContent = '';
+	let escape = false;
+	let nextState: TokenizerState;
+	while (true) {
+		if (walker.current() === undefined) {
+			nextState = tokenStateEnd;
+			break;
+		} else if (escape) {
+			textContent += walker.current();
+			escape = false;
+		} else if (walker.current() === '\\') {
+			escape = true;
+		} else if (walker.current() === '{') {
+			nextState = tokenStateCommand;
+			break;
+		} else {
+			textContent += walker.current();
+		}
+		walker.next();
 	}
-	if (str[0] === '{') return [str, tokenStateCommand];
-	if (str[0] === '\n') return [str, tokenStateNewLine];
-	return [str, tokenText];
-}
-
-function tokenStateEnd(): [string, TokenizerState] {
-	return null!;
-}
-
-function tokenText(contents: Token[], str: string): [string, TokenizerState] {
-	const endIdx = str.search(/[\{\n]/);
-	const textContent = endIdx === -1 ? str : str.substr(0, endIdx);
 	contents.push({
 		type: 'text',
+		pos,
 		content: textContent,
 	});
-	return [endIdx === -1 ? '' : str.slice(endIdx), tokenStateNormal];
+	return nextState;
+}
+
+function error(walker: StringWalker, msg: string): never {
+	throw new Error(
+		`Error at position ${walker.pos}: (around: ${walker.around}) ${msg}`
+	);
 }
 
 function tokenStateCommand(
 	contents: Token[],
-	str: string
-): [string, TokenizerState] {
-	const endOfCommandIdx = str.indexOf('}');
-	if (endOfCommandIdx === -1) {
-		throw new Error('Broken');
+	walker: StringWalker
+): TokenizerState {
+	const { pos } = walker;
+	if (walker.current() !== '{') {
+		throw new Error('Parser error: Command does not start with {');
 	}
-	const commandText = str.substr(1, endOfCommandIdx - 1).split('=');
-	if (commandText[0][0] === '/') {
-		if (commandText[1]) {
-			throw new Error('Closing tags may not contain arguments');
+	const closing = walker.next() === '/';
+	if (closing) {
+		walker.next();
+	}
+	let commandName = '';
+	let argument = '';
+	let argumentsState = false;
+
+	while (true) {
+		if (walker.current() === undefined) {
+			error(walker, 'Unexpected end of text inside a command');
 		}
+		if (walker.current() === '}') {
+			break;
+		} else if (!argumentsState) {
+			if (walker.current().match(/[a-z]/i)) {
+				commandName += walker.current();
+			} else if (walker.current() === '=') {
+				if (closing) {
+					error(walker, 'Closing commands may not contain arguments');
+				}
+				argumentsState = true;
+			} else {
+				error(walker, 'Unexpected character in command name.');
+			}
+		} else {
+			argument += walker.current();
+		}
+		walker.next();
+	}
+	walker.next();
+	if (closing) {
 		contents.push({
 			type: 'commandClose',
-			commandName: commandText[0].slice(1),
+			commandName,
+			pos,
 		});
 	} else {
 		contents.push({
 			type: 'command',
-			argument: commandText[1],
-			commandName: commandText[0],
+			pos,
+			argument,
+			commandName,
 		});
 	}
-	return [str.slice(endOfCommandIdx + 1), tokenStateNormal];
+	return tokenStateNormal;
 }
 
 function tokenStateNewLine(
 	contents: Token[],
-	str: string
-): [string, TokenizerState] {
-	contents.push({ type: 'newline' });
-	return [str.slice(1), tokenStateNormal];
+	walker: StringWalker
+): TokenizerState {
+	contents.push({ type: 'newline', pos: walker.pos });
+	walker.next();
+	return tokenStateNormal;
 }

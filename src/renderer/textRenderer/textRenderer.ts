@@ -1,4 +1,4 @@
-import { tokenize, Token } from './tokenizer';
+import { tokenize, Token, ICommandToken } from './tokenizer';
 
 import textCommands from './textCommands';
 
@@ -123,10 +123,10 @@ export class TextRenderer {
 	private getRenderParts(tokens: Token[], baseStyle: ITextStyle): RenderItem[] {
 		const renderParts: RenderItem[] = [];
 		const styleStack: ITextStyle[] = [];
-		const tagStack: string[] = [];
+		const tagStack: Array<ICommandToken | null> = [];
 		let currentStyleHeight: number = measureHeight(baseStyle);
 		let currentStyle = baseStyle;
-		let currentTag = '';
+		let currentTag: ICommandToken | null = null;
 		for (const token of tokens) {
 			switch (token.type) {
 				case 'command':
@@ -138,16 +138,23 @@ export class TextRenderer {
 							token.argument
 						);
 						currentStyleHeight = measureHeight(currentStyle);
-						currentTag = token.commandName;
+						currentTag = token;
 					} else {
 						throw new Error(
-							`There is no text command called '${token.commandName}'`
+							`There is no text command called '${token.commandName}' at position ${token.pos}.`
 						);
 					}
 					break;
 				case 'commandClose':
-					if (token.commandName !== currentTag) {
-						throw new Error(`Unmatched closing tag for '${token.commandName}'`);
+					if (!currentTag) {
+						throw new Error(
+							`Unmatched closing command at position ${token.pos}. Closed '${token.commandName}', but no commands are currently open.`
+						);
+					}
+					if (token.commandName !== currentTag.commandName) {
+						throw new Error(
+							`Unmatched closing command at position ${token.pos}. Closed '${token.commandName}', expected to close '${currentTag}' first. (Opened at position ${currentTag.pos})`
+						);
 					}
 					currentTag = tagStack.pop()!;
 					currentStyle = styleStack.pop()!;
