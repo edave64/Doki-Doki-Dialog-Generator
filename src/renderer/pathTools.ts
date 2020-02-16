@@ -6,6 +6,8 @@ export function roundedRectangle(
 	h: number,
 	r: number
 ) {
+	if (w < 0) w = 0;
+	if (h < 0) h = 0;
 	if (w < 2 * r) r = w / 2;
 	if (h < 2 * r) r = h / 2;
 	ctx.moveTo(x + r, y);
@@ -24,6 +26,8 @@ export function roundedTopRectangle(
 	h: number,
 	r: number
 ) {
+	if (w < 0) w = 0;
+	if (h < 0) h = 0;
 	if (w < 2 * r) r = w / 2;
 	if (h < 2 * r) r = h / 2;
 	ctx.moveTo(x + r, y);

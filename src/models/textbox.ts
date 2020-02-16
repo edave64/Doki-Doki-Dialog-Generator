@@ -292,7 +292,7 @@ export class TextBox implements IRenderable {
 						x,
 						y,
 						w: this.obj.width,
-						h: this.obj.height,
+						h,
 						fill: {
 							style: gradient,
 						},
