@@ -1,10 +1,14 @@
 <template>
 	<fieldset>
-		<legend>Position{{allowSize ? "/Size" : ""}}:</legend>
+		<legend>Position{{ allowSize ? '/Size' : '' }}:</legend>
 		<table>
 			<tr>
 				<td colspan="2">
-					<toggle v-if="allowStepMove" v-model="freeMove" label="Move freely?" />
+					<toggle
+						v-if="allowStepMove"
+						v-model="freeMove"
+						label="Move freely?"
+					/>
 				</td>
 			</tr>
 			<tr v-if="allowStepMove && !freeMove">
@@ -16,7 +20,12 @@
 							</td>
 							<td>
 								<select id="current_talking" v-model.number="pos">
-									<option v-for="(val, key) of positionNames" :key="key" :value="key">{{val}}</option>
+									<option
+										v-for="(val, key) of positionNames"
+										:key="key"
+										:value="key"
+										>{{ val }}</option
+									>
 								</select>
 							</td>
 							<td class="arrow-col">
@@ -32,7 +41,12 @@
 						<label for="sprite_x">X:</label>
 					</td>
 					<td>
-						<input id="sprite_x" type="number" v-model.number="x" @keydown.stop />
+						<input
+							id="sprite_x"
+							type="number"
+							v-model.number="x"
+							@keydown.stop
+						/>
 					</td>
 				</tr>
 				<tr>
@@ -40,7 +54,12 @@
 						<label for="sprite_y">Y:</label>
 					</td>
 					<td>
-						<input id="sprite_y" type="number" v-model.number="y" @keydown.stop />
+						<input
+							id="sprite_y"
+							type="number"
+							v-model.number="y"
+							@keydown.stop
+						/>
 					</td>
 				</tr>
 			</template>
@@ -50,7 +69,13 @@
 						<label for="sprite_w">Width:</label>
 					</td>
 					<td>
-						<input id="sprite_w" type="number" v-model.number="width" @keydown.stop />
+						<input
+							id="sprite_w"
+							min="0"
+							type="number"
+							v-model.number="width"
+							@keydown.stop
+						/>
 					</td>
 				</tr>
 				<tr>
@@ -58,7 +83,13 @@
 						<label for="sprite_h">Height:</label>
 					</td>
 					<td>
-						<input id="sprite_h" type="number" v-model.number="height" @keydown.stop />
+						<input
+							id="sprite_h"
+							min="0"
+							type="number"
+							v-model.number="height"
+							@keydown.stop
+						/>
 					</td>
 				</tr>
 				<tr>
