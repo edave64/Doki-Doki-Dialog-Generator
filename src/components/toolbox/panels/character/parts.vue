@@ -99,7 +99,7 @@ export default class PartsPanel extends Vue {
 		);
 		if (!baseStyle) return;
 		this.styleData.lastBase = baseStyle.styleGroup;
-		this.styleData.components = baseStyle.components;
+		this.styleData.components = { ...baseStyle.components };
 	}
 
 	private async created() {
@@ -247,6 +247,7 @@ export default class PartsPanel extends Vue {
 		);
 		for (const component of data.styleComponents) {
 			const subSelect = selection.filter(styleComponent => {
+				debugger;
 				return (
 					styleComponent.components[component.name] ===
 					this.styleData.components[component.name]
