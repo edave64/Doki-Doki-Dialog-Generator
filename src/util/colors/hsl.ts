@@ -24,10 +24,13 @@ export class HSLAColor implements IColor {
 		} else if (h < 0) {
 			h += 1;
 		}
-		if (s + deltas.s > 1 || s + deltas.s < 0) {
+		if (s + deltas.s > 1) {
 			s -= deltas.s;
 		} else {
 			s += deltas.s;
+			if (s < 0) {
+				s = 0;
+			}
 		}
 		if (l + deltas.l > 1 || l + deltas.l < 0) {
 			l -= deltas.l;
