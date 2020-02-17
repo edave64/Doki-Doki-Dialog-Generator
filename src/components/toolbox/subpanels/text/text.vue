@@ -6,13 +6,7 @@
 			<button @click="$emit('leave')">OK</button>
 		</div>
 		<div class="column">
-			<textarea
-				ref="textArea"
-				:value="value"
-				@input="onValueChanged"
-				@keydown.stop
-				@keypress.stop
-			/>
+			<textarea ref="textArea" :value="value" @input="onValueChanged" @keydown.stop @keypress.stop />
 		</div>
 		<div class="column error-col" v-if="error">{{ error }}</div>
 		<div class="column">
@@ -20,64 +14,26 @@
 			<button @click="insertText('\\{')" class="style-button">Insert {</button>
 			<button @click="insertText('\\}')" class="style-button">Insert }</button>
 		</div>
+		<p class="hint-col">Apply style to selected text:</p>
 		<div class="column">
-			<button
-				@click="insertCommand('b')"
-				class="style-button"
-				style="font-weight: bold"
-			>
-				Bold
-			</button>
-			<button
-				@click="insertCommand('i')"
-				class="style-button"
-				style="font-style: italic"
-			>
-				Italics
-			</button>
-			<button @click="insertCommand('plain')" class="style-button">
-				Plain
-			</button>
-			<button
-				@click="insertCommand('edited')"
-				class="style-button edited-style"
-			>
-				Edited
-			</button>
-			<button
-				@click="insertCommand('k', 2)"
-				class="style-button"
-				style="letter-spacing: 5px;"
-			>
-				Kerning
-			</button>
-			<button @click="insertCommand('alpha', 0.5)" class="style-button">
-				Alpha
-			</button>
+			<button @click="insertCommand('b')" class="style-button" style="font-weight: bold">Bold</button>
+			<button @click="insertCommand('i')" class="style-button" style="font-style: italic">Italics</button>
+			<button @click="insertCommand('plain')" class="style-button">Plain</button>
+			<button @click="insertCommand('edited')" class="style-button edited-style">Edited</button>
+			<button @click="insertCommand('k', 2)" class="style-button" style="letter-spacing: 5px;">Kerning</button>
 		</div>
 		<div class="column">
-			<button
-				@click="insertCommand('size', 12)"
-				class="style-button"
-				style="font-size: 20px"
-			>
-				Font size
-			</button>
+			<button @click="insertCommand('alpha', 0.5)" class="style-button">Alpha</button>
+		</div>
+		<div class="column">
+			<button @click="insertCommand('size', 12)" class="style-button" style="font-size: 20px">Font size</button>
 			<select v-model="selectedFont" class="style-button">
 				<option value>Font</option>
-				<option value="aller" style="font-family: aller"
-					>Aller (Textbox)</option
-				>
-				<option value="riffic" style="font-family: riffic"
-					>Riffic (Bold text)</option
-				>
+				<option value="aller" style="font-family: aller">Aller (Textbox)</option>
+				<option value="riffic" style="font-family: riffic">Riffic (Bold text)</option>
 			</select>
-			<button @click="selectColor('text')" class="style-button">
-				Text color
-			</button>
-			<button @click="selectColor('outline')" class="style-button">
-				Outline color
-			</button>
+			<button @click="selectColor('text')" class="style-button">Text color</button>
+			<button @click="selectColor('outline')" class="style-button">Outline color</button>
 		</div>
 	</div>
 </template>
@@ -143,15 +99,20 @@ export default class TextPanel extends Vue {
 	private applyColor() {
 		const color = this.selectedColor;
 		const colorSelector = this.colorSelector;
-		this.$nextTick(() => {
+		const apply = () => {
 			const el = this.$refs.textArea as HTMLTextAreaElement;
+			if (!el) {
+				this.$nextTick(apply);
+				return;
+			}
 			el.selectionStart = this.rememberedStart;
 			el.selectionEnd = this.rememberedEnd;
-			if (colorSelector === 'text') {
-				this.insertCommand('color', color);
-			} else if (colorSelector === 'outline')
-				this.insertCommand('outlinecolor', color);
-		});
+			this.insertCommand(
+				colorSelector === 'text' ? 'color' : 'outlinecolor',
+				color
+			);
+		};
+		this.$nextTick(apply);
 		this.selectedColor = '#000000';
 		this.colorSelector = '';
 	}
@@ -192,6 +153,7 @@ export default class TextPanel extends Vue {
 .text-subpanel {
 	display: flex;
 	flex-wrap: wrap;
+	//flex-flow: nowrap;
 
 	h2 {
 		font-size: 20px;
@@ -236,11 +198,15 @@ export default class TextPanel extends Vue {
 			height: 100%;
 			flex-direction: column;
 			flex-wrap: wrap;
-			width: -webkit-fill-available;
 
 			textarea {
 				height: 100%;
 			}
+		}
+
+		.hint-col {
+			width: 64px;
+			margin: 4px;
 		}
 
 		.error-col {
