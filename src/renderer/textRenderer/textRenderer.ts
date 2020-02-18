@@ -131,8 +131,20 @@ export class TextRenderer {
 			}
 		}
 
-		let lineHeight = 0;
 		let y = yStart;
+		const lineHeights = [];
+		let lineHeight = 0;
+
+		for (const item of this.renderParts) {
+			lineHeight = Math.max(lineHeight, item.height);
+
+			if (item.type === 'newline') {
+				lineHeights.push(lineHeight);
+			}
+		}
+		lineHeights.push(lineHeight);
+
+		let line = 0;
 
 		for (const item of this.renderParts) {
 			lineHeight = Math.max(lineHeight, item.height);
@@ -142,7 +154,7 @@ export class TextRenderer {
 
 			if (item.type === 'newline') {
 				fixLine();
-				y += lineHeight;
+				y += lineHeights[++line] || 0;
 				lineWidth = 0;
 				lineHeight = 0;
 				currentLine = [];
