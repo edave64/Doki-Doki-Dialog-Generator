@@ -70,8 +70,8 @@ function tokenText(contents: Token[], walker: StringWalker): TokenizerState {
 			escape = false;
 		} else if (walker.current() === '\\') {
 			escape = true;
-		} else if (walker.current() === '{') {
-			nextState = tokenStateCommand;
+		} else if (walker.current() === '{' || walker.current() === '\n') {
+			nextState = tokenStateNormal;
 			break;
 		} else {
 			textContent += walker.current();
