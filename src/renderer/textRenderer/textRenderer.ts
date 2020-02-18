@@ -198,7 +198,7 @@ export class TextRenderer {
 					break;
 				case 'newline':
 					renderParts.push({
-						height: currentStyleHeight * currentStyle.lineSpacing,
+						height: currentStyleHeight,
 						width: 0,
 						x: 0,
 						y: 0,
@@ -239,16 +239,20 @@ const heightCache = new Map<string, number>();
 function measureHeight(textStyle: ITextStyle): number {
 	const font = textStyle.fontSize + ' ' + textStyle.fontName;
 	if (heightCache.has(font)) {
-		return heightCache.get(font)!;
+		return heightCache.get(font)! * textStyle.lineSpacing;
 	}
 
 	const text = document.createElement('span');
 	text.innerHTML = 'Hg';
-	text.style.font = font;
+	text.style.fontFamily = textStyle.fontName;
+	text.style.fontSize = `${textStyle.fontSize}px`;
 	text.style.lineHeight = '1';
 
 	const div = document.createElement('div');
 	div.style.opacity = '0';
+	div.style.fontFamily = textStyle.fontName;
+	div.style.fontSize = `${textStyle.fontSize}px`;
+	div.style.lineHeight = '1';
 	div.style.position = 'absolute';
 	div.style.top = '0';
 	div.style.left = '0';
