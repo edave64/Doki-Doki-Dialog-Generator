@@ -72,6 +72,43 @@ export class TextRenderer {
 		ctx.restore();
 	}
 
+	public quote() {
+		let lastChar = -1;
+		let quoted = false;
+
+		for (let i = 0; i < this.renderParts.length; ++i) {
+			const part = this.renderParts[i];
+			if (part.type !== 'character') continue;
+			if (part.character.match(/\s/)) continue;
+			lastChar = i;
+			if (!quoted) {
+				this.renderParts.splice(i, 0, {
+					type: 'character',
+					x: 0,
+					y: 0,
+					style: part.style,
+					character: '"',
+					height: part.height,
+					width: measureWidth(part.style, '"'),
+				});
+				quoted = true;
+			}
+		}
+
+		if (quoted && lastChar >= 0) {
+			const part = this.renderParts[lastChar] as IDrawCharacterItem;
+			this.renderParts.splice(lastChar + 1, 0, {
+				type: 'character',
+				x: 0,
+				y: 0,
+				style: part.style,
+				character: '"',
+				height: part.height,
+				width: measureWidth(part.style, '"'),
+			});
+		}
+	}
+
 	public fixAlignment(
 		alignment: 'left' | 'center' | 'right',
 		xStart: number,
