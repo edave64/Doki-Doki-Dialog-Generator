@@ -61,6 +61,7 @@
 				<button @click="textEditor = 'body'">Formatting</button>
 			</div>
 			<position-and-size :obj="textbox" />
+			<button @click="resetPosition">Reset position</button>
 			<button @click="splitTextbox">Split textbox</button>
 			<layers :obj="textbox" />
 			<opacity :obj="textbox" />
@@ -167,6 +168,7 @@ import {
 	ISetTextBoxDeriveCustomColorMutation,
 	ISplitTextbox,
 	ISetTextBoxAutoQuotingMutation,
+	IResetTextboxBounds,
 } from '@/store/objectTypes/textbox';
 import Toggle from '@/components/toggle.vue';
 import { State } from 'vuex-class-decorator';
@@ -237,6 +239,14 @@ export default class TextPanel extends Mixins(PanelMixin) {
 			this.$store.dispatch('objects/splitTextbox', {
 				id: this.textbox.id,
 			} as ISplitTextbox);
+		});
+	}
+
+	private resetPosition(): void {
+		this.vuexHistory.transaction(() => {
+			this.$store.dispatch('objects/resetTextboxBounds', {
+				id: this.textbox.id,
+			} as IResetTextboxBounds);
 		});
 	}
 

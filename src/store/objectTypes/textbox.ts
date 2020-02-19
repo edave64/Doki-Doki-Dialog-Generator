@@ -40,6 +40,12 @@ export interface ITextBox extends IObject {
 	skip: boolean;
 	autoQuoting: boolean;
 	continue: boolean;
+	resetBounds: {
+		x: number;
+		y: number;
+		width: number;
+		height: number;
+	};
 }
 
 export const textBoxMutations: MutationTree<IObjectsState> = {
@@ -114,6 +120,15 @@ export const textBoxMutations: MutationTree<IObjectsState> = {
 		obj.autoQuoting = command.autoQuoting;
 		++obj.version;
 	},
+	setResetBounds(state, command: ISetResetBoundsMutation) {
+		const obj = state.objects[command.id] as ITextBox;
+		obj.resetBounds = command.resetBounds;
+		obj.x = command.resetBounds.x;
+		obj.y = command.resetBounds.y;
+		obj.height = command.resetBounds.height;
+		obj.width = command.resetBounds.width;
+		++obj.version;
+	},
 };
 
 let lastTextBoxId = 0;
@@ -121,18 +136,21 @@ let lastTextBoxId = 0;
 export const textBoxActions: ActionTree<IObjectsState, never> = {
 	createTextBox({ commit }, command: ICreateTextBoxAction): string {
 		const id = 'textBox_' + ++lastTextBoxId;
+		const resetBounds = command.resetBounds || {
+			x: 640,
+			y: NameboxY,
+			width: TextBoxWidth,
+			height: TextBoxHeight,
+		};
 		commit('create', {
 			object: {
+				...resetBounds,
 				flip: false,
 				id,
 				onTop: true,
 				opacity: 100,
 				type: 'textBox',
 				version: 0,
-				x: 640,
-				y: NameboxY,
-				width: TextBoxWidth,
-				height: TextBoxHeight,
 				preserveRatio: false,
 				ratio: TextBoxWidth / TextBoxHeight,
 				continue: true,
@@ -149,6 +167,7 @@ export const textBoxActions: ActionTree<IObjectsState, never> = {
 				talkingDefault: 'No-one',
 				talkingOther: '',
 				text: '',
+				resetBounds,
 			} as ITextBox,
 		} as ICreateObjectMutation);
 		return id;
@@ -161,37 +180,47 @@ export const textBoxActions: ActionTree<IObjectsState, never> = {
 		} as ISetTextBoxStyleMutation);
 	},
 
+	resetTextboxBounds(
+		{ commit, state, dispatch },
+		command: IResetTextboxBounds
+	) {
+		const obj = state.objects[command.id] as ITextBox;
+		commit('setPosition', {
+			id: command.id,
+			x: obj.resetBounds.x,
+			y: obj.resetBounds.y,
+		} as ISetObjectPositionMutation);
+		commit('setSize', {
+			id: command.id,
+			height: obj.resetBounds.height,
+			width: obj.resetBounds.width,
+		} as ISetSpriteSizeMutation);
+	},
+
 	async splitTextbox({ commit, state, dispatch }, command: ISplitTextbox) {
 		const obj = state.objects[command.id];
 		const newWidth = (obj.width - 4) / 2;
-		commit('setSize', {
+		commit('setResetBounds', {
 			id: command.id,
-			width: newWidth,
-			height: obj.height,
-		});
+			resetBounds: {
+				x: obj.x - newWidth / 2,
+				y: obj.y,
+				width: newWidth,
+				height: obj.height,
+			},
+		} as ISetResetBoundsMutation);
 		commit('setStyle', {
 			id: command.id,
 			style: 'custom',
 		} as ISetTextBoxStyleMutation);
-		commit('setPosition', {
-			id: command.id,
-			x: obj.x - newWidth / 2,
-			y: obj.y,
-		} as ISetObjectPositionMutation);
-		const id = (await dispatch(
-			'createTextBox',
-			{} as ICreateTextBoxAction
-		)) as string;
-		commit('setPosition', {
-			id,
-			x: obj.x + newWidth + 2,
-			y: obj.y,
-		} as ISetObjectPositionMutation);
-		commit('setSize', {
-			id,
-			width: newWidth,
-			height: obj.height,
-		} as ISetSpriteSizeMutation);
+		const id = (await dispatch('createTextBox', {
+			resetBounds: {
+				x: obj.x + newWidth + 2,
+				y: obj.y,
+				width: newWidth,
+				height: obj.height,
+			},
+		} as ICreateTextBoxAction)) as string;
 		commit('setStyle', {
 			id,
 			style: 'custom',
@@ -249,6 +278,10 @@ export interface ISetTextBoxAutoQuotingMutation extends ICommand {
 	readonly autoQuoting: boolean;
 }
 
+export interface ISetResetBoundsMutation extends ICommand {
+	readonly resetBounds: ITextBox['resetBounds'];
+}
+
 export interface ISetTextBoxControlsSkipMutation extends ICommand {
 	readonly skip: boolean;
 }
@@ -261,10 +294,14 @@ export interface ISetTextBoxCustomColorMutation extends ICommand {
 	readonly color: string;
 }
 
-export interface ICreateTextBoxAction extends ICommand {}
+export interface ICreateTextBoxAction extends ICommand {
+	readonly resetBounds?: ITextBox['resetBounds'];
+}
 
 export interface ISetTextBoxStyleAction extends ICommand {
 	readonly style: ITextBox['style'];
 }
 
 export interface ISplitTextbox extends ICommand {}
+
+export interface IResetTextboxBounds extends ICommand {}
