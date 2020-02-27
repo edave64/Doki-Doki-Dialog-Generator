@@ -5,7 +5,7 @@ import { State } from 'vuex-class-decorator';
 export class PanelMixin extends Vue {
 	@State('vertical', { namespace: 'ui' }) private readonly vertical!: boolean;
 
-	private mounted() {
+	mounted() {
 		this.updateVertical();
 		this.$el.addEventListener(
 			'wheel',

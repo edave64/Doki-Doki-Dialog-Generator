@@ -54,17 +54,24 @@ import {
 	ISeekVariantAction,
 	ScalingModes,
 	ISetScalingMutation,
-} from '@/store/background';
+	IPanel,
+} from '@/store/panels';
 
 @Component({
 	components: { Toggle },
 })
 export default class BackgroundSettings extends Vue {
 	public $store!: Store<IRootState>;
-	@State('current', { namespace: 'background' })
-	private currentBackgroundId!: string;
+	private get currentBackgroundId(): string {
+		return this.background.current;
+	}
 
 	private vuexHistory!: IHistorySupport;
+
+	private get background(): Readonly<IPanel['background']> {
+		const currentPanel = this.$store.state.panels.currentPanel;
+		return this.$store.state.panels.panels[currentPanel].background;
+	}
 
 	private get bgData(): Background<IAsset> | null {
 		return (
@@ -79,37 +86,40 @@ export default class BackgroundSettings extends Vue {
 	}
 
 	private get color(): string {
-		return this.$store.state.background.color;
+		return this.background.color;
 	}
 
 	private set color(color: string) {
 		this.vuexHistory.transaction(() => {
-			this.$store.commit('background/setColor', {
+			this.$store.commit('panels/setBackgroundColor', {
 				color,
+				panelId: this.$store.state.panels.currentPanel,
 			} as ISetColorMutation);
 		});
 	}
 
 	private get flipped(): boolean {
-		return this.$store.state.background.flipped;
+		return this.background.flipped;
 	}
 
 	private set flipped(flipped: boolean) {
 		this.vuexHistory.transaction(() => {
-			this.$store.commit('background/setFlipped', {
+			this.$store.commit('panels/setBackgroundFlipped', {
 				flipped,
+				panelId: this.$store.state.panels.currentPanel,
 			} as ISetFlipMutation);
 		});
 	}
 
 	private get scaling(): string {
-		return this.$store.state.background.scaling.toString();
+		return this.background.scaling.toString();
 	}
 
 	private set scaling(scaling: string) {
 		this.vuexHistory.transaction(() => {
-			this.$store.commit('background/setScaling', {
+			this.$store.commit('panels/setBackgroundScaling', {
 				scaling: parseInt(scaling, 10),
+				panelId: this.$store.state.panels.currentPanel,
 			} as ISetScalingMutation);
 		});
 	}
@@ -124,8 +134,9 @@ export default class BackgroundSettings extends Vue {
 
 	private seekVariant(delta: 1 | -1) {
 		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('background/seekVariant', {
+			this.$store.dispatch('panels/seekBackgroundVariant', {
 				delta,
+				panelId: this.$store.state.panels.currentPanel,
 			} as ISeekVariantAction);
 		});
 	}

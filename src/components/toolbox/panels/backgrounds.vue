@@ -43,7 +43,7 @@ import {
 	Background,
 	ContentPack,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { ISetCurrentMutation, ISetColorMutation } from '@/store/background';
+import { ISetCurrentMutation, ISetColorMutation } from '@/store/panels';
 import { PanelMixin } from './panelMixin';
 import { IHistorySupport } from '@/plugins/vuex-history';
 import Color from '../subpanels/color/color.vue';
@@ -85,18 +85,21 @@ export default class BackgroundsPanel extends Mixins(PanelMixin) {
 	}
 
 	private setBackground(id: Background<IAsset>['id']) {
-		this.$store.commit('background/setCurrent', {
+		this.$store.commit('panels/setCurrentBackground', {
 			current: id,
+			panelId: this.$store.state.panels.currentPanel,
 		} as ISetCurrentMutation);
 	}
 
 	private get bgColor(): string {
-		return this.$store.state.background.color;
+		return this.$store.state.panels.panels[
+			this.$store.state.panels.currentPanel
+		].background.color;
 	}
 
 	private set bgColor(color: string) {
 		this.vuexHistory.transaction(() => {
-			this.$store.commit('background/setColor', {
+			this.$store.commit('panels/setBackgroundColor', {
 				color,
 			} as ISetColorMutation);
 		});

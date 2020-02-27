@@ -35,7 +35,6 @@ export default {
 					if (!this.$store) this.$store = store;
 					if (!this.$store) return;
 					if (this.initialized) return;
-					debugger;
 					this.initialized = true;
 					this.$store.subscribe(mutation => {
 						const exec = () => {

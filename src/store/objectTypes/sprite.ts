@@ -15,7 +15,10 @@ export const spriteMutations: MutationTree<IObjectsState> = {};
 let lastSpriteId = 0;
 
 export const spriteActions: ActionTree<IObjectsState, IRootState> = {
-	async createSprite({ state, commit }, command: ICreateSpriteAction) {
+	async createSprite(
+		{ state, commit, rootState },
+		command: ICreateSpriteAction
+	) {
 		const asset = await getAAsset(command.assets[0], false);
 		if (!(asset instanceof HTMLImageElement)) return;
 		commit('create', {
@@ -25,6 +28,7 @@ export const spriteActions: ActionTree<IObjectsState, IRootState> = {
 				height: asset.height,
 				width: asset.width,
 				id: 'sprite_' + ++lastSpriteId,
+				panelId: rootState.panels.currentPanel,
 				onTop: false,
 				opacity: 100,
 				preserveRatio: true,

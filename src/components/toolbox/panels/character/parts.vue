@@ -247,7 +247,6 @@ export default class PartsPanel extends Vue {
 		);
 		for (const component of data.styleComponents) {
 			const subSelect = selection.filter(styleComponent => {
-				debugger;
 				return (
 					styleComponent.components[component.name] ===
 					this.styleData.components[component.name]

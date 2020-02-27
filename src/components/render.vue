@@ -24,7 +24,7 @@
 // tslint:disable:member-ordering
 import { Component, Vue, Watch, Prop } from 'vue-property-decorator';
 import { State } from 'vuex-class-decorator';
-import { Store } from 'vuex';
+import { Store, MutationPayload } from 'vuex';
 import { IRootState } from '@/store';
 import { Renderer } from '@/renderer/renderer';
 import { IRenderable } from '@/models/renderable';
@@ -48,7 +48,11 @@ import {
 } from '@/store/objectTypes/characters';
 import { Sprite } from '@/models/sprite';
 import { TextBox } from '@/models/textbox';
-import { ISetCurrentMutation } from '@/store/background';
+import {
+	ISetCurrentMutation,
+	IPanel,
+	ISetPanelPreviewMutation,
+} from '@/store/panels';
 import content from '@/store/content';
 
 @Component({})
@@ -111,22 +115,27 @@ export default class Render extends Vue {
 		});
 	}
 
+	private get background(): Readonly<IPanel['background']> {
+		const currentPanel = this.$store.state.panels.currentPanel;
+		return this.$store.state.panels.panels[currentPanel].background;
+	}
+
 	private get currentBackground(): IBackground | null {
-		switch (this.$store.state.background.current) {
+		switch (this.background.current) {
 			case 'buildin.static-color':
-				color.color = this.$store.state.background.color;
+				color.color = this.background.color;
 				return color;
 			default:
 				const current = this.$store.state.content.current.backgrounds.find(
-					background => background.id === this.$store.state.background.current
+					background => background.id === this.background.current
 				)!;
 				if (!current) return null;
-				const variant = current.variants[this.$store.state.background.variant];
+				const variant = current.variants[this.background.variant];
 				if (!variant) return null;
 				return new Background(
 					variant,
-					this.$store.state.background.flipped,
-					this.$store.state.background.scaling
+					this.background.flipped,
+					this.background.scaling
 				);
 		}
 	}
@@ -198,7 +207,11 @@ export default class Render extends Vue {
 
 	private async created(): Promise<void> {
 		eventBus.subscribe(InvalidateRenderEvent, command => this.invalidateRender);
-		this.$store.subscribe(this.invalidateRender);
+		this.$store.subscribe((mut: MutationPayload) => {
+			if (mut.type === 'panels/setPanelPreview') return;
+			if (mut.type === 'panels/currentPanel') return;
+			this.invalidateRender();
+		});
 	}
 
 	private mounted(): void {
@@ -215,6 +228,17 @@ export default class Render extends Vue {
 		if (!this.sdCtx) return;
 		this.showingLast = false;
 		this.renderer.paintOnto(this.sdCtx, 0, 0, 1280, 720);
+		const sd = this.$refs.sd as HTMLCanvasElement;
+		sd.toBlob(blob => {
+			if (!blob) return;
+			const url = URL.createObjectURL(blob);
+			this.vuexHistory.transaction(() => {
+				this.$store.commit('panels/setPanelPreview', {
+					panelId: this.$store.state.panels.currentPanel,
+					url,
+				} as ISetPanelPreviewMutation);
+			});
+		}, 'image/png');
 	}
 
 	private toRendererCoordinate(x: number, y: number): [number, number] {
@@ -381,7 +405,8 @@ export default class Render extends Vue {
 
 	private renderObjectCache: { [id: string]: IRenderable } = {};
 	private get renderObjects() {
-		const objectsState = this.$store.state.objects;
+		const currentPanel = this.$store.state.panels.currentPanel;
+		const objectsState = this.$store.state.objects.panels[currentPanel];
 		const order = [...objectsState.order, ...objectsState.onTopOrder];
 		const objects = this.$store.state.objects.objects;
 		const toUncache = Object.keys(this.renderObjectCache).filter(

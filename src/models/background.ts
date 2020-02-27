@@ -2,7 +2,7 @@ import { RenderContext } from '@/renderer/rendererContext';
 import { getAAsset } from '@/asset-manager';
 import { screenWidth, screenHeight } from './constants';
 import { IAsset } from '@/store/content';
-import { ScalingModes } from '@/store/background';
+import { ScalingModes } from '@/store/panels';
 
 export interface IBackground {
 	render(rx: RenderContext): Promise<void>;

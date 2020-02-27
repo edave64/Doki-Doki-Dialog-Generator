@@ -31,7 +31,7 @@ import {
 import ToolBox from '@/components/toolbox/toolbox.vue';
 import MessageConsole from '@/components/message-console.vue';
 import Render from '@/components/render.vue';
-import { ISetCurrentMutation } from '@/store/background';
+import { ISetCurrentMutation } from '@/store/panels';
 
 @Component({
 	components: {
@@ -83,9 +83,6 @@ export default class App extends Vue {
 			},
 			true
 		);
-		if (Object.keys(this.$store.state.objects.objects).length === 0) {
-			this.$store.dispatch('objects/createTextBox', {} as ICreateTextBoxAction);
-		}
 
 		this.vuexHistory.transaction(async () => {
 			await this.$store.dispatch('content/loadContentPacks', [
@@ -102,8 +99,16 @@ export default class App extends Vue {
 				`${process.env.BASE_URL}packs/buildin.extra.amy.json`,
 			]);
 
-			await this.$store.commit('background/setCurrent', {
+			await this.$store.dispatch('panels/createPanel');
+			if (Object.keys(this.$store.state.objects.objects).length === 0) {
+				this.$store.dispatch(
+					'objects/createTextBox',
+					{} as ICreateTextBoxAction
+				);
+			}
+			await this.$store.commit('panels/setCurrentBackground', {
 				current: 'ddlc.clubroom',
+				panelId: this.$store.state.panels.currentPanel,
 			} as ISetCurrentMutation);
 		});
 	}

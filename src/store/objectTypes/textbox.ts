@@ -13,6 +13,7 @@ import {
 	TextBoxHeight,
 } from '@/models/textBoxConstants';
 import { ISetSpriteSizeMutation } from './characters';
+import { IRootState } from '..';
 
 export interface ITextBox extends IObject {
 	type: 'textBox';
@@ -133,8 +134,8 @@ export const textBoxMutations: MutationTree<IObjectsState> = {
 
 let lastTextBoxId = 0;
 
-export const textBoxActions: ActionTree<IObjectsState, never> = {
-	createTextBox({ commit }, command: ICreateTextBoxAction): string {
+export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
+	createTextBox({ commit, rootState }, command: ICreateTextBoxAction): string {
 		const id = 'textBox_' + ++lastTextBoxId;
 		const resetBounds = command.resetBounds || {
 			x: 640,
@@ -145,6 +146,7 @@ export const textBoxActions: ActionTree<IObjectsState, never> = {
 		commit('create', {
 			object: {
 				...resetBounds,
+				panelId: rootState.panels.currentPanel,
 				flip: false,
 				id,
 				onTop: true,

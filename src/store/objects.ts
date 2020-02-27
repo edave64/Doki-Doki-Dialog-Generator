@@ -10,15 +10,22 @@ import { textBoxActions, textBoxMutations } from './objectTypes/textbox';
 import { IRootState } from '.';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset } from './content';
+import Vue from 'vue';
 
-export interface IObjectsState {
-	objects: { [id: string]: IObject };
+export interface IPanel {
+	id: string;
 	order: string[];
 	onTopOrder: string[];
 }
 
+export interface IObjectsState {
+	objects: { [id: string]: IObject };
+	panels: { [id: string]: IPanel };
+}
+
 export interface IObject {
 	type: ObjectTypes;
+	panelId: string;
 	id: string;
 	x: number;
 	y: number;
@@ -34,29 +41,39 @@ export interface IObject {
 
 export type ObjectTypes = 'sprite' | 'character' | 'textBox';
 
+let lastCopyId = 0;
+
 export default {
 	namespaced: true,
 	state: {
 		objects: {},
-		order: [],
-		onTopOrder: [],
+		panels: {},
 	},
 	mutations: {
-		create(state, command: ICreateObjectMutation) {
-			state.objects[command.object.id] = command.object;
-			if (command.object.onTop) {
-				state.onTopOrder.push(command.object.id);
-			} else {
-				state.order.push(command.object.id);
+		create(state, { object }: ICreateObjectMutation) {
+			if (!state.panels[object.panelId]) {
+				Vue.set(state.panels, object.panelId, {
+					id: object.panelId,
+					onTopOrder: [],
+					order: [],
+				});
 			}
+			const panel = state.panels[object.panelId];
+			const collection = object.onTop ? panel.onTopOrder : panel.order;
+			Vue.set(state.objects, object.id, object);
+			collection.push(object.id);
 		},
 		removeFromList(state, command: IRemoveFromListMutation) {
-			const collection = command.onTop ? state.onTopOrder : state.order;
+			const obj = state.objects[command.id];
+			const panel = state.panels[obj.panelId];
+			const collection = command.onTop ? panel.onTopOrder : panel.order;
 			const idx = collection.indexOf(command.id);
 			collection.splice(idx, 1);
 		},
 		addToList(state, command: IAddToListMutation) {
-			const collection = command.onTop ? state.onTopOrder : state.order;
+			const obj = state.objects[command.id];
+			const panel = state.panels[obj.panelId];
+			const collection = command.onTop ? panel.onTopOrder : panel.order;
 			collection.splice(command.position, 0, command.id);
 		},
 		setOnTop(state, command: ISetOnTopMutation) {
@@ -87,7 +104,12 @@ export default {
 			obj.ratio = command.ratio;
 		},
 		removeObject(state, command: IRemoveObjectMutation) {
+			const obj = state.objects[command.id];
 			delete state.objects[command.id];
+			const panel = state.panels[obj.panelId];
+			if (panel.onTopOrder.length === 0 && panel.order.length === 0) {
+				delete state.panels[obj.panelId];
+			}
 		},
 		...spriteMutations,
 		...characterMutations,
@@ -117,6 +139,7 @@ export default {
 		},
 		setOnTop({ state, commit }, command: IObjectSetOnTopAction) {
 			const obj = state.objects[command.id];
+			const panel = state.panels[obj.panelId];
 			if (obj.onTop === command.onTop) return;
 			commit('removeFromList', {
 				id: command.id,
@@ -124,7 +147,7 @@ export default {
 			} as IRemoveFromListMutation);
 			commit('addToList', {
 				id: command.id,
-				position: (command.onTop ? state.onTopOrder : state.order).length,
+				position: (command.onTop ? panel.onTopOrder : panel.order).length,
 				onTop: command.onTop,
 			} as IRemoveFromListMutation);
 			commit('setOnTop', {
@@ -134,7 +157,8 @@ export default {
 		},
 		shiftLayer({ state, commit }, command: IObjectShiftLayerAction) {
 			const obj = state.objects[command.id];
-			const collection = obj.onTop ? state.onTopOrder : state.order;
+			const panel = state.panels[obj.panelId];
+			const collection = obj.onTop ? panel.onTopOrder : panel.order;
 			const position = collection.indexOf(obj.id);
 
 			let newPosition = position + command.delta;
@@ -196,6 +220,28 @@ export default {
 				}
 			});
 		},
+		copyObjects(
+			{ commit, state },
+			{ sourcePanelId, targetPanelId }: ICopyObjectsAction
+		) {
+			const sourceOrders = state.panels[sourcePanelId];
+			for (const id of [...sourceOrders.onTopOrder, ...sourceOrders.order]) {
+				const oldObject = state.objects[id];
+				commit('create', {
+					object: {
+						...JSON.parse(JSON.stringify(oldObject)),
+						id: `copy_${oldObject.id}_${++lastCopyId}`,
+						panelId: targetPanelId,
+					},
+				} as ICreateObjectMutation);
+			}
+		},
+		deleteAllOfPanel({ state, dispatch }, { panelId }: IDeleteAllOfPanel) {
+			const panel = state.panels[panelId];
+			for (const id of [...panel.onTopOrder, ...panel.order]) {
+				dispatch('removeObject', { id } as IRemoveObjectAction);
+			}
+		},
 		...spriteActions,
 		...characterActions,
 		...textBoxActions,
@@ -204,6 +250,10 @@ export default {
 
 export interface ICreateObjectMutation {
 	readonly object: IObject;
+}
+
+export interface IDeleteAllOfPanel {
+	readonly panelId: string;
 }
 
 export interface IObjectMutation {
@@ -276,4 +326,9 @@ export interface ISetPositionAction extends ICommand {
 
 export interface IObjectContentPackRemovalAction extends ICommand {
 	readonly oldPack: ContentPack<IAsset>;
+}
+
+export interface ICopyObjectsAction {
+	readonly sourcePanelId: string;
+	readonly targetPanelId: string;
 }

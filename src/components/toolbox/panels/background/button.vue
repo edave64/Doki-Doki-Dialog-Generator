@@ -16,6 +16,7 @@ import { IAsset, BackgroundLookup } from '@/store/content';
 import { ErrorAsset } from '@/models/error-asset';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
+import { IPanel } from '@/store/panels';
 
 @Component({
 	components: {},
@@ -27,6 +28,11 @@ export default class BackgroundButton extends Vue {
 	private isWebPSupported: boolean | null = null;
 	private assets: Array<HTMLImageElement | ErrorAsset> = [];
 
+	private get background(): Readonly<IPanel['background']> {
+		const currentPanel = this.$store.state.panels.currentPanel;
+		return this.$store.state.panels.panels[currentPanel].background;
+	}
+
 	private get bgData(): Background<IAsset> | null {
 		const backgrounds: BackgroundLookup = this.$store.getters[
 			'content/getBackgrounds'
@@ -35,7 +41,7 @@ export default class BackgroundButton extends Vue {
 	}
 
 	private get isActive(): boolean {
-		return this.backgroundId === this.$store.state.background.current;
+		return this.backgroundId === this.background.current;
 	}
 
 	private async created() {
@@ -60,7 +66,7 @@ export default class BackgroundButton extends Vue {
 		switch (this.backgroundId) {
 			case 'buildin.static-color':
 				return {
-					'background-color': this.$store.state.background.color,
+					'background-color': this.background.color,
 				};
 			case 'buildin.transparent':
 				return {};

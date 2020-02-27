@@ -180,13 +180,17 @@ export default class AddPanel extends Mixins(PanelMixin) {
 	}
 
 	private addTextBox() {
-		this.$store.dispatch('objects/createTextBox', {} as ICreateTextBoxAction);
+		this.vuexHistory.transaction(async () => {
+			this.$store.dispatch('objects/createTextBox', {} as ICreateTextBoxAction);
+		});
 	}
 
 	private onChosen(id: string) {
-		this.$store.dispatch('objects/createCharacters', {
-			characterType: id,
-		} as ICreateCharacterAction);
+		this.vuexHistory.transaction(async () => {
+			this.$store.dispatch('objects/createCharacters', {
+				characterType: id,
+			} as ICreateCharacterAction);
+		});
 	}
 
 	private addCustomSpriteFile(file: File) {

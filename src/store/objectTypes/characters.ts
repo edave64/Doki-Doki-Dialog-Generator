@@ -141,11 +141,12 @@ export function closestCharacterSlot(pos: number): number {
 let lastSpriteId = 0;
 
 export const characterActions: ActionTree<IObjectsState, IRootState> = {
-	createCharacters({ state, commit }, command: ICreateCharacterAction) {
+	createCharacters({ rootState, commit }, command: ICreateCharacterAction) {
 		commit('create', {
 			object: {
 				flip: false,
 				id: 'characters_' + ++lastSpriteId,
+				panelId: rootState.panels.currentPanel,
 				onTop: false,
 				opacity: 100,
 				type: 'character',
