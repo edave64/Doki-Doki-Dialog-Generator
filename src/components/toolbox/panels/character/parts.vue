@@ -12,7 +12,10 @@
 				$emit('leave');
 			"
 		/>
-		<fieldset v-for="styleComponent of styleComponents" :key="styleComponent.name">
+		<fieldset
+			v-for="styleComponent of styleComponents"
+			:key="styleComponent.name"
+		>
 			<legend>{{ styleComponent.label }}</legend>
 			<part-button
 				v-for="(button, index) of styleComponent.buttons"
@@ -53,6 +56,7 @@ import {
 } from '@/store/objectTypes/characters';
 import { IHistorySupport } from '@/plugins/vuex-history';
 import { State } from 'vuex-class-decorator';
+import { DeepReadonly } from '../../../../util/readonly';
 
 interface IPartStyleGroup {
 	label: string;
@@ -87,7 +91,7 @@ export default class PartsPanel extends Vue {
 
 	private vuexHistory!: IHistorySupport;
 
-	private get charData(): Character<IAsset> {
+	private get charData(): DeepReadonly<Character<IAsset>> {
 		return getData(this.$store, this.character);
 	}
 
@@ -124,11 +128,11 @@ export default class PartsPanel extends Vue {
 		});
 	}
 
-	private get parts(): { [id: number]: IPartButtonImage } {
-		const ret: { [id: string]: IPartButtonImage } = {};
-		let collection: IAsset[][];
-		let offset: IPartButtonImage['offset'];
-		let size: IPartButtonImage['size'];
+	private get parts(): { [id: number]: DeepReadonly<IPartButtonImage> } {
+		const ret: { [id: string]: DeepReadonly<IPartButtonImage> } = {};
+		let collection: DeepReadonly<IAsset[][]>;
+		let offset: DeepReadonly<IPartButtonImage['offset']>;
+		let size: DeepReadonly<IPartButtonImage['size']>;
 		const data = this.charData;
 		const currentPose = getPose(data, this.character);
 		switch (this.part) {
@@ -207,7 +211,9 @@ export default class PartsPanel extends Vue {
 		return ret;
 	}
 
-	private generatePosePreview(pose: Pose<IAsset>): IPartButtonImage {
+	private generatePosePreview(
+		pose: DeepReadonly<Pose<IAsset>>
+	): DeepReadonly<IPartButtonImage> {
 		const data = this.charData;
 		const heads = data.heads[pose.compatibleHeads[0]];
 		const head = heads ? heads.variants[0] : null;

@@ -5,6 +5,7 @@ import { IDragable } from './dragable';
 import { ErrorAsset } from './error-asset';
 import { ISprite } from '@/store/objectTypes/sprite';
 import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
+import { DeepReadonly } from '@/util/readonly';
 
 const BaseXPosition = 640;
 
@@ -20,7 +21,7 @@ export class Sprite implements IRenderable, IDragable {
 		return this.obj.onTop;
 	}
 
-	public constructor(public readonly obj: ISprite) {}
+	public constructor(public readonly obj: DeepReadonly<ISprite>) {}
 
 	public async render(selected: boolean, rx: RenderContext) {
 		const assets = await Promise.all(

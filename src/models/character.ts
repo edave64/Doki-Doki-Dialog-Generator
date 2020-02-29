@@ -16,9 +16,8 @@ import {
 	Character as CharacterModel,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset } from '@/store/content';
-import { IRootState } from '@/store';
-import { Store } from 'vuex';
 import { ErrorAsset } from './error-asset';
+import { DeepReadonly } from '@/util/readonly';
 
 export class Character implements IRenderable, IDragable {
 	public styleData = {
@@ -36,17 +35,16 @@ export class Character implements IRenderable, IDragable {
 
 	public constructor(
 		public readonly obj: ICharacter,
-		private $store: Store<IRootState>
+		private readonly data: DeepReadonly<CharacterModel<IAsset>>
 	) {}
 
 	public async updateLocalCanvas() {
 		await this.localRenderer.render(async rx => {
-			const data = this.getData();
-			const pose = getPose(data, this.obj) as Pose<IAsset>;
+			const pose = getPose(this.data, this.obj) as Pose<IAsset>;
 			let assets: Array<IAsset | 'head'> = [];
-			let headAssets: IAsset[] = [];
-			const partKeys = getParts(data, this.obj);
-			const currentHeads = getHeads(data, this.obj);
+			let headAssets: DeepReadonly<IAsset[]> = [];
+			const partKeys = getParts(this.data, this.obj);
+			const currentHeads = getHeads(this.data, this.obj);
 
 			console.log(pose.renderOrder);
 			for (const renderPart of pose.renderOrder.toLowerCase()) {
@@ -185,9 +183,5 @@ export class Character implements IRenderable, IDragable {
 		}
 
 		return true;
-	}
-
-	public getData(): CharacterModel<IAsset> {
-		return getDataG(this.$store.getters, this.obj);
 	}
 }

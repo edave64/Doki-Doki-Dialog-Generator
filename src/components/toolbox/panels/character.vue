@@ -17,7 +17,9 @@
 								<button @click="seekStyle(-1)">&lt;</button>
 							</td>
 							<td>
-								<button class="middle-button" @click="panelForParts = 'style'">Style</button>
+								<button class="middle-button" @click="panelForParts = 'style'">
+									Style
+								</button>
 							</td>
 							<td class="arrow-col">
 								<button @click="seekStyle(1)">&gt;</button>
@@ -28,7 +30,9 @@
 								<button @click="seekPose(-1)">&lt;</button>
 							</td>
 							<td>
-								<button class="middle-button" @click="panelForParts = 'pose'">Pose</button>
+								<button class="middle-button" @click="panelForParts = 'pose'">
+									Pose
+								</button>
 							</td>
 							<td class="arrow-col">
 								<button @click="seekPose(1)">&gt;</button>
@@ -39,7 +43,9 @@
 								<button @click="seekPart(part, -1)">&lt;</button>
 							</td>
 							<td>
-								<button class="middle-button" @click="panelForParts = part">{{ captialize(part) }}</button>
+								<button class="middle-button" @click="panelForParts = part">
+									{{ captialize(part) }}
+								</button>
 							</td>
 							<td class="arrow-col">
 								<button @click="seekPart(part, 1)">&gt;</button>
@@ -84,6 +90,7 @@ import { IAsset } from '@/store/content';
 import { PanelMixin } from './panelMixin';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
+import { DeepReadonly } from '../../../util/readonly';
 
 @Component({
 	components: {
@@ -96,9 +103,9 @@ import { IRootState } from '@/store';
 	},
 })
 export default class CharacterPanel extends Mixins(PanelMixin) {
-	public $store!: Store<IRootState>;
+	public $store!: Store<DeepReadonly<IRootState>>;
 
-	private get character(): ICharacter {
+	private get character(): DeepReadonly<ICharacter> {
 		const obj = this.$store.state.objects.objects[
 			this.$store.state.ui.selection!
 		];
@@ -110,7 +117,7 @@ export default class CharacterPanel extends Mixins(PanelMixin) {
 
 	private vuexHistory!: IHistorySupport;
 
-	private get charData(): Readonly<Character<IAsset>> {
+	private get charData(): DeepReadonly<Character<IAsset>> {
 		return getData(this.$store, this.character);
 	}
 
@@ -118,7 +125,7 @@ export default class CharacterPanel extends Mixins(PanelMixin) {
 		return this.charData.label || '';
 	}
 
-	private get parts(): string[] {
+	private get parts(): DeepReadonly<string[]> {
 		return getParts(this.charData, this.character);
 	}
 

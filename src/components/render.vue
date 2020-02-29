@@ -16,7 +16,8 @@
 		@dragover="onDragOver"
 		@drop="onDrop"
 		@mouseenter="onMouseEnter"
-	>HTML5 is required to use the Doki Doki Dialog Generator.</canvas>
+		>HTML5 is required to use the Doki Doki Dialog Generator.</canvas
+	>
 </template>
 
 <script lang="ts">
@@ -48,16 +49,14 @@ import {
 } from '@/store/objectTypes/characters';
 import { Sprite } from '@/models/sprite';
 import { TextBox } from '@/models/textbox';
-import {
-	ISetCurrentMutation,
-	IPanel,
-	ISetPanelPreviewMutation,
-} from '@/store/panels';
+import { ISetCurrentMutation, IPanel } from '@/store/panels';
 import content from '@/store/content';
+import { SceneRenderer } from '../models/scene-renderer';
+import { DeepReadonly } from '../util/readonly';
 
 @Component({})
 export default class Render extends Vue {
-	public $store!: Store<IRootState>;
+	public $store!: Store<DeepReadonly<IRootState>>;
 
 	private sdCtx: CanvasRenderingContext2D | undefined;
 
@@ -65,7 +64,6 @@ export default class Render extends Vue {
 		return this.$store.state.ui.selection;
 	}
 
-	private renderer: Renderer = new Renderer();
 	private currentlyRendering: boolean = false;
 
 	private queuedRender: number | null = null;
@@ -82,28 +80,19 @@ export default class Render extends Vue {
 
 	private vuexHistory!: IHistorySupport;
 
-	public async blendOver(imageUrl: string): Promise<void> {
-		const completed = await this.renderer.render(rc => {
-			return new Promise((resolve, reject) => {
-				const img = new Image();
-				img.addEventListener('load', () => {
-					rc.drawImage({
-						image: img,
-						x: 0,
-						y: 0,
-						w: 1280,
-						h: 720,
-					});
-					resolve();
-				});
-				img.src = imageUrl;
-			});
-		}, true);
-		if (completed) this.display();
+	private get sceneRender() {
+		return new SceneRenderer(
+			this.$store,
+			this.$store.state.panels.currentPanel,
+			1280,
+			720
+		);
 	}
 
+	public async blendOver(imageUrl: string): Promise<void> {}
+
 	public async download(): Promise<void> {
-		const url = await this.renderer.download(this.renderCallback, 'panel.png');
+		const url = await this.sceneRender.download();
 
 		this.vuexHistory.transaction(async () => {
 			const oldUrl = this.$store.state.ui.lastDownload;
@@ -115,54 +104,9 @@ export default class Render extends Vue {
 		});
 	}
 
-	private get background(): Readonly<IPanel['background']> {
-		const currentPanel = this.$store.state.panels.currentPanel;
-		return this.$store.state.panels.panels[currentPanel].background;
-	}
-
-	private get currentBackground(): IBackground | null {
-		switch (this.background.current) {
-			case 'buildin.static-color':
-				color.color = this.background.color;
-				return color;
-			default:
-				const current = this.$store.state.content.current.backgrounds.find(
-					background => background.id === this.background.current
-				)!;
-				if (!current) return null;
-				const variant = current.variants[this.background.variant];
-				if (!variant) return null;
-				return new Background(
-					variant,
-					this.background.flipped,
-					this.background.scaling
-				);
-		}
-	}
-
 	private invalidateRender() {
 		if (this.queuedRender) return;
 		this.queuedRender = requestAnimationFrame(() => this.render_());
-	}
-
-	private async renderLoadingScreen(): Promise<void> {
-		const completed = await this.renderer.render(async rc => {
-			rc.drawText({
-				text: 'Starting...',
-				x: this.renderer.width / 2,
-				y: this.renderer.height / 2,
-				align: 'center',
-				outline: {
-					width: 5,
-					style: '#b59',
-				},
-				font: '32px riffic',
-				fill: {
-					style: 'white',
-				},
-			});
-		}, true);
-		if (completed) this.display();
 	}
 
 	private async render_(): Promise<void> {
@@ -173,36 +117,8 @@ export default class Render extends Vue {
 
 		if (this.$store.state.unsafe) return;
 
-		const completed = await this.renderer.render(
-			this.renderCallback,
-			!this.lqRendering
-		);
-		if (completed) {
-			this.display();
-		}
-	}
-
-	private async renderCallback(rx: RenderContext): Promise<void> {
-		this.currentlyRendering = true;
-		try {
-			if (rx.preview) {
-				rx.drawImage({
-					x: 0,
-					y: 0,
-					image: await getAsset('backgrounds/transparent'),
-				});
-			}
-
-			if (this.currentBackground) {
-				await this.currentBackground.render(rx);
-			}
-
-			for (const object of this.renderObjects) {
-				await object.render(this.selection === object.id, rx);
-			}
-		} finally {
-			this.currentlyRendering = false;
-		}
+		await this.sceneRender.render(!this.lqRendering);
+		this.display();
 	}
 
 	private async created(): Promise<void> {
@@ -222,23 +138,39 @@ export default class Render extends Vue {
 		this.invalidateRender();
 	}
 
+	private renderLoadingScreen() {
+		if (!this.sdCtx) return;
+		const loadingScreen = document.createElement('canvas');
+		loadingScreen.height = 1280;
+		loadingScreen.width = 720;
+		const rctx = new RenderContext(
+			loadingScreen.getContext('2d')!,
+			true,
+			false
+		);
+		rctx.drawText({
+			text: 'Starting...',
+			x: loadingScreen.width / 2,
+			y: loadingScreen.height / 2,
+			align: 'center',
+			outline: {
+				width: 5,
+				style: '#b59',
+			},
+			font: '32px riffic',
+			fill: {
+				style: 'white',
+			},
+		});
+		this.sdCtx!.drawImage(loadingScreen, this.canvasWidth, this.canvasHeight);
+	}
+
 	@Watch('canvasWidth')
 	@Watch('canvasHeight')
 	private display(): void {
 		if (!this.sdCtx) return;
 		this.showingLast = false;
-		this.renderer.paintOnto(this.sdCtx, 0, 0, 1280, 720);
-		const sd = this.$refs.sd as HTMLCanvasElement;
-		sd.toBlob(blob => {
-			if (!blob) return;
-			const url = URL.createObjectURL(blob);
-			this.vuexHistory.transaction(() => {
-				this.$store.commit('panels/setPanelPreview', {
-					panelId: this.$store.state.panels.currentPanel,
-					url,
-				} as ISetPanelPreviewMutation);
-			});
-		}, 'image/png');
+		this.sceneRender.paintOnto(this.sdCtx, 0, 0, 1280, 720);
 	}
 
 	private toRendererCoordinate(x: number, y: number): [number, number] {
@@ -258,12 +190,10 @@ export default class Render extends Vue {
 
 		const [sx, sy] = this.toRendererCoordinate(e.clientX, e.clientY);
 
-		const objects = this.objectsAt(sx, sy);
+		const objects = this.sceneRender.objectsAt(sx, sy);
 
-		const currentObjectIdx = objects.findIndex(
-			obj => obj.id === this.selection
-		);
-		let selectedObject: IRenderable | null;
+		const currentObjectIdx = objects.findIndex(id => id === this.selection);
+		let selectedObject: string | null;
 
 		if (currentObjectIdx === 0) {
 			selectedObject = null;
@@ -274,16 +204,7 @@ export default class Render extends Vue {
 			selectedObject = objects[objects.length - 1] || null;
 		}
 
-		this.$store.commit(
-			'ui/setSelection',
-			selectedObject ? selectedObject.id : null
-		);
-	}
-
-	private objectsAt(x: number, y: number): IRenderable[] {
-		return this.renderObjects.filter(renderObject =>
-			renderObject.hitTest(x, y)
-		);
+		this.$store.commit('ui/setSelection', selectedObject);
 	}
 
 	private draggedObject: IObject | null = null;
@@ -401,48 +322,6 @@ export default class Render extends Vue {
 		if (e.buttons !== 1) {
 			this.draggedObject = null;
 		}
-	}
-
-	private renderObjectCache: { [id: string]: IRenderable } = {};
-	private get renderObjects() {
-		const currentPanel = this.$store.state.panels.currentPanel;
-		const objectsState = this.$store.state.objects.panels[currentPanel];
-		const order = [...objectsState.order, ...objectsState.onTopOrder];
-		const objects = this.$store.state.objects.objects;
-		const toUncache = Object.keys(this.renderObjectCache).filter(
-			id => !order.includes(id)
-		);
-
-		for (const id of toUncache) {
-			if (this.selection === id) {
-				this.vuexHistory.transaction(() => {
-					this.$store.commit('ui/setSelection', id);
-				});
-			}
-			this.$delete(this.renderObjectCache, id);
-		}
-
-		return order.map(id => {
-			if (!this.renderObjectCache[id]) {
-				const obj = objects[id];
-				switch (obj.type) {
-					case 'sprite':
-						this.renderObjectCache[id] = new Sprite((obj as any) as ISprite);
-						break;
-					case 'character':
-						this.renderObjectCache[id] = new Character(
-							(obj as any) as ICharacter,
-							this.$store
-						);
-						break;
-					case 'textBox':
-						this.renderObjectCache[id] = new TextBox((obj as any) as ITextBox);
-						break;
-				}
-			}
-			this.renderObjectCache[id].obj = objects[id];
-			return this.renderObjectCache[id];
-		});
 	}
 }
 </script>

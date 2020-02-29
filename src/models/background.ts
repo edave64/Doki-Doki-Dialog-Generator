@@ -3,6 +3,7 @@ import { getAAsset } from '@/asset-manager';
 import { screenWidth, screenHeight } from './constants';
 import { IAsset } from '@/store/content';
 import { ScalingModes } from '@/store/panels';
+import { DeepReadonly } from '@/util/readonly';
 
 export interface IBackground {
 	render(rx: RenderContext): Promise<void>;
@@ -10,7 +11,7 @@ export interface IBackground {
 
 export class Background implements IBackground {
 	public constructor(
-		public readonly assets: IAsset[],
+		public readonly assets: DeepReadonly<IAsset[]>,
 		public readonly flip: boolean,
 		public readonly scale: ScalingModes
 	) {}

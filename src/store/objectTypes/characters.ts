@@ -19,6 +19,7 @@ import {
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset } from '../content';
 import { IRootState } from '..';
+import { DeepReadonly } from '@/util/readonly';
 
 export interface ICharacter extends IObject {
 	type: 'character';
@@ -76,9 +77,9 @@ export const characterMutations: MutationTree<IObjectsState> = {
 };
 
 export function getData(
-	store: Store<IRootState>,
-	state: Readonly<ICharacter>
-): Readonly<Character<IAsset>> {
+	store: Store<DeepReadonly<IRootState>>,
+	state: DeepReadonly<ICharacter>
+): DeepReadonly<Character<IAsset>> {
 	const characters = store.getters['content/getCharacters'] as Map<
 		Character<IAsset>['id'],
 		Character<IAsset>
@@ -98,16 +99,16 @@ export function getDataG(
 }
 
 export function getPose(
-	data: Character<IAsset>,
-	state: Readonly<ICharacter>
-): Readonly<Pose<IAsset>> {
+	data: DeepReadonly<Character<IAsset>>,
+	state: DeepReadonly<ICharacter>
+): DeepReadonly<Pose<IAsset>> {
 	return data.poses[state.poseId];
 }
 
 export function getParts(
-	data: Character<IAsset>,
-	state: Readonly<ICharacter>
-): Part[] {
+	data: DeepReadonly<Character<IAsset>>,
+	state: DeepReadonly<ICharacter>
+): DeepReadonly<Part[]> {
 	const pose = getPose(data, state);
 	const parts: Part[] = [];
 
@@ -119,10 +120,10 @@ export function getParts(
 }
 
 export function getHeads(
-	data: Character<IAsset>,
-	state: Readonly<ICharacter>,
+	data: DeepReadonly<Character<IAsset>>,
+	state: DeepReadonly<ICharacter>,
 	headTypeId: number = state.posePositions.headType
-): HeadCollection<IAsset> | null {
+): DeepReadonly<HeadCollection<IAsset>> | null {
 	const compatibleHeads = getPose(data, state).compatibleHeads;
 	if (!compatibleHeads || compatibleHeads.length === 0) {
 		return null;

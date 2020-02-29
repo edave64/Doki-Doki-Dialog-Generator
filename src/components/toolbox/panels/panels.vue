@@ -12,9 +12,9 @@
 					@click="updateCurrentPanel(panel.id)"
 				>
 					<div class="panel_text">
-						<p>{{panel.text}}</p>
+						<p>{{ panel.text }}</p>
 					</div>
-					<div class="panel_nr">{{idx + 1}}</div>
+					<div class="panel_nr">{{ idx + 1 }}</div>
 				</div>
 			</div>
 		</fieldset>
@@ -33,11 +33,14 @@ import {
 	IDuplicatePanelAction,
 	ISetCurrentPanelMutation,
 	IDeletePanelAction,
+	ISetPanelPreviewMutation,
 } from '@/store/panels';
 import { State } from 'vuex-class-decorator';
-import { getAAsset } from '../../../asset-manager';
+import { getAAsset, isWebPSupported } from '../../../asset-manager';
 import { ITextBox } from '../../../store/objectTypes/textbox';
 import { IHistorySupport } from '../../../plugins/vuex-history';
+import { SceneRenderer } from '../../../models/scene-renderer';
+import { DeepReadonly } from '../../../util/readonly';
 
 interface IPanelButton {
 	id: string;
@@ -47,14 +50,49 @@ interface IPanelButton {
 
 @Component({})
 export default class PanelsPanel extends Mixins(PanelMixin) {
-	public $store!: Store<IRootState>;
+	public $store!: Store<DeepReadonly<IRootState>>;
 	private vuexHistory!: IHistorySupport;
 
 	@State('currentPanel', { namespace: 'panels' })
 	private currentPanel!: string;
 
-	mounted() {
+	async mounted() {
 		this.moveFocusToActivePanel();
+
+		const sceneRenderer = new SceneRenderer(
+			this.$store,
+			this.currentPanel,
+			1280,
+			720
+		);
+
+		await sceneRenderer.render(false);
+
+		const targetCanvas = document.createElement('canvas');
+		targetCanvas.width = 1280 / 4;
+		targetCanvas.height = 720 / 4;
+
+		sceneRenderer.paintOnto(
+			targetCanvas.getContext('2d')!,
+			0,
+			0,
+			targetCanvas.width,
+			targetCanvas.height
+		);
+		targetCanvas.toBlob(
+			blob => {
+				if (!blob) return;
+				const url = URL.createObjectURL(blob);
+				this.vuexHistory.transaction(() => {
+					this.$store.commit('panels/setPanelPreview', {
+						panelId: this.$store.state.panels.currentPanel,
+						url,
+					} as ISetPanelPreviewMutation);
+				});
+			},
+			(await isWebPSupported()) ? 'image/webp' : 'image/png',
+			0.5
+		);
 	}
 
 	private moveFocusToActivePanel() {
@@ -180,10 +218,9 @@ fieldset {
 	}
 	&:not(.vertical) {
 		fieldset {
-			height: 168px;
 			.existing_panels {
 				max-width: 350px;
-				height: 100%;
+				height: 153px;
 				flex-direction: row;
 
 				.panel_button {
