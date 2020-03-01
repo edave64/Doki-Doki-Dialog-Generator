@@ -197,9 +197,25 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 	}
 
 	private moveFocusToActivePanel() {
-		const active = this.$el.querySelector('.panel_button.active');
+		const active = this.$el.querySelector('.panel_button.active_button');
 		if (active) {
-			active.scrollIntoView();
+			this.scrollIntoView(active);
+		}
+	}
+
+	private scrollIntoView(ele: Element) {
+		const parent = ele.parentElement!;
+		const idx = Array.from(parent.children).indexOf(ele);
+		if (this.$store.state.ui.vertical) {
+			let scroll =
+				idx * ele.clientHeight - parent.clientHeight / 2 + ele.clientHeight / 2;
+			parent.scrollTop = scroll;
+			parent.scrollLeft = 0;
+		} else {
+			let scroll =
+				idx * ele.clientWidth - parent.clientWidth / 2 + ele.clientWidth / 2;
+			parent.scrollLeft = scroll;
+			parent.scrollTop = 0;
 		}
 	}
 
