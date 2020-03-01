@@ -21,6 +21,9 @@
 		<div class="column">
 			<button @click="addNewPanel">Add new</button>
 			<button @click="deletePanel" :disabled="!canDeletePanel">Delete panel</button>
+
+			<button @click="moveAhead" :disabled="!canMoveAhead">Move ahead</button>
+			<button @click="moveBehind" :disabled="!canMoveBehind">Move behind</button>
 		</div>
 		<fieldset>
 			<legend>Export</legend>
@@ -78,12 +81,13 @@ import { Component, Mixins, Watch } from 'vue-property-decorator';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { PanelMixin } from './panelMixin';
-import {
+import panels, {
 	IPanel,
 	IDuplicatePanelAction,
 	ISetCurrentPanelMutation,
 	IDeletePanelAction,
 	ISetPanelPreviewMutation,
+	IMovePanelAction,
 } from '@/store/panels';
 import { State } from 'vuex-class-decorator';
 import { getAAsset, isWebPSupported } from '@/asset-manager';
@@ -300,6 +304,36 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 		this.$nextTick(() => {
 			this.moveFocusToActivePanel();
 		});
+	}
+
+	private moveAhead() {
+		this.vuexHistory.transaction(() => {
+			this.$store.dispatch('panels/move', {
+				panelId: this.currentPanel,
+				delta: -1,
+			} as IMovePanelAction);
+		});
+	}
+
+	private get canMoveAhead(): boolean {
+		const panelOrder = this.$store.state.panels.panelOrder;
+		const idx = panelOrder.indexOf(this.currentPanel);
+		return idx > 0;
+	}
+
+	private moveBehind() {
+		this.vuexHistory.transaction(() => {
+			this.$store.dispatch('panels/move', {
+				panelId: this.currentPanel,
+				delta: 1,
+			} as IMovePanelAction);
+		});
+	}
+
+	private get canMoveBehind(): boolean {
+		const panelOrder = this.$store.state.panels.panelOrder;
+		const idx = panelOrder.indexOf(this.currentPanel);
+		return idx < panelOrder.length - 1;
 	}
 }
 </script>

@@ -268,6 +268,14 @@ export default {
 				}
 			}
 		},
+		move({ state, commit }, { panelId, delta }: IMovePanelAction) {
+			const collection = [...state.panelOrder];
+			const oldIdx = collection.indexOf(panelId);
+			collection.splice(oldIdx, 1);
+			const newIdx = Math.max(oldIdx + delta, 0);
+			collection.splice(newIdx, 0, panelId);
+			commit('setPanelOrder', { panelOrder: collection } as ISetPanelOrder);
+		},
 	},
 } as Module<IPanels, IRootState>;
 
@@ -327,4 +335,9 @@ export interface ISetScalingMutation {
 
 export interface ISeekVariantAction {
 	readonly delta: 1 | -1;
+}
+
+export interface IMovePanelAction {
+	readonly panelId: string;
+	readonly delta: number;
 }
