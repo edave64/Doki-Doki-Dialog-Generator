@@ -20,7 +20,7 @@
 		</fieldset>
 		<div class="column">
 			<button @click="addNewPanel">Add new</button>
-			<button @click="deletePanel">Delete panel</button>
+			<button @click="deletePanel" :disabled="!canDeletePanel">Delete panel</button>
 		</div>
 		<fieldset>
 			<legend>Export</legend>
@@ -210,6 +210,10 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 				this.quality / 100
 			);
 		}
+	}
+
+	private get canDeletePanel(): boolean {
+		return this.panelButtons.length > 1;
 	}
 
 	private getPanelDistibution(): DeepReadonly<string[][]> {
