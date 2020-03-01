@@ -60,22 +60,28 @@ export class Electron implements IEnvironment {
 
 	public saveToFile(
 		downloadCanvas: HTMLCanvasElement,
-		filename: string
+		filename: string,
+		format: string = 'image/png',
+		quality: number = 1
 	): Promise<string> {
 		return new Promise((resolve, reject) => {
-			downloadCanvas.toBlob(async blob => {
-				if (!blob) {
-					reject();
-					return;
-				}
-				const buffer = await (blob as any).arrayBuffer();
-				this.electron.ipcRenderer.send(
-					'save-file',
-					filename,
-					new Uint8Array(buffer)
-				);
-				resolve(URL.createObjectURL(blob));
-			});
+			downloadCanvas.toBlob(
+				async blob => {
+					if (!blob) {
+						reject();
+						return;
+					}
+					const buffer = await (blob as any).arrayBuffer();
+					this.electron.ipcRenderer.send(
+						'save-file',
+						filename,
+						new Uint8Array(buffer)
+					);
+					resolve(URL.createObjectURL(blob));
+				},
+				format,
+				quality
+			);
 		});
 	}
 

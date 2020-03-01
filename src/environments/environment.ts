@@ -16,7 +16,12 @@ export interface IEnvironment {
 	readonly isBackgroundInstallingSupported: boolean;
 	readonly isPackInstallingSupported: boolean;
 	readonly installedCharacterPacks: Readonly<Array<Readonly<IPack>>>;
-	saveToFile(canvas: HTMLCanvasElement, filename: string): Promise<string>;
+	saveToFile(
+		canvas: HTMLCanvasElement,
+		filename: string,
+		format?: string,
+		quality?: number
+	): Promise<string>;
 	installBackground(background: Background): void;
 	uninstallBackground(background: Background): void;
 	activateContentPack(url: string): void;

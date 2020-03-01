@@ -6,11 +6,13 @@ export class Browser implements IEnvironment {
 
 	public async saveToFile(
 		downloadCanvas: HTMLCanvasElement,
-		filename: string
+		filename: string,
+		format: string = 'image/png',
+		quality: number = 1
 	): Promise<string> {
 		const a = document.createElement('a');
 		a.setAttribute('download', filename);
-		const url = await this.createObjectURL(downloadCanvas);
+		const url = await this.createObjectURL(downloadCanvas, format, quality);
 		a.setAttribute('href', url);
 		document.body.appendChild(a);
 		a.click();
@@ -76,19 +78,27 @@ export class Browser implements IEnvironment {
 		return;
 	}
 
-	protected createObjectURL(canvas: HTMLCanvasElement): Promise<string> {
+	protected createObjectURL(
+		canvas: HTMLCanvasElement,
+		format: string,
+		quality: number
+	): Promise<string> {
 		return new Promise((resolve, reject) => {
 			if (canvas.toBlob && window.URL && window.URL.createObjectURL) {
-				canvas.toBlob(blob => {
-					if (!blob) {
-						reject();
-						return;
-					}
-					resolve(URL.createObjectURL(blob));
-				}, 'image/png');
+				canvas.toBlob(
+					blob => {
+						if (!blob) {
+							reject();
+							return;
+						}
+						resolve(URL.createObjectURL(blob));
+					},
+					format,
+					quality
+				);
 			} else if (window.URL && window.URL.createObjectURL) {
 				const url = canvas.toDataURL();
-				const blob = this.dataURItoBlob(url);
+				const blob = this.dataURItoBlob(url, format);
 				resolve(URL.createObjectURL(blob));
 			} else {
 				resolve(canvas.toDataURL());
@@ -96,7 +106,7 @@ export class Browser implements IEnvironment {
 		});
 	}
 
-	protected dataURItoBlob(dataURI: string) {
+	protected dataURItoBlob(dataURI: string, type: string) {
 		const binStr = atob(dataURI.split(',')[1]);
 		const len = binStr.length;
 		const arr = new Uint8Array(len);
@@ -105,6 +115,6 @@ export class Browser implements IEnvironment {
 			arr[i] = binStr.charCodeAt(i);
 		}
 
-		return new Blob([arr], { type: 'image/png' });
+		return new Blob([arr], { type });
 	}
 }
