@@ -1,7 +1,7 @@
 <template>
 	<div class="panel">
 		<h1>Panels</h1>
-		<fieldset>
+		<fieldset class="existing_panels_fieldset">
 			<legend>Existing Panels</legend>
 			<div class="existing_panels">
 				<div
@@ -18,29 +18,57 @@
 				</div>
 			</div>
 		</fieldset>
-		<button @click="addNewPanel">Add new</button>
-		<button @click="deletePanel">Delete panel</button>
+		<div class="column">
+			<button @click="addNewPanel">Add new</button>
+			<button @click="deletePanel">Delete panel</button>
+		</div>
 		<fieldset>
 			<legend>Export</legend>
-			<select v-model="format">
-				<option value="image/png">PNG (lossless)</option>
-				<option value="image/webp" v-if="webpSupport">WebP (lossy)</option>
-				<option value="image/heif" v-if="heifSupport">HEIF (lossy)</option>
-				<option value="image/jpeg">JPEG (lossy)</option>
-				<!-- <option value="image/jpeg">WebM (lossy, video)</option> -->
-			</select>
-			<br />
-			<p v-if="isLossy">
-				<label for="export_quality">Quality:</label>
-				<input id="export_quality" type="number" min="0" max="100" v-model.number="quality" />
-			</p>
-			<p
-				v-if="isLossy && quality === 100"
-			>Note: 100% quality on a lossy format is still not lossless! Select PNG if you want lossless compression.</p>
-			<label for="export_ppi">Panels per image: (0 for one single image)</label>
-			<input id="export_ppi" type="number" min="0" v-model.number="ppi" />
-			<br />
-			<button @click="download">Download</button>
+			<table>
+				<tr>
+					<td>
+						<label for="export_format">Format</label>
+					</td>
+					<td>
+						<select id="export_format" v-model="format">
+							<option value="image/png">PNG (lossless)</option>
+							<option value="image/webp" v-if="webpSupport">WebP (lossy)</option>
+							<option value="image/heif" v-if="heifSupport">HEIF (lossy)</option>
+							<option value="image/jpeg">JPEG (lossy)</option>
+							<!-- <option value="image/jpeg">WebM (lossy, video)</option>-->
+						</select>
+					</td>
+				</tr>
+				<tr v-if="isLossy">
+					<td>
+						<label for="export_quality">Quality:</label>
+					</td>
+					<td>
+						<input id="export_quality" type="number" min="0" max="100" v-model.number="quality" />
+					</td>
+				</tr>
+				<tr v-if="isLossy && quality === 100">
+					<td
+						colspan="2"
+					>Note: 100% quality on a lossy format is still not lossless! Select PNG if you want lossless compression.</td>
+				</tr>
+				<tr>
+					<td>
+						<label for="export_ppi">
+							Panels per image:
+							<br />(0 for one single image)
+						</label>
+					</td>
+					<td>
+						<input id="export_ppi" type="number" min="0" v-model.number="ppi" />
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<button @click="download">Download</button>
+					</td>
+				</tr>
+			</table>
 		</fieldset>
 	</div>
 </template>
@@ -197,7 +225,7 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 	}
 
 	private moveFocusToActivePanel() {
-		const active = this.$el.querySelector('.panel_button.active_button');
+		const active = this.$el.querySelector('.panel_button.active');
 		if (active) {
 			this.scrollIntoView(active);
 		}
@@ -296,10 +324,10 @@ fieldset {
 
 		text-shadow: 0 0 4px #000, -1px -1px 0 #000, 1px -1px 0 #000,
 			-1px 1px 0 #000, 1px 1px 0 #000;
-	}
 
-	.panel_button.active {
-		background-color: #ffbde1;
+		&.active {
+			background-color: #ffbde1;
+		}
 	}
 
 	.panel_text {
@@ -317,8 +345,21 @@ fieldset {
 	}
 }
 
+#export_ppi {
+	width: 128px;
+}
+
 .panel {
 	&.vertical {
+		.column {
+			width: 100%;
+
+			button,
+			select {
+				width: 100%;
+			}
+		}
+
 		fieldset {
 			width: 100%;
 			.existing_panels {
@@ -334,10 +375,25 @@ fieldset {
 		}
 	}
 	&:not(.vertical) {
+		.column {
+			display: flex;
+			height: 100%;
+			flex-direction: column;
+			flex-wrap: wrap;
+
+			textarea {
+				height: 100%;
+			}
+		}
+
+		.existing_panels_fieldset {
+			height: 100%;
+		}
+
 		fieldset {
 			.existing_panels {
 				max-width: 350px;
-				height: 153px;
+				height: calc(100% - 16px);
 				flex-direction: row;
 
 				.panel_button {

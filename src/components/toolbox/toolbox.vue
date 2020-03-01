@@ -159,6 +159,7 @@ export default class ToolBox extends Vue {
 	border: 3px solid #ffbde1;
 	position: absolute;
 	display: flex;
+	overflow: hidden;
 
 	.panel {
 		display: flex;
