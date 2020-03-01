@@ -20,6 +20,28 @@
 		</fieldset>
 		<button @click="addNewPanel">Add new</button>
 		<button @click="deletePanel">Delete panel</button>
+		<fieldset>
+			<legend>Export</legend>
+			<select v-model="format">
+				<option value="image/png">PNG (lossless)</option>
+				<option value="image/webp" v-if="webpSupport">WebP (lossy)</option>
+				<option value="image/heif" v-if="heifSupport">HEIF (lossy)</option>
+				<option value="image/jpeg">JPEG (lossy)</option>
+				<!-- <option value="image/jpeg">WebM (lossy, video)</option> -->
+			</select>
+			<br />
+			<p v-if="isLossy">
+				<label for="export_quality">Quality:</label>
+				<input id="export_quality" type="number" min="0" max="100" v-model.number="quality" />
+			</p>
+			<p
+				v-if="isLossy && quality === 100"
+			>Note: 100% quality on a lossy format is still not lossless! Select PNG if you want lossless compression.</p>
+			<label for="export_ppi">Panels per image: (0 for one single image)</label>
+			<input id="export_ppi" type="number" min="0" v-model.number="ppi" />
+			<br />
+			<button @click="download">Download</button>
+		</fieldset>
 	</div>
 </template>
 
@@ -36,11 +58,13 @@ import {
 	ISetPanelPreviewMutation,
 } from '@/store/panels';
 import { State } from 'vuex-class-decorator';
-import { getAAsset, isWebPSupported } from '../../../asset-manager';
-import { ITextBox } from '../../../store/objectTypes/textbox';
-import { IHistorySupport } from '../../../plugins/vuex-history';
-import { SceneRenderer } from '../../../models/scene-renderer';
-import { DeepReadonly } from '../../../util/readonly';
+import { getAAsset, isWebPSupported } from '@/asset-manager';
+import { ITextBox } from '@/store/objectTypes/textbox';
+import { IHistorySupport } from '@/plugins/vuex-history';
+import { SceneRenderer } from '@/models/scene-renderer';
+import { DeepReadonly } from '@/util/readonly';
+import environment from '@/environments/environment';
+import leftPad from 'left-pad';
 
 interface IPanelButton {
 	id: string;
@@ -56,7 +80,17 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 	@State('currentPanel', { namespace: 'panels' })
 	private currentPanel!: string;
 
-	async mounted() {
+	private webpSupport = false;
+	private heifSupport = false;
+	private ppi = 0;
+	private format = 'image/png';
+	private quality = 90;
+
+	public async created() {
+		this.webpSupport = await isWebPSupported();
+	}
+
+	public async mounted() {
 		this.moveFocusToActivePanel();
 
 		const sceneRenderer = new SceneRenderer(
@@ -90,9 +124,77 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 					} as ISetPanelPreviewMutation);
 				});
 			},
-			(await isWebPSupported()) ? 'image/webp' : 'image/png',
+			(await isWebPSupported()) ? 'image/webp' : 'image/jpeg',
 			0.5
 		);
+	}
+
+	private get isLossy(): boolean {
+		return this.format !== 'image/png';
+	}
+
+	private async download() {
+		const distribution = this.getPanelDistibution();
+		console.log(distribution);
+		const date = new Date();
+		const prefix = `cd-${date.getFullYear()}-${leftPad(
+			date.getMonth() + 1,
+			2,
+			'0'
+		)}-${leftPad(date.getDate(), 2, '0')}-${leftPad(
+			date.getHours(),
+			2,
+			'0'
+		)}-${leftPad(date.getMinutes(), 2, '0')}-${leftPad(
+			date.getSeconds(),
+			2,
+			'0'
+		)}`;
+		const extension = this.format.split('/')[1];
+		for (let imageIdx = 0; imageIdx < distribution.length; ++imageIdx) {
+			const image = distribution[imageIdx];
+			const targetCanvas = document.createElement('canvas');
+			targetCanvas.width = 1280;
+			targetCanvas.height = 720 * image.length;
+
+			for (let panelIdx = 0; panelIdx < image.length; ++panelIdx) {
+				const sceneRenderer = new SceneRenderer(
+					this.$store,
+					image[panelIdx],
+					1280,
+					720
+				);
+
+				await sceneRenderer.render(true);
+
+				sceneRenderer.paintOnto(
+					targetCanvas.getContext('2d')!,
+					0,
+					720 * panelIdx,
+					1280,
+					720
+				);
+			}
+
+			return environment.saveToFile(
+				targetCanvas,
+				`${prefix}_${imageIdx}.${extension}`,
+				this.format,
+				this.quality / 100
+			);
+		}
+	}
+
+	private getPanelDistibution(): DeepReadonly<string[][]> {
+		const panelOrder = this.$store.state.panels.panelOrder;
+		if (this.ppi === 0) return [panelOrder];
+		const images: string[][] = [];
+		for (let imageI = 0; imageI < panelOrder.length / this.ppi; ++imageI) {
+			const sliceStart = imageI * this.ppi;
+			const sliceEnd = sliceStart + this.ppi;
+			images.push([...panelOrder.slice(sliceStart, sliceEnd)]);
+		}
+		return images;
 	}
 
 	private moveFocusToActivePanel() {
