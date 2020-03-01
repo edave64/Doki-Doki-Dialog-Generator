@@ -99,8 +99,7 @@ export class SceneRenderer {
 	}
 
 	private getRenderObjects() {
-		const currentPanel = this.state.panels.currentPanel;
-		const objectsState = this.state.objects.panels[currentPanel];
+		const objectsState = this.state.objects.panels[this.panelId];
 		const order = [...objectsState.order, ...objectsState.onTopOrder];
 		const objects = this.state.objects.objects;
 		const toUncache = Object.keys(this.renderObjectCache).filter(
@@ -143,7 +142,7 @@ export class SceneRenderer {
 	}
 
 	private get panel(): DeepReadonly<IPanel> {
-		return this.state.panels.panels[this.state.panels.currentPanel];
+		return this.state.panels.panels[this.panelId];
 	}
 
 	private getBackgroundRenderer(): IBackground | null {
