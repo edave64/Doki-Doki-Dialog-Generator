@@ -135,7 +135,6 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 
 	private async download() {
 		const distribution = this.getPanelDistibution();
-		console.log(distribution);
 		const date = new Date();
 		const prefix = `cd-${date.getFullYear()}-${leftPad(
 			date.getMonth() + 1,
@@ -176,7 +175,7 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 				);
 			}
 
-			return environment.saveToFile(
+			environment.saveToFile(
 				targetCanvas,
 				`${prefix}_${imageIdx}.${extension}`,
 				this.format,
