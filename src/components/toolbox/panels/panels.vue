@@ -50,11 +50,6 @@
 						<input id="export_quality" type="number" min="0" max="100" v-model.number="quality" />
 					</td>
 				</tr>
-				<tr v-if="isLossy && quality === 100">
-					<td
-						colspan="2"
-					>Note: 100% quality on a lossy format is still not lossless! Select PNG if you want lossless compression.</td>
-				</tr>
 				<tr>
 					<td>
 						<label for="export_ppi">
@@ -243,6 +238,18 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 				)}`
 			)
 		);
+	}
+
+	@Watch('quality')
+	private warnImageQuality(quality: number, oldQuality: number) {
+		if (quality === 100) {
+			eventBus.fire(
+				new ShowMessageEvent(
+					`Note: 100% quality on a lossy format is still not lossless! Select PNG if you want lossless compression.`
+				)
+			);
+			return;
+		}
 	}
 
 	private async renderObjects<T>(
