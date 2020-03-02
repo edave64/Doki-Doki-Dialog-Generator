@@ -19,11 +19,19 @@
 			</div>
 		</fieldset>
 		<div class="column">
-			<button @click="addNewPanel">Add new</button>
-			<button @click="deletePanel" :disabled="!canDeletePanel">Delete panel</button>
+			<button @click="addNewPanel">
+				<i class="material-icons">add_to_queue</i> Add new
+			</button>
+			<button @click="deletePanel" :disabled="!canDeletePanel">
+				<i class="material-icons">remove_from_queue</i> Delete panel
+			</button>
 
-			<button @click="moveAhead" :disabled="!canMoveAhead">Move ahead</button>
-			<button @click="moveBehind" :disabled="!canMoveBehind">Move behind</button>
+			<button @click="moveAhead" :disabled="!canMoveAhead">
+				<i class="material-icons">arrow_upward</i> Move ahead
+			</button>
+			<button @click="moveBehind" :disabled="!canMoveBehind">
+				<i class="material-icons">arrow_downward</i> Move behind
+			</button>
 		</div>
 		<fieldset>
 			<legend>Export</legend>
@@ -63,7 +71,9 @@
 				</tr>
 				<tr>
 					<td colspan="2">
-						<button @click="download">Download</button>
+						<button @click="download">
+							<i class="material-icons">photo_camera</i> Download
+						</button>
 					</td>
 				</tr>
 				<tr>
