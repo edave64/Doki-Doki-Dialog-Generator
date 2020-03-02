@@ -250,6 +250,14 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 			);
 			return;
 		}
+		if (oldQuality > 70 && quality <= 70) {
+			eventBus.fire(
+				new ShowMessageEvent(
+					`Note: A quality level below 70% might be very noticable and impair legibility of text.`
+				)
+			);
+			return;
+		}
 	}
 
 	private async renderObjects<T>(
