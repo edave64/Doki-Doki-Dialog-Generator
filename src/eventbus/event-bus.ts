@@ -57,3 +57,9 @@ export class InvalidateRenderEvent implements IEvent {
 	public static readonly kind = 'InvalidateRenderEvent';
 	public readonly kind = 'InvalidateRenderEvent';
 }
+
+export class ShowMessageEvent implements IEvent {
+	public static readonly kind = 'ShowMessageEvent';
+	public readonly kind = 'ShowMessageEvent';
+	public constructor(public message: string) {}
+}

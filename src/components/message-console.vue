@@ -11,6 +11,7 @@ import { State } from 'vuex-class-decorator';
 import EventBus, {
 	AssetFailureEvent,
 	CustomAssetFailureEvent,
+	ShowMessageEvent,
 } from '@/eventbus/event-bus';
 
 @Component({
@@ -30,7 +31,7 @@ export default class MessageConsole extends Vue {
 		EventBus.subscribe(AssetFailureEvent, ev => {
 			this.messages.push(`Failed to load asset '${ev.path}'`);
 			setTimeout(() => {
-				this.messages.pop();
+				this.messages.shift();
 			}, 5000);
 		});
 
@@ -39,8 +40,16 @@ export default class MessageConsole extends Vue {
 				'Failed to load custom asset. Try to download it manually and then upload it.'
 			);
 			setTimeout(() => {
-				this.messages.pop();
-			}, 50000);
+				this.messages.shift();
+			}, 20000);
+		});
+
+		EventBus.subscribe(ShowMessageEvent, ev => {
+			debugger;
+			this.messages.push(ev.message);
+			setTimeout(() => {
+				this.messages.shift();
+			}, 20000);
 		});
 	}
 
