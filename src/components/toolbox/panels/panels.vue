@@ -71,6 +71,11 @@
 						<button @click="download">Download</button>
 					</td>
 				</tr>
+				<tr>
+					<td colspan="2">
+						<button @click="estimateExportSize">Estimate filesizes</button>
+					</td>
+				</tr>
 			</table>
 		</fieldset>
 	</div>
@@ -97,6 +102,7 @@ import { SceneRenderer } from '@/models/scene-renderer';
 import { DeepReadonly } from '@/util/readonly';
 import environment from '@/environments/environment';
 import leftPad from 'left-pad';
+import eventBus, { ShowMessageEvent } from '../../../eventbus/event-bus';
 
 interface IPanelButton {
 	id: string;
@@ -182,38 +188,93 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 			'0'
 		)}`;
 		const extension = this.format.split('/')[1];
-		for (let imageIdx = 0; imageIdx < distribution.length; ++imageIdx) {
-			const image = distribution[imageIdx];
-			const targetCanvas = document.createElement('canvas');
-			targetCanvas.width = 1280;
-			targetCanvas.height = 720 * image.length;
-
-			for (let panelIdx = 0; panelIdx < image.length; ++panelIdx) {
-				const sceneRenderer = new SceneRenderer(
-					this.$store,
-					image[panelIdx],
-					1280,
-					720
-				);
-
-				await sceneRenderer.render(true);
-
-				sceneRenderer.paintOnto(
-					targetCanvas.getContext('2d')!,
-					0,
-					720 * panelIdx,
-					1280,
-					720
+		const format = this.format;
+		const quality = this.quality;
+		await this.renderObjects(
+			distribution,
+			true,
+			async (imageIdx: number, canvas: HTMLCanvasElement) => {
+				environment.saveToFile(
+					canvas,
+					`${prefix}_${imageIdx}.${extension}`,
+					format,
+					quality / 100
 				);
 			}
+		);
+	}
 
-			environment.saveToFile(
-				targetCanvas,
-				`${prefix}_${imageIdx}.${extension}`,
-				this.format,
-				this.quality / 100
-			);
-		}
+	private async estimateExportSize() {
+		const distribution = this.getPanelDistibution();
+		const format = this.format || 'image/png';
+		const quality = this.quality || 0.9;
+		const estimateFactor = 1.5;
+		const sizes = await this.renderObjects(
+			distribution,
+			false,
+			async (imageIdx: number, canvas: HTMLCanvasElement) => {
+				return new Promise<number>((resolve, reject) => {
+					canvas.toBlob(
+						blob => {
+							if (!blob) {
+								reject(`Image ${imageIdx + 1} could not be rendered.`);
+								return;
+							}
+							resolve(blob.size);
+						},
+						format,
+						quality
+					);
+				});
+			}
+		);
+		const readableSizes = sizes.map(
+			size => ((size * estimateFactor) / 1024 / 1024).toFixed(2) + 'MiB'
+		);
+		const filePluralize = readableSizes.length > 1 ? 'files' : 'file';
+		const itPluralize = readableSizes.length > 1 ? 'These' : 'It';
+		const sizePluralize = readableSizes.length > 1 ? 'sizes' : 'size';
+		eventBus.fire(
+			new ShowMessageEvent(
+				`This would export ${
+					readableSizes.length
+				} ${filePluralize}. ${itPluralize} would have the following (aproximate) ${sizePluralize}: ${readableSizes.join(
+					','
+				)}`
+			)
+		);
+	}
+
+	private async renderObjects<T>(
+		distribution: DeepReadonly<string[][]>,
+		hq: boolean,
+		mapper: (imageIdx: number, canvas: HTMLCanvasElement) => Promise<T>
+	): Promise<T[]> {
+		return await Promise.all(
+			distribution.map(async (image, imageIdx) => {
+				const targetCanvas = document.createElement('canvas');
+				targetCanvas.width = 1280;
+				targetCanvas.height = 720 * image.length;
+				const context = targetCanvas.getContext('2d')!;
+
+				await Promise.all(
+					image.map(async (panelId, panelIdx) => {
+						const sceneRenderer = new SceneRenderer(
+							this.$store,
+							image[panelIdx],
+							1280,
+							720
+						);
+
+						await sceneRenderer.render(hq);
+
+						sceneRenderer.paintOnto(context, 0, 720 * panelIdx, 1280, 720);
+					})
+				);
+
+				return await mapper(imageIdx, targetCanvas);
+			})
+		);
 	}
 
 	private get canDeletePanel(): boolean {
