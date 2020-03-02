@@ -1,6 +1,5 @@
 import { ITextStyle } from '@/renderer/textRenderer/textRenderer';
-
-export const ScreenWidth = 1280;
+import { screenWidth } from './constants';
 
 export const TextBoxWidth = 816;
 export const TextBoxCorruptedWidth = 900;
@@ -94,8 +93,8 @@ export const TextBoxCorruptedStyle = {
 	},
 };
 
-export const TextBoxX = ScreenWidth / 2 - TextBoxWidth / 2; // 232
-export const TextBoxCorruptedX = ScreenWidth / 2 - TextBoxCorruptedWidth / 2;
+export const TextBoxX = screenWidth / 2 - TextBoxWidth / 2; // 232
+export const TextBoxCorruptedX = screenWidth / 2 - TextBoxCorruptedWidth / 2;
 export const TextBoxTextX = TextBoxX + TextBoxTextXOffset;
 export const TextBoxTextY = TextBoxY + TextBoxTextYOffset;
 

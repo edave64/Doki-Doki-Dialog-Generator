@@ -98,6 +98,7 @@ import { DeepReadonly } from '@/util/readonly';
 import environment from '@/environments/environment';
 import leftPad from 'left-pad';
 import eventBus, { ShowMessageEvent } from '../../../eventbus/event-bus';
+import { screenWidth, screenHeight } from '../../../models/constants';
 
 interface IPanelButton {
 	id: string;
@@ -129,15 +130,15 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 		const sceneRenderer = new SceneRenderer(
 			this.$store,
 			this.currentPanel,
-			1280,
-			720
+			screenWidth,
+			screenHeight
 		);
 
 		await sceneRenderer.render(false);
 
 		const targetCanvas = document.createElement('canvas');
-		targetCanvas.width = 1280 / 4;
-		targetCanvas.height = 720 / 4;
+		targetCanvas.width = screenWidth / 4;
+		targetCanvas.height = screenHeight / 4;
 
 		sceneRenderer.paintOnto(
 			targetCanvas.getContext('2d')!,
@@ -268,8 +269,8 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 		return await Promise.all(
 			distribution.map(async (image, imageIdx) => {
 				const targetCanvas = document.createElement('canvas');
-				targetCanvas.width = 1280;
-				targetCanvas.height = 720 * image.length;
+				targetCanvas.width = screenWidth;
+				targetCanvas.height = screenHeight * image.length;
 				const context = targetCanvas.getContext('2d')!;
 
 				await Promise.all(
@@ -277,13 +278,19 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 						const sceneRenderer = new SceneRenderer(
 							this.$store,
 							image[panelIdx],
-							1280,
-							720
+							screenWidth,
+							screenHeight
 						);
 
 						await sceneRenderer.render(hq);
 
-						sceneRenderer.paintOnto(context, 0, 720 * panelIdx, 1280, 720);
+						sceneRenderer.paintOnto(
+							context,
+							0,
+							screenHeight * panelIdx,
+							screenWidth,
+							screenHeight
+						);
 					})
 				);
 

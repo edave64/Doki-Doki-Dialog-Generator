@@ -29,6 +29,7 @@ import { roundedRectangle, roundedTopRectangle } from '@/renderer/pathTools';
 import { RGBAColor } from '@/util/colors/rgb';
 import { HSLAColor } from '@/util/colors/hsl';
 import { TextRenderer, ITextStyle } from '@/renderer/textRenderer/textRenderer';
+import { screenWidth, screenHeight } from './constants';
 
 export class TextBox implements IRenderable {
 	public display: boolean = true;
@@ -37,7 +38,7 @@ export class TextBox implements IRenderable {
 	private lastY = 0;
 	private lastH = 0;
 	private lastW = 0;
-	private localRenderer = new Renderer(1280, 720);
+	private localRenderer = new Renderer(screenWidth, screenHeight);
 
 	public constructor(public obj: ITextBox) {}
 

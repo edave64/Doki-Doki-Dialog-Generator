@@ -2,8 +2,8 @@
 	<canvas
 		id="scaled_display"
 		ref="sd"
-		height="720"
-		width="1280"
+		:height="bitmapHeight"
+		:width="bitmapWidth"
 		:style="{ width: canvasWidth + 'px', height: canvasHeight + 'px' }"
 		draggable
 		@click="onUiClick"
@@ -16,8 +16,7 @@
 		@dragover="onDragOver"
 		@drop="onDrop"
 		@mouseenter="onMouseEnter"
-		>HTML5 is required to use the Doki Doki Dialog Generator.</canvas
-	>
+	>HTML5 is required to use the Doki Doki Dialog Generator.</canvas>
 </template>
 
 <script lang="ts">
@@ -53,6 +52,7 @@ import { ISetCurrentMutation, IPanel } from '@/store/panels';
 import content from '@/store/content';
 import { SceneRenderer } from '../models/scene-renderer';
 import { DeepReadonly } from '../util/readonly';
+import { screenHeight, screenWidth } from '../models/constants';
 
 @Component({})
 export default class Render extends Vue {
@@ -84,9 +84,16 @@ export default class Render extends Vue {
 		return new SceneRenderer(
 			this.$store,
 			this.$store.state.panels.currentPanel,
-			1280,
-			720
+			this.bitmapWidth,
+			this.bitmapHeight
 		);
+	}
+
+	private get bitmapHeight(): number {
+		return screenHeight;
+	}
+	private get bitmapWidth(): number {
+		return screenWidth;
 	}
 
 	public async blendOver(imageUrl: string): Promise<void> {}
@@ -141,8 +148,8 @@ export default class Render extends Vue {
 	private renderLoadingScreen() {
 		if (!this.sdCtx) return;
 		const loadingScreen = document.createElement('canvas');
-		loadingScreen.height = 1280;
-		loadingScreen.width = 720;
+		loadingScreen.height = this.bitmapHeight;
+		loadingScreen.width = this.bitmapWidth;
 		const rctx = new RenderContext(
 			loadingScreen.getContext('2d')!,
 			true,
@@ -170,7 +177,13 @@ export default class Render extends Vue {
 	private display(): void {
 		if (!this.sdCtx) return;
 		this.showingLast = false;
-		this.sceneRender.paintOnto(this.sdCtx, 0, 0, 1280, 720);
+		this.sceneRender.paintOnto(
+			this.sdCtx,
+			0,
+			0,
+			this.bitmapWidth,
+			this.bitmapHeight
+		);
 	}
 
 	private toRendererCoordinate(x: number, y: number): [number, number] {

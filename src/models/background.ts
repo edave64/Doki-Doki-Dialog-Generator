@@ -69,7 +69,13 @@ export const color = {
 	color: '#000000',
 
 	async render(rx: RenderContext): Promise<void> {
-		rx.drawRect({ x: 0, y: 0, w: 1280, h: 720, fill: { style: this.color } });
+		rx.drawRect({
+			x: 0,
+			y: 0,
+			w: screenWidth,
+			h: screenHeight,
+			fill: { style: this.color },
+		});
 	},
 };
 

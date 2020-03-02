@@ -1,12 +1,13 @@
 import { RenderContext } from './rendererContext';
 import { RenderAbortedException } from './renderAbortedException';
 import environment from '../environments/environment';
+import { screenWidth, screenHeight } from '@/models/constants';
 
 export class Renderer {
 	private previewCanvas: HTMLCanvasElement;
 	private runningContext: RenderContext | null = null;
 
-	public constructor(w: number = 1280, h: number = 720) {
+	public constructor(w: number = screenWidth, h: number = screenHeight) {
 		this.previewCanvas = document.createElement('canvas');
 		this.previewCanvas.width = w;
 		this.previewCanvas.height = h;
