@@ -1,6 +1,7 @@
 import { ITextStyle } from '@/renderer/textRenderer/textRenderer';
-import { screenWidth } from './constants';
+import { screenWidth } from '@/constants/base';
 
+// tslint:disable: no-magic-numbers
 export const TextBoxWidth = 816;
 export const TextBoxCorruptedWidth = 900;
 export const TextBoxHeight = 146;

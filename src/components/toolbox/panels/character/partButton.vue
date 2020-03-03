@@ -19,6 +19,8 @@ export interface IPartButtonImage {
 	offset: [number, number];
 }
 
+const spriteSize = 960;
+
 @Component({
 	components: {},
 })
@@ -52,8 +54,8 @@ export default class PartButton extends Vue {
 	}
 
 	private get backgroundSize(): string {
-		return `${Math.floor(960 * this.scaleX)}px ${Math.floor(
-			960 * this.scaleY
+		return `${Math.floor(spriteSize * this.scaleX)}px ${Math.floor(
+			spriteSize * this.scaleY
 		)}px`;
 	}
 

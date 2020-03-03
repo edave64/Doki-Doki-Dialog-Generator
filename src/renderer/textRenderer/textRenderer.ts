@@ -121,6 +121,7 @@ export class TextRenderer {
 		function fixLine() {
 			let x = xStart;
 			if (alignment === 'center') {
+				// tslint:disable-next-line: no-magic-numbers
 				x = xStart + (xEnd - xStart) / 2 - lineWidth / 2;
 			} else if (alignment === 'right') {
 				x = xEnd - lineWidth;

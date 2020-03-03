@@ -1,5 +1,6 @@
 import { HSLAColor } from './hsl';
 
+// tslint:disable: no-magic-numbers
 export class RGBAColor {
 	public static validCss(str: string): boolean {
 		return this.validCssRgb(str) || this.validHex(str);

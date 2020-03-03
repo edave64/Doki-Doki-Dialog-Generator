@@ -33,6 +33,10 @@ import MessageConsole from '@/components/message-console.vue';
 import Render from '@/components/render.vue';
 import { ISetCurrentMutation } from '@/store/panels';
 
+// tslint:disable-next-line: no-magic-numbers
+const aspectRatio = 16 / 9;
+const arrowMoveStepSize = 20;
+
 @Component({
 	components: {
 		ToolBox,
@@ -119,7 +123,7 @@ export default class App extends Vue {
 
 	private mounted(): void {
 		window.addEventListener('keypress', e => {
-			if (e.keyCode === 27) {
+			if (e.key === 'Escape') {
 				this.vuexHistory.transaction(() => {
 					this.$store.commit('ui/setSelection', null);
 				});
@@ -128,8 +132,8 @@ export default class App extends Vue {
 	}
 
 	private optimum(sw: number, sh: number): [number, number] {
-		let rh = sw / (16 / 9);
-		let rw = sh * (16 / 9);
+		let rh = sw / aspectRatio;
+		let rw = sh * aspectRatio;
 
 		if (rh > sh) {
 			rh = sh;
@@ -203,13 +207,13 @@ export default class App extends Vue {
 			}
 			let { x, y } = selection;
 			if (e.key === 'ArrowLeft') {
-				x -= e.shiftKey ? 1 : 20;
+				x -= e.shiftKey ? 1 : arrowMoveStepSize;
 			} else if (selection && e.key === 'ArrowRight') {
-				x += e.shiftKey ? 1 : 20;
+				x += e.shiftKey ? 1 : arrowMoveStepSize;
 			} else if (selection && e.key === 'ArrowUp') {
-				y -= e.shiftKey ? 1 : 20;
+				y -= e.shiftKey ? 1 : arrowMoveStepSize;
 			} else if (selection && e.key === 'ArrowDown') {
-				y += e.shiftKey ? 1 : 20;
+				y += e.shiftKey ? 1 : arrowMoveStepSize;
 			} else {
 				console.log(e);
 				return;

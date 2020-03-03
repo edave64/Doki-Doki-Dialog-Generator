@@ -52,7 +52,7 @@ import { ISetCurrentMutation, IPanel } from '@/store/panels';
 import content from '@/store/content';
 import { SceneRenderer } from '../models/scene-renderer';
 import { DeepReadonly } from '../util/readonly';
-import { screenHeight, screenWidth } from '../models/constants';
+import { screenHeight, screenWidth } from '@/constants/base';
 
 @Component({})
 export default class Render extends Vue {
@@ -157,7 +157,9 @@ export default class Render extends Vue {
 		);
 		rctx.drawText({
 			text: 'Starting...',
+			// tslint:disable-next-line: no-magic-numbers
 			x: loadingScreen.width / 2,
+			// tslint:disable-next-line: no-magic-numbers
 			y: loadingScreen.height / 2,
 			align: 'center',
 			outline: {

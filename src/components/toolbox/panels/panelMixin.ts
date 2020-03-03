@@ -1,6 +1,8 @@
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { State } from 'vuex-class-decorator';
 
+const firefoxDeltaFactor = 25;
+
 @Component({})
 export class PanelMixin extends Vue {
 	@State('vertical', { namespace: 'ui' }) private readonly vertical!: boolean;
@@ -19,7 +21,7 @@ export class PanelMixin extends Vue {
 				if (ev.deltaY === 0) return;
 				if ((ev as any).mozInputSource) {
 					// Firefox sends wierdly low delta values :/
-					target.scrollLeft += ev.deltaY * 25;
+					target.scrollLeft += ev.deltaY * firefoxDeltaFactor;
 				} else {
 					target.scrollLeft += ev.deltaY;
 				}

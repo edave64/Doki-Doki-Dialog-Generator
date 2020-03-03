@@ -1,6 +1,7 @@
 import { IColor } from './color';
 import { RGBAColor } from './rgb';
 
+// tslint:disable: no-magic-numbers
 export class HSLAColor implements IColor {
 	public constructor(
 		public readonly h: number,

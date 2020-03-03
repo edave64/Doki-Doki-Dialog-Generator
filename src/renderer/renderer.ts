@@ -1,7 +1,7 @@
 import { RenderContext } from './rendererContext';
 import { RenderAbortedException } from './renderAbortedException';
-import environment from '../environments/environment';
-import { screenWidth, screenHeight } from '@/models/constants';
+import environment from '@/environments/environment';
+import { screenWidth, screenHeight } from '@/constants/base';
 
 export class Renderer {
 	private previewCanvas: HTMLCanvasElement;

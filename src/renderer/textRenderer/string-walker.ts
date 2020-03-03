@@ -1,3 +1,5 @@
+const aroundContextSize = 5;
+
 export class StringWalker {
 	private i: number = 0;
 	public constructor(private readonly str: string) {}
@@ -11,7 +13,10 @@ export class StringWalker {
 	}
 
 	public get around(): string {
-		return this.str.slice(Math.max(0, this.i - 5), this.i + 5);
+		return this.str.slice(
+			Math.max(0, this.i - aroundContextSize),
+			this.i + aroundContextSize
+		);
 	}
 
 	public get ahead(): string {

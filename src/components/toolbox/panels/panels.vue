@@ -108,13 +108,15 @@ import { DeepReadonly } from '@/util/readonly';
 import environment from '@/environments/environment';
 import leftPad from 'left-pad';
 import eventBus, { ShowMessageEvent } from '../../../eventbus/event-bus';
-import { screenWidth, screenHeight } from '../../../models/constants';
+import { screenWidth, screenHeight } from '@/constants/base';
 
 interface IPanelButton {
 	id: string;
 	image: string;
 	text: string;
 }
+const estimateFactor = 1.5;
+const thumbnailFactor = 1 / 4;
 
 @Component({})
 export default class PanelsPanel extends Mixins(PanelMixin) {
@@ -147,8 +149,8 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 		await sceneRenderer.render(false);
 
 		const targetCanvas = document.createElement('canvas');
-		targetCanvas.width = screenWidth / 4;
-		targetCanvas.height = screenHeight / 4;
+		targetCanvas.width = screenWidth * thumbnailFactor;
+		targetCanvas.height = screenHeight * thumbnailFactor;
 
 		sceneRenderer.paintOnto(
 			targetCanvas.getContext('2d')!,
@@ -214,7 +216,6 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 		const distribution = this.getPanelDistibution();
 		const format = this.format || 'image/png';
 		const quality = this.quality || 0.9;
-		const estimateFactor = 1.5;
 		const sizes = await this.renderObjects(
 			distribution,
 			false,
@@ -256,7 +257,7 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 		if (quality === 100) {
 			eventBus.fire(
 				new ShowMessageEvent(
-					`Note: 100% quality on a lossy format is still not lossless! Select PNG if you want lossless compression.`
+					'Note: 100% quality on a lossy format is still not lossless! Select PNG if you want lossless compression.'
 				)
 			);
 			return;
@@ -264,7 +265,7 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 		if (oldQuality > 70 && quality <= 70) {
 			eventBus.fire(
 				new ShowMessageEvent(
-					`Note: A quality level below 70% might be very noticable and impair legibility of text.`
+					'Note: A quality level below 70% might be very noticable and impair legibility of text.'
 				)
 			);
 			return;
@@ -336,12 +337,12 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 		const parent = ele.parentElement!;
 		const idx = Array.from(parent.children).indexOf(ele);
 		if (this.$store.state.ui.vertical) {
-			let scroll =
+			const scroll =
 				idx * ele.clientHeight - parent.clientHeight / 2 + ele.clientHeight / 2;
 			parent.scrollTop = scroll;
 			parent.scrollLeft = 0;
 		} else {
-			let scroll =
+			const scroll =
 				idx * ele.clientWidth - parent.clientWidth / 2 + ele.clientWidth / 2;
 			parent.scrollLeft = scroll;
 			parent.scrollTop = 0;

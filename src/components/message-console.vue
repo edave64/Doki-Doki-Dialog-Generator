@@ -14,6 +14,11 @@ import EventBus, {
 	ShowMessageEvent,
 } from '@/eventbus/event-bus';
 
+const shortHidingTime = 5000;
+const longHidingTime = 20000;
+
+const hideShowTimeouts = 100;
+
 @Component({
 	components: {},
 })
@@ -32,7 +37,7 @@ export default class MessageConsole extends Vue {
 			this.messages.push(`Failed to load asset '${ev.path}'`);
 			setTimeout(() => {
 				this.messages.shift();
-			}, 5000);
+			}, shortHidingTime);
 		});
 
 		EventBus.subscribe(CustomAssetFailureEvent, ev => {
@@ -41,7 +46,7 @@ export default class MessageConsole extends Vue {
 			);
 			setTimeout(() => {
 				this.messages.shift();
-			}, 20000);
+			}, longHidingTime);
 		});
 
 		EventBus.subscribe(ShowMessageEvent, ev => {
@@ -49,7 +54,7 @@ export default class MessageConsole extends Vue {
 			this.messages.push(ev.message);
 			setTimeout(() => {
 				this.messages.shift();
-			}, 20000);
+			}, longHidingTime);
 		});
 	}
 
@@ -64,7 +69,7 @@ export default class MessageConsole extends Vue {
 				this.showLoadingTimeout = setTimeout(() => {
 					this.showLoading = true;
 					this.showLoadingTimeout = 0;
-				}, 100);
+				}, hideShowTimeouts);
 			}
 		} else {
 			if (this.showLoadingTimeout) {
@@ -75,7 +80,7 @@ export default class MessageConsole extends Vue {
 				this.hideLoadingTimeout = setTimeout(() => {
 					this.showLoading = false;
 					this.hideLoadingTimeout = 0;
-				}, 100);
+				}, hideShowTimeouts);
 			}
 		}
 	}

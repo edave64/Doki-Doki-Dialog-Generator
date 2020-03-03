@@ -14,6 +14,7 @@ export function isWebPSupported(): Promise<boolean> {
 				'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA=';
 			const img = document.createElement('img');
 			img.addEventListener('load', () => {
+				// tslint:disable-next-line: no-magic-numbers
 				resolve(img.width === 2 && img.height === 1);
 			});
 			img.addEventListener('error', () => {

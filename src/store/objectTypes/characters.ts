@@ -8,7 +8,7 @@ import {
 	IRemoveObjectAction,
 } from '@/store/objects';
 import { MutationTree, ActionTree, Store, Commit, ActionContext } from 'vuex';
-import { Part, characterPositions } from '@/models/constants';
+import { Part, characterPositions } from '@/constants/base';
 import { arraySeeker } from '@/models/seekers';
 import { IHistoryOptions } from '@/plugins/vuex-history';
 import {

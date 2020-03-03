@@ -1,6 +1,6 @@
 import { RenderContext } from '@/renderer/rendererContext';
 import { getAAsset } from '@/asset-manager';
-import { screenWidth, screenHeight } from './constants';
+import { screenWidth, screenHeight } from '@/constants/base';
 import { IAsset } from '@/store/content';
 import { ScalingModes } from '@/store/panels';
 import { DeepReadonly } from '@/util/readonly';

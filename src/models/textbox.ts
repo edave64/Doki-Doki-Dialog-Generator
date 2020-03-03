@@ -23,13 +23,29 @@ import {
 	ControlsYBottomOffset,
 	GlowRY,
 	GlowRX,
-} from './textBoxConstants';
+} from '@/constants/textBox';
 import { Renderer } from '@/renderer/renderer';
 import { roundedRectangle, roundedTopRectangle } from '@/renderer/pathTools';
 import { RGBAColor } from '@/util/colors/rgb';
 import { HSLAColor } from '@/util/colors/hsl';
 import { TextRenderer, ITextStyle } from '@/renderer/textRenderer/textRenderer';
-import { screenWidth, screenHeight } from './constants';
+import { screenWidth, screenHeight } from '@/constants/base';
+import {
+	nameboxTextOutlineDelta,
+	nameboxBackgroundDelta,
+	nameboxGradientEndDelta,
+	nameboxGradientMiddleStopPosition,
+	controlColorDelta,
+	controlDisableColorDelta,
+	nameboxRounding,
+	dotColorDelta,
+	dotRadius,
+	dotPatternSize,
+	nameColorThreshold,
+	textboxRoundingBuffer,
+	textboxRounding,
+	textboxOutlineColorDelta,
+} from '@/constants/textBoxCustom';
 
 export class TextBox implements IRenderable {
 	public display: boolean = true;
@@ -61,6 +77,7 @@ export class TextBox implements IRenderable {
 		const w = this.width;
 		const h = this.height;
 
+		// tslint:disable-next-line: no-magic-numbers
 		const w2 = w / 2;
 		const x1 = this.obj.x - w2;
 		const x2 = x1 + w;
@@ -96,14 +113,8 @@ export class TextBox implements IRenderable {
 	public get controlColor(): string {
 		if (this.obj.deriveCustomColors) {
 			const base = RGBAColor.fromCss(this.obj.customColor).toHSL();
-			const delta = new HSLAColor(
-				0.08045977011494243,
-				-0.5714285714285714,
-				-0.5960784313725489,
-				0
-			);
 			return base
-				.shift(delta)
+				.shift(controlColorDelta)
 				.toRgb()
 				.toCss();
 		}
@@ -124,9 +135,8 @@ export class TextBox implements IRenderable {
 		if (this.obj.style !== 'custom') return ControlsTextDisabledStyle;
 
 		const col = RGBAColor.fromCss(this.controlColor).toHSL();
-		const delta = new HSLAColor(0, -0.14285714285714296, 0.3, 0);
 		const disColor = col
-			.shift(delta)
+			.shift(controlDisableColorDelta)
 			.toRgb()
 			.toCss();
 
@@ -140,12 +150,10 @@ export class TextBox implements IRenderable {
 	}
 
 	public async updateLocalCanvas() {
-		const base = RGBAColor.fromCss(this.obj.customColor).toHSL();
-		const target = RGBAColor.fromCss('#552222').toHSL();
-
 		await this.localRenderer.render(async rx => {
 			const w = this.width;
 			const h = this.height;
+			// tslint:disable-next-line: no-magic-numbers
 			const w2 = w / 2;
 			const x = this.obj.x - w2;
 			const y = this.obj.y;
@@ -164,6 +172,7 @@ export class TextBox implements IRenderable {
 
 			const bottom = y + h;
 			const controlsY = bottom - ControlsYBottomOffset;
+			// tslint:disable-next-line: no-magic-numbers
 			const controlsCenter = x + w / 2;
 
 			if (this.obj.controls) {
@@ -200,14 +209,8 @@ export class TextBox implements IRenderable {
 	private get nameboxOutlineColor(): string {
 		if (this.obj.deriveCustomColors) {
 			const base = RGBAColor.fromCss(this.obj.customColor).toHSL();
-			const delta = new HSLAColor(
-				-0.03065134099616873,
-				-0.5714285714285714,
-				-0.29607843137254896,
-				0
-			);
 			return base
-				.shift(delta)
+				.shift(nameboxTextOutlineDelta)
 				.toRgb()
 				.toCss();
 		}
@@ -217,14 +220,8 @@ export class TextBox implements IRenderable {
 	private get nameboxBackgroundColor(): string {
 		if (this.obj.deriveCustomColors) {
 			const base = RGBAColor.fromCss(this.obj.customColor).toHSL();
-			const delta = new HSLAColor(
-				0.002028397565922768,
-				0,
-				0.13725490196078438,
-				0
-			);
 			return base
-				.shift(delta)
+				.shift(nameboxBackgroundDelta)
 				.toRgb()
 				.toCss();
 		}
@@ -246,31 +243,29 @@ export class TextBox implements IRenderable {
 				...style,
 				strokeColor: this.nameboxOutlineColor,
 				strokeWidth: 6,
-				color: hslOutline.l > 0.6 ? '#000000' : '#FFFFFF',
+				color: hslOutline.l > nameColorThreshold ? '#000000' : '#FFFFFF',
 			};
 			w = this.obj.customNameboxWidth;
 			rx.customTransform(
 				ctx => {
 					ctx.beginPath();
-					roundedTopRectangle(ctx, x, y, w, h, 12);
+					roundedTopRectangle(ctx, x, y, w, h, nameboxRounding);
 					ctx.clip();
 				},
 				subRx => {
 					const gradient = subRx.linearGradient(x, y, x, y + NameboxHeight);
 					const baseBG = RGBAColor.fromCss(this.nameboxBackgroundColor);
-					const color = new RGBAColor(baseBG.r, baseBG.g, baseBG.b, 244);
-					const delta = new HSLAColor(
-						-0.004901960784313708,
-						-0.8599999999999999,
-						-0.16274509803921566,
-						0
-					);
+					// tslint:disable-next-line: no-magic-numbers
+					const color = new RGBAColor(baseBG.r, baseBG.g, baseBG.b, 0.95);
 					const targetColor = color
 						.toHSL()
-						.shift(delta)
+						.shift(nameboxGradientEndDelta)
 						.toRgb();
 					gradient.addColorStop(0, color.toCss());
-					gradient.addColorStop(0.82, color.toCss());
+					gradient.addColorStop(
+						nameboxGradientMiddleStopPosition,
+						color.toCss()
+					);
 					gradient.addColorStop(1, targetColor.toCss());
 					subRx.drawRect({
 						x,
@@ -306,17 +301,11 @@ export class TextBox implements IRenderable {
 	): Promise<void> {
 		if (this.obj.style === 'custom') {
 			const hslColor = RGBAColor.fromCss(this.obj.customColor).toHSL();
-			const dotPattern = new Renderer(47, 47);
+			const dotPattern = new Renderer(dotPatternSize, dotPatternSize);
 			dotPattern.render(async (dotRx: RenderContext) => {
-				const fillDelta = new HSLAColor(
-					0.004269293924466178,
-					-0.01869158878504662,
-					-0.039215686274509665,
-					0
-				);
 				const fill = {
 					style: hslColor
-						.shift(fillDelta)
+						.shift(dotColorDelta)
 						.toRgb()
 						.toCss(),
 				};
@@ -324,28 +313,32 @@ export class TextBox implements IRenderable {
 				function drawDot(dotX: number, dotY: number) {
 					dotRx.drawPath({
 						path: ctx => {
-							ctx.ellipse(dotX, dotY, 9.5, 9.5, 0, 0, 2 * Math.PI);
+							// tslint:disable-next-line: no-magic-numbers
+							ctx.ellipse(dotX, dotY, dotRadius, dotRadius, 0, 0, 2 * Math.PI);
 						},
 						fill,
 					});
 				}
 
 				drawDot(0, 0);
-				drawDot(47, 0);
-				drawDot(0, 47);
-				drawDot(47, 47);
-				drawDot(23.5, 24.5);
+				drawDot(dotPatternSize, 0);
+				drawDot(0, dotPatternSize);
+				drawDot(dotPatternSize, dotPatternSize);
+				// tslint:disable-next-line: no-magic-numbers
+				drawDot(dotPatternSize / 2, dotPatternSize / 2);
 			}, true);
 			rx.customTransform(
 				ctx => {
 					ctx.beginPath();
 					roundedRectangle(
 						ctx,
-						x + 1.5,
-						y + 1.5,
-						this.obj.width - 3,
-						this.obj.height - 3,
-						12
+						x + textboxRoundingBuffer,
+						y + textboxRoundingBuffer,
+						// tslint:disable-next-line: no-magic-numbers
+						this.obj.width - textboxRoundingBuffer * 2,
+						// tslint:disable-next-line: no-magic-numbers
+						this.obj.height - textboxRoundingBuffer * 2,
+						textboxRounding
 					);
 					ctx.clip();
 				},
@@ -397,10 +390,12 @@ export class TextBox implements IRenderable {
 						y + h
 					);
 					glowGradient.addColorStop(0, 'rgba(255,255,255,0.3137)');
+					// tslint:disable-next-line: no-magic-numbers
 					glowGradient.addColorStop(0.5, 'rgba(255,255,255,0.0627)');
 					glowGradient.addColorStop(1, 'rgba(255,255,255,0)');
 					subRx.drawPath({
 						path: ctx => {
+							// tslint:disable-next-line: no-magic-numbers
 							ctx.ellipse(x + w / 2, y + h, GlowRX, GlowRY, 0, 0, 2 * Math.PI);
 						},
 						fill: {
@@ -409,25 +404,21 @@ export class TextBox implements IRenderable {
 					});
 				}
 			);
-			const outlineDelta = new HSLAColor(
-				0.0023347701149424305,
-				0,
-				0.10784313725490202,
-				0
-			);
 			const outlineColor = hslColor
-				.shift(outlineDelta)
+				.shift(textboxOutlineColorDelta)
 				.toRgb()
 				.toCss();
 			rx.drawPath({
 				path: path => {
 					roundedRectangle(
 						path,
-						x + 1.5,
-						y + 1.5,
-						this.obj.width - 3,
-						this.obj.height - 3,
-						12
+						x + textboxRoundingBuffer,
+						y + textboxRoundingBuffer,
+						// tslint:disable-next-line: no-magic-numbers
+						this.obj.width - textboxRoundingBuffer * 2,
+						// tslint:disable-next-line: no-magic-numbers
+						this.obj.height - textboxRoundingBuffer * 2,
+						textboxRounding
 					);
 				},
 				outline: {
@@ -437,6 +428,7 @@ export class TextBox implements IRenderable {
 			});
 		} else {
 			if (this.obj.style === 'corrupt') {
+				// tslint:disable-next-line: no-magic-numbers
 				x += (TextBoxWidth - TextBoxCorruptedWidth) / 2;
 			}
 			const image = await getAsset(
@@ -474,9 +466,4 @@ export class TextBox implements IRenderable {
 
 		render.render(rx.fsCtx);
 	}
-}
-
-interface DialogLetter {
-	l: string;
-	b: boolean;
 }

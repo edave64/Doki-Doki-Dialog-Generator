@@ -25,7 +25,7 @@ export class Character implements IRenderable, IDragable {
 		components: {} as { [component: string]: string },
 	};
 	private lq: boolean = true;
-	private localRenderer = new Renderer(960, 960);
+	private localRenderer: Renderer;
 	private lastVersion = -1;
 	private hitDetectionFallback = false;
 
@@ -36,7 +36,9 @@ export class Character implements IRenderable, IDragable {
 	public constructor(
 		public readonly obj: ICharacter,
 		private readonly data: DeepReadonly<CharacterModel<IAsset>>
-	) {}
+	) {
+		this.localRenderer = new Renderer(data.size[0], data.size[1]);
+	}
 
 	public async updateLocalCanvas() {
 		await this.localRenderer.render(async rx => {
@@ -113,11 +115,13 @@ export class Character implements IRenderable, IDragable {
 	}
 
 	public get width() {
+		// tslint:disable-next-line: no-magic-numbers
 		const zoom = this.obj.close ? 2 : 1;
 		return this.obj.width * zoom;
 	}
 
 	public get height() {
+		// tslint:disable-next-line: no-magic-numbers
 		const zoom = this.obj.close ? 2 : 1;
 		return this.obj.height * zoom;
 	}
@@ -137,6 +141,7 @@ export class Character implements IRenderable, IDragable {
 
 		const w = this.width;
 		const h = this.height;
+		// tslint:disable-next-line: no-magic-numbers
 		const x = this.x - w / 2;
 		const y = this.y;
 
@@ -153,6 +158,7 @@ export class Character implements IRenderable, IDragable {
 	}
 
 	public hitTest(hx: number, hy: number): boolean {
+		// tslint:disable-next-line: no-magic-numbers
 		const scaledX = hx - (this.x - this.width / 2);
 		const scaledY = hy - this.y;
 
@@ -162,12 +168,13 @@ export class Character implements IRenderable, IDragable {
 		if (!this.hitDetectionFallback) {
 			try {
 				const flippedX = this.obj.flip ? this.width - scaledX : scaledX;
-				const scaleX = 960 / this.width;
-				const scaleY = 960 / this.height;
+				const scaleX = this.data.size[0] / this.width;
+				const scaleY = this.data.size[1] / this.height;
 				const data = this.localRenderer.getDataAt(
 					Math.round(flippedX * scaleX),
 					Math.round(scaledY * scaleY)
 				);
+				// tslint:disable-next-line: no-magic-numbers
 				return data[3] !== 0;
 			} catch (e) {
 				// On chrome for android, the hit test tends to fail because of cross-origin shenanigans, even though
