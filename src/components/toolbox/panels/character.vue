@@ -17,9 +17,7 @@
 								<button @click="seekStyle(-1)">&lt;</button>
 							</td>
 							<td>
-								<button class="middle-button" @click="panelForParts = 'style'">
-									Style
-								</button>
+								<button class="middle-button" @click="panelForParts = 'style'">Style</button>
 							</td>
 							<td class="arrow-col">
 								<button @click="seekStyle(1)">&gt;</button>
@@ -30,9 +28,7 @@
 								<button @click="seekPose(-1)">&lt;</button>
 							</td>
 							<td>
-								<button class="middle-button" @click="panelForParts = 'pose'">
-									Pose
-								</button>
+								<button class="middle-button" @click="panelForParts = 'pose'">Pose</button>
 							</td>
 							<td class="arrow-col">
 								<button @click="seekPose(1)">&gt;</button>
@@ -43,9 +39,7 @@
 								<button @click="seekPart(part, -1)">&lt;</button>
 							</td>
 							<td>
-								<button class="middle-button" @click="panelForParts = part">
-									{{ captialize(part) }}
-								</button>
+								<button class="middle-button" @click="panelForParts = part">{{ captialize(part) }}</button>
 							</td>
 							<td class="arrow-col">
 								<button @click="seekPart(part, 1)">&gt;</button>
@@ -68,7 +62,7 @@
 import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
 import { State } from 'vuex-class-decorator';
 import { IHistorySupport } from '@/plugins/vuex-history';
-import { Part } from '@/models/constants';
+import { Part } from '@/constants/base';
 import {
 	getData,
 	getParts,

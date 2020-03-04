@@ -35,7 +35,7 @@ import {
 } from '@/asset-manager';
 import environment from '@/environments/environment';
 import PartButton, { IPartButtonImage } from './partButton.vue';
-import { Part } from '@/models/constants';
+import { Part } from '@/constants/base';
 import {
 	StyleComponent,
 	Pose,
