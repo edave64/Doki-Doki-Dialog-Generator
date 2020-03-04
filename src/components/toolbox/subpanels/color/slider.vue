@@ -53,6 +53,9 @@ import { RGBAColor } from '../../../../util/colors/rgb';
 import { IColor } from '../../../../util/colors/color';
 import { HSLAColor } from '../../../../util/colors/hsl';
 
+const sliderLength = 255;
+const sliderOffset = 8;
+
 @Component({
 	components: {},
 })
@@ -66,7 +69,8 @@ export default class Slider extends Vue {
 	private slideActive = false;
 
 	private get pointerPath(): string {
-		const val = (this.value / this.maxValue) * 255;
+		const val = (this.value / this.maxValue) * sliderLength;
+		// tslint:disable-next-line: no-magic-numbers
 		return `M${val} 0L${val + 14} 0L${val + 7} 12Z`;
 	}
 
@@ -84,14 +88,16 @@ export default class Slider extends Vue {
 			return;
 		}
 		const bounding = svg.getBoundingClientRect();
-		const scale = bounding.width / 271;
+		const scale = bounding.width / (sliderOffset + sliderLength + sliderOffset);
 		const x =
 			(event instanceof MouseEvent ? event.clientX : event.touches[0].clientX) -
 			bounding.x;
 		const scaledX = x / scale;
 		event.preventDefault();
 		const value =
-			(Math.max(Math.min(scaledX - 8, 255), 0) / 255) * this.maxValue;
+			(Math.max(Math.min(scaledX - sliderOffset, sliderLength), 0) /
+				sliderLength) *
+			this.maxValue;
 		this.$emit('input', value);
 	}
 

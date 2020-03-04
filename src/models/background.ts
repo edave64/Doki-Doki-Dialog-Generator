@@ -29,7 +29,9 @@ export class Background implements IBackground {
 
 			switch (this.scale) {
 				case ScalingModes.None:
+					// tslint:disable-next-line: no-magic-numbers
 					x = screenWidth / 2 - w / 2;
+					// tslint:disable-next-line: no-magic-numbers
 					y = screenHeight / 2 - h / 2;
 					break;
 				case ScalingModes.Stretch:
@@ -48,7 +50,9 @@ export class Background implements IBackground {
 						h = w / ratio;
 					}
 
+					// tslint:disable-next-line: no-magic-numbers
 					x = screenWidth / 2 - w / 2;
+					// tslint:disable-next-line: no-magic-numbers
 					y = screenHeight / 2 - h / 2;
 			}
 

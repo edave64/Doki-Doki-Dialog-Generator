@@ -41,7 +41,7 @@ import {
 	registerAssetWithURL,
 } from '@/asset-manager';
 import environment from '@/environments/environment';
-import { Part } from '@/models/constants';
+import { Part } from '@/constants/base';
 import {
 	StyleComponent,
 	Pose,
@@ -100,6 +100,7 @@ export default class PartsPanel extends Vue {
 
 	private updateHex(event: Event) {
 		const hex = (event.target as HTMLInputElement).value;
+		// tslint:disable-next-line: no-magic-numbers
 		if (RGBAColor.validHex(hex) && (hex.length === 7 || hex.length === 9)) {
 			console.log('setting updateHex', hex);
 			this.$emit('input', hex);

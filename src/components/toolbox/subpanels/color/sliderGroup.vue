@@ -15,6 +15,8 @@ import { RGBAColor } from '@/util/colors/rgb';
 import { HSLAColor } from '@/util/colors/hsl';
 import Slider from './slider.vue';
 
+// tslint:disable: no-magic-numbers
+
 @Component({
 	components: { Slider },
 })

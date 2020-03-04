@@ -115,8 +115,17 @@ interface IPanelButton {
 	image: string;
 	text: string;
 }
+
+// tslint:disable: no-magic-numbers
 const estimateFactor = 1.5;
 const thumbnailFactor = 1 / 4;
+const thumbnailQuality = 0.5;
+const qualityFactor = 100;
+
+const defaultQuality = 90;
+
+const qualityWarningThreshold = 70;
+// tslint:enable: no-magic-numbers
 
 @Component({})
 export default class PanelsPanel extends Mixins(PanelMixin) {
@@ -130,7 +139,7 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 	private heifSupport = false;
 	private ppi = 0;
 	private format = 'image/png';
-	private quality = 90;
+	private quality = defaultQuality;
 
 	public async created() {
 		this.webpSupport = await isWebPSupported();
@@ -171,7 +180,7 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 				});
 			},
 			(await isWebPSupported()) ? 'image/webp' : 'image/jpeg',
-			0.5
+			thumbnailQuality
 		);
 	}
 
@@ -182,19 +191,16 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 	private async download() {
 		const distribution = this.getPanelDistibution();
 		const date = new Date();
-		const prefix = `cd-${date.getFullYear()}-${leftPad(
-			date.getMonth() + 1,
-			2,
-			'0'
-		)}-${leftPad(date.getDate(), 2, '0')}-${leftPad(
-			date.getHours(),
-			2,
-			'0'
-		)}-${leftPad(date.getMinutes(), 2, '0')}-${leftPad(
-			date.getSeconds(),
-			2,
-			'0'
-		)}`;
+		// tslint:disable: no-magic-numbers
+		const prefix = `cd-${[
+			date.getFullYear(),
+			leftPad(date.getMonth() + 1, 2, '0'),
+			leftPad(date.getDate(), 2, '0'),
+			leftPad(date.getHours(), 2, '0'),
+			leftPad(date.getMinutes(), 2, '0'),
+			leftPad(date.getSeconds(), 2, '0'),
+		].join('-')}`;
+		// tslint:enable: no-magic-numbers
 		const extension = this.format.split('/')[1];
 		const format = this.format;
 		const quality = this.quality;
@@ -206,7 +212,7 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 					canvas,
 					`${prefix}_${imageIdx}.${extension}`,
 					format,
-					quality / 100
+					quality / qualityFactor
 				);
 			}
 		);
@@ -215,7 +221,7 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 	private async estimateExportSize() {
 		const distribution = this.getPanelDistibution();
 		const format = this.format || 'image/png';
-		const quality = this.quality || 0.9;
+		const quality = this.quality || defaultQuality;
 		const sizes = await this.renderObjects(
 			distribution,
 			false,
@@ -230,7 +236,7 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 							resolve(blob.size);
 						},
 						format,
-						quality
+						quality / qualityFactor
 					);
 				});
 			}
@@ -254,7 +260,7 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 
 	@Watch('quality')
 	private warnImageQuality(quality: number, oldQuality: number) {
-		if (quality === 100) {
+		if (quality === qualityFactor) {
 			eventBus.fire(
 				new ShowMessageEvent(
 					'Note: 100% quality on a lossy format is still not lossless! Select PNG if you want lossless compression.'
@@ -262,7 +268,10 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 			);
 			return;
 		}
-		if (oldQuality > 70 && quality <= 70) {
+		if (
+			oldQuality > qualityWarningThreshold &&
+			quality <= qualityWarningThreshold
+		) {
 			eventBus.fire(
 				new ShowMessageEvent(
 					'Note: A quality level below 70% might be very noticable and impair legibility of text.'
@@ -338,11 +347,13 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 		const idx = Array.from(parent.children).indexOf(ele);
 		if (this.$store.state.ui.vertical) {
 			const scroll =
+				// tslint:disable-next-line: no-magic-numbers
 				idx * ele.clientHeight - parent.clientHeight / 2 + ele.clientHeight / 2;
 			parent.scrollTop = scroll;
 			parent.scrollLeft = 0;
 		} else {
 			const scroll =
+				// tslint:disable-next-line: no-magic-numbers
 				idx * ele.clientWidth - parent.clientWidth / 2 + ele.clientWidth / 2;
 			parent.scrollLeft = scroll;
 			parent.scrollTop = 0;

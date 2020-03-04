@@ -18,7 +18,7 @@ import leftPad from 'left-pad';
 export class SceneRenderer {
 	private renderObjectCache = new Map<string, IRenderable>();
 	private state: DeepReadonly<IRootState>;
-	private _currentlyRendering = false;
+	private lCurrentlyRendering = false;
 	private renderer: Renderer;
 
 	public constructor(
@@ -37,24 +37,21 @@ export class SceneRenderer {
 
 	public download(): Promise<string> {
 		const date = new Date();
-		const filename = `panel-${date.getFullYear()}-${leftPad(
-			date.getMonth() + 1,
-			2,
-			'0'
-		)}-${leftPad(date.getDate(), 2, '0')}-${leftPad(
-			date.getHours(),
-			2,
-			'0'
-		)}-${leftPad(date.getMinutes(), 2, '0')}-${leftPad(
-			date.getSeconds(),
-			2,
-			'0'
-		)}.png`;
+		// tslint:disable: no-magic-numbers
+		const filename = `panel-${[
+			date.getFullYear(),
+			leftPad(date.getMonth() + 1, 2, '0'),
+			leftPad(date.getDate(), 2, '0'),
+			leftPad(date.getHours(), 2, '0'),
+			leftPad(date.getMinutes(), 2, '0'),
+			leftPad(date.getSeconds(), 2, '0'),
+		].join('-')}.png`;
+		// tslint:enable: no-magic-numbers
 		return this.renderer.download(this.renderCallback.bind(this), filename);
 	}
 
 	public get currentlyRendering() {
-		return this._currentlyRendering;
+		return this.lCurrentlyRendering;
 	}
 
 	public paintOnto(
@@ -74,7 +71,7 @@ export class SceneRenderer {
 	}
 
 	private async renderCallback(rx: RenderContext): Promise<void> {
-		this._currentlyRendering = true;
+		this.lCurrentlyRendering = true;
 		try {
 			if (rx.preview) {
 				rx.drawImage({
@@ -94,7 +91,7 @@ export class SceneRenderer {
 				await object.render(selection === object.id, rx);
 			}
 		} finally {
-			this._currentlyRendering = false;
+			this.lCurrentlyRendering = false;
 		}
 	}
 

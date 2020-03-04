@@ -27,6 +27,7 @@ export class Sprite implements IRenderable, IDragable {
 		const assets = await Promise.all(
 			this.obj.assets.map(asset => getAAsset(asset))
 		);
+		// tslint:disable-next-line: no-magic-numbers
 		const x = this.obj.x - this.obj.width / 2;
 		for (const asset of assets) {
 			rx.drawImage({
@@ -43,6 +44,7 @@ export class Sprite implements IRenderable, IDragable {
 	}
 
 	public hitTest(hx: number, hy: number): boolean {
+		// tslint:disable-next-line: no-magic-numbers
 		const hitX = hx - this.obj.x + this.obj.width / 2;
 		const hitY = hy - this.obj.y;
 		return (

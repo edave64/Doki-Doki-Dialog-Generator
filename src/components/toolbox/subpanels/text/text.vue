@@ -41,15 +41,15 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import environment from '@/environments/environment';
-import { Part } from '@/models/constants';
+import { Part } from '@/constants/base';
 import { IHistorySupport } from '@/plugins/vuex-history';
 import { State } from 'vuex-class-decorator';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { RGBAColor } from '@/util/colors/rgb';
 import Color from '../color/color.vue';
-import { TextRenderer } from '../../../../renderer/textRenderer/textRenderer';
-import { NameboxTextStyle } from '../../../../models/textBoxConstants';
+import { TextRenderer } from '@/renderer/textRenderer/textRenderer';
+import { NameboxTextStyle } from '@/constants/textBox';
 
 @Component({
 	components: { Color },
@@ -80,6 +80,7 @@ export default class TextPanel extends Vue {
 	private onValueChanged() {
 		const val = (this.$refs.textArea as HTMLTextAreaElement).value;
 		try {
+			// tslint:disable-next-line: no-unused-expression
 			new TextRenderer(val, NameboxTextStyle);
 			this.error = '';
 		} catch (e) {
@@ -141,6 +142,7 @@ export default class TextPanel extends Vue {
 			commandOpen += '=' + arg;
 		}
 		el.value = `${before}{${commandOpen}}${selectedText}{/${command}}${after}`;
+		// tslint:disable-next-line: no-magic-numbers
 		el.selectionStart = selStart + commandOpen.length + 2;
 		el.selectionEnd = el.selectionStart + selectedText.length;
 		el.focus();

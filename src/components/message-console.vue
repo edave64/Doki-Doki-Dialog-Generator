@@ -50,7 +50,6 @@ export default class MessageConsole extends Vue {
 		});
 
 		EventBus.subscribe(ShowMessageEvent, ev => {
-			debugger;
 			this.messages.push(ev.message);
 			setTimeout(() => {
 				this.messages.shift();

@@ -12,10 +12,7 @@
 				$emit('leave');
 			"
 		/>
-		<fieldset
-			v-for="styleComponent of styleComponents"
-			:key="styleComponent.name"
-		>
+		<fieldset v-for="styleComponent of styleComponents" :key="styleComponent.name">
 			<legend>{{ styleComponent.label }}</legend>
 			<part-button
 				v-for="(button, index) of styleComponent.buttons"
@@ -111,7 +108,7 @@ export default class PartsPanel extends Vue {
 		this.isWebPSupported = await isWebPSupported();
 	}
 
-	private get styleComponents(): IPartStyleGroup[] {
+	private get styleComponents(): DeepReadonly<IPartStyleGroup[]> {
 		if (this.part !== 'style') return [];
 		return this.charData.styleComponents.map(component => {
 			const buttons: IPartStyleGroup['buttons'] = {};
@@ -119,7 +116,7 @@ export default class PartsPanel extends Vue {
 				if (!component.variants.hasOwnProperty(key)) continue;
 				const variant = component.variants[key];
 				buttons[key] = {
-					size: [960, 960],
+					size: this.charData.size as [number, number],
 					offset: [0, 0],
 					images: [variant],
 				};
@@ -269,6 +266,7 @@ export default class PartsPanel extends Vue {
 			this.updatePose();
 		} else if (this.part === 'head') {
 			const [headTypeIdx, headIdx] = index
+				// tslint:disable-next-line: no-magic-numbers
 				.split('_', 2)
 				.map(part => parseInt(part, 10));
 			this.setPart('headType', headTypeIdx);
