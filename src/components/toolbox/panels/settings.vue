@@ -12,7 +12,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch, Mixins } from 'vue-property-decorator';
-import { TextBox } from '@/models/textbox';
+import { TextBox } from '@/renderables/textbox';
 import Toggle from '@/components/toggle.vue';
 import { State } from 'vuex-class-decorator';
 import { PanelMixin } from './panelMixin';

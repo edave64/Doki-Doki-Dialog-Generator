@@ -103,7 +103,7 @@ import { State } from 'vuex-class-decorator';
 import { getAAsset, isWebPSupported } from '@/asset-manager';
 import { ITextBox } from '@/store/objectTypes/textbox';
 import { IHistorySupport } from '@/plugins/vuex-history';
-import { SceneRenderer } from '@/models/scene-renderer';
+import { SceneRenderer } from '@/renderables/scene-renderer';
 import { DeepReadonly } from '@/util/readonly';
 import environment from '@/environments/environment';
 import leftPad from 'left-pad';

@@ -15,7 +15,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { State } from 'vuex-class-decorator';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
-import { IRenderable } from '@/models/renderable';
+import { IRenderable } from '@/renderables/renderable';
 import { IHistorySupport } from '@/plugins/vuex-history';
 import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
 import {
@@ -23,7 +23,7 @@ import {
 	ISetObjectPositionMutation,
 	IRemoveObjectAction,
 } from '@/store/objects';
-import { Character } from '@/models/character';
+import { Character } from '@/renderables/character';
 import {
 	IShiftCharacterSlotAction,
 	ICharacter,

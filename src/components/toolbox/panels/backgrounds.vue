@@ -31,7 +31,6 @@
 <script lang="ts">
 import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
 import { registerAsset, getAsset } from '@/asset-manager';
-import { IBackground } from '@/models/background';
 import BackgroundButton from './background/button.vue';
 import BackgroundSettings from './background/settings.vue';
 import DropTarget from '../drop-target.vue';

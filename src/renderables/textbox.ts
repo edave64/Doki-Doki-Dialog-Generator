@@ -1,7 +1,7 @@
 import { RenderContext } from '@/renderer/rendererContext';
 import { getAsset } from '@/asset-manager';
 import { ITextBox } from '@/store/objectTypes/textbox';
-import { IRenderable } from './renderable';
+import { IRenderable, IHitbox } from './renderable';
 import {
 	NameboxTextStyle,
 	ControlsTextStyle,
@@ -27,7 +27,6 @@ import {
 import { Renderer } from '@/renderer/renderer';
 import { roundedRectangle, roundedTopRectangle } from '@/renderer/pathTools';
 import { RGBAColor } from '@/util/colors/rgb';
-import { HSLAColor } from '@/util/colors/hsl';
 import { TextRenderer, ITextStyle } from '@/renderer/textRenderer/textRenderer';
 import { screenWidth, screenHeight } from '@/constants/base';
 import {
@@ -204,6 +203,17 @@ export class TextBox implements IRenderable {
 				});
 			}
 		});
+	}
+
+	public getHitbox(): IHitbox {
+		return {
+			// tslint:disable-next-line: no-magic-numbers
+			x0: this.obj.x - this.obj.width / 2,
+			// tslint:disable-next-line: no-magic-numbers
+			x1: this.obj.x + this.obj.width / 2,
+			y0: this.obj.y,
+			y1: this.obj.y + this.obj.height,
+		};
 	}
 
 	private get nameboxOutlineColor(): string {

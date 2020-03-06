@@ -74,7 +74,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import Toggle from '@/components/toggle.vue';
-import { IRenderable } from '@/models/renderable';
+import { IRenderable } from '@/renderables/renderable';
 import { positions, characterPositions } from '@/constants/base';
 import {
 	closestCharacterSlot,

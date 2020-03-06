@@ -1,7 +1,7 @@
 import { Edge } from './edge';
 import { Browser } from './browser';
 import { Electron } from './electron';
-import { Background } from '@/models/background';
+import { Background } from '@/renderables/background';
 
 export interface IPack {
 	url: string;

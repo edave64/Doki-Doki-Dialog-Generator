@@ -72,7 +72,6 @@ import BackgroundsPanel from './panels/backgrounds.vue';
 import ContentPacksPanel from './panels/content-pack.vue';
 import PanelsPanel from './panels/panels.vue';
 import { IObject } from '@/store/objects';
-import { IBackground } from '@/models/background';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import environment from '@/environments/environment';

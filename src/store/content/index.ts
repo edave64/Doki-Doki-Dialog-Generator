@@ -116,7 +116,7 @@ export default {
 			const contentPacks = await Promise.all(
 				urls.map(async url => {
 					const response = await fetch(url);
-					if (response.ok) {
+					if (!response.ok) {
 						error(
 							`Could not load content pack. Server responded with: ${response.statusText}`
 						);

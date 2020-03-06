@@ -1,5 +1,5 @@
 import { IEnvironment, IPack } from './environment';
-import { IBackground } from '@/models/background';
+import { Background } from '@/renderables/background';
 
 export class Browser implements IEnvironment {
 	public readonly allowLQ = true;
@@ -32,7 +32,7 @@ export class Browser implements IEnvironment {
 		return false;
 	}
 
-	public installBackground(background: IBackground): boolean {
+	public installBackground(background: Background): boolean {
 		throw new Error('This environment does not support installing backgrounds');
 	}
 
@@ -42,7 +42,7 @@ export class Browser implements IEnvironment {
 		);
 	}
 
-	public uninstallBackground(background: IBackground): boolean {
+	public uninstallBackground(background: Background): boolean {
 		throw new Error(
 			'This environment does not support uninstalling backgrounds'
 		);

@@ -1,15 +1,12 @@
 import { RenderContext } from '@/renderer/rendererContext';
 import { getAAsset } from '@/asset-manager';
-import { IRenderable } from './renderable';
-import { IDragable } from './dragable';
-import { ErrorAsset } from './error-asset';
+import { IRenderable, IHitbox } from './renderable';
 import { ISprite } from '@/store/objectTypes/sprite';
-import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 import { DeepReadonly } from '@/util/readonly';
 
 const BaseXPosition = 640;
 
-export class Sprite implements IRenderable, IDragable {
+export class Sprite implements IRenderable {
 	public ratio: number = 0;
 	public lockedRatio: boolean = true;
 	private asset: HTMLImageElement | null = null;
@@ -53,5 +50,16 @@ export class Sprite implements IRenderable, IDragable {
 			hitY >= 0 &&
 			hitY <= this.obj.height
 		);
+	}
+
+	public getHitbox(): IHitbox {
+		return {
+			// tslint:disable-next-line: no-magic-numbers
+			x0: this.obj.x - this.obj.width / 2,
+			// tslint:disable-next-line: no-magic-numbers
+			x1: this.obj.x + this.obj.width / 2,
+			y0: this.obj.y,
+			y1: this.obj.y + this.obj.height,
+		};
 	}
 }

@@ -1,6 +1,6 @@
 import { IEnvironment, IPack } from './environment';
 import { registerAssetWithURL, getAsset } from '@/asset-manager';
-import { Background } from '@/models/background';
+import { Background } from '@/renderables/background';
 import eventBus from '@/eventbus/event-bus';
 
 const packs: IPack[] = [];

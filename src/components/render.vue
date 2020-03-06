@@ -27,8 +27,8 @@ import { State } from 'vuex-class-decorator';
 import { Store, MutationPayload } from 'vuex';
 import { IRootState } from '@/store';
 import { Renderer } from '@/renderer/renderer';
-import { IRenderable } from '@/models/renderable';
-import { IBackground, color, Background } from '@/models/background';
+import { IRenderable } from '@/renderables/renderable';
+import { color, Background } from '@/renderables/background';
 import { IHistorySupport } from '@/plugins/vuex-history';
 import { RenderContext } from '@/renderer/rendererContext';
 import { getAsset, registerAsset } from '@/asset-manager';
@@ -41,16 +41,16 @@ import {
 	IObjectsState,
 } from '@/store/objects';
 import { ICreateSpriteAction, ISprite } from '@/store/objectTypes/sprite';
-import { Character } from '@/models/character';
+import { Character } from '@/renderables/character';
 import {
 	IShiftCharacterSlotAction,
 	ICharacter,
 } from '@/store/objectTypes/characters';
-import { Sprite } from '@/models/sprite';
-import { TextBox } from '@/models/textbox';
+import { Sprite } from '@/renderables/sprite';
+import { TextBox } from '@/renderables/textbox';
 import { ISetCurrentMutation, IPanel } from '@/store/panels';
 import content from '@/store/content';
-import { SceneRenderer } from '../models/scene-renderer';
+import { SceneRenderer } from '../renderables/scene-renderer';
 import { DeepReadonly } from '../util/readonly';
 import { screenHeight, screenWidth } from '@/constants/base';
 

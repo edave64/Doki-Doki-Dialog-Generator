@@ -1,8 +1,7 @@
 import { RenderContext } from '@/renderer/rendererContext';
 import { getAsset, getAAsset } from '@/asset-manager';
 import { Renderer } from '@/renderer/renderer';
-import { IRenderable } from './renderable';
-import { IDragable } from './dragable';
+import { IRenderable, IHitbox } from './renderable';
 import {
 	ICharacter,
 	getPose,
@@ -16,10 +15,10 @@ import {
 	Character as CharacterModel,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset } from '@/store/content';
-import { ErrorAsset } from './error-asset';
+import { ErrorAsset } from '../models/error-asset';
 import { DeepReadonly } from '@/util/readonly';
 
-export class Character implements IRenderable, IDragable {
+export class Character implements IRenderable {
 	public styleData = {
 		lastBase: '',
 		components: {} as { [component: string]: string },
@@ -190,5 +189,16 @@ export class Character implements IRenderable, IDragable {
 		}
 
 		return true;
+	}
+
+	public getHitbox(): IHitbox {
+		return {
+			// tslint:disable-next-line: no-magic-numbers
+			x0: this.x - this.width / 2,
+			// tslint:disable-next-line: no-magic-numbers
+			x1: this.x + this.width / 2,
+			y0: this.y,
+			y1: this.y + this.height,
+		};
 	}
 }

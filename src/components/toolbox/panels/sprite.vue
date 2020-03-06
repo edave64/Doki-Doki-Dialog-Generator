@@ -12,14 +12,14 @@
 <script lang="ts">
 import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
 import { isWebPSupported } from '@/asset-manager';
-import { Character } from '@/models/character';
+import { Character } from '@/renderables/character';
 import Toggle from '@/components/toggle.vue';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
 import Opacity from '@/components/toolbox/commonsFieldsets/opacity.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
-import { IRenderable } from '@/models/renderable';
-import { Sprite } from '@/models/sprite';
+import { IRenderable } from '@/renderables/renderable';
+import { Sprite } from '@/renderables/sprite';
 import { ISprite } from '@/store/objectTypes/sprite';
 import { ICommand } from '@/eventbus/command';
 import eventBus from '@/eventbus/event-bus';

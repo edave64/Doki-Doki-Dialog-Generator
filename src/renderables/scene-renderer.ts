@@ -1,7 +1,7 @@
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { IRenderable } from './renderable';
-import { IBackground, color, Background } from './background';
+import { color, Background } from './background';
 import { IPanel } from '@/store/panels';
 import { DeepReadonly } from '@/util/readonly';
 import { ISprite } from '@/store/objectTypes/sprite';
@@ -32,6 +32,7 @@ export class SceneRenderer {
 	}
 
 	public render(hq: boolean): Promise<boolean> {
+		if (!this.panel) return Promise.resolve(false);
 		return this.renderer.render(this.renderCallback.bind(this), hq);
 	}
 
@@ -81,7 +82,7 @@ export class SceneRenderer {
 				});
 			}
 
-			await this.getBackgroundRenderer()?.render(rx);
+			await this.getBackgroundRenderer()?.render(false, rx);
 			/*
 				await this.currentBackground.render(rx);
 			}*/
@@ -133,7 +134,6 @@ export class SceneRenderer {
 				}
 			}
 			const renderObject = this.renderObjectCache.get(id)!;
-			renderObject.obj = objects[id];
 			return renderObject;
 		});
 	}
@@ -142,7 +142,7 @@ export class SceneRenderer {
 		return this.state.panels.panels[this.panelId];
 	}
 
-	private getBackgroundRenderer(): IBackground | null {
+	private getBackgroundRenderer(): IRenderable | null {
 		const panel = this.panel;
 		switch (panel.background.current) {
 			case 'buildin.static-color':
@@ -156,6 +156,7 @@ export class SceneRenderer {
 				const variant = current.variants[panel.background.variant];
 				if (!variant) return null;
 				return new Background(
+					panel.background.current,
 					variant,
 					panel.background.flipped,
 					panel.background.scaling
