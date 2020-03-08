@@ -171,6 +171,23 @@ export class TextRenderer {
 		fixLine();
 	}
 
+	public getHeight() {
+		let lineHeight = 0;
+		let height = 0;
+
+		for (const item of this.renderParts) {
+			lineHeight = Math.max(lineHeight, item.height);
+
+			if (item.type === 'newline') {
+				height += lineHeight;
+				lineHeight = 0;
+			}
+		}
+		height += lineHeight;
+
+		return height;
+	}
+
 	private getRenderParts(tokens: Token[], baseStyle: ITextStyle): RenderItem[] {
 		const renderParts: RenderItem[] = [];
 		const styleStack: ITextStyle[] = [];
