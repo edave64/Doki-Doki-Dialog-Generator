@@ -29,6 +29,7 @@
 		<character-panel v-else-if="panel === 'character'" />
 		<sprite-panel v-else-if="panel === 'sprite'" />
 		<text-box-panel v-else-if="panel === 'textBox'" />
+		<choice-panel v-else-if="panel === 'choice'" />
 		<panels-panel v-else-if="panel === 'panels'" />
 		<add-panel v-else />
 		<div id="toolbar-end">
@@ -67,6 +68,7 @@ import AddPanel from './panels/add.vue';
 import CharacterPanel from './panels/character.vue';
 import SpritePanel from './panels/sprite.vue';
 import TextBoxPanel from './panels/textbox.vue';
+import ChoicePanel from './panels/choice.vue';
 import CreditsPanel from './panels/credits.vue';
 import BackgroundsPanel from './panels/backgrounds.vue';
 import ContentPacksPanel from './panels/content-pack.vue';
@@ -93,6 +95,7 @@ type PanelNames =
 		CreditsPanel,
 		CharacterPanel,
 		TextBoxPanel,
+		ChoicePanel,
 		SpritePanel,
 		ContentPacksPanel,
 		PanelsPanel,
@@ -135,6 +138,7 @@ export default class ToolBox extends Vue {
 		if (name === this.panelSelection) name = 'add';
 		this.panelSelection = name;
 		if (this.selection) {
+			if (this.$store.state.ui.selection === null) return;
 			this.$store.commit('ui/setSelection', null);
 		}
 	}

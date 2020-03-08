@@ -10,11 +10,13 @@ import { Character } from './character';
 import { ICharacter, getData } from '@/store/objectTypes/characters';
 import { ITextBox } from '@/store/objectTypes/textbox';
 import { TextBox } from './textbox';
+import { Choice } from './choices';
 import { RenderContext } from '@/renderer/rendererContext';
 import { getAsset } from '@/asset-manager';
 import { Renderer } from '@/renderer/renderer';
 import leftPad from 'left-pad';
 import { BackgroundLookup } from '@/store/content';
+import { IChoices } from '@/store/objectTypes/choices';
 
 export class SceneRenderer {
 	private renderObjectCache = new Map<string, IRenderable>();
@@ -127,6 +129,12 @@ export class SceneRenderer {
 						this.renderObjectCache.set(
 							id,
 							new TextBox(obj as DeepReadonly<ITextBox>)
+						);
+						break;
+					case 'choice':
+						this.renderObjectCache.set(
+							id,
+							new Choice(obj as DeepReadonly<IChoices>)
 						);
 						break;
 				}

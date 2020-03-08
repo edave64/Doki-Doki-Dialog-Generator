@@ -6,6 +6,7 @@ import {
 	characterMutations,
 	fixContentPackRemovalFromCharacter,
 } from './objectTypes/characters';
+import { choiceMutations, choiceActions } from './objectTypes/choices';
 import { textBoxActions, textBoxMutations } from './objectTypes/textbox';
 import { IRootState } from '.';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
@@ -39,7 +40,7 @@ export interface IObject {
 	onTop: boolean;
 }
 
-export type ObjectTypes = 'sprite' | 'character' | 'textBox';
+export type ObjectTypes = 'sprite' | 'character' | 'textBox' | 'choice';
 
 let lastCopyId = 0;
 
@@ -114,6 +115,7 @@ export default {
 		...spriteMutations,
 		...characterMutations,
 		...textBoxMutations,
+		...choiceMutations,
 	},
 	actions: {
 		removeObject({ state, commit, rootState }, command: IRemoveObjectAction) {
@@ -245,6 +247,7 @@ export default {
 		...spriteActions,
 		...characterActions,
 		...textBoxActions,
+		...choiceActions,
 	},
 } as Module<IObjectsState, IRootState>;
 
