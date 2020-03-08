@@ -463,7 +463,7 @@ export class TextBox implements IRenderable {
 			strokeWidth: 4,
 			lineSpacing: 1.2,
 		});
-		if (this.obj.autoQuoting) {
+		if (this.obj.autoQuoting && this.obj.talkingDefault !== 'No-one') {
 			render.quote();
 		}
 

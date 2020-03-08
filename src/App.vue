@@ -125,6 +125,7 @@ export default class App extends Vue {
 		window.addEventListener('keypress', e => {
 			if (e.key === 'Escape') {
 				this.vuexHistory.transaction(() => {
+					if (this.$store.state.ui.selection === null) return;
 					this.$store.commit('ui/setSelection', null);
 				});
 			}
@@ -163,6 +164,7 @@ export default class App extends Vue {
 
 		this.canvasWidth = cw;
 		this.canvasHeight = ch;
+		if (this.$store.state.ui.vertical === v) return;
 		this.$store.commit('ui/setVertical', v);
 	}
 

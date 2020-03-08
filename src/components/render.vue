@@ -219,6 +219,7 @@ export default class Render extends Vue {
 			selectedObject = objects[objects.length - 1] || null;
 		}
 
+		if (this.$store.state.ui.selection === selectedObject) return;
 		this.$store.commit('ui/setSelection', selectedObject);
 	}
 
