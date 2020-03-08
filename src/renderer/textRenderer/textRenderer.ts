@@ -141,6 +141,7 @@ export class TextRenderer {
 
 			if (item.type === 'newline') {
 				lineHeights.push(lineHeight);
+				lineHeight = 0;
 			}
 		}
 		lineHeights.push(lineHeight);
