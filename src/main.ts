@@ -8,7 +8,7 @@ import ObjectsHistoryProperties from './store/objects_history_properties';
 import { VueErrorEvent } from '@/eventbus/event-bus';
 
 Vue.config.productionTip = false;
-Vue.config.errorHandler = async function(err, vm, info) {
+Vue.config.errorHandler = async (err, vm, info) => {
 	// handle error
 	// `info` is a Vue-specific error info, e.g. which lifecycle hook
 	// the error was found in. Only available in 2.2.0+
