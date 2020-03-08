@@ -14,6 +14,7 @@ import { RenderContext } from '@/renderer/rendererContext';
 import { getAsset } from '@/asset-manager';
 import { Renderer } from '@/renderer/renderer';
 import leftPad from 'left-pad';
+import { BackgroundLookup } from '@/store/content';
 
 export class SceneRenderer {
 	private renderObjectCache = new Map<string, IRenderable>();
@@ -83,9 +84,6 @@ export class SceneRenderer {
 			}
 
 			await this.getBackgroundRenderer()?.render(false, rx);
-			/*
-				await this.currentBackground.render(rx);
-			}*/
 
 			const selection = this.state.ui.selection;
 			for (const object of this.getRenderObjects()) {
@@ -149,9 +147,10 @@ export class SceneRenderer {
 				color.color = panel.background.color;
 				return color;
 			default:
-				const current = this.state.content.current.backgrounds.find(
-					background => background.id === panel.background.current
-				)!;
+				const lookup = this.store.getters[
+					'content/getBackgrounds'
+				] as BackgroundLookup;
+				const current = lookup.get(panel.background.current);
 				if (!current) return null;
 				const variant = current.variants[panel.background.variant];
 				if (!variant) return null;
