@@ -84,11 +84,11 @@ export default {
 								await callback();
 							} catch (e) {
 								console.log('Error during transaction!: ', e);
-								reject(e);
-								this.currentTransaction = [];
+								// reject(e);
+								//this.currentTransaction = [];
 								// The transaction that just failed is not in the undo history yet.
 								// So replaying that is equivalent to undoing the transaction.
-								replayAll(this);
+								//replayAll(this);
 							}
 							const lastUndo = this.done[this.done.length - 1];
 							if (

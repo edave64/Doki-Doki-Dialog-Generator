@@ -179,10 +179,12 @@ export default class App extends Vue {
 				return;
 			}
 			if (e.key === 'z' && e.ctrlKey) {
-				this.$store.commit('history/undo');
+				// this.$store.commit('history/undo');
+				e.preventDefault();
 				return;
 			} else if (e.key === 'y' && e.ctrlKey) {
-				this.$store.commit('history/redo');
+				// this.$store.commit('history/redo');
+				e.preventDefault();
 				return;
 			}
 
