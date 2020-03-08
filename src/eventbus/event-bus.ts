@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import { ICommand } from './command';
+import { DeepReadonly } from '@/util/readonly';
 
 const eventBus = new Vue();
 
@@ -62,4 +63,13 @@ export class ShowMessageEvent implements IEvent {
 	public static readonly kind = 'ShowMessageEvent';
 	public readonly kind = 'ShowMessageEvent';
 	public constructor(public message: string) {}
+}
+
+export class VueErrorEvent implements IEvent {
+	public static readonly kind = 'VueErrorEvent';
+	public readonly kind = 'VueErrorEvent';
+	public constructor(
+		public readonly error: DeepReadonly<Error>,
+		public readonly info: string
+	) {}
 }

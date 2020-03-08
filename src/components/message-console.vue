@@ -12,6 +12,7 @@ import EventBus, {
 	AssetFailureEvent,
 	CustomAssetFailureEvent,
 	ShowMessageEvent,
+	VueErrorEvent,
 } from '@/eventbus/event-bus';
 
 const shortHidingTime = 5000;
@@ -52,6 +53,17 @@ export default class MessageConsole extends Vue {
 		EventBus.subscribe(ShowMessageEvent, ev => {
 			this.messages.push(ev.message);
 			setTimeout(() => {
+				this.messages.shift();
+			}, longHidingTime);
+		});
+
+		EventBus.subscribe(VueErrorEvent, ev => {
+			this.messages.push(ev.error.name);
+			this.messages.push(JSON.stringify(ev.error.stack));
+			this.messages.push(ev.info);
+			setTimeout(() => {
+				this.messages.shift();
+				this.messages.shift();
 				this.messages.shift();
 			}, longHidingTime);
 		});
