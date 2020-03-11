@@ -19,7 +19,7 @@
 					>{{ (button.text.trim() === '') ? '[Empty]' : button.text }}</div>
 				</div>
 			</fieldset>
-			<fieldset class="buttons">
+			<fieldset class="current_button">
 				<legend>Current button:</legend>
 				<table>
 					<tr>
@@ -175,7 +175,17 @@ fieldset {
 			height: 24px;
 			text-overflow: ellipsis;
 			padding: 2px;
+
+			&.active {
+				background-color: #ffbde1;
+			}
 		}
+	}
+}
+
+.current_button {
+	input {
+		width: 145px;
 	}
 }
 
