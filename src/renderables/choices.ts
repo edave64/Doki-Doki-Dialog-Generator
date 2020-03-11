@@ -36,22 +36,26 @@ export class Choice implements IRenderable {
 
 	public hitTest(hx: number, hy: number): boolean {
 		// tslint:disable-next-line: no-magic-numbers
-		const localX = hx - this.obj.x + this.width / 2;
+		const scaledX = hx - (this.obj.x - this.width / 2);
 		// tslint:disable-next-line: no-magic-numbers
-		const localY = hy - this.obj.y + this.height / 2;
-		// tslint:disable-next-line: no-magic-numbers
-		const h = this.height;
-		return localX >= 0 && localX <= this.width && localY >= 0 && localY <= h;
+		const scaledY = hy - (this.obj.y - this.height / 2);
+
+		if (scaledX < 0 || scaledX > this.width) return false;
+		if (scaledY < 0 || scaledY > this.height) return false;
+
+		return true;
 	}
 
 	public getHitbox(): IHitbox {
 		return {
 			// tslint:disable-next-line: no-magic-numbers
-			x0: this.obj.x - this.obj.width / 2,
+			x0: this.obj.x - this.width / 2,
 			// tslint:disable-next-line: no-magic-numbers
-			x1: this.obj.x + this.obj.width / 2,
-			y0: this.obj.y,
-			y1: this.obj.y + this.obj.height,
+			x1: this.obj.x + this.width / 2,
+			// tslint:disable-next-line: no-magic-numbers
+			y0: this.obj.y - this.height / 2,
+			// tslint:disable-next-line: no-magic-numbers
+			y1: this.obj.y + this.height / 2,
 		};
 	}
 
@@ -96,7 +100,7 @@ export class Choice implements IRenderable {
 				rx.drawRect({
 					x,
 					// tslint:disable-next-line: no-magic-numbers
-					y: y - ChoicePadding * 1.5,
+					y,
 					w,
 					// tslint:disable-next-line: no-magic-numbers
 					h: height + ChoicePadding * 2,
@@ -113,7 +117,7 @@ export class Choice implements IRenderable {
 					x,
 					x + w,
 					// tslint:disable-next-line: no-magic-numbers
-					y + ChoiceSpacing * 0.75
+					y + ChoiceSpacing * 1.25
 				);
 				choiceRenderer.render(rx.fsCtx);
 				// tslint:disable-next-line: no-magic-numbers
