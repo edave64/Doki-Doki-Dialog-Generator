@@ -8,9 +8,7 @@ export function roundedRectangle(
 ) {
 	if (w < 0) w = 0;
 	if (h < 0) h = 0;
-	// tslint:disable-next-line: no-magic-numbers
 	if (w < 2 * r) r = w / 2;
-	// tslint:disable-next-line: no-magic-numbers
 	if (h < 2 * r) r = h / 2;
 	ctx.moveTo(x + r, y);
 	ctx.arcTo(x + w, y, x + w, y + h, r);
@@ -30,9 +28,7 @@ export function roundedTopRectangle(
 ) {
 	if (w < 0) w = 0;
 	if (h < 0) h = 0;
-	// tslint:disable-next-line: no-magic-numbers
 	if (w < 2 * r) r = w / 2;
-	// tslint:disable-next-line: no-magic-numbers
 	if (h < 2 * r) r = h / 2;
 	ctx.moveTo(x + r, y);
 	ctx.arcTo(x + w, y, x + w, y + h, r);

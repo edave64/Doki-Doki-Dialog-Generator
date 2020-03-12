@@ -29,6 +29,6 @@
 		"object-literal-key-quotes": false,
 		"no-empty": false,
 		"no-empty-interface": false,
-		"no-magic-numbers": true
+		"no-magic-numbers": [true, -1, 0, 1, 2]
 	}
 }

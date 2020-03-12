@@ -35,9 +35,7 @@ export class Choice implements IRenderable {
 	}
 
 	public hitTest(hx: number, hy: number): boolean {
-		// tslint:disable-next-line: no-magic-numbers
 		const scaledX = hx - (this.obj.x - this.width / 2);
-		// tslint:disable-next-line: no-magic-numbers
 		const scaledY = hy - (this.obj.y - this.height / 2);
 
 		if (scaledX < 0 || scaledX > this.width) return false;
@@ -47,15 +45,13 @@ export class Choice implements IRenderable {
 	}
 
 	public getHitbox(): IHitbox {
+		const w2 = this.width / 2;
+		const h2 = this.height / 2;
 		return {
-			// tslint:disable-next-line: no-magic-numbers
-			x0: this.obj.x - this.width / 2,
-			// tslint:disable-next-line: no-magic-numbers
-			x1: this.obj.x + this.width / 2,
-			// tslint:disable-next-line: no-magic-numbers
-			y0: this.obj.y - this.height / 2,
-			// tslint:disable-next-line: no-magic-numbers
-			y1: this.obj.y + this.height / 2,
+			x0: this.obj.x - w2,
+			x1: this.obj.x + w2,
+			y0: this.obj.y - h2,
+			y1: this.obj.y + h2,
 		};
 	}
 
@@ -89,20 +85,16 @@ export class Choice implements IRenderable {
 
 			const w = this.width;
 			const h = this.height;
-			// tslint:disable-next-line: no-magic-numbers
 			const w2 = w / 2;
 			const x = this.obj.x - w2;
-			// tslint:disable-next-line: no-magic-numbers
 			let y = this.obj.y - h / 2;
 
 			for (const choiceRenderer of this.choiceRenderers) {
 				const height = choiceRenderer.getHeight();
 				rx.drawRect({
 					x,
-					// tslint:disable-next-line: no-magic-numbers
 					y,
 					w,
-					// tslint:disable-next-line: no-magic-numbers
 					h: height + ChoicePadding * 2,
 					outline: {
 						style: ChoiceButtonBorderColor,
@@ -120,7 +112,6 @@ export class Choice implements IRenderable {
 					y + ChoiceSpacing * 1.25
 				);
 				choiceRenderer.render(rx.fsCtx);
-				// tslint:disable-next-line: no-magic-numbers
 				y += height + ChoicePadding * 2 + ChoiceSpacing;
 			}
 		});
@@ -133,7 +124,6 @@ export class Choice implements IRenderable {
 
 		this.height =
 			this.choiceRenderers.reduce(
-				// tslint:disable-next-line: no-magic-numbers
 				(acc, renderer) => acc + renderer.getHeight() + ChoicePadding * 2,
 				0
 			) +

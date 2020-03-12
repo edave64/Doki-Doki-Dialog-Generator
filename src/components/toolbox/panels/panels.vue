@@ -191,7 +191,6 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 	private async download() {
 		const distribution = this.getPanelDistibution();
 		const date = new Date();
-		// tslint:disable: no-magic-numbers
 		const prefix = `cd-${[
 			date.getFullYear(),
 			leftPad(date.getMonth() + 1, 2, '0'),
@@ -200,7 +199,6 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 			leftPad(date.getMinutes(), 2, '0'),
 			leftPad(date.getSeconds(), 2, '0'),
 		].join('-')}`;
-		// tslint:enable: no-magic-numbers
 		const extension = this.format.split('/')[1];
 		const format = this.format;
 		const quality = this.quality;
@@ -347,13 +345,11 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 		const idx = Array.from(parent.children).indexOf(ele);
 		if (this.$store.state.ui.vertical) {
 			const scroll =
-				// tslint:disable-next-line: no-magic-numbers
 				idx * ele.clientHeight - parent.clientHeight / 2 + ele.clientHeight / 2;
 			parent.scrollTop = scroll;
 			parent.scrollLeft = 0;
 		} else {
 			const scroll =
-				// tslint:disable-next-line: no-magic-numbers
 				idx * ele.clientWidth - parent.clientWidth / 2 + ele.clientWidth / 2;
 			parent.scrollLeft = scroll;
 			parent.scrollTop = 0;

@@ -142,7 +142,6 @@ export default class TextPanel extends Vue {
 			commandOpen += '=' + arg;
 		}
 		el.value = `${before}{${commandOpen}}${selectedText}{/${command}}${after}`;
-		// tslint:disable-next-line: no-magic-numbers
 		el.selectionStart = selStart + commandOpen.length + 2;
 		el.selectionEnd = el.selectionStart + selectedText.length;
 		el.focus();

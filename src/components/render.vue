@@ -157,9 +157,7 @@ export default class Render extends Vue {
 		);
 		rctx.drawText({
 			text: 'Starting...',
-			// tslint:disable-next-line: no-magic-numbers
 			x: loadingScreen.width / 2,
-			// tslint:disable-next-line: no-magic-numbers
 			y: loadingScreen.height / 2,
 			align: 'center',
 			outline: {

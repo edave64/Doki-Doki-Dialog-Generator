@@ -266,7 +266,6 @@ export default class PartsPanel extends Vue {
 			this.updatePose();
 		} else if (this.part === 'head') {
 			const [headTypeIdx, headIdx] = index
-				// tslint:disable-next-line: no-magic-numbers
 				.split('_', 2)
 				.map(part => parseInt(part, 10));
 			this.setPart('headType', headTypeIdx);

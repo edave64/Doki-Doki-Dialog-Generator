@@ -124,15 +124,12 @@ export class RenderContext {
 			}
 		}
 
-		// tslint:disable-next-line: no-magic-numbers
 		this.fsCtx.translate(x + w / 2, y + h / 2);
 		this.fsCtx.scale(flip ? -1 : 1, 1);
 
 		if (image instanceof Renderer) {
-			// tslint:disable-next-line: no-magic-numbers
 			image.paintOnto(this.fsCtx, -w / 2, -h / 2, w, h);
 		} else {
-			// tslint:disable-next-line: no-magic-numbers
 			this.fsCtx.drawImage(image as HTMLImageElement, -w / 2, -h / 2, w, h);
 		}
 

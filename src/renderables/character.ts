@@ -114,13 +114,11 @@ export class Character implements IRenderable {
 	}
 
 	public get width() {
-		// tslint:disable-next-line: no-magic-numbers
 		const zoom = this.obj.close ? 2 : 1;
 		return this.obj.width * zoom;
 	}
 
 	public get height() {
-		// tslint:disable-next-line: no-magic-numbers
 		const zoom = this.obj.close ? 2 : 1;
 		return this.obj.height * zoom;
 	}
@@ -140,7 +138,6 @@ export class Character implements IRenderable {
 
 		const w = this.width;
 		const h = this.height;
-		// tslint:disable-next-line: no-magic-numbers
 		const x = this.x - w / 2;
 		const y = this.y;
 
@@ -157,7 +154,6 @@ export class Character implements IRenderable {
 	}
 
 	public hitTest(hx: number, hy: number): boolean {
-		// tslint:disable-next-line: no-magic-numbers
 		const scaledX = hx - (this.x - this.width / 2);
 		const scaledY = hy - this.y;
 
@@ -193,9 +189,7 @@ export class Character implements IRenderable {
 
 	public getHitbox(): IHitbox {
 		return {
-			// tslint:disable-next-line: no-magic-numbers
 			x0: this.x - this.width / 2,
-			// tslint:disable-next-line: no-magic-numbers
 			x1: this.x + this.width / 2,
 			y0: this.y,
 			y1: this.y + this.height,

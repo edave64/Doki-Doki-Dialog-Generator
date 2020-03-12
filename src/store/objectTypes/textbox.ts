@@ -199,12 +199,10 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 
 	async splitTextbox({ commit, state, dispatch }, command: ISplitTextbox) {
 		const obj = state.objects[command.id];
-		// tslint:disable-next-line: no-magic-numbers
 		const newWidth = (obj.width - splitTextboxSpacing) / 2;
 		commit('setResetBounds', {
 			id: command.id,
 			resetBounds: {
-				// tslint:disable-next-line: no-magic-numbers
 				x: obj.x - newWidth / 2,
 				y: obj.y,
 				width: newWidth,
@@ -217,7 +215,6 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 		} as ISetTextBoxStyleMutation);
 		const id = (await dispatch('createTextBox', {
 			resetBounds: {
-				// tslint:disable-next-line: no-magic-numbers
 				x: obj.x + newWidth + splitTextboxSpacing / 2,
 				y: obj.y,
 				width: newWidth,

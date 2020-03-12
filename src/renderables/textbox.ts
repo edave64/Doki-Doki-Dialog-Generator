@@ -76,7 +76,6 @@ export class TextBox implements IRenderable {
 		const w = this.width;
 		const h = this.height;
 
-		// tslint:disable-next-line: no-magic-numbers
 		const w2 = w / 2;
 		const x1 = this.obj.x - w2;
 		const x2 = x1 + w;
@@ -152,7 +151,6 @@ export class TextBox implements IRenderable {
 		await this.localRenderer.render(async rx => {
 			const w = this.width;
 			const h = this.height;
-			// tslint:disable-next-line: no-magic-numbers
 			const w2 = w / 2;
 			const x = this.obj.x - w2;
 			const y = this.obj.y;
@@ -171,7 +169,6 @@ export class TextBox implements IRenderable {
 
 			const bottom = y + h;
 			const controlsY = bottom - ControlsYBottomOffset;
-			// tslint:disable-next-line: no-magic-numbers
 			const controlsCenter = x + w / 2;
 
 			if (this.obj.controls) {
@@ -207,9 +204,7 @@ export class TextBox implements IRenderable {
 
 	public getHitbox(): IHitbox {
 		return {
-			// tslint:disable-next-line: no-magic-numbers
 			x0: this.obj.x - this.obj.width / 2,
-			// tslint:disable-next-line: no-magic-numbers
 			x1: this.obj.x + this.obj.width / 2,
 			y0: this.obj.y,
 			y1: this.obj.y + this.obj.height,
@@ -323,7 +318,6 @@ export class TextBox implements IRenderable {
 				function drawDot(dotX: number, dotY: number) {
 					dotRx.drawPath({
 						path: ctx => {
-							// tslint:disable-next-line: no-magic-numbers
 							ctx.ellipse(dotX, dotY, dotRadius, dotRadius, 0, 0, 2 * Math.PI);
 						},
 						fill,
@@ -334,7 +328,6 @@ export class TextBox implements IRenderable {
 				drawDot(dotPatternSize, 0);
 				drawDot(0, dotPatternSize);
 				drawDot(dotPatternSize, dotPatternSize);
-				// tslint:disable-next-line: no-magic-numbers
 				drawDot(dotPatternSize / 2, dotPatternSize / 2);
 			}, true);
 			rx.customTransform(
@@ -344,9 +337,7 @@ export class TextBox implements IRenderable {
 						ctx,
 						x + textboxRoundingBuffer,
 						y + textboxRoundingBuffer,
-						// tslint:disable-next-line: no-magic-numbers
 						this.obj.width - textboxRoundingBuffer * 2,
-						// tslint:disable-next-line: no-magic-numbers
 						this.obj.height - textboxRoundingBuffer * 2,
 						textboxRounding
 					);
@@ -405,7 +396,6 @@ export class TextBox implements IRenderable {
 					glowGradient.addColorStop(1, 'rgba(255,255,255,0)');
 					subRx.drawPath({
 						path: ctx => {
-							// tslint:disable-next-line: no-magic-numbers
 							ctx.ellipse(x + w / 2, y + h, GlowRX, GlowRY, 0, 0, 2 * Math.PI);
 						},
 						fill: {
@@ -424,9 +414,7 @@ export class TextBox implements IRenderable {
 						path,
 						x + textboxRoundingBuffer,
 						y + textboxRoundingBuffer,
-						// tslint:disable-next-line: no-magic-numbers
 						this.obj.width - textboxRoundingBuffer * 2,
-						// tslint:disable-next-line: no-magic-numbers
 						this.obj.height - textboxRoundingBuffer * 2,
 						textboxRounding
 					);
@@ -438,7 +426,6 @@ export class TextBox implements IRenderable {
 			});
 		} else {
 			if (this.obj.style === 'corrupt') {
-				// tslint:disable-next-line: no-magic-numbers
 				x += (TextBoxWidth - TextBoxCorruptedWidth) / 2;
 			}
 			const image = await getAsset(

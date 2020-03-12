@@ -24,7 +24,6 @@ export class Sprite implements IRenderable {
 		const assets = await Promise.all(
 			this.obj.assets.map(asset => getAAsset(asset))
 		);
-		// tslint:disable-next-line: no-magic-numbers
 		const x = this.obj.x - this.obj.width / 2;
 		for (const asset of assets) {
 			rx.drawImage({
@@ -41,7 +40,6 @@ export class Sprite implements IRenderable {
 	}
 
 	public hitTest(hx: number, hy: number): boolean {
-		// tslint:disable-next-line: no-magic-numbers
 		const hitX = hx - this.obj.x + this.obj.width / 2;
 		const hitY = hy - this.obj.y;
 		return (
@@ -54,9 +52,7 @@ export class Sprite implements IRenderable {
 
 	public getHitbox(): IHitbox {
 		return {
-			// tslint:disable-next-line: no-magic-numbers
 			x0: this.obj.x - this.obj.width / 2,
-			// tslint:disable-next-line: no-magic-numbers
 			x1: this.obj.x + this.obj.width / 2,
 			y0: this.obj.y,
 			y1: this.obj.y + this.obj.height,

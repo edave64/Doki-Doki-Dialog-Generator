@@ -41,7 +41,6 @@ export class SceneRenderer {
 
 	public download(): Promise<string> {
 		const date = new Date();
-		// tslint:disable: no-magic-numbers
 		const filename = `panel-${[
 			date.getFullYear(),
 			leftPad(date.getMonth() + 1, 2, '0'),
@@ -50,7 +49,6 @@ export class SceneRenderer {
 			leftPad(date.getMinutes(), 2, '0'),
 			leftPad(date.getSeconds(), 2, '0'),
 		].join('-')}.png`;
-		// tslint:enable: no-magic-numbers
 		return this.renderer.download(this.renderCallback.bind(this), filename);
 	}
 
