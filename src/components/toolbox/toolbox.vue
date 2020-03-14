@@ -31,6 +31,7 @@
 		<text-box-panel v-else-if="panel === 'textBox'" />
 		<choice-panel v-else-if="panel === 'choice'" />
 		<panels-panel v-else-if="panel === 'panels'" />
+		<notification-panel v-else-if="panel === 'notification'" />
 		<add-panel v-else />
 		<div id="toolbar-end">
 			<button
@@ -73,6 +74,7 @@ import CreditsPanel from './panels/credits.vue';
 import BackgroundsPanel from './panels/backgrounds.vue';
 import ContentPacksPanel from './panels/content-pack.vue';
 import PanelsPanel from './panels/panels.vue';
+import NotificationPanel from './panels/notification.vue';
 import { IObject } from '@/store/objects';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
@@ -85,7 +87,8 @@ type PanelNames =
 	| 'selection'
 	| 'packs'
 	| 'settings'
-	| 'panels';
+	| 'panels'
+	| 'notification';
 
 @Component({
 	components: {
@@ -99,6 +102,7 @@ type PanelNames =
 		SpritePanel,
 		ContentPacksPanel,
 		PanelsPanel,
+		NotificationPanel,
 	},
 })
 export default class ToolBox extends Vue {

@@ -101,7 +101,7 @@ export const choiceActions: ActionTree<IObjectsState, IRootState> = {
 		commit('setChoices', {
 			id: command.id,
 			choices,
-		} as ISetChoicesMutation); 
+		} as ISetChoicesMutation);
 	},
 
 	setChoiceText({ state, commit }, command: ISetChoiceTextAction) {

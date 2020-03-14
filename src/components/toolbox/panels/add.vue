@@ -61,7 +61,7 @@
 			<template v-if="group === 'ui'">
 				<button @click="addTextBox">Textbox</button>
 				<button disabled="disabled">Poem</button>
-				<button disabled="disabled">Dialog box</button>
+				<button @click="addDialog">Notifiation</button>
 				<button @click="addChoice">Choice</button>
 				<button disabled="disabled">Console</button>
 			</template>
@@ -92,6 +92,7 @@ import { IHistorySupport } from '@/plugins/vuex-history';
 import DropTarget from '../drop-target.vue';
 import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
 import { ICreateChoicesAction } from '../../../store/objectTypes/choices';
+import { ICreateNotificationAction } from '../../../store/objectTypes/notification';
 
 const uploadedSpritesPack: ContentPack<string> = {
 	packId: 'dddg.buildin.uploadedSprites',
@@ -189,6 +190,15 @@ export default class AddPanel extends Mixins(PanelMixin) {
 	private addChoice() {
 		this.vuexHistory.transaction(async () => {
 			this.$store.dispatch('objects/createChoice', {} as ICreateChoicesAction);
+		});
+	}
+
+	private addDialog() {
+		this.vuexHistory.transaction(async () => {
+			this.$store.dispatch(
+				'objects/createNotification',
+				{} as ICreateNotificationAction
+			);
 		});
 	}
 

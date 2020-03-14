@@ -17,6 +17,8 @@ import { Renderer } from '@/renderer/renderer';
 import leftPad from 'left-pad';
 import { BackgroundLookup } from '@/store/content';
 import { IChoices } from '@/store/objectTypes/choices';
+import { INotification } from '@/store/objectTypes/notification';
+import { Notification } from '@/renderables/notification';
 
 export class SceneRenderer {
 	private renderObjectCache = new Map<string, IRenderable>();
@@ -133,6 +135,12 @@ export class SceneRenderer {
 						this.renderObjectCache.set(
 							id,
 							new Choice(obj as DeepReadonly<IChoices>)
+						);
+						break;
+					case 'notification':
+						this.renderObjectCache.set(
+							id,
+							new Notification(obj as DeepReadonly<INotification>)
 						);
 						break;
 				}

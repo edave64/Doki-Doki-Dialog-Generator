@@ -187,6 +187,29 @@ export class TextRenderer {
 		return height;
 	}
 
+	public getWidth() {
+		let lineWidth = 0;
+		let maxLineWidth = 0;
+		let lastItemInLine: RenderItem | null = null;
+
+		for (const item of this.renderParts) {
+			lineWidth += item.width;
+
+			if (item.type === 'newline') {
+				maxLineWidth = Math.max(maxLineWidth, lineWidth);
+				lineWidth = 0;
+				lastItemInLine = null;
+			} else if (item.type === 'character') {
+				if (lastItemInLine && lastItemInLine.type === 'character') {
+					lineWidth += lastItemInLine.style.letterSpacing;
+				}
+				lastItemInLine = item;
+			}
+		}
+		maxLineWidth = Math.max(maxLineWidth, lineWidth);
+		return maxLineWidth;
+	}
+
 	private getRenderParts(tokens: Token[], baseStyle: ITextStyle): RenderItem[] {
 		const renderParts: RenderItem[] = [];
 		const styleStack: ITextStyle[] = [];
