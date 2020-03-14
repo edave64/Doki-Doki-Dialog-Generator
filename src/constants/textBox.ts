@@ -53,6 +53,7 @@ export const NameboxTextStyle: ITextStyle = {
 	strokeColor: '#bb5599',
 	strokeWidth: 6,
 	color: 'white',
+	letterSpacing: 1,
 };
 
 export const ControlsTextStyle = {
