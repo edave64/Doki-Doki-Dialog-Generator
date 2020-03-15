@@ -290,6 +290,8 @@ export class TextBox implements IRenderable {
 				x,
 				y,
 			});
+		} else {
+			w = NameboxWidth;
 		}
 
 		const render = new TextRenderer(name, style);
