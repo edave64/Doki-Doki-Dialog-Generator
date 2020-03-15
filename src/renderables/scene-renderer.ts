@@ -98,7 +98,9 @@ export class SceneRenderer {
 
 	private getRenderObjects() {
 		const objectsState = this.state.objects.panels[this.panelId];
-		const order = [...objectsState.order, ...objectsState.onTopOrder];
+		const order = objectsState
+			? [...objectsState.order, ...objectsState.onTopOrder]
+			: [];
 		const objects = this.state.objects.objects;
 		const toUncache = Object.keys(this.renderObjectCache).filter(
 			id => !order.includes(id)
