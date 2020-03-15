@@ -4,7 +4,7 @@
 		<text-editor
 			v-if="textEditor"
 			title="Notification Text"
-			v-model="notification_text"
+			v-model="text"
 			@leave="textEditor = false"
 		/>
 		<template v-else>
