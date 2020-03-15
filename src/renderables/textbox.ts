@@ -283,7 +283,7 @@ export class TextBox implements IRenderable {
 					});
 				}
 			);
-		} else {
+		} else if (this.obj.style !== 'none') {
 			w = NameboxWidth;
 			rx.drawImage({
 				image: await getAsset('namebox'),
@@ -424,7 +424,7 @@ export class TextBox implements IRenderable {
 					width: 3,
 				},
 			});
-		} else {
+		} else if (this.obj.style !== 'none') {
 			if (this.obj.style === 'corrupt') {
 				x += (TextBoxWidth - TextBoxCorruptedWidth) / 2;
 			}

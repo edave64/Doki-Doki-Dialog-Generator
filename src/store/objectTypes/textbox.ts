@@ -26,7 +26,7 @@ export interface ITextBox extends IObject {
 		| 'Amy'
 		| 'Other';
 	talkingOther: string;
-	style: 'normal' | 'corrupt' | 'custom';
+	style: 'normal' | 'corrupt' | 'custom' | 'none';
 	customColor: string;
 	deriveCustomColors: boolean;
 	customControlsColor: string;

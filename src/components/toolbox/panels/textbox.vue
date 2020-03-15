@@ -19,6 +19,7 @@
 							<option value="normal">Normal</option>
 							<option value="corrupt">Corrupt</option>
 							<option value="custom">Custom</option>
+							<option value="none">None</option>
 						</select>
 					</td>
 				</tr>
