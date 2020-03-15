@@ -34,8 +34,11 @@ export async function getAAsset(
 	asset: IAsset,
 	hq: boolean = true
 ): Promise<HTMLImageElement | ErrorAsset> {
-	const url = hq ? asset.hq : asset.lq;
-
+	return getAssetByUrl(hq ? asset.hq : asset.lq);
+}
+export async function getAssetByUrl(
+	url: string
+): Promise<HTMLImageElement | ErrorAsset> {
 	if (!assetCache[url]) {
 		assetCache[url] = new Promise((resolve, reject) => {
 			const img = new Image();
@@ -69,26 +72,7 @@ export async function getAsset(
 	const url = `${baseUrl}/assets/${asset}${hq ? '' : '.lq'}${
 		(await isWebPSupported()) ? '.webp' : '.png'
 	}`.replace(/\/+/, '/');
-
-	if (!assetCache[url]) {
-		assetCache[url] = new Promise((resolve, reject) => {
-			const img = new Image();
-			img.addEventListener('load', () => {
-				resolve(img);
-			});
-			img.addEventListener('error', () => {
-				EventBus.fire(new AssetFailureEvent(url));
-				assetCache[url] = undefined;
-				resolve(new ErrorAsset());
-			});
-			img.crossOrigin = 'Anonymous';
-			img.src = url;
-			img.style.display = 'none';
-			document.body.appendChild(img);
-		});
-	}
-
-	return assetCache[url]!;
+	return getAssetByUrl(url);
 }
 
 export function registerAsset(asset: string, file: File): string {

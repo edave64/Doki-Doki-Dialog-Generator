@@ -19,6 +19,8 @@ import { BackgroundLookup } from '@/store/content';
 import { IChoices } from '@/store/objectTypes/choices';
 import { INotification } from '@/store/objectTypes/notification';
 import { Notification } from '@/renderables/notification';
+import { Poem } from './poem';
+import { IPoem } from '@/store/objectTypes/poem';
 
 export class SceneRenderer {
 	private renderObjectCache = new Map<string, IRenderable>();
@@ -143,6 +145,12 @@ export class SceneRenderer {
 						this.renderObjectCache.set(
 							id,
 							new Notification(obj as DeepReadonly<INotification>)
+						);
+						break;
+					case 'poem':
+						this.renderObjectCache.set(
+							id,
+							new Poem(obj as DeepReadonly<IPoem>)
 						);
 						break;
 				}

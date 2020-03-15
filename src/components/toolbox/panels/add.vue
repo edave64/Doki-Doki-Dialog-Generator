@@ -60,7 +60,7 @@
 			</template>
 			<template v-if="group === 'ui'">
 				<button @click="addTextBox">Textbox</button>
-				<button disabled="disabled">Poem</button>
+				<button @click="addPoem">Poem</button>
 				<button @click="addDialog">Notifiation</button>
 				<button @click="addChoice">Choice</button>
 				<button disabled="disabled">Console</button>
@@ -93,6 +93,7 @@ import DropTarget from '../drop-target.vue';
 import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
 import { ICreateChoicesAction } from '../../../store/objectTypes/choices';
 import { ICreateNotificationAction } from '../../../store/objectTypes/notification';
+import { ICreatePoemAction } from '../../../store/objectTypes/poem';
 
 const uploadedSpritesPack: ContentPack<string> = {
 	packId: 'dddg.buildin.uploadedSprites',
@@ -199,6 +200,12 @@ export default class AddPanel extends Mixins(PanelMixin) {
 				'objects/createNotification',
 				{} as ICreateNotificationAction
 			);
+		});
+	}
+
+	private addPoem() {
+		this.vuexHistory.transaction(async () => {
+			this.$store.dispatch('objects/createPoem', {} as ICreatePoemAction);
 		});
 	}
 

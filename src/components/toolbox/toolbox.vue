@@ -32,6 +32,7 @@
 		<choice-panel v-else-if="panel === 'choice'" />
 		<panels-panel v-else-if="panel === 'panels'" />
 		<notification-panel v-else-if="panel === 'notification'" />
+		<poem-panel v-else-if="panel === 'poem'" />
 		<add-panel v-else />
 		<div id="toolbar-end">
 			<button
@@ -75,6 +76,7 @@ import BackgroundsPanel from './panels/backgrounds.vue';
 import ContentPacksPanel from './panels/content-pack.vue';
 import PanelsPanel from './panels/panels.vue';
 import NotificationPanel from './panels/notification.vue';
+import PoemPanel from './panels/poem.vue';
 import { IObject } from '@/store/objects';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
@@ -88,7 +90,8 @@ type PanelNames =
 	| 'packs'
 	| 'settings'
 	| 'panels'
-	| 'notification';
+	| 'notification'
+	| 'poem';
 
 @Component({
 	components: {
@@ -103,6 +106,7 @@ type PanelNames =
 		ContentPacksPanel,
 		PanelsPanel,
 		NotificationPanel,
+		PoemPanel,
 	},
 })
 export default class ToolBox extends Vue {

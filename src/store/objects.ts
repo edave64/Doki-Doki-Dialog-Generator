@@ -12,6 +12,7 @@ import {
 	notificationMutations,
 	notificationActions,
 } from './objectTypes/notification';
+import { poemMutations, poemActions } from './objectTypes/poem';
 import { IRootState } from '.';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset } from './content';
@@ -49,7 +50,8 @@ export type ObjectTypes =
 	| 'character'
 	| 'textBox'
 	| 'choice'
-	| 'notification';
+	| 'notification'
+	| 'poem';
 
 let lastCopyId = 0;
 
@@ -126,6 +128,7 @@ export default {
 		...textBoxMutations,
 		...choiceMutations,
 		...notificationMutations,
+		...poemMutations,
 	},
 	actions: {
 		removeObject({ state, commit, rootState }, command: IRemoveObjectAction) {
@@ -259,6 +262,7 @@ export default {
 		...textBoxActions,
 		...choiceActions,
 		...notificationActions,
+		...poemActions,
 	},
 } as Module<IObjectsState, IRootState>;
 
