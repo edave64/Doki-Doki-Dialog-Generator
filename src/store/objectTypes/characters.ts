@@ -201,7 +201,16 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 		const obj = state.objects[id] as Readonly<ICharacter>;
 		const data = getDataG(rootGetters, obj);
 		mutatePoseAndPositions(commit, obj, data, change => {
-			change.poseId = arraySeeker(data.poses, change.poseId, delta);
+			const oldPose = data.poses[change.poseId];
+			const posesWithStyle = data.poses.filter(
+				pose => pose.style === oldPose.style
+			);
+			const oldPoseIdx = posesWithStyle.findIndex(
+				pose => pose.name === oldPose.name
+			);
+			const newPoseIdx = arraySeeker(posesWithStyle, oldPoseIdx, delta);
+			const newPose = posesWithStyle[newPoseIdx];
+			change.poseId = data.poses.findIndex(pose => pose.name === newPose.name);
 		});
 	},
 
