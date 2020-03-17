@@ -113,49 +113,32 @@ export class SceneRenderer {
 		}
 
 		return order.map(id => {
-			if (!this.renderObjectCache.has(id)) {
+			let renderObject = this.renderObjectCache.get(id);
+			if (!renderObject) {
 				const obj = objects[id];
 				switch (obj.type) {
 					case 'sprite':
-						this.renderObjectCache.set(
-							id,
-							new Sprite(obj as DeepReadonly<ISprite>)
-						);
+						renderObject = new Sprite(obj as DeepReadonly<ISprite>);
 						break;
 					case 'character':
 						const char = obj as DeepReadonly<ICharacter>;
-						this.renderObjectCache.set(
-							id,
-							new Character(char, getData(this.store, char))
-						);
+						renderObject = new Character(char, getData(this.store, char));
 						break;
 					case 'textBox':
-						this.renderObjectCache.set(
-							id,
-							new TextBox(obj as DeepReadonly<ITextBox>)
-						);
+						renderObject = new TextBox(obj as DeepReadonly<ITextBox>);
 						break;
 					case 'choice':
-						this.renderObjectCache.set(
-							id,
-							new Choice(obj as DeepReadonly<IChoices>)
-						);
+						renderObject = new Choice(obj as DeepReadonly<IChoices>);
 						break;
 					case 'notification':
-						this.renderObjectCache.set(
-							id,
-							new Notification(obj as DeepReadonly<INotification>)
-						);
+						renderObject = new Notification(obj as DeepReadonly<INotification>);
 						break;
 					case 'poem':
-						this.renderObjectCache.set(
-							id,
-							new Poem(obj as DeepReadonly<IPoem>)
-						);
+						renderObject = new Poem(obj as DeepReadonly<IPoem>);
 						break;
 				}
+				this.renderObjectCache.set(id, renderObject);
 			}
-			const renderObject = this.renderObjectCache.get(id)!;
 			return renderObject;
 		});
 	}
