@@ -43,8 +43,12 @@
 					<td>
 						<select id="export_format" v-model="format">
 							<option value="image/png">PNG (lossless)</option>
-							<option value="image/webp" v-if="webpSupport">WebP (lossy)</option>
-							<option value="image/heif" v-if="heifSupport">HEIF (lossy)</option>
+							<option value="image/webp" v-if="webpSupport"
+								>WebP (lossy)</option
+							>
+							<option value="image/heif" v-if="heifSupport"
+								>HEIF (lossy)</option
+							>
 							<option value="image/jpeg">JPEG (lossy)</option>
 							<!-- <option value="image/jpeg">WebM (lossy, video)</option>-->
 						</select>
@@ -55,7 +59,13 @@
 						<label for="export_quality">Quality:</label>
 					</td>
 					<td>
-						<input id="export_quality" type="number" min="0" max="100" v-model.number="quality" />
+						<input
+							id="export_quality"
+							type="number"
+							min="0"
+							max="100"
+							v-model.number="quality"
+						/>
 					</td>
 				</tr>
 				<tr>
@@ -109,6 +119,11 @@ import environment from '@/environments/environment';
 import leftPad from 'left-pad';
 import eventBus, { ShowMessageEvent } from '../../../eventbus/event-bus';
 import { screenWidth, screenHeight } from '@/constants/base';
+import { IObject } from '../../../store/objects';
+import { INotification } from '../../../store/objectTypes/notification';
+import { IPoemTextStyle } from '../../../constants/poem';
+import { IPoem } from '../../../store/objectTypes/poem';
+import { IChoice, IChoices } from '../../../store/objectTypes/choices';
 
 interface IPanelButton {
 	id: string;
@@ -365,13 +380,31 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 			const txtBox = ([] as string[])
 				.concat(objectOrders.order, objectOrders.onTopOrder)
 				.map(objId => this.$store.state.objects.objects[objId])
-				.find(obj => obj.type === 'textBox') as ITextBox | undefined;
+				.map(this.extractObjectText);
 			return {
 				id,
 				image: panel.lastRender,
-				text: txtBox ? txtBox.text : '',
+				text: txtBox.reduce((acc, current) =>
+					acc.length > current.length ? acc : current
+				),
 			} as IPanelButton;
 		});
+	}
+
+	private extractObjectText(obj: IObject) {
+		switch (obj.type) {
+			case 'textBox':
+				return (obj as ITextBox).text;
+			case 'notification':
+				return (obj as INotification).text;
+			case 'poem':
+				return (obj as IPoem).text;
+			case 'choice':
+				return (obj as IChoices).choices
+					.map(choice => `[${choice.text}]`)
+					.join('\n');
+		}
+		return '';
 	}
 
 	private async addNewPanel() {
@@ -471,11 +504,18 @@ fieldset {
 
 	.panel_text {
 		flex-grow: 1;
+		position: relative;
 
 		p {
 			height: 60px;
 			overflow: hidden;
 			text-overflow: ellipsis;
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			white-space: pre;
 		}
 	}
 
