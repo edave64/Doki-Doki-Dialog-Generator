@@ -41,14 +41,47 @@ type RenderItem = IDrawCharacterItem | INewlineItem;
 
 export class TextRenderer {
 	public static textCommands = textCommands;
-	private readonly renderParts: RenderItem[];
+	private renderParts: RenderItem[];
 
-	public constructor(str: string, baseStyle: ITextStyle) {
+	public constructor(
+		private readonly str: string,
+		private readonly baseStyle: ITextStyle
+	) {
 		const tokens = tokenize(str);
 		this.renderParts = this.getRenderParts(tokens, baseStyle);
 	}
 
-	public render(ctx: CanvasRenderingContext2D) {
+	public async loadFonts() {
+		if (!('fonts' in document)) return;
+		const fonts = new Set<string>();
+		let currentStyle: ITextStyle | null = null;
+		for (const part of this.renderParts) {
+			if (!('style' in part)) continue;
+			if (part.style !== currentStyle) {
+				currentStyle = part.style;
+				if (currentStyle.fontName) {
+					fonts.add(currentStyle.fontName);
+				}
+			}
+		}
+
+		let neededToLoad = false;
+		for (const font of fonts) {
+			const doc = document as any;
+			const fontString = `8px ${font}`;
+			if (!doc.fonts.check(fontString)) {
+				neededToLoad = true;
+				await doc.fonts.load(fontString);
+			}
+		}
+
+		if (neededToLoad) {
+			const tokens = tokenize(this.str);
+			this.renderParts = this.getRenderParts(tokens, this.baseStyle);
+		}
+	}
+
+	public render(ctx: CanvasRenderingContext2D): void {
 		ctx.save();
 		let currentStyle: ITextStyle | null = null;
 		for (const part of this.renderParts) {

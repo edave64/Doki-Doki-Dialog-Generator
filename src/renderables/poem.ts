@@ -95,8 +95,8 @@ export class Poem implements IRenderable {
 			}
 
 			const style = poemTextStyles[this.obj.font];
-			debugger;
 			const render = new TextRenderer(this.obj.text, style);
+			await render.loadFonts();
 
 			render.fixAlignment(
 				'left',

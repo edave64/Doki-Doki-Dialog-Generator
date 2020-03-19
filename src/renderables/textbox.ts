@@ -165,7 +165,7 @@ export class TextBox implements IRenderable {
 				await this.renderNamebox(rx, x + NameboxXOffset, y, name);
 			}
 
-			this.renderText(rx, x, y);
+			await this.renderText(rx, x, y);
 
 			const bottom = y + h;
 			const controlsY = bottom - ControlsYBottomOffset;
@@ -295,6 +295,7 @@ export class TextBox implements IRenderable {
 		}
 
 		const render = new TextRenderer(name, style);
+		await render.loadFonts();
 
 		render.fixAlignment('center', x, x + w, y + NameboxTextYOffset);
 
@@ -437,7 +438,11 @@ export class TextBox implements IRenderable {
 		}
 	}
 
-	private renderText(rx: RenderContext, baseX: number, baseY: number): void {
+	private async renderText(
+		rx: RenderContext,
+		baseX: number,
+		baseY: number
+	): Promise<void> {
 		const render = new TextRenderer(this.obj.text, {
 			alpha: 1,
 			color: '#ffffff',
@@ -455,6 +460,7 @@ export class TextBox implements IRenderable {
 		if (this.obj.autoQuoting && this.obj.talkingDefault !== 'No-one') {
 			render.quote();
 		}
+		await render.loadFonts();
 
 		render.fixAlignment(
 			'left',

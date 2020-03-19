@@ -99,6 +99,8 @@ export class Notification implements IRenderable {
 				NotificationTextStyle
 			);
 			const buttonRenderer = new TextRenderer('OK', NotificationOkTextStyle);
+			await textRenderer.loadFonts();
+			await buttonRenderer.loadFonts();
 
 			const textWidth = textRenderer.getWidth();
 			const textHeight = textRenderer.getHeight();
