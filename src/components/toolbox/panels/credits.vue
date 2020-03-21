@@ -20,6 +20,10 @@
 			otherwise.
 		</p>
 		<p>
+			Doki Doki Dialog Generator developed by EDave64
+			<br />Based on gemdude46's DDLC Shitpost generator
+		</p>
+		<p>
 			Unused House Background by
 			<a
 				target="_blank"
@@ -127,10 +131,6 @@
 				href="https://www.dafont.com/halogen.font"
 				>JLH Fonts</a
 			>
-		</p>
-		<p>
-			Doki Doki Dialog Generator developed by EDave64
-			<br />Based on gemdude46's DDLC Shitpost generator
 		</p>
 		<p>
 			MC Classic Sprite by Childish-N
