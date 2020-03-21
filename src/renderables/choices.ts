@@ -90,6 +90,7 @@ export class Choice implements IRenderable {
 			let y = this.obj.y - h / 2;
 
 			for (const choiceRenderer of this.choiceRenderers) {
+				await choiceRenderer.loadFonts();
 				const height = choiceRenderer.getHeight();
 				rx.drawRect({
 					x,
