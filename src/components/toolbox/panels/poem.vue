@@ -1,24 +1,40 @@
 <template>
 	<div class="panel">
-		<h1>Poem</h1>
-		<text-editor v-if="textEditor" title="Poem Text" v-model="text" @leave="textEditor = false" />
+		<h1>{{ sprite.subType === 'poem' ? 'Poem' : 'Console' }}</h1>
+		<text-editor
+			v-if="textEditor"
+			title="Poem Text"
+			v-model="text"
+			@leave="textEditor = false"
+		/>
 		<template v-else>
 			<div id="notification_text">
 				<label for="notification_text">Text:</label>
 				<textarea v-model="text" id="notification_text" @keydown.stop />
 				<button @click="textEditor = true">Formatting</button>
 			</div>
-			<select v-model="poemBackground" @keydown.stop>
-				<option v-for="(background, idx) of backgrounds" :value="idx" :key="idx">{{background.name}}</option>
-			</select>
-			<select v-model="poemStyle" @keydown.stop>
-				<option v-for="(style, idx) of poemTextStyles" :value="idx" :key="idx">{{style.name}}</option>
-			</select>
+			<template v-if="sprite.subType === 'poem'">
+				<select v-model="poemBackground" @keydown.stop>
+					<option
+						v-for="(background, idx) of backgrounds"
+						:value="idx"
+						:key="idx"
+						>{{ background.name }}</option
+					>
+				</select>
+				<select v-model="poemStyle" @keydown.stop>
+					<option
+						v-for="(style, idx) of poemTextStyles"
+						:value="idx"
+						:key="idx"
+						>{{ style.name }}</option
+					>
+				</select>
+			</template>
 			<position-and-size :obj="sprite" />
 			<layers :obj="sprite" />
 			<opacity :obj="sprite" />
 			<toggle v-model="flip" label="Flip?" />
-			<toggle v-model="renderBackdrop" label="Show backdrop?" />
 			<delete :obj="sprite" />
 		</template>
 	</div>

@@ -6,14 +6,26 @@ export const poemBackgrounds = [
 	{ name: 'Normal paper', file: 'poem.jpg' },
 	{ name: 'Lightly soiled paper', file: 'poem_y1.jpg' },
 	{ name: 'Heavily soiled paper', file: 'poem_y2.jpg' },
-	{ name: 'Transparent', file: '' },
+	{ name: 'Console', file: 'internal:console' },
+	{ name: 'Transparent', file: 'internal:transparent' },
 ];
 export const defaultPoemBackground = 0;
+export const defaultPoemStyle = 0;
 export const defaultX = screenWidth / 2;
 export const defaultY = screenHeight / 2;
 export const poemTopPadding = 33;
 export const poemBottomPadding = 100;
 export const poemPadding = 30;
+export const defaultPoemWidth = 800;
+export const defaultPoemHeight = 720;
+
+//#region Console style
+export const consoleBackgroundColor = 'rgba(51,51,51,0.75)';
+export const consoleWidth = 480;
+export const consoleHeight = 180;
+export const defaultConsoleBackground = 3;
+export const defaultConsoleStyle = 7;
+//#endregion Console style
 
 const BasePoemStyle: ITextStyle = {
 	alpha: 1,
@@ -80,6 +92,15 @@ export const poemTextStyles: IPoemTextStyle[] = [
 		...BasePoemStyle,
 		name: 'MC',
 		fontName: 'halogen',
-		fontSize: 32,
+		fontSize: 30,
+		lineSpacing: 1.53,
+	},
+	{
+		...BasePoemStyle,
+		name: 'Console',
+		fontName: 'f25_bank_printer',
+		fontSize: 18,
+		color: 'white',
+		lineSpacing: 1.1,
 	},
 ];

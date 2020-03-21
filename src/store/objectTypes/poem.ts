@@ -2,10 +2,22 @@ import { ICommand } from '@/eventbus/command';
 import { IObjectsState, ICreateObjectMutation, IObject } from '@/store/objects';
 import { MutationTree, ActionTree } from 'vuex';
 import { IRootState } from '..';
-import { defaultPoemBackground, defaultX, defaultY } from '@/constants/poem';
+import {
+	defaultPoemBackground,
+	defaultX,
+	defaultY,
+	defaultPoemWidth,
+	defaultPoemHeight,
+	consoleHeight,
+	consoleWidth,
+	defaultPoemStyle,
+	defaultConsoleBackground,
+	defaultConsoleStyle,
+} from '@/constants/poem';
 
 export interface IPoem extends IObject {
 	type: 'poem';
+	subType: 'poem' | 'console';
 	background: number;
 	font: number;
 	text: string;
@@ -36,10 +48,11 @@ export const poemActions: ActionTree<IObjectsState, IRootState> = {
 		const id = 'poem_' + ++lastPoemId;
 		commit('create', {
 			object: {
+				subType: 'poem',
 				x: defaultX,
 				y: defaultY,
-				width: 0,
-				height: 0,
+				width: defaultPoemWidth,
+				height: defaultPoemHeight,
 				panelId: rootState.panels.currentPanel,
 				flip: false,
 				id,
@@ -48,10 +61,35 @@ export const poemActions: ActionTree<IObjectsState, IRootState> = {
 				type: 'poem',
 				version: 0,
 				preserveRatio: false,
-				ratio: 0,
-				background: 0,
-				font: 0,
+				ratio: defaultPoemWidth / defaultPoemHeight,
+				background: defaultPoemBackground,
+				font: defaultPoemStyle,
 				text: 'New poem\n\nClick here to edit poem',
+			} as IPoem,
+		} as ICreateObjectMutation);
+		return id;
+	},
+	createConsole({ commit, rootState }, command: ICreatePoemAction): string {
+		const id = 'poem_' + ++lastPoemId;
+		commit('create', {
+			object: {
+				subType: 'console',
+				x: consoleWidth / 2,
+				y: consoleHeight / 2,
+				width: consoleWidth,
+				height: consoleHeight,
+				panelId: rootState.panels.currentPanel,
+				flip: false,
+				id,
+				onTop: true,
+				opacity: 100,
+				type: 'poem',
+				version: 0,
+				preserveRatio: false,
+				ratio: consoleWidth / consoleHeight,
+				background: defaultConsoleBackground,
+				font: defaultConsoleStyle,
+				text: '> _\n  \n  Console command\n  Click here to edit',
 			} as IPoem,
 		} as ICreateObjectMutation);
 		return id;

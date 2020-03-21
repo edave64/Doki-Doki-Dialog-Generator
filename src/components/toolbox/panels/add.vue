@@ -5,17 +5,21 @@
 		@dragenter="showDropTarget"
 		@mouseleave="hideDropTarget"
 	>
-		<drop-target
-			ref="spriteDt"
-			class="drop-target"
-			@drop="addCustomSpriteFile"
-		>Drop here to add as a new sprite</drop-target>
+		<drop-target ref="spriteDt" class="drop-target" @drop="addCustomSpriteFile"
+			>Drop here to add as a new sprite</drop-target
+		>
 		<h1>Add</h1>
 		<div :class="{ 'group-selector': true, vertical }">
-			<button :class="{ active: group === 'characters' }" @click="group = 'characters'">
+			<button
+				:class="{ active: group === 'characters' }"
+				@click="group = 'characters'"
+			>
 				<i class="material-icons">emoji_people</i> Characters
 			</button>
-			<button :class="{ active: group === 'sprites' }" @click="group = 'sprites'">
+			<button
+				:class="{ active: group === 'sprites' }"
+				@click="group = 'sprites'"
+			>
 				<i class="material-icons">change_history</i> Sprites
 			</button>
 			<button :class="{ active: group === 'ui' }" @click="group = 'ui'">
@@ -45,7 +49,9 @@
 					:title="sprite.label"
 					:style="{ background: assetSpriteBackground(sprite) }"
 					@click="addSpriteToScene(sprite)"
-				>{{ sprite.label }}</div>
+				>
+					{{ sprite.label }}
+				</div>
 				<button class="btn custom-sprite" @click="$refs.spriteUpload.click()">
 					<i class="material-icons">publish</i>
 					Upload new sprite
@@ -63,7 +69,7 @@
 				<button @click="addPoem">Poem</button>
 				<button @click="addDialog">Notifiation</button>
 				<button @click="addChoice">Choice</button>
-				<button disabled="disabled">Console</button>
+				<button @click="addConsole">Console</button>
 			</template>
 		</div>
 	</div>
@@ -206,6 +212,12 @@ export default class AddPanel extends Mixins(PanelMixin) {
 	private addPoem() {
 		this.vuexHistory.transaction(async () => {
 			this.$store.dispatch('objects/createPoem', {} as ICreatePoemAction);
+		});
+	}
+
+	private addConsole() {
+		this.vuexHistory.transaction(async () => {
+			this.$store.dispatch('objects/createConsole', {} as ICreatePoemAction);
 		});
 	}
 

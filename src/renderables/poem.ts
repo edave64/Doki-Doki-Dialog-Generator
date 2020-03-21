@@ -10,6 +10,7 @@ import {
 	poemTextStyles,
 	poemTopPadding,
 	poemPadding,
+	consoleBackgroundColor,
 } from '@/constants/poem';
 import { getAsset, getAssetByUrl } from '@/asset-manager';
 
@@ -80,19 +81,41 @@ export class Poem implements IRenderable {
 			const paper = poemBackgrounds[this.obj.background];
 			let y = this.obj.y;
 			let x = this.obj.x + 10;
+			let padding = poemPadding;
+			let topPadding = poemTopPadding;
 
-			const asset = await getAssetByUrl(`assets/poemBackgrounds/${paper.file}`);
-			if (asset instanceof HTMLImageElement) {
-				rx.drawImage({
-					image: asset,
-					x: this.obj.x - asset.width / 2,
-					y: this.obj.y - asset.height / 2,
+			if (paper.file === 'internal:console') {
+				const h = (this.height = this.obj.height);
+				const w = (this.width = this.obj.width);
+
+				rx.drawRect({
+					x: this.obj.x - w / 2,
+					y: this.obj.y - h / 2,
+					h,
+					w,
+					fill: { style: consoleBackgroundColor },
 				});
-				y -= asset.height / 2;
-				x -= asset.width / 2;
-				this.height = asset.height;
-				this.width = asset.width;
+				padding = -2;
+				topPadding = 26;
+			} else if (paper.file === 'internal:transparent') {
+				this.height = this.obj.height;
+				this.width = this.obj.width;
+			} else {
+				const asset = await getAssetByUrl(
+					`assets/poemBackgrounds/${paper.file}`
+				);
+				if (asset instanceof HTMLImageElement) {
+					rx.drawImage({
+						image: asset,
+						x: this.obj.x - asset.width / 2,
+						y: this.obj.y - asset.height / 2,
+					});
+					this.height = asset.height;
+					this.width = asset.width;
+				}
 			}
+			y -= this.height / 2;
+			x -= this.width / 2;
 
 			const style = poemTextStyles[this.obj.font];
 			const render = new TextRenderer(this.obj.text, style);
@@ -100,9 +123,9 @@ export class Poem implements IRenderable {
 
 			render.fixAlignment(
 				'left',
-				x + poemPadding,
-				x + poemPadding,
-				y + poemTopPadding + poemPadding
+				x + padding,
+				x + padding,
+				y + topPadding + padding
 			);
 
 			render.render(rx.fsCtx);
