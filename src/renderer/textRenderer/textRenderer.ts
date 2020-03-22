@@ -106,38 +106,99 @@ export class TextRenderer {
 	}
 
 	public quote() {
+		enum State {
+			None,
+			ExplictQuote,
+			ImplictQuote,
+			Star,
+		}
+
 		let lastChar = -1;
-		let quoted = false;
+		let state = State.None;
 
 		for (let i = 0; i < this.renderParts.length; ++i) {
 			const part = this.renderParts[i];
 			if (part.type !== 'character') continue;
-			if (part.character.match(/\s/)) continue;
-			lastChar = i;
-			if (!quoted) {
-				this.renderParts.splice(i, 0, {
-					type: 'character',
-					x: 0,
-					y: 0,
-					style: part.style,
-					character: '"',
-					height: part.height,
-					width: measureWidth(part.style, '"'),
-				});
-				quoted = true;
+			switch (state) {
+				case State.None:
+					if (part.character.match(/\s/)) continue;
+					if (part.character === '"') {
+						state = State.ExplictQuote;
+						lastChar = i;
+					} else if (part.character === '*') {
+						state = State.Star;
+						lastChar = i;
+					} else {
+						this.renderParts.splice(i, 0, {
+							type: 'character',
+							x: 0,
+							y: 0,
+							style: part.style,
+							character: '"',
+							height: part.height,
+							width: measureWidth(part.style, '"'),
+						});
+						i++;
+						lastChar = i;
+						state = State.ImplictQuote;
+					}
+					break;
+				case State.ExplictQuote:
+					lastChar = i;
+					if (part.character === '"') {
+						state = State.None;
+					}
+					break;
+				case State.ImplictQuote:
+					if (part.character.match(/\s/)) continue;
+					if (part.character === '*') {
+						this.renderParts.splice(lastChar + 1, 0, {
+							type: 'character',
+							x: 0,
+							y: 0,
+							style: part.style,
+							character: '"',
+							height: part.height,
+							width: measureWidth(part.style, '"'),
+						});
+						state = State.Star;
+						i++;
+					}
+					lastChar = i;
+					break;
+				case State.Star:
+					if (part.character === '*') {
+						state = State.None;
+					}
+					lastChar = i;
+					break;
 			}
 		}
 
-		if (quoted && lastChar >= 0) {
-			const part = this.renderParts[lastChar] as IDrawCharacterItem;
+		const lastPart = this.renderParts[lastChar] as IDrawCharacterItem;
+		if (lastPart && state === State.Star) {
 			this.renderParts.splice(lastChar + 1, 0, {
 				type: 'character',
 				x: 0,
 				y: 0,
-				style: part.style,
+				style: lastPart.style,
+				character: '*',
+				height: lastPart.height,
+				width: measureWidth(lastPart.style, '"'),
+			});
+		}
+		if (
+			lastPart &&
+			(state === State.ExplictQuote || state === State.ImplictQuote)
+		) {
+			this.renderParts.splice(lastChar + 1, 0, {
+				type: 'character',
+				x: 0,
+				y: 0,
+				style: lastPart.style,
 				character: '"',
-				height: part.height,
-				width: measureWidth(part.style, '"'),
+				height: lastPart.height,
+				width: measureWidth(lastPart.style, '"'),
 			});
 		}
 	}
