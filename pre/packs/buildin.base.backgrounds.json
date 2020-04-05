@@ -222,6 +222,12 @@
 				["monika_bg_glitch{ext}", "monika_glitch3{ext}"],
 				["monika_bg_glitch{ext}", "monika_glitch4{ext}"]
 			]
+		},
+		{
+			"id": "ddlc.notebook",
+			"label": "The poem game",
+			"folder": "/backgrounds/",
+			"variants": [["notebook{ext}"], ["notebook-glitch{ext}"]]
 		}
 	],
 	"colors": [

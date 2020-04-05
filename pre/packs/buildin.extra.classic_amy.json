@@ -9,12 +9,6 @@
 			"id": "ddlc.fan.amy1",
 			"label": "Amy (Classic)",
 			"chibi": "/chibis/classic_amy{ext}",
-			"styles": [
-				{
-					"name": "uniform",
-					"label": "Uniform"
-				}
-			],
 			"heads": {
 				"straight": [
 					["aa{ext}"],
@@ -73,20 +67,31 @@
 					["fi{ext}"]
 				]
 			},
-			"poses": [
+			"styleGroups": [
 				{
-					"compatibleHeads": ["straight"],
-					"left": [["1l{ext}"], ["2l{ext}"]],
-					"right": [["1r{ext}"]],
-					"name": "normal",
-					"style": "uniform",
-					"renderOrder": "lrh"
-				},
-				{
-					"compatibleHeads": ["straight"],
-					"name": "crossed_arms",
-					"style": "uniform",
-					"static": ["3{ext}"]
+					"id": "uniform",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight"],
+									"positions": {
+										"Left": [["1l{ext}"], ["2l{ext}"]],
+										"Right": [["1r{ext}"]]
+									}
+								},
+								{
+									"id": "crossed_arms",
+									"compatibleHeads": ["straight"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3{ext}"] }
+									]
+								}
+							]
+						}
+					]
 				}
 			]
 		}

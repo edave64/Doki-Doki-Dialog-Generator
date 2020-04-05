@@ -9,18 +9,75 @@
 			"label": "Monika",
 			"chibi": "/chibis/monika{ext}",
 			"folder": "/monika/",
-			"styles": [
+			"styleGroups": [
 				{
-					"name": "uniform",
-					"label": "Uniform"
+					"id": "uniform",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight"],
+									"positions": {
+										"Left": [["1l{ext}"], ["2l{ext}"]],
+										"Right": [["1r{ext}"], ["2r{ext}"]]
+									}
+								},
+								{
+									"id": "leaned",
+									"compatibleHeads": ["sideways"],
+									"renderCommands": [
+										{ "type": "image", "images": ["3{ext}"] },
+										{ "type": "head" }
+									]
+								}
+							]
+						}
+					]
 				},
 				{
-					"name": "old",
-					"label": "Placeholder art"
+					"id": "old",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "old",
+									"compatibleHeads": [],
+									"folder": "old/",
+									"positions": {
+										"Variant": [
+											["1{ext}"],
+											["2{ext}"],
+											["3{ext}"],
+											["4{ext}"],
+											["5{ext}"]
+										]
+									}
+								}
+							]
+						}
+					]
 				},
 				{
-					"name": "glitch",
-					"label": "Glitchy"
+					"id": "glitch",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "glitch",
+									"compatibleHeads": [],
+									"positions": {
+										"Variant": [
+											["g1_scaled{ext}"],
+											["g2{ext}"],
+											["g3{ext}"],
+											["g4{ext}"]
+										]
+									}
+								}
+							]
+						}
+					]
 				}
 			],
 			"heads": {
@@ -48,41 +105,7 @@
 					"variants": [["a2{ext}"], ["b2{ext}"]],
 					"offset": [135, 75]
 				}
-			},
-			"poses": [
-				{
-					"name": "normal",
-					"style": "uniform",
-					"compatibleHeads": ["straight"],
-					"left": [["1l{ext}"], ["2l{ext}"]],
-					"right": [["1r{ext}"], ["2r{ext}"]]
-				},
-				{
-					"name": "leaned",
-					"style": "uniform",
-					"compatibleHeads": ["sideways"],
-					"static": ["3{ext}"]
-				},
-				{
-					"name": "old",
-					"style": "old",
-					"compatibleHeads": [],
-					"folder": "old/",
-					"variant": [
-						["1{ext}"],
-						["2{ext}"],
-						["3{ext}"],
-						["4{ext}"],
-						["5{ext}"]
-					]
-				},
-				{
-					"name": "glitch",
-					"style": "glitch",
-					"compatibleHeads": [],
-					"variant": [["g1_scaled{ext}"], ["g2{ext}"], ["g3{ext}"], ["g4{ext}"]]
-				}
-			]
+			}
 		}
 	],
 	"colors": [

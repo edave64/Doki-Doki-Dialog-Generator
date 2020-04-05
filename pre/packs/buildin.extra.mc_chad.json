@@ -111,68 +111,120 @@
 					]
 				}
 			},
-			"poses": [
+			"styleGroups": [
 				{
-					"compatibleHeads": ["straight", "straight_closed"],
-					"name": "normal",
-					"style": "uniform-yellow",
-					"left": [["1l{ext}"], ["2l{ext}"], ["4l{ext}"]],
-					"right": [["1r{ext}"], ["2r{ext}"]]
+					"id": "uniform",
+					"styleComponents": [
+						{
+							"label": "Eyes",
+							"id": "eyes",
+							"variants": {
+								"yellow": "/parts/yellow-eyes{ext}",
+								"red": "/parts/red-eyes{ext}"
+							}
+						}
+					],
+					"styles": [
+						{
+							"components": { "eyes": "yellow" },
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight", "straight_closed"],
+									"positions": {
+										"Left": [["1l{ext}"], ["2l{ext}"], ["4l{ext}"]],
+										"Right": [["1r{ext}"], ["2r{ext}"]]
+									}
+								},
+								{
+									"id": "youknowihadto",
+									"compatibleHeads": ["straight", "straight_closed"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3{ext}"] }
+									]
+								}
+							]
+						},
+						{
+							"components": { "eyes": "red" },
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_red", "straight_closed"],
+									"positions": {
+										"Left": [["1l{ext}"], ["2l{ext}"], ["4l{ext}"]],
+										"Right": [["1r{ext}"], ["2r{ext}"]]
+									}
+								},
+								{
+									"id": "youknowihadto",
+									"compatibleHeads": ["straight_red", "straight_closed"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3{ext}"] }
+									]
+								}
+							]
+						}
+					]
 				},
 				{
-					"compatibleHeads": ["straight", "straight_closed"],
-					"name": "youknowihadto",
-					"style": "uniform-yellow",
-					"static": ["3{ext}"]
-				},
-				{
-					"compatibleHeads": ["straight", "straight_closed"],
-					"name": "normal_casual",
-					"style": "casual-yellow",
-					"left": [["1bl{ext}"], ["2bl{ext}"], ["4bl{ext}"]],
-					"right": [["1br{ext}"], ["2br{ext}"]]
-				},
-				{
-					"compatibleHeads": ["straight", "straight_closed"],
-					"name": "youknowihadto_casual",
-					"style": "casual-yellow",
-					"static": ["3b{ext}"]
-				},
-				{
-					"compatibleHeads": ["straight_red", "straight_closed"],
-					"name": "normal_red",
-					"style": "uniform-red",
-					"left": [["1l{ext}"], ["2l{ext}"], ["4l{ext}"]],
-					"right": [["1r{ext}"], ["2r{ext}"]]
-				},
-				{
-					"compatibleHeads": ["straight_red", "straight_closed"],
-					"name": "youknowihadto_red",
-					"style": "uniform-red",
-					"static": ["3{ext}"]
-				},
-				{
-					"compatibleHeads": ["straight_red", "straight_closed"],
-					"name": "normal_casual_red",
-					"style": "casual-red",
-					"left": [["1bl{ext}"], ["2bl{ext}"], ["4bl{ext}"]],
-					"right": [["1br{ext}"], ["2br{ext}"]]
-				},
-				{
-					"compatibleHeads": ["straight_red", "straight_closed"],
-					"name": "youknowihadto_casual_red",
-					"style": "casual-red",
-					"static": ["3b{ext}"]
-				}
-			],
-			"styleComponents": [
-				{
-					"label": "Eyes",
-					"name": "eyes",
-					"variants": {
-						"yellow": "/parts/yellow-eyes{ext}",
-						"red": "/parts/red-eyes{ext}"
-					}
+					"id": "casual",
+					"styleComponents": [
+						{
+							"label": "Eyes",
+							"id": "eyes",
+							"variants": {
+								"yellow": "/parts/yellow-eyes{ext}",
+								"red": "/parts/red-eyes{ext}"
+							}
+						}
+					],
+					"styles": [
+						{
+							"components": { "eyes": "yellow" },
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight", "straight_closed"],
+									"positions": {
+										"Left": [["1bl{ext}"], ["2bl{ext}"], ["4bl{ext}"]],
+										"Right": [["1br{ext}"], ["2br{ext}"]]
+									}
+								},
+								{
+									"id": "youknowihadto",
+									"compatibleHeads": ["straight", "straight_closed"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3b{ext}"] }
+									]
+								}
+							]
+						},
+						{
+							"components": { "eyes": "red" },
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_red", "straight_closed"],
+									"positions": {
+										"Left": [["1bl{ext}"], ["2bl{ext}"], ["4bl{ext}"]],
+										"Right": [["1br{ext}"], ["2br{ext}"]]
+									}
+								},
+								{
+									"id": "youknowihadto",
+									"compatibleHeads": ["straight_red", "straight_closed"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3b{ext}"] }
+									]
+								}
+							]
+						}
+					]
 				}
 			]
 		}

@@ -6,23 +6,37 @@
 	"folder": "/natsuki/",
 	"characters": [
 		{
-			"id": "ddlc.natsuki",
-			"styles": [],
+			"id": "dddg.buildin.base.natsuki:ddlc.natsuki",
 			"heads": {
-				"straight": [["crying{ext}"]]
+				"dddg.buildin.base.natsuki:straight": [["crying{ext}"]]
 			},
-			"poses": [
+			"styleGroups": [
 				{
-					"compatibleHeads": [],
-					"name": "vomit",
-					"style": "uniform",
-					"static": ["vomit{ext}"]
-				},
-				{
-					"compatibleHeads": [],
-					"name": "ghost",
-					"style": "uniform",
-					"variant": [["ghost1{ext}"], ["ghost2{ext}"], ["ghost3{ext}"]]
+					"id": "dddg.buildin.base.natsuki:uniform",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "vomit",
+									"compatibleHeads": [],
+									"renderCommands": [
+										{ "type": "image", "images": ["vomit{ext}"] }
+									]
+								},
+								{
+									"id": "ghost",
+									"compatibleHeads": [],
+									"positions": {
+										"Variant": [
+											["ghost1{ext}"],
+											["ghost2{ext}"],
+											["ghost3{ext}"]
+										]
+									}
+								}
+							]
+						}
+					]
 				}
 			]
 		}
