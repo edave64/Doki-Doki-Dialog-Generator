@@ -65,7 +65,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
+import { Component, Vue, Prop, Mixins, Watch } from 'vue-property-decorator';
 import { State } from 'vuex-class-decorator';
 import { IHistorySupport } from '@/plugins/vuex-history';
 import {
@@ -104,10 +104,12 @@ import { DeepReadonly } from '../../../util/readonly';
 export default class CharacterPanel extends Mixins(PanelMixin) {
 	public $store!: Store<DeepReadonly<IRootState>>;
 
+	private get selection(): string {
+		return this.$store.state.ui.selection!;
+	}
+
 	private get character(): DeepReadonly<ICharacter> {
-		const obj = this.$store.state.objects.objects[
-			this.$store.state.ui.selection!
-		];
+		const obj = this.$store.state.objects.objects[this.selection];
 		if (obj.type !== 'character') return undefined!;
 		return obj as ICharacter;
 	}
@@ -197,6 +199,11 @@ export default class CharacterPanel extends Mixins(PanelMixin) {
 				close: newValue,
 			} as ISetCloseMutation);
 		});
+	}
+
+	@Watch('selection')
+	private reset() {
+		this.panelForParts = null;
 	}
 }
 </script>
