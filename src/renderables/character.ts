@@ -5,18 +5,21 @@ import { IRenderable, IHitbox } from './renderable';
 import {
 	ICharacter,
 	getPose,
-	getParts,
 	getHeads,
 	CloseUpYOffset,
 	getDataG,
+	getData,
 } from '@/store/objectTypes/characters';
 import {
 	Pose,
 	Character as CharacterModel,
+	ContentPack,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset } from '@/store/content';
 import { ErrorAsset } from '../models/error-asset';
 import { DeepReadonly } from '@/util/readonly';
+import { Store } from 'vuex';
+import { IRootState } from '@/store';
 
 export class Character implements IRenderable {
 	public styleData = {
@@ -24,7 +27,7 @@ export class Character implements IRenderable {
 		components: {} as { [component: string]: string },
 	};
 	private lq: boolean = true;
-	private localRenderer: Renderer;
+	private localRenderer: Renderer | null = null;
 	private lastVersion = -1;
 	private hitDetectionFallback = false;
 
@@ -34,78 +37,65 @@ export class Character implements IRenderable {
 
 	public constructor(
 		public readonly obj: ICharacter,
-		private readonly data: DeepReadonly<CharacterModel<IAsset>>
-	) {
-		this.localRenderer = new Renderer(data.size[0], data.size[1]);
+		private data: DeepReadonly<CharacterModel<IAsset>>
+	) {}
+
+	public updatedContent(store: Store<DeepReadonly<IRootState>>): void {
+		this.data = getData(store, this.obj);
 	}
 
 	public async updateLocalCanvas() {
-		await this.localRenderer.render(async rx => {
-			const pose = getPose(this.data, this.obj) as Pose<IAsset>;
-			let assets: Array<IAsset | 'head'> = [];
-			let headAssets: DeepReadonly<IAsset[]> = [];
-			const partKeys = getParts(this.data, this.obj);
+		const pose = getPose(this.data, this.obj) as Pose<IAsset>;
+		this.localRenderer = new Renderer(pose.size[0], pose.size[1]);
+		await this.localRenderer.render(async (rx) => {
 			const currentHeads = getHeads(this.data, this.obj);
 
-			console.log(pose.renderOrder);
-			for (const renderPart of pose.renderOrder.toLowerCase()) {
-				switch (renderPart) {
-					case 'l':
-						assets = ([] as Array<IAsset | 'head'>).concat(
-							assets,
-							pose.left[this.obj.posePositions.left]
-						);
+			const drawAssetsUnloaded: IDrawAssetsUnloaded[] = [];
+
+			for (const renderCommand of pose.renderCommands) {
+				switch (renderCommand.type) {
+					case 'head':
+						drawAssetsUnloaded.push({
+							offset: renderCommand.offset,
+							assets: currentHeads
+								? currentHeads.variants[this.obj.posePositions.head || 0]
+								: [],
+						});
 						break;
-					case 'r':
-						assets = ([] as Array<IAsset | 'head'>).concat(
-							assets,
-							pose.right[this.obj.posePositions.right]
-						);
+					case 'image':
+						drawAssetsUnloaded.push({
+							offset: renderCommand.offset,
+							assets: renderCommand.images,
+						});
 						break;
-					case 's':
-						assets = ([] as Array<IAsset | 'head'>).concat(assets, pose.static);
-						break;
-					case 'v':
-						assets = ([] as Array<IAsset | 'head'>).concat(
-							assets,
-							pose.variant[this.obj.posePositions.variant]
-						);
-						break;
-					case 'h':
-						headAssets = currentHeads
-							? currentHeads.variants[this.obj.posePositions.head]
-							: [];
-						assets.push('head');
+					case 'pose-part':
+						const posePosition = pose.positions[renderCommand.part];
+						if (!posePosition || posePosition.length === 0) {
+							break;
+						}
+						const partAssets =
+							posePosition[this.obj.posePositions[renderCommand.part] || 0];
+						if (!partAssets) break;
+						drawAssetsUnloaded.push({
+							offset: renderCommand.offset,
+							assets: partAssets,
+						});
 						break;
 				}
+				console.log(renderCommand, JSON.stringify(drawAssetsUnloaded));
 			}
 
-			assets = assets.filter(asset => asset);
-			const [loadedAssets, loadedHeadAssets]: [
-				Array<HTMLImageElement | ErrorAsset | string>,
-				Array<HTMLImageElement | ErrorAsset>
-			] = await Promise.all([
-				Promise.all(
-					assets.map(asset =>
-						typeof asset === 'string'
-							? Promise.resolve(asset)
-							: getAAsset(asset, rx.hq)
-					)
-				),
-				Promise.all(headAssets.map(asset => getAAsset(asset, rx.hq))),
-			]);
+			const loadedDraws = await Promise.all(
+				drawAssetsUnloaded.map((drawAsset) => loadAssets(drawAsset, rx.hq))
+			);
 
-			for (const loadedAsset of loadedAssets) {
-				if (loadedAsset === 'head') {
-					for (const loadedheadAsset of loadedHeadAssets) {
-						rx.drawImage({
-							image: loadedheadAsset,
-							x: pose.headAnchor[0],
-							y: pose.headAnchor[1],
-						});
-					}
-				} else {
-					rx.drawImage({ image: loadedAsset, x: 0, y: 0 });
+			for (const loadedDraw of loadedDraws) {
+				for (const asset of loadedDraw.assets) {
+					rx.drawImage({
+						image: asset,
+						x: loadedDraw.offset[0],
+						y: loadedDraw.offset[1],
+					});
 				}
 			}
 
@@ -132,7 +122,11 @@ export class Character implements IRenderable {
 	}
 
 	public async render(selected: boolean, rx: RenderContext) {
-		if (this.lastVersion !== this.obj.version || this.lq !== !rx.hq) {
+		if (
+			this.localRenderer === null ||
+			this.lastVersion !== this.obj.version ||
+			this.lq !== !rx.hq
+		) {
 			await this.updateLocalCanvas();
 		}
 
@@ -142,7 +136,7 @@ export class Character implements IRenderable {
 		const y = this.y;
 
 		rx.drawImage({
-			image: this.localRenderer,
+			image: this.localRenderer!,
 			x,
 			y,
 			w,
@@ -154,6 +148,8 @@ export class Character implements IRenderable {
 	}
 
 	public hitTest(hx: number, hy: number): boolean {
+		if (!this.localRenderer) return false;
+
 		const scaledX = hx - (this.x - this.width / 2);
 		const scaledY = hy - this.y;
 
@@ -163,8 +159,8 @@ export class Character implements IRenderable {
 		if (!this.hitDetectionFallback) {
 			try {
 				const flippedX = this.obj.flip ? this.width - scaledX : scaledX;
-				const scaleX = this.data.size[0] / this.width;
-				const scaleY = this.data.size[1] / this.height;
+				const scaleX = this.localRenderer.width / this.width;
+				const scaleY = this.localRenderer.height / this.height;
 				const data = this.localRenderer.getDataAt(
 					Math.round(flippedX * scaleX),
 					Math.round(scaledY * scaleY)
@@ -195,4 +191,26 @@ export class Character implements IRenderable {
 			y1: this.y + this.height,
 		};
 	}
+}
+
+interface IDrawAssetsUnloaded {
+	offset: DeepReadonly<[number, number]>;
+	assets: DeepReadonly<IAsset[]>;
+}
+
+interface IDrawAssets {
+	offset: DeepReadonly<[number, number]>;
+	assets: DeepReadonly<Array<HTMLImageElement | ErrorAsset>>;
+}
+
+async function loadAssets(
+	unloaded: IDrawAssetsUnloaded,
+	hq: boolean
+): Promise<IDrawAssets> {
+	return {
+		offset: unloaded.offset,
+		assets: await Promise.all(
+			unloaded.assets.map((asset) => getAAsset(asset, hq))
+		),
+	};
 }

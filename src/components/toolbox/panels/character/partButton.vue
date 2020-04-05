@@ -1,6 +1,6 @@
 <template>
 	<div
-		:class="{part: true, active: false/*background === value*/}"
+		:class="{ part: true, active: false /*background === value*/ }"
 		:style="style"
 		@click="$emit('click')"
 	></div>
@@ -12,11 +12,17 @@ import { getAAsset, getAsset } from '@/asset-manager';
 import environment from '@/environments/environment';
 import { ErrorAsset } from '@/models/error-asset';
 import { IAsset } from '@/store/content';
+import { DeepReadonly } from '../../../../util/readonly';
 
 export interface IPartButtonImage {
-	images: Array<IAsset | string>;
-	size: [number, number];
-	offset: [number, number];
+	images: IPartImage[];
+	size: DeepReadonly<[number, number]>;
+	offset: DeepReadonly<[number, number]>;
+}
+
+export interface IPartImage {
+	asset: IAsset | string;
+	offset: DeepReadonly<[number, number]>;
 }
 
 const spriteSize = 960;
@@ -35,11 +41,11 @@ export default class PartButton extends Vue {
 
 	private async created() {
 		this.lookups = await Promise.all(
-			this.part.images.map(asset => {
-				if (typeof asset === 'string') {
-					return getAsset(asset, false);
+			this.part.images.map((image) => {
+				if (typeof image.asset === 'string') {
+					return getAsset(image.asset, false);
 				} else {
-					return getAAsset(asset, false);
+					return getAAsset(image.asset, false);
 				}
 			})
 		);
@@ -67,21 +73,17 @@ export default class PartButton extends Vue {
 	}
 
 	private get style(): { [id: string]: string } {
-		const baseStyle = {
+		const images = (this.lookups.filter(
+			(lookup) => lookup instanceof HTMLImageElement
+		) as HTMLImageElement[]).map(
+			(lookup) => `url('${lookup.src.replace("'", "\\'")}')`
+		);
+		return {
+			backgroundImage: images.join(','),
 			height: this.size + 'px',
 			width: this.size + 'px',
 			backgroundPosition: this.backgroundPosition,
 			backgroundSize: this.backgroundSize,
-		};
-		const lq = environment.allowLQ ? '.lq' : '';
-		const images = (this.lookups.filter(
-			lookup => lookup instanceof HTMLImageElement
-		) as HTMLImageElement[]).map(
-			lookup => `url('${lookup.src.replace("'", "\\'")}')`
-		);
-		return {
-			backgroundImage: images.join(','),
-			...baseStyle,
 		};
 	}
 }

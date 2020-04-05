@@ -8,40 +8,40 @@
 		{
 			"id": "ddlc.fan.mc1",
 			"label": "MC (Classic)",
-			"styles": [
-				{
-					"name": "uniform-yellow",
-					"label": "Uniform and yellow eyes",
-					"styleGroup": "uniform-yellow",
-					"components": {}
-				}
-			],
 			"chibi": "/chibis/classic_mc{ext}",
 			"heads": {
-				"straight": {
-					"variants": [
-						["a{ext}"],
-						["b{ext}"],
-						["c{ext}"],
-						["d{ext}"],
-						["e{ext}"],
-						["f{ext}"],
-						["g{ext}"],
-						["h{ext}"],
-						["i{ext}"],
-						["j{ext}"]
+				"straight": [
+					["a{ext}"],
+					["b{ext}"],
+					["c{ext}"],
+					["d{ext}"],
+					["e{ext}"],
+					["f{ext}"],
+					["g{ext}"],
+					["h{ext}"],
+					["i{ext}"],
+					["j{ext}"]
+				]
+			},
+			"styleGroups": [
+				{
+					"id": "uniform",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["1{ext}"] }
+									]
+								}
+							]
+						}
 					]
 				}
-			},
-			"poses": [
-				{
-					"compatibleHeads": ["straight"],
-					"name": "normal",
-					"style": "uniform-yellow",
-					"static": ["1{ext}"]
-				}
-			],
-			"styleComponents": []
+			]
 		}
 	],
 	"colors": [

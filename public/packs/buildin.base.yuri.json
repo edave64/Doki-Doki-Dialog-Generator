@@ -8,24 +8,88 @@
 		{
 			"id": "ddlc.yuri",
 			"label": "Yuri",
-			"styles": [
+			"styleGroups": [
 				{
-					"name": "uniform",
-					"label": "Uniform",
-					"styleGroup": "uniform",
-					"components": {}
+					"id": "uniform",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight"],
+									"positions": {
+										"Left": [["1l{ext}"], ["2l{ext}"]],
+										"Right": [["1r{ext}"], ["2r{ext}"]]
+									}
+								},
+								{
+									"id": "hairplay",
+									"compatibleHeads": ["sideways"],
+									"renderCommands": [
+										{ "type": "image", "images": ["3{ext}"] },
+										{ "type": "head" }
+									]
+								},
+								{
+									"id": "dragon",
+									"compatibleHeads": [],
+									"positions": {
+										"Variant": [["dragon1{ext}"], ["dragon2{ext}"]]
+									}
+								}
+							]
+						}
+					]
 				},
 				{
-					"name": "casual",
-					"label": "Casual attire",
-					"styleGroup": "casual",
-					"components": {}
+					"id": "casual",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight"],
+									"positions": {
+										"Left": [["1bl{ext}"], ["2bl{ext}"]],
+										"Right": [["1br{ext}"], ["2br{ext}"]]
+									}
+								},
+								{
+									"id": "hairplay",
+									"compatibleHeads": ["sideways"],
+									"renderCommands": [
+										{ "type": "image", "images": ["3b{ext}"] },
+										{ "type": "head" }
+									]
+								}
+							]
+						}
+					]
 				},
 				{
-					"name": "glitch",
-					"label": "Glitchy",
-					"styleGroup": "glitch",
-					"components": {}
+					"id": "glitch",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "glitching",
+									"compatibleHeads": [],
+									"positions": {
+										"Variant": [
+											["0a{ext}"],
+											["0b{ext}"],
+											["eyesfull{ext}"],
+											["glitch1{ext}"],
+											["glitch2{ext}"],
+											["glitch3{ext}"],
+											["glitch4{ext}"],
+											["glitch5{ext}"]
+										]
+									}
+								}
+							]
+						}
+					]
 				}
 			],
 			"chibi": "/chibis/yuri{ext}",
@@ -74,56 +138,7 @@
 					["d2{ext}"],
 					["e2{ext}"]
 				]
-			},
-			"poses": [
-				{
-					"compatibleHeads": ["straight"],
-					"name": "normal",
-					"style": "uniform",
-					"left": [["1l{ext}"], ["2l{ext}"]],
-					"right": [["1r{ext}"], ["2r{ext}"]]
-				},
-				{
-					"compatibleHeads": ["sideways"],
-					"name": "hairplay",
-					"style": "uniform",
-					"static": ["3{ext}"]
-				},
-				{
-					"compatibleHeads": ["straight"],
-					"name": "normal_causal",
-					"style": "casual",
-					"left": [["1bl{ext}"], ["2bl{ext}"]],
-					"right": [["1br{ext}"], ["2br{ext}"]]
-				},
-				{
-					"compatibleHeads": ["sideways"],
-					"name": "hairplay_casual",
-					"style": "casual",
-					"static": ["3b{ext}"]
-				},
-				{
-					"compatibleHeads": [],
-					"name": "glitching",
-					"style": "glitch",
-					"variant": [
-						["0a{ext}"],
-						["0b{ext}"],
-						["eyesfull{ext}"],
-						["glitch1{ext}"],
-						["glitch2{ext}"],
-						["glitch3{ext}"],
-						["glitch4{ext}"],
-						["glitch5{ext}"]
-					]
-				},
-				{
-					"compatibleHeads": [],
-					"name": "dragon",
-					"style": "uniform",
-					"variant": [["dragon1{ext}"], ["dragon2{ext}"]]
-				}
-			]
+			}
 		}
 	],
 	"colors": [

@@ -223,7 +223,7 @@ export default {
 			} as ISetSpriteSizeMutation);
 		},
 		fixContentPackRemoval(context, oldContent: ContentPack<IAsset>) {
-			Object.values(context.state.objects).map(obj => {
+			Object.values(context.state.objects).map((obj) => {
 				switch (obj.type) {
 					case 'character':
 						fixContentPackRemovalFromCharacter(context, obj.id, oldContent);
@@ -240,6 +240,7 @@ export default {
 			{ sourcePanelId, targetPanelId }: ICopyObjectsAction
 		) {
 			const sourceOrders = state.panels[sourcePanelId];
+			if (!sourceOrders) return;
 			for (const id of [...sourceOrders.onTopOrder, ...sourceOrders.order]) {
 				const oldObject = state.objects[id];
 				commit('create', {

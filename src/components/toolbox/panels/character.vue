@@ -17,7 +17,9 @@
 								<button @click="seekStyle(-1)">&lt;</button>
 							</td>
 							<td>
-								<button class="middle-button" @click="panelForParts = 'style'">Style</button>
+								<button class="middle-button" @click="panelForParts = 'style'">
+									Style
+								</button>
 							</td>
 							<td class="arrow-col">
 								<button @click="seekStyle(1)">&gt;</button>
@@ -28,7 +30,9 @@
 								<button @click="seekPose(-1)">&lt;</button>
 							</td>
 							<td>
-								<button class="middle-button" @click="panelForParts = 'pose'">Pose</button>
+								<button class="middle-button" @click="panelForParts = 'pose'">
+									Pose
+								</button>
 							</td>
 							<td class="arrow-col">
 								<button @click="seekPose(1)">&gt;</button>
@@ -39,7 +43,9 @@
 								<button @click="seekPart(part, -1)">&lt;</button>
 							</td>
 							<td>
-								<button class="middle-button" @click="panelForParts = part">{{ captialize(part) }}</button>
+								<button class="middle-button" @click="panelForParts = part">
+									{{ captialize(part) }}
+								</button>
 							</td>
 							<td class="arrow-col">
 								<button @click="seekPart(part, 1)">&gt;</button>
@@ -62,7 +68,6 @@
 import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
 import { State } from 'vuex-class-decorator';
 import { IHistorySupport } from '@/plugins/vuex-history';
-import { Part } from '@/constants/base';
 import {
 	getData,
 	getParts,
@@ -107,7 +112,7 @@ export default class CharacterPanel extends Mixins(PanelMixin) {
 		return obj as ICharacter;
 	}
 
-	private panelForParts: Part | null = null;
+	private panelForParts: string | null = null;
 
 	private vuexHistory!: IHistorySupport;
 
@@ -124,12 +129,16 @@ export default class CharacterPanel extends Mixins(PanelMixin) {
 	}
 
 	private get hasMultipleStyles(): boolean {
-		return this.charData.styles.length > 1;
+		return (
+			this.charData.styleGroups[this.character.styleGroupId].styles.length >
+				1 || this.charData.styleGroups.length > 1
+		);
 	}
 
 	private get hasMultiplePoses(): boolean {
-		const style = this.charData.styles[this.character.styleId];
-		return this.charData.poses.filter(x => x.style === style.name).length > 1;
+		const styleGroup = this.charData.styleGroups[this.character.styleGroupId];
+		const style = styleGroup.styles[this.character.styleId];
+		return style.poses.length > 1;
 	}
 
 	private seekPose(delta: number): void {
@@ -150,7 +159,7 @@ export default class CharacterPanel extends Mixins(PanelMixin) {
 		});
 	}
 
-	private seekPart(part: Part, delta: number): void {
+	private seekPart(part: string, delta: number): void {
 		this.vuexHistory.transaction(() => {
 			this.$store.dispatch('objects/seekPart', {
 				id: this.character.id,

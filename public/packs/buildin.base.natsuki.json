@@ -54,76 +54,96 @@
 				],
 				"turnedAway": [["tj{ext}"]]
 			},
-			"poses": [
+			"styleGroups": [
 				{
-					"compatibleHeads": ["straight", "sideways", "turnedAway"],
-					"name": "normal",
-					"renderOrder": "SVLRH",
-					"style": "uniform",
-					"left": [["1l{ext}"], ["2l{ext}"]],
-					"right": [["1r{ext}"], ["2r{ext}"]]
-				},
-				{
-					"compatibleHeads": ["straight", "sideways", "turnedAway"],
-					"headAnchor": [18, 22],
-					"name": "crossed_arms",
-					"renderOrder": "SVLRH",
-					"style": "uniform",
-					"static": ["3{ext}"]
-				},
-				{
-					"compatibleHeads": ["straight", "sideways", "turnedAway"],
-					"name": "normal_causal",
-					"renderOrder": "SVLRH",
-					"style": "casual",
-					"left": [["1bl{ext}"], ["2bl{ext}"]],
-					"right": [["1br{ext}"], ["2br{ext}"]]
-				},
-				{
-					"compatibleHeads": ["straight", "sideways", "turnedAway"],
-					"headAnchor": [18, 22],
-					"name": "crossed_arms_casual",
-					"renderOrder": "SVLRH",
-					"style": "casual",
-					"static": ["3b{ext}"]
-				},
-				{
-					"compatibleHeads": [],
-					"name": "old",
-					"style": "old",
-					"variant": [
-						["old/1{ext}"],
-						["old/2{ext}"],
-						["old/3{ext}"],
-						["old/4{ext}"],
-						["old/5{ext}"]
+					"id": "uniform",
+					"styles": [
+						{
+							"poses": [
+								{
+									"compatibleHeads": ["straight", "sideways", "turnedAway"],
+									"id": "normal",
+									"renderCommands": [
+										{ "type": "pose-part", "part": "Left" },
+										{ "type": "pose-part", "part": "Right" },
+										{ "type": "head" }
+									],
+									"positions": {
+										"Left": [["1l{ext}"], ["2l{ext}"]],
+										"Right": [["1r{ext}"], ["2r{ext}"]]
+									}
+								},
+								{
+									"compatibleHeads": ["straight", "sideways", "turnedAway"],
+									"id": "crossed_arms",
+									"renderCommands": [
+										{ "type": "image", "images": ["3{ext}"] },
+										{ "type": "head", "offset": [18, 22] }
+									]
+								},
+								{
+									"id": "glitch",
+									"compatibleHeads": [],
+									"renderCommands": [
+										{ "type": "image", "images": ["glitch1{ext}"] }
+									]
+								}
+							]
+						}
 					]
 				},
 				{
-					"compatibleHeads": [],
-					"name": "glitch",
-					"style": "uniform",
-					"static": ["glitch1{ext}"]
-				}
-			],
-			"styles": [
-				{
-					"name": "uniform",
-					"label": "Uniform",
-					"styleGroup": "uniform",
-					"components": {}
+					"id": "casual",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight", "sideways", "turnedAway"],
+									"renderCommands": [
+										{ "type": "pose-part", "part": "Left" },
+										{ "type": "pose-part", "part": "Right" },
+										{ "type": "head" }
+									],
+									"positions": {
+										"Left": [["1bl{ext}"], ["2bl{ext}"]],
+										"Right": [["1br{ext}"], ["2br{ext}"]]
+									}
+								},
+								{
+									"id": "crossed_arms",
+									"compatibleHeads": ["straight", "sideways", "turnedAway"],
+									"renderCommands": [
+										{ "type": "image", "images": ["3b{ext}"] },
+										{ "type": "head", "offset": [18, 22] }
+									]
+								}
+							]
+						}
+					]
 				},
 				{
-					"name": "casual",
-					"label": "Casual attire",
-					"styleGroup": "casual",
-					"components": {}
-				},
-				{
-					"name": "old",
-					"label": "Placeholder art",
-					"styleGroup": "old",
-					"components": {}
+					"id": "old",
+					"folder": "old/",
+					"styles": [
+						{
+							"poses": [
+								{
+									"compatibleHeads": [],
+									"id": "old",
+									"positions": {
+										"Variant": [
+											["1{ext}"],
+											["2{ext}"],
+											["3{ext}"],
+											["4{ext}"],
+											["5{ext}"]
+										]
+									}
+								}
+							]
+						}
+					]
 				}
 			]
 		}

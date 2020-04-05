@@ -184,7 +184,7 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 			targetCanvas.height
 		);
 		targetCanvas.toBlob(
-			blob => {
+			(blob) => {
 				if (!blob) return;
 				const url = URL.createObjectURL(blob);
 				this.vuexHistory.transaction(() => {
@@ -241,7 +241,7 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 			async (imageIdx: number, canvas: HTMLCanvasElement) => {
 				return new Promise<number>((resolve, reject) => {
 					canvas.toBlob(
-						blob => {
+						(blob) => {
 							if (!blob) {
 								reject(`Image ${imageIdx + 1} could not be rendered.`);
 								return;
@@ -255,7 +255,7 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 			}
 		);
 		const readableSizes = sizes.map(
-			size => ((size * estimateFactor) / 1024 / 1024).toFixed(2) + 'MiB'
+			(size) => ((size * estimateFactor) / 1024 / 1024).toFixed(2) + 'MiB'
 		);
 		const filePluralize = readableSizes.length > 1 ? 'files' : 'file';
 		const itPluralize = readableSizes.length > 1 ? 'These' : 'It';
@@ -374,18 +374,21 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 	private get panelButtons(): IPanelButton[] {
 		const panelButtons: IPanelButton[] = [];
 		const panelOrder = this.$store.state.panels.panelOrder;
-		return panelOrder.map(id => {
+		return panelOrder.map((id) => {
 			const panel = this.$store.state.panels.panels[id];
 			const objectOrders = this.$store.state.objects.panels[id];
-			const txtBox = ([] as string[])
-				.concat(objectOrders.order, objectOrders.onTopOrder)
-				.map(objId => this.$store.state.objects.objects[objId])
-				.map(this.extractObjectText);
+			const txtBox = objectOrders
+				? ([] as string[])
+						.concat(objectOrders.order, objectOrders.onTopOrder)
+						.map((objId) => this.$store.state.objects.objects[objId])
+						.map(this.extractObjectText)
+				: [];
 			return {
 				id,
 				image: panel.lastRender,
-				text: txtBox.reduce((acc, current) =>
-					acc.length > current.length ? acc : current
+				text: txtBox.reduce(
+					(acc, current) => (acc.length > current.length ? acc : current),
+					''
 				),
 			} as IPanelButton;
 		});
@@ -401,7 +404,7 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 				return (obj as IPoem).text;
 			case 'choice':
 				return (obj as IChoices).choices
-					.map(choice => `[${choice.text}]`)
+					.map((choice) => `[${choice.text}]`)
 					.join('\n');
 		}
 		return '';

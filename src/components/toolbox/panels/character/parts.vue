@@ -12,15 +12,18 @@
 				$emit('leave');
 			"
 		/>
-		<fieldset v-for="styleComponent of styleComponents" :key="styleComponent.name">
+		<fieldset
+			v-for="styleComponent of styleComponents"
+			:key="styleComponent.name"
+		>
 			<legend>{{ styleComponent.label }}</legend>
 			<part-button
-				v-for="(button, index) of styleComponent.buttons"
+				v-for="(button, id) of styleComponent.buttons"
 				:size="130"
-				:key="index"
-				:value="index"
+				:key="id"
+				:value="id"
 				:part="button"
-				@click="choose_component(styleComponent.name, index)"
+				@click="choose_component(styleComponent.name, id)"
 			/>
 		</fieldset>
 	</div>
@@ -34,8 +37,7 @@ import {
 	registerAssetWithURL,
 } from '@/asset-manager';
 import environment from '@/environments/environment';
-import PartButton, { IPartButtonImage } from './partButton.vue';
-import { Part } from '@/constants/base';
+import PartButton, { IPartButtonImage, IPartImage } from './partButton.vue';
 import {
 	StyleComponent,
 	Pose,
@@ -50,6 +52,7 @@ import {
 	ISetPartAction,
 	getData,
 	ICharacter,
+	ISetStyleAction,
 } from '@/store/objectTypes/characters';
 import { IHistorySupport } from '@/plugins/vuex-history';
 import { State } from 'vuex-class-decorator';
@@ -71,22 +74,17 @@ export default class PartsPanel extends Vue {
 
 	@Prop({ required: true }) private character!: ICharacter;
 	@Prop({ required: true, type: String }) private readonly part!:
-		| Part
+		| string
 		| 'pose'
 		| 'style';
 
 	private isWebPSupported: boolean | null = null;
-	private styleData: {
-		lastBase: string;
-		components: {
-			[s: string]: string;
-		};
-	} = {
-		lastBase: '',
-		components: {},
-	};
 
 	private vuexHistory!: IHistorySupport;
+	/**
+	 * [styleComponentKey, styleComponentValue]
+	 */
+	private stylePriorities: [string, string][] = [];
 
 	private get charData(): DeepReadonly<Character<IAsset>> {
 		return getData(this.$store, this.character);
@@ -94,13 +92,12 @@ export default class PartsPanel extends Vue {
 
 	@Watch('character')
 	private updateStyleData(): void {
-		const pose = getPose(this.charData, this.character);
-		const baseStyle = this.charData.styles.find(
-			style => style.name === pose.style
-		);
-		if (!baseStyle) return;
-		this.styleData.lastBase = baseStyle.styleGroup;
-		this.styleData.components = { ...baseStyle.components };
+		const baseStyle = this.charData.styleGroups[this.character.styleGroupId]
+			.styles[this.character.styleId];
+		this.stylePriorities = Object.keys(baseStyle.components).map((key) => [
+			key,
+			baseStyle.components[key],
+		]);
 	}
 
 	private async created() {
@@ -110,18 +107,21 @@ export default class PartsPanel extends Vue {
 
 	private get styleComponents(): DeepReadonly<IPartStyleGroup[]> {
 		if (this.part !== 'style') return [];
-		return this.charData.styleComponents.map(component => {
+		const styleComponents = this.charData.styleGroups[
+			this.character.styleGroupId
+		];
+		return styleComponents.styleComponents.map((component) => {
 			const buttons: IPartStyleGroup['buttons'] = {};
 			for (const key in component.variants) {
 				if (!component.variants.hasOwnProperty(key)) continue;
 				const variant = component.variants[key];
 				buttons[key] = {
-					size: this.charData.size as [number, number],
+					size: styleComponents.styles[0].poses[0].size,
 					offset: [0, 0],
-					images: [variant],
+					images: [{ offset: [0, 0], asset: variant }],
 				};
 			}
-			return { label: component.label, name: component.name, buttons };
+			return { label: component.label, name: component.id, buttons };
 		});
 	}
 
@@ -144,63 +144,46 @@ export default class PartsPanel extends Vue {
 					for (let headIdx = 0; headIdx < heads.variants.length; ++headIdx) {
 						const headImages = heads.variants[headIdx];
 						ret[`${headKeyIdx}_${headIdx}`] = {
-							images: headImages,
-							size: heads.size,
-							offset: heads.offset,
+							size: heads.previewSize,
+							offset: heads.previewOffset,
+							images: headImages.map(
+								(image): IPartImage => ({ asset: image, offset: [0, 0] })
+							),
 						};
 					}
 				}
 				return ret;
-			case 'variant':
-				collection = currentPose.variant;
-				size = currentPose.size;
-				offset = currentPose.offset;
-				break;
-			case 'left':
-				collection = currentPose.left;
-				size = currentPose.size;
-				offset = currentPose.offset;
-				break;
-			case 'right':
-				collection = currentPose.right;
-				size = currentPose.size;
-				offset = currentPose.offset;
-				break;
 			case 'pose':
-				const currentStyle = data.styles[this.character.styleId];
-				for (let poseIdx = 0; poseIdx < data.poses.length; ++poseIdx) {
-					const pose = data.poses[poseIdx];
-					if (pose.style !== currentStyle.name) continue;
+				const currentStyle =
+					data.styleGroups[this.character.styleGroupId].styles[
+						this.character.styleId
+					];
+				for (let poseIdx = 0; poseIdx < currentStyle.poses.length; ++poseIdx) {
+					const pose = currentStyle.poses[poseIdx];
 					ret[poseIdx] = this.generatePosePreview(pose);
 				}
 				return ret;
 			case 'style':
-				const styles = data.styles;
-				const dedupedStyleGroups = styles
-					.map(style => style.styleGroup)
-					.filter((style, idx, all) => {
-						if (all.indexOf(style) !== idx) return false;
-						return true;
-					});
-
-				for (const styleGroup of dedupedStyleGroups) {
-					const firstStyle = styles.find(
-						style => style.styleGroup === styleGroup
-					)!;
-					const firstPose = data.poses.find(
-						pose => pose.style === firstStyle.name
-					)!;
-					ret[styleGroup] = this.generatePosePreview(firstPose);
+				for (const styleGroup of data.styleGroups) {
+					ret[styleGroup.id] = this.generatePosePreview(
+						styleGroup.styles[0].poses[0]
+					);
 				}
 				return ret;
 
 			default:
-				throw new Error('Unrecognised pose part: ' + this.part);
+				collection = currentPose.positions[this.part];
+				size = currentPose.previewSize;
+				offset = currentPose.previewOffset;
+				break;
 		}
 		for (let partIdx = 0; partIdx < collection.length; ++partIdx) {
 			const part = collection[partIdx];
 			ret[partIdx] = {
-				images: part,
+				images: part.map((partImage: IAsset) => ({
+					offset: [0, 0],
+					asset: partImage,
+				})),
 				size,
 				offset,
 			};
@@ -215,68 +198,80 @@ export default class PartsPanel extends Vue {
 		const heads = data.heads[pose.compatibleHeads[0]];
 		const head = heads ? heads.variants[0] : null;
 		let images: IAsset[] = [];
+		debugger;
 
-		for (const order of pose.renderOrder) {
-			switch (order.toUpperCase()) {
-				case 'S':
-					if (pose.static) images = images.concat(pose.static);
+		for (const command of pose.renderCommands) {
+			switch (command.type) {
+				case 'pose-part':
+					const part = pose.positions[command.part];
+					if (!part || part.length === 0) break;
+					images = images.concat(part[0] as IAsset[]);
 					break;
-				case 'V':
-					if (pose.variant.length > 0) images = images.concat(pose.variant[0]);
-					break;
-				case 'L':
-					if (pose.left.length > 0) images = images.concat(pose.left[0]);
-					break;
-				case 'R':
-					if (pose.right.length > 0) images = images.concat(pose.right[0]);
-					break;
-				case 'H':
+				case 'head':
 					if (head) images = images.concat(head);
+					break;
+				case 'image':
+					images = images.concat(command.images);
 					break;
 			}
 		}
 
 		return {
-			images,
-			size: pose.size,
-			offset: pose.offset,
+			images: images.map((image) => ({ asset: image, offset: [0, 0] })),
+			size: pose.previewSize,
+			offset: pose.previewOffset,
 		};
 	}
 
-	private updatePose() {
+	private updatePose(styleGroupId?: number) {
+		if (styleGroupId === undefined) styleGroupId = this.character.styleGroupId;
+
 		const data = this.charData;
-		let selection = data.styles.filter(
-			style => style.styleGroup === this.styleData.lastBase
-		);
-		for (const component of data.styleComponents) {
-			const subSelect = selection.filter(styleComponent => {
-				return (
-					styleComponent.components[component.name] ===
-					this.styleData.components[component.name]
-				);
+		const styleGroups = data.styleGroups[styleGroupId];
+		let selection = styleGroups.styles;
+		for (const priority of this.stylePriorities) {
+			const subSelect = selection.filter((style) => {
+				return style.components[priority[0]] === priority[1];
 			});
 			if (subSelect.length > 0) selection = subSelect;
 		}
-		this.setPart('style', data.styles.indexOf(selection[0]));
+		this.vuexHistory.transaction(() => {
+			this.$store.dispatch('objects/setCharStyle', {
+				id: this.character.id,
+				styleGroupId,
+				styleId: styleGroups.styles.indexOf(selection[0]),
+			} as ISetStyleAction);
+		});
 	}
 
 	private choose(index: string) {
+		debugger;
 		if (this.part === 'style') {
-			this.styleData.lastBase = index;
-			this.updatePose();
+			this.updatePose(
+				this.charData.styleGroups.findIndex((group) => group.id === index)
+			);
 		} else if (this.part === 'head') {
 			const [headTypeIdx, headIdx] = index
 				.split('_', 2)
-				.map(part => parseInt(part, 10));
-			this.setPart('headType', headTypeIdx);
-			this.setPart('head', headIdx);
+				.map((part) => parseInt(part, 10));
+			this.$store.commit('objects/setPosePosition', {
+				id: this.character.id,
+				posePositions: {
+					headType: headTypeIdx,
+					head: headIdx,
+				},
+			} as ISetPosePositionMutation);
 		} else {
 			this.setPart(this.part, parseInt(index, 10));
 		}
 	}
 
-	private choose_component(component: string, index: string) {
-		this.styleData.components[component] = index;
+	private choose_component(component: string, id: string) {
+		const prioIdx = this.stylePriorities.findIndex(
+			(stylePriority) => stylePriority[0] === component
+		);
+		this.stylePriorities.splice(prioIdx, 1);
+		this.stylePriorities.unshift([component, id]);
 		this.updatePose();
 	}
 

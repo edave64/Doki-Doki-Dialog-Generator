@@ -57,6 +57,8 @@ export class TextBox implements IRenderable {
 
 	public constructor(public obj: ITextBox) {}
 
+	public updatedContent(): void {}
+
 	public get id() {
 		return this.obj.id;
 	}
@@ -111,10 +113,7 @@ export class TextBox implements IRenderable {
 	public get controlColor(): string {
 		if (this.obj.deriveCustomColors) {
 			const base = RGBAColor.fromCss(this.obj.customColor).toHSL();
-			return base
-				.shift(controlColorDelta)
-				.toRgb()
-				.toCss();
+			return base.shift(controlColorDelta).toRgb().toCss();
 		}
 		return this.obj.customControlsColor;
 	}
@@ -133,10 +132,7 @@ export class TextBox implements IRenderable {
 		if (this.obj.style !== 'custom') return ControlsTextDisabledStyle;
 
 		const col = RGBAColor.fromCss(this.controlColor).toHSL();
-		const disColor = col
-			.shift(controlDisableColorDelta)
-			.toRgb()
-			.toCss();
+		const disColor = col.shift(controlDisableColorDelta).toRgb().toCss();
 
 		return {
 			...ControlsTextStyle,
@@ -148,7 +144,7 @@ export class TextBox implements IRenderable {
 	}
 
 	public async updateLocalCanvas() {
-		await this.localRenderer.render(async rx => {
+		await this.localRenderer.render(async (rx) => {
 			const w = this.width;
 			const h = this.height;
 			const w2 = w / 2;
@@ -214,10 +210,7 @@ export class TextBox implements IRenderable {
 	private get nameboxOutlineColor(): string {
 		if (this.obj.deriveCustomColors) {
 			const base = RGBAColor.fromCss(this.obj.customColor).toHSL();
-			return base
-				.shift(nameboxTextOutlineDelta)
-				.toRgb()
-				.toCss();
+			return base.shift(nameboxTextOutlineDelta).toRgb().toCss();
 		}
 		return this.obj.customNameboxStroke;
 	}
@@ -225,10 +218,7 @@ export class TextBox implements IRenderable {
 	private get nameboxBackgroundColor(): string {
 		if (this.obj.deriveCustomColors) {
 			const base = RGBAColor.fromCss(this.obj.customColor).toHSL();
-			return base
-				.shift(nameboxBackgroundDelta)
-				.toRgb()
-				.toCss();
+			return base.shift(nameboxBackgroundDelta).toRgb().toCss();
 		}
 		return this.obj.customNameboxColor;
 	}
@@ -252,12 +242,12 @@ export class TextBox implements IRenderable {
 			};
 			w = this.obj.customNameboxWidth;
 			rx.customTransform(
-				ctx => {
+				(ctx) => {
 					ctx.beginPath();
 					roundedTopRectangle(ctx, x, y, w, h, nameboxRounding);
 					ctx.clip();
 				},
-				subRx => {
+				(subRx) => {
 					const gradient = subRx.linearGradient(x, y, x, y + NameboxHeight);
 					const baseBG = RGBAColor.fromCss(this.nameboxBackgroundColor);
 					// tslint:disable-next-line: no-magic-numbers
@@ -312,15 +302,12 @@ export class TextBox implements IRenderable {
 			const dotPattern = new Renderer(dotPatternSize, dotPatternSize);
 			dotPattern.render(async (dotRx: RenderContext) => {
 				const fill = {
-					style: hslColor
-						.shift(dotColorDelta)
-						.toRgb()
-						.toCss(),
+					style: hslColor.shift(dotColorDelta).toRgb().toCss(),
 				};
 
 				function drawDot(dotX: number, dotY: number) {
 					dotRx.drawPath({
-						path: ctx => {
+						path: (ctx) => {
 							ctx.ellipse(dotX, dotY, dotRadius, dotRadius, 0, 0, 2 * Math.PI);
 						},
 						fill,
@@ -334,7 +321,7 @@ export class TextBox implements IRenderable {
 				drawDot(dotPatternSize / 2, dotPatternSize / 2);
 			}, true);
 			rx.customTransform(
-				ctx => {
+				(ctx) => {
 					ctx.beginPath();
 					roundedRectangle(
 						ctx,
@@ -346,7 +333,7 @@ export class TextBox implements IRenderable {
 					);
 					ctx.clip();
 				},
-				subRx => {
+				(subRx) => {
 					const h = this.obj.height;
 					const w = this.obj.width;
 					const gradient = subRx.linearGradient(x, y, x, y + h);
@@ -370,10 +357,10 @@ export class TextBox implements IRenderable {
 						},
 					});
 					subRx.customTransform(
-						ctx => {
+						(ctx) => {
 							ctx.translate(x, y);
 						},
-						subSubRx => {
+						(subSubRx) => {
 							const pattern = subRx.patternFrom(dotPattern);
 							subRx.drawRect({
 								x: 0,
@@ -398,7 +385,7 @@ export class TextBox implements IRenderable {
 					glowGradient.addColorStop(0.5, 'rgba(255,255,255,0.0627)');
 					glowGradient.addColorStop(1, 'rgba(255,255,255,0)');
 					subRx.drawPath({
-						path: ctx => {
+						path: (ctx) => {
 							ctx.ellipse(x + w / 2, y + h, GlowRX, GlowRY, 0, 0, 2 * Math.PI);
 						},
 						fill: {
@@ -412,7 +399,7 @@ export class TextBox implements IRenderable {
 				.toRgb()
 				.toCss();
 			rx.drawPath({
-				path: path => {
+				path: (path) => {
 					roundedRectangle(
 						path,
 						x + textboxRoundingBuffer,

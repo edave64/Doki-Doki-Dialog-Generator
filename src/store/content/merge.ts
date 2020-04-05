@@ -4,6 +4,9 @@ import {
 	Character,
 	HeadCollections,
 	Pose,
+	Style,
+	StyleClasses,
+	StyleComponent,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset } from '.';
 
@@ -14,10 +17,11 @@ export function mergeContentPacks(
 	return {
 		backgrounds: mergeBackgrounds(x.backgrounds, y.backgrounds),
 		characters: mergeCharacters<IAsset>(x.characters, y.characters),
+		dependencies: mergeArrayUnique(x.dependencies, y.dependencies),
 		fonts: mergeIdArrays(
 			x.fonts,
 			y.fonts,
-			obj => obj.id,
+			(obj) => obj.id,
 			(xObj, yObj) => ({
 				...xObj,
 				files: mergeArrayUnique(xObj.files, yObj.files),
@@ -26,16 +30,18 @@ export function mergeContentPacks(
 		poemStyles: mergeIdArrays(
 			x.poemStyles,
 			y.poemStyles,
-			obj => obj.label,
+			(obj) => obj.label,
 			() => {
 				throw new Error();
 			}
 		),
+		poemBackgrounds: [...x.poemBackgrounds, ...y.poemBackgrounds],
 		sprites: mergeIdArrays(
 			x.sprites,
 			y.sprites,
-			obj => obj.label,
+			(obj) => obj.id,
 			(xObj, yObj) => ({
+				id: xObj.id,
 				label: xObj.label,
 				variants: [...xObj.variants, ...yObj.variants],
 			})
@@ -43,8 +49,8 @@ export function mergeContentPacks(
 		colors: mergeIdArrays(
 			x.colors,
 			y.colors,
-			obj => obj.color,
-			xObj => xObj
+			(obj) => obj.color,
+			(xObj) => xObj
 		),
 	};
 }
@@ -53,7 +59,7 @@ function mergeBackgrounds<A>(
 	x: Array<Background<A>>,
 	y: Array<Background<A>>
 ): Array<Background<A>> {
-	return mergeIdArrays(x, y, obj => obj.id, mergeBackground);
+	return mergeIdArrays(x, y, (obj) => obj.id, mergeBackground);
 }
 
 function mergeBackground<A>(x: Background<A>, y: Background<A>): Background<A> {
@@ -68,7 +74,7 @@ function mergeCharacters<A>(
 	x: Array<Character<A>>,
 	y: Array<Character<A>>
 ): Array<Character<A>> {
-	return mergeIdArrays(x, y, obj => obj.id, mergeCharacter);
+	return mergeIdArrays(x, y, (obj) => obj.id, mergeCharacter);
 }
 
 function mergeCharacter<A>(x: Character<A>, y: Character<A>): Character<A> {
@@ -76,50 +82,84 @@ function mergeCharacter<A>(x: Character<A>, y: Character<A>): Character<A> {
 		chibi: x.chibi,
 		id: x.id,
 		label: x.label,
-		size: x.size,
-		styleComponents: mergeIdArrays(
-			x.styleComponents,
-			y.styleComponents,
-			obj => obj.name,
-			(xObj, yObj) => ({
-				label: xObj.label,
-				name: xObj.name,
-				variants: {
-					...yObj.variants,
-					...xObj.variants,
-				},
-			})
-		),
 		heads: mergeHeadCollections(x.heads, y.heads),
-		poses: mergeIdArrays(x.poses, y.poses, obj => obj.name, mergePose),
-		styles: mergeIdArrays(
-			x.styles,
-			y.styles,
-			obj => obj.name,
-			(xStyle, yStyle) => {
-				throw new Error('Colliding style definitions');
+		styleGroups: mergeIdArrays(
+			x.styleGroups,
+			y.styleGroups,
+			(obj) => obj.id,
+			(xStyleGroup, yStyleGroup) => {
+				return {
+					id: xStyleGroup.id,
+					styleComponents: mergeIdArrays(
+						xStyleGroup.styleComponents,
+						yStyleGroup.styleComponents,
+						(obj) => obj.id,
+						(xClasses, yClasses) => {
+							return {
+								id: xClasses.id,
+								label: xClasses.label,
+								variants: mergeStyleClasses(
+									xClasses.variants,
+									yClasses.variants
+								),
+							};
+						}
+					),
+					styles: mergeIdArrays(
+						xStyleGroup.styles,
+						yStyleGroup.styles,
+						(obj) => JSON.stringify(obj.components),
+						(xStyle, yStyle) => ({
+							components: xStyle.components,
+							poses: mergeIdArrays(
+								xStyle.poses,
+								yStyle.poses,
+								(obj) => obj.id,
+								mergePose
+							),
+						})
+					),
+				};
 			}
 		),
 	};
 }
 
+function mergeStyleClasses<A>(
+	x: StyleClasses<A>,
+	y: StyleClasses<A>
+): StyleClasses<A> {
+	const ret: StyleClasses<A> = { ...x };
+
+	for (const classKey in y) {
+		if (!y.hasOwnProperty(classKey)) continue;
+		if (ret.hasOwnProperty(classKey)) continue;
+		ret[classKey] = y[classKey];
+	}
+
+	return ret;
+}
+
 function mergePose<A>(x: Pose<A>, y: Pose<A>): Pose<A> {
-	if (x.static && x.static.length > 0 && y.static && y.static.length > 0) {
-		throw new Error('Colliding static poses');
+	const positions: Pose<A>['positions'] = { ...x.positions };
+
+	for (const key in y.positions) {
+		if (positions[key]) {
+			positions[key] = [...positions[key], ...y.positions[key]] as A[][];
+		} else {
+			positions[key] = y.positions[key];
+		}
 	}
 
 	return {
+		id: x.id,
 		compatibleHeads: mergeArrayUnique(x.compatibleHeads, y.compatibleHeads),
-		headAnchor: x.headAnchor,
-		left: [...x.left, ...y.left],
-		right: [...x.right, ...y.right],
-		name: x.name,
-		offset: x.offset,
-		renderOrder: x.renderOrder,
+		previewOffset: x.previewOffset,
+		previewSize: x.previewSize,
+		scale: x.scale,
 		size: x.size,
-		static: x.static,
-		style: x.style,
-		variant: [...x.variant, ...y.variant],
+		renderCommands: x.renderCommands,
+		positions,
 	};
 }
 
@@ -135,8 +175,8 @@ function mergeHeadCollections<A>(
 		if (ret[headGroupKey]) {
 			const oldHeadGroup = ret[headGroupKey];
 			ret[headGroupKey] = {
-				offset: oldHeadGroup.offset,
-				size: oldHeadGroup.size,
+				previewOffset: oldHeadGroup.previewOffset,
+				previewSize: oldHeadGroup.previewSize,
 				variants: [...oldHeadGroup.variants, ...headGroup.variants],
 			};
 		} else {

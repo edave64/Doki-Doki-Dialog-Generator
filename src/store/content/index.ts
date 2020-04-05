@@ -28,12 +28,7 @@ export interface IAsset {
 }
 
 function baseDir(url: string): string {
-	return (
-		url
-			.split('/')
-			.slice(0, -1)
-			.join('/') + '/'
-	);
+	return url.split('/').slice(0, -1).join('/') + '/';
 }
 
 // These types are assumed to always be supported
@@ -49,10 +44,12 @@ export default {
 	state: {
 		contentPacks: [],
 		current: {
+			dependencies: [],
 			backgrounds: [],
 			characters: [],
 			fonts: [],
 			poemStyles: [],
+			poemBackgrounds: [],
 			sprites: [],
 			colors: [],
 		},
@@ -77,7 +74,7 @@ export default {
 
 		async removeContentPacks({ commit, state }, packIds: Set<string>) {
 			const newContentPacks = state.contentPacks.filter(
-				pack => !packIds.has(pack.packId!)
+				(pack) => !packIds.has(pack.packId!)
 			);
 			commit('setContentPacks', newContentPacks);
 			commit(
@@ -95,7 +92,7 @@ export default {
 				: await convertContentPack(action.contentPack);
 			const packs = state.contentPacks;
 			const packIdx = packs.findIndex(
-				pack => pack.packId === action.contentPack.packId
+				(pack) => pack.packId === action.contentPack.packId
 			);
 			if (packIdx === -1) {
 				packs.push(convertedPack);
@@ -114,7 +111,7 @@ export default {
 				urls = [urls];
 			}
 			const contentPacks = await Promise.all(
-				urls.map(async url => {
+				urls.map(async (url) => {
 					const response = await fetch(url);
 					if (!response.ok) {
 						error(
@@ -179,12 +176,13 @@ async function convertContentPack(
 		(await isWebPSupported()) ? ['webp', ...baseTypes] : baseTypes
 	);
 
+	const replacementMap = new Map([
+		['ext', '{lq:.lq:}.{format:webp:webp:png:png}'],
+	]);
+
 	return assetWalker(
 		pack,
 		(path: string, type: 'image' | 'font'): IAsset => {
-			const replacementMap = new Map([
-				['ext', '{lq:.lq:}.{format:webp:webp:png:png}'],
-			]);
 			const hq = normalizePath(path, replacementMap, types, false);
 			const lq = normalizePath(path, replacementMap, types, true);
 

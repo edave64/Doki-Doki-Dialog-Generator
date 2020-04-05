@@ -20,9 +20,11 @@ export class Sprite implements IRenderable {
 
 	public constructor(public readonly obj: DeepReadonly<ISprite>) {}
 
+	public updatedContent(): void {}
+
 	public async render(selected: boolean, rx: RenderContext) {
 		const assets = await Promise.all(
-			this.obj.assets.map(asset => getAAsset(asset))
+			this.obj.assets.map((asset) => getAAsset(asset))
 		);
 		const x = this.obj.x - this.obj.width / 2;
 		for (const asset of assets) {

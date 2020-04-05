@@ -10,7 +10,9 @@
 					:class="{ active: pack.name === name }"
 					:key="pack.name"
 					@click="select(pack.name)"
-				>{{ pack.name }}</div>
+				>
+					{{ pack.name }}
+				</div>
 			</div>
 		</fieldset>
 		<label for="pack_name">Name:</label>
@@ -39,7 +41,7 @@ import { IRootState } from '@/store';
 
 interface IPack {
 	name: string;
-	credits: string;
+	credits: [string | [string, string]];
 	installed: boolean;
 	queuedUninstall: boolean;
 	active: boolean;
@@ -98,9 +100,9 @@ export default class CharacterPackPanel extends Mixins(PanelMixin) {
 		if (!this.selectedPack) return '';
 		return this.selectedPack.name;
 	}
-	private get credits(): string {
-		if (!this.selectedPack) return '';
-		return sanitize(this.selectedPack.credits || '');
+	private get credits(): [string | [string, string]] {
+		if (!this.selectedPack) return [''];
+		return this.selectedPack.credits;
 	}
 	private get activatable(): boolean {
 		if (!environment.isPackInstallingSupported) return false;

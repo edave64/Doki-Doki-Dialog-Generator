@@ -72,8 +72,8 @@ export class SceneRenderer {
 
 	public objectsAt(x: number, y: number): string[] {
 		return this.getRenderObjects()
-			.filter(renderObject => renderObject.hitTest(x, y))
-			.map(renderObject => renderObject.id);
+			.filter((renderObject) => renderObject.hitTest(x, y))
+			.map((renderObject) => renderObject.id);
 	}
 
 	private async renderCallback(rx: RenderContext): Promise<void> {
@@ -91,6 +91,7 @@ export class SceneRenderer {
 
 			const selection = this.state.ui.selection;
 			for (const object of this.getRenderObjects()) {
+				object.updatedContent(this.store);
 				await object.render(selection === object.id, rx);
 			}
 		} finally {
@@ -105,14 +106,14 @@ export class SceneRenderer {
 			: [];
 		const objects = this.state.objects.objects;
 		const toUncache = Object.keys(this.renderObjectCache).filter(
-			id => !order.includes(id)
+			(id) => !order.includes(id)
 		);
 
 		for (const id of toUncache) {
 			this.renderObjectCache.delete(id);
 		}
 
-		return order.map(id => {
+		return order.map((id) => {
 			let renderObject = this.renderObjectCache.get(id);
 			if (!renderObject) {
 				const obj = objects[id];

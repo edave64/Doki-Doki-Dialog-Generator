@@ -8,7 +8,7 @@ import {
 	IRemoveObjectAction,
 } from '@/store/objects';
 import { MutationTree, ActionTree, Store, Commit, ActionContext } from 'vuex';
-import { Part, characterPositions } from '@/constants/base';
+import { characterPositions } from '@/constants/base';
 import { arraySeeker } from '@/models/seekers';
 import { IHistoryOptions } from '@/plugins/vuex-history';
 import {
@@ -26,14 +26,11 @@ export interface ICharacter extends IObject {
 	characterType: string;
 	freeMove: boolean;
 	close: boolean;
+	styleGroupId: number;
 	styleId: number;
 	poseId: number;
 	posePositions: {
-		variant: number;
-		left: number;
-		right: number;
-		head: number;
-		headType: number;
+		[id: string]: number;
 	};
 }
 
@@ -46,11 +43,14 @@ export const characterMutations: MutationTree<IObjectsState> = {
 		obj.poseId = command.poseId;
 		++obj.version;
 	},
-	setCharStyle(state, command: ISetCharStyleMutation) {
-		console.log(`Setting style of ${command.id} to ${command.styleId}`);
-
-		const obj = state.objects[command.id] as ICharacter;
-		obj.styleId = command.styleId;
+	setCharStyleGroup(state, { id, styleGroupId }: ISetCharStyleGroupMutation) {
+		const obj = state.objects[id] as ICharacter;
+		obj.styleGroupId = styleGroupId;
+		++obj.version;
+	},
+	setCharStyle(state, { id, styleId }: ISetCharStyleMutation) {
+		const obj = state.objects[id] as ICharacter;
+		obj.styleId = styleId;
 		++obj.version;
 	},
 	setPosePosition(state, command: ISetPosePositionMutation) {
@@ -102,27 +102,29 @@ export function getPose(
 	data: DeepReadonly<Character<IAsset>>,
 	state: DeepReadonly<ICharacter>
 ): DeepReadonly<Pose<IAsset>> {
-	return data.poses[state.poseId];
+	return data.styleGroups[state.styleGroupId].styles[state.styleId].poses[
+		state.poseId
+	];
 }
 
 export function getParts(
 	data: DeepReadonly<Character<IAsset>>,
 	state: DeepReadonly<ICharacter>
-): DeepReadonly<Part[]> {
+): DeepReadonly<string[]> {
 	const pose = getPose(data, state);
-	const parts: Part[] = [];
-
-	if (pose.compatibleHeads.length > 0) parts.push('head');
-	if (pose.variant.length > 1) parts.push('variant');
-	if (pose.left.length > 1) parts.push('left');
-	if (pose.right.length > 1) parts.push('right');
-	return parts;
+	const positionKeys = [
+		...Object.keys(pose.positions).filter(
+			(positionKey) => pose.positions[positionKey].length > 1
+		),
+	];
+	if (pose.compatibleHeads.length > 0) positionKeys.unshift('head');
+	return positionKeys;
 }
 
 export function getHeads(
 	data: DeepReadonly<Character<IAsset>>,
 	state: DeepReadonly<ICharacter>,
-	headTypeId: number = state.posePositions.headType
+	headTypeId: number = state.posePositions.headType || 0
 ): DeepReadonly<HeadCollection<IAsset>> | null {
 	const compatibleHeads = getPose(data, state).compatibleHeads;
 	if (!compatibleHeads || compatibleHeads.length === 0) {
@@ -163,13 +165,8 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 				version: 0,
 				poseId: 0,
 				styleId: 0,
-				posePositions: {
-					head: 0,
-					headType: 0,
-					left: 0,
-					right: 0,
-					variant: 0,
-				},
+				styleGroupId: 0,
+				posePositions: {},
 			} as ICharacter,
 		} as ICreateObjectMutation);
 	},
@@ -184,13 +181,13 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 		}
 		const obj = state.objects[id] as Readonly<ICharacter>;
 		const pose = getPose(getDataG(rootGetters, obj), obj);
-		if (!(pose as any)[part]) return;
+		if (!pose.positions[part]) return;
 		commit('setPosePosition', {
 			id,
 			posePositions: {
 				[part]: arraySeeker(
-					(pose as any)[part],
-					obj.posePositions[part],
+					pose.positions[part],
+					obj.posePositions[part] || 0,
 					delta
 				),
 			},
@@ -200,25 +197,38 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 	seekPose({ state, commit, rootGetters }, { id, delta }: ISeekPoseAction) {
 		const obj = state.objects[id] as Readonly<ICharacter>;
 		const data = getDataG(rootGetters, obj);
-		mutatePoseAndPositions(commit, obj, data, change => {
-			const oldPose = data.poses[change.poseId];
-			const posesWithStyle = data.poses.filter(
-				pose => pose.style === oldPose.style
-			);
-			const oldPoseIdx = posesWithStyle.findIndex(
-				pose => pose.name === oldPose.name
-			);
-			const newPoseIdx = arraySeeker(posesWithStyle, oldPoseIdx, delta);
-			const newPose = posesWithStyle[newPoseIdx];
-			change.poseId = data.poses.findIndex(pose => pose.name === newPose.name);
+		const poses = data.styleGroups[obj.styleGroupId].styles[obj.styleId].poses;
+		mutatePoseAndPositions(commit, obj, data, (change) => {
+			change.poseId = arraySeeker(poses, change.poseId, delta);
 		});
 	},
 
 	seekStyle({ state, commit, rootGetters }, { id, delta }: ISeekStyleAction) {
 		const obj = state.objects[id] as Readonly<ICharacter>;
 		const data = getDataG(rootGetters, obj);
-		mutatePoseAndPositions(commit, obj, data, change => {
-			change.styleId = arraySeeker(data.styles, change.styleId, delta);
+		const linearStyles = data.styleGroups
+			.flatMap((styleGroup, styleGroupIdx) => {
+				return styleGroup.styles.map((style, styleIdx) => {
+					return {
+						styleGroupIdx,
+						styleIdx,
+						styleGroupJson: JSON.stringify(style.components),
+					};
+				});
+			})
+			.sort((styleA, styleB) =>
+				styleA.styleGroupJson.localeCompare(styleB.styleGroupJson)
+			);
+		const linearIdx = linearStyles.findIndex(
+			(style) =>
+				style.styleGroupIdx === obj.styleGroupId &&
+				style.styleIdx === obj.styleId
+		);
+		mutatePoseAndPositions(commit, obj, data, (change) => {
+			const nextIdx = arraySeeker(linearStyles, linearIdx, delta);
+			const style = linearStyles[nextIdx];
+			change.styleGroupId = style.styleGroupIdx;
+			change.styleId = style.styleIdx;
 		});
 	},
 
@@ -228,11 +238,11 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 		const pose = getPose(data, obj);
 		let currentHeads = getHeads(data, obj);
 		if (!currentHeads) return;
-		let head = obj.posePositions.head + delta;
-		let headType = obj.posePositions.headType;
+		let head = (obj.posePositions.head || 0) + delta;
+		let headType = obj.posePositions.headType || 0;
 		if (head < 0 || head >= currentHeads.variants.length) {
 			headType = arraySeeker(
-				pose.compatibleHeads.map(headKey => data.heads[headKey]),
+				pose.compatibleHeads.map((headKey) => data.heads[headKey]),
 				headType,
 				delta
 			);
@@ -254,19 +264,32 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 	): void {
 		const obj = state.objects[id] as Readonly<ICharacter>;
 		const data = getDataG(rootGetters, obj);
+		debugger;
 		if (part === 'pose') {
-			mutatePoseAndPositions(commit, obj, data, change => {
+			mutatePoseAndPositions(commit, obj, data, (change) => {
 				change.poseId = val;
 			});
 		} else if (part === 'style') {
-			mutatePoseAndPositions(commit, obj, data, change => {
+			mutatePoseAndPositions(commit, obj, data, (change) => {
 				change.styleId = val;
 			});
 		} else {
-			mutatePoseAndPositions(commit, obj, data, change => {
+			mutatePoseAndPositions(commit, obj, data, (change) => {
 				change.posePositions[part] = val;
 			});
 		}
+	},
+
+	setCharStyle(
+		{ state, commit, rootGetters },
+		{ id, styleGroupId, styleId }: ISetStyleAction
+	) {
+		const obj = state.objects[id] as Readonly<ICharacter>;
+		const data = getDataG(rootGetters, obj);
+		mutatePoseAndPositions(commit, obj, data, (change) => {
+			change.styleGroupId = styleGroupId;
+			change.styleId = styleId;
+		});
 	},
 
 	setCharacterPosition(
@@ -317,7 +340,7 @@ export async function fixContentPackRemovalFromCharacter(
 ) {
 	const obj = context.state.objects[id] as ICharacter;
 	const oldCharData = oldPack.characters.find(
-		char => char.id === obj.characterType
+		(char) => char.id === obj.characterType
 	);
 	if (!oldCharData) {
 		console.error('Character data is missing. Dropping the character.');
@@ -326,8 +349,13 @@ export async function fixContentPackRemovalFromCharacter(
 		} as IRemoveObjectAction);
 		return;
 	}
+	const poseAndPositionChange = buildPoseAndPositionData(obj);
+	const oldStyleGroup = oldCharData.styleGroups[obj.styleGroupId];
+	const oldStyle = oldStyleGroup.styles[poseAndPositionChange.styleId];
+	const oldPose = oldStyle.poses[poseAndPositionChange.poseId];
+
 	const newCharData = context.rootState.content.current.characters.find(
-		chr => chr.id === oldCharData.id
+		(chr) => chr.id === oldCharData.id
 	);
 	if (!newCharData) {
 		console.error('Character data is missing. Dropping the character.');
@@ -336,89 +364,43 @@ export async function fixContentPackRemovalFromCharacter(
 		} as IRemoveObjectAction);
 		return;
 	}
-	const poseAndPositionChange = buildPoseAndPositionData(obj);
-	const oldStyle = oldCharData.styles[obj.styleId];
-	const newStyleIdx = newCharData.styles.findIndex(
-		style => style.name === oldStyle.name
+	const newStyleGroupIdx = newCharData.styleGroups.findIndex(
+		(styleGroup) => styleGroup.id === oldStyleGroup.id
 	);
-	if (newStyleIdx === -1) {
-		poseAndPositionChange.styleId = 0;
-		const oldPoseInStyle = oldCharData.poses[poseAndPositionChange.poseId];
-		const oldPoseInStyleIndex = oldCharData.poses
-			.filter(pose => pose.style === oldStyle.name)
-			.indexOf(oldPoseInStyle);
-		const newPosesInStyle = newCharData.poses.filter(
-			pose => pose.style === oldStyle.name
-		);
-		if (newPosesInStyle.length < oldPoseInStyleIndex) {
-			// Restore a pose of the same index within its style
-			poseAndPositionChange.poseId = newCharData.poses.indexOf(
-				newPosesInStyle[oldPoseInStyleIndex]
-			);
-		} else {
-			poseAndPositionChange.poseId = 0;
-		}
-	} else {
-		if (newStyleIdx !== obj.styleId) {
-			poseAndPositionChange.styleId = newStyleIdx;
-		}
-		const newStyle = newCharData.styles[poseAndPositionChange.styleId];
-		const oldPoseInStyle = oldCharData.poses[obj.poseId];
-		const newPoseIdx = newCharData.poses.findIndex(
-			pose => pose.name === oldPoseInStyle.name
-		);
-		if (newPoseIdx === -1) {
-			poseAndPositionChange.poseId = newCharData.poses.findIndex(
-				pose => pose.style === newStyle.name
-			);
-		} else if (newPoseIdx !== obj.poseId) {
-			poseAndPositionChange.poseId = newPoseIdx;
-		}
-	}
+	poseAndPositionChange.styleGroupId =
+		newStyleGroupIdx === -1 ? 0 : newStyleGroupIdx;
+
+	const newStyleGroup =
+		newCharData.styleGroups[poseAndPositionChange.styleGroupId];
+	const styleProperies = JSON.stringify(oldStyle.components);
+	const newStyleIdx = newStyleGroup.styles.findIndex(
+		(style) => JSON.stringify(style.components) === styleProperies
+	);
+	poseAndPositionChange.styleId = newStyleIdx === -1 ? 0 : newStyleIdx;
+
+	const newStyle = newStyleGroup.styles[poseAndPositionChange.styleId];
+	const newPoseIdx = newStyle.poses.findIndex((pose) => pose.id === oldPose.id);
+	poseAndPositionChange.poseId = newPoseIdx === -1 ? 0 : newPoseIdx;
+
 	// Styles and poses have been restored. Proceding with pose parts
-	const oldPose = oldCharData.poses[obj.poseId];
-	const newPose = newCharData.poses[poseAndPositionChange.poseId];
+	const newPose = newStyle.poses[poseAndPositionChange.poseId];
 
-	for (const part of ['variant', 'left', 'right'] as Array<
-		'variant' | 'left' | 'right'
-	>) {
-		const oldPart = JSON.stringify(oldPose[part][obj.posePositions[part]]);
-		const newPartIdx = newPose[part].findIndex(
-			variant => JSON.stringify(variant) === oldPart
-		);
-		if (newPartIdx === -1) {
-			poseAndPositionChange.posePositions[part] = 0;
-		} else if (newPartIdx !== obj.posePositions[part]) {
-			poseAndPositionChange.posePositions[part] = newPartIdx;
+	const newPosePositions: ICharacter['posePositions'] = {};
+
+	for (const key in newPose.positions) {
+		if (!newPose.positions.hasOwnProperty(key)) continue;
+		const newPosition = newPose.positions[key];
+
+		if (oldPose.positions[key]) {
+			const oldPositionIdx = poseAndPositionChange.posePositions[key];
+			if (oldPositionIdx >= 0 && oldPositionIdx < newPosition.length) {
+				newPosePositions[key] = oldPositionIdx;
+			} else {
+				newPosePositions[key] = 0;
+			}
+		} else {
+			newPosePositions[key] = 0;
 		}
-	}
-
-	const oldVariant = JSON.stringify(oldPose.variant[obj.posePositions.variant]);
-	const newVariantIdx = newPose.variant.findIndex(
-		variant => JSON.stringify(variant) === oldVariant
-	);
-	if (newVariantIdx === -1) {
-		poseAndPositionChange.posePositions.variant = 0;
-	} else if (newVariantIdx !== obj.posePositions.variant) {
-		poseAndPositionChange.posePositions.variant = newVariantIdx;
-	}
-	const oldLeft = JSON.stringify(oldPose.variant[obj.posePositions.left]);
-	const newLeftIdx = newPose.variant.findIndex(
-		left => JSON.stringify(left) === oldLeft
-	);
-	if (newLeftIdx === -1) {
-		poseAndPositionChange.posePositions.left = 0;
-	} else if (newLeftIdx !== obj.posePositions.left) {
-		poseAndPositionChange.posePositions.left = newLeftIdx;
-	}
-	const oldRigth = JSON.stringify(oldPose.variant[obj.posePositions.right]);
-	const newRightIdx = newPose.variant.findIndex(
-		right => JSON.stringify(right) === oldRigth
-	);
-	if (newRightIdx === -1) {
-		poseAndPositionChange.posePositions.right = 0;
-	} else if (newRightIdx !== obj.posePositions.right) {
-		poseAndPositionChange.posePositions.right = newRightIdx;
 	}
 
 	const oldHeadGroup = oldPose.compatibleHeads[obj.posePositions.headType];
@@ -435,7 +417,7 @@ export async function fixContentPackRemovalFromCharacter(
 			oldCharData.heads[oldHeadGroup].variants[obj.posePositions.head]
 		);
 		const newHeadIdx = newCharData.heads[oldHeadGroup].variants.findIndex(
-			variant => JSON.stringify(variant) === oldHead
+			(variant) => JSON.stringify(variant) === oldHead
 		);
 		if (newHeadIdx === -1) {
 			poseAndPositionChange.posePositions.head = 0;
@@ -468,7 +450,9 @@ export const propertyOptions: IHistoryOptions = {
 function buildPoseAndPositionData(
 	character: Readonly<ICharacter>
 ): PoseAndPositionChange {
+	debugger;
 	return {
+		styleGroupId: character.styleGroupId,
 		styleId: character.styleId,
 		poseId: character.poseId,
 		posePositions: { ...character.posePositions },
@@ -480,6 +464,12 @@ function commitPoseAndPositionChanges(
 	character: Readonly<ICharacter>,
 	poseAndPosition: PoseAndPositionChange
 ) {
+	if (poseAndPosition.styleGroupId !== character.styleGroupId) {
+		commit('setCharStyleGroup', {
+			id: character.id,
+			styleGroupId: poseAndPosition.styleGroupId,
+		} as ISetCharStyleGroupMutation);
+	}
 	if (poseAndPosition.styleId !== character.styleId) {
 		console.log(
 			`Setting style of ${character.id} to ${poseAndPosition.styleId}`
@@ -515,38 +505,38 @@ function mutatePoseAndPositions(
 	const poseAndPosition = buildPoseAndPositionData(character);
 	callback(poseAndPosition);
 
-	if (!data.styles[poseAndPosition.styleId]) {
+	if (!data.styleGroups[poseAndPosition.styleGroupId]) {
+		poseAndPosition.styleGroupId = 0;
+	}
+	const styleGroup = data.styleGroups[poseAndPosition.styleGroupId];
+
+	if (!styleGroup.styles[poseAndPosition.styleId]) {
 		poseAndPosition.styleId = 0;
 	}
-	const style = data.styles[poseAndPosition.styleId];
+	const style = styleGroup.styles[poseAndPosition.styleId];
 
 	// ensure pose integrity
-	if (!data.poses[poseAndPosition.poseId]) {
+	if (!style.poses[poseAndPosition.poseId]) {
 		poseAndPosition.poseId = 0;
 	}
-	if (data.poses[poseAndPosition.poseId].style !== style.name) {
-		poseAndPosition.poseId = data.poses.findIndex(
-			(val, idx) => idx > poseAndPosition.poseId && val.style === style.name
-		);
-		poseAndPosition.poseId = data.poses.findIndex(
-			val => val.style === style.name
-		);
-	}
-	const pose = data.poses[poseAndPosition.poseId];
-	if (!pose.left[poseAndPosition.posePositions.left]) {
-		poseAndPosition.posePositions.left = 0;
-	}
-	if (!pose.right[poseAndPosition.posePositions.right]) {
-		poseAndPosition.posePositions.right = 0;
-	}
-	if (!pose.variant[poseAndPosition.posePositions.variant]) {
-		poseAndPosition.posePositions.variant = 0;
+	const pose = style.poses[poseAndPosition.poseId];
+
+	for (const positionKey in pose.positions) {
+		if (!pose.positions[positionKey]) continue;
+		if (
+			!pose.positions[positionKey][poseAndPosition.posePositions[positionKey]]
+		) {
+			poseAndPosition.posePositions[positionKey] = 0;
+		}
 	}
 
 	// restore head group
-	const oldPose = data.poses[character.poseId];
+	const oldPose =
+		data.styleGroups[character.styleGroupId].styles[character.styleId].poses[
+			character.poseId
+		];
 	const oldHeadCollection =
-		oldPose.compatibleHeads[character.posePositions.headType];
+		oldPose.compatibleHeads[character.posePositions.headType || 0];
 	const newHeadCollectionNr = pose.compatibleHeads.indexOf(oldHeadCollection);
 	if (newHeadCollectionNr >= 0) {
 		poseAndPosition.posePositions.headType = newHeadCollectionNr;
@@ -559,6 +549,7 @@ function mutatePoseAndPositions(
 }
 
 interface PoseAndPositionChange {
+	styleGroupId: ICharacter['styleGroupId'];
 	styleId: ICharacter['styleId'];
 	poseId: ICharacter['poseId'];
 	posePositions: ICharacter['posePositions'];
@@ -568,17 +559,17 @@ export interface ISetPoseMutation extends ICommand {
 	readonly poseId: number;
 }
 
+export interface ISetCharStyleGroupMutation extends ICommand {
+	readonly styleGroupId: number;
+}
+
 export interface ISetCharStyleMutation extends ICommand {
 	readonly styleId: number;
 }
 
 export interface ISetPosePositionMutation extends ICommand {
 	readonly posePositions: {
-		variant: number;
-		left: number;
-		right: number;
-		head: number;
-		headType: number;
+		[id: string]: number;
 	};
 }
 
@@ -607,14 +598,19 @@ export interface ISeekHeadAction extends ICommand {
 }
 
 export interface ISetPartAction extends ICommand {
-	readonly part: Part | 'headType' | 'pose' | 'style';
+	readonly part: string;
 	readonly val: number;
+}
+
+export interface ISetStyleAction extends ICommand {
+	readonly styleGroupId: number;
+	readonly styleId: number;
 }
 
 export interface INsfwCheckAction extends ICommand {}
 
 export interface ISeekPosePartAction extends ICommand {
-	readonly part: Part;
+	readonly part: string;
 	readonly delta: -1 | 1;
 }
 

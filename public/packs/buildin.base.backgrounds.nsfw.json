@@ -5,9 +5,14 @@
 	"packCredits": "",
 	"backgrounds": [
 		{
-			"id": "ddlc.clubroom",
+			"id": "dddg.buildin.backgrounds:ddlc.clubroom",
 			"folder": "/backgrounds/",
 			"variants": [["club-skill{ext}"]]
+		},
+		{
+			"id": "dddg.buildin.backgrounds:ddlc.spaceroom",
+			"folder": "/cg/monika/",
+			"variants": [["monika_scare{ext}"], ["space{ext}", "monika_scare{ext}"]]
 		},
 		{
 			"id": "ddlc.yuri.death",
@@ -24,11 +29,6 @@
 				["3b{ext}"],
 				["3c{ext}"]
 			]
-		},
-		{
-			"id": "ddlc.spaceroom",
-			"folder": "/cg/monika/",
-			"variants": [["monika_scare{ext}"], ["space{ext}", "monika_scare{ext}"]]
 		}
 	]
 }

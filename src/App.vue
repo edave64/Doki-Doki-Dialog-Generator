@@ -1,10 +1,17 @@
 <template>
 	<div id="app">
 		<div id="container">
-			<render ref="render" :canvasWidth="canvasWidth" :canvasHeight="canvasHeight" />
+			<render
+				ref="render"
+				:canvasWidth="canvasWidth"
+				:canvasHeight="canvasHeight"
+			/>
 		</div>
 		<message-console />
-		<tool-box @show-prev-render="drawLastDownload" @download="$refs.render.download()" />
+		<tool-box
+			@show-prev-render="drawLastDownload"
+			@download="$refs.render.download()"
+		/>
 	</div>
 </template>
 
@@ -111,7 +118,7 @@ export default class App extends Vue {
 				);
 			}
 			await this.$store.commit('panels/setCurrentBackground', {
-				current: 'ddlc.clubroom',
+				current: 'dddg.buildin.backgrounds:ddlc.clubroom',
 				panelId: this.$store.state.panels.currentPanel,
 			} as ISetCurrentMutation);
 		});
@@ -122,7 +129,7 @@ export default class App extends Vue {
 	}
 
 	private mounted(): void {
-		window.addEventListener('keypress', e => {
+		window.addEventListener('keypress', (e) => {
 			if (e.key === 'Escape') {
 				this.vuexHistory.transaction(() => {
 					if (this.$store.state.ui.selection === null) return;

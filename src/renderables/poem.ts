@@ -27,6 +27,8 @@ export class Poem implements IRenderable {
 
 	public constructor(public obj: DeepReadonly<IPoem>) {}
 
+	public updatedContent(): void {}
+
 	public get id() {
 		return this.obj.id;
 	}
@@ -77,7 +79,7 @@ export class Poem implements IRenderable {
 	}
 
 	private async updateLocalCanvas() {
-		await this.localRenderer.render(async rx => {
+		await this.localRenderer.render(async (rx) => {
 			const paper = poemBackgrounds[this.obj.background];
 			let y = this.obj.y;
 			let x = this.obj.x + 10;

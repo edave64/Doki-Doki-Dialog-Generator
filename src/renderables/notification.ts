@@ -31,6 +31,8 @@ export class Notification implements IRenderable {
 
 	public constructor(public obj: DeepReadonly<INotification>) {}
 
+	public updatedContent(): void {}
+
 	public get id() {
 		return this.obj.id;
 	}
@@ -93,7 +95,7 @@ export class Notification implements IRenderable {
 	}
 
 	private async updateLocalCanvas() {
-		await this.localRenderer.render(async rx => {
+		await this.localRenderer.render(async (rx) => {
 			const textRenderer = new TextRenderer(
 				this.obj.text,
 				NotificationTextStyle

@@ -1,10 +1,8 @@
 <template>
 	<div class="panel" @dragenter="dragEnter" @mouseleave="$refs.dt.hide()">
-		<drop-target
-			ref="dt"
-			class="drop-target"
-			@drop="addImageFile"
-		>Drop here to add as a new background</drop-target>
+		<drop-target ref="dt" class="drop-target" @drop="addImageFile"
+			>Drop here to add as a new background</drop-target
+		>
 		<h1>Background</h1>
 		<color v-if="colorSelect" v-model="bgColor" @leave="colorSelect = false" />
 		<template v-else>
@@ -21,7 +19,11 @@
 				<input type="file" ref="upload" @change="onFileUpload" />
 			</div>
 			<button class="upload-background" @click="addByUrl">Add by URL</button>
-			<button class="upload-background" title="Not yet implemented" disabled="disabled">
+			<button
+				class="upload-background"
+				title="Not yet implemented"
+				disabled="disabled"
+			>
 				<i class="material-icons">extension</i> Search in content packs
 			</button>
 		</template>
@@ -49,11 +51,13 @@ import Color from '../subpanels/color/color.vue';
 
 const uploadedBackgroundsPack: ContentPack<string> = {
 	packId: 'dddg.buildin.uploadedBackgrounds',
-	packCredits: '',
+	dependencies: [],
+	packCredits: [],
 	characters: [],
 	fonts: [],
 	sprites: [],
 	poemStyles: [],
+	poemBackgrounds: [],
 	backgrounds: [],
 	colors: [],
 };

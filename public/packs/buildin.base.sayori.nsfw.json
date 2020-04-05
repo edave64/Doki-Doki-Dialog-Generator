@@ -6,20 +6,23 @@
 	"folder": "/sayori/",
 	"characters": [
 		{
-			"id": "ddlc.sayori",
-			"styles": [
+			"id": "dddg.buildin.sayori:ddlc.sayori",
+			"styleGroups": [
 				{
-					"name": "hanging",
-					"label": "Hanging",
-					"styleGroup": "hanging"
-				}
-			],
-			"poses": [
-				{
-					"compatibleHeads": [],
-					"name": "dead",
-					"style": "hanging",
-					"variant": [["dead1{ext}"], ["dead2{ext}"]]
+					"id": "hanging",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "dead",
+									"compatibleHeads": [],
+									"positions": {
+										"Variant": [["dead1{ext}"], ["dead2{ext}"]]
+									}
+								}
+							]
+						}
+					]
 				}
 			]
 		}

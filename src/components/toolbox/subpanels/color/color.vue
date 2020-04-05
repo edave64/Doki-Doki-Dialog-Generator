@@ -1,6 +1,6 @@
 <template>
 	<div :class="{ color: true, vertical }">
-		<h2>{{title}}</h2>
+		<h2>{{ title }}</h2>
 		<button @click="$emit('leave')">OK</button>
 		<table>
 			<tr>
@@ -12,6 +12,7 @@
 				</td>
 			</tr>
 		</table>
+
 		<div class="column">
 			<slider-group :mode="mode" v-model="color" :relative="true" />
 			<div class="hex-selector">
@@ -25,9 +26,12 @@
 				v-for="swatch of swatches"
 				class="swatch"
 				:key="swatch.color"
-				:style="{backgroundColor: swatch.color}"
+				:style="{ backgroundColor: swatch.color }"
 				:title="swatch.label"
-				@click="color = swatch.color; $emit('leave')"
+				@click="
+					color = swatch.color;
+					$emit('leave');
+				"
 			></button>
 		</div>
 	</div>
@@ -41,7 +45,6 @@ import {
 	registerAssetWithURL,
 } from '@/asset-manager';
 import environment from '@/environments/environment';
-import { Part } from '@/constants/base';
 import {
 	StyleComponent,
 	Pose,
@@ -114,12 +117,14 @@ export default class PartsPanel extends Vue {
 			pack => pack.packId === 'generatedPackId'
 		) || {
 			packId: generatedPackId,
-			packCredits: '',
+			packCredits: [''],
+			dependencies: [],
 			characters: [],
 			fonts: [],
 			backgrounds: [],
 			sprites: [],
 			poemStyles: [],
+			poemBackgrounds: [],
 			colors: [],
 		};
 

@@ -67,7 +67,7 @@
 			<template v-if="group === 'ui'">
 				<button @click="addTextBox">Textbox</button>
 				<button @click="addPoem">Poem</button>
-				<button @click="addDialog">Notifiation</button>
+				<button @click="addDialog">Notification</button>
 				<button @click="addChoice">Choice</button>
 				<button @click="addConsole">Console</button>
 			</template>
@@ -103,11 +103,13 @@ import { ICreatePoemAction } from '../../../store/objectTypes/poem';
 
 const uploadedSpritesPack: ContentPack<string> = {
 	packId: 'dddg.buildin.uploadedSprites',
-	packCredits: '',
+	packCredits: [''],
+	dependencies: [],
 	characters: [],
 	fonts: [],
 	sprites: [],
 	poemStyles: [],
+	poemBackgrounds: [],
 	backgrounds: [],
 	colors: [],
 };
@@ -136,7 +138,9 @@ export default class AddPanel extends Mixins(PanelMixin) {
 	}
 
 	private assetSpriteBackground(sprite: Sprite<IAsset>) {
-		return sprite.variants[0].map(variant => `url('${variant.lq}')`).join(',');
+		return sprite.variants[0]
+			.map((variant) => `url('${variant.lq}')`)
+			.join(',');
 	}
 
 	private assetPath(character: Character<IAsset>) {
@@ -147,7 +151,7 @@ export default class AddPanel extends Mixins(PanelMixin) {
 		if (!e.dataTransfer) return;
 		e.dataTransfer.effectAllowed = 'none';
 		if (
-			!Array.from(e.dataTransfer.items).find(item =>
+			!Array.from(e.dataTransfer.items).find((item) =>
 				item.type.match(/^image.*$/)
 			)
 		) {
@@ -236,6 +240,7 @@ export default class AddPanel extends Mixins(PanelMixin) {
 
 	private addNewCustomSprite(label: string, url: string) {
 		uploadedSpritesPack.sprites.push({
+			id: url,
 			label,
 			variants: [[url]],
 		});

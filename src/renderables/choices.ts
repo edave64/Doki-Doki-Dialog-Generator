@@ -34,6 +34,8 @@ export class Choice implements IRenderable {
 		return this.obj.width;
 	}
 
+	public updatedContent(): void {}
+
 	public hitTest(hx: number, hy: number): boolean {
 		const scaledX = hx - (this.obj.x - this.width / 2);
 		const scaledY = hy - (this.obj.y - this.height / 2);
@@ -80,7 +82,7 @@ export class Choice implements IRenderable {
 	}
 
 	private async updateLocalCanvas() {
-		await this.localRenderer.render(async rx => {
+		await this.localRenderer.render(async (rx) => {
 			await this.updateChoiceBounds();
 
 			const w = this.width;
@@ -120,7 +122,7 @@ export class Choice implements IRenderable {
 
 	private async updateChoiceBounds() {
 		this.choiceRenderers = this.obj.choices.map(
-			choice => new TextRenderer(choice.text || ' ', ChoiceTextStyle)
+			(choice) => new TextRenderer(choice.text || ' ', ChoiceTextStyle)
 		);
 
 		this.height =

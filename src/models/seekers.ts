@@ -1,4 +1,10 @@
-export function arraySeeker(array: any[], pos: number, delta: number) {
+import { DeepReadonly } from '@/util/readonly';
+
+export function arraySeeker(
+	array: DeepReadonly<any[]>,
+	pos: number,
+	delta: number
+) {
 	let val = pos + delta;
 	const length = array.length;
 

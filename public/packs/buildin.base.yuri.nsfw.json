@@ -6,20 +6,30 @@
 	"folder": "/yuri/",
 	"characters": [
 		{
-			"id": "ddlc.yuri",
-			"styles": [],
-			"poses": [
+			"id": "dddg.buildin.yuri:ddlc.yuri",
+			"styleGroups": [
 				{
-					"compatibleHeads": [],
-					"name": "stabbing",
-					"style": "uniform",
-					"variant": [
-						["stab/1{ext}"],
-						["stab/2{ext}"],
-						["stab/3{ext}"],
-						["stab/4{ext}"],
-						["stab/5{ext}"],
-						["stab/6-full{ext}"]
+					"id": "dddg.buildin.yuri:uniform",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "stabbing",
+									"compatibleHeads": [],
+									"folder": "stab/",
+									"positions": {
+										"Variant": [
+											["1{ext}"],
+											["2{ext}"],
+											["3{ext}"],
+											["4{ext}"],
+											["5{ext}"],
+											["6-full{ext}"]
+										]
+									}
+								}
+							]
+						}
 					]
 				}
 			]

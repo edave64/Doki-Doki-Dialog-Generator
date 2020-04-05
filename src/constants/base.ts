@@ -1,6 +1,4 @@
 // tslint:disable: no-magic-numbers
-export type Part = 'variant' | 'left' | 'right' | 'head';
-
 export const screenWidth = 1280;
 export const screenHeight = 720;
 

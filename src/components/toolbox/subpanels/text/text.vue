@@ -6,7 +6,13 @@
 			<button @click="$emit('leave')">OK</button>
 		</div>
 		<div class="column">
-			<textarea ref="textArea" :value="value" @input="onValueChanged" @keydown.stop @keypress.stop />
+			<textarea
+				ref="textArea"
+				:value="value"
+				@input="onValueChanged"
+				@keydown.stop
+				@keypress.stop
+			/>
 		</div>
 		<div class="column error-col" v-if="error">{{ error }}</div>
 		<div class="column">
@@ -16,40 +22,86 @@
 		</div>
 		<p class="hint-col">Apply style to selected text:</p>
 		<div class="column">
-			<button @click="insertCommand('b')" class="style-button" style="font-weight: bold">Bold</button>
-			<button @click="insertCommand('i')" class="style-button" style="font-style: italic">Italics</button>
-			<button @click="insertCommand('plain')" class="style-button">Plain</button>
-			<button @click="insertCommand('edited')" class="style-button edited-style">Edited</button>
-			<button @click="insertCommand('k', 2)" class="style-button" style="letter-spacing: 5px;">Kerning</button>
+			<button
+				@click="insertCommand('b')"
+				class="style-button"
+				style="font-weight: bold"
+			>
+				Bold
+			</button>
+			<button
+				@click="insertCommand('i')"
+				class="style-button"
+				style="font-style: italic"
+			>
+				Italics
+			</button>
+			<button @click="insertCommand('plain')" class="style-button">
+				Plain
+			</button>
+			<button
+				@click="insertCommand('edited')"
+				class="style-button edited-style"
+			>
+				Edited
+			</button>
+			<button
+				@click="insertCommand('k', 2)"
+				class="style-button"
+				style="letter-spacing: 5px;"
+			>
+				Kerning
+			</button>
 		</div>
 		<div class="column">
-			<button @click="insertCommand('alpha', 0.5)" class="style-button">Alpha</button>
+			<button @click="insertCommand('alpha', 0.5)" class="style-button">
+				Alpha
+			</button>
 		</div>
 		<div class="column">
-			<button @click="insertCommand('size', 12)" class="style-button" style="font-size: 20px">Font size</button>
+			<button
+				@click="insertCommand('size', 12)"
+				class="style-button"
+				style="font-size: 20px"
+			>
+				Font size
+			</button>
 			<select v-model="selectedFont" class="style-button">
 				<option value>Font</option>
-				<option value="aller" style="font-family: aller">Aller (Textbox)</option>
-				<option value="riffic" style="font-family: riffic">Riffic (Bold text)</option>
-				<option value="hashtag" style="font-family: hashtag">Hashtag (Sayori)</option>
-				<option
-					value="ammy_handwriting"
-					style="font-family: ammy_handwriting"
-				>Ammy's Handwriting (Natsuki)</option>
-				<option value="journal" style="font-family: journal">Journal (Monika)</option>
-				<option value="jp_hand_slanted" style="font-family: jp_hand_slanted">JP Hand Slanted (Yuri)</option>
-				<option
-					value="damagrafik_script"
-					style="font-family: damagrafik_script"
-				>Damagrafik (Yuri, Act 2)</option>
-				<option
-					value="as_i_lay_dying"
-					style="font-family: as_i_lay_dying"
-				>As I Lay Dying (Yuri, Act Unused)</option>
-				<option value="halogen" style="font-family: halogen">Halogen (MC)</option>
+				<option value="aller" style="font-family: aller"
+					>Aller (Textbox)</option
+				>
+				<option value="riffic" style="font-family: riffic"
+					>Riffic (Bold text)</option
+				>
+				<option value="hashtag" style="font-family: hashtag"
+					>Hashtag (Sayori)</option
+				>
+				<option value="ammy_handwriting" style="font-family: ammy_handwriting"
+					>Ammy's Handwriting (Natsuki)</option
+				>
+				<option value="journal" style="font-family: journal"
+					>Journal (Monika)</option
+				>
+				<option value="jp_hand_slanted" style="font-family: jp_hand_slanted"
+					>JP Hand Slanted (Yuri)</option
+				>
+				<option value="damagrafik_script" style="font-family: damagrafik_script"
+					>Damagrafik (Yuri, Act 2)</option
+				>
+				<option value="as_i_lay_dying" style="font-family: as_i_lay_dying"
+					>As I Lay Dying (Yuri, Act Unused)</option
+				>
+				<option value="halogen" style="font-family: halogen"
+					>Halogen (MC)</option
+				>
 			</select>
-			<button @click="selectColor('text')" class="style-button">Text color</button>
-			<button @click="selectColor('outline')" class="style-button">Outline color</button>
+			<button @click="selectColor('text')" class="style-button">
+				Text color
+			</button>
+			<button @click="selectColor('outline')" class="style-button">
+				Outline color
+			</button>
 		</div>
 	</div>
 </template>
@@ -57,7 +109,6 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import environment from '@/environments/environment';
-import { Part } from '@/constants/base';
 import { IHistorySupport } from '@/plugins/vuex-history';
 import { State } from 'vuex-class-decorator';
 import { Store } from 'vuex';
