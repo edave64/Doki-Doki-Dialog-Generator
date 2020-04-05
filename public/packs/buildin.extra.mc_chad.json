@@ -8,40 +8,6 @@
 		{
 			"id": "ddlc.fan.mc_chad",
 			"label": "MC (Chad)",
-			"styles": [
-				{
-					"name": "uniform-yellow",
-					"label": "Uniform and yellow eyes",
-					"styleGroup": "uniform",
-					"components": {
-						"eyes": "yellow"
-					}
-				},
-				{
-					"name": "casual-yellow",
-					"label": "Casual attire and yellow eyes",
-					"styleGroup": "casual",
-					"components": {
-						"eyes": "yellow"
-					}
-				},
-				{
-					"name": "uniform-red",
-					"label": "Uniform and red eyes",
-					"styleGroup": "uniform",
-					"components": {
-						"eyes": "red"
-					}
-				},
-				{
-					"name": "casual-red",
-					"label": "Casual attire and red eyes",
-					"styleGroup": "casual",
-					"components": {
-						"eyes": "red"
-					}
-				}
-			],
 			"chibi": "/chibis/chad{ext}",
 			"heads": {
 				"straight": [
@@ -119,8 +85,8 @@
 							"label": "Eyes",
 							"id": "eyes",
 							"variants": {
-								"yellow": "/parts/yellow-eyes{ext}",
-								"red": "/parts/red-eyes{ext}"
+								"yellow": "/parts/chad/yellow-eyes{ext}",
+								"red": "/parts/chad/red-eyes{ext}"
 							}
 						}
 					],
@@ -176,8 +142,8 @@
 							"label": "Eyes",
 							"id": "eyes",
 							"variants": {
-								"yellow": "/parts/yellow-eyes{ext}",
-								"red": "/parts/red-eyes{ext}"
+								"yellow": "/parts/chad/yellow-eyes{ext}",
+								"red": "/parts/chad/red-eyes{ext}"
 							}
 						}
 					],
