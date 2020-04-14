@@ -27,8 +27,8 @@
 									"id": "leaned",
 									"compatibleHeads": ["sideways"],
 									"renderCommands": [
-										{ "type": "image", "images": ["3{ext}"] },
-										{ "type": "head" }
+										{ "type": "head" },
+										{ "type": "image", "images": ["3{ext}"] }
 									]
 								}
 							]
