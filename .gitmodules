@@ -1,0 +1,3 @@
+[submodule "src/repo"]
+	path = src/repo
+	url = https://github.com/edave64/Doki-Doki-Dialog-Generator-Packs.git
