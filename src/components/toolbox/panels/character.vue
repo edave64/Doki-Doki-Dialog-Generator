@@ -6,6 +6,7 @@
 			:character="character"
 			:part="panelForParts"
 			@leave="panelForParts = null"
+			@show-dialog="$emit('show-dialog', $event)"
 		/>
 		<template v-else>
 			<fieldset v-if="hasMultiplePoses || parts.length > 0">

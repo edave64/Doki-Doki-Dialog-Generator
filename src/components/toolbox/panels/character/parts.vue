@@ -26,6 +26,26 @@
 				@click="choose_component(styleComponent.name, id)"
 			/>
 		</fieldset>
+		<button
+			@click="
+				$emit('show-dialog', 'type: Expressions character: ' + charData.label)
+			"
+			v-if="part === 'head'"
+		>
+			<i class="material-icons">extension</i> Search in content packs
+		</button>
+		<button
+			@click="$emit('show-dialog', 'type: Styles character: ' + charData.label)"
+			v-else-if="part === 'style'"
+		>
+			<i class="material-icons">extension</i> Search in content packs
+		</button>
+		<button
+			@click="$emit('show-dialog', 'type: Poses character: ' + charData.label)"
+			v-else
+		>
+			<i class="material-icons">extension</i> Search in content packs
+		</button>
 	</div>
 </template>
 
@@ -94,7 +114,7 @@ export default class PartsPanel extends Vue {
 	private updateStyleData(): void {
 		const baseStyle = this.charData.styleGroups[this.character.styleGroupId]
 			.styles[this.character.styleId];
-		this.stylePriorities = Object.keys(baseStyle.components).map((key) => [
+		this.stylePriorities = Object.keys(baseStyle.components).map(key => [
 			key,
 			baseStyle.components[key],
 		]);
@@ -110,7 +130,7 @@ export default class PartsPanel extends Vue {
 		const styleComponents = this.charData.styleGroups[
 			this.character.styleGroupId
 		];
-		return styleComponents.styleComponents.map((component) => {
+		return styleComponents.styleComponents.map(component => {
 			const buttons: IPartStyleGroup['buttons'] = {};
 			for (const key in component.variants) {
 				if (!component.variants.hasOwnProperty(key)) continue;
@@ -198,7 +218,6 @@ export default class PartsPanel extends Vue {
 		const heads = data.heads[pose.compatibleHeads[0]];
 		const head = heads ? heads.variants[0] : null;
 		let images: IAsset[] = [];
-		debugger;
 
 		for (const command of pose.renderCommands) {
 			switch (command.type) {
@@ -217,7 +236,7 @@ export default class PartsPanel extends Vue {
 		}
 
 		return {
-			images: images.map((image) => ({ asset: image, offset: [0, 0] })),
+			images: images.map(image => ({ asset: image, offset: [0, 0] })),
 			size: pose.previewSize,
 			offset: pose.previewOffset,
 		};
@@ -230,7 +249,7 @@ export default class PartsPanel extends Vue {
 		const styleGroups = data.styleGroups[styleGroupId];
 		let selection = styleGroups.styles;
 		for (const priority of this.stylePriorities) {
-			const subSelect = selection.filter((style) => {
+			const subSelect = selection.filter(style => {
 				return style.components[priority[0]] === priority[1];
 			});
 			if (subSelect.length > 0) selection = subSelect;
@@ -245,15 +264,14 @@ export default class PartsPanel extends Vue {
 	}
 
 	private choose(index: string) {
-		debugger;
 		if (this.part === 'style') {
 			this.updatePose(
-				this.charData.styleGroups.findIndex((group) => group.id === index)
+				this.charData.styleGroups.findIndex(group => group.id === index)
 			);
 		} else if (this.part === 'head') {
 			const [headTypeIdx, headIdx] = index
 				.split('_', 2)
-				.map((part) => parseInt(part, 10));
+				.map(part => parseInt(part, 10));
 			this.$store.commit('objects/setPosePosition', {
 				id: this.character.id,
 				posePositions: {
@@ -268,7 +286,7 @@ export default class PartsPanel extends Vue {
 
 	private choose_component(component: string, id: string) {
 		const prioIdx = this.stylePriorities.findIndex(
-			(stylePriority) => stylePriority[0] === component
+			stylePriority => stylePriority[0] === component
 		);
 		this.stylePriorities.splice(prioIdx, 1);
 		this.stylePriorities.unshift([component, id]);

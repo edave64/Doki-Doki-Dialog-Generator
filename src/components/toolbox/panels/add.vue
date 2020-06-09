@@ -37,7 +37,10 @@
 				>
 					<img :src="assetPath(character)" :alt="character.label" />
 				</div>
-				<div class="btn custom-sprite disabled" title="Not yet implemented">
+				<div
+					class="btn custom-sprite"
+					@click="$emit('show-dialog', 'type: Characters')"
+				>
 					<i class="material-icons">extension</i> Search in content packs
 				</div>
 			</template>
@@ -60,7 +63,7 @@
 				<button @click="uploadFromURL">
 					<i class="material-icons">insert_link</i> New sprite from URL
 				</button>
-				<button title="Not yet implemented" disabled="disabled">
+				<button @click="$emit('show-dialog', 'type: Sprites')">
 					<i class="material-icons">extension</i> Search in content packs
 				</button>
 			</template>
@@ -138,9 +141,7 @@ export default class AddPanel extends Mixins(PanelMixin) {
 	}
 
 	private assetSpriteBackground(sprite: Sprite<IAsset>) {
-		return sprite.variants[0]
-			.map((variant) => `url('${variant.lq}')`)
-			.join(',');
+		return sprite.variants[0].map(variant => `url('${variant.lq}')`).join(',');
 	}
 
 	private assetPath(character: Character<IAsset>) {
@@ -151,7 +152,7 @@ export default class AddPanel extends Mixins(PanelMixin) {
 		if (!e.dataTransfer) return;
 		e.dataTransfer.effectAllowed = 'none';
 		if (
-			!Array.from(e.dataTransfer.items).find((item) =>
+			!Array.from(e.dataTransfer.items).find(item =>
 				item.type.match(/^image.*$/)
 			)
 		) {

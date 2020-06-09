@@ -11,6 +11,7 @@
 		<tool-box
 			@show-prev-render="drawLastDownload"
 			@download="$refs.render.download()"
+			@show-dialog="showDialog"
 		/>
 	</div>
 </template>
@@ -38,7 +39,9 @@ import {
 import ToolBox from '@/components/toolbox/toolbox.vue';
 import MessageConsole from '@/components/message-console.vue';
 import Render from '@/components/render.vue';
+import ModalDialog from '@/components/ModalDialog.vue';
 import { ISetCurrentMutation } from '@/store/panels';
+import SingleBox from '@/components/repo/layouts/SingleBox.vue';
 
 // tslint:disable-next-line: no-magic-numbers
 const aspectRatio = 16 / 9;
@@ -49,12 +52,14 @@ const arrowMoveStepSize = 20;
 		ToolBox,
 		MessageConsole,
 		Render,
+		ModalDialog,
+		SingleBox: () => import('@/components/repo/layouts/SingleBox.vue'),
 	},
 })
 export default class App extends Vue {
+	public $store!: Store<IRootState>;
 	public canvasWidth: number = 0;
 	public canvasHeight: number = 0;
-	public $store!: Store<IRootState>;
 	private vuexHistory!: IHistorySupport;
 	private blendOver: string | null = null;
 
@@ -62,6 +67,7 @@ export default class App extends Vue {
 	private currentlyRendering: boolean = false;
 
 	private panel: string = '';
+	private dialogVisable: boolean = false;
 
 	private drawLastDownload(): void {
 		const last = this.$store.state.ui.lastDownload;
@@ -129,7 +135,7 @@ export default class App extends Vue {
 	}
 
 	private mounted(): void {
-		window.addEventListener('keypress', (e) => {
+		window.addEventListener('keypress', e => {
 			if (e.key === 'Escape') {
 				this.vuexHistory.transaction(() => {
 					if (this.$store.state.ui.selection === null) return;
@@ -173,6 +179,15 @@ export default class App extends Vue {
 		this.canvasHeight = ch;
 		if (this.$store.state.ui.vertical === v) return;
 		this.$store.commit('ui/setVertical', v);
+	}
+
+	private showDialog(search: string | undefined) {
+		this.dialogVisable = true;
+		if (search) {
+			this.$nextTick(() => {
+				(this.$refs.packDialog as SingleBox).setSearch(search);
+			});
+		}
 	}
 
 	private onKeydown(e: KeyboardEvent) {

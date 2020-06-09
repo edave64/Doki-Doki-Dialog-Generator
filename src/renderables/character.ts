@@ -47,7 +47,7 @@ export class Character implements IRenderable {
 	public async updateLocalCanvas() {
 		const pose = getPose(this.data, this.obj) as Pose<IAsset>;
 		this.localRenderer = new Renderer(pose.size[0], pose.size[1]);
-		await this.localRenderer.render(async (rx) => {
+		await this.localRenderer.render(async rx => {
 			const currentHeads = getHeads(this.data, this.obj);
 
 			const drawAssetsUnloaded: IDrawAssetsUnloaded[] = [];

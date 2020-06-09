@@ -22,7 +22,7 @@
 			<button
 				class="upload-background"
 				title="Not yet implemented"
-				disabled="disabled"
+				@click="$emit('show-dialog', 'type: Backgrounds')"
 			>
 				<i class="material-icons">extension</i> Search in content packs
 			</button>

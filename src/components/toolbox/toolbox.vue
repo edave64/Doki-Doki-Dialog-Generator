@@ -15,25 +15,39 @@
 			>
 				<i class="material-icons">panorama</i>
 			</button>
-			<button :class="{ active: panel === 'panels' }" title="Panels" @click="setPanel('panels')">
+			<button
+				:class="{ active: panel === 'panels' }"
+				title="Panels"
+				@click="setPanel('panels')"
+			>
 				<i class="material-icons">view_module</i>
 			</button>
-			<button :class="{ active: panel === 'settings' }" title="Settings" @click="setPanel('settings')">
+			<button
+				:class="{ active: panel === 'settings' }"
+				title="Settings"
+				@click="setPanel('settings')"
+			>
 				<i class="material-icons">settings_applications</i>
 			</button>
 		</div>
 		<settings-panel v-if="panel === 'settings'" />
 		<content-packs-panel v-else-if="panel === 'packs'" />
-		<backgrounds-panel v-else-if="panel === 'backgrounds'" />
+		<backgrounds-panel
+			v-else-if="panel === 'backgrounds'"
+			@show-dialog="$emit('show-dialog', $event)"
+		/>
 		<credits-panel v-else-if="panel === 'help_credits'" />
-		<character-panel v-else-if="panel === 'character'" />
+		<character-panel
+			v-else-if="panel === 'character'"
+			@show-dialog="$emit('show-dialog', $event)"
+		/>
 		<sprite-panel v-else-if="panel === 'sprite'" />
 		<text-box-panel v-else-if="panel === 'textBox'" />
 		<choice-panel v-else-if="panel === 'choice'" />
 		<panels-panel v-else-if="panel === 'panels'" />
 		<notification-panel v-else-if="panel === 'notification'" />
 		<poem-panel v-else-if="panel === 'poem'" />
-		<add-panel v-else />
+		<add-panel v-else @show-dialog="$emit('show-dialog', $event)" />
 		<div id="toolbar-end">
 			<button
 				:class="{ active: panel === 'help_credits' }"
@@ -42,7 +56,11 @@
 			>
 				<i class="material-icons">help</i>
 			</button>
-			<button :class="{ active: panel === 'packs' }" @click="setPanel('packs')" title="Content packs">
+			<button
+				:class="{ active: panel === 'packs' }"
+				@click="$emit('show-dialog')"
+				title="Content packs"
+			>
 				<i class="material-icons">extension</i>
 			</button>
 			<button
@@ -52,7 +70,10 @@
 			>
 				<i class="material-icons">flip_to_back</i>
 			</button>
-			<button title="Take a screenshot of the current scene" @click="$emit('download')">
+			<button
+				title="Take a screenshot of the current scene"
+				@click="$emit('download')"
+			>
 				<i class="material-icons">photo_camera</i>
 			</button>
 		</div>
