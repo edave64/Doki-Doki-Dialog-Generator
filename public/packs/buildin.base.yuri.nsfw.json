@@ -14,6 +14,13 @@
 						{
 							"poses": [
 								{
+									"id": "dddg.buildin.yuri:normal",
+									"compatibleHeads": ["straight"],
+									"positions": {
+										"Right": [["2r_cuts{ext}"]]
+									}
+								},
+								{
 									"id": "stabbing",
 									"compatibleHeads": [],
 									"folder": "stab/",
