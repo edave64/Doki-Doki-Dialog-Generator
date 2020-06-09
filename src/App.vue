@@ -13,6 +13,15 @@
 			@download="$refs.render.download()"
 			@show-dialog="showDialog"
 		/>
+		<keep-alive>
+			<modal-dialog
+				v-if="dialogVisable"
+				ref="dialog"
+				@leave="dialogVisable = false"
+			>
+				<single-box ref="packDialog" @leave="dialogVisable = false" />
+			</modal-dialog>
+		</keep-alive>
 	</div>
 </template>
 
