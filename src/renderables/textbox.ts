@@ -245,12 +245,11 @@ export class TextBox implements IRenderable {
 		const h = NameboxHeight;
 		let style: ITextStyle = NameboxTextStyle;
 		if (this.obj.style === 'custom') {
-			const hslOutline = RGBAColor.fromCss(this.nameboxOutlineColor).toHSL();
 			style = {
 				...style,
 				strokeColor: this.nameboxOutlineColor,
 				strokeWidth: 6,
-				color: hslOutline.l > nameColorThreshold ? '#000000' : '#FFFFFF',
+				color: '#FFFFFF',
 			};
 			w = this.obj.customNameboxWidth;
 			rx.customTransform(

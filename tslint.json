@@ -2,7 +2,15 @@
 	"defaultSeverity": "warning",
 	"extends": ["tslint:recommended"],
 	"linterOptions": {
-		"exclude": ["node_modules/**", "*.json", "**/*.json", "tests/**"]
+		"exclude": [
+			"vendor/**",
+			"node_modules/**",
+			"*.json",
+			"**/*.json",
+			"tests/**",
+			"src/repo/*.d.ts",
+			"src/repo/**.spec.ts"
+		]
 	},
 	"rules": {
 		"indent": [true, "tabs"],

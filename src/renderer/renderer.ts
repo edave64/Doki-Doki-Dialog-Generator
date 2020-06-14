@@ -76,6 +76,24 @@ export class Renderer {
 		return environment.saveToFile(downloadCanvas, filename);
 	}
 
+	public async renderToBlob(
+		renderCallback: (rc: RenderContext) => Promise<void>
+	): Promise<Blob> {
+		const downloadCanvas = document.createElement('canvas');
+		downloadCanvas.width = this.previewCanvas.width;
+		downloadCanvas.height = this.previewCanvas.height;
+
+		const ctx = downloadCanvas.getContext('2d')!;
+		ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
+		await renderCallback(new RenderContext(ctx, true, false));
+		return await new Promise<Blob>((resolve, reject) => {
+			downloadCanvas.toBlob(blob => {
+				if (blob) resolve(blob);
+				else reject();
+			});
+		});
+	}
+
 	public getDataAt(x: number, y: number): Uint8ClampedArray {
 		const ctx = this.previewCanvas.getContext('2d');
 

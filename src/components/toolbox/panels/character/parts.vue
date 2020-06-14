@@ -28,6 +28,14 @@
 		</fieldset>
 		<button
 			@click="
+				$emit('show-expression-dialog', { character: character.characterType })
+			"
+			v-if="part === 'head'"
+		>
+			<i class="material-icons">extension</i> Create new expressions
+		</button>
+		<button
+			@click="
 				$emit('show-dialog', 'type: Expressions character: ' + charData.label)
 			"
 			v-if="part === 'head'"

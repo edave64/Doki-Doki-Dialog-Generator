@@ -12,6 +12,7 @@
 			@show-prev-render="drawLastDownload"
 			@download="$refs.render.download()"
 			@show-dialog="showDialog"
+			@show-expression-dialog="showExpressionDialog"
 		/>
 		<keep-alive>
 			<modal-dialog
@@ -22,12 +23,22 @@
 				<single-box ref="packDialog" @leave="dialogVisable = false" />
 			</modal-dialog>
 		</keep-alive>
+		<modal-dialog
+			v-if="expressionBuilderVisible"
+			ref="dialog"
+			@leave="expressionBuilderVisible = false"
+		>
+			<expression-builder
+				:character="expressionBuilderCharacter"
+				:initHeadGroup="expressionBuilderHeadGroup"
+				@leave="expressionBuilderVisible = false"
+			/>
+		</modal-dialog>
 	</div>
 </template>
 
 <script lang="ts">
 // App.vue has currently so many responsiblities that it's best to break it into chunks
-// tslint:disable:member-ordering
 import { Component, Vue } from 'vue-property-decorator';
 import { State } from 'vuex-class-decorator';
 import { Store } from 'vuex';
@@ -51,6 +62,8 @@ import Render from '@/components/render.vue';
 import ModalDialog from '@/components/ModalDialog.vue';
 import { ISetCurrentMutation } from '@/store/panels';
 import SingleBox from '@/components/repo/layouts/SingleBox.vue';
+import ExpressionBuilder from '@/components/content-pack-builder/expression-builder/index.vue';
+import eventBus from './eventbus/event-bus';
 
 // tslint:disable-next-line: no-magic-numbers
 const aspectRatio = 16 / 9;
@@ -63,6 +76,8 @@ const arrowMoveStepSize = 20;
 		Render,
 		ModalDialog,
 		SingleBox: () => import('@/components/repo/layouts/SingleBox.vue'),
+		ExpressionBuilder: () =>
+			import('@/components/content-pack-builder/expression-builder/index.vue'),
 	},
 })
 export default class App extends Vue {
@@ -77,6 +92,10 @@ export default class App extends Vue {
 
 	private panel: string = '';
 	private dialogVisable: boolean = false;
+
+	private expressionBuilderVisible: boolean = false;
+	private expressionBuilderCharacter: string = '';
+	private expressionBuilderHeadGroup: string | undefined;
 
 	private drawLastDownload(): void {
 		const last = this.$store.state.ui.lastDownload;
@@ -199,6 +218,12 @@ export default class App extends Vue {
 		}
 	}
 
+	private showExpressionDialog(e: IShowExpressionDialogEvent) {
+		this.expressionBuilderVisible = true;
+		this.expressionBuilderCharacter = e.character;
+		this.expressionBuilderHeadGroup = e.headGroup;
+	}
+
 	private onKeydown(e: KeyboardEvent) {
 		this.vuexHistory.transaction(() => {
 			const selection = this.$store.state.objects.objects[
@@ -262,6 +287,11 @@ export default class App extends Vue {
 			return;
 		});
 	}
+}
+
+export interface IShowExpressionDialogEvent {
+	character: string;
+	headGroup?: string;
 }
 </script>
 

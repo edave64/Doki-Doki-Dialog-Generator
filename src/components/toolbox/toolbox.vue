@@ -40,6 +40,7 @@
 		<character-panel
 			v-else-if="panel === 'character'"
 			@show-dialog="$emit('show-dialog', $event)"
+			@show-expression-dialog="$emit('show-expression-dialog', $event)"
 		/>
 		<sprite-panel v-else-if="panel === 'sprite'" />
 		<text-box-panel v-else-if="panel === 'textBox'" />

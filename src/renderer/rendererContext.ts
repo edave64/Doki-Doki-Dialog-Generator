@@ -87,6 +87,7 @@ export class RenderContext {
 		params: {
 			image: HTMLImageElement | ErrorAsset | Renderer;
 			flip?: boolean;
+			composite?: CanvasRenderingContext2D['globalCompositeOperation'];
 		} & IRPos &
 			IOSize &
 			IOShadow &
@@ -126,6 +127,10 @@ export class RenderContext {
 
 		this.fsCtx.translate(x + w / 2, y + h / 2);
 		this.fsCtx.scale(flip ? -1 : 1, 1);
+
+		if (params.composite) {
+			this.fsCtx.globalCompositeOperation = params.composite;
+		}
 
 		if (image instanceof Renderer) {
 			image.paintOnto(this.fsCtx, -w / 2, -h / 2, w, h);
