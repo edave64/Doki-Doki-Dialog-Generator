@@ -119,6 +119,7 @@ import {
 	ContentPack,
 	Character as CharacterModel,
 	Pose,
+	IHeadCommand,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset, ReplaceContentPackAction } from '../../../store/content';
 import { getAssetByUrl } from '../../../asset-manager';
@@ -326,6 +327,13 @@ export default class ExpressionBuilder extends Mixins(VerticalScrollRedirect) {
 									command => command.type === 'head'
 								);
 								const headRenderCommand = renderCommands[headIdx];
+								const newHeadCommand: IHeadCommand = {
+									type: 'head',
+									offset: [
+										headRenderCommand.offset[0] + offsetX,
+										headRenderCommand.offset[1] + offsetY,
+									],
+								};
 
 								if (
 									this.addMask &&
@@ -336,29 +344,20 @@ export default class ExpressionBuilder extends Mixins(VerticalScrollRedirect) {
 									const mask = this.headGroup.imagePatching.mask;
 									renderCommands.splice(headIdx, 1);
 									headIdx = 1;
-									renderCommands.splice(
-										0,
-										0,
-										{
-											type: 'head',
-											offset: [
-												headRenderCommand.offset[0] + offsetX,
-												headRenderCommand.offset[1] + offsetY,
-											],
-										},
-										{
-											type: 'image',
-											images: [
-												{
-													hq: mask,
-													lq: mask,
-													sourcePack: 'dddg.temp1',
-												},
-											],
-											composite: 'destination-in',
-											offset: headRenderCommand.offset,
-										}
-									);
+									renderCommands.splice(0, 0, newHeadCommand, {
+										type: 'image',
+										images: [
+											{
+												hq: mask,
+												lq: mask,
+												sourcePack: 'dddg.temp1',
+											},
+										],
+										composite: 'destination-in',
+										offset: headRenderCommand.offset,
+									});
+								} else {
+									renderCommands.splice(headIdx, 1, newHeadCommand);
 								}
 
 								if (
