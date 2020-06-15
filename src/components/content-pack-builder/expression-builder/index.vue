@@ -35,63 +35,75 @@
 				<drop-target ref="dt" class="drop-target" @drop="addByImageFile"
 					>Drop here to add as a new expression</drop-target
 				>
-				<div class="expression_list" @wheel.passive="verticalScrollRedirect">
-					<button @click="$refs.upload.click()">
-						Upload expression
-						<input type="file" ref="upload" multiple @change="addByUpload" />
-					</button>
-					<button @click="addByUrl">Add expression from URL</button>
-					<div
-						v-for="(expression, idx) of uploadedExpressions"
-						:key="idx"
-						:style="{ backgroundImage: `url('${expression}')` }"
-						:class="{
-							expression_item: true,
-							active: currentUploadedExpression === expression,
-						}"
-						@click="currentUploadedExpression = expression"
-					></div>
-				</div>
-				<div class="image">
-					<canvas
-						ref="target"
-						:width="previewPoses[previewPoseIdx].width"
-						:height="previewPoses[previewPoseIdx].height"
-					/>
-				</div>
-				<div>
-					Preview pose:
-					<select v-model="previewPoseIdx">
-						<option
-							v-for="(pose, idx) of previewPoses"
+				<div class="expression_list_wrapper">
+					<div class="expression_list" @wheel.passive="verticalScrollRedirect">
+						<button @click="$refs.upload.click()">
+							Upload expression
+							<input type="file" ref="upload" multiple @change="addByUpload" />
+						</button>
+						<button @click="addByUrl">Add expression from URL</button>
+						<div
+							v-for="(expression, idx) of uploadedExpressions"
 							:key="idx"
-							:value="idx"
-							>{{ normalizeName(pose.name) }}</option
-						>
-					</select>
-					<fieldset>
-						<legend>Offset</legend>
-						X: <input type="number" v-model.number="offsetX" /> Y:
-						<input type="number" v-model.number="offsetY" />
-					</fieldset>
-					<toggle-box
-						label="Reduce to fit DDDG standard"
-						v-if="headGroup.imagePatching && headGroup.imagePatching.mask"
-						v-model="addMask"
-					/>
-					<toggle-box
-						label="Add new parts to fit DDDG standard"
-						v-if="headGroup.imagePatching && headGroup.imagePatching.addition"
-						v-model="addExtras"
-					/>
-					<button
-						:disabled="currentUploadedExpression === null"
-						@click="removeUploadedExpression"
-					>
-						Remove this expression
-					</button>
-					<button @click="finishUpload">Finish</button>
-					<button @click="leave">Abort</button>
+							:style="{ backgroundImage: `url('${expression}')` }"
+							:class="{
+								expression_item: true,
+								active: currentUploadedExpression === expression,
+							}"
+							@click="currentUploadedExpression = expression"
+						></div>
+					</div>
+					<div class="options_wrapper">
+						<div class="image">
+							<canvas
+								ref="target"
+								:width="previewPoses[previewPoseIdx].width"
+								:height="previewPoses[previewPoseIdx].height"
+							/>
+						</div>
+						<div>
+							Preview pose:
+							<select v-model="previewPoseIdx">
+								<option
+									v-for="(pose, idx) of previewPoses"
+									:key="idx"
+									:value="idx"
+									>{{ normalizeName(pose.name) }}</option
+								>
+							</select>
+							<fieldset>
+								<legend>Offset</legend>
+								<table>
+									<tr>
+										<th>X:</th>
+										<td><input type="number" v-model.number="offsetX" /></td>
+										<th>Y:</th>
+										<td><input type="number" v-model.number="offsetY" /></td>
+									</tr>
+								</table>
+							</fieldset>
+							<toggle-box
+								label="Reduce to fit DDDG standard"
+								v-if="headGroup.imagePatching && headGroup.imagePatching.mask"
+								v-model="addMask"
+							/>
+							<toggle-box
+								label="Add new parts to fit DDDG standard"
+								v-if="
+									headGroup.imagePatching && headGroup.imagePatching.addition
+								"
+								v-model="addExtras"
+							/>
+							<button
+								:disabled="currentUploadedExpression === null"
+								@click="removeUploadedExpression"
+							>
+								Remove this expression
+							</button>
+							<button @click="finishUpload">Finish</button>
+							<button @click="leave">Abort</button>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div v-else>
@@ -672,6 +684,20 @@ interface ICachedProcessedExpression {
 </script>
 
 <style lang="scss" scoped>
+.expression_list_wrapper {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	flex-shrink: 1;
+}
+
+.options_wrapper {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	flex-shrink: 1;
+}
+
 .expression_list {
 	display: flex;
 	flex-direction: row;
@@ -694,6 +720,7 @@ interface ICachedProcessedExpression {
 	background-size: contain;
 	background-repeat: no-repeat;
 	box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.5);
+	box-sizing: border-box;
 
 	&.active {
 		box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.25);
@@ -734,19 +761,24 @@ input[type='file'] {
 }
 
 @media only screen and (max-height: 560px) {
-	.expression_list button,
-	.expression_list .expression_item {
-		height: 64px;
-	}
-}
+	.expression_list_wrapper {
+		flex-direction: row;
+		height: 1px;
 
-@media only screen and (max-height: 460px) {
-	.expression_list button,
-	.expression_list .expression_item {
-		height: 32px;
-	}
-	.expression_list button {
-		width: 200px;
+		.expression_list {
+			flex-direction: column;
+			width: 128px;
+			overflow: auto;
+
+			button {
+				height: 64px;
+				width: 100%;
+			}
+
+			.expression_item {
+				width: 100%;
+			}
+		}
 	}
 }
 </style>
