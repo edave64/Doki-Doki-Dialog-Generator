@@ -112,7 +112,7 @@ export default class PartsPanel extends Vue {
 	/**
 	 * [styleComponentKey, styleComponentValue]
 	 */
-	private stylePriorities: [string, string][] = [];
+	private stylePriorities: Array<[string, string]> = [];
 
 	private get charData(): DeepReadonly<Character<IAsset>> {
 		return getData(this.$store, this.character);

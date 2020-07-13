@@ -5,8 +5,6 @@ import { IAsset } from '@/store/content';
 import { ScalingModes } from '@/store/panels';
 import { DeepReadonly } from '@/util/readonly';
 import { IRenderable, IHitbox } from './renderable';
-import { Store } from 'vuex';
-import { IRootState } from '@/store';
 
 export class Background implements IRenderable {
 	public constructor(
@@ -20,7 +18,7 @@ export class Background implements IRenderable {
 
 	public async render(selected: boolean, rx: RenderContext): Promise<void> {
 		const images = await Promise.all(
-			this.assets.map((asset) => getAAsset(asset, rx.hq))
+			this.assets.map(asset => getAAsset(asset, rx.hq))
 		);
 		for (const image of images) {
 			if (!(image instanceof HTMLImageElement)) return;

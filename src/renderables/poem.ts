@@ -14,6 +14,10 @@ import {
 } from '@/constants/poem';
 import { getAsset, getAssetByUrl } from '@/asset-manager';
 
+const consolePadding = -2;
+const consoleTopPadding = 26;
+const poemTopMargin = 10;
+
 export class Poem implements IRenderable {
 	private lastVersion = -1;
 	private lastX = 0;
@@ -79,10 +83,10 @@ export class Poem implements IRenderable {
 	}
 
 	private async updateLocalCanvas() {
-		await this.localRenderer.render(async (rx) => {
+		await this.localRenderer.render(async rx => {
 			const paper = poemBackgrounds[this.obj.background];
 			let y = this.obj.y;
-			let x = this.obj.x + 10;
+			let x = this.obj.x + poemTopMargin;
 			let padding = poemPadding;
 			let topPadding = poemTopPadding;
 
@@ -97,8 +101,8 @@ export class Poem implements IRenderable {
 					w,
 					fill: { style: consoleBackgroundColor },
 				});
-				padding = -2;
-				topPadding = 26;
+				padding = consolePadding;
+				topPadding = consoleTopPadding;
 			} else if (paper.file === 'internal:transparent') {
 				this.height = this.obj.height;
 				this.width = this.obj.width;
