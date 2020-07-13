@@ -212,9 +212,14 @@ export default class App extends Vue {
 	private showDialog(search: string | undefined) {
 		this.dialogVisable = true;
 		if (search) {
-			this.$nextTick(() => {
-				(this.$refs.packDialog as SingleBox).setSearch(search);
-			});
+			const wait = () => {
+				if (this.$refs.packDialog) {
+					(this.$refs.packDialog as SingleBox).setSearch(search);
+				} else {
+					setTimeout(wait, 50);
+				}
+			};
+			this.$nextTick(wait);
 		}
 	}
 
