@@ -91,7 +91,7 @@ async function queueAssetConversions(folder, hashes) {
 
 function checksumFile(path) {
 	return new Promise((resolve, reject) => {
-		const hash = crypto.createHash('SHA3-512');
+		const hash = crypto.createHash('SHA512');
 		const stream = fs.createReadStream(join(path));
 		stream.on('error', err => reject(err));
 		stream.on('data', chunk => hash.update(chunk));
