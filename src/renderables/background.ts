@@ -109,7 +109,7 @@ export const color = {
 };
 
 export const transparent = {
-	id: 'buildin.static-color',
+	id: 'buildin.transparent',
 	name: 'Transparent',
 	// tslint:disable-next-line: no-empty
 	async render(selected: boolean, rx: RenderContext) {},
