@@ -1,8 +1,14 @@
 import { IEnvironment, IPack } from './environment';
 import { Background } from '@/renderables/background';
+import { EnvState } from './envState';
 
 export class Browser implements IEnvironment {
 	public readonly allowLQ = true;
+	public readonly isLocalRepoSupported = false;
+	public readonly isAutoLoadingSupported = false;
+	public readonly isBackgroundInstallingSupported = false;
+	public readonly vueState = new EnvState();
+	public readonly localRepositoryUrl = '';
 
 	public async saveToFile(
 		downloadCanvas: HTMLCanvasElement,
@@ -20,26 +26,8 @@ export class Browser implements IEnvironment {
 		return url;
 	}
 
-	public get installedCharacterPacks(): Readonly<Array<Readonly<IPack>>> {
-		return [];
-	}
-
-	public get isBackgroundInstallingSupported(): boolean {
-		return false;
-	}
-
-	public get isPackInstallingSupported(): boolean {
-		return false;
-	}
-
 	public installBackground(background: Background): boolean {
 		throw new Error('This environment does not support installing backgrounds');
-	}
-
-	public installContentPack(url: string): boolean {
-		throw new Error(
-			'This environment does not support installing content packs'
-		);
 	}
 
 	public uninstallBackground(background: Background): boolean {
@@ -48,21 +36,20 @@ export class Browser implements IEnvironment {
 		);
 	}
 
-	public uninstallContentPack(url: string): boolean {
-		throw new Error(
-			'This environment does not support uninstalling content packs'
-		);
-	}
-	public activateContentPack(url: string): boolean {
-		throw new Error(
-			'This environment does not support installing content packs'
-		);
+	public localRepoAdd(url: string): void {
+		throw new Error('This environment does not support a local repository');
 	}
 
-	public deactivateContentPack(url: string): boolean {
-		throw new Error(
-			'This environment does not support uninstalling content packs'
-		);
+	public localRepoRemove(id: string): void {
+		throw new Error('This environment does not support a local repository');
+	}
+
+	public autoLoadAdd(id: string): void {
+		throw new Error('This environment does not support auto loading');
+	}
+
+	public autoLoadRemove(id: string): void {
+		throw new Error('This environment does not support auto loading');
 	}
 
 	public prompt(

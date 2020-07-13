@@ -103,6 +103,7 @@ import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
 import { ICreateChoicesAction } from '../../../store/objectTypes/choices';
 import { ICreateNotificationAction } from '../../../store/objectTypes/notification';
 import { ICreatePoemAction } from '../../../store/objectTypes/poem';
+import environment from '@/environments/environment';
 
 const uploadedSpritesPack: ContentPack<string> = {
 	packId: 'dddg.buildin.uploadedSprites',
@@ -145,7 +146,11 @@ export default class AddPanel extends Mixins(PanelMixin) {
 	}
 
 	private assetPath(character: Character<IAsset>) {
-		return character.chibi ? character.chibi.lq : '';
+		return character.chibi
+			? environment.allowLQ
+				? character.chibi.lq
+				: character.chibi.hq
+			: '';
 	}
 
 	private showDropTarget(e: DragEvent) {

@@ -58,8 +58,10 @@ export default class CharacterPackPanel extends Mixins(PanelMixin) {
 	private needRestart = false;
 
 	private created() {
+		/*
 		const packs = environment.installedCharacterPacks;
 		console.log('packs:', packs);
+		*/
 	}
 
 	private get packs(): IPack[] {
@@ -105,7 +107,7 @@ export default class CharacterPackPanel extends Mixins(PanelMixin) {
 		return this.selectedPack.credits;
 	}
 	private get activatable(): boolean {
-		if (!environment.isPackInstallingSupported) return false;
+		if (!environment.isAutoLoadingSupported) return false;
 		if (!this.selectedPack) return false;
 		if (!this.selectedPack.installed) return false;
 		if (this.selectedPack.queuedUninstall) return false;
@@ -113,7 +115,7 @@ export default class CharacterPackPanel extends Mixins(PanelMixin) {
 		return !this.selectedPack.active;
 	}
 	private get deactivatable(): boolean {
-		if (!environment.isPackInstallingSupported) return false;
+		if (!environment.isAutoLoadingSupported) return false;
 		if (!this.selectedPack) return false;
 		if (!this.selectedPack.installed) return false;
 		if (this.selectedPack.queuedUninstall) return false;
@@ -121,12 +123,12 @@ export default class CharacterPackPanel extends Mixins(PanelMixin) {
 		return this.selectedPack.active;
 	}
 	private get installable(): boolean {
-		if (!environment.isPackInstallingSupported) return false;
+		if (!environment.isLocalRepoSupported) return false;
 		if (!this.selectedPack) return false;
 		return this.selectedPack.queuedUninstall || !this.selectedPack.installed;
 	}
 	private get uninstallable(): boolean {
-		if (!environment.isPackInstallingSupported) return false;
+		if (!environment.isLocalRepoSupported) return false;
 		if (!this.selectedPack) return false;
 		if (this.selectedPack.freshInstall) return false;
 		return !(this.selectedPack.queuedUninstall || !this.selectedPack.installed);
@@ -134,7 +136,7 @@ export default class CharacterPackPanel extends Mixins(PanelMixin) {
 
 	private install(): void {
 		if (!this.selectedPack) return;
-		environment.installContentPack(this.selectedPack.url);
+		environment.localRepoAdd(this.selectedPack.url);
 		if (this.selectedPack.queuedUninstall) {
 			this.selectedPack.queuedUninstall = false;
 		} else {
@@ -144,21 +146,21 @@ export default class CharacterPackPanel extends Mixins(PanelMixin) {
 
 	private uninstall(): void {
 		if (!this.selectedPack) return;
-		environment.uninstallContentPack(this.selectedPack.url);
+		environment.localRepoRemove(this.selectedPack.url);
 		this.selectedPack.queuedUninstall = true;
 		this.needRestart = true;
 	}
 
 	private activate(): void {
 		if (!this.selectedPack) return;
-		environment.activateContentPack(this.selectedPack.url);
+		environment.autoLoadAdd(this.selectedPack.url);
 		this.selectedPack.active = true;
 		this.needRestart = true;
 	}
 
 	private deactivate(): void {
 		if (!this.selectedPack) return;
-		environment.deactivateContentPack(this.selectedPack.url);
+		environment.autoLoadRemove(this.selectedPack.url);
 		this.selectedPack.active = false;
 		this.needRestart = true;
 	}

@@ -2,6 +2,7 @@
 	<div class="panel">
 		<h1>Settings</h1>
 		<toggle
+			v-if="lqAllowed"
 			label="Low quality preview?"
 			title="Reduces the quality of the preview images to speed up the user experience and consume less data. Does not effect final render."
 			v-model="lqRendering"
@@ -19,6 +20,7 @@ import { PanelMixin } from './panelMixin';
 import { IHistorySupport } from '@/plugins/vuex-history';
 import { IRemovePacksAction, IRootState } from '@/store';
 import { Store } from 'vuex';
+import environment from '@/environments/environment';
 
 const nsfwPacks = {
 	'dddg.buildin.backgrounds.nsfw': `${process.env.BASE_URL}packs/buildin.base.backgrounds.nsfw.json`,
@@ -47,6 +49,10 @@ export default class SettingsPanel extends Mixins(PanelMixin) {
 		this.vuexHistory.transaction(async () => {
 			await this.$store.commit('ui/setLqRendering', lqRendering);
 		});
+	}
+
+	private get lqAllowed(): boolean {
+		return environment.allowLQ;
 	}
 
 	private get nsfw(): boolean {

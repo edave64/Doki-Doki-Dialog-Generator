@@ -45,7 +45,7 @@
 					<td>{{ pack.characters.join(', ') }}</td>
 					<td>{{ pack.kind.join(', ') }}</td>
 					<td>{{ pack.authors.join(', ') }}</td>
-					<td>{{ pack.state === 'Unknown' ? 'Not added' : pack.state }}</td>
+					<td>{{ translatePackState(pack.state) }}</td>
 				</tr>
 			</transition-group>
 		</table>
@@ -57,12 +57,16 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import run from '@edave64/dddg-repo-filters/dist/main';
+import { PackStates, IPackWithState } from './types';
+import { exhaust } from '@/util/exhaust';
+
+const pageKeyMoveBy = 10;
 
 @Component
 export default class List extends Vue {
 	@Prop() private search!: string;
 	@Prop() private authors!: IAuthors;
-	@Prop() private packs!: IPack[];
+	@Prop() private packs!: IPackWithState[];
 	@Prop({ default: false }) private disabled!: boolean;
 	private sort: keyof IPack | '' = '';
 	private desc = false;
@@ -70,11 +74,11 @@ export default class List extends Vue {
 
 	private wordCache: { [id: string]: Set<string> } = {};
 
-	public get list(): IPack[] {
+	public get list(): IPackWithState[] {
 		const filtered = this.filterList(this.packs, this.search);
 		if (this.sort && filtered.length > 0) {
 			const sort = this.sort as keyof IPack;
-			let sortFunc: ((a: IPack, b: IPack) => number) | undefined = undefined;
+			let sortFunc: ((a: IPack, b: IPack) => number) | undefined;
 			if (typeof filtered[0][sort] === 'string') {
 				sortFunc = (a, b) => a.name.localeCompare(b.name);
 			} else if (filtered[0][sort] instanceof Array) {
@@ -96,6 +100,10 @@ export default class List extends Vue {
 
 	public get listById(): Map<string, IPack> {
 		return new Map(this.packs.map(pack => [pack.id, pack]));
+	}
+
+	public focus(): void {
+		((this.$refs.tbody as Vue).$el as HTMLElement).focus();
 	}
 
 	private keydownHandler(event: KeyboardEvent) {
@@ -126,7 +134,7 @@ export default class List extends Vue {
 			case 'PageUp': {
 				event.preventDefault();
 				event.stopPropagation();
-				let newIdx = indexOf - 10;
+				let newIdx = indexOf - pageKeyMoveBy;
 				if (newIdx < 0) {
 					newIdx = 0;
 				}
@@ -136,7 +144,7 @@ export default class List extends Vue {
 			case 'PageDown': {
 				event.preventDefault();
 				event.stopPropagation();
-				let newIdx = indexOf + 10;
+				let newIdx = indexOf + pageKeyMoveBy;
 				const max = this.list.length - 1;
 				if (newIdx > max) {
 					newIdx = max;
@@ -166,10 +174,6 @@ export default class List extends Vue {
 				event.preventDefault();
 				break;
 		}
-	}
-
-	public focus(): void {
-		((this.$refs.tbody as Vue).$el as HTMLElement).focus();
 	}
 
 	@Watch('focusedItem')
@@ -230,9 +234,22 @@ export default class List extends Vue {
 		}
 	}
 
-	private filterList(list: IPack[], search: string): IPack[] {
+	private filterList(list: IPackWithState[], search: string): IPackWithState[] {
 		if (!search) return [...list];
-		return run(search, this.authors, list);
+		return run(search, this.authors, list) as IPackWithState[];
+	}
+
+	private translatePackState(state: PackStates) {
+		switch (state) {
+			case PackStates.Unknown:
+				return 'Not added';
+			case PackStates.Installed:
+				return 'Installed';
+			case PackStates.Active:
+				return 'Active';
+			default:
+				exhaust(state);
+		}
 	}
 }
 </script>

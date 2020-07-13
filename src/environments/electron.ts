@@ -1,33 +1,59 @@
 import { IEnvironment, IPack } from './environment';
 import { registerAssetWithURL, getAsset } from '@/asset-manager';
 import { Background } from '@/renderables/background';
-import eventBus from '@/eventbus/event-bus';
+import eventBus, { ShowMessageEvent } from '@/eventbus/event-bus';
+import { EnvState } from '@/environments/envState';
+import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { IHistorySupport } from '@/plugins/vuex-history';
+import { Store } from 'vuex';
+import { IRootState } from '@/store';
+import { ReplaceContentPackAction } from '@/store/content';
 
 const packs: IPack[] = [];
 
+const installedBackgroundsPack: ContentPack<string> = {
+	packId: 'dddg.buildin.installedBackgrounds',
+	dependencies: [],
+	packCredits: [],
+	characters: [],
+	fonts: [],
+	sprites: [],
+	poemStyles: [],
+	poemBackgrounds: [],
+	backgrounds: [],
+	colors: [],
+};
+
 export class Electron implements IEnvironment {
 	public readonly allowLQ = false;
+	public readonly vueState = new EnvState();
+	public readonly localRepositoryUrl = '/repo/repo.json';
+	public readonly isBackgroundInstallingSupported = true;
+	public readonly isLocalRepoSupported = true;
+	public readonly isAutoLoadingSupported = true;
+
 	private electron = (window as any) as IElectronWindow;
 	private promptCache: {
 		[promptId: number]: (resolved: string | null) => void;
 	} = {};
 	private lastPrompt: number = 0;
 
+	private vuexHistory: IHistorySupport | null = null;
+	private $store: Store<IRootState> | null = null;
+	private bgInvalidation: number | null = null;
+	private pendingContentPacks: string[] = [];
+
 	constructor() {
 		this.electron.ipcRenderer.on(
-			'add-persistent-character',
-			async (e, filePath: string, active: boolean = true) => {
-				/*
-				const json = await loadCharacterPack(filePath, active);
-				if (!json) return;
-				packs.push({
-					url: filePath,
-					queuedUninstall: false,
-					id: json.packId,
-					credits: json.packCredits,
-					active,
+			'add-persistent-content-pack',
+			async (e, filePath: string) => {
+				if (!this.$store || !this.vuexHistory) {
+					this.pendingContentPacks.push(filePath);
+					return;
+				}
+				this.vuexHistory.transaction(async () => {
+					await this.$store!.dispatch('content/loadContentPacks', filePath);
 				});
-				*/
 			}
 		);
 		this.electron.ipcRenderer.on(
@@ -36,18 +62,16 @@ export class Electron implements IEnvironment {
 				const name = 'persistentBg-' + filepath;
 				const parts = filepath.split('/');
 				registerAssetWithURL(name, filepath);
-				console.log(filepath);
-				/*
-				backgrounds.push(
-					new Background(name, parts[parts.length - 1], true, '', true)
-				);
-				*/
+				installedBackgroundsPack.backgrounds.push({
+					id: name,
+					variants: [[name]],
+					label: parts[parts.length - 1],
+				});
+				this.invalidateInstalledBGs();
 			}
 		);
 		this.electron.ipcRenderer.on('push-message', async (e, message: string) => {
-			/*
 			eventBus.fire(new ShowMessageEvent(message));
-			*/
 		});
 		this.electron.ipcRenderer.on(
 			'prompt-answered',
@@ -55,7 +79,25 @@ export class Electron implements IEnvironment {
 				this.promptCache[id](value);
 			}
 		);
+		this.electron.ipcRenderer.on('update-ready', e => {});
 		this.electron.ipcRenderer.send('find-customs');
+	}
+
+	public localRepoAdd(url: string): void {
+		console.log('installContentPack', url);
+		this.electron.ipcRenderer.send('install-content-pack', url);
+	}
+	public localRepoRemove(id: string): void {
+		console.log('uninstallContentPack', id);
+		this.electron.ipcRenderer.send('uninstall-content-pack', id);
+	}
+	public autoLoadAdd(id: string): void {
+		console.log('activateContentPack', id);
+		this.electron.ipcRenderer.send('activate-content-pack', id);
+	}
+	public autoLoadRemove(id: string): void {
+		console.log('deactivateContentPack', id);
+		this.electron.ipcRenderer.send('deactivate-content-pack', id);
 	}
 
 	public saveToFile(
@@ -85,61 +127,38 @@ export class Electron implements IEnvironment {
 		});
 	}
 
-	public get installedCharacterPacks(): Readonly<Array<Readonly<IPack>>> {
-		return packs;
-	}
-
-	public get isBackgroundInstallingSupported(): boolean {
-		return true;
-	}
-
-	public get isPackInstallingSupported(): boolean {
-		return true;
-	}
-
 	public async installBackground(background: Background): Promise<void> {
-		/*
-		const asset = await getAsset(background.path, true);
+		if (background.assets.length !== 1) return;
+		if (
+			background.assets[0].sourcePack !== 'dddg.buildin.uploadedBackgrounds'
+		) {
+			return;
+		}
+
+		const asset = await getAsset(background.assets[0].hq, true);
 		if (!(asset instanceof HTMLImageElement)) return;
 		const img = await fetch(asset.src);
 		const array = new Uint8Array(await img.arrayBuffer());
 		this.electron.ipcRenderer.send('install-background', array);
-		*/
 	}
 
 	public async uninstallBackground(background: Background): Promise<void> {
-		/*
-		const asset = await getAsset(background.path, true);
+		if (background.assets.length !== 1) return;
+		if (
+			background.assets[0].sourcePack !== 'dddg.buildin.installedBackgrounds'
+		) {
+			return;
+		}
+
+		const asset = await getAsset(background.assets[0].hq, true);
 		if (!(asset instanceof HTMLImageElement)) return;
 		if (!asset.src.startsWith('blob:')) {
 			const img = await fetch(asset.src);
 			const blob = await img.blob();
 			const newUrl = URL.createObjectURL(blob);
-			registerAssetWithURL(background.path, newUrl);
+			registerAssetWithURL(background.assets[0].hq, newUrl);
 		}
-		this.electron.ipcRenderer.send('uninstall-background', background.name);
-		background.installed = false;
-		*/
-	}
-
-	public installContentPack(url: string): void {
-		console.log('installContentPack', url);
-		this.electron.ipcRenderer.send('install-content-pack', url);
-	}
-
-	public uninstallContentPack(url: string): void {
-		console.log('uninstallContentPack', url);
-		this.electron.ipcRenderer.send('uninstall-content-pack', url);
-	}
-
-	public activateContentPack(url: string): void {
-		console.log('activateContentPack', url);
-		this.electron.ipcRenderer.send('activate-content-pack', url);
-	}
-
-	public deactivateContentPack(url: string): void {
-		console.log('deactivateContentPack', url);
-		this.electron.ipcRenderer.send('deactivate-content-pack', url);
+		this.electron.ipcRenderer.send('uninstall-background', background.id);
 	}
 
 	public prompt(
@@ -160,6 +179,46 @@ export class Electron implements IEnvironment {
 	public onPanelChange(handler: (panel: string) => void): void {
 		this.electron.ipcRenderer.on('open-panel', (e, panel: string) => {
 			handler(panel);
+		});
+	}
+
+	public connectToStore(
+		vuexHistory: IHistorySupport,
+		store: Store<IRootState>
+	) {
+		this.vuexHistory = vuexHistory;
+		this.$store = store;
+		this.invalidateInstalledBGs();
+
+		if (this.pendingContentPacks.length > 0) {
+			this.vuexHistory.transaction(async () => {
+				await this.$store!.dispatch(
+					'content/loadContentPacks',
+					this.pendingContentPacks
+				);
+			});
+		}
+	}
+
+	private invalidateInstalledBGs() {
+		if (!this.vuexHistory || !this.$store) return;
+		if (this.bgInvalidation !== null) return;
+		this.bgInvalidation = requestAnimationFrame(() => {
+			this.updateInstalledBGs();
+		});
+	}
+
+	private updateInstalledBGs() {
+		if (this.bgInvalidation) {
+			cancelAnimationFrame(this.bgInvalidation);
+			this.bgInvalidation = null;
+		}
+		if (!this.vuexHistory || !this.$store) return;
+
+		this.vuexHistory.transaction(() => {
+			this.$store!.dispatch('content/replaceContentPack', {
+				contentPack: installedBackgroundsPack,
+			} as ReplaceContentPackAction);
 		});
 	}
 }

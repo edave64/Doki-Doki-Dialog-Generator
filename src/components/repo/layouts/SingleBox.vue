@@ -35,15 +35,17 @@
 </template>
 
 <script lang="ts">
+/* tslint:disable:no-bitwise */
 import { Component, Vue } from 'vue-property-decorator';
 import { Store } from 'vuex';
 import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 import SearchBar from '../SearchBar.vue';
 import List from '../List.vue';
-import { SelectedEvent, IPackWithState } from '../types';
+import { SelectedEvent, IPackWithState, PackStates } from '../types';
 import PackDisplay from '../PackDisplay.vue';
 import { IRootState } from '@/store';
+import environment from '@/environments/environment';
 
 const repoUrl = 'https://edave64.github.io/Doki-Doki-Dialog-Generator-Packs/';
 
@@ -55,17 +57,24 @@ const repoUrl = 'https://edave64.github.io/Doki-Doki-Dialog-Generator-Packs/';
 	},
 })
 export default class SingleBox extends Vue {
+	public $store!: Store<IRootState>;
 	private search = '';
 	private authors: IAuthors = {};
 	private packs: IPack[] = [];
-	public $store!: Store<IRootState>;
-
+	private localPacks: IPack[] = [];
 	private selected: string | null = null;
 
 	public async created() {
-		[this.packs, this.authors] = await Promise.all([
+		let localPacksPromise: Promise<IPack[]> | [] = [];
+
+		if (environment.isLocalRepoSupported) {
+			localPacksPromise = this.fetchJSON(environment.localRepositoryUrl);
+		}
+
+		[this.packs, this.authors, this.localPacks] = await Promise.all([
 			this.fetchJSON<IPack[]>(repoUrl + 'repo.json'),
 			this.fetchJSON<IAuthors>(repoUrl + 'people.json'),
+			localPacksPromise,
 		]);
 	}
 
@@ -113,24 +122,31 @@ export default class SingleBox extends Vue {
 	}
 
 	private get packsArgmented(): IPackWithState[] {
+		const loadedPacks = this.$store.state.content.contentPacks;
 		const repoPacks = this.packs;
-		const installedPacks = this.$store.state.content.contentPacks;
 
 		const repoLookup = new Map(repoPacks.map(pack => [pack.id, pack]));
-		const installedLookup = new Map(
-			installedPacks.map(pack => [pack.packId, pack])
-		);
+		const loadedLookup = new Map(loadedPacks.map(pack => [pack.packId, pack]));
+		const localLookup = new Map(this.localPacks.map(pack => [pack.id, pack]));
 
-		const installedRet: IPackWithState[] = installedPacks.map(pack => {
+		const installedRet: IPackWithState[] = loadedPacks.map(pack => {
 			const repoPack = repoLookup.get(pack.packId!);
+			const isLoaded = loadedLookup.has(pack.packId!)
+				? PackStates.Active
+				: PackStates.Unknown;
+			const isInstalled = localLookup.has(pack.packId!)
+				? PackStates.Installed
+				: PackStates.Unknown;
+			const state: PackStates = isLoaded | isInstalled;
+
 			if (repoPack) {
 				return {
 					...repoPack,
-					state: pack.state,
+					state,
 				} as IPackWithState;
 			} else {
 				return {
-					state: pack.state,
+					state,
 					id: pack.packId,
 					characters: [],
 					name: pack.packId,
@@ -147,11 +163,11 @@ export default class SingleBox extends Vue {
 		});
 
 		const notInstalledPacks = repoPacks
-			.filter(pack => !installedLookup.has(pack.id))
+			.filter(pack => !loadedLookup.has(pack.id))
 			.map(pack => {
 				return {
 					...pack,
-					state: 'Unknown',
+					state: PackStates.Unknown,
 				} as IPackWithState;
 			});
 

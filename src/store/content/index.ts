@@ -16,12 +16,8 @@ import { isWebPSupported } from '@/asset-manager';
 import { mergeContentPacks } from './merge';
 import { IRootState } from '..';
 
-export type PackState = 'Added' | 'Installed';
-
-export type ContentPackWithState<T> = ContentPack<T> & { state: PackState };
-
 export interface IContentState {
-	contentPacks: Array<ContentPackWithState<IAsset>>;
+	contentPacks: Array<ContentPack<IAsset>>;
 	current: ContentPack<IAsset>;
 }
 
@@ -64,10 +60,7 @@ export default {
 		},
 	},
 	mutations: {
-		setContentPacks(
-			state: IContentState,
-			packs: Array<ContentPackWithState<IAsset>>
-		) {
+		setContentPacks(state: IContentState, packs: Array<ContentPack<IAsset>>) {
 			state.contentPacks = packs;
 		},
 		setCurrentContent(state: IContentState, content: ContentPack<IAsset>) {
@@ -75,14 +68,10 @@ export default {
 		},
 	},
 	actions: {
-		async contentPack(
-			{ commit, state },
-			contentPack: ContentPackWithState<string>
-		) {
+		async contentPack({ commit, state }, contentPack: ContentPack<string>) {
 			const convertedPack = (await convertContentPack(
 				contentPack
-			)) as ContentPackWithState<IAsset>;
-			convertedPack.state = contentPack.state;
+			)) as ContentPack<IAsset>;
 			commit('setContentPacks', [...state.contentPacks, convertedPack]);
 			commit(
 				'setCurrentContent',
@@ -148,27 +137,25 @@ export default {
 						error('Content pack is not valid json!');
 					}
 
-					let contentPack: ContentPackWithState<string>;
+					let contentPack: ContentPack<string>;
 					try {
 						const paths = {
 							'./': baseDir(url),
 							'/': baseDir(location.href) + 'assets/',
 						};
 						if (json.version === '2.0') {
-							contentPack = normalizeContentPack(
-								json,
-								paths
-							) as ContentPackWithState<string>;
+							contentPack = normalizeContentPack(json, paths) as ContentPack<
+								string
+							>;
 						} else {
 							contentPack = convertV1(
 								normalizeCharacterV1(json, paths),
 								false
-							) as ContentPackWithState<string>;
+							) as ContentPack<string>;
 						}
 					} catch (e) {
 						error('Content pack is not in a valid format!', e);
 					}
-					contentPack.state = 'Added';
 					return contentPack;
 				})
 			);
@@ -176,6 +163,8 @@ export default {
 			for (const contentPack of contentPacks) {
 				await dispatch('contentPack', contentPack);
 			}
+
+			return contentPacks.map(x => x.packId);
 		},
 	},
 	getters: {
@@ -199,8 +188,8 @@ export default {
 } as Module<IContentState, IRootState>;
 
 async function convertContentPack(
-	pack: ContentPackWithState<string>
-): Promise<ContentPackWithState<IAsset>> {
+	pack: ContentPack<string>
+): Promise<ContentPack<IAsset>> {
 	const types: ReadonlySet<string> = new Set(
 		(await isWebPSupported()) ? ['webp', ...baseTypes] : baseTypes
 	);
@@ -221,8 +210,7 @@ async function convertContentPack(
 				sourcePack: pack.packId || 'buildIn',
 			};
 		}
-	) as ContentPackWithState<IAsset>;
-	ret.state = pack.state;
+	) as ContentPack<IAsset>;
 	return ret;
 }
 
@@ -234,11 +222,11 @@ function error(msg: string, payload?: any): never {
 // tslint:disable: indent
 export type ReplaceContentPackAction =
 	| {
-			contentPack: ContentPackWithState<string>;
+			contentPack: ContentPack<string>;
 			processed: false;
 	  }
 	| {
-			contentPack: ContentPackWithState<IAsset>;
+			contentPack: ContentPack<IAsset>;
 			processed: true;
 	  };
 // tslint:enable: indent

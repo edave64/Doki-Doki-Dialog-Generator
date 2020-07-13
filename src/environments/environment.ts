@@ -2,6 +2,7 @@ import { Edge } from './edge';
 import { Browser } from './browser';
 import { Electron } from './electron';
 import { Background } from '@/renderables/background';
+import { EnvState } from './envState';
 
 export interface IPack {
 	url: string;
@@ -14,8 +15,11 @@ export interface IPack {
 export interface IEnvironment {
 	readonly allowLQ: boolean;
 	readonly isBackgroundInstallingSupported: boolean;
-	readonly isPackInstallingSupported: boolean;
-	readonly installedCharacterPacks: Readonly<Array<Readonly<IPack>>>;
+	readonly isLocalRepoSupported: boolean;
+	readonly localRepositoryUrl: string;
+	readonly isAutoLoadingSupported: boolean;
+	readonly vueState: EnvState;
+
 	saveToFile(
 		canvas: HTMLCanvasElement,
 		filename: string,
@@ -24,12 +28,13 @@ export interface IEnvironment {
 	): Promise<string>;
 	installBackground(background: Background): void;
 	uninstallBackground(background: Background): void;
-	activateContentPack(url: string): void;
-	deactivateContentPack(url: string): void;
-	installContentPack(url: string): void;
-	uninstallContentPack(url: string): void;
 	prompt(message: string, defaultValue?: string): Promise<string | null>;
 	onPanelChange(handler: (panel: string) => void): void;
+
+	localRepoAdd(url: string): void;
+	localRepoRemove(id: string): void;
+	autoLoadAdd(id: string): void;
+	autoLoadRemove(id: string): void;
 }
 
 function chooseEnv(): IEnvironment {

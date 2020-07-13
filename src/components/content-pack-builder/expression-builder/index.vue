@@ -174,7 +174,8 @@ const partFiles: { [s: string]: string[] | undefined } = {};
 	components: { Selection, Selector, ToggleBox, DropTarget },
 })
 export default class ExpressionBuilder extends Mixins(VerticalScrollRedirect) {
-	private vuexHistory!: IHistorySupport;
+	private static nr = 0;
+
 	@Prop() public readonly character!: string;
 	@Prop() public readonly initHeadGroup!: string | undefined;
 	public $store!: Store<IRootState>;
@@ -191,6 +192,12 @@ export default class ExpressionBuilder extends Mixins(VerticalScrollRedirect) {
 
 	public addMask = false;
 	public addExtras = false;
+	private vuexHistory!: IHistorySupport;
+
+	private batchRunner = new WorkBatch<string, string>(
+		this.processExpression.bind(this),
+		async asset => {}
+	);
 
 	public created() {
 		(window as any).exp = this;
@@ -523,8 +530,6 @@ export default class ExpressionBuilder extends Mixins(VerticalScrollRedirect) {
 		});
 	}
 
-	private static nr = 0;
-
 	private async finishUpload() {
 		this.uploadsFinished = true;
 		const processedExpressions = (
@@ -571,11 +576,6 @@ export default class ExpressionBuilder extends Mixins(VerticalScrollRedirect) {
 
 		this.leave();
 	}
-
-	private batchRunner = new WorkBatch<string, string>(
-		this.processExpression.bind(this),
-		async asset => {}
-	);
 
 	private leave() {
 		this.$emit('leave');

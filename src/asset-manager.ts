@@ -4,6 +4,7 @@ import EventBus, {
 } from './eventbus/event-bus';
 import { ErrorAsset } from './models/error-asset';
 import { IAsset } from './store/content';
+import environment from './environments/environment';
 
 let webpSupportPromise: Promise<boolean>;
 
@@ -34,7 +35,7 @@ export async function getAAsset(
 	asset: IAsset,
 	hq: boolean = true
 ): Promise<HTMLImageElement | ErrorAsset> {
-	return getAssetByUrl(hq ? asset.hq : asset.lq);
+	return getAssetByUrl(environment.allowLQ && !hq ? asset.lq : asset.hq);
 }
 export async function getAssetByUrl(
 	url: string

@@ -22,13 +22,29 @@
 			>
 		</section>
 		<section>
-			<button v-if="addable" class="clipboard" ref="toFocus" @click="add">
+			<button v-if="addable" @click="add">
 				<i class="material-icons">add</i>
 				Add {{ installable ? 'Temporarily' : '' }}
 			</button>
-			<button v-if="removable" class="clipboard" ref="toFocus" @click="remove">
+			<button v-if="removable" @click="remove">
 				<i class="material-icons">remove</i>
 				Remove {{ uninstallable ? 'Temporarily' : '' }}
+			</button>
+			<button v-if="installable" @click="add">
+				<i class="material-icons">add</i>
+				Install
+			</button>
+			<button v-if="uninstallable" @click="remove">
+				<i class="material-icons">remove</i>
+				Uninstall
+			</button>
+			<button v-if="activatable" @click="add">
+				<i class="material-icons">add</i>
+				Activate
+			</button>
+			<button v-if="deactivatable" @click="remove">
+				<i class="material-icons">remove</i>
+				Deactivate
 			</button>
 		</section>
 		<section>
@@ -64,14 +80,14 @@
 </template>
 
 <script lang="ts">
+/* tslint:disable:no-bitwise */
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Store } from 'vuex';
 import { IAuthor, IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import { sanitize } from '@/components/toolbox/panels/character-pack-sanitizer';
 import environment from '@/environments/environment';
-import { IRootState, IRemovePacksAction } from '../../store';
-import { Store } from 'vuex';
-import { PackState, ContentPackWithState } from '../../store/content';
-import { IPackWithState } from './types';
+import { IRootState, IRemovePacksAction } from '@/store';
+import { IPackWithState, PackStates } from './types';
 
 const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 	['reddit', 'https://reddit.com/u/%1', 'reddit.png'],
@@ -86,11 +102,11 @@ const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 
 @Component({})
 export default class PackDisplay extends Vue {
+	public $store!: Store<IRootState>;
 	@Prop() private selected!: string;
 	@Prop() private authors!: IAuthors;
 	@Prop() private packs!: IPackWithState[];
 	@Prop({ type: Boolean, default: false }) private showBack!: boolean;
-	public $store!: Store<IRootState>;
 
 	public focus() {
 		(this.$refs.toFocus as HTMLElement).focus();
@@ -130,50 +146,25 @@ export default class PackDisplay extends Vue {
 		return this.pack.preview.map(preview => `url('${preview}')`).join(',');
 	}
 
-	/*
-	private get knownPacks(): IInstalledPack[] {
-		const packs = this.$store.state.content.contentPacks;
-		return packs
-			.filter(pack => pack.packId && !pack.packId.startsWith('dddg.buildin.'))
-			.map(
-				pack =>
-					({
-						name: pack.packId,
-						credits: pack.packCredits,
-						installed: true,
-						active: true,
-						queuedUninstall: false,
-						freshInstall: false,
-						url: '',
-					} as IInstalledPack)
-			);
-	}
-
 	private get activatable(): boolean {
-		if (!environment.isPackInstallingSupported) return false;
-		if (!this.installedPack) return false;
-		if (!this.installedPack.installed) return false;
-		if (this.installedPack.queuedUninstall) return false;
-		if (this.installedPack.freshInstall) return false;
-		return !this.installedPack.active;
+		if (!environment.isAutoLoadingSupported) return false;
+		if (!(this.pack.state & PackStates.Installed)) return false;
+		return !(this.pack.state & PackStates.Active);
 	}
 	private get deactivatable(): boolean {
-		if (!environment.isPackInstallingSupported) return false;
-		if (!this.installedPack) return false;
-		if (!this.installedPack.installed) return false;
-		if (this.installedPack.queuedUninstall) return false;
-		if (this.installedPack.freshInstall) return false;
-		return this.installedPack.active;
+		if (!environment.isAutoLoadingSupported) return false;
+		if (!(this.pack.state & PackStates.Installed)) return false;
+		return !!(this.pack.state & PackStates.Active);
 	}
-	*/
+
 	private get installable(): boolean {
-		if (!environment.isPackInstallingSupported) return false;
-		if (this.pack.state === 'Installed') return false;
+		if (!environment.isLocalRepoSupported) return false;
+		if (this.pack.state & PackStates.Installed) return false;
 		return true;
 	}
 	private get uninstallable(): boolean {
-		if (!environment.isPackInstallingSupported) return false;
-		if (this.pack.state !== 'Installed') return false;
+		if (!environment.isLocalRepoSupported) return false;
+		if (!(this.pack.state & PackStates.Installed)) return false;
 		return true;
 	}
 	/*
@@ -192,22 +183,9 @@ export default class PackDisplay extends Vue {
 		environment.uninstallContentPack(this.installedPack.url);
 		this.installedPack.queuedUninstall = true;
 	}
-
-	private activate(): void {
-		if (!this.installedPack) return;
-		environment.activateContentPack(this.installedPack.url);
-		this.installedPack.active = true;
-	}
-
-	private deactivate(): void {
-		if (!this.installedPack) return;
-		environment.deactivateContentPack(this.installedPack.url);
-		this.installedPack.active = false;
-	}
-
 */
 	private get removable(): boolean {
-		return this.pack.state === 'Added' || this.pack.state === 'Installed';
+		return !!(this.pack.state & PackStates.Active);
 	}
 
 	private async remove(): Promise<void> {
@@ -217,7 +195,7 @@ export default class PackDisplay extends Vue {
 	}
 
 	private get addable(): boolean {
-		return this.pack.state === 'Unknown';
+		return this.pack.state === PackStates.Unknown;
 	}
 
 	private async add(): Promise<void> {
@@ -227,9 +205,7 @@ export default class PackDisplay extends Vue {
 		);
 	}
 
-	private isAdded() {
-		this.$store.state;
-	}
+	private isAdded() {}
 }
 
 interface AuthorLink {
