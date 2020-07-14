@@ -150,6 +150,7 @@ export default {
 						} else {
 							contentPack = convertV1(
 								normalizeCharacterV1(json, paths),
+								paths,
 								false
 							) as ContentPack<string>;
 						}
