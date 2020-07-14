@@ -163,6 +163,7 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 				controls: true,
 				skip: true,
 				autoQuoting: true,
+				autoWrap: true,
 				style: 'normal',
 				customColor: '#ffa8d2',
 				deriveCustomColors: true,
