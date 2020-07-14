@@ -82,7 +82,7 @@ export class Choice implements IRenderable {
 	}
 
 	private async updateLocalCanvas() {
-		await this.localRenderer.render(async (rx) => {
+		await this.localRenderer.render(async rx => {
 			await this.updateChoiceBounds();
 
 			const w = this.width;
@@ -112,7 +112,8 @@ export class Choice implements IRenderable {
 					x,
 					x + w,
 					// tslint:disable-next-line: no-magic-numbers
-					y + ChoiceSpacing * 1.25
+					y + ChoiceSpacing * 1.25,
+					0
 				);
 				choiceRenderer.render(rx.fsCtx);
 				y += height + ChoicePadding * 2 + ChoiceSpacing;
@@ -122,7 +123,7 @@ export class Choice implements IRenderable {
 
 	private async updateChoiceBounds() {
 		this.choiceRenderers = this.obj.choices.map(
-			(choice) => new TextRenderer(choice.text || ' ', ChoiceTextStyle)
+			choice => new TextRenderer(choice.text || ' ', ChoiceTextStyle)
 		);
 
 		this.height =

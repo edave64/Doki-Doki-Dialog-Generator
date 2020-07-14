@@ -40,7 +40,6 @@ import {
 	dotColorDelta,
 	dotRadius,
 	dotPatternSize,
-	nameColorThreshold,
 	textboxRoundingBuffer,
 	textboxRounding,
 	textboxOutlineColorDelta,
@@ -167,7 +166,7 @@ export class TextBox implements IRenderable {
 				await this.renderNamebox(rx, x + NameboxXOffset, y, name);
 			}
 
-			await this.renderText(rx, x, y);
+			await this.renderText(rx, x, y, this.obj.autoWrap ? w : 0);
 
 			const bottom = y + h;
 			const controlsY = bottom - ControlsYBottomOffset;
@@ -298,7 +297,7 @@ export class TextBox implements IRenderable {
 		const render = new TextRenderer(name, style);
 		await render.loadFonts();
 
-		render.fixAlignment('center', x, x + w, y + NameboxTextYOffset);
+		render.fixAlignment('center', x, x + w, y + NameboxTextYOffset, 0);
 
 		render.render(rx.fsCtx);
 	}
@@ -442,7 +441,8 @@ export class TextBox implements IRenderable {
 	private async renderText(
 		rx: RenderContext,
 		baseX: number,
-		baseY: number
+		baseY: number,
+		maxLineWidth: number
 	): Promise<void> {
 		const render = new TextRenderer(this.obj.text, {
 			alpha: 1,
@@ -467,7 +467,8 @@ export class TextBox implements IRenderable {
 			'left',
 			baseX + TextBoxTextXOffset,
 			0,
-			baseY + NameboxHeight + TextBoxTextYOffset
+			baseY + NameboxHeight + TextBoxTextYOffset,
+			maxLineWidth - TextBoxTextXOffset - TextBoxTextXOffset
 		);
 
 		render.render(rx.fsCtx);

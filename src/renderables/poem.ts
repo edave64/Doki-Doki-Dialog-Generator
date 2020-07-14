@@ -131,7 +131,8 @@ export class Poem implements IRenderable {
 				'left',
 				x + padding,
 				x + padding,
-				y + topPadding + padding
+				y + topPadding + padding,
+				0
 			);
 
 			render.render(rx.fsCtx);

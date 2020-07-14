@@ -1,7 +1,12 @@
 <template>
 	<div class="panel">
 		<h1>Textbox</h1>
-		<color v-if="colorSelect !== ''" :title="colorName" v-model="color" @leave="colorSelect = ''" />
+		<color
+			v-if="colorSelect !== ''"
+			:title="colorName"
+			v-model="color"
+			@leave="colorSelect = ''"
+		/>
 		<text-editor
 			v-else-if="textEditor !== ''"
 			:title="textEditorName"
@@ -28,7 +33,11 @@
 						<label for="current_talking">Person talking:</label>
 					</td>
 					<td>
-						<select id="current_talking" v-model="talkingDefaults" @keydown.stop>
+						<select
+							id="current_talking"
+							v-model="talkingDefaults"
+							@keydown.stop
+						>
 							<option value="No-one">No-one</option>
 							<option value="Sayori">Sayori</option>
 							<option value="Yuri">Yuri</option>
@@ -52,10 +61,9 @@
 					</td>
 				</tr>
 			</table>
-			<toggle label="Controls visible?" v-model="showControls" />
-			<toggle label="Able to skip?" v-model="allowSkipping" />
-			<toggle label="Continue arrow?" v-model="showContinueArrow" />
+
 			<toggle label="Auto quoting?" v-model="autoQuoting" />
+			<toggle label="Auto line wrap?" v-model="autoWrap" />
 			<div id="dialog_text_wrapper">
 				<label for="dialog_text">Dialog:</label>
 				<textarea v-model="dialog" id="dialog_text" @keydown.stop />
@@ -68,9 +76,12 @@
 			<opacity :obj="textbox" />
 			<toggle v-model="flip" label="Flip?" />
 
-			<fieldset v-if="textBoxStyle === 'custom'">
+			<fieldset @wheel.stop>
 				<legend>Customization:</legend>
-				<table>
+				<toggle label="Controls visible?" v-model="showControls" />
+				<toggle label="Able to skip?" v-model="allowSkipping" />
+				<toggle label="Continue arrow?" v-model="showContinueArrow" />
+				<table v-if="textBoxStyle === 'custom'">
 					<tr>
 						<td>
 							<label for="textbox_color">Color:</label>
@@ -79,7 +90,7 @@
 							<button
 								id="textbox_color"
 								class="color-button"
-								:style="{background: textbox.customColor}"
+								:style="{ background: textbox.customColor }"
 								@click="colorSelect = 'base'"
 							/>
 						</td>
@@ -99,7 +110,11 @@
 					</tr>
 					<tr>
 						<td colspan="2">
-							<toggle id="derive_custom_colors" v-model="deriveCustomColors" label="Derive other colors" />
+							<toggle
+								id="derive_custom_colors"
+								v-model="deriveCustomColors"
+								label="Derive other colors"
+							/>
 						</td>
 					</tr>
 					<template v-if="!deriveCustomColors">
@@ -111,7 +126,7 @@
 								<button
 									id="custom_controls_color"
 									class="color-button"
-									:style="{background: textbox.customControlsColor}"
+									:style="{ background: textbox.customControlsColor }"
 									@click="colorSelect = 'controls'"
 								/>
 							</td>
@@ -124,7 +139,7 @@
 								<button
 									id="custom_namebox_color"
 									class="color-button"
-									:style="{background: textbox.customNameboxColor}"
+									:style="{ background: textbox.customNameboxColor }"
 									@click="colorSelect = 'namebox'"
 								/>
 							</td>
@@ -137,7 +152,7 @@
 								<button
 									id="custom_namebox_stroke"
 									class="color-button"
-									:style="{background: textbox.customNameboxStroke}"
+									:style="{ background: textbox.customNameboxStroke }"
 									@click="colorSelect = 'nameboxStroke'"
 								/>
 							</td>
@@ -170,6 +185,7 @@ import {
 	ISplitTextbox,
 	ISetTextBoxAutoQuotingMutation,
 	IResetTextboxBounds,
+	ISetTextBoxAutoWrappingMutation,
 } from '@/store/objectTypes/textbox';
 import Toggle from '@/components/toggle.vue';
 import { State } from 'vuex-class-decorator';
@@ -315,6 +331,19 @@ export default class TextPanel extends Mixins(PanelMixin) {
 				id: this.textbox.id,
 				autoQuoting,
 			} as ISetTextBoxAutoQuotingMutation);
+		});
+	}
+
+	private get autoWrap(): boolean {
+		return this.textbox.autoWrap;
+	}
+
+	private set autoWrap(autoWrap: boolean) {
+		this.vuexHistory.transaction(() => {
+			this.$store.commit('objects/setAutoWrapping', {
+				id: this.textbox.id,
+				autoWrap,
+			} as ISetTextBoxAutoWrappingMutation);
 		});
 	}
 

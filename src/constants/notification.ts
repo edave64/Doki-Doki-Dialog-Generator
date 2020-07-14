@@ -1,5 +1,3 @@
-import { HSLAColor } from '@/util/colors/hsl';
-import { screenHeight } from './base';
 import { ITextStyle } from '@/renderer/textRenderer/textRenderer';
 import { BaseTextStyle } from './textBox';
 

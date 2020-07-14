@@ -1,6 +1,7 @@
 import { tokenize, Token, ICommandToken } from './tokenizer';
 
 import textCommands from './textCommands';
+import { exhaust } from '@/util/exhaust';
 
 export interface ITextStyle {
 	fontName: string;
@@ -41,14 +42,19 @@ type RenderItem = IDrawCharacterItem | INewlineItem;
 
 export class TextRenderer {
 	public static textCommands = textCommands;
-	private renderParts: RenderItem[];
+	private renderParts!: RenderItem[];
+	private readonly tokens: Token[];
 
 	public constructor(
-		private readonly str: string,
+		private str: string,
 		private readonly baseStyle: ITextStyle
 	) {
-		const tokens = tokenize(str);
-		this.renderParts = this.getRenderParts(tokens, baseStyle);
+		this.tokens = tokenize(str);
+		this.rebuildParts();
+	}
+
+	public rebuildParts() {
+		this.renderParts = this.getRenderParts(this.tokens, this.baseStyle);
 	}
 
 	public async loadFonts() {
@@ -207,7 +213,8 @@ export class TextRenderer {
 		alignment: 'left' | 'center' | 'right',
 		xStart: number,
 		xEnd: number,
-		yStart: number
+		yStart: number,
+		maxLineWidth: number
 	) {
 		let lineWidth = 0;
 		let currentLine: RenderItem[] = [];
@@ -223,6 +230,66 @@ export class TextRenderer {
 				item.x = x;
 				x += item.width;
 			}
+		}
+
+		if (maxLineWidth > 0) {
+			let lastBreakPoint = -1;
+			let currentLineWidth = 0;
+			let lastBreakLineWidth = 0;
+			const parts = this.renderParts.slice(0);
+			const newParts: RenderItem[] = [];
+
+			for (const item of parts) {
+				if (item.type === 'newline') {
+					lastBreakPoint = -1;
+					currentLineWidth = 0;
+					lastBreakLineWidth = 0;
+					newParts.push(item);
+				} else if (item.type === 'character') {
+					if (item.character === ' ') {
+						if (currentLineWidth > maxLineWidth) {
+							lastBreakPoint = -1;
+							currentLineWidth = 0;
+							lastBreakLineWidth = 0;
+							newParts.push({
+								type: 'newline',
+								height: item.height,
+								width: 0,
+								x: 0,
+								y: 0,
+							});
+							continue;
+						} else {
+							currentLineWidth += item.width;
+							lastBreakLineWidth = currentLineWidth;
+							lastBreakPoint = newParts.length;
+							newParts.push(item);
+						}
+					} else {
+						currentLineWidth += item.width;
+
+						if (currentLineWidth > maxLineWidth && lastBreakPoint !== -1) {
+							currentLineWidth -= lastBreakLineWidth;
+							newParts.splice(lastBreakPoint, 1, {
+								type: 'newline',
+								height: item.height,
+								width: 0,
+								x: 0,
+								y: 0,
+							});
+							lastBreakPoint = -1;
+							lastBreakLineWidth = 0;
+							newParts.push(item);
+						} else {
+							newParts.push(item);
+						}
+					}
+				} else {
+					exhaust(item);
+				}
+			}
+
+			this.renderParts = newParts;
 		}
 
 		let y = yStart;

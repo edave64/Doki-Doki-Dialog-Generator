@@ -114,6 +114,9 @@ export default class App extends Vue {
 		window.addEventListener('resize', this.updateArea);
 		window.removeEventListener('keydown', this.onKeydown);
 		window.addEventListener('keydown', this.onKeydown);
+
+		(window as any).store = this.$store;
+
 		document.body.addEventListener(
 			'drop',
 			(event: Event) => {

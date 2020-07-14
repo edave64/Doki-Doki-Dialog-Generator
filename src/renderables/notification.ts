@@ -95,7 +95,7 @@ export class Notification implements IRenderable {
 	}
 
 	private async updateLocalCanvas() {
-		await this.localRenderer.render(async (rx) => {
+		await this.localRenderer.render(async rx => {
 			const textRenderer = new TextRenderer(
 				this.obj.text,
 				NotificationTextStyle
@@ -140,7 +140,8 @@ export class Notification implements IRenderable {
 				x,
 				x + w,
 				// tslint:disable-next-line: no-magic-numbers
-				y + NotificationPadding * 1.5
+				y + NotificationPadding * 1.5,
+				0
 			);
 			textRenderer.render(rx.fsCtx);
 			buttonRenderer.fixAlignment(
@@ -148,7 +149,8 @@ export class Notification implements IRenderable {
 				x,
 				x + w,
 				// tslint:disable-next-line: no-magic-numbers
-				y + h - NotificationPadding
+				y + h - NotificationPadding,
+				0
 			);
 			buttonRenderer.render(rx.fsCtx);
 		});

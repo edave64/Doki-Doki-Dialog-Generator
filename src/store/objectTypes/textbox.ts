@@ -36,6 +36,7 @@ export interface ITextBox extends IObject {
 	controls: boolean;
 	skip: boolean;
 	autoQuoting: boolean;
+	autoWrap: boolean;
 	continue: boolean;
 	resetBounds: {
 		x: number;
@@ -117,6 +118,11 @@ export const textBoxMutations: MutationTree<IObjectsState> = {
 	setAutoQuoting(state, command: ISetTextBoxAutoQuotingMutation) {
 		const obj = state.objects[command.id] as ITextBox;
 		obj.autoQuoting = command.autoQuoting;
+		++obj.version;
+	},
+	setAutoWrapping(state, command: ISetTextBoxAutoWrappingMutation) {
+		const obj = state.objects[command.id] as ITextBox;
+		obj.autoWrap = command.autoWrap;
 		++obj.version;
 	},
 	setResetBounds(state, command: ISetResetBoundsMutation) {
@@ -276,6 +282,10 @@ export interface ISetTextBoxNameboxWidthMutation extends ICommand {
 
 export interface ISetTextBoxAutoQuotingMutation extends ICommand {
 	readonly autoQuoting: boolean;
+}
+
+export interface ISetTextBoxAutoWrappingMutation extends ICommand {
+	readonly autoWrap: boolean;
 }
 
 export interface ISetResetBoundsMutation extends ICommand {
