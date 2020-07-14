@@ -81,8 +81,7 @@ export class WorkBatch<P, R> {
 			++this.state.completed;
 			this.returnData[idx] = ret;
 			this.currentlyRunning.delete(data);
-			const lastEntry = this.returnData.length - 1 === idx;
-			if (this.currentlyRunning.size === 0 && lastEntry) {
+			if (this.currentlyRunning.size === 0 && this.pendingData.length === 0) {
 				this.resolve();
 			}
 		} else if (ret !== undefined) {
