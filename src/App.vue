@@ -68,6 +68,7 @@ import eventBus from './eventbus/event-bus';
 // tslint:disable-next-line: no-magic-numbers
 const aspectRatio = 16 / 9;
 const arrowMoveStepSize = 20;
+const packDialogWaitMs = 50;
 
 @Component({
 	components: {
@@ -219,7 +220,7 @@ export default class App extends Vue {
 				if (this.$refs.packDialog) {
 					(this.$refs.packDialog as SingleBox).setSearch(search);
 				} else {
-					setTimeout(wait, 50);
+					setTimeout(wait, packDialogWaitMs);
 				}
 			};
 			this.$nextTick(wait);
