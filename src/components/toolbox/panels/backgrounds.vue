@@ -104,6 +104,7 @@ export default class BackgroundsPanel extends Mixins(PanelMixin) {
 		this.vuexHistory.transaction(() => {
 			this.$store.commit('panels/setBackgroundColor', {
 				color,
+				panelId: this.$store.state.panels.currentPanel,
 			} as ISetColorMutation);
 		});
 	}
