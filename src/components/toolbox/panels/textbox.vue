@@ -185,7 +185,7 @@ import {
 	ISplitTextbox,
 	ISetTextBoxAutoQuotingMutation,
 	IResetTextboxBounds,
-	ISetTextBoxAutoWrappingMutation,
+	ISetAutoWrappingMutation,
 } from '@/store/objectTypes/textbox';
 import Toggle from '@/components/toggle.vue';
 import { State } from 'vuex-class-decorator';
@@ -343,7 +343,7 @@ export default class TextPanel extends Mixins(PanelMixin) {
 			this.$store.commit('objects/setAutoWrapping', {
 				id: this.textbox.id,
 				autoWrap,
-			} as ISetTextBoxAutoWrappingMutation);
+			} as ISetAutoWrappingMutation);
 		});
 	}
 

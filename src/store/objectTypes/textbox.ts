@@ -120,7 +120,7 @@ export const textBoxMutations: MutationTree<IObjectsState> = {
 		obj.autoQuoting = command.autoQuoting;
 		++obj.version;
 	},
-	setAutoWrapping(state, command: ISetTextBoxAutoWrappingMutation) {
+	setAutoWrapping(state, command: ISetAutoWrappingMutation) {
 		const obj = state.objects[command.id] as ITextBox;
 		obj.autoWrap = command.autoWrap;
 		++obj.version;
@@ -285,7 +285,7 @@ export interface ISetTextBoxAutoQuotingMutation extends ICommand {
 	readonly autoQuoting: boolean;
 }
 
-export interface ISetTextBoxAutoWrappingMutation extends ICommand {
+export interface ISetAutoWrappingMutation extends ICommand {
 	readonly autoWrap: boolean;
 }
 

@@ -104,10 +104,16 @@ export class Notification implements IRenderable {
 			await textRenderer.loadFonts();
 			await buttonRenderer.loadFonts();
 
-			const textWidth = textRenderer.getWidth();
-			const textHeight = textRenderer.getHeight();
-			const buttonWidth = buttonRenderer.getWidth();
-			const buttonHeight = buttonRenderer.getHeight();
+			const lineWrap = this.obj.autoWrap
+				? this.obj.width - NotificationPadding * 2
+				: 0;
+
+			const textWidth = this.obj.autoWrap ? lineWrap : textRenderer.getWidth();
+			const textHeight = textRenderer.getHeight(lineWrap);
+			const buttonWidth = this.obj.autoWrap
+				? lineWrap
+				: buttonRenderer.getWidth();
+			const buttonHeight = buttonRenderer.getHeight(lineWrap);
 
 			this.width = Math.max(textWidth, buttonWidth) + NotificationPadding * 2;
 			this.height =
@@ -141,7 +147,7 @@ export class Notification implements IRenderable {
 				x + w,
 				// tslint:disable-next-line: no-magic-numbers
 				y + NotificationPadding * 1.5,
-				0
+				lineWrap
 			);
 			textRenderer.render(rx.fsCtx);
 			buttonRenderer.fixAlignment(
@@ -150,7 +156,7 @@ export class Notification implements IRenderable {
 				x + w,
 				// tslint:disable-next-line: no-magic-numbers
 				y + h - NotificationPadding,
-				0
+				lineWrap
 			);
 			buttonRenderer.render(rx.fsCtx);
 		});

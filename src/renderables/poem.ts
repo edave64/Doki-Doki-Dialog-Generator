@@ -16,6 +16,7 @@ import { getAsset, getAssetByUrl } from '@/asset-manager';
 
 const consolePadding = -2;
 const consoleTopPadding = 26;
+const consoleLineWrapPadding = 10;
 const poemTopMargin = 10;
 
 export class Poem implements IRenderable {
@@ -89,6 +90,7 @@ export class Poem implements IRenderable {
 			let x = this.obj.x + poemTopMargin;
 			let padding = poemPadding;
 			let topPadding = poemTopPadding;
+			let lineWrapPadding = padding * 2;
 
 			if (paper.file === 'internal:console') {
 				const h = (this.height = this.obj.height);
@@ -103,6 +105,7 @@ export class Poem implements IRenderable {
 				});
 				padding = consolePadding;
 				topPadding = consoleTopPadding;
+				lineWrapPadding = consoleLineWrapPadding;
 			} else if (paper.file === 'internal:transparent') {
 				this.height = this.obj.height;
 				this.width = this.obj.width;
@@ -132,7 +135,7 @@ export class Poem implements IRenderable {
 				x + padding,
 				x + padding,
 				y + topPadding + padding,
-				0
+				this.obj.autoWrap ? this.width - lineWrapPadding : 0
 			);
 
 			render.render(rx.fsCtx);

@@ -16,7 +16,9 @@
 						:class="{ active: btnIdx === currentIdx }"
 						:key="btnIdx"
 						@click="select(btnIdx)"
-					>{{ (button.text.trim() === '') ? '[Empty]' : button.text }}</div>
+					>
+						{{ button.text.trim() === '' ? '[Empty]' : button.text }}
+					</div>
 				</div>
 			</fieldset>
 			<fieldset class="current_button">
@@ -29,7 +31,11 @@
 					</tr>
 					<tr>
 						<td>
-							<input id="choice-button-input" v-model="button_text" @keydown.stop />
+							<input
+								id="choice-button-input"
+								v-model="button_text"
+								@keydown.stop
+							/>
 						</td>
 						<td>
 							<button @click="textEditor = true">...</button>
@@ -39,6 +45,7 @@
 			</fieldset>
 			<button @click="addChoice">Add</button>
 			<button @click="removeChoice">Remove</button>
+			<toggle label="Auto line wrap?" v-model="autoWrap" />
 			<position-and-size :obj="sprite" />
 			<layers :obj="sprite" />
 			<opacity :obj="sprite" />
@@ -84,6 +91,7 @@ import {
 } from '../../../store/objectTypes/choices';
 import { DeepReadonly } from '../../../util/readonly';
 import TextEditor from '../subpanels/text/text.vue';
+import { ISetAutoWrappingMutation } from '../../../store/objectTypes/textbox';
 
 @Component({
 	components: {
@@ -120,6 +128,19 @@ export default class ChoicePanel extends Mixins(PanelMixin) {
 				id: this.sprite.id,
 				flip: newValue,
 			} as ISetObjectFlipMutation);
+		});
+	}
+
+	private get autoWrap(): boolean {
+		return this.sprite.autoWrap;
+	}
+
+	private set autoWrap(autoWrap: boolean) {
+		this.vuexHistory.transaction(() => {
+			this.$store.commit('objects/setAutoWrapping', {
+				id: this.sprite.id,
+				autoWrap,
+			} as ISetAutoWrappingMutation);
 		});
 	}
 

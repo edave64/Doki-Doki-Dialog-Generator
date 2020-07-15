@@ -231,72 +231,20 @@ export class TextRenderer {
 				x += item.width;
 			}
 		}
+		let renderParts = this.renderParts;
 
 		if (maxLineWidth > 0) {
-			let lastBreakPoint = -1;
-			let currentLineWidth = 0;
-			let lastBreakLineWidth = 0;
-			const parts = this.renderParts.slice(0);
-			const newParts: RenderItem[] = [];
-
-			for (const item of parts) {
-				if (item.type === 'newline') {
-					lastBreakPoint = -1;
-					currentLineWidth = 0;
-					lastBreakLineWidth = 0;
-					newParts.push(item);
-				} else if (item.type === 'character') {
-					if (item.character === ' ') {
-						if (currentLineWidth > maxLineWidth) {
-							lastBreakPoint = -1;
-							currentLineWidth = 0;
-							lastBreakLineWidth = 0;
-							newParts.push({
-								type: 'newline',
-								height: item.height,
-								width: 0,
-								x: 0,
-								y: 0,
-							});
-							continue;
-						} else {
-							currentLineWidth += item.width;
-							lastBreakLineWidth = currentLineWidth;
-							lastBreakPoint = newParts.length;
-							newParts.push(item);
-						}
-					} else {
-						currentLineWidth += item.width;
-
-						if (currentLineWidth > maxLineWidth && lastBreakPoint !== -1) {
-							currentLineWidth -= lastBreakLineWidth;
-							newParts.splice(lastBreakPoint, 1, {
-								type: 'newline',
-								height: item.height,
-								width: 0,
-								x: 0,
-								y: 0,
-							});
-							lastBreakPoint = -1;
-							lastBreakLineWidth = 0;
-							newParts.push(item);
-						} else {
-							newParts.push(item);
-						}
-					}
-				} else {
-					exhaust(item);
-				}
-			}
-
-			this.renderParts = newParts;
+			renderParts = this.applyLineWrapping(
+				this.renderParts.slice(0),
+				maxLineWidth
+			);
 		}
 
 		let y = yStart;
 		const lineHeights = [];
 		let lineHeight = 0;
 
-		for (const item of this.renderParts) {
+		for (const item of renderParts) {
 			lineHeight = Math.max(lineHeight, item.height);
 
 			if (item.type === 'newline') {
@@ -308,7 +256,7 @@ export class TextRenderer {
 
 		let line = 0;
 
-		for (const item of this.renderParts) {
+		for (const item of renderParts) {
 			lineHeight = Math.max(lineHeight, item.height);
 			item.y = y;
 			currentLine.push(item);
@@ -331,11 +279,15 @@ export class TextRenderer {
 		fixLine();
 	}
 
-	public getHeight() {
+	public getHeight(maxLineWidth: number) {
 		let lineHeight = 0;
 		let height = 0;
+		const renderParts =
+			maxLineWidth === 0
+				? this.renderParts
+				: this.applyLineWrapping(this.renderParts.slice(0), maxLineWidth);
 
-		for (const item of this.renderParts) {
+		for (const item of renderParts) {
 			lineHeight = Math.max(lineHeight, item.height);
 
 			if (item.type === 'newline') {
@@ -434,6 +386,68 @@ export class TextRenderer {
 			}
 		}
 		return renderParts;
+	}
+
+	private applyLineWrapping(
+		parts: RenderItem[],
+		maxLineWidth: number
+	): RenderItem[] {
+		let lastBreakPoint = -1;
+		let currentLineWidth = 0;
+		let lastBreakLineWidth = 0;
+		const newParts: RenderItem[] = [];
+
+		for (const item of parts) {
+			if (item.type === 'newline') {
+				lastBreakPoint = -1;
+				currentLineWidth = 0;
+				lastBreakLineWidth = 0;
+				newParts.push(item);
+			} else if (item.type === 'character') {
+				if (item.character === ' ') {
+					if (currentLineWidth > maxLineWidth) {
+						lastBreakPoint = -1;
+						currentLineWidth = 0;
+						lastBreakLineWidth = 0;
+						newParts.push({
+							type: 'newline',
+							height: item.height,
+							width: 0,
+							x: 0,
+							y: 0,
+						});
+						continue;
+					} else {
+						currentLineWidth += item.width;
+						lastBreakLineWidth = currentLineWidth;
+						lastBreakPoint = newParts.length;
+						newParts.push(item);
+					}
+				} else {
+					currentLineWidth += item.width;
+
+					if (currentLineWidth > maxLineWidth && lastBreakPoint !== -1) {
+						currentLineWidth -= lastBreakLineWidth;
+						newParts.splice(lastBreakPoint, 1, {
+							type: 'newline',
+							height: item.height,
+							width: 0,
+							x: 0,
+							y: 0,
+						});
+						lastBreakPoint = -1;
+						lastBreakLineWidth = 0;
+						newParts.push(item);
+					} else {
+						newParts.push(item);
+					}
+				}
+			} else {
+				exhaust(item);
+			}
+		}
+
+		return newParts;
 	}
 }
 

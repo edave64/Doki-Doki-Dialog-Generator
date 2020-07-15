@@ -13,6 +13,7 @@
 				<textarea v-model="text" id="notification_text" @keydown.stop />
 				<button @click="textEditor = true">Formatting</button>
 			</div>
+			<toggle label="Auto line wrap?" v-model="autoWrap" />
 			<template v-if="sprite.subType === 'poem'">
 				<select v-model="poemBackground" @keydown.stop>
 					<option
@@ -78,6 +79,7 @@ import {
 	poemTextStyles,
 	IPoemTextStyle,
 } from '../../../constants/poem';
+import { ISetAutoWrappingMutation } from '../../../store/objectTypes/textbox';
 
 @Component({
 	components: {
@@ -134,6 +136,19 @@ export default class PoemPanel extends Mixins(PanelMixin) {
 				id: this.sprite.id,
 				text: newValue,
 			} as ISetTextMutation);
+		});
+	}
+
+	private get autoWrap(): boolean {
+		return this.sprite.autoWrap;
+	}
+
+	private set autoWrap(autoWrap: boolean) {
+		this.vuexHistory.transaction(() => {
+			this.$store.commit('objects/setAutoWrapping', {
+				id: this.sprite.id,
+				autoWrap,
+			} as ISetAutoWrappingMutation);
 		});
 	}
 

@@ -15,6 +15,7 @@ import {
 	ChoiceY,
 	ChoiceButtonWidth,
 } from '@/constants/choices';
+import { ISetAutoWrappingMutation } from './textbox';
 
 export interface IChoice {
 	text: string;
@@ -26,6 +27,7 @@ export interface IChoices extends IObject {
 	customColor: string;
 	choices: IChoice[];
 	choiceDistance: number;
+	autoWrap: boolean;
 }
 
 export const choiceMutations: MutationTree<IObjectsState> = {
@@ -42,6 +44,11 @@ export const choiceMutations: MutationTree<IObjectsState> = {
 	setChoiceDistance(state, command: ISetChoiceDistanceMutation) {
 		const obj = state.objects[command.id] as IChoices;
 		obj.choiceDistance = command.choiceDistance;
+		++obj.version;
+	},
+	setAutoWrapping(state, command: ISetAutoWrappingMutation) {
+		const obj = state.objects[command.id] as IChoices;
+		obj.autoWrap = command.autoWrap;
 		++obj.version;
 	},
 };
@@ -61,6 +68,7 @@ export const choiceActions: ActionTree<IObjectsState, IRootState> = {
 				flip: false,
 				id,
 				onTop: true,
+				autoWrap: true,
 				opacity: 100,
 				type: 'choice',
 				version: 0,

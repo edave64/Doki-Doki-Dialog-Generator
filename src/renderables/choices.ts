@@ -93,7 +93,9 @@ export class Choice implements IRenderable {
 
 			for (const choiceRenderer of this.choiceRenderers) {
 				await choiceRenderer.loadFonts();
-				const height = choiceRenderer.getHeight();
+				const height = choiceRenderer.getHeight(
+					this.obj.autoWrap ? this.obj.width : 0
+				);
 				rx.drawRect({
 					x,
 					y,
@@ -113,7 +115,7 @@ export class Choice implements IRenderable {
 					x + w,
 					// tslint:disable-next-line: no-magic-numbers
 					y + ChoiceSpacing * 1.25,
-					0
+					this.obj.autoWrap ? w : 0
 				);
 				choiceRenderer.render(rx.fsCtx);
 				y += height + ChoicePadding * 2 + ChoiceSpacing;
@@ -128,7 +130,10 @@ export class Choice implements IRenderable {
 
 		this.height =
 			this.choiceRenderers.reduce(
-				(acc, renderer) => acc + renderer.getHeight() + ChoicePadding * 2,
+				(acc, renderer) =>
+					acc +
+					renderer.getHeight(this.obj.autoWrap ? this.obj.width : 0) +
+					ChoicePadding * 2,
 				0
 			) +
 			this.obj.choiceDistance * (this.obj.choices.length - 1);

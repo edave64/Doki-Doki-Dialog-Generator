@@ -14,6 +14,7 @@ import {
 	defaultConsoleBackground,
 	defaultConsoleStyle,
 } from '@/constants/poem';
+import { ISetAutoWrappingMutation } from './textbox';
 
 export interface IPoem extends IObject {
 	type: 'poem';
@@ -21,6 +22,7 @@ export interface IPoem extends IObject {
 	background: number;
 	font: number;
 	text: string;
+	autoWrap: boolean;
 }
 
 export const poemMutations: MutationTree<IObjectsState> = {
@@ -37,6 +39,11 @@ export const poemMutations: MutationTree<IObjectsState> = {
 	setPoemText(state, { id, text }: ISetTextMutation) {
 		const obj = state.objects[id] as IPoem;
 		obj.text = text;
+		++obj.version;
+	},
+	setAutoWrapping(state, command: ISetAutoWrappingMutation) {
+		const obj = state.objects[command.id] as IPoem;
+		obj.autoWrap = command.autoWrap;
 		++obj.version;
 	},
 };
@@ -61,6 +68,7 @@ export const poemActions: ActionTree<IObjectsState, IRootState> = {
 				type: 'poem',
 				version: 0,
 				preserveRatio: false,
+				autoWrap: true,
 				ratio: defaultPoemWidth / defaultPoemHeight,
 				background: defaultPoemBackground,
 				font: defaultPoemStyle,

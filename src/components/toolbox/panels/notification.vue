@@ -14,6 +14,7 @@
 				<button @click="textEditor = true">Formatting</button>
 			</div>
 			<position-and-size :obj="sprite" />
+			<toggle label="Auto line wrap?" v-model="autoWrap" />
 			<layers :obj="sprite" />
 			<opacity :obj="sprite" />
 			<toggle v-model="flip" label="Flip?" />
@@ -64,6 +65,7 @@ import {
 	ISetNotificationTextMutation,
 	ISetNotificationBackdropMutation,
 } from '../../../store/objectTypes/notification';
+import { ISetAutoWrappingMutation } from '../../../store/objectTypes/textbox';
 
 @Component({
 	components: {
@@ -99,6 +101,19 @@ export default class NotificationPanel extends Mixins(PanelMixin) {
 				id: this.sprite.id,
 				flip: newValue,
 			} as ISetObjectFlipMutation);
+		});
+	}
+
+	private get autoWrap(): boolean {
+		return this.sprite.autoWrap;
+	}
+
+	private set autoWrap(autoWrap: boolean) {
+		this.vuexHistory.transaction(() => {
+			this.$store.commit('objects/setAutoWrapping', {
+				id: this.sprite.id,
+				autoWrap,
+			} as ISetAutoWrappingMutation);
 		});
 	}
 

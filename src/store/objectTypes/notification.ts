@@ -9,12 +9,14 @@ import {
 	ChoiceButtonWidth,
 } from '@/constants/choices';
 import { screenHeight, screenWidth } from '@/constants/base';
+import { ISetAutoWrappingMutation } from './textbox';
 
 export interface INotification extends IObject {
 	type: 'notification';
 	customColor: string;
 	text: string;
 	backdrop: boolean;
+	autoWrap: boolean;
 }
 
 export const notificationMutations: MutationTree<IObjectsState> = {
@@ -36,6 +38,11 @@ export const notificationMutations: MutationTree<IObjectsState> = {
 		obj.backdrop = backdrop;
 		++obj.version;
 	},
+	setAutoWrapping(state, command: ISetAutoWrappingMutation) {
+		const obj = state.objects[command.id] as INotification;
+		obj.autoWrap = command.autoWrap;
+		++obj.version;
+	},
 };
 
 let lastNotificationId = 0;
@@ -54,6 +61,7 @@ export const notificationActions: ActionTree<IObjectsState, IRootState> = {
 				height: 0,
 				panelId: rootState.panels.currentPanel,
 				flip: false,
+				autoWrap: false,
 				id,
 				onTop: true,
 				opacity: 100,
