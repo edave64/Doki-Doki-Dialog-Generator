@@ -1,33 +1,18 @@
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue, Watch, Mixins } from 'vue-property-decorator';
 import { State } from 'vuex-class-decorator';
+import { VerticalScrollRedirect } from '@/components/vertical-scroll-redirect';
 
 const firefoxDeltaFactor = 25;
 
 @Component({})
-export class PanelMixin extends Vue {
+export class PanelMixin extends Mixins(VerticalScrollRedirect) {
 	@State('vertical', { namespace: 'ui' }) private readonly vertical!: boolean;
 
 	public mounted() {
 		this.updateVertical();
-		this.$el.addEventListener(
-			'wheel',
-			e => {
-				if (e.type !== 'wheel') return;
-				if (!e.currentTarget) return;
-				const target = e.currentTarget as HTMLElement;
-				if (target.classList.contains('vertical')) return;
-
-				const ev = e as WheelEvent;
-				if (ev.deltaY === 0) return;
-				if ((ev as any).mozInputSource) {
-					// Firefox sends wierdly low delta values :/
-					target.scrollLeft += ev.deltaY * firefoxDeltaFactor;
-				} else {
-					target.scrollLeft += ev.deltaY;
-				}
-			},
-			{ passive: true }
-		);
+		this.$el.addEventListener('wheel', this.verticalScrollRedirect as any, {
+			passive: true,
+		});
 	}
 
 	@Watch('vertical')

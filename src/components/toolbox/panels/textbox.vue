@@ -76,7 +76,7 @@
 			<opacity :obj="textbox" />
 			<toggle v-model="flip" label="Flip?" />
 
-			<fieldset @wheel.stop>
+			<fieldset>
 				<legend>Customization:</legend>
 				<toggle label="Controls visible?" v-model="showControls" />
 				<toggle label="Able to skip?" v-model="allowSkipping" />
