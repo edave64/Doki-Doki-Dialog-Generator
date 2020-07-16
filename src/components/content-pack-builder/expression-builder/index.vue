@@ -317,7 +317,6 @@ export default class ExpressionBuilder extends Mixins(VerticalScrollRedirect) {
 
 	public get listLink(): string | null {
 		if (!this.characterData || !this.headGroup) return null;
-		debugger;
 		const charName = this.characterData.id;
 		const headGroupName = this.headGroup.name;
 		if (listPaths[charName + ':' + headGroupName]) {
