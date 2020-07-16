@@ -31,7 +31,14 @@
 		</selector>
 		<template v-else-if="method === 'upload'">
 			<div v-if="!uploadsFinished" class="page">
-				<h2>Upload new '{{ normalizeName(headGroup.name) }}' expressions</h2>
+				<h2>Upload new '{{ normalizeName(headGroup.name) }}' expressions
+					<a v-if="downloadLink" :href="downloadLink"
+			target="_blank"
+			rel="noopener noreferrer">(Template)</a>
+					<a v-if="listLink" :href="listLink"
+			target="_blank"
+			rel="noopener noreferrer">(List)</a>
+				</h2>
 				<drop-target ref="dt" class="drop-target" @drop="addByImageFile"
 					>Drop here to add as a new expression</drop-target
 				>
@@ -168,6 +175,13 @@ const adds: { [s: string]: string | undefined } = {
 	'dddg.buildin.base.natsuki:straight': 'assets/mask/natsuki-a-add.png',
 };
 
+const masks: { [s: string]: string | undefined } = {
+	'dddg.buildin.base.monika': 'assets/mask/monika-a-mask.png',
+	'dddg.buildin.base.natsuki': 'assets/mask/natsuki-a-mask.png',
+	'dddg.buildin.base.sayori': 'assets/mask/sayori-a-mask.png',
+	'dddg.buildin.base.yuri': 'assets/mask/yuri-a-mask.png',
+};
+
 const partFiles: { [s: string]: string[] | undefined } = {};
 
 @Component({
@@ -268,6 +282,12 @@ export default class ExpressionBuilder extends Mixins(VerticalScrollRedirect) {
 	public addUrl(url: string): void {
 		this.currentUploadedExpression = url;
 		this.uploadedExpressions.push(url);
+	}
+
+	public get downloadLink(): string {
+		const character = this.characterData;
+		const headType = character.heads[this.headGroup!.name];
+		return headType.variants[0][0].hq;
 	}
 
 	public get previewPoses(): IPose[] {
