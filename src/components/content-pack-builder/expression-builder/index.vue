@@ -31,13 +31,22 @@
 		</selector>
 		<template v-else-if="method === 'upload'">
 			<div v-if="!uploadsFinished" class="page">
-				<h2>Upload new '{{ normalizeName(headGroup.name) }}' expressions
-					<a v-if="downloadLink" :href="downloadLink"
-			target="_blank"
-			rel="noopener noreferrer">(Template)</a>
-					<a v-if="listLink" :href="listLink"
-			target="_blank"
-			rel="noopener noreferrer">(List)</a>
+				<h2>
+					Upload new '{{ normalizeName(headGroup.name) }}' expressions
+					<a
+						v-if="downloadLink"
+						:href="downloadLink"
+						target="_blank"
+						rel="noopener noreferrer"
+						>(Template)</a
+					>
+					<a
+						v-if="listLink"
+						:href="listLink"
+						target="_blank"
+						rel="noopener noreferrer"
+						>(List)</a
+					>
 				</h2>
 				<drop-target ref="dt" class="drop-target" @drop="addByImageFile"
 					>Drop here to add as a new expression</drop-target
@@ -175,11 +184,25 @@ const adds: { [s: string]: string | undefined } = {
 	'dddg.buildin.base.natsuki:straight': 'assets/mask/natsuki-a-add.png',
 };
 
-const masks: { [s: string]: string | undefined } = {
-	'dddg.buildin.base.monika': 'assets/mask/monika-a-mask.png',
-	'dddg.buildin.base.natsuki': 'assets/mask/natsuki-a-mask.png',
-	'dddg.buildin.base.sayori': 'assets/mask/sayori-a-mask.png',
-	'dddg.buildin.base.yuri': 'assets/mask/yuri-a-mask.png',
+const baseUrl =
+	'https://github.com/edave64/Doki-Doki-Dialog-Generator/tree/master/public/assets/';
+
+const listPaths: { [s: string]: string | undefined } = {
+	'dddg.buildin.base.monika:ddlc.monika': `${baseUrl}monika`,
+	'dddg.buildin.base.natsuki:ddlc.natsuki': `${baseUrl}natsuki`,
+	'dddg.buildin.base.sayori:ddlc.sayori': `${baseUrl}sayori`,
+	'dddg.buildin.base.yuri:ddlc.yuri': `${baseUrl}yuri`,
+	'dddg.buildin.amy1:ddlc.fan.amy1': `${baseUrl}classic_amy`,
+	'dddg.buildin.amy2:ddlc.fan.amy2': `${baseUrl}amy`,
+	'dddg.buildin.femc:ddlc.fan.femc': `${baseUrl}femc`,
+	'dddg.buildin.femc:ddlc.fan.femc:straight_lh': `${baseUrl}femc_lh`,
+	'dddg.buildin.femc:ddlc.fan.femc:straight_hetero': `${baseUrl}femc/hetero`,
+	'dddg.buildin.femc:ddlc.fan.femc:straight_hetero_lh': `${baseUrl}femc_lh/hetero`,
+	'dddg.buildin.mc_classic:ddlc.fan.mc1': `${baseUrl}classic_mc`,
+	'dddg.buildin.mc:ddlc.fan.mc2': `${baseUrl}mc`,
+	'dddg.buildin.mc:ddlc.fan.mc2:straight_red': `${baseUrl}mc/red`,
+	'dddg.buildin.mc_chad:ddlc.fan.mc_chad': `${baseUrl}chad`,
+	'dddg.buildin.mc_chad:ddlc.fan.mc_chad:straight_red': `${baseUrl}chad/red`,
 };
 
 const partFiles: { [s: string]: string[] | undefined } = {};
@@ -284,10 +307,23 @@ export default class ExpressionBuilder extends Mixins(VerticalScrollRedirect) {
 		this.uploadedExpressions.push(url);
 	}
 
-	public get downloadLink(): string {
+	public get downloadLink(): string | null {
 		const character = this.characterData;
+		if (!character || !this.headGroup) return null;
 		const headType = character.heads[this.headGroup!.name];
+		if (!headType) return null;
 		return headType.variants[0][0].hq;
+	}
+
+	public get listLink(): string | null {
+		if (!this.characterData || !this.headGroup) return null;
+		debugger;
+		const charName = this.characterData.id;
+		const headGroupName = this.headGroup.name;
+		if (listPaths[charName + ':' + headGroupName]) {
+			return listPaths[charName + ':' + headGroupName] || null;
+		}
+		return listPaths[charName] || null;
 	}
 
 	public get previewPoses(): IPose[] {
