@@ -9,7 +9,6 @@ export class VerticalScrollRedirect extends Vue {
 		if (!e.currentTarget) return;
 		const currentTarget = e.currentTarget as HTMLElement;
 		let target = e.target as HTMLElement;
-		debugger;
 
 		while (target !== currentTarget && target) {
 			if (target.scrollHeight > target.clientHeight) {
