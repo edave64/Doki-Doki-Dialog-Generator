@@ -7,6 +7,7 @@ import { IAsset } from './store/content';
 import environment from './environments/environment';
 
 let webpSupportPromise: Promise<boolean>;
+let heifSupportPromise: Promise<boolean>;
 
 export function isWebPSupported(): Promise<boolean> {
 	if (!webpSupportPromise) {
@@ -24,6 +25,26 @@ export function isWebPSupported(): Promise<boolean> {
 		});
 	}
 	return webpSupportPromise;
+}
+
+export function isHeifSupported(): Promise<boolean> {
+	if (!heifSupportPromise) {
+		heifSupportPromise = new Promise((resolve, reject) => {
+			const losslessCode =
+				'data:image/heic;base64,AAAAGGZ0eXBoZWljAAAAAG1pZjFoZWljAAAAsW1ldGEAAAAAAAAAIWhkbHIAAAAAAAAAAHBpY3QAXABjAGMAcwBsAGEAAAAADnBpdG0AAAAAAAEAAAAQaWxvYwAAAABEQAAAAAAAI2lpbmYAAAAAAAEAAAAVaW5mZQIAAAAAAQAAaHZjMQAAAABDaXBycAAAACdpcGNvAAAAH2h2Y0NmzGx1ci0AAAAAAABv9HP+//v9bjr3AAAAABRpcG1hAAAAAAAAAAEAAQGBAAAACG1kYXQ=';
+			const img = document.createElement('img');
+			img.addEventListener('load', () => {
+				console.log('Heif no error. ' + (img.width === 2 && img.height === 1));
+				resolve(img.width === 2 && img.height === 1);
+			});
+			img.addEventListener('error', () => {
+				console.log('Heif not supported');
+				resolve(false);
+			});
+			img.src = losslessCode;
+		});
+	}
+	return heifSupportPromise;
 }
 
 const assetCache: {
