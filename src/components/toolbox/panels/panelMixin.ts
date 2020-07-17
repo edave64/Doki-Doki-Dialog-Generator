@@ -1,8 +1,6 @@
-import { Component, Vue, Watch, Mixins } from 'vue-property-decorator';
+import { Component, Watch, Mixins } from 'vue-property-decorator';
 import { State } from 'vuex-class-decorator';
 import { VerticalScrollRedirect } from '@/components/vertical-scroll-redirect';
-
-const firefoxDeltaFactor = 25;
 
 @Component({})
 export class PanelMixin extends Mixins(VerticalScrollRedirect) {
@@ -10,9 +8,15 @@ export class PanelMixin extends Mixins(VerticalScrollRedirect) {
 
 	public mounted() {
 		this.updateVertical();
-		this.$el.addEventListener('wheel', this.verticalScrollRedirect as any, {
-			passive: true,
-		});
+		this.$el.addEventListener(
+			'wheel',
+			e => {
+				if (!this.vertical) this.verticalScrollRedirect(e as WheelEvent);
+			},
+			{
+				passive: true,
+			}
+		);
 	}
 
 	@Watch('vertical')
