@@ -8,12 +8,6 @@
 		<template v-else>
 			<background-settings @change-color="colorSelect = true" />
 
-			<background-button
-				v-for="background of backgrounds"
-				:key="background"
-				:backgroundId="background"
-				@input="setBackground(background)"
-			/>
 			<div class="btn upload-background" @click="$refs.upload.click()">
 				Upload
 				<input type="file" ref="upload" @change="onFileUpload" />
@@ -26,6 +20,12 @@
 			>
 				<i class="material-icons">extension</i> Search in content packs
 			</button>
+			<background-button
+				v-for="background of backgrounds"
+				:key="background"
+				:backgroundId="background"
+				@input="setBackground(background)"
+			/>
 		</template>
 	</div>
 </template>

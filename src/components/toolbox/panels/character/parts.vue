@@ -2,6 +2,42 @@
 	<div :class="{ partList: true, vertical }">
 		<button @click="$emit('leave')">Back</button>
 
+		<button
+			@click="
+				$emit('show-expression-dialog', { character: character.characterType })
+			"
+			v-if="part === 'head'"
+			class="icon-button"
+		>
+			<i class="material-icons">extension</i>
+			<span class="text-block">Create new expressions</span>
+		</button>
+		<button
+			@click="
+				$emit('show-dialog', 'type: Expressions character: ' + charData.label)
+			"
+			v-if="part === 'head'"
+			class="icon-button"
+		>
+			<i class="material-icons">extension</i>
+			<span class="text-block">Search in content packs</span>
+		</button>
+		<button
+			@click="$emit('show-dialog', 'type: Styles character: ' + charData.label)"
+			v-else-if="part === 'style'"
+			class="icon-button"
+		>
+			<i class="material-icons">extension</i>
+			<span>Search in content packs</span>
+		</button>
+		<button
+			@click="$emit('show-dialog', 'type: Poses character: ' + charData.label)"
+			v-else
+			class="icon-button"
+		>
+			<i class="material-icons">extension</i>
+			<span>Search in content packs</span>
+		</button>
 		<part-button
 			v-for="(part, index) of parts"
 			:key="index"
@@ -26,34 +62,6 @@
 				@click="choose_component(styleComponent.name, id)"
 			/>
 		</fieldset>
-		<button
-			@click="
-				$emit('show-expression-dialog', { character: character.characterType })
-			"
-			v-if="part === 'head'"
-		>
-			<i class="material-icons">extension</i> Create new expressions
-		</button>
-		<button
-			@click="
-				$emit('show-dialog', 'type: Expressions character: ' + charData.label)
-			"
-			v-if="part === 'head'"
-		>
-			<i class="material-icons">extension</i> Search in content packs
-		</button>
-		<button
-			@click="$emit('show-dialog', 'type: Styles character: ' + charData.label)"
-			v-else-if="part === 'style'"
-		>
-			<i class="material-icons">extension</i> Search in content packs
-		</button>
-		<button
-			@click="$emit('show-dialog', 'type: Poses character: ' + charData.label)"
-			v-else
-		>
-			<i class="material-icons">extension</i> Search in content packs
-		</button>
 	</div>
 </template>
 
@@ -315,10 +323,20 @@ export default class PartsPanel extends Vue {
 
 <style lang="scss" scoped>
 .partList {
+	button {
+		display: inline-table;
+		> * {
+			display: table-cell;
+		}
+	}
 	&:not(.vertical) {
 		white-space: nowrap;
 		button {
 			height: 100%;
+			> span {
+				width: 1px;
+				white-space: break-spaces;
+			}
 		}
 	}
 	&.vertical {
