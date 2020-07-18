@@ -105,6 +105,7 @@
 								type="number"
 								style="width: 48px"
 								v-model.number="customNameboxWidth"
+								@keydown.stop
 							/>
 						</td>
 					</tr>

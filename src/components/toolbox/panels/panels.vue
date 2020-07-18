@@ -65,6 +65,7 @@
 							min="0"
 							max="100"
 							v-model.number="quality"
+							@keydown.stop
 						/>
 					</td>
 				</tr>
@@ -76,7 +77,13 @@
 						</label>
 					</td>
 					<td>
-						<input id="export_ppi" type="number" min="0" v-model.number="ppi" />
+						<input
+							id="export_ppi"
+							type="number"
+							min="0"
+							v-model.number="ppi"
+							@keydown.stop
+						/>
 					</td>
 				</tr>
 				<tr>

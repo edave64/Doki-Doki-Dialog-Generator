@@ -1,6 +1,6 @@
 <template>
 	<div :class="{ slider: true, vertical }" @keydown.stop>
-		<label :for="_uid">{{label}}</label>
+		<label :for="_uid">{{ label }}</label>
 		<div>
 			<svg
 				ref="svg"
@@ -14,11 +14,17 @@
 				@touchend="exitSlide"
 			>
 				<defs>
-					<linearGradient :id="`gradient${_uid}`" x1="0%" y1="0%" x2="100%" y2="0%">
+					<linearGradient
+						:id="`gradient${_uid}`"
+						x1="0%"
+						y1="0%"
+						x2="100%"
+						y2="0%"
+					>
 						<stop
 							v-for="(color, idx) in gradientStops"
 							:key="idx"
-							:offset="idx / (gradientStops.length - 1) * 100 + '%'"
+							:offset="(idx / (gradientStops.length - 1)) * 100 + '%'"
 							:style="'stop-color:' + color"
 						/>
 					</linearGradient>
@@ -42,6 +48,7 @@
 			:value="value"
 			type="number"
 			@input="$emit('input', parseFloat($event.target.value))"
+			@keydown.stop
 		/>
 	</div>
 </template>

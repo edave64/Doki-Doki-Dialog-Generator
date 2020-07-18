@@ -92,9 +92,21 @@
 								<table>
 									<tr>
 										<th>X:</th>
-										<td><input type="number" v-model.number="offsetX" /></td>
+										<td>
+											<input
+												type="number"
+												v-model.number="offsetX"
+												@keydown.stop
+											/>
+										</td>
 										<th>Y:</th>
-										<td><input type="number" v-model.number="offsetY" /></td>
+										<td>
+											<input
+												type="number"
+												v-model.number="offsetY"
+												@keydown.stop
+											/>
+										</td>
 									</tr>
 								</table>
 							</fieldset>
