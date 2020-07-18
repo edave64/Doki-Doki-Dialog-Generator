@@ -5,7 +5,7 @@
 			class="btn"
 			target="_blank"
 			rel="noopener noreferrer"
-			href="https://github.com/edave64/Doki-Doki-Dialog-Generator/blob/v1/docs/index.md"
+			href="https://github.com/edave64/Doki-Doki-Dialog-Generator/wiki/Version-2:-Dokumentation"
 			>Help</a
 		>
 		<a
