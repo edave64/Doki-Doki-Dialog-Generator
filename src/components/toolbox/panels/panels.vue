@@ -363,11 +363,14 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 		let foundMatch = false;
 
 		for (const part of parts) {
-			const match = part.match(/^\s*((\d+)|(\d+)\s*\-\s*(\d+))\s*$/);
+			const trimmedPart = part.trim();
+			const match = trimmedPart.match(/^\s*((\d+)|(\d+)\s*\-\s*(\d+))\s*$/);
 			if (!match) {
-				eventBus.fire(
-					new ShowMessageEvent(`Could not read '${part}' in the page list.`)
-				);
+				if (trimmedPart !== '') {
+					eventBus.fire(
+						new ShowMessageEvent(`Could not read '${part}' in the page list.`)
+					);
+				}
 				continue;
 			}
 			foundMatch = true;
