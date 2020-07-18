@@ -1,13 +1,7 @@
 import { ICommand } from '@/eventbus/command';
-import {
-	IObjectsState,
-	ICreateObjectMutation,
-	IObject,
-	ISetObjectPositionMutation,
-	ISetObjectFlipMutation,
-} from '@/store/objects';
+import { IObjectsState, ICreateObjectMutation, IObject } from '@/store/objects';
 import { MutationTree, ActionTree } from 'vuex';
-import { NameboxY, TextBoxWidth, TextBoxHeight } from '@/constants/textBox';
+import { TextBoxWidth, TextBoxHeight } from '@/constants/textBox';
 import { IRootState } from '..';
 import {
 	ChoiceSpacing,
