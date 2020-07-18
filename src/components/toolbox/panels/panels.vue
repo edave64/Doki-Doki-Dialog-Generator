@@ -72,7 +72,7 @@
 					<td>
 						<label for="export_ppi">
 							Panels per image:
-							<br />(0 for one single image)
+							<br /><small>(0 for one single image)</small>
 						</label>
 					</td>
 					<td>
@@ -80,14 +80,27 @@
 					</td>
 				</tr>
 				<tr>
-					<td colspan="2">
+					<td>
+						<label for="export_pages">
+							Panels to export:
+							<br /><small>(Leave empty for all)</small>
+						</label>
+					</td>
+					<td>
+						<input
+							id="export_pages"
+							v-model="pages"
+							placeholder="E.g. 1-5, 8, 11-13"
+						/>
+					</td>
+				</tr>
+				<tr>
+					<td>
 						<button @click="download">
 							<i class="material-icons">photo_camera</i> Download
 						</button>
 					</td>
-				</tr>
-				<tr>
-					<td colspan="2">
+					<td>
 						<button @click="estimateExportSize">Estimate filesizes</button>
 					</td>
 				</tr>
@@ -153,10 +166,13 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 	private webpSupport = false;
 	private heifSupport = false;
 	private ppi = 0;
+	private pages = '';
 	private format = 'image/png';
 	private quality = defaultQuality;
 
 	public async created() {
+		(window as any).panelsTool = this;
+
 		[this.webpSupport, this.heifSupport] = await Promise.all([
 			isWebPSupported(),
 			isHeifSupported(),
@@ -339,8 +355,47 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 		return this.panelButtons.length > 1;
 	}
 
+	private getLimitedPanelList(): DeepReadonly<string[]> {
+		const max = this.$store.state.panels.panelOrder.length - 1;
+		const min = 0;
+		const parts = this.pages.split(',');
+		const listedPages: number[] = [];
+		let foundMatch = false;
+
+		for (const part of parts) {
+			const match = part.match(/^\s*((\d+)|(\d+)\s*\-\s*(\d+))\s*$/);
+			if (!match) {
+				eventBus.fire(
+					new ShowMessageEvent(`Could not read '${part}' in the page list.`)
+				);
+				continue;
+			}
+			foundMatch = true;
+			/* tslint:disable:no-magic-numbers */
+			if (match[2]) listedPages.push(parseInt(match[2], 10) - 1);
+			else {
+				const from = Math.max(parseInt(match[3], 10) - 1, min);
+				const to = Math.min(parseInt(match[4], 10) - 1, max);
+				if (from === undefined || to === undefined || from > to) continue;
+				for (let i = from; i <= to; ++i) {
+					listedPages.push(i);
+				}
+			}
+			/* tslint:enable:no-magic-numbers */
+		}
+
+		if (!foundMatch) {
+			return this.$store.state.panels.panelOrder;
+		}
+
+		return listedPages
+			.sort((a, b) => a - b)
+			.filter((value, idx, ary) => ary[idx - 1] !== value)
+			.map(pageIdx => this.$store.state.panels.panelOrder[pageIdx]);
+	}
+
 	private getPanelDistibution(): DeepReadonly<string[][]> {
-		const panelOrder = this.$store.state.panels.panelOrder;
+		const panelOrder = this.getLimitedPanelList();
 		if (this.ppi === 0) return [panelOrder];
 		const images: string[][] = [];
 		for (let imageI = 0; imageI < panelOrder.length / this.ppi; ++imageI) {
@@ -530,8 +585,13 @@ fieldset {
 	}
 }
 
-#export_ppi {
+#export_ppi,
+#export_pages {
 	width: 128px;
+}
+
+small {
+	font-size: 0.75em;
 }
 
 .panel {
