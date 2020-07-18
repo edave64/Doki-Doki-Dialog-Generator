@@ -52,7 +52,7 @@ export const notificationActions: ActionTree<IObjectsState, IRootState> = {
 		{ commit, rootState },
 		command: ICreateNotificationAction
 	): string {
-		const id = 'choice_' + ++lastNotificationId;
+		const id = 'notification_' + ++lastNotificationId;
 		commit('create', {
 			object: {
 				x: screenWidth / 2,
