@@ -627,6 +627,14 @@ small {
 					height: 150px;
 				}
 			}
+
+			table {
+				width: 100%;
+				td {
+					width: 100%;
+					display: table-row;
+				}
+			}
 		}
 	}
 	&:not(.vertical) {

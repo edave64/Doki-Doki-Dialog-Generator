@@ -103,7 +103,7 @@
 							<input
 								id="custom_namebox_width"
 								type="number"
-								style="width: 48px"
+								style="width: 48px;"
 								v-model.number="customNameboxWidth"
 								@keydown.stop
 							/>
