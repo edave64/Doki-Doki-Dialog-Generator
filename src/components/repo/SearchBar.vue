@@ -57,6 +57,7 @@
 				<tr>
 					<td>Type:</td>
 					<td>
+						<code>Backgrounds</code>, <code>Sprites</code>,
 						<code>Expressions</code>, <code>Styles</code>, <code>Poses</code> or
 						<code>Characters</code>
 					</td>
