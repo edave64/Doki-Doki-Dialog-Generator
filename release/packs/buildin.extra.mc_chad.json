@@ -1,0 +1,212 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.mc_chad",
+	"packCredits": "",
+	"folder": "/chad/",
+	"characters": [
+		{
+			"id": "ddlc.fan.mc_chad",
+			"label": "MC (Chad)",
+			"chibi": "/chibis/chad{ext}",
+			"heads": {
+				"straight": [
+					["a{ext}"],
+					["b{ext}"],
+					["c{ext}"],
+					["d{ext}"],
+					["e{ext}"],
+					["f{ext}"],
+					["g{ext}"],
+					["h{ext}"],
+					["i{ext}"],
+					["j{ext}"],
+					["k{ext}"],
+					["l{ext}"],
+					["m{ext}"],
+					["n{ext}"],
+					["o{ext}"],
+					["p{ext}"],
+					["q{ext}"],
+					["r{ext}"],
+					["s{ext}"],
+					["t{ext}"],
+					["y{ext}"],
+					["z{ext}"],
+					["error{ext}"],
+					["error1{ext}"],
+					["shock{ext}"]
+				],
+				"straight_closed": [
+					["u{ext}"],
+					["w{ext}"],
+					["v{ext}"],
+					["x1{ext}"],
+					["x2{ext}"],
+					["x3{ext}"],
+					["x4{ext}"]
+				],
+				"straight_red": {
+					"folder": "red/",
+					"variants": [
+						["a{ext}"],
+						["b{ext}"],
+						["c{ext}"],
+						["d{ext}"],
+						["e{ext}"],
+						["f{ext}"],
+						["g{ext}"],
+						["h{ext}"],
+						["i{ext}"],
+						["j{ext}"],
+						["k{ext}"],
+						["l{ext}"],
+						["m{ext}"],
+						["n{ext}"],
+						["o{ext}"],
+						["p{ext}"],
+						["q{ext}"],
+						["r{ext}"],
+						["s{ext}"],
+						["t{ext}"],
+						["y{ext}"],
+						["z{ext}"],
+						["error{ext}"],
+						["error1{ext}"],
+						["shock{ext}"]
+					]
+				}
+			},
+			"styleGroups": [
+				{
+					"id": "uniform",
+					"styleComponents": [
+						{
+							"label": "Eyes",
+							"id": "eyes",
+							"variants": {
+								"yellow": "/parts/chad/yellow-eyes{ext}",
+								"red": "/parts/chad/red-eyes{ext}"
+							}
+						}
+					],
+					"styles": [
+						{
+							"components": { "eyes": "yellow" },
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight", "straight_closed"],
+									"positions": {
+										"Left": [["1l{ext}"], ["2l{ext}"], ["4l{ext}"]],
+										"Right": [["1r{ext}"], ["2r{ext}"]]
+									}
+								},
+								{
+									"id": "youknowihadto",
+									"compatibleHeads": ["straight", "straight_closed"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3{ext}"] }
+									]
+								}
+							]
+						},
+						{
+							"components": { "eyes": "red" },
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_red", "straight_closed"],
+									"positions": {
+										"Left": [["1l{ext}"], ["2l{ext}"], ["4l{ext}"]],
+										"Right": [["1r{ext}"], ["2r{ext}"]]
+									}
+								},
+								{
+									"id": "youknowihadto",
+									"compatibleHeads": ["straight_red", "straight_closed"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3{ext}"] }
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"id": "casual",
+					"styleComponents": [
+						{
+							"label": "Eyes",
+							"id": "eyes",
+							"variants": {
+								"yellow": "/parts/chad/yellow-eyes{ext}",
+								"red": "/parts/chad/red-eyes{ext}"
+							}
+						}
+					],
+					"styles": [
+						{
+							"components": { "eyes": "yellow" },
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight", "straight_closed"],
+									"positions": {
+										"Left": [["1bl{ext}"], ["2bl{ext}"], ["4bl{ext}"]],
+										"Right": [["1br{ext}"], ["2br{ext}"]]
+									}
+								},
+								{
+									"id": "youknowihadto",
+									"compatibleHeads": ["straight", "straight_closed"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3b{ext}"] }
+									]
+								}
+							]
+						},
+						{
+							"components": { "eyes": "red" },
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_red", "straight_closed"],
+									"positions": {
+										"Left": [["1bl{ext}"], ["2bl{ext}"], ["4bl{ext}"]],
+										"Right": [["1br{ext}"], ["2br{ext}"]]
+									}
+								},
+								{
+									"id": "youknowihadto",
+									"compatibleHeads": ["straight_red", "straight_closed"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3b{ext}"] }
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"colors": [
+		{
+			"label": "MC's eye red",
+			"color": "#EE4228"
+		},
+		{
+			"label": "MC's eye yellow",
+			"color": "#FFD017"
+		},
+		{
+			"label": "MC's hair brown",
+			"color": "#79595A"
+		}
+	]
+}

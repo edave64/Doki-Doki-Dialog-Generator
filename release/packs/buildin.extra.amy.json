@@ -1,0 +1,165 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.amy2",
+	"packCredits": "",
+	"folder": "/amy/",
+	"characters": [
+		{
+			"id": "ddlc.fan.amy2",
+			"label": "Amy",
+			"chibi": "/chibis/amy{ext}",
+			"heads": {
+				"straight": [
+					["a{ext}"],
+					["b{ext}"],
+					["c{ext}"],
+					["d{ext}"],
+					["e{ext}"],
+					["f{ext}"],
+					["g{ext}"],
+					["h{ext}"],
+					["i{ext}"],
+					["h{ext}"],
+					["k{ext}"],
+					["l{ext}"],
+					["m{ext}"],
+					["n{ext}"],
+					["o{ext}"],
+					["p{ext}"],
+					["q{ext}"],
+					["r{ext}"],
+					["s{ext}"],
+					["t{ext}"],
+					["u{ext}"],
+					["v{ext}"],
+					["w{ext}"],
+					["x{ext}"],
+					["y{ext}"],
+					["z{ext}"]
+				],
+				"straight_broken_glases": [
+					["!1{ext}"],
+					["!2{ext}"],
+					["!3{ext}"],
+					["!4{ext}"],
+					["!5{ext}"]
+				]
+			},
+			"styleGroups": [
+				{
+					"id": "uniform",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight", "straight_broken_glases"],
+									"renderCommands": [
+										{ "type": "pose-part", "part": "Left" },
+										{ "type": "pose-part", "part": "Right" },
+										{ "type": "head" }
+									],
+									"positions": {
+										"Left": [["1l{ext}"], ["2l{ext}"], ["3l{ext}"]],
+										"Right": [["1r{ext}"], ["2r{ext}"]]
+									}
+								},
+								{
+									"id": "hands_on_glasses",
+									"compatibleHeads": ["straight"],
+									"renderCommands": [
+										{ "type": "pose-part", "part": "Left" },
+										{ "type": "pose-part", "part": "Right" },
+										{ "type": "head" }
+									],
+									"positions": {
+										"Left": [["4l{ext}"]],
+										"Right": [["1r{ext}"], ["2r{ext}"]]
+									}
+								},
+								{
+									"id": "folded_hands_up",
+									"compatibleHeads": ["straight", "straight_broken_glases"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["5{ext}"] }
+									]
+								},
+								{
+									"id": "folded_hands_down",
+									"compatibleHeads": ["straight", "straight_broken_glases"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["6{ext}"] }
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"id": "casual",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight", "straight_broken_glases"],
+									"renderCommands": [
+										{ "type": "pose-part", "part": "Left" },
+										{ "type": "pose-part", "part": "Right" },
+										{ "type": "head" }
+									],
+									"positions": {
+										"Left": [["1bl{ext}"], ["2bl{ext}"], ["3bl{ext}"]],
+										"Right": [["1br{ext}"], ["2br{ext}"]]
+									}
+								},
+								{
+									"id": "hands_on_glasses",
+									"compatibleHeads": ["straight"],
+									"renderCommands": [
+										{ "type": "pose-part", "part": "Left" },
+										{ "type": "pose-part", "part": "Right" },
+										{ "type": "head" }
+									],
+									"positions": {
+										"Left": [["4bl{ext}"]],
+										"Right": [["1br{ext}"], ["2br{ext}"]]
+									}
+								},
+								{
+									"id": "folded_hands_up",
+									"compatibleHeads": ["straight", "straight_broken_glases"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["5b{ext}"] }
+									]
+								},
+								{
+									"id": "folded_hands_down",
+									"compatibleHeads": ["straight", "straight_broken_glases"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["6b{ext}"] }
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"colors": [
+		{
+			"label": "Amy's eye yellow",
+			"color": "#DE9437"
+		},
+		{
+			"label": "Amy's hair red",
+			"color": "#850710"
+		}
+	]
+}

@@ -1,0 +1,157 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.base.natsuki",
+	"packCredits": "",
+	"folder": "/natsuki/",
+	"characters": [
+		{
+			"id": "ddlc.natsuki",
+			"chibi": "/chibis/natsuki{ext}",
+			"label": "Natsuki",
+			"heads": {
+				"straight": [
+					["a{ext}"],
+					["b{ext}"],
+					["c{ext}"],
+					["d{ext}"],
+					["e{ext}"],
+					["f{ext}"],
+					["g{ext}"],
+					["h{ext}"],
+					["i{ext}"],
+					["j{ext}"],
+					["k{ext}"],
+					["l{ext}"],
+					["m{ext}"],
+					["n{ext}"],
+					["o{ext}"],
+					["p{ext}"],
+					["q{ext}"],
+					["r{ext}"],
+					["s{ext}"],
+					["t{ext}"],
+					["u{ext}"],
+					["v{ext}"],
+					["w{ext}"],
+					["x{ext}"],
+					["y{ext}"],
+					["z{ext}"],
+					["1t{ext}"],
+					["scream{ext}"],
+					["corrupt{ext}"]
+				],
+				"sideways": [
+					["ta{ext}"],
+					["tb{ext}"],
+					["tc{ext}"],
+					["td{ext}"],
+					["te{ext}"],
+					["tf{ext}"],
+					["tg{ext}"],
+					["th{ext}"],
+					["ti{ext}"]
+				],
+				"turnedAway": [["tj{ext}"]]
+			},
+			"styleGroups": [
+				{
+					"id": "uniform",
+					"styles": [
+						{
+							"poses": [
+								{
+									"compatibleHeads": ["straight", "sideways", "turnedAway"],
+									"id": "normal",
+									"renderCommands": [
+										{ "type": "pose-part", "part": "Left" },
+										{ "type": "pose-part", "part": "Right" },
+										{ "type": "head" }
+									],
+									"positions": {
+										"Left": [["1l{ext}"], ["2l{ext}"]],
+										"Right": [["1r{ext}"], ["2r{ext}"]]
+									}
+								},
+								{
+									"compatibleHeads": ["straight", "sideways", "turnedAway"],
+									"id": "crossed_arms",
+									"renderCommands": [
+										{ "type": "image", "images": ["3{ext}"] },
+										{ "type": "head", "offset": [18, 22] }
+									]
+								},
+								{
+									"id": "glitch",
+									"compatibleHeads": [],
+									"renderCommands": [
+										{ "type": "image", "images": ["glitch1{ext}"] }
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"id": "casual",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight", "sideways", "turnedAway"],
+									"renderCommands": [
+										{ "type": "pose-part", "part": "Left" },
+										{ "type": "pose-part", "part": "Right" },
+										{ "type": "head" }
+									],
+									"positions": {
+										"Left": [["1bl{ext}"], ["2bl{ext}"]],
+										"Right": [["1br{ext}"], ["2br{ext}"]]
+									}
+								},
+								{
+									"id": "crossed_arms",
+									"compatibleHeads": ["straight", "sideways", "turnedAway"],
+									"renderCommands": [
+										{ "type": "image", "images": ["3b{ext}"] },
+										{ "type": "head", "offset": [18, 22] }
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"id": "old",
+					"folder": "old/",
+					"styles": [
+						{
+							"poses": [
+								{
+									"compatibleHeads": [],
+									"id": "old",
+									"positions": {
+										"Variant": [
+											["1{ext}"],
+											["2{ext}"],
+											["3{ext}"],
+											["4{ext}"],
+											["5{ext}"]
+										]
+									}
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"colors": [
+		{
+			"label": "Natsuki pink",
+			"color": "#FFBBC3"
+		}
+	]
+}

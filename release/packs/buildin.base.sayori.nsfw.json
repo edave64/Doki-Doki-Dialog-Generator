@@ -1,0 +1,30 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.sayori.nsfw",
+	"packCredits": "",
+	"folder": "/sayori/",
+	"characters": [
+		{
+			"id": "dddg.buildin.sayori:ddlc.sayori",
+			"styleGroups": [
+				{
+					"id": "hanging",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "dead",
+									"compatibleHeads": [],
+									"positions": {
+										"Variant": [["dead1{ext}"], ["dead2{ext}"]]
+									}
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

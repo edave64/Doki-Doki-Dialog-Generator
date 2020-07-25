@@ -1,0 +1,45 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.yuri.nsfw",
+	"packCredits": "",
+	"folder": "/yuri/",
+	"characters": [
+		{
+			"id": "dddg.buildin.yuri:ddlc.yuri",
+			"styleGroups": [
+				{
+					"id": "dddg.buildin.yuri:uniform",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "dddg.buildin.yuri:normal",
+									"compatibleHeads": ["straight"],
+									"positions": {
+										"Right": [["2r_cuts{ext}"]]
+									}
+								},
+								{
+									"id": "stabbing",
+									"compatibleHeads": [],
+									"folder": "stab/",
+									"positions": {
+										"Variant": [
+											["1{ext}"],
+											["2{ext}"],
+											["3{ext}"],
+											["4{ext}"],
+											["5{ext}"],
+											["6-full{ext}"]
+										]
+									}
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

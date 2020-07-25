@@ -1,0 +1,34 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.backgrounds.nsfw",
+	"packCredits": "",
+	"backgrounds": [
+		{
+			"id": "dddg.buildin.backgrounds:ddlc.clubroom",
+			"folder": "/backgrounds/",
+			"variants": [["club-skill{ext}"]]
+		},
+		{
+			"id": "dddg.buildin.backgrounds:ddlc.spaceroom",
+			"folder": "/cg/monika/",
+			"variants": [["monika_scare{ext}"], ["space{ext}", "monika_scare{ext}"]]
+		},
+		{
+			"id": "ddlc.yuri.death",
+			"label": "Yuri's death",
+			"folder": "/cg/yuri_kill/",
+			"variants": [
+				["1a{ext}"],
+				["1b{ext}"],
+				["1c{ext}"],
+				["2a{ext}"],
+				["2b{ext}"],
+				["2c{ext}"],
+				["3a{ext}"],
+				["3b{ext}"],
+				["3c{ext}"]
+			]
+		}
+	]
+}

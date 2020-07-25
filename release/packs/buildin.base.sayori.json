@@ -1,0 +1,141 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.sayori",
+	"packCredits": "",
+	"folder": "/sayori/",
+	"characters": [
+		{
+			"id": "ddlc.sayori",
+			"label": "Sayori",
+			"styleGroups": [
+				{
+					"id": "uniform",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight"],
+									"positions": {
+										"Left": [["1l{ext}"], ["2l{ext}"]],
+										"Right": [["1r{ext}"], ["2r{ext}"]]
+									}
+								},
+								{
+									"id": "sideways",
+									"compatibleHeads": ["sideways"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3{ext}"] }
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"id": "casual",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight"],
+									"positions": {
+										"Left": [["1bl{ext}"], ["2bl{ext}"]],
+										"Right": [["1br{ext}"], ["2br{ext}"]]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"id": "old",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "old",
+									"compatibleHeads": [],
+									"positions": {
+										"Variant": [
+											["old/1{ext}"],
+											["old/2{ext}"],
+											["old/3{ext}"],
+											["old/4{ext}"],
+											["old/5{ext}"]
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"id": "glitch",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "glitch",
+									"compatibleHeads": [],
+									"positions": {
+										"Variant": [
+											["glitch1{ext}"],
+											["glitch2{ext}"],
+											["end-glitch1{ext}"],
+											["end-glitch2{ext}"]
+										]
+									}
+								}
+							]
+						}
+					]
+				}
+			],
+			"chibi": "/chibis/sayori{ext}",
+			"heads": {
+				"straight": [
+					["a{ext}"],
+					["b{ext}"],
+					["c{ext}"],
+					["d{ext}"],
+					["e{ext}"],
+					["f{ext}"],
+					["g{ext}"],
+					["h{ext}"],
+					["i{ext}"],
+					["j{ext}"],
+					["k{ext}"],
+					["l{ext}"],
+					["m{ext}"],
+					["n{ext}"],
+					["o{ext}"],
+					["p{ext}"],
+					["q{ext}"],
+					["r{ext}"],
+					["s{ext}"],
+					["t{ext}"],
+					["u{ext}"],
+					["v{ext}"],
+					["w{ext}"],
+					["x{ext}"],
+					["y{ext}"]
+				],
+				"sideways": [["a2{ext}"], ["b2{ext}"], ["c2{ext}"], ["d2{ext}"]]
+			}
+		}
+	],
+	"colors": [
+		{
+			"label": "Sayori's eye blue",
+			"color": "#72D0FA"
+		},
+		{
+			"label": "Sayori's hair coral",
+			"color": "#F1A796"
+		}
+	]
+}

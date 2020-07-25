@@ -1,0 +1,61 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.mc_classic",
+	"packCredits": "",
+	"folder": "/classic_mc/",
+	"characters": [
+		{
+			"id": "ddlc.fan.mc1",
+			"label": "MC (Classic)",
+			"chibi": "/chibis/classic_mc{ext}",
+			"heads": {
+				"straight": [
+					["a{ext}"],
+					["b{ext}"],
+					["c{ext}"],
+					["d{ext}"],
+					["e{ext}"],
+					["f{ext}"],
+					["g{ext}"],
+					["h{ext}"],
+					["i{ext}"],
+					["j{ext}"]
+				]
+			},
+			"styleGroups": [
+				{
+					"id": "uniform",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["1{ext}"] }
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"colors": [
+		{
+			"label": "MC's eye red",
+			"color": "#EE4228"
+		},
+		{
+			"label": "MC's eye yellow",
+			"color": "#FFD017"
+		},
+		{
+			"label": "MC's hair brown",
+			"color": "#79595A"
+		}
+	]
+}

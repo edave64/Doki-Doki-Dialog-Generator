@@ -1,0 +1,211 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.mc",
+	"packCredits": "",
+	"folder": "/mc/",
+	"characters": [
+		{
+			"id": "ddlc.fan.mc2",
+			"label": "MC",
+			"chibi": "/chibis/mc{ext}",
+			"heads": {
+				"straight": [
+					["a{ext}"],
+					["b{ext}"],
+					["c{ext}"],
+					["d{ext}"],
+					["e{ext}"],
+					["f{ext}"],
+					["g{ext}"],
+					["h{ext}"],
+					["i{ext}"],
+					["j{ext}"],
+					["k{ext}"],
+					["l{ext}"],
+					["m{ext}"],
+					["n{ext}"],
+					["o{ext}"],
+					["p{ext}"],
+					["q{ext}"],
+					["r{ext}"],
+					["s{ext}"],
+					["t{ext}"],
+					["u{ext}"],
+					["v{ext}"],
+					["w{ext}"],
+					["x{ext}"],
+					["y{ext}"],
+					["z{ext}"],
+					["error{ext}"],
+					["error1{ext}"],
+					["shock{ext}"]
+				],
+				"straight_red": {
+					"folder": "red/",
+					"variants": [
+						["a{ext}"],
+						["b{ext}"],
+						["c{ext}"],
+						["d{ext}"],
+						["e{ext}"],
+						["f{ext}"],
+						["g{ext}"],
+						["h{ext}"],
+						["i{ext}"],
+						["j{ext}"],
+						["k{ext}"],
+						["l{ext}"],
+						["m{ext}"],
+						["n{ext}"],
+						["o{ext}"],
+						["p{ext}"],
+						["q{ext}"],
+						["r{ext}"],
+						["s{ext}"],
+						["t{ext}"],
+						["u{ext}"],
+						["v{ext}"],
+						["w{ext}"],
+						["x{ext}"],
+						["y{ext}"],
+						["z{ext}"],
+						["error{ext}"],
+						["error1{ext}"],
+						["shock{ext}"]
+					]
+				}
+			},
+			"styleGroups": [
+				{
+					"id": "uniform",
+					"styleComponents": [
+						{
+							"id": "eyes",
+							"label": "Eyes",
+							"variants": {
+								"yellow": "/parts/mc/yellow-eyes{ext}",
+								"red": "/parts/mc/red-eyes{ext}"
+							}
+						}
+					],
+					"styles": [
+						{
+							"components": { "eyes": "yellow" },
+							"poses": [
+								{
+									"compatibleHeads": ["straight"],
+									"id": "normal",
+									"positions": {
+										"Left": [["1l{ext}"], ["2l{ext}"]],
+										"Right": [["1r{ext}"], ["2r{ext}"]]
+									}
+								},
+								{
+									"compatibleHeads": ["straight"],
+									"id": "crossed_arms",
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3{ext}"] }
+									]
+								}
+							]
+						},
+						{
+							"components": { "eyes": "red" },
+							"poses": [
+								{
+									"compatibleHeads": ["straight_red"],
+									"id": "normal",
+									"positions": {
+										"Left": [["1l{ext}"], ["2l{ext}"]],
+										"Right": [["1r{ext}"], ["2r{ext}"]]
+									}
+								},
+								{
+									"compatibleHeads": ["straight_red"],
+									"id": "crossed_arms",
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3{ext}"] }
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"id": "casual",
+					"styleComponents": [
+						{
+							"id": "eyes",
+							"label": "Eyes",
+							"variants": {
+								"yellow": "/parts/mc/yellow-eyes{ext}",
+								"red": "/parts/mc/red-eyes{ext}"
+							}
+						}
+					],
+					"styles": [
+						{
+							"components": { "eyes": "yellow" },
+							"poses": [
+								{
+									"compatibleHeads": ["straight"],
+									"id": "normal",
+									"positions": {
+										"Left": [["1bl{ext}"], ["2bl{ext}"]],
+										"Right": [["1br{ext}"], ["2br{ext}"]]
+									}
+								},
+								{
+									"compatibleHeads": ["straight"],
+									"id": "crossed_arms",
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3b{ext}"] }
+									]
+								}
+							]
+						},
+						{
+							"components": { "eyes": "red" },
+							"poses": [
+								{
+									"compatibleHeads": ["straight_red"],
+									"id": "normal",
+									"positions": {
+										"Left": [["1bl{ext}"], ["2bl{ext}"]],
+										"Right": [["1br{ext}"], ["2br{ext}"]]
+									}
+								},
+								{
+									"compatibleHeads": ["straight_red"],
+									"id": "crossed_arms",
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3b{ext}"] }
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"colors": [
+		{
+			"label": "MC's eye red",
+			"color": "#EE4228"
+		},
+		{
+			"label": "MC's eye yellow",
+			"color": "#FFD017"
+		},
+		{
+			"label": "MC's hair brown",
+			"color": "#79595A"
+		}
+	]
+}

@@ -1,0 +1,121 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.base.monika",
+	"packCredits": "",
+	"characters": [
+		{
+			"id": "ddlc.monika",
+			"label": "Monika",
+			"chibi": "/chibis/monika{ext}",
+			"folder": "/monika/",
+			"styleGroups": [
+				{
+					"id": "uniform",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight"],
+									"positions": {
+										"Left": [["1l{ext}"], ["2l{ext}"]],
+										"Right": [["1r{ext}"], ["2r{ext}"]]
+									}
+								},
+								{
+									"id": "leaned",
+									"compatibleHeads": ["sideways"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3{ext}"] }
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"id": "old",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "old",
+									"compatibleHeads": [],
+									"folder": "old/",
+									"positions": {
+										"Variant": [
+											["1{ext}"],
+											["2{ext}"],
+											["3{ext}"],
+											["4{ext}"],
+											["5{ext}"]
+										]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"id": "glitch",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "glitch",
+									"compatibleHeads": [],
+									"positions": {
+										"Variant": [
+											["g1_scaled{ext}"],
+											["g2{ext}"],
+											["g3{ext}"],
+											["g4{ext}"]
+										]
+									}
+								}
+							]
+						}
+					]
+				}
+			],
+			"heads": {
+				"straight": [
+					["a{ext}"],
+					["b{ext}"],
+					["c{ext}"],
+					["d{ext}"],
+					["e{ext}"],
+					["f{ext}"],
+					["g{ext}"],
+					["h{ext}"],
+					["i{ext}"],
+					["j{ext}"],
+					["k{ext}"],
+					["l{ext}"],
+					["m{ext}"],
+					["n{ext}"],
+					["o{ext}"],
+					["p{ext}"],
+					["q{ext}"],
+					["r{ext}"]
+				],
+				"sideways": {
+					"variants": [["a2{ext}"], ["b2{ext}"]],
+					"offset": [135, 75]
+				}
+			}
+		}
+	],
+	"colors": [
+		{
+			"label": "Monika's eyes green",
+			"color": "#8CD63A"
+		},
+		{
+			"label": "Monika's hair brown",
+			"color": "#D1897E"
+		}
+	]
+}

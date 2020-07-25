@@ -1,0 +1,109 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.amy1",
+	"packCredits": "",
+	"folder": "/classic_amy/",
+	"characters": [
+		{
+			"id": "ddlc.fan.amy1",
+			"label": "Amy (Classic)",
+			"chibi": "/chibis/classic_amy{ext}",
+			"heads": {
+				"straight": [
+					["aa{ext}"],
+					["ab{ext}"],
+					["ac{ext}"],
+					["ad{ext}"],
+					["ae{ext}"],
+					["af{ext}"],
+					["ag{ext}"],
+					["ah{ext}"],
+					["ai{ext}"],
+					["ba{ext}"],
+					["bb{ext}"],
+					["bc{ext}"],
+					["bd{ext}"],
+					["be{ext}"],
+					["bf{ext}"],
+					["bg{ext}"],
+					["bh{ext}"],
+					["bi{ext}"],
+					["ca{ext}"],
+					["cb{ext}"],
+					["cc{ext}"],
+					["cd{ext}"],
+					["ce{ext}"],
+					["cf{ext}"],
+					["cg{ext}"],
+					["ch{ext}"],
+					["ci{ext}"],
+					["da{ext}"],
+					["db{ext}"],
+					["dc{ext}"],
+					["dd{ext}"],
+					["de{ext}"],
+					["df{ext}"],
+					["dg{ext}"],
+					["dh{ext}"],
+					["di{ext}"],
+					["ea{ext}"],
+					["eb{ext}"],
+					["ec{ext}"],
+					["ed{ext}"],
+					["ee{ext}"],
+					["ef{ext}"],
+					["eg{ext}"],
+					["eh{ext}"],
+					["ei{ext}"],
+					["fa{ext}"],
+					["fb{ext}"],
+					["fc{ext}"],
+					["fd{ext}"],
+					["fe{ext}"],
+					["ff{ext}"],
+					["fg{ext}"],
+					["fh{ext}"],
+					["fi{ext}"]
+				]
+			},
+			"styleGroups": [
+				{
+					"id": "uniform",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight"],
+									"positions": {
+										"Left": [["1l{ext}"], ["2l{ext}"]],
+										"Right": [["1r{ext}"]]
+									}
+								},
+								{
+									"id": "crossed_arms",
+									"compatibleHeads": ["straight"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3{ext}"] }
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"colors": [
+		{
+			"label": "Amy's eye yellow",
+			"color": "#DE9437"
+		},
+		{
+			"label": "Amy's hair red",
+			"color": "#850710"
+		}
+	]
+}

@@ -1,0 +1,642 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.femc",
+	"packCredits": "",
+	"characters": [
+		{
+			"id": "ddlc.fan.femc",
+			"label": "FeMC",
+			"chibi": "/chibis/femc{ext}",
+			"heads": {
+				"straight": {
+					"folder": "femc/",
+					"variants": [
+						["a{ext}"],
+						["b{ext}"],
+						["c{ext}"],
+						["d{ext}"],
+						["e{ext}"],
+						["f{ext}"],
+						["g{ext}"],
+						["h{ext}"],
+						["i{ext}"],
+						["j{ext}"],
+						["k{ext}"],
+						["l{ext}"],
+						["m{ext}"],
+						["n{ext}"],
+						["o{ext}"],
+						["p{ext}"],
+						["q{ext}"],
+						["r{ext}"],
+						["s{ext}"],
+						["t{ext}"],
+						["u{ext}"],
+						["v{ext}"],
+						["w{ext}"],
+						["x{ext}"],
+						["y{ext}"],
+						["z{ext}"],
+						["glitch1{ext}"],
+						["glitch2{ext}"],
+						["_1{ext}"],
+						["_2{ext}"],
+						["_3{ext}"],
+						["_4{ext}"],
+						["_5{ext}"],
+						["_6{ext}"],
+						["_7{ext}"],
+						["_8{ext}"],
+						["_9{ext}"],
+						["_10{ext}"],
+						["_10alt{ext}"],
+						["_11{ext}"],
+						["_12{ext}"],
+						["_13{ext}"],
+						["_14{ext}"]
+					]
+				},
+				"straight_lh": {
+					"folder": "femc_lh/",
+					"variants": [
+						["a{ext}"],
+						["b{ext}"],
+						["c{ext}"],
+						["d{ext}"],
+						["e{ext}"],
+						["f{ext}"],
+						["g{ext}"],
+						["h{ext}"],
+						["i{ext}"],
+						["j{ext}"],
+						["k{ext}"],
+						["l{ext}"],
+						["m{ext}"],
+						["n{ext}"],
+						["o{ext}"],
+						["p{ext}"],
+						["q{ext}"],
+						["r{ext}"],
+						["s{ext}"],
+						["t{ext}"],
+						["u{ext}"],
+						["v{ext}"],
+						["w{ext}"],
+						["x{ext}"],
+						["y{ext}"],
+						["z{ext}"],
+						["glitch1{ext}"],
+						["glitch2{ext}"],
+						["_1{ext}"],
+						["_2{ext}"],
+						["_3{ext}"],
+						["_4{ext}"],
+						["_5{ext}"],
+						["_6{ext}"],
+						["_7{ext}"],
+						["_8{ext}"],
+						["_9{ext}"],
+						["_10{ext}"],
+						["_10alt{ext}"],
+						["_11{ext}"],
+						["_12{ext}"],
+						["_13{ext}"],
+						["_14{ext}"]
+					]
+				},
+				"straight_hetero": {
+					"folder": "femc/hetero/",
+					"variants": [
+						["a{ext}"],
+						["b{ext}"],
+						["c{ext}"],
+						["d{ext}"],
+						["e{ext}"],
+						["f{ext}"],
+						["g{ext}"],
+						["h{ext}"],
+						["i{ext}"],
+						["j{ext}"],
+						["k{ext}"],
+						["l{ext}"],
+						["m{ext}"],
+						["n{ext}"],
+						["o{ext}"],
+						["p{ext}"],
+						["q{ext}"],
+						["r{ext}"],
+						["s{ext}"],
+						["/femc/t{ext}"],
+						["/femc/u{ext}"],
+						["/femc/v{ext}"],
+						["/femc/w{ext}"],
+						["x{ext}"],
+						["y{ext}"],
+						["z{ext}"],
+						["glitch1{ext}"],
+						["glitch2{ext}"],
+						["_1{ext}"],
+						["_2{ext}"],
+						["/femc/_3{ext}"],
+						["/femc/_4{ext}"],
+						["/femc/_5{ext}"],
+						["/femc/_6{ext}"],
+						["_7{ext}"],
+						["_8{ext}"],
+						["/femc/_9{ext}"],
+						["/femc/_10{ext}"],
+						["/femc/_10alt{ext}"],
+						["_11{ext}"],
+						["_12{ext}"],
+						["_13{ext}"],
+						["_14{ext}"]
+					]
+				},
+				"straight_hetero_lh": {
+					"folder": "femc_lh/hetero/",
+					"variants": [
+						["a{ext}"],
+						["b{ext}"],
+						["c{ext}"],
+						["d{ext}"],
+						["e{ext}"],
+						["f{ext}"],
+						["g{ext}"],
+						["h{ext}"],
+						["i{ext}"],
+						["j{ext}"],
+						["k{ext}"],
+						["l{ext}"],
+						["m{ext}"],
+						["n{ext}"],
+						["o{ext}"],
+						["p{ext}"],
+						["q{ext}"],
+						["r{ext}"],
+						["s{ext}"],
+						["/femc_lh/t{ext}"],
+						["/femc_lh/u{ext}"],
+						["/femc_lh/v{ext}"],
+						["/femc_lh/w{ext}"],
+						["x{ext}"],
+						["y{ext}"],
+						["z{ext}"],
+						["glitch1{ext}"],
+						["glitch2{ext}"],
+						["_1{ext}"],
+						["_2{ext}"],
+						["/femc_lh/_3{ext}"],
+						["/femc_lh/_4{ext}"],
+						["/femc_lh/_5{ext}"],
+						["/femc_lh/_6{ext}"],
+						["_7{ext}"],
+						["_8{ext}"],
+						["/femc_lh/_9{ext}"],
+						["/femc_lh/_10{ext}"],
+						["/femc_lh/_10alt{ext}"],
+						["_11{ext}"],
+						["_12{ext}"],
+						["_13{ext}"],
+						["_14{ext}"]
+					]
+				}
+			},
+			"styleGroups": [
+				{
+					"id": "uniform",
+					"styleComponents": [
+						{
+							"label": "Eyes",
+							"id": "eyes",
+							"variants": {
+								"yellow": "/parts/femc/yellow-eyes{ext}",
+								"hetero": "/parts/femc/hetero-eyes{ext}"
+							}
+						},
+						{
+							"label": "Hairs",
+							"id": "hairs",
+							"variants": {
+								"sh": "/parts/femc/short-hair{ext}",
+								"lh": "/parts/femc/long-hair{ext}"
+							}
+						}
+					],
+					"styles": [
+						{
+							"components": {
+								"eyes": "yellow",
+								"hairs": "sh"
+							},
+							"folder": "femc/",
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight"],
+									"positions": {
+										"Left": [
+											["1l{ext}"],
+											["2l{ext}"],
+											["4l{ext}"],
+											["5l{ext}"]
+										],
+										"Right": [["1r{ext}"], ["4r{ext}"]]
+									}
+								},
+								{
+									"id": "crossed_arms",
+									"compatibleHeads": ["straight"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3{ext}"] }
+									]
+								}
+							]
+						},
+						{
+							"components": {
+								"eyes": "yellow",
+								"hairs": "lh"
+							},
+							"folder": "femc_lh/",
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_lh"],
+									"positions": {
+										"Left": [
+											["1l{ext}"],
+											["2l{ext}"],
+											["4l{ext}"],
+											["5l{ext}"]
+										],
+										"Right": [["1r{ext}"], ["4r{ext}"]]
+									}
+								},
+								{
+									"id": "crossed_arms",
+									"compatibleHeads": ["straight_lh"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3{ext}"] }
+									]
+								}
+							]
+						},
+						{
+							"components": {
+								"eyes": "hetero",
+								"hairs": "sh"
+							},
+							"folder": "femc/",
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_hetero"],
+									"positions": {
+										"Left": [
+											["1l{ext}"],
+											["2l{ext}"],
+											["4l{ext}"],
+											["5l{ext}"]
+										],
+										"Right": [["1r{ext}"], ["4r{ext}"]]
+									}
+								},
+								{
+									"id": "crossed_arms",
+									"compatibleHeads": ["straight_hetero"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3{ext}"] }
+									]
+								}
+							]
+						},
+						{
+							"components": {
+								"eyes": "hetero",
+								"hairs": "lh"
+							},
+							"folder": "femc_lh/",
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_hetero_lh"],
+									"positions": {
+										"Left": [
+											["1l{ext}"],
+											["2l{ext}"],
+											["4l{ext}"],
+											["5l{ext}"]
+										],
+										"Right": [["1r{ext}"], ["4r{ext}"]]
+									}
+								},
+								{
+									"id": "crossed_arms",
+									"compatibleHeads": ["straight_hetero_lh"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3{ext}"] }
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"id": "causal",
+					"styleComponents": [
+						{
+							"label": "Eyes",
+							"id": "eyes",
+							"variants": {
+								"yellow": "/parts/femc/yellow-eyes{ext}",
+								"hetero": "/parts/femc/hetero-eyes{ext}"
+							}
+						},
+						{
+							"label": "Hairs",
+							"id": "hairs",
+							"variants": {
+								"sh": "/parts/femc/short-hair{ext}",
+								"lh": "/parts/femc/long-hair{ext}"
+							}
+						}
+					],
+					"styles": [
+						{
+							"components": {
+								"eyes": "yellow",
+								"hairs": "sh"
+							},
+							"folder": "femc/",
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight"],
+									"positions": {
+										"Left": [
+											["1bl{ext}"],
+											["2bl{ext}"],
+											["4bl{ext}"],
+											["5bl{ext}"]
+										],
+										"Right": [["1br{ext}"], ["4br{ext}"]]
+									}
+								},
+								{
+									"id": "crossed_arms",
+									"compatibleHeads": ["straight"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3b{ext}"] }
+									]
+								}
+							]
+						},
+						{
+							"components": {
+								"eyes": "yellow",
+								"hairs": "lh"
+							},
+							"folder": "femc_lh/",
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_lh"],
+									"positions": {
+										"Left": [
+											["1bl{ext}"],
+											["2bl{ext}"],
+											["4bl{ext}"],
+											["5bl{ext}"]
+										],
+										"Right": [["1br{ext}"], ["4br{ext}"]]
+									}
+								},
+								{
+									"id": "crossed_arms",
+									"compatibleHeads": ["straight_lh"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3b{ext}"] }
+									]
+								}
+							]
+						},
+						{
+							"components": {
+								"eyes": "hetero",
+								"hairs": "sh"
+							},
+							"folder": "femc/",
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_hetero"],
+									"positions": {
+										"Left": [
+											["1bl{ext}"],
+											["2bl{ext}"],
+											["4bl{ext}"],
+											["5bl{ext}"]
+										],
+										"Right": [["1br{ext}"], ["4br{ext}"]]
+									}
+								},
+								{
+									"id": "crossed_arms",
+									"compatibleHeads": ["straight_hetero"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3b{ext}"] }
+									]
+								}
+							]
+						},
+						{
+							"components": {
+								"eyes": "hetero",
+								"hairs": "lh"
+							},
+							"folder": "femc_lh/",
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_hetero_lh"],
+									"positions": {
+										"Left": [
+											["1bl{ext}"],
+											["2bl{ext}"],
+											["4bl{ext}"],
+											["5bl{ext}"]
+										],
+										"Right": [["1br{ext}"], ["4br{ext}"]]
+									}
+								},
+								{
+									"id": "crossed_arms",
+									"compatibleHeads": ["straight_hetero_lh"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3b{ext}"] }
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"id": "uniform_strict",
+					"styleComponents": [
+						{
+							"label": "Eyes",
+							"id": "eyes",
+							"variants": {
+								"yellow": "/parts/femc/yellow-eyes{ext}",
+								"hetero": "/parts/femc/hetero-eyes{ext}"
+							}
+						},
+						{
+							"label": "Hairs",
+							"id": "hairs",
+							"variants": {
+								"sh": "/parts/femc/short-hair{ext}",
+								"lh": "/parts/femc/long-hair{ext}"
+							}
+						}
+					],
+					"styles": [
+						{
+							"folder": "femc/",
+							"components": {
+								"eyes": "yellow",
+								"hairs": "sh"
+							},
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight"],
+									"positions": {
+										"Left": [
+											["1cl{ext}"],
+											["2cl{ext}"],
+											["4cl{ext}"],
+											["5cl{ext}"]
+										],
+										"Right": [["1cr{ext}"], ["4cr{ext}"]]
+									}
+								},
+								{
+									"id": "crossed_arms",
+									"compatibleHeads": ["straight"],
+									"folder": "femc/",
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3c{ext}"] }
+									]
+								}
+							]
+						},
+						{
+							"folder": "femc_lh/",
+							"components": {
+								"eyes": "yellow",
+								"hairs": "lh"
+							},
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_lh"],
+									"positions": {
+										"Left": [
+											["1cl{ext}"],
+											["2cl{ext}"],
+											["4cl{ext}"],
+											["5cl{ext}"]
+										],
+										"Right": [["1cr{ext}"], ["4cr{ext}"]]
+									}
+								},
+								{
+									"id": "crossed_arms",
+									"compatibleHeads": ["straight_lh"],
+									"folder": "femc/",
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3c{ext}"] }
+									]
+								}
+							]
+						},
+						{
+							"folder": "femc/",
+							"components": {
+								"eyes": "hetero",
+								"hairs": "sh"
+							},
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_hetero"],
+									"positions": {
+										"Left": [
+											["1cl{ext}"],
+											["2cl{ext}"],
+											["4cl{ext}"],
+											["5cl{ext}"]
+										],
+										"Right": [["1cr{ext}"], ["4cr{ext}"]]
+									}
+								},
+								{
+									"id": "crossed_arms",
+									"compatibleHeads": ["straight_hetero"],
+									"folder": "femc/",
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3c{ext}"] }
+									]
+								}
+							]
+						},
+						{
+							"folder": "femc_lh/",
+							"components": {
+								"eyes": "hetero",
+								"hairs": "lh"
+							},
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_hetero_lh"],
+									"positions": {
+										"Left": [
+											["1cl{ext}"],
+											["2cl{ext}"],
+											["4cl{ext}"],
+											["5cl{ext}"]
+										],
+										"Right": [["1cr{ext}"], ["4cr{ext}"]]
+									}
+								},
+								{
+									"id": "crossed_arms",
+									"compatibleHeads": ["straight_hetero_lh"],
+									"folder": "femc/",
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3c{ext}"] }
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

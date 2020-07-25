@@ -1,0 +1,44 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.base.natsuki.nsfw",
+	"packCredits": "",
+	"folder": "/natsuki/",
+	"characters": [
+		{
+			"id": "dddg.buildin.base.natsuki:ddlc.natsuki",
+			"heads": {
+				"dddg.buildin.base.natsuki:straight": [["crying{ext}"]]
+			},
+			"styleGroups": [
+				{
+					"id": "dddg.buildin.base.natsuki:uniform",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "vomit",
+									"compatibleHeads": [],
+									"renderCommands": [
+										{ "type": "image", "images": ["vomit{ext}"] }
+									]
+								},
+								{
+									"id": "ghost",
+									"compatibleHeads": [],
+									"positions": {
+										"Variant": [
+											["ghost1{ext}"],
+											["ghost2{ext}"],
+											["ghost3{ext}"]
+										]
+									}
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

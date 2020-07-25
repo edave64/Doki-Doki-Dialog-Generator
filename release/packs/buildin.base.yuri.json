@@ -1,0 +1,154 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.yuri",
+	"packCredits": "",
+	"folder": "/yuri/",
+	"characters": [
+		{
+			"id": "ddlc.yuri",
+			"label": "Yuri",
+			"styleGroups": [
+				{
+					"id": "uniform",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight"],
+									"positions": {
+										"Left": [["1l{ext}"], ["2l{ext}"]],
+										"Right": [["1r{ext}"], ["2r{ext}"]]
+									}
+								},
+								{
+									"id": "hairplay",
+									"compatibleHeads": ["sideways"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3{ext}"] }
+									]
+								},
+								{
+									"id": "dragon",
+									"compatibleHeads": [],
+									"positions": {
+										"Variant": [["dragon1{ext}"], ["dragon2{ext}"]]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"id": "casual",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight"],
+									"positions": {
+										"Left": [["1bl{ext}"], ["2bl{ext}"]],
+										"Right": [["1br{ext}"], ["2br{ext}"]]
+									}
+								},
+								{
+									"id": "hairplay",
+									"compatibleHeads": ["sideways"],
+									"renderCommands": [
+										{ "type": "head" },
+										{ "type": "image", "images": ["3b{ext}"] }
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"id": "glitch",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "glitching",
+									"compatibleHeads": [],
+									"positions": {
+										"Variant": [
+											["0a{ext}"],
+											["0b{ext}"],
+											["eyesfull{ext}"],
+											["glitch1{ext}"],
+											["glitch2{ext}"],
+											["glitch3{ext}"],
+											["glitch4{ext}"],
+											["glitch5{ext}"]
+										]
+									}
+								}
+							]
+						}
+					]
+				}
+			],
+			"chibi": "/chibis/yuri{ext}",
+			"heads": {
+				"straight": [
+					["a{ext}"],
+					["b{ext}"],
+					["c{ext}"],
+					["d{ext}"],
+					["e{ext}"],
+					["f{ext}"],
+					["g{ext}"],
+					["h{ext}"],
+					["i{ext}"],
+					["j{ext}"],
+					["k{ext}"],
+					["k-old{ext}"],
+					["l{ext}"],
+					["l-old{ext}"],
+					["m{ext}"],
+					["m-old{ext}"],
+					["n{ext}"],
+					["o{ext}"],
+					["p{ext}"],
+					["q{ext}"],
+					["r{ext}"],
+					["s{ext}"],
+					["t{ext}"],
+					["u{ext}"],
+					["v{ext}"],
+					["w{ext}"],
+					["w-old{ext}"],
+					["y1{ext}"],
+					["y2{ext}"],
+					["y3{ext}"],
+					["y4{ext}"],
+					["y5{ext}"],
+					["y6{ext}"],
+					["y7{ext}"],
+					["hisui{ext}"]
+				],
+				"sideways": [
+					["a2{ext}"],
+					["b2{ext}"],
+					["c2{ext}"],
+					["d2{ext}"],
+					["e2{ext}"]
+				]
+			}
+		}
+	],
+	"colors": [
+		{
+			"label": "Yuri's eye lavender",
+			"color": "#D98EFE"
+		},
+		{
+			"label": "Yuri's hair purple",
+			"color": "#6C4681"
+		}
+	]
+}
