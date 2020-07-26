@@ -1,5 +1,8 @@
 <template>
-	<div id="app">
+	<div v-if="canvasTooSmall && isSafari">
+		Protrait mode is not supported by safari. Please turn the device sideways.
+	</div>
+	<div v-else id="app">
 		<div id="container">
 			<render
 				ref="render"
@@ -69,6 +72,7 @@ import eventBus from './eventbus/event-bus';
 const aspectRatio = 16 / 9;
 const arrowMoveStepSize = 20;
 const packDialogWaitMs = 50;
+const canvasTooSmallThreshold = 200;
 
 @Component({
 	components: {
@@ -116,6 +120,7 @@ export default class App extends Vue {
 		window.removeEventListener('keydown', this.onKeydown);
 		window.addEventListener('keydown', this.onKeydown);
 
+		(window as any).app = this;
 		(window as any).store = this.$store;
 
 		document.body.addEventListener(
@@ -194,11 +199,23 @@ export default class App extends Vue {
 		const opth = this.optimum(sw, sh - this.uiSize);
 		const optv = this.optimum(sw - this.uiSize, sh);
 
-		if (opth[0] * opth[1] > optv[0] * optv[1]) {
+		if (!this.isSafari && opth[0] * opth[1] > optv[0] * optv[1]) {
 			return [opth[0], opth[1], false];
 		} else {
 			return [optv[0], optv[1], true];
 		}
+	}
+
+	private canvasTooSmall = false;
+
+	private get isSafari(): boolean {
+		return !!(
+			navigator.vendor &&
+			navigator.vendor.indexOf('Apple') > -1 &&
+			navigator.userAgent &&
+			navigator.userAgent.indexOf('CriOS') === -1 &&
+			navigator.userAgent.indexOf('FxiOS') === -1
+		);
 	}
 
 	private updateArea(): void {
@@ -209,6 +226,9 @@ export default class App extends Vue {
 
 		this.canvasWidth = cw;
 		this.canvasHeight = ch;
+
+		this.canvasTooSmall = Math.max(cw, ch) < canvasTooSmallThreshold;
+
 		if (this.$store.state.ui.vertical === v) return;
 		this.$store.commit('ui/setVertical', v);
 	}
