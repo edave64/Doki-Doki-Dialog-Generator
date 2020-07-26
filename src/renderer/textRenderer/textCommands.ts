@@ -36,6 +36,10 @@ export default new Map<string, Command>([
 		...style,
 		alpha: relative ? style.alpha + parameter : parameter,
 	})),
+	relativeNumberOp('stroke', (style, relative, parameter) => ({
+		...style,
+		strokeWidth: relative ? style.strokeWidth + parameter : parameter,
+	})),
 	[
 		'font',
 		(style, parameter?) => {
