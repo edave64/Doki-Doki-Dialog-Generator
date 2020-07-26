@@ -664,6 +664,12 @@ small {
 					width: 150px;
 				}
 			}
+
+			table {
+				td {
+					white-space: nowrap;
+				}
+			}
 		}
 	}
 }
