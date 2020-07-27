@@ -97,6 +97,7 @@ export default class App extends Vue {
 
 	private panel: string = '';
 	private dialogVisable: boolean = false;
+	private canvasTooSmall = false;
 
 	private expressionBuilderVisible: boolean = false;
 	private expressionBuilderCharacter: string = '';
@@ -205,8 +206,6 @@ export default class App extends Vue {
 			return [optv[0], optv[1], true];
 		}
 	}
-
-	private canvasTooSmall = false;
 
 	private get isSafari(): boolean {
 		return !!(
