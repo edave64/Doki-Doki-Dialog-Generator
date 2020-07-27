@@ -16,7 +16,8 @@
 		@dragover="onDragOver"
 		@drop="onDrop"
 		@mouseenter="onMouseEnter"
-	>HTML5 is required to use the Doki Doki Dialog Generator.</canvas>
+		>HTML5 is required to use the Doki Doki Dialog Generator.</canvas
+	>
 </template>
 
 <script lang="ts">
@@ -124,7 +125,7 @@ export default class Render extends Vue {
 
 		if (this.$store.state.unsafe) return;
 
-		await this.sceneRender.render(!this.lqRendering);
+		await this.sceneRender.render(!this.lqRendering, true);
 		this.display();
 	}
 

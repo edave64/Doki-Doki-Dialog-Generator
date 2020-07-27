@@ -38,9 +38,9 @@ export class SceneRenderer {
 		this.renderer = new Renderer(canvasWidth, canvasHeight);
 	}
 
-	public render(hq: boolean): Promise<boolean> {
+	public render(hq: boolean, preview: boolean): Promise<boolean> {
 		if (!this.panel) return Promise.resolve(false);
-		return this.renderer.render(this.renderCallback.bind(this), hq);
+		return this.renderer.render(this.renderCallback.bind(this), hq, preview);
 	}
 
 	public download(): Promise<string> {
@@ -72,8 +72,8 @@ export class SceneRenderer {
 
 	public objectsAt(x: number, y: number): string[] {
 		return this.getRenderObjects()
-			.filter((renderObject) => renderObject.hitTest(x, y))
-			.map((renderObject) => renderObject.id);
+			.filter(renderObject => renderObject.hitTest(x, y))
+			.map(renderObject => renderObject.id);
 	}
 
 	private async renderCallback(rx: RenderContext): Promise<void> {
@@ -106,14 +106,14 @@ export class SceneRenderer {
 			: [];
 		const objects = this.state.objects.objects;
 		const toUncache = Object.keys(this.renderObjectCache).filter(
-			(id) => !order.includes(id)
+			id => !order.includes(id)
 		);
 
 		for (const id of toUncache) {
 			this.renderObjectCache.delete(id);
 		}
 
-		return order.map((id) => {
+		return order.map(id => {
 			let renderObject = this.renderObjectCache.get(id);
 			if (!renderObject) {
 				const obj = objects[id];

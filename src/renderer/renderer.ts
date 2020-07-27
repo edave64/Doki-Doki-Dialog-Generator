@@ -15,7 +15,8 @@ export class Renderer {
 
 	public async render(
 		renderCallback: (rc: RenderContext) => Promise<void>,
-		hq: boolean = true
+		hq: boolean = true,
+		preview: boolean = true
 	): Promise<boolean> {
 		if (this.runningContext) {
 			this.runningContext.abort();
@@ -23,7 +24,7 @@ export class Renderer {
 
 		const ctx = this.previewCanvas.getContext('2d')!;
 		ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
-		const context = (this.runningContext = new RenderContext(ctx, hq, true));
+		const context = (this.runningContext = new RenderContext(ctx, hq, preview));
 		try {
 			await renderCallback(this.runningContext);
 		} catch (e) {

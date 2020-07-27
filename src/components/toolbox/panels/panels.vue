@@ -196,7 +196,7 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 			screenHeight
 		);
 
-		await sceneRenderer.render(false);
+		await sceneRenderer.render(false, true);
 
 		const targetCanvas = document.createElement('canvas');
 		targetCanvas.width = screenWidth * thumbnailFactor;
@@ -341,7 +341,7 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 							screenHeight
 						);
 
-						await sceneRenderer.render(hq);
+						await sceneRenderer.render(hq, false);
 
 						sceneRenderer.paintOnto(
 							context,
