@@ -62,35 +62,42 @@ const protocolMatcher = /^(\w+):/;
 function sanitizeElement(node: Node): Node[] {
 	if (node.nodeType !== Node.ELEMENT_NODE) return [node];
 	const el = node as Element;
-	let ret: Node[] = [];
 	const tagName = el.tagName.toLowerCase();
 	if (allowedTags.includes(tagName)) {
-		ret.push(el);
+		const newEl = document.createElement(tagName) as HTMLElement;
 		const attrs: Attr[] = Array.prototype.slice.call(el.attributes);
 		const allowedAttrs = allowedAttributes[tagName] || [];
 		for (const attr of attrs) {
-			if (!allowedAttrs.includes(attr.name)) {
-				el.removeAttribute(attr.name);
-			} else if (schemaLimitedAttributes.includes(attr.name)) {
+			if (!allowedAttrs.includes(attr.name)) continue;
+			if (schemaLimitedAttributes.includes(attr.name)) {
 				const protocolMatch = attr.value.match(protocolMatcher);
-				if (protocolMatch && !allowedSchemas.includes(protocolMatch[1])) {
-					el.removeAttribute(attr.name);
-				}
+				if (protocolMatch && !allowedSchemas.includes(protocolMatch[1]))
+					continue;
 			}
+			newEl.setAttribute(attr.name, el.getAttribute(attr.name)!);
 		}
 		const enforce = enforceAttributes[tagName];
 		if (enforce) {
 			for (const attrName in enforce) {
-				if (!enforce.hasOwnProperty(attrName)) continue;
-				el.setAttribute(attrName, enforce[attrName]);
+				if (!Object.prototype.hasOwnProperty.call(enforce, attrName)) continue;
+				newEl.setAttribute(attrName, enforce[attrName]);
 			}
 		}
+		const children: Node[] = Array.prototype.slice.call(el.childNodes);
+		for (const childNode of children) {
+			const subNodes = sanitizeElement(childNode);
+			for (const subNode of subNodes) {
+				newEl.appendChild(subNode);
+			}
+		}
+		return [newEl];
 	} else {
+		let ret: Node[] = [];
 		ret.push(document.createTextNode(`<${tagName}>`));
 		for (const subNode of el.childNodes) {
 			ret = ret.concat(sanitizeElement(subNode));
 		}
 		ret.push(document.createTextNode(`</${tagName}>`));
+		return ret;
 	}
-	return ret;
 }
