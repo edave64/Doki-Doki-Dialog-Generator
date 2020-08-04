@@ -182,10 +182,8 @@ a {
 }
 
 .search-bar {
-	position: absolute;
-	top: 8px;
-	left: 8px;
-	right: 8px;
+	margin: 4px;
+	width: calc(100% - 8px);
 	display: flex;
 }
 
@@ -194,6 +192,7 @@ a {
 	top: 48px;
 	left: 8px;
 	right: 8px;
+	z-index: 2;
 	border: 2px solid #ffbde1;
 	background: #fff;
 	max-height: calc(100vh - 56px);

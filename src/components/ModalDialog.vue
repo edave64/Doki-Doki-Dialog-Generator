@@ -42,6 +42,7 @@ dialog {
 	overflow: hidden;
 	padding: 0;
 	border: 4px solid #ffbde1;
+	overflow: hidden;
 	align-self: center;
 	justify-self: center;
 	margin: auto;

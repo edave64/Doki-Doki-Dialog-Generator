@@ -257,11 +257,8 @@ export default class List extends Vue {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .list {
-	position: absolute;
-	top: 64px;
-	bottom: 0px;
-	left: 0px;
-	right: 0px;
+	width: 100%;
+	height: calc(100% - 64px);
 	overflow: auto;
 	display: flex;
 	flex-direction: column;
