@@ -10,7 +10,7 @@
 			@show-expression-dialog="$emit('show-expression-dialog', $event)"
 		/>
 		<template v-else>
-			<fieldset v-if="hasMultiplePoses || parts.length > 0">
+			<fieldset v-if="hasMultiplePoses || parts.length > 0" class="pose-list">
 				<legend>Pose:</legend>
 				<table>
 					<tbody>
@@ -216,6 +216,13 @@ fieldset {
 
 	table {
 		width: 100%;
+	}
+}
+
+:not(.vertical) {
+	fieldset {
+		max-height: 100%;
+		overflow: auto;
 	}
 }
 
