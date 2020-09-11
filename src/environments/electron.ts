@@ -8,6 +8,7 @@ import { IHistorySupport } from '@/plugins/vuex-history';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { ReplaceContentPackAction } from '@/store/content';
+import { reactive } from 'vue';
 
 const packs: IPack[] = [];
 
@@ -26,7 +27,12 @@ const installedBackgroundsPack: ContentPack<string> = {
 
 export class Electron implements IEnvironment {
 	public readonly allowLQ = false;
-	public readonly vueState = new EnvState();
+	public readonly vueState: EnvState = reactive({
+		active: [],
+		inactive: [],
+		tempInstalled: [],
+		tempUninstalled: [],
+	});
 	public readonly localRepositoryUrl = '/repo/repo.json';
 	public readonly isBackgroundInstallingSupported = true;
 	public readonly isLocalRepoSupported = true;
@@ -36,7 +42,7 @@ export class Electron implements IEnvironment {
 	private promptCache: {
 		[promptId: number]: (resolved: string | null) => void;
 	} = {};
-	private lastPrompt: number = 0;
+	private lastPrompt = 0;
 
 	private vuexHistory: IHistorySupport | null = null;
 	private $store: Store<IRootState> | null = null;
@@ -103,8 +109,8 @@ export class Electron implements IEnvironment {
 	public saveToFile(
 		downloadCanvas: HTMLCanvasElement,
 		filename: string,
-		format: string = 'image/png',
-		quality: number = 1
+		format = 'image/png',
+		quality = 1
 	): Promise<string> {
 		return new Promise((resolve, reject) => {
 			downloadCanvas.toBlob(

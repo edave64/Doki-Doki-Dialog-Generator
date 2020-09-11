@@ -1,33 +1,33 @@
-import Vue from 'vue';
 import { ICommand } from './command';
 import { DeepReadonly } from '@/util/readonly';
+import mitt from 'mitt';
 
-const eventBus = new Vue();
+const eventBus = mitt();
 
 export default {
 	fireCommand(command: ICommand) {
-		eventBus.$emit('command', command);
+		eventBus.emit('command', command);
 	},
 	subscribeCommand(handler: (ev: ICommand) => void): void {
-		eventBus.$on('command', handler);
+		eventBus.on('command', handler as any);
 	},
 
 	fire(event: IEvent) {
-		eventBus.$emit(event.kind, event);
+		eventBus.emit(event.kind, event);
 	},
 
 	subscribe<T extends IEvent>(
 		eventType: IEventClass<T>,
 		handler: (ev: T) => void
 	) {
-		eventBus.$on(eventType.kind, handler);
+		eventBus.on(eventType.kind, handler as any);
 	},
 
 	unsubscribe<T extends IEvent>(
 		eventType: IEventClass<T>,
 		handler: (ev: T) => void
 	) {
-		eventBus.$off(eventType.kind, handler);
+		eventBus.off(eventType.kind, handler as any);
 	},
 };
 

@@ -1,38 +1,44 @@
 <template>
 	<div id="messageConsole" :class="{ vertical }">
 		<p v-if="showLoading">Loading...</p>
-		<p v-for="(message, i) in messages" :key="message + '_' + i">{{message}}</p>
+		<p v-for="(message, i) in messages" :key="message + '_' + i">
+			{{ message }}
+		</p>
 	</div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import { State } from 'vuex-class-decorator';
 import EventBus, {
 	AssetFailureEvent,
 	CustomAssetFailureEvent,
 	ShowMessageEvent,
 	VueErrorEvent,
 } from '@/eventbus/event-bus';
+import { defineComponent } from 'vue';
 
 const shortHidingTime = 5000;
 const longHidingTime = 20000;
-
 const hideShowTimeouts = 100;
 
-@Component({
-	components: {},
-})
-export default class MessageConsole extends Vue {
-	@Prop({ default: false, type: Boolean }) private readonly loading!: boolean;
-
-	@State('vertical', { namespace: 'ui' }) private readonly vertical!: boolean;
-	private messages: string[] = [];
-	private showLoading: boolean = false;
-	private showLoadingTimeout: number = 0;
-	private hideLoadingTimeout: number = 0;
-
-	private created() {
+export default defineComponent({
+	props: {
+		loading: {
+			default: false,
+			type: Boolean,
+		},
+	},
+	data: () => ({
+		messages: [] as string[],
+		showLoading: false,
+		showLoadingTimeout: 0,
+		hideLoadingTimeout: 0,
+	}),
+	computed: {
+		vertical(): boolean {
+			return this.$store.state.ui.vertical;
+		},
+	},
+	created() {
 		this.onLoadingChange(this.loading);
 		EventBus.subscribe(AssetFailureEvent, ev => {
 			this.messages.push(`Failed to load asset '${ev.path}'`);
@@ -67,35 +73,42 @@ export default class MessageConsole extends Vue {
 				this.messages.shift();
 			}, longHidingTime);
 		});
-	}
+	},
 
-	@Watch('loading')
-	private onLoadingChange(newValue: boolean) {
-		if (newValue) {
-			if (this.hideLoadingTimeout) {
-				clearTimeout(this.hideLoadingTimeout);
-				this.hideLoadingTimeout = 0;
-			}
-			if (!this.showLoading && !this.showLoadingTimeout) {
-				this.showLoadingTimeout = setTimeout(() => {
-					this.showLoading = true;
-					this.showLoadingTimeout = 0;
-				}, hideShowTimeouts);
-			}
-		} else {
-			if (this.showLoadingTimeout) {
-				clearTimeout(this.showLoadingTimeout);
-				this.showLoadingTimeout = 0;
-			}
-			if (this.showLoading && !this.hideLoadingTimeout) {
-				this.hideLoadingTimeout = setTimeout(() => {
-					this.showLoading = false;
+	methods: {
+		onLoadingChange(newValue: boolean) {
+			if (newValue) {
+				if (this.hideLoadingTimeout) {
+					clearTimeout(this.hideLoadingTimeout);
 					this.hideLoadingTimeout = 0;
-				}, hideShowTimeouts);
+				}
+				if (!this.showLoading && !this.showLoadingTimeout) {
+					this.showLoadingTimeout = setTimeout(() => {
+						this.showLoading = true;
+						this.showLoadingTimeout = 0;
+					}, hideShowTimeouts);
+				}
+			} else {
+				if (this.showLoadingTimeout) {
+					clearTimeout(this.showLoadingTimeout);
+					this.showLoadingTimeout = 0;
+				}
+				if (this.showLoading && !this.hideLoadingTimeout) {
+					this.hideLoadingTimeout = setTimeout(() => {
+						this.showLoading = false;
+						this.hideLoadingTimeout = 0;
+					}, hideShowTimeouts);
+				}
 			}
-		}
-	}
-}
+		},
+	},
+
+	watch: {
+		loading(newValue: boolean) {
+			this.onLoadingChange(newValue);
+		},
+	},
+});
 </script>
 
 <style lang="scss" scoped>

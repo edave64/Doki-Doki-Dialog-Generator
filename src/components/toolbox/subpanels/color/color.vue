@@ -16,8 +16,8 @@
 		<div class="column">
 			<slider-group :mode="mode" v-model="color" :relative="true" />
 			<div class="hex-selector">
-				<label class="hex-label" :for="`hex_${_uid}`">Hex</label>
-				<input :id="`hex_${_uid}`" :value="color" @input="updateHex" />
+				<label class="hex-label" :for="`hex_${_.uid}`">Hex</label>
+				<input :id="`hex_${_.uid}`" :modelValue="color" @input="updateHex" />
 			</div>
 			<button @click="addSwatch">Add as swatch</button>
 		</div>
@@ -38,115 +38,96 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import {
-	isWebPSupported,
-	registerAsset,
-	registerAssetWithURL,
-} from '@/asset-manager';
-import environment from '@/environments/environment';
-import {
-	StyleComponent,
-	Pose,
-	Character,
 	Color,
 	ContentPack,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset, ReplaceContentPackAction } from '@/store/content';
-import {
-	getPose,
-	getDataG,
-	ISeekPoseAction,
-	ISetPosePositionMutation,
-	ISetPartAction,
-	getData,
-	ICharacter,
-} from '@/store/objectTypes/characters';
-import { IHistorySupport } from '@/plugins/vuex-history';
-import { State } from 'vuex-class-decorator';
 import SliderGroup from './sliderGroup.vue';
-import { Store } from 'vuex';
-import { IRootState } from '@/store';
 import { RGBAColor } from '@/util/colors/rgb';
+import { defineComponent } from 'vue';
+import { DeepReadonly } from '@/util/readonly';
 
 const generatedPackId = 'dddg.generated.colors';
 
-@Component({
+export default defineComponent({
 	components: {
 		SliderGroup,
 	},
-})
-export default class PartsPanel extends Vue {
-	public $store!: Store<IRootState>;
+	props: {
+		modelValue: {
+			required: true,
+			type: String,
+		},
+		title: { default: '' },
+	},
+	data: () => ({
+		mode: 'hsla',
+		relative: true,
+	}),
+	computed: {
+		vertical(): boolean {
+			return this.$store.state.ui.vertical;
+		},
+		swatches(): DeepReadonly<Color[]> {
+			return this.$store.state.content.current.colors;
+		},
+		color: {
+			get(): string {
+				return this.modelValue;
+			},
+			set(newColor: string) {
+				this.$emit('update:modelValue', newColor);
+			},
+		},
+	},
+	methods: {
+		updateHex(event: Event) {
+			const hex = (event.target as HTMLInputElement).value;
+			// tslint:disable-next-line: no-magic-numbers
+			if (RGBAColor.validHex(hex) && (hex.length === 7 || hex.length === 9)) {
+				console.log('setting updateHex', hex);
+				this.$emit('update:modelValue', hex);
+			}
+		},
+		addSwatch() {
+			if (this.swatches.find(swatch => swatch.color === this.color)) return;
 
-	@State('vertical', { namespace: 'ui' }) private readonly vertical!: boolean;
+			const existingPack = this.$store.state.content.contentPacks.find(
+				pack => pack.packId === 'generatedPackId'
+			) || {
+				packId: generatedPackId,
+				packCredits: [''],
+				dependencies: [],
+				characters: [],
+				fonts: [],
+				backgrounds: [],
+				sprites: [],
+				poemStyles: [],
+				poemBackgrounds: [],
+				colors: [],
+			};
 
-	@Prop({ required: true, type: String }) private readonly value!: string;
-	@Prop({ type: String, default: '' }) private readonly title!: string;
+			const newPack: ContentPack<IAsset> = {
+				...existingPack,
+				colors: [
+					...existingPack.colors,
+					{
+						label: this.color,
+						color: this.color,
+					},
+				],
+			} as any;
 
-	private vuexHistory!: IHistorySupport;
-
-	private mode: string = 'hsla';
-	private relative: boolean = true;
-
-	private get swatches(): Color[] {
-		return this.$store.state.content.current.colors;
-	}
-
-	private get color(): string {
-		return this.value;
-	}
-
-	private set color(newColor: string) {
-		this.$emit('input', newColor);
-	}
-
-	private updateHex(event: Event) {
-		const hex = (event.target as HTMLInputElement).value;
-		// tslint:disable-next-line: no-magic-numbers
-		if (RGBAColor.validHex(hex) && (hex.length === 7 || hex.length === 9)) {
-			console.log('setting updateHex', hex);
-			this.$emit('input', hex);
-		}
-	}
-
-	private addSwatch() {
-		if (this.swatches.find(swatch => swatch.color === this.color)) return;
-
-		const existingPack = this.$store.state.content.contentPacks.find(
-			pack => pack.packId === 'generatedPackId'
-		) || {
-			packId: generatedPackId,
-			packCredits: [''],
-			dependencies: [],
-			characters: [],
-			fonts: [],
-			backgrounds: [],
-			sprites: [],
-			poemStyles: [],
-			poemBackgrounds: [],
-			colors: [],
-		};
-
-		const newPack: ContentPack<IAsset> = {
-			...existingPack,
-			colors: [
-				...existingPack.colors,
-				{
-					label: this.color,
-					color: this.color,
-				},
-			],
-		};
-
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('content/replaceContentPack', {
-				contentPack: newPack,
-				processed: true,
-			} as ReplaceContentPackAction);
-		});
-	}
-}
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('content/replaceContentPack', {
+					contentPack: newPack,
+					processed: true,
+				} as ReplaceContentPackAction);
+			});
+		},
+	},
+});
 </script>
 
 <style lang="scss" scoped>

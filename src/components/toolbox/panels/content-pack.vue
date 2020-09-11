@@ -31,13 +31,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
 import { PanelMixin } from './panelMixin';
 import environment from '@/environments/environment';
-import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { sanitize } from './character-pack-sanitizer';
-import { Store } from 'vuex';
-import { IRootState } from '@/store';
+import { defineComponent } from 'vue';
 
 interface IPack {
 	name: string;
@@ -49,122 +45,112 @@ interface IPack {
 	url: string;
 }
 
-@Component({
-	components: {},
-})
-export default class CharacterPackPanel extends Mixins(PanelMixin) {
-	public $store!: Store<IRootState>;
-	private selectedPack: IPack | null = null;
-	private needRestart = false;
+export default defineComponent({
+	mixins: [PanelMixin],
+	data: () => ({
+		selectedPack: null as IPack | null,
+		needRestart: false,
+	}),
+	computed: {
+		packs(): IPack[] {
+			const packs = this.$store.state.content.contentPacks;
+			return packs
+				.filter(pack => pack.packId && !pack.packId.startsWith('dddg.buildin.'))
+				.map(
+					pack =>
+						({
+							name: pack.packId,
+							credits: pack.packCredits,
+							installed: true,
+							active: true,
+							queuedUninstall: false,
+							freshInstall: false,
+							url: '',
+						} as IPack)
+				);
+		},
 
-	private created() {
-		/*
-		const packs = environment.installedCharacterPacks;
-		console.log('packs:', packs);
-		*/
-	}
-
-	private get packs(): IPack[] {
-		const packs = this.$store.state.content.contentPacks;
-		return packs
-			.filter(pack => pack.packId && !pack.packId.startsWith('dddg.buildin.'))
-			.map(
-				pack =>
-					({
-						name: pack.packId,
-						credits: pack.packCredits,
-						installed: true,
-						active: true,
-						queuedUninstall: false,
-						freshInstall: false,
-						url: '',
-					} as IPack)
+		name(): string {
+			if (!this.selectedPack) return '';
+			return this.selectedPack.name;
+		},
+		credits(): [string | [string, string]] {
+			if (!this.selectedPack) return [''];
+			return this.selectedPack.credits;
+		},
+		activatable(): boolean {
+			if (!environment.isAutoLoadingSupported) return false;
+			if (!this.selectedPack) return false;
+			if (!this.selectedPack.installed) return false;
+			if (this.selectedPack.queuedUninstall) return false;
+			if (this.selectedPack.freshInstall) return false;
+			return !this.selectedPack.active;
+		},
+		deactivatable(): boolean {
+			if (!environment.isAutoLoadingSupported) return false;
+			if (!this.selectedPack) return false;
+			if (!this.selectedPack.installed) return false;
+			if (this.selectedPack.queuedUninstall) return false;
+			if (this.selectedPack.freshInstall) return false;
+			return this.selectedPack.active;
+		},
+		installable(): boolean {
+			if (!environment.isLocalRepoSupported) return false;
+			if (!this.selectedPack) return false;
+			return this.selectedPack.queuedUninstall || !this.selectedPack.installed;
+		},
+		uninstallable(): boolean {
+			if (!environment.isLocalRepoSupported) return false;
+			if (!this.selectedPack) return false;
+			if (this.selectedPack.freshInstall) return false;
+			return !(
+				this.selectedPack.queuedUninstall || !this.selectedPack.installed
 			);
-	}
-
-	private select(name: string) {
-		this.selectedPack = this.packs.find(pack => pack.name === name) || null;
-	}
-
-	private async addNew() {
-		const url = await environment.prompt(
-			'Enter the URL of the character pack:'
-		);
-		if (!url) return;
-		await this.$store.dispatch('content/loadContentPacks', url);
-	}
-
-	private restart() {
-		location.reload(true);
-	}
-
-	private get name(): string {
-		if (!this.selectedPack) return '';
-		return this.selectedPack.name;
-	}
-	private get credits(): [string | [string, string]] {
-		if (!this.selectedPack) return [''];
-		return this.selectedPack.credits;
-	}
-	private get activatable(): boolean {
-		if (!environment.isAutoLoadingSupported) return false;
-		if (!this.selectedPack) return false;
-		if (!this.selectedPack.installed) return false;
-		if (this.selectedPack.queuedUninstall) return false;
-		if (this.selectedPack.freshInstall) return false;
-		return !this.selectedPack.active;
-	}
-	private get deactivatable(): boolean {
-		if (!environment.isAutoLoadingSupported) return false;
-		if (!this.selectedPack) return false;
-		if (!this.selectedPack.installed) return false;
-		if (this.selectedPack.queuedUninstall) return false;
-		if (this.selectedPack.freshInstall) return false;
-		return this.selectedPack.active;
-	}
-	private get installable(): boolean {
-		if (!environment.isLocalRepoSupported) return false;
-		if (!this.selectedPack) return false;
-		return this.selectedPack.queuedUninstall || !this.selectedPack.installed;
-	}
-	private get uninstallable(): boolean {
-		if (!environment.isLocalRepoSupported) return false;
-		if (!this.selectedPack) return false;
-		if (this.selectedPack.freshInstall) return false;
-		return !(this.selectedPack.queuedUninstall || !this.selectedPack.installed);
-	}
-
-	private install(): void {
-		if (!this.selectedPack) return;
-		environment.localRepoAdd(this.selectedPack.url);
-		if (this.selectedPack.queuedUninstall) {
-			this.selectedPack.queuedUninstall = false;
-		} else {
-			this.selectedPack.installed = true;
-		}
-	}
-
-	private uninstall(): void {
-		if (!this.selectedPack) return;
-		environment.localRepoRemove(this.selectedPack.url);
-		this.selectedPack.queuedUninstall = true;
-		this.needRestart = true;
-	}
-
-	private activate(): void {
-		if (!this.selectedPack) return;
-		environment.autoLoadAdd(this.selectedPack.url);
-		this.selectedPack.active = true;
-		this.needRestart = true;
-	}
-
-	private deactivate(): void {
-		if (!this.selectedPack) return;
-		environment.autoLoadRemove(this.selectedPack.url);
-		this.selectedPack.active = false;
-		this.needRestart = true;
-	}
-}
+		},
+	},
+	methods: {
+		select(name: string) {
+			this.selectedPack = this.packs.find(pack => pack.name === name) || null;
+		},
+		async addNew() {
+			const url = await environment.prompt(
+				'Enter the URL of the character pack:'
+			);
+			if (!url) return;
+			await this.$store.dispatch('content/loadContentPacks', url);
+		},
+		restart() {
+			location.reload(true);
+		},
+		install(): void {
+			if (!this.selectedPack) return;
+			environment.localRepoAdd(this.selectedPack.url);
+			if (this.selectedPack.queuedUninstall) {
+				this.selectedPack.queuedUninstall = false;
+			} else {
+				this.selectedPack.installed = true;
+			}
+		},
+		uninstall(): void {
+			if (!this.selectedPack) return;
+			environment.localRepoRemove(this.selectedPack.url);
+			this.selectedPack.queuedUninstall = true;
+			this.needRestart = true;
+		},
+		activate(): void {
+			if (!this.selectedPack) return;
+			environment.autoLoadAdd(this.selectedPack.url);
+			this.selectedPack.active = true;
+			this.needRestart = true;
+		},
+		deactivate(): void {
+			if (!this.selectedPack) return;
+			environment.autoLoadRemove(this.selectedPack.url);
+			this.selectedPack.active = false;
+			this.needRestart = true;
+		},
+	},
+});
 </script>
 
 <style lang="scss" scoped>

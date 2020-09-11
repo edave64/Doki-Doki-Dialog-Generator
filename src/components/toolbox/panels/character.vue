@@ -3,7 +3,7 @@
 		<h1>{{ label }}</h1>
 		<parts
 			v-if="panelForParts"
-			:character="character"
+			:character="object"
 			:part="panelForParts"
 			@leave="panelForParts = null"
 			@show-dialog="$emit('show-dialog', $event)"
@@ -56,30 +56,25 @@
 					</tbody>
 				</table>
 			</fieldset>
-			<position-and-size :obj="character" />
-			<layers :obj="character" />
-			<opacity :obj="character" />
+			<position-and-size :obj="object" />
+			<layers :obj="object" />
+			<opacity :obj="object" />
 			<toggle v-model="closeUp" label="Close up?" />
 			<toggle v-model="flip" label="Flip?" />
-			<delete :obj="character" />
+			<delete :obj="object" />
 		</template>
 	</div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Mixins, Watch } from 'vue-property-decorator';
-import { State } from 'vuex-class-decorator';
-import { IHistorySupport } from '@/plugins/vuex-history';
 import {
 	getData,
 	getParts,
 	ISeekPoseAction,
-	ISetCloseMutation,
 	ISeekPosePartAction,
 	ICharacter,
 	ISeekStyleAction,
 } from '@/store/objectTypes/characters';
-import { ISetObjectFlipMutation } from '@/store/objects';
 import Toggle from '@/components/toggle.vue';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
@@ -89,11 +84,14 @@ import Parts from './character/parts.vue';
 import { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset } from '@/store/content';
 import { PanelMixin } from './panelMixin';
-import { Store } from 'vuex';
-import { IRootState } from '@/store';
-import { DeepReadonly } from '../../../util/readonly';
+import { DeepReadonly } from '@/util/readonly';
+import { defineComponent } from 'vue';
+import { genericSetable } from '@/util/simpleSettable';
 
-@Component({
+const setable = genericSetable<ICharacter>();
+
+export default defineComponent({
+	mixins: [PanelMixin],
 	components: {
 		Toggle,
 		PositionAndSize,
@@ -102,112 +100,77 @@ import { DeepReadonly } from '../../../util/readonly';
 		Delete,
 		Parts,
 	},
-})
-export default class CharacterPanel extends Mixins(PanelMixin) {
-	public $store!: Store<DeepReadonly<IRootState>>;
-
-	private get selection(): string {
-		return this.$store.state.ui.selection!;
-	}
-
-	private get character(): DeepReadonly<ICharacter> {
-		const obj = this.$store.state.objects.objects[this.selection];
-		if (obj.type !== 'character') return undefined!;
-		return obj as ICharacter;
-	}
-
-	private panelForParts: string | null = null;
-
-	private vuexHistory!: IHistorySupport;
-
-	private get charData(): DeepReadonly<Character<IAsset>> {
-		return getData(this.$store, this.character);
-	}
-
-	private get label(): string {
-		return this.charData.label || '';
-	}
-
-	private get parts(): DeepReadonly<string[]> {
-		return getParts(this.charData, this.character);
-	}
-
-	private get hasMultipleStyles(): boolean {
-		return (
-			this.charData.styleGroups[this.character.styleGroupId].styles.length >
-				1 || this.charData.styleGroups.length > 1
-		);
-	}
-
-	private get hasMultiplePoses(): boolean {
-		const styleGroup = this.charData.styleGroups[this.character.styleGroupId];
-		const style = styleGroup.styles[this.character.styleId];
-		return style.poses.length > 1;
-	}
-
-	private seekPose(delta: number): void {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('objects/seekPose', {
-				id: this.character.id,
-				delta,
-			} as ISeekPoseAction);
-		});
-	}
-
-	private seekStyle(delta: number): void {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('objects/seekStyle', {
-				id: this.character.id,
-				delta,
-			} as ISeekStyleAction);
-		});
-	}
-
-	private seekPart(part: string, delta: number): void {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('objects/seekPart', {
-				id: this.character.id,
-				delta,
-				part,
-			} as ISeekPosePartAction);
-		});
-	}
-
-	private captialize(str: string) {
-		return str.charAt(0).toUpperCase() + str.substring(1);
-	}
-
-	private get flip() {
-		return this.character.flip;
-	}
-
-	private set flip(newValue: boolean) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setFlip', {
-				id: this.character.id,
-				flip: newValue,
-			} as ISetObjectFlipMutation);
-		});
-	}
-
-	private get closeUp() {
-		return this.character.close;
-	}
-
-	private set closeUp(newValue: boolean) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setClose', {
-				id: this.character.id,
-				close: newValue,
-			} as ISetCloseMutation);
-		});
-	}
-
-	@Watch('selection')
-	private reset() {
-		this.panelForParts = null;
-	}
-}
+	data: () => ({
+		panelForParts: null as string | null,
+	}),
+	computed: {
+		flip: setable('flip', 'objects/setFlip'),
+		closeUp: setable('close', 'objects/setClose'),
+		selection(): string {
+			return this.$store.state.ui.selection!;
+		},
+		object(): DeepReadonly<ICharacter> {
+			const obj = this.$store.state.objects.objects[this.selection];
+			if (obj.type !== 'character') return undefined!;
+			return obj as ICharacter;
+		},
+		charData(): DeepReadonly<Character<IAsset>> {
+			return getData(this.$store, this.object);
+		},
+		label(): string {
+			return this.charData.label || '';
+		},
+		parts(): DeepReadonly<string[]> {
+			return getParts(this.charData, this.object);
+		},
+		hasMultipleStyles(): boolean {
+			return (
+				this.charData.styleGroups[this.object.styleGroupId].styles.length > 1 ||
+				this.charData.styleGroups.length > 1
+			);
+		},
+		hasMultiplePoses(): boolean {
+			const styleGroup = this.charData.styleGroups[this.object.styleGroupId];
+			const style = styleGroup.styles[this.object.styleId];
+			return style.poses.length > 1;
+		},
+	},
+	methods: {
+		seekPose(delta: number): void {
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('objects/seekPose', {
+					id: this.object.id,
+					delta,
+				} as ISeekPoseAction);
+			});
+		},
+		seekStyle(delta: number): void {
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('objects/seekStyle', {
+					id: this.object.id,
+					delta,
+				} as ISeekStyleAction);
+			});
+		},
+		seekPart(part: string, delta: number): void {
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('objects/seekPart', {
+					id: this.object.id,
+					delta,
+					part,
+				} as ISeekPosePartAction);
+			});
+		},
+		captialize(str: string) {
+			return str.charAt(0).toUpperCase() + str.substring(1);
+		},
+	},
+	watch: {
+		selection() {
+			this.panelForParts = null;
+		},
+	},
+});
 </script>
 
 <style lang="scss" scoped>
@@ -219,14 +182,14 @@ fieldset {
 	}
 }
 
-:not(.vertical) {
+.panel:not(.vertical) {
 	fieldset {
 		max-height: 100%;
 		overflow: auto;
 	}
 }
 
-.vertical {
+.panel.vertical {
 	fieldset {
 		width: calc(100% - 4px);
 		input {

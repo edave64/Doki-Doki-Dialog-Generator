@@ -46,54 +46,33 @@
 			<button @click="addChoice">Add</button>
 			<button @click="removeChoice">Remove</button>
 			<toggle label="Auto line wrap?" v-model="autoWrap" />
-			<position-and-size :obj="sprite" />
-			<layers :obj="sprite" />
-			<opacity :obj="sprite" />
+			<position-and-size :obj="object" />
+			<layers :obj="object" />
+			<opacity :obj="object" />
 			<toggle v-model="flip" label="Flip?" />
-			<delete :obj="sprite" />
+			<delete :obj="object" />
 		</template>
 	</div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
-import { isWebPSupported } from '@/asset-manager';
-import { Character } from '@/renderables/character';
 import Toggle from '@/components/toggle.vue';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
 import Opacity from '@/components/toolbox/commonsFieldsets/opacity.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
-import { IRenderable } from '@/renderables/renderable';
-import { Sprite } from '@/renderables/sprite';
-import { ISprite } from '@/store/objectTypes/sprite';
-import { ICommand } from '@/eventbus/command';
-import eventBus from '@/eventbus/event-bus';
-import { IHistorySupport } from '@/plugins/vuex-history';
-import {
-	IObjectSetOnTopAction,
-	ISetObjectFlipMutation,
-	ISetObjectPositionMutation,
-	ISetObjectOpacityMutation,
-	IObjectShiftLayerAction,
-} from '@/store/objects';
 import { PanelMixin } from './panelMixin';
-import { Store } from 'vuex';
-import { IRootState } from '@/store';
-import {
-	IChoices,
-	IRemoveChoiceAction,
-} from '../../../store/objectTypes/choices';
-import {
-	IChoice,
-	IAddChoiceAction,
-	ISetChoiceTextAction,
-} from '../../../store/objectTypes/choices';
-import { DeepReadonly } from '../../../util/readonly';
+import { IChoices, IRemoveChoiceAction } from '@/store/objectTypes/choices';
+import { IChoice, IAddChoiceAction } from '@/store/objectTypes/choices';
+import { DeepReadonly } from '@/util/readonly';
 import TextEditor from '../subpanels/text/text.vue';
-import { ISetAutoWrappingMutation } from '../../../store/objectTypes/textbox';
+import { ComponentCustomProperties, defineComponent } from 'vue';
+import { genericSetable } from '@/util/simpleSettable';
 
-@Component({
+const setable = genericSetable<IChoices>();
+
+export default defineComponent({
+	mixins: [PanelMixin],
 	components: {
 		Toggle,
 		PositionAndSize,
@@ -102,87 +81,72 @@ import { ISetAutoWrappingMutation } from '../../../store/objectTypes/textbox';
 		Delete,
 		TextEditor,
 	},
-})
-export default class ChoicePanel extends Mixins(PanelMixin) {
-	public $store!: Store<IRootState>;
+	data: () => ({
+		currentIdx: 0,
+		textEditor: false,
+	}),
+	computed: {
+		object(): IChoices {
+			const obj = this.$store.state.objects.objects[
+				this.$store.state.ui.selection!
+			];
+			if (obj.type !== 'choice') return undefined!;
+			return obj as IChoices;
+		},
+		flip: setable('flip', 'objects/setFlip'),
+		autoWrap: setable('autoWrap', 'objects/setAutoWrapping'),
+		// eslint-disable-next-line @typescript-eslint/camelcase
+		button_text: simpleButtonSettable('text', 'objects/setChoiceText'),
+		buttons(): DeepReadonly<IChoice[]> {
+			return this.object.choices;
+		},
+	},
+	methods: {
+		select(idx: number): void {
+			this.currentIdx = idx;
+		},
+		addChoice(): void {
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('objects/addChoice', {
+					id: this.object.id,
+					text: '',
+				} as IAddChoiceAction);
+			});
+		},
+		removeChoice(): void {
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('objects/removeChoise', {
+					id: this.object.id,
+					choiceIdx: this.currentIdx,
+				} as IRemoveChoiceAction);
+			});
+		},
+	},
+});
 
-	private vuexHistory!: IHistorySupport;
-	private currentIdx: number = 0;
-	private textEditor: boolean = false;
+function simpleButtonSettable<K extends keyof IChoice>(
+	key: K,
+	message: string
+) {
+	return {
+		get(this: IThis): IChoice[K] {
+			return this.object.choices[this.currentIdx][key];
+		},
+		set(this: IThis, val: IChoice[K]): void {
+			this.vuexHistory.transaction(() => {
+				this.$store.commit(message, {
+					id: this.object.id,
+					choiceIdx: this.currentIdx,
+					[key]: val,
+				});
+			});
+		},
+	};
+}
 
-	private get sprite(): IChoices {
-		const obj = this.$store.state.objects.objects[
-			this.$store.state.ui.selection!
-		];
-		if (obj.type !== 'choice') return undefined!;
-		return obj as IChoices;
-	}
-
-	private get flip() {
-		return this.sprite.flip;
-	}
-
-	private set flip(newValue: boolean) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setFlip', {
-				id: this.sprite.id,
-				flip: newValue,
-			} as ISetObjectFlipMutation);
-		});
-	}
-
-	private get autoWrap(): boolean {
-		return this.sprite.autoWrap;
-	}
-
-	private set autoWrap(autoWrap: boolean) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setAutoWrapping', {
-				id: this.sprite.id,
-				autoWrap,
-			} as ISetAutoWrappingMutation);
-		});
-	}
-
-	private get button_text() {
-		return this.sprite.choices[this.currentIdx].text;
-	}
-
-	private set button_text(newValue: string) {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('objects/setChoiceText', {
-				id: this.sprite.id,
-				choiceIdx: this.currentIdx,
-				text: newValue,
-			} as ISetChoiceTextAction);
-		});
-	}
-
-	private select(idx: number): void {
-		this.currentIdx = idx;
-	}
-
-	private get buttons(): DeepReadonly<IChoice[]> {
-		return this.sprite.choices;
-	}
-
-	private addChoice(): void {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('objects/addChoice', {
-				id: this.sprite.id,
-				text: '',
-			} as IAddChoiceAction);
-		});
-	}
-
-	private removeChoice(): void {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('objects/removeChoise', {
-				id: this.sprite.id,
-				choiceIdx: this.currentIdx,
-			} as IRemoveChoiceAction);
-		});
-	}
+interface IThis extends ComponentCustomProperties {
+	object: IChoices;
+	currentIdx: number;
 }
 </script>
 

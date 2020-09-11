@@ -1,20 +1,26 @@
 import { IEnvironment, IPack } from './environment';
 import { Background } from '@/renderables/background';
 import { EnvState } from './envState';
+import { reactive } from 'vue';
 
 export class Browser implements IEnvironment {
 	public readonly allowLQ = true;
 	public readonly isLocalRepoSupported = false;
 	public readonly isAutoLoadingSupported = false;
 	public readonly isBackgroundInstallingSupported = false;
-	public readonly vueState = new EnvState();
+	public readonly vueState: EnvState = reactive({
+		active: [],
+		inactive: [],
+		tempInstalled: [],
+		tempUninstalled: [],
+	});
 	public readonly localRepositoryUrl = '';
 
 	public async saveToFile(
 		downloadCanvas: HTMLCanvasElement,
 		filename: string,
-		format: string = 'image/png',
-		quality: number = 1
+		format = 'image/png',
+		quality = 1
 	): Promise<string> {
 		const a = document.createElement('a');
 		a.setAttribute('download', filename);

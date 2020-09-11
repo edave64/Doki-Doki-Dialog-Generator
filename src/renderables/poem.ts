@@ -79,7 +79,8 @@ export class Poem implements IRenderable {
 			y: 0,
 			flip: this.obj.flip,
 			shadow: selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
-			opacity: this.obj.opacity,
+			composite: this.obj.composite,
+			filters: this.obj.filters,
 		});
 	}
 

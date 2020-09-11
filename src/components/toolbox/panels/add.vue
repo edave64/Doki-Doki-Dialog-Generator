@@ -79,12 +79,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
-import {
-	isWebPSupported,
-	registerAsset,
-	registerAssetWithURL,
-} from '@/asset-manager';
+import { isWebPSupported } from '@/asset-manager';
 import { ICreateCharacterAction } from '@/store/objectTypes/characters';
 import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
 import { IAsset, ReplaceContentPackAction } from '@/store/content';
@@ -93,17 +88,15 @@ import {
 	ContentPack,
 	Sprite,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { Store } from 'vuex';
-import { IRootState } from '@/store';
 import { PanelMixin } from './panelMixin';
-import { State } from 'vuex-class-decorator';
-import { IHistorySupport } from '@/plugins/vuex-history';
 import DropTarget from '../drop-target.vue';
 import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
 import { ICreateChoicesAction } from '../../../store/objectTypes/choices';
 import { ICreateNotificationAction } from '../../../store/objectTypes/notification';
 import { ICreatePoemAction } from '../../../store/objectTypes/poem';
 import environment from '@/environments/environment';
+import { defineComponent } from 'vue';
+import { DeepReadonly } from '@/util/readonly';
 
 const uploadedSpritesPack: ContentPack<string> = {
 	packId: 'dddg.buildin.uploadedSprites',
@@ -118,146 +111,138 @@ const uploadedSpritesPack: ContentPack<string> = {
 	colors: [],
 };
 
-@Component({
+export default defineComponent({
+	mixins: [PanelMixin],
 	components: { DropTarget },
-})
-export default class AddPanel extends Mixins(PanelMixin) {
-	public $store!: Store<IRootState>;
-	private isWebPSupported: boolean | null = null;
-	private customAssetCount = 0;
-	private group: 'characters' | 'sprites' | 'ui' = 'characters';
-
-	private vuexHistory!: IHistorySupport;
-
-	private async created() {
+	data: () => ({
+		isWebPSupported: null as boolean | null,
+		customAssetCount: 0,
+		group: 'characters' as 'characters' | 'sprites' | 'ui',
+	}),
+	computed: {
+		characters(): DeepReadonly<Array<Character<IAsset>>> {
+			return this.$store.state.content.current.characters;
+		},
+		sprites(): DeepReadonly<Array<Sprite<IAsset>>> {
+			return this.$store.state.content.current.sprites;
+		},
+	},
+	methods: {
+		assetSpriteBackground(sprite: Sprite<IAsset>) {
+			return sprite.variants[0]
+				.map(variant => `url('${variant.lq}')`)
+				.join(',');
+		},
+		assetPath(character: Character<IAsset>) {
+			return character.chibi
+				? environment.allowLQ
+					? character.chibi.lq
+					: character.chibi.hq
+				: '';
+		},
+		showDropTarget(e: DragEvent) {
+			if (!e.dataTransfer) return;
+			e.dataTransfer.effectAllowed = 'none';
+			if (
+				!Array.from(e.dataTransfer.items).find(item =>
+					item.type.match(/^image.*$/)
+				)
+			) {
+				return;
+			}
+			e.dataTransfer.effectAllowed = 'link';
+			if (this.group === 'sprites') {
+				(this.$refs.spriteDt as any).show();
+			}
+		},
+		hideDropTarget() {
+			if (this.group === 'sprites') {
+				(this.$refs.spriteDt as any).hide();
+			}
+		},
+		onSpriteFileUpload(e: Event) {
+			const uploadInput = this.$refs.spriteUpload as HTMLInputElement;
+			if (!uploadInput.files) return;
+			for (const file of uploadInput.files) {
+				this.addCustomSpriteFile(file);
+			}
+		},
+		async uploadFromURL() {
+			const url = prompt('Enter the URL of the image');
+			if (!url) return;
+			const lastSegment = url.split('/').slice(-1)[0];
+			this.addNewCustomSprite(lastSegment, url);
+		},
+		async addSpriteToScene(sprite: Sprite<IAsset>) {
+			this.vuexHistory.transaction(async () => {
+				await this.$store.dispatch('objects/createSprite', {
+					assets: sprite.variants[0],
+				} as ICreateSpriteAction);
+			});
+		},
+		addTextBox() {
+			this.vuexHistory.transaction(async () => {
+				this.$store.dispatch(
+					'objects/createTextBox',
+					{} as ICreateTextBoxAction
+				);
+			});
+		},
+		addChoice() {
+			this.vuexHistory.transaction(async () => {
+				this.$store.dispatch(
+					'objects/createChoice',
+					{} as ICreateChoicesAction
+				);
+			});
+		},
+		addDialog() {
+			this.vuexHistory.transaction(async () => {
+				this.$store.dispatch(
+					'objects/createNotification',
+					{} as ICreateNotificationAction
+				);
+			});
+		},
+		addPoem() {
+			this.vuexHistory.transaction(async () => {
+				this.$store.dispatch('objects/createPoem', {} as ICreatePoemAction);
+			});
+		},
+		addConsole() {
+			this.vuexHistory.transaction(async () => {
+				this.$store.dispatch('objects/createConsole', {} as ICreatePoemAction);
+			});
+		},
+		onChosen(id: string) {
+			this.vuexHistory.transaction(async () => {
+				this.$store.dispatch('objects/createCharacters', {
+					characterType: id,
+				} as ICreateCharacterAction);
+			});
+		},
+		addCustomSpriteFile(file: File) {
+			const url = URL.createObjectURL(file);
+			this.addNewCustomSprite(file.name, url);
+		},
+		addNewCustomSprite(label: string, url: string) {
+			uploadedSpritesPack.sprites.push({
+				id: url,
+				label,
+				variants: [[url]],
+			});
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('content/replaceContentPack', {
+					contentPack: uploadedSpritesPack,
+					processed: false,
+				} as ReplaceContentPackAction);
+			});
+		},
+	},
+	async created() {
 		this.isWebPSupported = await isWebPSupported();
-	}
-
-	private get characters(): Array<Character<IAsset>> {
-		return this.$store.state.content.current.characters;
-	}
-
-	private get sprites(): Array<Sprite<IAsset>> {
-		return this.$store.state.content.current.sprites;
-	}
-
-	private assetSpriteBackground(sprite: Sprite<IAsset>) {
-		return sprite.variants[0].map(variant => `url('${variant.lq}')`).join(',');
-	}
-
-	private assetPath(character: Character<IAsset>) {
-		return character.chibi
-			? environment.allowLQ
-				? character.chibi.lq
-				: character.chibi.hq
-			: '';
-	}
-
-	private showDropTarget(e: DragEvent) {
-		if (!e.dataTransfer) return;
-		e.dataTransfer.effectAllowed = 'none';
-		if (
-			!Array.from(e.dataTransfer.items).find(item =>
-				item.type.match(/^image.*$/)
-			)
-		) {
-			return;
-		}
-		e.dataTransfer.effectAllowed = 'link';
-		if (this.group === 'sprites') {
-			(this.$refs.spriteDt as DropTarget).show();
-		}
-	}
-
-	private hideDropTarget() {
-		if (this.group === 'sprites') {
-			(this.$refs.spriteDt as DropTarget).hide();
-		}
-	}
-
-	private onSpriteFileUpload(e: Event) {
-		const uploadInput = this.$refs.spriteUpload as HTMLInputElement;
-		if (!uploadInput.files) return;
-		for (const file of uploadInput.files) {
-			this.addCustomSpriteFile(file);
-		}
-	}
-
-	private async uploadFromURL() {
-		const url = prompt('Enter the URL of the image');
-		if (!url) return;
-		const lastSegment = url.split('/').slice(-1)[0];
-		this.addNewCustomSprite(lastSegment, url);
-	}
-
-	private async addSpriteToScene(sprite: Sprite<IAsset>) {
-		this.vuexHistory.transaction(async () => {
-			await this.$store.dispatch('objects/createSprite', {
-				assets: sprite.variants[0],
-			} as ICreateSpriteAction);
-		});
-	}
-
-	private addTextBox() {
-		this.vuexHistory.transaction(async () => {
-			this.$store.dispatch('objects/createTextBox', {} as ICreateTextBoxAction);
-		});
-	}
-
-	private addChoice() {
-		this.vuexHistory.transaction(async () => {
-			this.$store.dispatch('objects/createChoice', {} as ICreateChoicesAction);
-		});
-	}
-
-	private addDialog() {
-		this.vuexHistory.transaction(async () => {
-			this.$store.dispatch(
-				'objects/createNotification',
-				{} as ICreateNotificationAction
-			);
-		});
-	}
-
-	private addPoem() {
-		this.vuexHistory.transaction(async () => {
-			this.$store.dispatch('objects/createPoem', {} as ICreatePoemAction);
-		});
-	}
-
-	private addConsole() {
-		this.vuexHistory.transaction(async () => {
-			this.$store.dispatch('objects/createConsole', {} as ICreatePoemAction);
-		});
-	}
-
-	private onChosen(id: string) {
-		this.vuexHistory.transaction(async () => {
-			this.$store.dispatch('objects/createCharacters', {
-				characterType: id,
-			} as ICreateCharacterAction);
-		});
-	}
-
-	private addCustomSpriteFile(file: File) {
-		const url = URL.createObjectURL(file);
-		this.addNewCustomSprite(file.name, url);
-	}
-
-	private addNewCustomSprite(label: string, url: string) {
-		uploadedSpritesPack.sprites.push({
-			id: url,
-			label,
-			variants: [[url]],
-		});
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('content/replaceContentPack', {
-				contentPack: uploadedSpritesPack,
-				processed: false,
-			} as ReplaceContentPackAction);
-		});
-	}
-}
+	},
+});
 </script>
 
 <style lang="scss" scoped>

@@ -117,33 +117,26 @@
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Watch } from 'vue-property-decorator';
-import { Store } from 'vuex';
-import { IRootState } from '@/store';
 import { PanelMixin } from './panelMixin';
-import panels, {
-	IPanel,
+import {
 	IDuplicatePanelAction,
 	ISetCurrentPanelMutation,
 	IDeletePanelAction,
 	ISetPanelPreviewMutation,
 	IMovePanelAction,
 } from '@/store/panels';
-import { State } from 'vuex-class-decorator';
-import { getAAsset, isWebPSupported, isHeifSupported } from '@/asset-manager';
+import { isWebPSupported, isHeifSupported } from '@/asset-manager';
 import { ITextBox } from '@/store/objectTypes/textbox';
-import { IHistorySupport } from '@/plugins/vuex-history';
 import { SceneRenderer } from '@/renderables/scene-renderer';
 import { DeepReadonly } from '@/util/readonly';
 import environment from '@/environments/environment';
-import leftPad from 'left-pad';
 import eventBus, { ShowMessageEvent } from '../../../eventbus/event-bus';
 import { screenWidth, screenHeight } from '@/constants/base';
 import { IObject } from '../../../store/objects';
 import { INotification } from '../../../store/objectTypes/notification';
-import { IPoemTextStyle } from '../../../constants/poem';
 import { IPoem } from '../../../store/objectTypes/poem';
-import { IChoice, IChoices } from '../../../store/objectTypes/choices';
+import { IChoices } from '../../../store/objectTypes/choices';
+import { defineComponent } from 'vue';
 
 interface IPanelButton {
 	id: string;
@@ -162,31 +155,70 @@ const defaultQuality = 90;
 const qualityWarningThreshold = 70;
 // tslint:enable: no-magic-numbers
 
-@Component({})
-export default class PanelsPanel extends Mixins(PanelMixin) {
-	public $store!: Store<DeepReadonly<IRootState>>;
-	private vuexHistory!: IHistorySupport;
+export default defineComponent({
+	mixins: [PanelMixin],
+	data: () => ({
+		webpSupport: false,
+		heifSupport: false,
+		ppi: 0,
+		pages: '',
+		format: 'image/png',
+		quality: defaultQuality,
+	}),
+	computed: {
+		currentPanel(): string {
+			return this.$store.state.panels.currentPanel;
+		},
 
-	@State('currentPanel', { namespace: 'panels' })
-	private currentPanel!: string;
+		isLossy(): boolean {
+			return this.format !== 'image/png';
+		},
 
-	private webpSupport = false;
-	private heifSupport = false;
-	private ppi = 0;
-	private pages = '';
-	private format = 'image/png';
-	private quality = defaultQuality;
+		canDeletePanel(): boolean {
+			return this.panelButtons.length > 1;
+		},
 
-	public async created() {
-		(window as any).panelsTool = this;
+		panelButtons(): IPanelButton[] {
+			const panelOrder = this.$store.state.panels.panelOrder;
+			return panelOrder.map(id => {
+				const panel = this.$store.state.panels.panels[id];
+				const objectOrders = this.$store.state.objects.panels[id];
+				const txtBox = objectOrders
+					? ([] as string[])
+							.concat(objectOrders.order, objectOrders.onTopOrder)
+							.map(objId => this.$store.state.objects.objects[objId])
+							.map(this.extractObjectText)
+					: [];
+				return {
+					id,
+					image: panel.lastRender,
+					text: txtBox.reduce(
+						(acc, current) => (acc.length > current.length ? acc : current),
+						''
+					),
+				} as IPanelButton;
+			});
+		},
 
+		canMoveAhead(): boolean {
+			const panelOrder = this.$store.state.panels.panelOrder;
+			const idx = panelOrder.indexOf(this.currentPanel);
+			return idx > 0;
+		},
+
+		canMoveBehind(): boolean {
+			const panelOrder = this.$store.state.panels.panelOrder;
+			const idx = panelOrder.indexOf(this.currentPanel);
+			return idx < panelOrder.length - 1;
+		},
+	},
+	async created() {
 		[this.webpSupport, this.heifSupport] = await Promise.all([
 			isWebPSupported(),
 			isHeifSupported(),
 		]);
-	}
-
-	public async mounted() {
+	},
+	async mounted() {
 		this.moveFocusToActivePanel();
 
 		const sceneRenderer = new SceneRenderer(
@@ -223,324 +255,270 @@ export default class PanelsPanel extends Mixins(PanelMixin) {
 			(await isWebPSupported()) ? 'image/webp' : 'image/jpeg',
 			thumbnailQuality
 		);
-	}
-
-	private get isLossy(): boolean {
-		return this.format !== 'image/png';
-	}
-
-	private async download() {
-		const distribution = this.getPanelDistibution();
-		const date = new Date();
-		const prefix = `cd-${[
-			date.getFullYear(),
-			leftPad(date.getMonth() + 1, 2, '0'),
-			leftPad(date.getDate(), 2, '0'),
-			leftPad(date.getHours(), 2, '0'),
-			leftPad(date.getMinutes(), 2, '0'),
-			leftPad(date.getSeconds(), 2, '0'),
-		].join('-')}`;
-		const extension = this.format.split('/')[1];
-		const format = this.format;
-		const quality = this.quality;
-		await this.renderObjects(
-			distribution,
-			true,
-			async (imageIdx: number, canvas: HTMLCanvasElement) => {
-				environment.saveToFile(
-					canvas,
-					`${prefix}_${imageIdx}.${extension}`,
-					format,
-					quality / qualityFactor
-				);
-			}
-		);
-	}
-
-	private async estimateExportSize() {
-		const distribution = this.getPanelDistibution();
-		const format = this.format || 'image/png';
-		const quality = this.quality || defaultQuality;
-		const sizes = await this.renderObjects(
-			distribution,
-			false,
-			async (imageIdx: number, canvas: HTMLCanvasElement) => {
-				return new Promise<number>((resolve, reject) => {
-					canvas.toBlob(
-						blob => {
-							if (!blob) {
-								reject(`Image ${imageIdx + 1} could not be rendered.`);
-								return;
-							}
-							resolve(blob.size);
-						},
+	},
+	methods: {
+		async download() {
+			const distribution = this.getPanelDistibution();
+			const date = new Date();
+			const prefix = `cd-${[
+				date.getFullYear(),
+				`${date.getMonth() + 1}`.padStart(2, '0'),
+				`${date.getDate()}`.padStart(2, '0'),
+				`${date.getHours()}`.padStart(2, '0'),
+				`${date.getMinutes()}`.padStart(2, '0'),
+				`${date.getSeconds()}`.padStart(2, '0'),
+			].join('-')}`;
+			const extension = this.format.split('/')[1];
+			const format = this.format;
+			const quality = this.quality;
+			await this.renderObjects(
+				distribution,
+				true,
+				async (imageIdx: number, canvas: HTMLCanvasElement) => {
+					environment.saveToFile(
+						canvas,
+						`${prefix}_${imageIdx}.${extension}`,
 						format,
 						quality / qualityFactor
 					);
-				});
-			}
-		);
-		const readableSizes = sizes.map(
-			size => ((size * estimateFactor) / 1024 / 1024).toFixed(2) + 'MiB'
-		);
-		const filePluralize = readableSizes.length > 1 ? 'files' : 'file';
-		const itPluralize = readableSizes.length > 1 ? 'These' : 'It';
-		const sizePluralize = readableSizes.length > 1 ? 'sizes' : 'size';
-		eventBus.fire(
-			new ShowMessageEvent(
-				`This would export ${
-					readableSizes.length
-				} ${filePluralize}. ${itPluralize} would have the following (aproximate) ${sizePluralize}: ${readableSizes.join(
-					','
-				)}`
-			)
-		);
-	}
-
-	@Watch('quality')
-	private warnImageQuality(quality: number, oldQuality: number) {
-		if (quality === qualityFactor) {
+				}
+			);
+		},
+		async estimateExportSize() {
+			const distribution = this.getPanelDistibution();
+			const format = this.format || 'image/png';
+			const quality = this.quality || defaultQuality;
+			const sizes = await this.renderObjects(
+				distribution,
+				false,
+				async (imageIdx: number, canvas: HTMLCanvasElement) => {
+					return new Promise<number>((resolve, reject) => {
+						canvas.toBlob(
+							blob => {
+								if (!blob) {
+									reject(`Image ${imageIdx + 1} could not be rendered.`);
+									return;
+								}
+								resolve(blob.size);
+							},
+							format,
+							quality / qualityFactor
+						);
+					});
+				}
+			);
+			const readableSizes = sizes.map(
+				size => ((size * estimateFactor) / 1024 / 1024).toFixed(2) + 'MiB'
+			);
+			const filePluralize = readableSizes.length > 1 ? 'files' : 'file';
+			const itPluralize = readableSizes.length > 1 ? 'These' : 'It';
+			const sizePluralize = readableSizes.length > 1 ? 'sizes' : 'size';
 			eventBus.fire(
 				new ShowMessageEvent(
-					'Note: 100% quality on a lossy format is still not lossless! Select PNG if you want lossless compression.'
+					`This would export ${
+						readableSizes.length
+					} ${filePluralize}. ${itPluralize} would have the following (aproximate) ${sizePluralize}: ${readableSizes.join(
+						','
+					)}`
 				)
 			);
-			return;
-		}
-		if (
-			oldQuality > qualityWarningThreshold &&
-			quality <= qualityWarningThreshold
-		) {
-			eventBus.fire(
-				new ShowMessageEvent(
-					'Note: A quality level below 70% might be very noticable and impair legibility of text.'
-				)
-			);
-			return;
-		}
-	}
+		},
+		async renderObjects<T>(
+			distribution: DeepReadonly<string[][]>,
+			hq: boolean,
+			mapper: (imageIdx: number, canvas: HTMLCanvasElement) => Promise<T>
+		): Promise<T[]> {
+			return await Promise.all(
+				distribution.map(async (image, imageIdx) => {
+					const targetCanvas = document.createElement('canvas');
+					targetCanvas.width = screenWidth;
+					targetCanvas.height = screenHeight * image.length;
+					const context = targetCanvas.getContext('2d')!;
 
-	private async renderObjects<T>(
-		distribution: DeepReadonly<string[][]>,
-		hq: boolean,
-		mapper: (imageIdx: number, canvas: HTMLCanvasElement) => Promise<T>
-	): Promise<T[]> {
-		return await Promise.all(
-			distribution.map(async (image, imageIdx) => {
-				const targetCanvas = document.createElement('canvas');
-				targetCanvas.width = screenWidth;
-				targetCanvas.height = screenHeight * image.length;
-				const context = targetCanvas.getContext('2d')!;
+					await Promise.all(
+						image.map(async (panelId, panelIdx) => {
+							const sceneRenderer = new SceneRenderer(
+								this.$store,
+								image[panelIdx],
+								screenWidth,
+								screenHeight
+							);
 
-				await Promise.all(
-					image.map(async (panelId, panelIdx) => {
-						const sceneRenderer = new SceneRenderer(
-							this.$store,
-							image[panelIdx],
-							screenWidth,
-							screenHeight
-						);
+							await sceneRenderer.render(hq, false);
 
-						await sceneRenderer.render(hq, false);
-
-						sceneRenderer.paintOnto(
-							context,
-							0,
-							screenHeight * panelIdx,
-							screenWidth,
-							screenHeight
-						);
-					})
-				);
-
-				return await mapper(imageIdx, targetCanvas);
-			})
-		);
-	}
-
-	private get canDeletePanel(): boolean {
-		return this.panelButtons.length > 1;
-	}
-
-	private getLimitedPanelList(): DeepReadonly<string[]> {
-		const max = this.$store.state.panels.panelOrder.length - 1;
-		const min = 0;
-		const parts = this.pages.split(',');
-		const listedPages: number[] = [];
-		let foundMatch = false;
-
-		for (const part of parts) {
-			const trimmedPart = part.trim();
-			const match = trimmedPart.match(/^\s*((\d+)|(\d+)\s*\-\s*(\d+))\s*$/);
-			if (!match) {
-				if (trimmedPart !== '') {
-					eventBus.fire(
-						new ShowMessageEvent(`Could not read '${part}' in the page list.`)
+							sceneRenderer.paintOnto(
+								context,
+								0,
+								screenHeight * panelIdx,
+								screenWidth,
+								screenHeight
+							);
+						})
 					);
+
+					return await mapper(imageIdx, targetCanvas);
+				})
+			);
+		},
+		getLimitedPanelList(): DeepReadonly<string[]> {
+			const max = this.$store.state.panels.panelOrder.length - 1;
+			const min = 0;
+			const parts = this.pages.split(',');
+			const listedPages: number[] = [];
+			let foundMatch = false;
+
+			for (const part of parts) {
+				const trimmedPart = part.trim();
+				const match = trimmedPart.match(/^\s*((\d+)|(\d+)\s*-\s*(\d+))\s*$/);
+				if (!match) {
+					if (trimmedPart !== '') {
+						eventBus.fire(
+							new ShowMessageEvent(`Could not read '${part}' in the page list.`)
+						);
+					}
+					continue;
 				}
-				continue;
-			}
-			foundMatch = true;
-			/* tslint:disable:no-magic-numbers */
-			if (match[2]) listedPages.push(parseInt(match[2], 10) - 1);
-			else {
-				const from = Math.max(parseInt(match[3], 10) - 1, min);
-				const to = Math.min(parseInt(match[4], 10) - 1, max);
-				if (from === undefined || to === undefined || from > to) continue;
-				for (let i = from; i <= to; ++i) {
-					listedPages.push(i);
+				foundMatch = true;
+				if (match[2]) listedPages.push(parseInt(match[2], 10) - 1);
+				else {
+					const from = Math.max(parseInt(match[3], 10) - 1, min);
+					const to = Math.min(parseInt(match[4], 10) - 1, max);
+					if (from === undefined || to === undefined || from > to) continue;
+					for (let i = from; i <= to; ++i) {
+						listedPages.push(i);
+					}
 				}
 			}
-			/* tslint:enable:no-magic-numbers */
-		}
 
-		if (!foundMatch) {
-			return this.$store.state.panels.panelOrder;
-		}
+			if (!foundMatch) {
+				return this.$store.state.panels.panelOrder;
+			}
 
-		return listedPages
-			.sort((a, b) => a - b)
-			.filter((value, idx, ary) => ary[idx - 1] !== value)
-			.map(pageIdx => this.$store.state.panels.panelOrder[pageIdx]);
-	}
-
-	private getPanelDistibution(): DeepReadonly<string[][]> {
-		const panelOrder = this.getLimitedPanelList();
-		if (this.ppi === 0) return [panelOrder];
-		const images: string[][] = [];
-		for (let imageI = 0; imageI < panelOrder.length / this.ppi; ++imageI) {
-			const sliceStart = imageI * this.ppi;
-			const sliceEnd = sliceStart + this.ppi;
-			images.push([...panelOrder.slice(sliceStart, sliceEnd)]);
-		}
-		return images;
-	}
-
-	private moveFocusToActivePanel() {
-		const active = this.$el.querySelector('.panel_button.active');
-		if (active) {
-			this.scrollIntoView(active);
-		}
-	}
-
-	private scrollIntoView(ele: Element) {
-		const parent = ele.parentElement!;
-		const idx = Array.from(parent.children).indexOf(ele);
-		if (this.$store.state.ui.vertical) {
-			const scroll =
-				idx * ele.clientHeight - parent.clientHeight / 2 + ele.clientHeight / 2;
-			parent.scrollTop = scroll;
-			parent.scrollLeft = 0;
-		} else {
-			const scroll =
-				idx * ele.clientWidth - parent.clientWidth / 2 + ele.clientWidth / 2;
-			parent.scrollLeft = scroll;
-			parent.scrollTop = 0;
-		}
-	}
-
-	private get panelButtons(): IPanelButton[] {
-		const panelButtons: IPanelButton[] = [];
-		const panelOrder = this.$store.state.panels.panelOrder;
-		return panelOrder.map(id => {
-			const panel = this.$store.state.panels.panels[id];
-			const objectOrders = this.$store.state.objects.panels[id];
-			const txtBox = objectOrders
-				? ([] as string[])
-						.concat(objectOrders.order, objectOrders.onTopOrder)
-						.map(objId => this.$store.state.objects.objects[objId])
-						.map(this.extractObjectText)
-				: [];
-			return {
-				id,
-				image: panel.lastRender,
-				text: txtBox.reduce(
-					(acc, current) => (acc.length > current.length ? acc : current),
-					''
-				),
-			} as IPanelButton;
-		});
-	}
-
-	private extractObjectText(obj: IObject) {
-		switch (obj.type) {
-			case 'textBox':
-				return (obj as ITextBox).text;
-			case 'notification':
-				return (obj as INotification).text;
-			case 'poem':
-				return (obj as IPoem).text;
-			case 'choice':
-				return (obj as IChoices).choices
-					.map(choice => `[${choice.text}]`)
-					.join('\n');
-		}
-		return '';
-	}
-
-	private async addNewPanel() {
-		await this.vuexHistory.transaction(async () => {
-			this.$store.dispatch('panels/duplicatePanel', {
-				panelId: this.$store.state.panels.currentPanel,
-			} as IDuplicatePanelAction);
-		});
-		this.$nextTick(() => {
-			this.moveFocusToActivePanel();
-		});
-	}
-
-	private updateCurrentPanel(panelId: string) {
-		this.vuexHistory.transaction(async () => {
-			this.$store.commit('panels/setCurrentPanel', {
-				panelId,
-			} as ISetCurrentPanelMutation);
-		});
-		this.$nextTick(() => {
-			this.moveFocusToActivePanel();
-		});
-	}
-
-	private deletePanel() {
-		this.vuexHistory.transaction(async () => {
-			this.$store.dispatch('panels/delete', {
-				panelId: this.$store.state.panels.currentPanel,
-			} as IDeletePanelAction);
-		});
-		this.$nextTick(() => {
-			this.moveFocusToActivePanel();
-		});
-	}
-
-	private moveAhead() {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('panels/move', {
-				panelId: this.currentPanel,
-				delta: -1,
-			} as IMovePanelAction);
-		});
-	}
-
-	private get canMoveAhead(): boolean {
-		const panelOrder = this.$store.state.panels.panelOrder;
-		const idx = panelOrder.indexOf(this.currentPanel);
-		return idx > 0;
-	}
-
-	private moveBehind() {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('panels/move', {
-				panelId: this.currentPanel,
-				delta: 1,
-			} as IMovePanelAction);
-		});
-	}
-
-	private get canMoveBehind(): boolean {
-		const panelOrder = this.$store.state.panels.panelOrder;
-		const idx = panelOrder.indexOf(this.currentPanel);
-		return idx < panelOrder.length - 1;
-	}
-}
+			return listedPages
+				.sort((a, b) => a - b)
+				.filter((value, idx, ary) => ary[idx - 1] !== value)
+				.map(pageIdx => this.$store.state.panels.panelOrder[pageIdx]);
+		},
+		getPanelDistibution(): DeepReadonly<string[][]> {
+			const panelOrder = this.getLimitedPanelList();
+			if (this.ppi === 0) return [panelOrder];
+			const images: string[][] = [];
+			for (let imageI = 0; imageI < panelOrder.length / this.ppi; ++imageI) {
+				const sliceStart = imageI * this.ppi;
+				const sliceEnd = sliceStart + this.ppi;
+				images.push([...panelOrder.slice(sliceStart, sliceEnd)]);
+			}
+			return images;
+		},
+		moveFocusToActivePanel() {
+			const active = this.$el.querySelector('.panel_button.active');
+			if (active) {
+				this.scrollIntoView(active);
+			}
+		},
+		scrollIntoView(ele: Element) {
+			const parent = ele.parentElement!;
+			const idx = Array.from(parent.children).indexOf(ele);
+			if (this.$store.state.ui.vertical) {
+				const scroll =
+					idx * ele.clientHeight -
+					parent.clientHeight / 2 +
+					ele.clientHeight / 2;
+				parent.scrollTop = scroll;
+				parent.scrollLeft = 0;
+			} else {
+				const scroll =
+					idx * ele.clientWidth - parent.clientWidth / 2 + ele.clientWidth / 2;
+				parent.scrollLeft = scroll;
+				parent.scrollTop = 0;
+			}
+		},
+		extractObjectText(obj: DeepReadonly<IObject>) {
+			switch (obj.type) {
+				case 'textBox':
+					return (obj as ITextBox).text;
+				case 'notification':
+					return (obj as INotification).text;
+				case 'poem':
+					return (obj as IPoem).text;
+				case 'choice':
+					return (obj as IChoices).choices
+						.map(choice => `[${choice.text}]`)
+						.join('\n');
+			}
+			return '';
+		},
+		async addNewPanel() {
+			await this.vuexHistory.transaction(async () => {
+				this.$store.dispatch('panels/duplicatePanel', {
+					panelId: this.$store.state.panels.currentPanel,
+				} as IDuplicatePanelAction);
+			});
+			this.$nextTick(() => {
+				this.moveFocusToActivePanel();
+			});
+		},
+		updateCurrentPanel(panelId: string) {
+			this.vuexHistory.transaction(async () => {
+				this.$store.commit('panels/setCurrentPanel', {
+					panelId,
+				} as ISetCurrentPanelMutation);
+			});
+			this.$nextTick(() => {
+				this.moveFocusToActivePanel();
+			});
+		},
+		deletePanel() {
+			this.vuexHistory.transaction(async () => {
+				this.$store.dispatch('panels/delete', {
+					panelId: this.$store.state.panels.currentPanel,
+				} as IDeletePanelAction);
+			});
+			this.$nextTick(() => {
+				this.moveFocusToActivePanel();
+			});
+		},
+		moveAhead() {
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('panels/move', {
+					panelId: this.currentPanel,
+					delta: -1,
+				} as IMovePanelAction);
+			});
+		},
+		moveBehind() {
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('panels/move', {
+					panelId: this.currentPanel,
+					delta: 1,
+				} as IMovePanelAction);
+			});
+		},
+	},
+	watch: {
+		quality(quality: number, oldQuality: number) {
+			if (quality === qualityFactor) {
+				eventBus.fire(
+					new ShowMessageEvent(
+						'Note: 100% quality on a lossy format is still not lossless! Select PNG if you want lossless compression.'
+					)
+				);
+				return;
+			}
+			if (
+				oldQuality > qualityWarningThreshold &&
+				quality <= qualityWarningThreshold
+			) {
+				eventBus.fire(
+					new ShowMessageEvent(
+						'Note: A quality level below 70% might be very noticable and impair legibility of text.'
+					)
+				);
+				return;
+			}
+		},
+	},
+});
 </script>
 
 <style lang="scss" scoped>

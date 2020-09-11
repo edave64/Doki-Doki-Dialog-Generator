@@ -7,10 +7,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 
-@Component({})
-export default class ModalDialog extends Vue {}
+export default defineComponent({});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -24,7 +24,7 @@ export class Sprite implements IRenderable {
 
 	public async render(selected: boolean, rx: RenderContext) {
 		const assets = await Promise.all(
-			this.obj.assets.map((asset) => getAAsset(asset))
+			this.obj.assets.map(asset => getAAsset(asset))
 		);
 		const x = this.obj.x - this.obj.width / 2;
 		for (const asset of assets) {
@@ -36,7 +36,8 @@ export class Sprite implements IRenderable {
 				h: this.obj.height,
 				shadow: selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
 				flip: this.obj.flip,
-				opacity: this.obj.opacity,
+				filters: this.obj.filters,
+				composite: this.obj.composite,
 			});
 		}
 	}

@@ -167,6 +167,8 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 				styleId: 0,
 				styleGroupId: 0,
 				posePositions: {},
+				composite: 'source-over',
+				filters: [],
 			} as ICharacter,
 		} as ICreateObjectMutation);
 	},

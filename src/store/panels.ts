@@ -79,7 +79,7 @@ export default {
 			previewManager.register(panelId, url);
 		},
 		createPanel(state, { panel }: ICreatePanel) {
-			Vue.set(state.panels, panel.id, panel);
+			state.panels[panel.id] = panel;
 		},
 		setPanelOrder(state, { panelOrder }: ISetPanelOrder) {
 			state.panelOrder = [...panelOrder];

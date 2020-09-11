@@ -19,31 +19,34 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
-import { ICommand } from '@/eventbus/command';
-import eventBus from '@/eventbus/event-bus';
-import { IHistorySupport } from '@/plugins/vuex-history';
-import { IObject, ISetObjectOpacityMutation } from '@/store/objects';
+import { IObject } from '@/store/objects';
+import { defineComponent, Prop } from 'vue';
 
-@Component({})
-export default class Opacity extends Vue {
-	@Prop({ required: true }) private obj!: IObject;
-
-	private vuexHistory!: IHistorySupport;
-
-	private get opacity() {
-		return this.obj.opacity;
-	}
-
-	private set opacity(opacity: number) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setOpacity', {
-				id: this.obj.id,
-				opacity,
-			} as ISetObjectOpacityMutation);
-		});
-	}
-}
+export default defineComponent({
+	props: {
+		obj: {
+			required: true,
+		} as Prop<IObject>,
+	},
+	computed: {
+		opacity: {
+			get(): number {
+				return 1;
+				/*return this.obj!.opacity;*/
+			},
+			set(opacity: number) {
+				this.vuexHistory.transaction(() => {
+					/*
+					this.$store.commit('objects/setOpacity', {
+						id: this.obj.id,
+						opacity,
+					} as ISetObjectOpacityMutation);
+					*/
+				});
+			},
+		},
+	},
+});
 </script>
 
 <style lang="scss" scoped>

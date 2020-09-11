@@ -9,41 +9,39 @@
 	</div>
 </template>
 <script lang="ts">
-import { Component, Mixins, Vue, Prop } from 'vue-property-decorator';
-import { Store } from 'vuex';
-import { IRootState } from '@/store';
-import { State } from 'vuex-class-decorator';
+import { defineComponent } from 'vue';
 
-@Component({})
-export default class Drop extends Vue {
-	public $store!: Store<IRootState>;
+export default defineComponent({
+	computed: {
+		vertical(): boolean {
+			return this.$store.state.ui.vertical;
+		},
+	},
+	data: () => ({
+		visible: false,
+	}),
+	methods: {
+		show(): void {
+			this.visible = true;
+		},
+		hide(): void {
+			this.visible = false;
+		},
+		drop(e: DragEvent): void {
+			this.hide();
+			e.stopPropagation();
+			e.preventDefault();
 
-	@State('vertical', { namespace: 'ui' }) private readonly vertical!: boolean;
+			if (!e.dataTransfer) return;
 
-	private visible = false;
-
-	public show(): void {
-		this.visible = true;
-	}
-
-	public hide(): void {
-		this.visible = false;
-	}
-
-	private drop(e: DragEvent): void {
-		this.hide();
-		e.stopPropagation();
-		e.preventDefault();
-
-		if (!e.dataTransfer) return;
-
-		for (const item of e.dataTransfer.items) {
-			if (item.kind === 'file' && item.type.match(/image.*/)) {
-				this.$emit('drop', item.getAsFile());
+			for (const item of e.dataTransfer.items) {
+				if (item.kind === 'file' && item.type.match(/image.*/)) {
+					this.$emit('drop', item.getAsFile());
+				}
 			}
-		}
-	}
-}
+		},
+	},
+});
 </script>
 <style lang="css" scoped>
 div {

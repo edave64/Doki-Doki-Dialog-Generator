@@ -4,84 +4,85 @@
 		:title="title"
 		:style="style"
 		@click="$emit('input', backgroundId)"
-	>{{ title }}</div>
+	>
+		{{ title }}
+	</div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import { color } from '@/renderables/background';
-import { isWebPSupported, getAAsset } from '@/asset-manager';
+import { getAAsset } from '@/asset-manager';
 import { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset, BackgroundLookup } from '@/store/content';
 import { ErrorAsset } from '@/models/error-asset';
-import { Store } from 'vuex';
-import { IRootState } from '@/store';
 import { IPanel } from '@/store/panels';
+import { defineComponent } from 'vue';
 
-@Component({
-	components: {},
-})
-export default class BackgroundButton extends Vue {
-	public $store!: Store<IRootState>;
-	@Prop({ required: true }) private readonly backgroundId!: string;
+export default defineComponent({
+	props: {
+		backgroundId: {
+			type: String,
+			required: true,
+		},
+	},
+	data: () => ({
+		isWebPSupported: null as boolean | null,
+		assets: [] as Array<HTMLImageElement | ErrorAsset>,
+	}),
+	computed: {
+		background(): Readonly<IPanel['background']> {
+			const currentPanel = this.$store.state.panels.currentPanel;
+			return this.$store.state.panels.panels[currentPanel].background;
+		},
 
-	private isWebPSupported: boolean | null = null;
-	private assets: Array<HTMLImageElement | ErrorAsset> = [];
+		bgData(): Background<IAsset> | null {
+			const backgrounds: BackgroundLookup = this.$store.getters[
+				'content/getBackgrounds'
+			];
+			return backgrounds.get(this.backgroundId) || null;
+		},
 
-	private get background(): Readonly<IPanel['background']> {
-		const currentPanel = this.$store.state.panels.currentPanel;
-		return this.$store.state.panels.panels[currentPanel].background;
-	}
+		isActive(): boolean {
+			return this.backgroundId === this.background.current;
+		},
 
-	private get bgData(): Background<IAsset> | null {
-		const backgrounds: BackgroundLookup = this.$store.getters[
-			'content/getBackgrounds'
-		];
-		return backgrounds.get(this.backgroundId) || null;
-	}
+		title(): string {
+			switch (this.backgroundId) {
+				case 'buildin.static-color':
+					return 'Static color';
+				case 'buildin.transparent':
+					return 'Transparent';
+			}
+			return this.bgData!.label || '';
+		},
 
-	private get isActive(): boolean {
-		return this.backgroundId === this.background.current;
-	}
-
-	private async created() {
+		style(): { [id: string]: string } {
+			switch (this.backgroundId) {
+				case 'buildin.static-color':
+					return {
+						'background-color': this.background.color,
+					};
+				case 'buildin.transparent':
+					return {};
+			}
+			const variant = this.bgData!.variants[0];
+			const urls = (this.assets.filter(
+				img => img instanceof HTMLImageElement
+			) as HTMLImageElement[])
+				.map(img => `url('${img.src}')`)
+				.join(',');
+			return {
+				backgroundImage: urls,
+			};
+		},
+	},
+	async created() {
 		if (this.bgData) {
 			this.assets = await Promise.all(
 				this.bgData.variants[0].map(asset => getAAsset(asset, false))
 			);
 		}
-	}
-
-	private get title(): string {
-		switch (this.backgroundId) {
-			case 'buildin.static-color':
-				return 'Static color';
-			case 'buildin.transparent':
-				return 'Transparent';
-		}
-		return this.bgData!.label || '';
-	}
-
-	private get style(): { [id: string]: string } {
-		switch (this.backgroundId) {
-			case 'buildin.static-color':
-				return {
-					'background-color': this.background.color,
-				};
-			case 'buildin.transparent':
-				return {};
-		}
-		const variant = this.bgData!.variants[0];
-		const urls = (this.assets.filter(
-			img => img instanceof HTMLImageElement
-		) as HTMLImageElement[])
-			.map(img => `url('${img.src}')`)
-			.join(',');
-		return {
-			backgroundImage: urls,
-		};
-	}
-}
+	},
+});
 </script>
 
 <style lang="scss" scoped>

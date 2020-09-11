@@ -66,33 +66,23 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import {
-	isWebPSupported,
-	registerAsset,
-	registerAssetWithURL,
-} from '@/asset-manager';
-import environment from '@/environments/environment';
+import { isWebPSupported } from '@/asset-manager';
 import PartButton, { IPartButtonImage, IPartImage } from './partButton.vue';
 import {
-	StyleComponent,
 	Pose,
 	Character,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset } from '@/store/content';
 import {
 	getPose,
-	getDataG,
-	ISeekPoseAction,
 	ISetPosePositionMutation,
 	ISetPartAction,
 	getData,
 	ICharacter,
 	ISetStyleAction,
 } from '@/store/objectTypes/characters';
-import { IHistorySupport } from '@/plugins/vuex-history';
-import { State } from 'vuex-class-decorator';
-import { DeepReadonly } from '../../../../util/readonly';
+import { DeepReadonly } from '@/util/readonly';
+import { defineComponent, PropType } from 'vue';
 
 interface IPartStyleGroup {
 	label: string;
@@ -100,225 +90,233 @@ interface IPartStyleGroup {
 	buttons: { [id: string]: IPartButtonImage };
 }
 
-@Component({
-	components: {
-		PartButton,
+export default defineComponent({
+	components: { PartButton },
+	props: {
+		character: {
+			type: Object as PropType<ICharacter>,
+			required: true,
+		},
+		part: {
+			required: true,
+			type: String as PropType<string | 'pose' | 'style'>,
+		},
 	},
-})
-export default class PartsPanel extends Vue {
-	@State('vertical', { namespace: 'ui' }) private readonly vertical!: boolean;
+	data: () => ({
+		isWebPSupported: null as boolean | null,
+		/**
+		 * [styleComponentKey, styleComponentValue]
+		 */
+		stylePriorities: [] as Array<[string, string]>,
+	}),
+	computed: {
+		vertical(): boolean {
+			return this.$store.state.ui.vertical;
+		},
+		styleComponents(): DeepReadonly<IPartStyleGroup[]> {
+			if (this.part !== 'style') return [];
+			const styleComponents = this.charData.styleGroups[
+				this.character.styleGroupId
+			];
+			return styleComponents.styleComponents.map(component => {
+				const buttons: IPartStyleGroup['buttons'] = {};
+				for (const key in component.variants) {
+					// eslint-disable-next-line no-prototype-builtins
+					if (!component.variants.hasOwnProperty(key)) continue;
+					const variant = component.variants[key];
+					buttons[key] = {
+						size: styleComponents.styles[0].poses[0].size,
+						offset: [0, 0],
+						images: [{ offset: [0, 0], asset: variant }],
+					};
+				}
+				return { label: component.label, name: component.id, buttons };
+			});
+		},
+		parts(): { [id: number]: DeepReadonly<IPartButtonImage> } {
+			const ret: { [id: string]: DeepReadonly<IPartButtonImage> } = {};
+			let collection: DeepReadonly<IAsset[][]>;
+			let offset: DeepReadonly<IPartButtonImage['offset']>;
+			let size: DeepReadonly<IPartButtonImage['size']>;
+			const data = this.charData;
+			const currentPose = getPose(data, this.character);
+			switch (this.part) {
+				case 'head':
+					for (
+						let headKeyIdx = 0;
+						headKeyIdx < currentPose.compatibleHeads.length;
+						++headKeyIdx
+					) {
+						const headKey = currentPose.compatibleHeads[headKeyIdx];
+						const heads = data.heads[headKey];
+						for (let headIdx = 0; headIdx < heads.variants.length; ++headIdx) {
+							const headImages = heads.variants[headIdx];
+							ret[`${headKeyIdx}_${headIdx}`] = {
+								size: heads.previewSize,
+								offset: heads.previewOffset,
+								images: headImages.map(
+									(image): IPartImage => ({ asset: image, offset: [0, 0] })
+								),
+							};
+						}
+					}
+					return ret;
+				case 'pose':
+					// eslint-disable-next-line no-case-declarations
+					const currentStyle =
+						data.styleGroups[this.character.styleGroupId].styles[
+							this.character.styleId
+						];
+					for (
+						let poseIdx = 0;
+						poseIdx < currentStyle.poses.length;
+						++poseIdx
+					) {
+						const pose = currentStyle.poses[poseIdx];
+						ret[poseIdx] = this.generatePosePreview(pose);
+					}
+					return ret;
+				case 'style':
+					for (const styleGroup of data.styleGroups) {
+						ret[styleGroup.id] = this.generatePosePreview(
+							styleGroup.styles[0].poses[0]
+						);
+					}
+					return ret;
 
-	@Prop({ required: true }) private character!: ICharacter;
-	@Prop({ required: true, type: String }) private readonly part!:
-		| string
-		| 'pose'
-		| 'style';
-
-	private isWebPSupported: boolean | null = null;
-
-	private vuexHistory!: IHistorySupport;
-	/**
-	 * [styleComponentKey, styleComponentValue]
-	 */
-	private stylePriorities: Array<[string, string]> = [];
-
-	private get charData(): DeepReadonly<Character<IAsset>> {
-		return getData(this.$store, this.character);
-	}
-
-	@Watch('character')
-	private updateStyleData(): void {
-		const baseStyle = this.charData.styleGroups[this.character.styleGroupId]
-			.styles[this.character.styleId];
-		this.stylePriorities = Object.keys(baseStyle.components).map(key => [
-			key,
-			baseStyle.components[key],
-		]);
-	}
-
-	private async created() {
-		this.updateStyleData();
-		this.isWebPSupported = await isWebPSupported();
-	}
-
-	private get styleComponents(): DeepReadonly<IPartStyleGroup[]> {
-		if (this.part !== 'style') return [];
-		const styleComponents = this.charData.styleGroups[
-			this.character.styleGroupId
-		];
-		return styleComponents.styleComponents.map(component => {
-			const buttons: IPartStyleGroup['buttons'] = {};
-			for (const key in component.variants) {
-				if (!component.variants.hasOwnProperty(key)) continue;
-				const variant = component.variants[key];
-				buttons[key] = {
-					size: styleComponents.styles[0].poses[0].size,
-					offset: [0, 0],
-					images: [{ offset: [0, 0], asset: variant }],
+				default:
+					collection = currentPose.positions[this.part];
+					size = currentPose.previewSize;
+					offset = currentPose.previewOffset;
+					break;
+			}
+			for (let partIdx = 0; partIdx < collection.length; ++partIdx) {
+				const part = collection[partIdx];
+				ret[partIdx] = {
+					images: part.map((partImage: IAsset) => ({
+						offset: [0, 0],
+						asset: partImage,
+					})),
+					size,
+					offset,
 				};
 			}
-			return { label: component.label, name: component.id, buttons };
-		});
-	}
+			return ret;
+		},
+		charData(): DeepReadonly<Character<IAsset>> {
+			return getData(this.$store, this.character);
+		},
+	},
+	methods: {
+		updateStyleData(): void {
+			const baseStyle = this.charData.styleGroups[this.character.styleGroupId]
+				.styles[this.character.styleId];
+			this.stylePriorities = Object.keys(baseStyle.components).map(key => [
+				key,
+				baseStyle.components[key],
+			]);
+		},
+		generatePosePreview(
+			pose: DeepReadonly<Pose<IAsset>>
+		): DeepReadonly<IPartButtonImage> {
+			const data = this.charData;
+			const heads = data.heads[pose.compatibleHeads[0]];
+			const head = heads ? heads.variants[0] : null;
+			let images: IAsset[] = [];
 
-	private get parts(): { [id: number]: DeepReadonly<IPartButtonImage> } {
-		const ret: { [id: string]: DeepReadonly<IPartButtonImage> } = {};
-		let collection: DeepReadonly<IAsset[][]>;
-		let offset: DeepReadonly<IPartButtonImage['offset']>;
-		let size: DeepReadonly<IPartButtonImage['size']>;
-		const data = this.charData;
-		const currentPose = getPose(data, this.character);
-		switch (this.part) {
-			case 'head':
-				for (
-					let headKeyIdx = 0;
-					headKeyIdx < currentPose.compatibleHeads.length;
-					++headKeyIdx
-				) {
-					const headKey = currentPose.compatibleHeads[headKeyIdx];
-					const heads = data.heads[headKey];
-					for (let headIdx = 0; headIdx < heads.variants.length; ++headIdx) {
-						const headImages = heads.variants[headIdx];
-						ret[`${headKeyIdx}_${headIdx}`] = {
-							size: heads.previewSize,
-							offset: heads.previewOffset,
-							images: headImages.map(
-								(image): IPartImage => ({ asset: image, offset: [0, 0] })
-							),
-						};
-					}
+			for (const command of pose.renderCommands) {
+				switch (command.type) {
+					case 'pose-part':
+						// eslint-disable-next-line no-case-declarations
+						const part = pose.positions[command.part];
+						if (!part || part.length === 0) break;
+						images = images.concat(part[0] as IAsset[]);
+						break;
+					case 'head':
+						if (head) images = images.concat(head);
+						break;
+					case 'image':
+						images = images.concat(command.images);
+						break;
 				}
-				return ret;
-			case 'pose':
-				const currentStyle =
-					data.styleGroups[this.character.styleGroupId].styles[
-						this.character.styleId
-					];
-				for (let poseIdx = 0; poseIdx < currentStyle.poses.length; ++poseIdx) {
-					const pose = currentStyle.poses[poseIdx];
-					ret[poseIdx] = this.generatePosePreview(pose);
-				}
-				return ret;
-			case 'style':
-				for (const styleGroup of data.styleGroups) {
-					ret[styleGroup.id] = this.generatePosePreview(
-						styleGroup.styles[0].poses[0]
-					);
-				}
-				return ret;
-
-			default:
-				collection = currentPose.positions[this.part];
-				size = currentPose.previewSize;
-				offset = currentPose.previewOffset;
-				break;
-		}
-		for (let partIdx = 0; partIdx < collection.length; ++partIdx) {
-			const part = collection[partIdx];
-			ret[partIdx] = {
-				images: part.map((partImage: IAsset) => ({
-					offset: [0, 0],
-					asset: partImage,
-				})),
-				size,
-				offset,
-			};
-		}
-		return ret;
-	}
-
-	private generatePosePreview(
-		pose: DeepReadonly<Pose<IAsset>>
-	): DeepReadonly<IPartButtonImage> {
-		const data = this.charData;
-		const heads = data.heads[pose.compatibleHeads[0]];
-		const head = heads ? heads.variants[0] : null;
-		let images: IAsset[] = [];
-
-		for (const command of pose.renderCommands) {
-			switch (command.type) {
-				case 'pose-part':
-					const part = pose.positions[command.part];
-					if (!part || part.length === 0) break;
-					images = images.concat(part[0] as IAsset[]);
-					break;
-				case 'head':
-					if (head) images = images.concat(head);
-					break;
-				case 'image':
-					images = images.concat(command.images);
-					break;
 			}
-		}
 
-		return {
-			images: images.map(image => ({ asset: image, offset: [0, 0] })),
-			size: pose.previewSize,
-			offset: pose.previewOffset,
-		};
-	}
+			return {
+				images: images.map(image => ({ asset: image, offset: [0, 0] })),
+				size: pose.previewSize,
+				offset: pose.previewOffset,
+			};
+		},
+		updatePose(styleGroupId?: number) {
+			if (styleGroupId === undefined)
+				styleGroupId = this.character.styleGroupId;
 
-	private updatePose(styleGroupId?: number) {
-		if (styleGroupId === undefined) styleGroupId = this.character.styleGroupId;
-
-		const data = this.charData;
-		const styleGroups = data.styleGroups[styleGroupId];
-		let selection = styleGroups.styles;
-		for (const priority of this.stylePriorities) {
-			const subSelect = selection.filter(style => {
-				return style.components[priority[0]] === priority[1];
+			const data = this.charData;
+			const styleGroups = data.styleGroups[styleGroupId];
+			let selection = styleGroups.styles;
+			for (const priority of this.stylePriorities) {
+				const subSelect = selection.filter(style => {
+					return style.components[priority[0]] === priority[1];
+				});
+				if (subSelect.length > 0) selection = subSelect;
+			}
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('objects/setCharStyle', {
+					id: this.character.id,
+					styleGroupId,
+					styleId: styleGroups.styles.indexOf(selection[0]),
+				} as ISetStyleAction);
 			});
-			if (subSelect.length > 0) selection = subSelect;
-		}
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('objects/setCharStyle', {
-				id: this.character.id,
-				styleGroupId,
-				styleId: styleGroups.styles.indexOf(selection[0]),
-			} as ISetStyleAction);
-		});
-	}
-
-	private choose(index: string) {
-		if (this.part === 'style') {
-			this.updatePose(
-				this.charData.styleGroups.findIndex(group => group.id === index)
+		},
+		choose(index: string) {
+			if (this.part === 'style') {
+				this.updatePose(
+					this.charData.styleGroups.findIndex(group => group.id === index)
+				);
+			} else if (this.part === 'head') {
+				const [headTypeIdx, headIdx] = index
+					.split('_', 2)
+					.map(part => parseInt(part, 10));
+				this.$store.commit('objects/setPosePosition', {
+					id: this.character.id,
+					posePositions: {
+						headType: headTypeIdx,
+						head: headIdx,
+					},
+				} as ISetPosePositionMutation);
+			} else {
+				this.setPart(this.part, parseInt(index, 10));
+			}
+		},
+		// eslint-disable-next-line @typescript-eslint/camelcase
+		choose_component(component: string, id: string) {
+			const prioIdx = this.stylePriorities.findIndex(
+				stylePriority => stylePriority[0] === component
 			);
-		} else if (this.part === 'head') {
-			const [headTypeIdx, headIdx] = index
-				.split('_', 2)
-				.map(part => parseInt(part, 10));
-			this.$store.commit('objects/setPosePosition', {
-				id: this.character.id,
-				posePositions: {
-					headType: headTypeIdx,
-					head: headIdx,
-				},
-			} as ISetPosePositionMutation);
-		} else {
-			this.setPart(this.part, parseInt(index, 10));
-		}
-	}
-
-	private choose_component(component: string, id: string) {
-		const prioIdx = this.stylePriorities.findIndex(
-			stylePriority => stylePriority[0] === component
-		);
-		this.stylePriorities.splice(prioIdx, 1);
-		this.stylePriorities.unshift([component, id]);
-		this.updatePose();
-	}
-
-	private setPart(part: ISetPartAction['part'], index: number): void {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('objects/setPart', {
-				id: this.character.id,
-				part,
-				val: index,
-			} as ISetPartAction);
-		});
-	}
-}
+			this.stylePriorities.splice(prioIdx, 1);
+			this.stylePriorities.unshift([component, id]);
+			this.updatePose();
+		},
+		setPart(part: ISetPartAction['part'], index: number): void {
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('objects/setPart', {
+					id: this.character.id,
+					part,
+					val: index,
+				} as ISetPartAction);
+			});
+		},
+	},
+	async created() {
+		this.updateStyleData();
+		this.isWebPSupported = await isWebPSupported();
+	},
+	watch: {
+		character() {
+			this.updateStyleData();
+		},
+	},
+});
 </script>
 
 <style lang="scss" scoped>

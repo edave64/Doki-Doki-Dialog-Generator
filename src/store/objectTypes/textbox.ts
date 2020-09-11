@@ -175,6 +175,8 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 				talkingOther: '',
 				text: '',
 				resetBounds,
+				composite: 'source-over',
+				filters: [],
 			} as ITextBox,
 		} as ICreateObjectMutation);
 		return id;

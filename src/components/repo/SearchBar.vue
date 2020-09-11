@@ -87,72 +87,75 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Watch } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 
 const debounce = 250;
 
-@Component({})
-export default class SearchBar extends Vue {
-	@Prop({ default: false }) private disabled!: boolean;
-	@Prop() private value!: string;
-
-	private showHelp = false;
-	private message = '';
-	private debounceTimeout: number | null = null;
-	private lastSend = '';
-
-	public focus() {
-		(this.$refs.input as HTMLElement).focus();
-	}
-
-	private created() {
+export default defineComponent({
+	props: {
+		disabled: {
+			type: Boolean,
+			default: false,
+		},
+		modelValue: {
+			type: String,
+			default: '',
+		},
+	},
+	data: () => ({
+		showHelp: false,
+		message: '',
+		debounceTimeout: null as number | null,
+		lastSend: '',
+	}),
+	methods: {
+		focus() {
+			(this.$refs.input as HTMLElement).focus();
+		},
+		documentClickHandler(event: MouseEvent & { dontCloseHelp?: boolean }) {
+			if (event.dontCloseHelp) return;
+			this.showHelp = false;
+		},
+		keydownHandler(event: KeyboardEvent) {
+			if (event.key === 'ArrowDown') {
+				this.$emit('focus-list');
+				event.preventDefault();
+				event.stopPropagation();
+			}
+		},
+		updateInternalValue() {
+			if (this.lastSend === this.modelValue) {
+				this.lastSend = '';
+				return;
+			}
+			this.message = this.modelValue;
+		},
+		onUpdate() {
+			if (this.debounceTimeout) clearTimeout(this.debounceTimeout);
+			this.debounceTimeout = setTimeout(this.doUpdate, debounce);
+		},
+		doUpdate() {
+			if (this.debounceTimeout) clearTimeout(this.debounceTimeout);
+			this.debounceTimeout = null;
+			const div = document.createElement('div');
+			div.innerHTML = this.message;
+			this.lastSend = div.innerText;
+			this.$emit('update:modelValue', div.innerText);
+		},
+	},
+	mounted() {
 		document.body.addEventListener('click', this.documentClickHandler);
 		this.updateInternalValue();
-	}
-
-	private destroyed() {
+	},
+	unmounted() {
 		document.body.removeEventListener('click', this.documentClickHandler);
-	}
-
-	private documentClickHandler(
-		event: MouseEvent & { dontCloseHelp?: boolean }
-	) {
-		if (event.dontCloseHelp) return;
-		this.showHelp = false;
-	}
-
-	private keydownHandler(event: KeyboardEvent) {
-		if (event.key === 'ArrowDown') {
-			this.$emit('focus-list');
-			event.preventDefault();
-			event.stopPropagation();
-		}
-	}
-
-	@Watch('value')
-	private updateInternalValue() {
-		if (this.lastSend === this.value) {
-			this.lastSend = '';
-			return;
-		}
-		this.message = this.value;
-	}
-
-	private onUpdate() {
-		if (this.debounceTimeout) clearTimeout(this.debounceTimeout);
-		this.debounceTimeout = setTimeout(this.doUpdate, debounce);
-	}
-
-	private doUpdate() {
-		if (this.debounceTimeout) clearTimeout(this.debounceTimeout);
-		this.debounceTimeout = null;
-		const div = document.createElement('div');
-		div.innerHTML = this.message;
-		this.lastSend = div.innerText;
-		this.$emit('input', div.innerText);
-	}
-}
+	},
+	watch: {
+		modelValue() {
+			this.updateInternalValue();
+		},
+	},
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

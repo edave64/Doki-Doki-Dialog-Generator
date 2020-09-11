@@ -1,6 +1,6 @@
 <template>
 	<div :class="{ slider: true, vertical }" @keydown.stop>
-		<label :for="_uid">{{ label }}</label>
+		<label :for="_.uid">{{ label }}</label>
 		<div>
 			<svg
 				ref="svg"
@@ -15,7 +15,7 @@
 			>
 				<defs>
 					<linearGradient
-						:id="`gradient${_uid}`"
+						:id="`gradient${_.uid}`"
 						x1="0%"
 						y1="0%"
 						x2="100%"
@@ -34,18 +34,18 @@
 						d="M7 0H262V24H7z"
 						stroke-width="2"
 						paint-order="fill stroke markers"
-						:fill="`url(#gradient${_uid})`"
+						:fill="`url(#gradient${_.uid})`"
 					/>
 					<path :d="pointerPath" stroke-width="2" fill="#000000" />
 				</g>
 			</svg>
 		</div>
 		<input
-			:id="_uid"
+			:id="_.uid"
 			class="sliderInput"
 			min="0"
 			:max="maxValue"
-			:value="value"
+			:value="modelValue"
 			type="number"
 			@input="$emit('input', parseFloat($event.target.value))"
 			@keydown.stop
@@ -54,64 +54,76 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import { State } from 'vuex-class-decorator';
-import { RGBAColor } from '../../../../util/colors/rgb';
-import { IColor } from '../../../../util/colors/color';
-import { HSLAColor } from '../../../../util/colors/hsl';
+import { defineComponent, Prop } from 'vue';
 
 const sliderLength = 255;
 const sliderOffset = 8;
 
-@Component({
-	components: {},
-})
-export default class Slider extends Vue {
-	@Prop({ type: String }) private label!: string | undefined;
-	@Prop({}) private gradientStops!: string[];
-	@Prop({ type: Number }) private value!: number;
-	@Prop({ type: Number }) private maxValue!: number;
-	@State('vertical', { namespace: 'ui' }) private readonly vertical!: boolean;
-
-	private slideActive = false;
-
-	private get pointerPath(): string {
-		const val = (this.value / this.maxValue) * sliderLength;
-		// tslint:disable-next-line: no-magic-numbers
-		return `M${val} 0L${val + 14} 0L${val + 7} 12Z`;
-	}
-
-	private enterSlide(event: MouseEvent | TouchEvent) {
-		this.slideActive = true;
-		this.moveSlide(event);
-	}
-
-	private moveSlide(event: MouseEvent | TouchEvent) {
-		if (!this.slideActive) return;
-		const svg = this.$refs.svg as HTMLElement;
-		if (!svg.contains(event.target as Node) && event.target !== svg) return;
-		if (event instanceof MouseEvent && event.which !== 1) {
+export default defineComponent({
+	props: {
+		label: {
+			type: String,
+			required: true,
+		},
+		gradientStops: {
+			required: true,
+		} as Prop<string[]>,
+		modelValue: {
+			type: Number,
+			required: true,
+		},
+		maxValue: {
+			type: Number,
+			required: true,
+		},
+	},
+	data: () => ({
+		slideActive: false,
+	}),
+	computed: {
+		vertical(): boolean {
+			return this.$store.state.ui.vertical;
+		},
+		pointerPath(): string {
+			const val = (this.modelValue / this.maxValue) * sliderLength;
+			// tslint:disable-next-line: no-magic-numbers
+			return `M${val} 0L${val + 14} 0L${val + 7} 12Z`;
+		},
+	},
+	methods: {
+		enterSlide(event: MouseEvent | TouchEvent): void {
+			this.slideActive = true;
+			this.gradientStops;
+			this.moveSlide(event);
+		},
+		moveSlide(event: MouseEvent | TouchEvent) {
+			if (!this.slideActive) return;
+			const svg = this.$refs.svg as HTMLElement;
+			if (!svg.contains(event.target as Node) && event.target !== svg) return;
+			if (event instanceof MouseEvent && event.which !== 1) {
+				this.slideActive = false;
+				return;
+			}
+			const bounding = svg.getBoundingClientRect();
+			const scale =
+				bounding.width / (sliderOffset + sliderLength + sliderOffset);
+			const x =
+				(event instanceof MouseEvent
+					? event.clientX
+					: event.touches[0].clientX) - bounding.x;
+			const scaledX = x / scale;
+			event.preventDefault();
+			const value =
+				(Math.max(Math.min(scaledX - sliderOffset, sliderLength), 0) /
+					sliderLength) *
+				this.maxValue;
+			this.$emit('update:modelValue', value);
+		},
+		exitSlide() {
 			this.slideActive = false;
-			return;
-		}
-		const bounding = svg.getBoundingClientRect();
-		const scale = bounding.width / (sliderOffset + sliderLength + sliderOffset);
-		const x =
-			(event instanceof MouseEvent ? event.clientX : event.touches[0].clientX) -
-			bounding.x;
-		const scaledX = x / scale;
-		event.preventDefault();
-		const value =
-			(Math.max(Math.min(scaledX - sliderOffset, sliderLength), 0) /
-				sliderLength) *
-			this.maxValue;
-		this.$emit('input', value);
-	}
-
-	private exitSlide() {
-		this.slideActive = false;
-	}
-}
+		},
+	},
+});
 </script>
 
 <style lang="scss" scoped>

@@ -6,7 +6,7 @@
 			<button
 				id="bg_color"
 				class="color-button"
-				:style="{background: color}"
+				:style="{ background: color }"
 				@click="$emit('change-color')"
 			/>
 		</template>
@@ -39,108 +39,97 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import { isWebPSupported } from '@/asset-manager';
 import Toggle from '@/components/toggle.vue';
-import { State } from 'vuex-class-decorator';
 import { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { Store } from 'vuex';
-import { IRootState } from '@/store';
 import { IAsset } from '@/store/content';
-import { IHistorySupport } from '@/plugins/vuex-history';
 import {
 	ISetColorMutation,
 	ISetFlipMutation,
 	ISeekVariantAction,
-	ScalingModes,
 	ISetScalingMutation,
 	IPanel,
 } from '@/store/panels';
+import { defineComponent } from 'vue';
+import { DeepReadonly } from '@/util/readonly';
 
-@Component({
+export default defineComponent({
 	components: { Toggle },
-})
-export default class BackgroundSettings extends Vue {
-	public $store!: Store<IRootState>;
-	private get currentBackgroundId(): string {
-		return this.background.current;
-	}
+	computed: {
+		color: {
+			get(): string {
+				return this.background.color;
+			},
+			set(color: string): void {
+				this.vuexHistory.transaction(() => {
+					this.$store.commit('panels/setBackgroundColor', {
+						color,
+						panelId: this.$store.state.panels.currentPanel,
+					} as ISetColorMutation);
+				});
+			},
+		},
+		flipped: {
+			get(): boolean {
+				return this.background.flipped;
+			},
+			set(flipped: boolean) {
+				this.vuexHistory.transaction(() => {
+					this.$store.commit('panels/setBackgroundFlipped', {
+						flipped,
+						panelId: this.$store.state.panels.currentPanel,
+					} as ISetFlipMutation);
+				});
+			},
+		},
+		scaling: {
+			get(): string {
+				return this.background.scaling.toString();
+			},
 
-	private vuexHistory!: IHistorySupport;
-
-	private get background(): Readonly<IPanel['background']> {
-		const currentPanel = this.$store.state.panels.currentPanel;
-		return this.$store.state.panels.panels[currentPanel].background;
-	}
-
-	private get bgData(): Background<IAsset> | null {
-		return (
-			this.$store.state.content.current.backgrounds.find(
-				background => background.id === this.currentBackgroundId
-			) || null
-		);
-	}
-
-	private get isColor(): boolean {
-		return this.currentBackgroundId === 'buildin.static-color';
-	}
-
-	private get color(): string {
-		return this.background.color;
-	}
-
-	private set color(color: string) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('panels/setBackgroundColor', {
-				color,
-				panelId: this.$store.state.panels.currentPanel,
-			} as ISetColorMutation);
-		});
-	}
-
-	private get flipped(): boolean {
-		return this.background.flipped;
-	}
-
-	private set flipped(flipped: boolean) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('panels/setBackgroundFlipped', {
-				flipped,
-				panelId: this.$store.state.panels.currentPanel,
-			} as ISetFlipMutation);
-		});
-	}
-
-	private get scaling(): string {
-		return this.background.scaling.toString();
-	}
-
-	private set scaling(scaling: string) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('panels/setBackgroundScaling', {
-				scaling: parseInt(scaling, 10),
-				panelId: this.$store.state.panels.currentPanel,
-			} as ISetScalingMutation);
-		});
-	}
-
-	private get isVariant() {
-		return !!this.bgData;
-	}
-
-	private get hasVariants() {
-		return this.bgData ? this.bgData.variants.length > 1 : false;
-	}
-
-	private seekVariant(delta: 1 | -1) {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('panels/seekBackgroundVariant', {
-				delta,
-				panelId: this.$store.state.panels.currentPanel,
-			} as ISeekVariantAction);
-		});
-	}
-}
+			set(scaling: string) {
+				this.vuexHistory.transaction(() => {
+					this.$store.commit('panels/setBackgroundScaling', {
+						scaling: parseInt(scaling, 10),
+						panelId: this.$store.state.panels.currentPanel,
+					} as ISetScalingMutation);
+				});
+			},
+		},
+		currentBackgroundId(): string {
+			return this.background.current;
+		},
+		background(): Readonly<IPanel['background']> {
+			const currentPanel = this.$store.state.panels.currentPanel;
+			return this.$store.state.panels.panels[currentPanel].background;
+		},
+		bgData(): DeepReadonly<Background<IAsset>> | null {
+			return (
+				this.$store.state.content.current.backgrounds.find(
+					background => background.id === this.currentBackgroundId
+				) || null
+			);
+		},
+		isColor(): boolean {
+			return this.currentBackgroundId === 'buildin.static-color';
+		},
+		isVariant(): boolean {
+			return !!this.bgData;
+		},
+		hasVariants(): boolean {
+			return this.bgData ? this.bgData.variants.length > 1 : false;
+		},
+	},
+	methods: {
+		seekVariant(delta: 1 | -1) {
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('panels/seekBackgroundVariant', {
+					delta,
+					panelId: this.$store.state.panels.currentPanel,
+				} as ISeekVariantAction);
+			});
+		},
+	},
+});
 </script>
 
 <style lang="scss" scoped>

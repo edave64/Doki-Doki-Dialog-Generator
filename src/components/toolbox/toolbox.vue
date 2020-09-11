@@ -82,11 +82,6 @@
 </template>
 
 <script lang="ts">
-// App.vue has currently so many responsiblities that it's best to break it into chunks
-// tslint:disable:member-ordering
-import { Component, Vue, Watch, Prop } from 'vue-property-decorator';
-import { State } from 'vuex-class-decorator';
-
 import SettingsPanel from './panels/settings.vue';
 import AddPanel from './panels/add.vue';
 import CharacterPanel from './panels/character.vue';
@@ -99,10 +94,9 @@ import ContentPacksPanel from './panels/content-pack.vue';
 import PanelsPanel from './panels/panels.vue';
 import NotificationPanel from './panels/notification.vue';
 import PoemPanel from './panels/poem.vue';
-import { IObject } from '@/store/objects';
-import { Store } from 'vuex';
-import { IRootState } from '@/store';
+import { IObject, ObjectTypes } from '@/store/objects';
 import environment from '@/environments/environment';
+import { defineComponent } from 'vue';
 
 type PanelNames =
 	| 'add'
@@ -115,7 +109,7 @@ type PanelNames =
 	| 'notification'
 	| 'poem';
 
-@Component({
+export default defineComponent({
 	components: {
 		SettingsPanel,
 		AddPanel,
@@ -130,60 +124,59 @@ type PanelNames =
 		NotificationPanel,
 		PoemPanel,
 	},
-})
-export default class ToolBox extends Vue {
-	public $store!: Store<IRootState>;
-
-	@State('vertical', { namespace: 'ui' }) private readonly vertical!: boolean;
-
-	private create() {
-		environment.onPanelChange((panel: string) => {
-			this.panelSelection = panel as PanelNames;
-		});
-	}
-
-	private get selection(): string | null {
-		return this.$store.state.ui.selection;
-	}
-
-	private panelSelection: PanelNames = 'add';
-
-	private get panel() {
-		if (this.panelSelection === 'selection') {
-			if (this.selection === null) {
-				this.panelSelection = 'add';
-			} else {
-				const obj = this.$store.state.objects.objects[this.selection];
-				return obj.type;
+	data: () => ({
+		panelSelection: 'add' as PanelNames,
+	}),
+	computed: {
+		vertical(): boolean {
+			return this.$store.state.ui.vertical;
+		},
+		selection(): string | null {
+			return this.$store.state.ui.selection;
+		},
+		panel(): PanelNames | ObjectTypes {
+			if (this.panelSelection === 'selection') {
+				if (this.selection === null) {
+					// eslint-disable-next-line vue/no-side-effects-in-computed-properties
+					this.panelSelection = 'add';
+				} else {
+					const obj = this.$store.state.objects.objects[this.selection];
+					return obj.type;
+				}
 			}
-		}
-		return this.panelSelection;
-	}
-
-	private get hasPrevRender(): boolean {
-		return this.$store.state.ui.lastDownload !== null;
-	}
-
-	private setPanel(name: PanelNames) {
-		if (name === this.panelSelection) name = 'add';
-		this.panelSelection = name;
-		if (this.selection) {
-			if (this.$store.state.ui.selection === null) return;
-			this.$store.commit('ui/setSelection', null);
-		}
-	}
-
-	@Watch('selection')
-	private onSelectionChange(newSelection: IObject | null) {
-		if (newSelection) {
-			this.panelSelection = 'selection';
-			return;
-		}
-		if (this.panelSelection === 'selection') {
-			this.panelSelection = 'add';
-		}
-	}
-}
+			return this.panelSelection;
+		},
+		hasPrevRender(): boolean {
+			return this.$store.state.ui.lastDownload !== null;
+		},
+	},
+	methods: {
+		create() {
+			environment.onPanelChange((panel: string) => {
+				this.panelSelection = panel as PanelNames;
+			});
+		},
+		setPanel(name: PanelNames) {
+			if (name === this.panelSelection) name = 'add';
+			this.panelSelection = name;
+			if (this.selection) {
+				if (this.$store.state.ui.selection === null) return;
+				this.$store.commit('ui/setSelection', null);
+			}
+		},
+	},
+	watch: {
+		selection(newSelection: IObject | null) {
+			if (newSelection) {
+				this.panelSelection = 'selection';
+				return;
+			}
+			if (this.panelSelection === 'selection') {
+				this.panelSelection = 'add';
+			}
+		},
+	},
+});
 </script>
 
 <style lang="scss">

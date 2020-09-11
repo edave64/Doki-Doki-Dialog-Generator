@@ -14,7 +14,6 @@ import { Choice } from './choices';
 import { RenderContext } from '@/renderer/rendererContext';
 import { getAsset } from '@/asset-manager';
 import { Renderer } from '@/renderer/renderer';
-import leftPad from 'left-pad';
 import { BackgroundLookup } from '@/store/content';
 import { IChoices } from '@/store/objectTypes/choices';
 import { INotification } from '@/store/objectTypes/notification';
@@ -47,11 +46,11 @@ export class SceneRenderer {
 		const date = new Date();
 		const filename = `panel-${[
 			date.getFullYear(),
-			leftPad(date.getMonth() + 1, 2, '0'),
-			leftPad(date.getDate(), 2, '0'),
-			leftPad(date.getHours(), 2, '0'),
-			leftPad(date.getMinutes(), 2, '0'),
-			leftPad(date.getSeconds(), 2, '0'),
+			`${date.getMonth() + 1}`.padStart(2, '0'),
+			`${date.getDate()}`.padStart(2, '0'),
+			`${date.getHours()}`.padStart(2, '0'),
+			`${date.getMinutes()}`.padStart(2, '0'),
+			`${date.getSeconds()}`.padStart(2, '0'),
 		].join('-')}.png`;
 		return this.renderer.download(this.renderCallback.bind(this), filename);
 	}

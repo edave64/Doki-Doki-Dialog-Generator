@@ -1,6 +1,8 @@
 import { RenderAbortedException } from './renderAbortedException';
 import { Renderer } from './renderer';
 import { ErrorAsset } from '@/models/error-asset';
+import { SpriteFilter } from '@/store/sprite_options';
+import { DeepReadonly } from '@/util/readonly';
 
 const opacityFactor = 100;
 
@@ -91,7 +93,7 @@ export class RenderContext {
 		} & IRPos &
 			IOSize &
 			IOShadow &
-			IOOpacity
+			IOFilters
 	): void {
 		if (this.aborted) throw new RenderAbortedException();
 		if (params.image instanceof ErrorAsset) return;
@@ -280,8 +282,8 @@ interface IOSize {
 interface IOOutline {
 	outline?: IOutline;
 }
-interface IOOpacity {
-	opacity?: number;
+interface IOFilters {
+	filters?: DeepReadonly<SpriteFilter[]>;
 }
 
 interface IOFill {

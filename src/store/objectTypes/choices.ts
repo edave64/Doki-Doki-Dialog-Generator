@@ -76,6 +76,8 @@ export const choiceActions: ActionTree<IObjectsState, IRootState> = {
 					},
 				],
 				customColor: ChoiceButtonColor,
+				composite: 'source-over',
+				filters: [],
 			} as IChoices,
 		} as ICreateObjectMutation);
 		return id;

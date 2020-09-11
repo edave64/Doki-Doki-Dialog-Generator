@@ -31,14 +31,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
-import { registerAsset, getAsset } from '@/asset-manager';
 import BackgroundButton from './background/button.vue';
 import BackgroundSettings from './background/settings.vue';
 import DropTarget from '../drop-target.vue';
-import { State } from 'vuex-class-decorator';
-import { Store } from 'vuex';
-import { IRootState } from '@/store';
 import { IAsset, ReplaceContentPackAction } from '@/store/content';
 import {
 	Background,
@@ -46,8 +41,8 @@ import {
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { ISetCurrentMutation, ISetColorMutation } from '@/store/panels';
 import { PanelMixin } from './panelMixin';
-import { IHistorySupport } from '@/plugins/vuex-history';
 import Color from '../subpanels/color/color.vue';
+import { defineComponent } from 'vue';
 
 const uploadedBackgroundsPack: ContentPack<string> = {
 	packId: 'dddg.buildin.uploadedBackgrounds',
@@ -62,105 +57,99 @@ const uploadedBackgroundsPack: ContentPack<string> = {
 	colors: [],
 };
 
-@Component({
+export default defineComponent({
+	mixins: [PanelMixin],
 	components: {
 		BackgroundButton,
 		BackgroundSettings,
 		DropTarget,
 		Color,
 	},
-})
-export default class BackgroundsPanel extends Mixins(PanelMixin) {
-	public $store!: Store<IRootState>;
-
-	private colorSelect: boolean = false;
-
-	private vuexHistory!: IHistorySupport;
-
-	private get backgrounds(): Array<Background<IAsset>['id']> {
-		return [
-			...this.$store.state.content.current.backgrounds.map(
-				background => background.id
-			),
-			'buildin.static-color',
-			'buildin.transparent',
-		];
-	}
-
-	private setBackground(id: Background<IAsset>['id']) {
-		this.$store.commit('panels/setCurrentBackground', {
-			current: id,
-			panelId: this.$store.state.panels.currentPanel,
-		} as ISetCurrentMutation);
-	}
-
-	private get bgColor(): string {
-		return this.$store.state.panels.panels[
-			this.$store.state.panels.currentPanel
-		].background.color;
-	}
-
-	private set bgColor(color: string) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('panels/setBackgroundColor', {
-				color,
+	data: () => ({
+		colorSelect: false,
+	}),
+	computed: {
+		bgColor: {
+			get(): string {
+				return this.$store.state.panels.panels[
+					this.$store.state.panels.currentPanel
+				].background.color;
+			},
+			set(color: string) {
+				this.vuexHistory.transaction(() => {
+					this.$store.commit('panels/setBackgroundColor', {
+						color,
+						panelId: this.$store.state.panels.currentPanel,
+					} as ISetColorMutation);
+				});
+			},
+		},
+		backgrounds(): Array<Background<IAsset>['id']> {
+			return [
+				...this.$store.state.content.current.backgrounds.map(
+					background => background.id
+				),
+				'buildin.static-color',
+				'buildin.transparent',
+			];
+		},
+	},
+	methods: {
+		setBackground(id: Background<IAsset>['id']) {
+			this.$store.commit('panels/setCurrentBackground', {
+				current: id,
 				panelId: this.$store.state.panels.currentPanel,
-			} as ISetColorMutation);
-		});
-	}
-
-	private onFileUpload(e: Event) {
-		const uploadInput = this.$refs.upload as HTMLInputElement;
-		if (!uploadInput.files) return;
-		for (const file of uploadInput.files) {
-			this.addImageFile(file);
-		}
-	}
-
-	private addImageFile(file: File) {
-		const url = URL.createObjectURL(file);
-		this.addNewCustomBackground(file.name, file.name, url);
-	}
-
-	private addByUrl() {
-		const url = prompt('Enter the URL of the image');
-		if (!url) return;
-		const lastSegment = url.split('/').slice(-1)[0];
-		this.addNewCustomBackground(lastSegment, lastSegment, url);
-	}
-
-	private addNewCustomBackground(
-		id: Background<IAsset>['id'],
-		label: string,
-		url: string
-	) {
-		uploadedBackgroundsPack.backgrounds.push({
-			id,
-			label,
-			variants: [[url]],
-		});
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('content/replaceContentPack', {
-				contentPack: uploadedBackgroundsPack,
-			} as ReplaceContentPackAction);
-			this.setBackground(id);
-		});
-	}
-
-	private dragEnter(e: DragEvent) {
-		if (!e.dataTransfer) return;
-		e.dataTransfer.effectAllowed = 'none';
-		if (
-			!Array.from(e.dataTransfer.items).find(item =>
-				item.type.match(/^image.*$/)
-			)
+			} as ISetCurrentMutation);
+		},
+		onFileUpload(e: Event) {
+			const uploadInput = this.$refs.upload as HTMLInputElement;
+			if (!uploadInput.files) return;
+			for (const file of uploadInput.files) {
+				this.addImageFile(file);
+			}
+		},
+		addImageFile(file: File) {
+			const url = URL.createObjectURL(file);
+			this.addNewCustomBackground(file.name, file.name, url);
+		},
+		addByUrl() {
+			const url = prompt('Enter the URL of the image');
+			if (!url) return;
+			const lastSegment = url.split('/').slice(-1)[0];
+			this.addNewCustomBackground(lastSegment, lastSegment, url);
+		},
+		addNewCustomBackground(
+			id: Background<IAsset>['id'],
+			label: string,
+			url: string
 		) {
-			return;
-		}
-		e.dataTransfer.effectAllowed = 'link';
-		(this.$refs.dt as DropTarget).show();
-	}
-}
+			uploadedBackgroundsPack.backgrounds.push({
+				id,
+				label,
+				variants: [[url]],
+			});
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('content/replaceContentPack', {
+					contentPack: uploadedBackgroundsPack,
+				} as ReplaceContentPackAction);
+				this.setBackground(id);
+			});
+		},
+		dragEnter(e: DragEvent) {
+			if (!e.dataTransfer) return;
+			e.dataTransfer.effectAllowed = 'none';
+			if (
+				!Array.from(e.dataTransfer.items).find(item =>
+					item.type.match(/^image.*$/)
+				)
+			) {
+				return;
+			}
+			e.dataTransfer.effectAllowed = 'link';
+			(this.$refs.dt as any).show();
+		},
+	},
+});
 </script>
 
 <style lang="scss" scoped>

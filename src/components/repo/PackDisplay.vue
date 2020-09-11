@@ -82,14 +82,12 @@
 </template>
 
 <script lang="ts">
-/* tslint:disable:no-bitwise */
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Store } from 'vuex';
 import { IAuthor, IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import { sanitize } from '@/components/toolbox/panels/character-pack-sanitizer';
 import environment from '@/environments/environment';
-import { IRootState, IRemovePacksAction } from '@/store';
 import { IPackWithState, PackStates } from './types';
+import { defineComponent, PropType } from 'vue';
+import { IRemovePacksAction } from '@/store';
 
 const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 	['reddit', 'https://reddit.com/u/%1', 'reddit.png'],
@@ -102,113 +100,120 @@ const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 	['website', '%1', 'website.svg'],
 ];
 
-@Component({})
-export default class PackDisplay extends Vue {
-	public $store!: Store<IRootState>;
-	@Prop() private selected!: string;
-	@Prop() private authors!: IAuthors;
-	@Prop() private packs!: IPackWithState[];
-	@Prop({ type: Boolean, default: false }) private showBack!: boolean;
-
-	public focus() {
-		(this.$refs.toFocus as HTMLElement).focus();
-	}
-
-	private authorName(authorId: string) {
-		const author = this.authors[authorId];
-		if (author && author.currentName) return author.currentName;
-		return authorId;
-	}
-
-	private authorsLinks(authorId: string): AuthorLink[] {
-		const author = this.authors[authorId];
-		if (!author) return [];
-		return linkablePlatforms
-			.filter(platform => author[platform[0]])
-			.map(platform => {
-				const value = author[platform[0]]!;
-				const target = platform[1].replace('%1', value);
-				return {
-					target,
-					platform: platform[0][0].toUpperCase() + platform[0].slice(1),
-					icon: 'icons/' + platform[2],
-				};
-			});
-	}
-
-	private sanitize(credits: string) {
-		return sanitize(credits);
-	}
-
-	private get pack(): IPackWithState {
-		return this.packs.find(pack => pack.id === this.selected)!;
-	}
-
-	private get backgroundImage(): string {
-		return this.pack.preview.map(preview => `url('${preview}')`).join(',');
-	}
-
-	private get activatable(): boolean {
-		if (!environment.isAutoLoadingSupported) return false;
-		if (!(this.pack.state & PackStates.Installed)) return false;
-		return !(this.pack.state & PackStates.Active);
-	}
-	private get deactivatable(): boolean {
-		if (!environment.isAutoLoadingSupported) return false;
-		if (!(this.pack.state & PackStates.Installed)) return false;
-		return !!(this.pack.state & PackStates.Active);
-	}
-
-	private get installable(): boolean {
-		if (!environment.isLocalRepoSupported) return false;
-		if (this.pack.state & PackStates.Installed) return false;
-		return true;
-	}
-	private get uninstallable(): boolean {
-		if (!environment.isLocalRepoSupported) return false;
-		if (!(this.pack.state & PackStates.Installed)) return false;
-		return true;
-	}
-	/*
-	private install(): void {
-		if (!this.installedPack) return;
-		environment.installContentPack(this.pack.dddg2Path || this.pack.dddg1Path);
-		if (this.installedPack.queuedUninstall) {
-			this.installedPack.queuedUninstall = false;
-		} else {
-			this.installedPack.installed = true;
-		}
-	}
-
-	private uninstall(): void {
-		if (!this.installedPack) return;
-		environment.uninstallContentPack(this.installedPack.url);
-		this.installedPack.queuedUninstall = true;
-	}
-*/
-	private get removable(): boolean {
-		return !!(this.pack.state & PackStates.Active);
-	}
-
-	private async remove(): Promise<void> {
-		await this.$store.dispatch('removePacks', {
-			packs: new Set([this.pack.id]),
-		} as IRemovePacksAction);
-	}
-
-	private get addable(): boolean {
-		return this.pack.state === PackStates.Unknown;
-	}
-
-	private async add(): Promise<void> {
-		await this.$store.dispatch(
-			'content/loadContentPacks',
-			this.pack.dddg2Path || this.pack.dddg1Path
-		);
-	}
-
-	private isAdded() {}
-}
+export default defineComponent({
+	props: {
+		selected: {
+			type: String,
+			required: true,
+		},
+		authors: {
+			type: Object as PropType<IAuthors>,
+			require: true,
+		},
+		packs: {
+			type: Object as PropType<IPackWithState[]>,
+			require: true,
+		},
+		showBack: {
+			type: Boolean,
+			require: false,
+		},
+	},
+	computed: {
+		pack(): IPackWithState {
+			return this.packs!.find(pack => pack.id === this.selected)!;
+		},
+		backgroundImage(): string {
+			return this.pack.preview.map(preview => `url('${preview}')`).join(',');
+		},
+		activatable(): boolean {
+			if (!environment.isAutoLoadingSupported) return false;
+			if (!(this.pack.state & PackStates.Installed)) return false;
+			return !(this.pack.state & PackStates.Active);
+		},
+		deactivatable(): boolean {
+			if (!environment.isAutoLoadingSupported) return false;
+			if (!(this.pack.state & PackStates.Installed)) return false;
+			return !!(this.pack.state & PackStates.Active);
+		},
+		installable(): boolean {
+			if (!environment.isLocalRepoSupported) return false;
+			if (this.pack.state & PackStates.Installed) return false;
+			return true;
+		},
+		uninstallable(): boolean {
+			if (!environment.isLocalRepoSupported) return false;
+			if (!(this.pack.state & PackStates.Installed)) return false;
+			return true;
+		},
+		removable(): boolean {
+			return !!(this.pack.state & PackStates.Active);
+		},
+		addable(): boolean {
+			return this.pack.state === PackStates.Unknown;
+		},
+		isAdded(): boolean {
+			return false;
+		},
+	},
+	methods: {
+		focus() {
+			(this.$refs.toFocus as HTMLElement).focus();
+		},
+		authorName(authorId: string) {
+			const author = this.authors![authorId];
+			if (author && author.currentName) return author.currentName;
+			return authorId;
+		},
+		authorsLinks(authorId: string): AuthorLink[] {
+			const author = this.authors![authorId];
+			if (!author) return [];
+			return linkablePlatforms
+				.filter(platform => author[platform[0]])
+				.map(platform => {
+					const value = author[platform[0]]!;
+					const target = platform[1].replace('%1', value);
+					return {
+						target,
+						platform: platform[0][0].toUpperCase() + platform[0].slice(1),
+						icon: 'icons/' + platform[2],
+					};
+				});
+		},
+		sanitize(credits: string) {
+			return sanitize(credits);
+		},
+		/*
+		install(): void {
+			if (!this.installedPack) return;
+			environment.installContentPack(
+				this.pack.dddg2Path || this.pack.dddg1Path
+			);
+			if (this.installedPack.queuedUninstall) {
+				this.installedPack.queuedUninstall = false;
+			} else {
+				this.installedPack.installed = true;
+			}
+		},
+		uninstall(): void {
+			if (!this.installedPack) return;
+			environment.uninstallContentPack(this.installedPack.url);
+			this.installedPack.queuedUninstall = true;
+		},
+		*/
+		async remove(): Promise<void> {
+			await this.$store.dispatch('removePacks', {
+				packs: new Set([this.pack.id]),
+			} as IRemovePacksAction);
+		},
+		async add(): Promise<void> {
+			await this.$store.dispatch(
+				'content/loadContentPacks',
+				this.pack.dddg2Path || this.pack.dddg1Path
+			);
+		},
+	},
+});
 
 interface AuthorLink {
 	readonly target: string;

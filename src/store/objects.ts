@@ -17,6 +17,7 @@ import { IRootState } from '.';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset } from './content';
 import Vue from 'vue';
+import { IHasSpriteFilters } from './sprite_options';
 
 export interface IPanel {
 	id: string;
@@ -29,7 +30,7 @@ export interface IObjectsState {
 	panels: { [id: string]: IPanel };
 }
 
-export interface IObject {
+export interface IObject extends IHasSpriteFilters {
 	type: ObjectTypes;
 	panelId: string;
 	id: string;
@@ -39,7 +40,6 @@ export interface IObject {
 	height: number;
 	preserveRatio: boolean;
 	ratio: number;
-	opacity: number;
 	version: number;
 	flip: boolean;
 	onTop: boolean;
@@ -64,15 +64,15 @@ export default {
 	mutations: {
 		create(state, { object }: ICreateObjectMutation) {
 			if (!state.panels[object.panelId]) {
-				Vue.set(state.panels, object.panelId, {
+				state.panels[object.panelId] = {
 					id: object.panelId,
 					onTopOrder: [],
 					order: [],
-				});
+				};
 			}
 			const panel = state.panels[object.panelId];
 			const collection = object.onTop ? panel.onTopOrder : panel.order;
-			Vue.set(state.objects, object.id, object);
+			state.objects[object.id] = object;
 			collection.push(object.id);
 		},
 		removeFromList(state, command: IRemoveFromListMutation) {
@@ -100,10 +100,6 @@ export default {
 		setFlip(state, command: ISetObjectFlipMutation) {
 			const obj = state.objects[command.id];
 			obj.flip = command.flip;
-		},
-		setOpacity(state, command: ISetObjectOpacityMutation) {
-			const obj = state.objects[command.id];
-			obj.opacity = command.opacity;
 		},
 		setSize(state, command: ISetSpriteSizeMutation) {
 			const obj = state.objects[command.id];
@@ -223,7 +219,7 @@ export default {
 			} as ISetSpriteSizeMutation);
 		},
 		fixContentPackRemoval(context, oldContent: ContentPack<IAsset>) {
-			Object.values(context.state.objects).map((obj) => {
+			Object.values(context.state.objects).map(obj => {
 				switch (obj.type) {
 					case 'character':
 						fixContentPackRemovalFromCharacter(context, obj.id, oldContent);
@@ -300,10 +296,6 @@ export interface ISetOnTopMutation extends IObjectMutation {
 
 export interface ISetObjectFlipMutation extends IObjectMutation {
 	readonly flip: boolean;
-}
-
-export interface ISetObjectOpacityMutation extends IObjectMutation {
-	readonly opacity: number;
 }
 
 export interface IRemoveFromListMutation extends IObjectMutation {

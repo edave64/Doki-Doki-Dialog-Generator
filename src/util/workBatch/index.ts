@@ -1,5 +1,4 @@
-import { Vue } from 'vue-property-decorator';
-import { InternalState } from './internalState';
+import { reactive } from 'vue';
 
 type Runner<P, R> = (
 	payload: P,
@@ -9,7 +8,12 @@ type Runner<P, R> = (
 type Disposer<R> = (payload: R) => Promise<void>;
 
 export class WorkBatch<P, R> {
-	private state = new Vue(InternalState) as InternalState;
+	private state = reactive({
+		busy: false,
+		error: null as string | null,
+		completed: 0,
+		fullCount: 0,
+	});
 	private pendingData: P[] = [];
 	private currentlyRunning = new Set<P>();
 	private resolveCurrentRun:

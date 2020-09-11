@@ -1,12 +1,9 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import { createStore } from 'vuex';
 import objects, { IObjectsState } from './objects';
 import ui, { IUiState } from './ui';
 import panels, { IPanels } from './panels';
 import content, { IContentState, IAsset } from './content';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-
-Vue.use(Vuex);
 
 export interface IRootState {
 	objects: IObjectsState;
@@ -16,18 +13,14 @@ export interface IRootState {
 	unsafe: boolean;
 }
 
-export default new Vuex.Store<IRootState>({
-	modules: {
-		objects,
-		ui,
-		panels,
-		content,
-	},
+export default createStore({
 	state: {
 		unsafe: false,
 	} as any,
 	mutations: {
-		setUnsafe(state, unsafe: boolean) {},
+		setUnsafe(state, unsafe: boolean) {
+			state.unsafe = unsafe;
+		},
 	},
 	actions: {
 		async removePacks(
@@ -45,6 +38,7 @@ export default new Vuex.Store<IRootState>({
 			commit('setUnsafe', false);
 		},
 	},
+	modules: { objects, ui, panels, content },
 });
 
 export interface IRemovePacksAction {

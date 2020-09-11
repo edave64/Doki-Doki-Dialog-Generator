@@ -160,13 +160,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
 import { PanelMixin } from './panelMixin';
+import { defineComponent } from 'vue';
 
-@Component({
-	components: {},
-})
-export default class AddPanel extends Mixins(PanelMixin) {}
+export default defineComponent({
+	mixins: [PanelMixin],
+});
 </script>
 
 <style lang="scss" scoped>

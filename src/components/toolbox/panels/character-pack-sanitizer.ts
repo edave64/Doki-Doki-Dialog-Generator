@@ -71,8 +71,9 @@ function sanitizeElement(node: Node): Node[] {
 			if (!allowedAttrs.includes(attr.name)) continue;
 			if (schemaLimitedAttributes.includes(attr.name)) {
 				const protocolMatch = attr.value.match(protocolMatcher);
-				if (protocolMatch && !allowedSchemas.includes(protocolMatch[1]))
+				if (protocolMatch && !allowedSchemas.includes(protocolMatch[1])) {
 					continue;
+				}
 			}
 			newEl.setAttribute(attr.name, el.getAttribute(attr.name)!);
 		}

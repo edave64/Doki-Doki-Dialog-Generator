@@ -69,11 +69,11 @@
 				<textarea v-model="dialog" id="dialog_text" @keydown.stop />
 				<button @click="textEditor = 'body'">Formatting</button>
 			</div>
-			<position-and-size :obj="textbox" />
+			<position-and-size :obj="object" />
 			<button @click="resetPosition">Reset position</button>
 			<button @click="splitTextbox">Split textbox</button>
-			<layers :obj="textbox" />
-			<opacity :obj="textbox" />
+			<layers :obj="object" />
+			<opacity :obj="object" />
 			<toggle v-model="flip" label="Flip?" />
 
 			<fieldset>
@@ -127,7 +127,7 @@
 								<button
 									id="custom_controls_color"
 									class="color-button"
-									:style="{ background: textbox.customControlsColor }"
+									:style="{ background: object.customControlsColor }"
 									@click="colorSelect = 'controls'"
 								/>
 							</td>
@@ -140,7 +140,7 @@
 								<button
 									id="custom_namebox_color"
 									class="color-button"
-									:style="{ background: textbox.customNameboxColor }"
+									:style="{ background: object.customNameboxColor }"
 									@click="colorSelect = 'namebox'"
 								/>
 							</td>
@@ -153,7 +153,7 @@
 								<button
 									id="custom_namebox_stroke"
 									class="color-button"
-									:style="{ background: textbox.customNameboxStroke }"
+									:style="{ background: object.customNameboxStroke }"
 									@click="colorSelect = 'nameboxStroke'"
 								/>
 							</td>
@@ -161,48 +161,36 @@
 					</template>
 				</table>
 			</fieldset>
-			<delete :obj="textbox" />
+			<delete :obj="object" />
 		</template>
 	</div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch, Mixins } from 'vue-property-decorator';
 import {
 	ITextBox,
-	ISetTextBoxControlsVisibleMutation,
-	ISetTextBoxControlsSkipMutation,
-	ISetTextBoxControlsContinueMutation,
-	ISetTextBoxTextMutation,
-	ISetTextBoxStyleAction,
 	ISetTextBoxCustomColorMutation,
-	ISetTextBoxTalkingDefaultMutation,
-	ISetTextBoxTalkingOtherMutation,
 	ISetTextBoxCustomControlsColorMutation,
 	ISetTextBoxNameboxColorMutation,
-	ISetTextBoxNameboxWidthMutation,
 	ISetTextBoxNameboxStrokeMutation,
-	ISetTextBoxDeriveCustomColorMutation,
 	ISplitTextbox,
-	ISetTextBoxAutoQuotingMutation,
 	IResetTextboxBounds,
-	ISetAutoWrappingMutation,
 } from '@/store/objectTypes/textbox';
 import Toggle from '@/components/toggle.vue';
-import { State } from 'vuex-class-decorator';
-import { IHistorySupport } from '@/plugins/vuex-history';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
 import Opacity from '@/components/toolbox/commonsFieldsets/opacity.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
-import { ISetObjectFlipMutation } from '@/store/objects';
-import { PanelMixin } from './panelMixin';
-import { Store } from 'vuex';
-import { IRootState } from '@/store';
 import Color from '../subpanels/color/color.vue';
 import TextEditor from '../subpanels/text/text.vue';
+import { defineComponent } from 'vue';
+import { exhaust } from '@/util/exhaust';
+import { PanelMixin } from './panelMixin';
+import { genericSetable } from '@/util/simpleSettable';
 
-@Component({
+const setable = genericSetable<ITextBox>();
+
+export default defineComponent({
 	components: {
 		Toggle,
 		PositionAndSize,
@@ -212,275 +200,142 @@ import TextEditor from '../subpanels/text/text.vue';
 		Color,
 		TextEditor,
 	},
-})
-export default class TextPanel extends Mixins(PanelMixin) {
-	public $store!: Store<IRootState>;
-
-	private vuexHistory!: IHistorySupport;
-
-	private readonly textEditor: '' | 'name' | 'body' = '';
-
-	private readonly colorSelect:
-		| ''
-		| 'base'
-		| 'controls'
-		| 'namebox'
-		| 'nameboxStroke' = '';
-
-	private get textbox(): ITextBox {
-		const obj = this.$store.state.objects.objects[
-			this.$store.state.ui.selection!
-		];
-		if (obj.type !== 'textBox') return undefined!;
-		return obj as ITextBox;
-	}
-
-	private get textEditorName(): string {
-		if (this.textEditor === 'name') return 'Name';
-		if (this.textEditor === 'body') return 'Dialog';
-		return '';
-	}
-
-	private get textEditorText(): string {
-		if (this.textEditor === 'name') return this.textbox.talkingOther;
-		if (this.textEditor === 'body') return this.dialog;
-		return '';
-	}
-
-	private set textEditorText(value: string) {
-		if (this.textEditor === 'name') this.talkingOther = value;
-		else if (this.textEditor === 'body') this.dialog = value;
-	}
-
-	private splitTextbox(): void {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('objects/splitTextbox', {
-				id: this.textbox.id,
-			} as ISplitTextbox);
-		});
-	}
-
-	private resetPosition(): void {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('objects/resetTextboxBounds', {
-				id: this.textbox.id,
-			} as IResetTextboxBounds);
-		});
-	}
-
-	private get talkingDefaults(): ISetTextBoxTalkingDefaultMutation['talkingDefault'] {
-		return this.textbox.talkingDefault;
-	}
-
-	private set talkingDefaults(
-		talkingDefault: ISetTextBoxTalkingDefaultMutation['talkingDefault']
-	) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setTalkingDefault', {
-				id: this.textbox.id,
-				talkingDefault,
-			} as ISetTextBoxTalkingDefaultMutation);
-		});
-	}
-
-	private get talkingOther(): string {
-		return this.textbox.talkingOther;
-	}
-
-	private set talkingOther(talkingOther: string) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setTalkingOther', {
-				id: this.textbox.id,
-				talkingOther,
-			} as ISetTextBoxTalkingOtherMutation);
-		});
-	}
-
-	private get showControls(): boolean {
-		return this.textbox.controls;
-	}
-
-	private set showControls(controls: boolean) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setControlsVisible', {
-				id: this.textbox.id,
-				controls,
-			} as ISetTextBoxControlsVisibleMutation);
-		});
-	}
-
-	private get allowSkipping(): boolean {
-		return this.textbox.controls;
-	}
-
-	private set allowSkipping(skip: boolean) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setSkipable', {
-				id: this.textbox.id,
-				skip,
-			} as ISetTextBoxControlsSkipMutation);
-		});
-	}
-
-	private get autoQuoting(): boolean {
-		return this.textbox.autoQuoting;
-	}
-
-	private set autoQuoting(autoQuoting: boolean) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setAutoQuoting', {
-				id: this.textbox.id,
-				autoQuoting,
-			} as ISetTextBoxAutoQuotingMutation);
-		});
-	}
-
-	private get autoWrap(): boolean {
-		return this.textbox.autoWrap;
-	}
-
-	private set autoWrap(autoWrap: boolean) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setAutoWrapping', {
-				id: this.textbox.id,
-				autoWrap,
-			} as ISetAutoWrappingMutation);
-		});
-	}
-
-	private get showContinueArrow(): boolean {
-		return this.textbox.continue;
-	}
-
-	private set showContinueArrow(value: boolean) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setContinueArrow', {
-				id: this.textbox.id,
-				continue: value,
-			} as ISetTextBoxControlsContinueMutation);
-		});
-	}
-
-	private get dialog(): string {
-		return this.textbox.text;
-	}
-
-	private set dialog(text: string) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setText', {
-				id: this.textbox.id,
-				text,
-			} as ISetTextBoxTextMutation);
-		});
-	}
-
-	private get flip(): boolean {
-		return this.textbox.flip;
-	}
-
-	private set flip(flip: boolean) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setFlip', {
-				id: this.textbox.id,
-				flip,
-			} as ISetObjectFlipMutation);
-		});
-	}
-
-	private get textBoxStyle(): ITextBox['style'] {
-		return this.textbox.style;
-	}
-
-	private set textBoxStyle(style: ITextBox['style']) {
-		this.$store.dispatch('objects/setStyle', {
-			id: this.textbox.id,
-			style,
-		} as ISetTextBoxStyleAction);
-	}
-
-	private get deriveCustomColors(): boolean {
-		return this.textbox.deriveCustomColors;
-	}
-
-	private set deriveCustomColors(deriveCustomColors: boolean) {
-		this.$store.commit('objects/setDeriveCustomColors', {
-			id: this.textbox.id,
-			deriveCustomColors,
-		} as ISetTextBoxDeriveCustomColorMutation);
-	}
-
-	private get customControlsColor(): string {
-		return this.textbox.customControlsColor;
-	}
-
-	private get customNameboxWidth(): number {
-		return this.textbox.customNameboxWidth;
-	}
-
-	private set customNameboxWidth(customNameboxWidth: number) {
-		this.$store.commit('objects/setNameboxWidth', {
-			id: this.textbox.id,
-			customNameboxWidth,
-		} as ISetTextBoxNameboxWidthMutation);
-	}
-
-	private get colorName(): string {
-		switch (this.colorSelect) {
-			case '':
+	mixins: [PanelMixin],
+	data: () => ({
+		textEditor: '' as '' | 'name' | 'body',
+		colorSelect: '' as '' | 'base' | 'controls' | 'namebox' | 'nameboxStroke',
+	}),
+	computed: {
+		object(): ITextBox {
+			const obj = this.$store.state.objects.objects[
+				this.$store.state.ui.selection!
+			];
+			if (obj.type !== 'textBox') return undefined!;
+			return obj as ITextBox;
+		},
+		textEditorText: {
+			get(): string {
+				if (this.textEditor === 'name') return this.object.talkingOther;
+				if (this.textEditor === 'body') return this.dialog;
 				return '';
-			case 'base':
-				return 'Base color';
-			case 'controls':
-				return 'Controls color';
-			case 'namebox':
-				return 'Namebox color';
-			case 'nameboxStroke':
-				return 'Namebox text stroke';
-		}
-	}
-
-	private get color(): string {
-		switch (this.colorSelect) {
-			case '':
-				return '#000000';
-			case 'base':
-				return this.textbox.customColor;
-			case 'controls':
-				return this.textbox.customControlsColor;
-			case 'namebox':
-				return this.textbox.customNameboxColor;
-			case 'nameboxStroke':
-				return this.textbox.customNameboxStroke;
-		}
-	}
-
-	private set color(color: string) {
-		switch (this.colorSelect) {
-			case '':
-				return;
-			case 'base':
-				this.$store.commit('objects/setCustomColor', {
-					id: this.textbox.id,
-					color,
-				} as ISetTextBoxCustomColorMutation);
-			case 'controls':
-				this.$store.commit('objects/setControlsColor', {
-					id: this.textbox.id,
-					customControlsColor: color,
-				} as ISetTextBoxCustomControlsColorMutation);
-			case 'namebox':
-				this.$store.commit('objects/setNameboxColor', {
-					id: this.textbox.id,
-					customNameboxColor: color,
-				} as ISetTextBoxNameboxColorMutation);
-			case 'nameboxStroke':
-				this.$store.commit('objects/setNameboxStroke', {
-					id: this.textbox.id,
-					customNameboxStroke: color,
-				} as ISetTextBoxNameboxStrokeMutation);
-		}
-	}
-}
+			},
+			set(value: string) {
+				if (this.textEditor === 'name') this.talkingOther = value;
+				else if (this.textEditor === 'body') this.dialog = value;
+			},
+		},
+		talkingDefaults: setable('talkingDefault', 'objects/setTalkingDefault'),
+		talkingOther: setable('talkingOther', 'objects/setTalkingOther'),
+		showControls: setable('controls', 'objects/setControlsVisible'),
+		allowSkipping: setable('skip', 'objects/setSkipable'),
+		autoQuoting: setable('autoQuoting', 'objects/setAutoQuoting'),
+		autoWrap: setable('autoWrap', 'objects/setAutoWrapping'),
+		showContinueArrow: setable('continue', 'objects/setContinueArrow'),
+		dialog: setable('text', 'objects/setText'),
+		flip: setable('flip', 'objects/setFlip'),
+		textBoxStyle: setable('style', 'objects/setStyle'),
+		deriveCustomColors: setable(
+			'deriveCustomColors',
+			'objects/setDeriveCustomColors'
+		),
+		customNameboxWidth: setable(
+			'customNameboxWidth',
+			'objects/setNameboxWidth'
+		),
+		color: {
+			get(): string {
+				switch (this.colorSelect) {
+					case '':
+						return '#000000';
+					case 'base':
+						return this.object.customColor;
+					case 'controls':
+						return this.object.customControlsColor;
+					case 'namebox':
+						return this.object.customNameboxColor;
+					case 'nameboxStroke':
+						return this.object.customNameboxStroke;
+					default:
+						exhaust(this.colorSelect);
+						return '';
+				}
+			},
+			set(color: string) {
+				this.vuexHistory.transaction(() => {
+					switch (this.colorSelect) {
+						case '':
+							return;
+						case 'base':
+							this.$store.commit('objects/setCustomColor', {
+								id: this.object.id,
+								color,
+							} as ISetTextBoxCustomColorMutation);
+							return;
+						case 'controls':
+							this.$store.commit('objects/setControlsColor', {
+								id: this.object.id,
+								customControlsColor: color,
+							} as ISetTextBoxCustomControlsColorMutation);
+							return;
+						case 'namebox':
+							this.$store.commit('objects/setNameboxColor', {
+								id: this.object.id,
+								customNameboxColor: color,
+							} as ISetTextBoxNameboxColorMutation);
+							return;
+						case 'nameboxStroke':
+							this.$store.commit('objects/setNameboxStroke', {
+								id: this.object.id,
+								customNameboxStroke: color,
+							} as ISetTextBoxNameboxStrokeMutation);
+							return;
+					}
+				});
+			},
+		},
+		textEditorName(): string {
+			if (this.textEditor === 'name') return 'Name';
+			if (this.textEditor === 'body') return 'Dialog';
+			return '';
+		},
+		customControlsColor(): string {
+			return this.object.customControlsColor;
+		},
+		colorName(): string {
+			switch (this.colorSelect) {
+				case '':
+					return '';
+				case 'base':
+					return 'Base color';
+				case 'controls':
+					return 'Controls color';
+				case 'namebox':
+					return 'Namebox color';
+				case 'nameboxStroke':
+					return 'Namebox text stroke';
+				default:
+					exhaust(this.colorSelect);
+					return '';
+			}
+		},
+	},
+	methods: {
+		splitTextbox(): void {
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('objects/splitTextbox', {
+					id: this.object.id,
+				} as ISplitTextbox);
+			});
+		},
+		resetPosition(): void {
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('objects/resetTextboxBounds', {
+					id: this.object.id,
+				} as IResetTextboxBounds);
+			});
+		},
+	},
+});
 </script>
 <style lang="scss" scoped>
 .panel {

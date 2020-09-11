@@ -4,7 +4,11 @@
 		<table>
 			<tr>
 				<td colspan="2">
-					<toggle v-if="allowStepMove" v-model="freeMove" label="Move freely?" />
+					<toggle
+						v-if="allowStepMove"
+						v-model="freeMove"
+						label="Move freely?"
+					/>
 				</td>
 			</tr>
 			<tr v-if="allowStepMove && !freeMove">
@@ -16,7 +20,12 @@
 							</td>
 							<td>
 								<select id="current_talking" v-model.number="pos">
-									<option v-for="(val, key) of positionNames" :key="key" :value="key">{{ val }}</option>
+									<option
+										v-for="(val, key) of positionNames"
+										:key="key"
+										:value="key"
+										>{{ val }}</option
+									>
 								</select>
 							</td>
 							<td class="arrow-col">
@@ -32,7 +41,12 @@
 						<label for="sprite_x">X:</label>
 					</td>
 					<td>
-						<input id="sprite_x" type="number" v-model.number="x" @keydown.stop />
+						<input
+							id="sprite_x"
+							type="number"
+							v-model.number="x"
+							@keydown.stop
+						/>
 					</td>
 				</tr>
 				<tr>
@@ -40,7 +54,12 @@
 						<label for="sprite_y">Y:</label>
 					</td>
 					<td>
-						<input id="sprite_y" type="number" v-model.number="y" @keydown.stop />
+						<input
+							id="sprite_y"
+							type="number"
+							v-model.number="y"
+							@keydown.stop
+						/>
 					</td>
 				</tr>
 			</template>
@@ -50,7 +69,13 @@
 						<label for="sprite_w">Width:</label>
 					</td>
 					<td>
-						<input id="sprite_w" min="0" type="number" v-model.number="width" @keydown.stop />
+						<input
+							id="sprite_w"
+							min="0"
+							type="number"
+							v-model.number="width"
+							@keydown.stop
+						/>
 					</td>
 				</tr>
 				<tr>
@@ -58,7 +83,13 @@
 						<label for="sprite_h">Height:</label>
 					</td>
 					<td>
-						<input id="sprite_h" min="0" type="number" v-model.number="height" @keydown.stop />
+						<input
+							id="sprite_h"
+							min="0"
+							type="number"
+							v-model.number="height"
+							@keydown.stop
+						/>
 					</td>
 				</tr>
 				<tr>
@@ -72,7 +103,6 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
 import Toggle from '@/components/toggle.vue';
 import { IRenderable } from '@/renderables/renderable';
 import { positions, characterPositions } from '@/constants/base';
@@ -81,7 +111,6 @@ import {
 	ISetFreeMoveMutation,
 	ICharacter,
 } from '@/store/objectTypes/characters';
-import { State } from 'vuex-class-decorator';
 import {
 	ISetPositionAction,
 	ISetObjectPositionMutation,
@@ -90,145 +119,137 @@ import {
 	ISetWidthAction,
 	ISetRatioAction,
 } from '@/store/objects';
-import { ISprite } from '@/store/objectTypes/sprite';
-import { IHistorySupport } from '@/plugins/vuex-history';
 import { ITextBox } from '@/store/objectTypes/textbox';
+import { defineComponent, Prop } from 'vue';
 
-@Component({
-	components: {
-		Toggle,
+export default defineComponent({
+	components: { Toggle },
+	props: {
+		obj: {
+			required: true,
+		} as Prop<IObject>,
 	},
-})
-export default class PositionAndSize extends Vue {
-	@Prop({ required: true })
-	private readonly obj!: IObject;
+	computed: {
+		freeMove: {
+			get(): boolean {
+				return (this.obj! as ICharacter).freeMove;
+			},
+			set(freeMove: boolean) {
+				this.vuexHistory.transaction(() => {
+					this.$store.commit('objects/setFreeMove', {
+						id: this.obj!.id,
+						freeMove,
+					} as ISetFreeMoveMutation);
+				});
+			},
+		},
+		preserveRatio: {
+			get(): boolean {
+				return (this.obj! as ICharacter).preserveRatio;
+			},
+			set(preserveRatio: boolean) {
+				this.vuexHistory.transaction(() => {
+					this.$store.dispatch('objects/setPreserveRatio', {
+						id: this.obj!.id,
+						preserveRatio,
+					} as ISetRatioAction);
+				});
+			},
+		},
+		pos: {
+			get(): number {
+				return closestCharacterSlot(this.obj!.x);
+			},
+			set(value: number) {
+				this.vuexHistory.transaction(() => {
+					this.$store.dispatch('objects/setPosition', {
+						id: this.obj!.id,
+						x: characterPositions[value],
+						y: this.obj!.y,
+					} as ISetPositionAction);
+				});
+			},
+		},
+		x: {
+			get(): number {
+				return this.obj!.x;
+			},
+			set(x: number) {
+				this.vuexHistory.transaction(() => {
+					this.$store.commit('objects/setPosition', {
+						id: this.obj!.id,
+						x,
+						y: this.y,
+					} as ISetObjectPositionMutation);
+				});
+			},
+		},
+		y: {
+			get(): number {
+				return this.obj!.y;
+			},
+			set(y: number) {
+				this.vuexHistory.transaction(() => {
+					this.$store.commit('objects/setPosition', {
+						id: this.obj!.id,
+						x: this.x,
+						y,
+					} as ISetObjectPositionMutation);
+				});
+			},
+		},
+		height: {
+			get(): number {
+				return this.obj!.height;
+			},
+			set(height: number) {
+				this.vuexHistory.transaction(() => {
+					this.$store.dispatch('objects/setHeight', {
+						id: this.obj!.id,
+						height,
+					} as ISetHeightAction);
+				});
+			},
+		},
+		width: {
+			get(): number {
+				return this.obj!.width;
+			},
+			set(width: number) {
+				this.vuexHistory.transaction(() => {
+					this.$store.dispatch('objects/setWidth', {
+						id: this.obj!.id,
+						width,
+					} as ISetWidthAction);
+				});
+			},
+		},
+		allowSize(): boolean {
+			const obj = this.obj!;
+			if (obj.type === 'textBox' && (obj as ITextBox).style !== 'custom') {
+				return false;
+			}
+			if (obj.type === 'character' && !(obj as ICharacter).freeMove) {
+				return false;
+			}
+			return true;
+		},
+		allowStepMove(): boolean {
+			return 'freeMove' in this.obj!;
+		},
+		positionNames(): string[] {
+			return positions;
+		},
 
-	private vuexHistory!: IHistorySupport;
+		isFirstPos(): boolean {
+			return this.pos === 0;
+		},
 
-	private get allowSize() {
-		const obj = this.obj;
-		if (
-			this.obj.type === 'textBox' &&
-			(this.obj as ITextBox).style !== 'custom'
-		) {
-			return false;
-		}
-		if (this.obj.type === 'character' && !(this.obj as ICharacter).freeMove) {
-			return false;
-		}
-		return true;
-	}
-
-	private get allowStepMove() {
-		return 'freeMove' in this.obj;
-	}
-
-	private get freeMove() {
-		return (this.obj as ICharacter).freeMove;
-	}
-
-	private set freeMove(val: boolean) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setFreeMove', {
-				id: this.obj.id,
-				freeMove: val,
-			} as ISetFreeMoveMutation);
-		});
-	}
-
-	private get positionNames(): string[] {
-		return positions;
-	}
-
-	private get pos(): number {
-		return closestCharacterSlot(this.obj.x);
-	}
-
-	private set pos(value: number) {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('objects/setPosition', {
-				id: this.obj.id,
-				x: characterPositions[value],
-				y: this.obj.y,
-			} as ISetPositionAction);
-		});
-	}
-
-	private get isFirstPos(): boolean {
-		return this.pos === 0;
-	}
-
-	private get isLastPos(): boolean {
-		return this.pos === positions.length - 1;
-	}
-
-	private get x(): number {
-		return this.obj.x;
-	}
-
-	private set x(val: number) {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('objects/setPosition', {
-				id: this.obj.id,
-				x: val,
-				y: this.y,
-			} as ISetObjectPositionMutation);
-		});
-	}
-
-	private get y(): number {
-		return this.obj.y;
-	}
-
-	private set y(val: number) {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('objects/setPosition', {
-				id: this.obj.id,
-				x: this.x,
-				y: val,
-			} as ISetObjectPositionMutation);
-		});
-	}
-
-	private get height(): number {
-		return (this.obj as ISprite).height;
-	}
-
-	private set height(val: number) {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('objects/setHeight', {
-				id: this.obj.id,
-				height: val,
-			} as ISetHeightAction);
-		});
-	}
-
-	private get width(): number {
-		return (this.obj as ISprite).width;
-	}
-
-	private set width(val: number) {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('objects/setWidth', {
-				id: this.obj.id,
-				width: val,
-			} as ISetWidthAction);
-		});
-	}
-
-	private get preserveRatio(): boolean {
-		return (this.obj as ISprite).preserveRatio;
-	}
-
-	private set preserveRatio(val: boolean) {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('objects/setPreserveRatio', {
-				id: this.obj.id,
-				preserveRatio: val,
-			} as ISetRatioAction);
-		});
-	}
-}
+		isLastPos(): boolean {
+			return this.pos === positions.length - 1;
+		},
+	},
+});
 
 export interface MoveObject {
 	object: IRenderable;

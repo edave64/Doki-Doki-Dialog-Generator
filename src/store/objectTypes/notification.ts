@@ -72,6 +72,8 @@ export const notificationActions: ActionTree<IObjectsState, IRootState> = {
 				customColor: ChoiceButtonColor,
 				text: 'Click here to edit notification',
 				backdrop: true,
+				composite: 'source-over',
+				filters: [],
 			} as INotification,
 		} as ICreateObjectMutation);
 		return id;

@@ -3,22 +3,24 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
-import { IHistorySupport } from '@/plugins/vuex-history';
 import { IObject, IRemoveObjectAction } from '@/store/objects';
+import { defineComponent, Prop } from 'vue';
 
-@Component({})
-export default class Delete extends Vue {
-	@Prop({ required: true }) private obj!: IObject;
+export default defineComponent({
+	props: {
+		obj: {
+			required: true,
+		} as Prop<IObject>,
+	},
 
-	private vuexHistory!: IHistorySupport;
-
-	private onClick() {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('objects/removeObject', {
-				id: this.obj.id,
-			} as IRemoveObjectAction);
-		});
-	}
-}
+	methods: {
+		onClick() {
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('objects/removeObject', {
+					id: this.obj!.id,
+				} as IRemoveObjectAction);
+			});
+		},
+	},
+});
 </script>

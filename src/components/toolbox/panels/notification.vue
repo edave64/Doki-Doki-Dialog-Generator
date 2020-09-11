@@ -13,61 +13,33 @@
 				<textarea v-model="text" id="notification_text" @keydown.stop />
 				<button @click="textEditor = true">Formatting</button>
 			</div>
-			<position-and-size :obj="sprite" />
+			<position-and-size :obj="object" />
 			<toggle label="Auto line wrap?" v-model="autoWrap" />
-			<layers :obj="sprite" />
-			<opacity :obj="sprite" />
+			<layers :obj="object" />
+			<opacity :obj="object" />
 			<toggle v-model="flip" label="Flip?" />
 			<toggle v-model="renderBackdrop" label="Show backdrop?" />
-			<delete :obj="sprite" />
+			<delete :obj="object" />
 		</template>
 	</div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
-import { isWebPSupported } from '@/asset-manager';
-import { Character } from '@/renderables/character';
 import Toggle from '@/components/toggle.vue';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
 import Opacity from '@/components/toolbox/commonsFieldsets/opacity.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
-import { IRenderable } from '@/renderables/renderable';
-import { Sprite } from '@/renderables/sprite';
-import { ISprite } from '@/store/objectTypes/sprite';
-import { ICommand } from '@/eventbus/command';
-import eventBus from '@/eventbus/event-bus';
-import { IHistorySupport } from '@/plugins/vuex-history';
-import {
-	IObjectSetOnTopAction,
-	ISetObjectFlipMutation,
-	ISetObjectPositionMutation,
-	ISetObjectOpacityMutation,
-	IObjectShiftLayerAction,
-} from '@/store/objects';
 import { PanelMixin } from './panelMixin';
-import { Store } from 'vuex';
-import { IRootState } from '@/store';
-import {
-	IChoices,
-	IRemoveChoiceAction,
-} from '../../../store/objectTypes/choices';
-import {
-	IChoice,
-	IAddChoiceAction,
-	ISetChoiceTextAction,
-} from '../../../store/objectTypes/choices';
-import { DeepReadonly } from '../../../util/readonly';
 import TextEditor from '../subpanels/text/text.vue';
-import {
-	INotification,
-	ISetNotificationTextMutation,
-	ISetNotificationBackdropMutation,
-} from '../../../store/objectTypes/notification';
-import { ISetAutoWrappingMutation } from '../../../store/objectTypes/textbox';
+import { INotification } from '../../../store/objectTypes/notification';
+import { ComponentCustomProperties, defineComponent } from 'vue';
+import { genericSetable } from '@/util/simpleSettable';
 
-@Component({
+const setable = genericSetable<INotification>();
+
+export default defineComponent({
+	mixins: [PanelMixin],
 	components: {
 		Toggle,
 		PositionAndSize,
@@ -76,73 +48,23 @@ import { ISetAutoWrappingMutation } from '../../../store/objectTypes/textbox';
 		Delete,
 		TextEditor,
 	},
-})
-export default class NotificationPanel extends Mixins(PanelMixin) {
-	public $store!: Store<IRootState>;
-
-	private vuexHistory!: IHistorySupport;
-	private textEditor: boolean = false;
-
-	private get sprite(): INotification {
-		const obj = this.$store.state.objects.objects[
-			this.$store.state.ui.selection!
-		];
-		if (obj.type !== 'notification') return undefined!;
-		return obj as INotification;
-	}
-
-	private get flip() {
-		return this.sprite.flip;
-	}
-
-	private set flip(newValue: boolean) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setFlip', {
-				id: this.sprite.id,
-				flip: newValue,
-			} as ISetObjectFlipMutation);
-		});
-	}
-
-	private get autoWrap(): boolean {
-		return this.sprite.autoWrap;
-	}
-
-	private set autoWrap(autoWrap: boolean) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setAutoWrapping', {
-				id: this.sprite.id,
-				autoWrap,
-			} as ISetAutoWrappingMutation);
-		});
-	}
-
-	private get text() {
-		return this.sprite.text;
-	}
-
-	private set text(newValue: string) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setNotificationText', {
-				id: this.sprite.id,
-				text: newValue,
-			} as ISetNotificationTextMutation);
-		});
-	}
-
-	private get renderBackdrop() {
-		return this.sprite.backdrop;
-	}
-
-	private set renderBackdrop(newValue: boolean) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setNotificationBackdrop', {
-				id: this.sprite.id,
-				backdrop: newValue,
-			} as ISetNotificationBackdropMutation);
-		});
-	}
-}
+	data: () => ({
+		textEditor: false,
+	}),
+	computed: {
+		object(): INotification {
+			const obj = this.$store.state.objects.objects[
+				this.$store.state.ui.selection!
+			];
+			if (obj.type !== 'notification') return undefined!;
+			return obj as INotification;
+		},
+		flip: setable('flip', 'objects/setFlip'),
+		autoWrap: setable('autoWrap', 'objects/setAutoWrapping'),
+		text: setable('text', 'objects/setNotificationText'),
+		renderBackdrop: setable('backdrop', 'objects/setNotificationBackdrop'),
+	},
+});
 </script>
 
 <style lang="scss" scoped>

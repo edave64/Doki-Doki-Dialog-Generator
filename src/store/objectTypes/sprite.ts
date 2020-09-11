@@ -37,6 +37,8 @@ export const spriteActions: ActionTree<IObjectsState, IRootState> = {
 				version: 0,
 				x: 640,
 				y: 0,
+				composite: 'source-over',
+				filters: [],
 			} as ISprite,
 		} as ICreateObjectMutation);
 	},

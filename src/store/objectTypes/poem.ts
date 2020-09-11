@@ -73,6 +73,8 @@ export const poemActions: ActionTree<IObjectsState, IRootState> = {
 				background: defaultPoemBackground,
 				font: defaultPoemStyle,
 				text: 'New poem\n\nClick here to edit poem',
+				composite: 'source-over',
+				filters: [],
 			} as IPoem,
 		} as ICreateObjectMutation);
 		return id;
@@ -98,6 +100,9 @@ export const poemActions: ActionTree<IObjectsState, IRootState> = {
 				background: defaultConsoleBackground,
 				font: defaultConsoleStyle,
 				text: '> _\n  \n  Console command\n  Click here to edit',
+				composite: 'source-over',
+				filters: [],
+				autoWrap: true,
 			} as IPoem,
 		} as ICreateObjectMutation);
 		return id;

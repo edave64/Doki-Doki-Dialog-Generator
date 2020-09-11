@@ -10,23 +10,24 @@
 </template>
 
 <script lang="ts">
-// App.vue has currently so many responsiblities that it's best to break it into chunks
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 
-@Component({
-	components: {},
-})
-export default class Selection extends Vue {
-	@Prop() private icon!: string;
-	@Prop() private label!: string;
-	@Prop({ default: [] }) private images!: string[];
-
-	public get background(): string {
-		return this.images
-			.map(i => `center / contain no-repeat url('${i}')`)
-			.join(',');
-	}
-}
+export default defineComponent({
+	props: {
+		icon: String,
+		label: String,
+		images: {
+			default: [] as string[],
+		},
+	},
+	computed: {
+		background(): string {
+			return this.images
+				.map(i => `center / contain no-repeat url('${i}')`)
+				.join(',');
+		},
+	},
+});
 </script>
 
 <style scoped>

@@ -72,6 +72,14 @@ export default {
 			const convertedPack = (await convertContentPack(
 				contentPack
 			)) as ContentPack<IAsset>;
+			const existingPacks = new Set(state.contentPacks.map(x => x.packId!));
+			for (const dependency of contentPack.dependencies) {
+				if (!existingPacks.has(dependency)) {
+					throw new Error(
+						`Missing dependency '${dependency}'. Refusing to install ${contentPack.packId}`
+					);
+				}
+			}
 			commit('setContentPacks', [...state.contentPacks, convertedPack]);
 			commit(
 				'setCurrentContent',
@@ -80,8 +88,8 @@ export default {
 		},
 
 		async removeContentPacks({ commit, state }, packIds: Set<string>) {
-			const newContentPacks = state.contentPacks.filter(
-				pack => !packIds.has(pack.packId!)
+			const newContentPacks = sortByDependencies(
+				state.contentPacks.filter(pack => !packIds.has(pack.packId!))
 			);
 			commit('setContentPacks', newContentPacks);
 			commit(
@@ -99,7 +107,7 @@ export default {
 			const convertedPack = action.processed
 				? action.contentPack
 				: await convertContentPack(action.contentPack);
-			const packs = state.contentPacks;
+			let packs = state.contentPacks;
 			const packIdx = packs.findIndex(
 				pack => pack.packId === action.contentPack.packId
 			);
@@ -108,6 +116,7 @@ export default {
 			} else {
 				packs.splice(packIdx, 1, convertedPack);
 			}
+			packs = sortByDependencies(packs);
 			commit('setContentPacks', packs);
 			commit(
 				'setCurrentContent',
@@ -187,6 +196,12 @@ export default {
 		},
 	},
 } as Module<IContentState, IRootState>;
+
+function sortByDependencies(
+	packs: Array<ContentPack<IAsset>>
+): Array<ContentPack<IAsset>> {
+	return packs;
+}
 
 async function convertContentPack(
 	pack: ContentPack<string>

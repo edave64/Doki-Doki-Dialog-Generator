@@ -1,41 +1,27 @@
 <template>
 	<div class="panel">
 		<h1>Custom Sprite</h1>
-		<position-and-size :obj="sprite" />
-		<layers :obj="sprite" />
-		<opacity :obj="sprite" />
+		<position-and-size :obj="object" />
+		<layers :obj="object" />
+		<opacity :obj="object" />
 		<toggle v-model="flip" label="Flip?" />
-		<delete :obj="sprite" />
+		<delete :obj="object" />
 	</div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Mixins } from 'vue-property-decorator';
-import { isWebPSupported } from '@/asset-manager';
-import { Character } from '@/renderables/character';
 import Toggle from '@/components/toggle.vue';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
 import Opacity from '@/components/toolbox/commonsFieldsets/opacity.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
-import { IRenderable } from '@/renderables/renderable';
-import { Sprite } from '@/renderables/sprite';
 import { ISprite } from '@/store/objectTypes/sprite';
-import { ICommand } from '@/eventbus/command';
-import eventBus from '@/eventbus/event-bus';
-import { IHistorySupport } from '@/plugins/vuex-history';
-import {
-	IObjectSetOnTopAction,
-	ISetObjectFlipMutation,
-	ISetObjectPositionMutation,
-	ISetObjectOpacityMutation,
-	IObjectShiftLayerAction,
-} from '@/store/objects';
 import { PanelMixin } from './panelMixin';
-import { Store } from 'vuex';
-import { IRootState } from '@/store';
+import { defineComponent } from 'vue';
+import { genericSetable } from '@/util/simpleSettable';
 
-@Component({
+export default defineComponent({
+	mixins: [PanelMixin],
 	components: {
 		Toggle,
 		PositionAndSize,
@@ -43,33 +29,17 @@ import { IRootState } from '@/store';
 		Opacity,
 		Delete,
 	},
-})
-export default class SpritePanel extends Mixins(PanelMixin) {
-	public $store!: Store<IRootState>;
-
-	private vuexHistory!: IHistorySupport;
-
-	private get sprite(): ISprite {
-		const obj = this.$store.state.objects.objects[
-			this.$store.state.ui.selection!
-		];
-		if (obj.type !== 'sprite') return undefined!;
-		return obj as ISprite;
-	}
-
-	private get flip() {
-		return this.sprite.flip;
-	}
-
-	private set flip(newValue: boolean) {
-		this.vuexHistory.transaction(() => {
-			this.$store.commit('objects/setFlip', {
-				id: this.sprite.id,
-				flip: newValue,
-			} as ISetObjectFlipMutation);
-		});
-	}
-}
+	computed: {
+		object(): ISprite {
+			const obj = this.$store.state.objects.objects[
+				this.$store.state.ui.selection!
+			];
+			if (obj.type !== 'sprite') return undefined!;
+			return obj as ISprite;
+		},
+		flip: genericSetable<ISprite>()('flip', 'objects/setFlip'),
+	},
+});
 </script>
 
 <style lang="scss" scoped>

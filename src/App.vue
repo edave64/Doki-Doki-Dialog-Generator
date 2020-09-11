@@ -42,19 +42,11 @@
 
 <script lang="ts">
 // App.vue has currently so many responsiblities that it's best to break it into chunks
-import { Component, Vue } from 'vue-property-decorator';
-import { State } from 'vuex-class-decorator';
-import { Store } from 'vuex';
-import { IRootState } from '@/store';
-import { IRenderable } from '@/renderables/renderable';
-import { IHistorySupport } from '@/plugins/vuex-history';
 import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
 import {
-	IObject,
 	ISetObjectPositionMutation,
 	IRemoveObjectAction,
 } from '@/store/objects';
-import { Character } from '@/renderables/character';
 import {
 	IShiftCharacterSlotAction,
 	ICharacter,
@@ -64,9 +56,7 @@ import MessageConsole from '@/components/message-console.vue';
 import Render from '@/components/render.vue';
 import ModalDialog from '@/components/ModalDialog.vue';
 import { ISetCurrentMutation } from '@/store/panels';
-import SingleBox from '@/components/repo/layouts/SingleBox.vue';
-import ExpressionBuilder from '@/components/content-pack-builder/expression-builder/index.vue';
-import eventBus from './eventbus/event-bus';
+import { defineComponent } from 'vue';
 
 // tslint:disable-next-line: no-magic-numbers
 const aspectRatio = 16 / 9;
@@ -74,7 +64,7 @@ const arrowMoveStepSize = 20;
 const packDialogWaitMs = 50;
 const canvasTooSmallThreshold = 200;
 
-@Component({
+export default defineComponent({
 	components: {
 		ToolBox,
 		MessageConsole,
@@ -84,36 +74,173 @@ const canvasTooSmallThreshold = 200;
 		ExpressionBuilder: () =>
 			import('@/components/content-pack-builder/expression-builder/index.vue'),
 	},
-})
-export default class App extends Vue {
-	public $store!: Store<IRootState>;
-	public canvasWidth: number = 0;
-	public canvasHeight: number = 0;
-	private vuexHistory!: IHistorySupport;
-	private blendOver: string | null = null;
+	data: () => ({
+		canvasWidth: 0,
+		canvasHeight: 0,
+		blendOver: null as string | null,
+		uiSize: 192,
+		currentlyRendering: false,
+		panel: '',
+		dialogVisable: false,
+		canvasTooSmall: false,
+		expressionBuilderVisible: false,
+		expressionBuilderCharacter: '',
+		expressionBuilderHeadGroup: undefined as string | undefined,
+	}),
+	computed: {
+		isSafari(): boolean {
+			return false;
+			/*		return !!(
+			navigator.vendor &&
+			navigator.vendor.indexOf('Apple') > -1 &&
+			navigator.userAgent &&
+			navigator.userAgent.indexOf('CriOS') === -1 &&
+			navigator.userAgent.indexOf('FxiOS') === -1
+		);*/
+		},
+	},
+	methods: {
+		drawLastDownload(): void {
+			const last = this.$store.state.ui.lastDownload;
+			if (!last) return;
+			(this.$refs.render as typeof Render).blendOver(last);
+		},
+		setBlendOver(): void {
+			this.blendOver = this.$store.state.ui.lastDownload;
+		},
+		optimum(sw: number, sh: number): [number, number] {
+			let rh = sw / aspectRatio;
+			let rw = sh * aspectRatio;
 
-	private uiSize: number = 192;
-	private currentlyRendering: boolean = false;
+			if (rh > sh) {
+				rh = sh;
+			} else {
+				rw = sw;
+			}
 
-	private panel: string = '';
-	private dialogVisable: boolean = false;
-	private canvasTooSmall = false;
+			return [rw, rh];
+		},
+		optimizeWithMenu(sw: number, sh: number): [number, number, boolean] {
+			const opth = this.optimum(sw, sh - this.uiSize);
+			const optv = this.optimum(sw - this.uiSize, sh);
 
-	private expressionBuilderVisible: boolean = false;
-	private expressionBuilderCharacter: string = '';
-	private expressionBuilderHeadGroup: string | undefined;
+			if (!this.isSafari && opth[0] * opth[1] > optv[0] * optv[1]) {
+				return [opth[0], opth[1], false];
+			} else {
+				return [optv[0], optv[1], true];
+			}
+		},
+		updateArea(): void {
+			const [cw, ch, v] = this.optimizeWithMenu(
+				document.documentElement.clientWidth,
+				document.documentElement.clientHeight
+			);
 
-	private drawLastDownload(): void {
-		const last = this.$store.state.ui.lastDownload;
-		if (!last) return;
-		(this.$refs.render as Render).blendOver(last);
-	}
+			this.canvasWidth = cw;
+			this.canvasHeight = ch;
 
-	private setBlendOver(): void {
-		this.blendOver = this.$store.state.ui.lastDownload;
-	}
+			this.canvasTooSmall = Math.max(cw, ch) < canvasTooSmallThreshold;
 
-	private async created(): Promise<void> {
+			if (this.$store.state.ui.vertical === v) return;
+			this.$store.commit('ui/setVertical', v);
+		},
+		showDialog(search: string | undefined) {
+			this.dialogVisable = true;
+			if (search) {
+				const wait = () => {
+					if (this.$refs.packDialog) {
+						(this.$refs.packDialog as any).setSearch(search);
+					} else {
+						setTimeout(wait, packDialogWaitMs);
+					}
+				};
+				this.$nextTick(wait);
+			}
+		},
+		showExpressionDialog(e: IShowExpressionDialogEvent) {
+			this.expressionBuilderVisible = true;
+			this.expressionBuilderCharacter = e.character;
+			this.expressionBuilderHeadGroup = e.headGroup;
+		},
+		onKeydown(e: KeyboardEvent) {
+			this.vuexHistory.transaction(() => {
+				const selection = this.$store.state.objects.objects[
+					this.$store.state.ui.selection!
+				];
+				if (!selection) return;
+				if (e.key === 'Delete') {
+					this.$store.dispatch('objects/removeObject', {
+						id: selection.id,
+					} as IRemoveObjectAction);
+					return;
+				}
+				if (e.key === 'z' && e.ctrlKey) {
+					// this.$store.commit('history/undo');
+					e.preventDefault();
+					return;
+				} else if (e.key === 'y' && e.ctrlKey) {
+					// this.$store.commit('history/redo');
+					e.preventDefault();
+					return;
+				}
+
+				if (selection.type === 'character') {
+					const character = selection as ICharacter;
+					if (character.freeMove) {
+						if (e.key === 'ArrowLeft') {
+							this.$store.dispatch('objects/shiftCharacterSlot', {
+								id: character.id,
+								delta: -1,
+							} as IShiftCharacterSlotAction);
+							return;
+						}
+						if (e.key === 'ArrowRight') {
+							this.$store.dispatch('objects/shiftCharacterSlot', {
+								id: character.id,
+								delta: 1,
+							} as IShiftCharacterSlotAction);
+							return;
+						}
+					}
+				}
+				let { x, y } = selection;
+				if (e.key === 'ArrowLeft') {
+					x -= e.shiftKey ? 1 : arrowMoveStepSize;
+				} else if (selection && e.key === 'ArrowRight') {
+					x += e.shiftKey ? 1 : arrowMoveStepSize;
+				} else if (selection && e.key === 'ArrowUp') {
+					y -= e.shiftKey ? 1 : arrowMoveStepSize;
+				} else if (selection && e.key === 'ArrowDown') {
+					y += e.shiftKey ? 1 : arrowMoveStepSize;
+				} else {
+					console.log(e);
+					return;
+				}
+				this.$store.dispatch('objects/setPosition', {
+					id: selection.id,
+					x,
+					y,
+				} as ISetObjectPositionMutation);
+				console.log(e);
+				return;
+			});
+		},
+		destroyed(): void {
+			window.removeEventListener('keydown', this.onKeydown);
+		},
+	},
+	mounted(): void {
+		console.log('Shit be stupid2');
+		window.addEventListener('keypress', e => {
+			if (e.key === 'Escape') {
+				this.vuexHistory.transaction(() => {
+					if (this.$store.state.ui.selection === null) return;
+					this.$store.commit('ui/setSelection', null);
+				});
+			}
+		});
+	},
+	async created(): Promise<void> {
 		// Moving this to the "mounted"-handler crashes safari over version 12.
 		// My best guess is because it runs in a microtask, which have been added in that Version.
 		this.updateArea();
@@ -140,6 +267,7 @@ export default class App extends Vue {
 		);
 
 		this.vuexHistory.transaction(async () => {
+			debugger;
 			await this.$store.dispatch('content/loadContentPacks', [
 				`${process.env.BASE_URL}packs/buildin.base.backgrounds.json`,
 				`${process.env.BASE_URL}packs/buildin.base.monika.json`,
@@ -166,156 +294,8 @@ export default class App extends Vue {
 				panelId: this.$store.state.panels.currentPanel,
 			} as ISetCurrentMutation);
 		});
-	}
-
-	private destroyed(): void {
-		window.removeEventListener('keydown', this.onKeydown);
-	}
-
-	private mounted(): void {
-		window.addEventListener('keypress', e => {
-			if (e.key === 'Escape') {
-				this.vuexHistory.transaction(() => {
-					if (this.$store.state.ui.selection === null) return;
-					this.$store.commit('ui/setSelection', null);
-				});
-			}
-		});
-	}
-
-	private optimum(sw: number, sh: number): [number, number] {
-		let rh = sw / aspectRatio;
-		let rw = sh * aspectRatio;
-
-		if (rh > sh) {
-			rh = sh;
-		} else {
-			rw = sw;
-		}
-
-		return [rw, rh];
-	}
-
-	private optimizeWithMenu(sw: number, sh: number): [number, number, boolean] {
-		const opth = this.optimum(sw, sh - this.uiSize);
-		const optv = this.optimum(sw - this.uiSize, sh);
-
-		if (!this.isSafari && opth[0] * opth[1] > optv[0] * optv[1]) {
-			return [opth[0], opth[1], false];
-		} else {
-			return [optv[0], optv[1], true];
-		}
-	}
-
-	private get isSafari(): boolean {
-		return !!(
-			navigator.vendor &&
-			navigator.vendor.indexOf('Apple') > -1 &&
-			navigator.userAgent &&
-			navigator.userAgent.indexOf('CriOS') === -1 &&
-			navigator.userAgent.indexOf('FxiOS') === -1
-		);
-	}
-
-	private updateArea(): void {
-		const [cw, ch, v] = this.optimizeWithMenu(
-			document.documentElement.clientWidth,
-			document.documentElement.clientHeight
-		);
-
-		this.canvasWidth = cw;
-		this.canvasHeight = ch;
-
-		this.canvasTooSmall = Math.max(cw, ch) < canvasTooSmallThreshold;
-
-		if (this.$store.state.ui.vertical === v) return;
-		this.$store.commit('ui/setVertical', v);
-	}
-
-	private showDialog(search: string | undefined) {
-		this.dialogVisable = true;
-		if (search) {
-			const wait = () => {
-				if (this.$refs.packDialog) {
-					(this.$refs.packDialog as SingleBox).setSearch(search);
-				} else {
-					setTimeout(wait, packDialogWaitMs);
-				}
-			};
-			this.$nextTick(wait);
-		}
-	}
-
-	private showExpressionDialog(e: IShowExpressionDialogEvent) {
-		this.expressionBuilderVisible = true;
-		this.expressionBuilderCharacter = e.character;
-		this.expressionBuilderHeadGroup = e.headGroup;
-	}
-
-	private onKeydown(e: KeyboardEvent) {
-		this.vuexHistory.transaction(() => {
-			const selection = this.$store.state.objects.objects[
-				this.$store.state.ui.selection!
-			];
-			if (!selection) return;
-			if (e.key === 'Delete') {
-				this.$store.dispatch('objects/removeObject', {
-					id: selection.id,
-				} as IRemoveObjectAction);
-				return;
-			}
-			if (e.key === 'z' && e.ctrlKey) {
-				// this.$store.commit('history/undo');
-				e.preventDefault();
-				return;
-			} else if (e.key === 'y' && e.ctrlKey) {
-				// this.$store.commit('history/redo');
-				e.preventDefault();
-				return;
-			}
-
-			if (selection.type === 'character') {
-				const character = selection as ICharacter;
-				if (character.freeMove) {
-					if (e.key === 'ArrowLeft') {
-						this.$store.dispatch('objects/shiftCharacterSlot', {
-							id: character.id,
-							delta: -1,
-						} as IShiftCharacterSlotAction);
-						return;
-					}
-					if (e.key === 'ArrowRight') {
-						this.$store.dispatch('objects/shiftCharacterSlot', {
-							id: character.id,
-							delta: 1,
-						} as IShiftCharacterSlotAction);
-						return;
-					}
-				}
-			}
-			let { x, y } = selection;
-			if (e.key === 'ArrowLeft') {
-				x -= e.shiftKey ? 1 : arrowMoveStepSize;
-			} else if (selection && e.key === 'ArrowRight') {
-				x += e.shiftKey ? 1 : arrowMoveStepSize;
-			} else if (selection && e.key === 'ArrowUp') {
-				y -= e.shiftKey ? 1 : arrowMoveStepSize;
-			} else if (selection && e.key === 'ArrowDown') {
-				y += e.shiftKey ? 1 : arrowMoveStepSize;
-			} else {
-				console.log(e);
-				return;
-			}
-			this.$store.dispatch('objects/setPosition', {
-				id: selection.id,
-				x,
-				y,
-			} as ISetObjectPositionMutation);
-			console.log(e);
-			return;
-		});
-	}
-}
+	},
+});
 
 export interface IShowExpressionDialogEvent {
 	character: string;

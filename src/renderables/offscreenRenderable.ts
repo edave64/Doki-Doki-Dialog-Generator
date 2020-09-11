@@ -20,8 +20,12 @@ import { DeepReadonly } from '@/util/readonly';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 
-export class Character implements IRenderable {
-	private lq: boolean = true;
+export class OffscreenRenderable implements IRenderable {
+	public styleData = {
+		lastBase: '',
+		components: {} as { [component: string]: string },
+	};
+	private hq: boolean = false;
 	private localRenderer: Renderer | null = null;
 	private lastVersion = -1;
 	private hitDetectionFallback = false;
@@ -39,69 +43,74 @@ export class Character implements IRenderable {
 		this.data = getData(store, this.obj);
 	}
 
-	public async updateLocalCanvas() {
+	public async updateLocalCanvas(hq: boolean) {
 		const pose = getPose(this.data, this.obj) as Pose<IAsset>;
 		this.localRenderer = new Renderer(pose.size[0], pose.size[1]);
-		await this.localRenderer.render(async rx => {
-			const currentHeads = getHeads(this.data, this.obj);
+		this.hq = hq;
+		await this.localRenderer.render(
+			async rx => {
+				const currentHeads = getHeads(this.data, this.obj);
 
-			const drawAssetsUnloaded: IDrawAssetsUnloaded[] = [];
+				const drawAssetsUnloaded: IDrawAssetsUnloaded[] = [];
 
-			for (const renderCommand of pose.renderCommands) {
-				switch (renderCommand.type) {
-					case 'head':
-						drawAssetsUnloaded.push({
-							offset: renderCommand.offset,
-							composite: renderCommand.composite,
-							assets: currentHeads
-								? currentHeads.variants[this.obj.posePositions.head || 0]
-								: [],
-						});
-						break;
-					case 'image':
-						drawAssetsUnloaded.push({
-							offset: renderCommand.offset,
-							composite: renderCommand.composite,
-							assets: renderCommand.images,
-						});
-						break;
-					case 'pose-part':
-						const posePosition = pose.positions[renderCommand.part];
-						if (!posePosition || posePosition.length === 0) {
+				for (const renderCommand of pose.renderCommands) {
+					switch (renderCommand.type) {
+						case 'head':
+							drawAssetsUnloaded.push({
+								offset: renderCommand.offset,
+								composite: renderCommand.composite,
+								assets: currentHeads
+									? currentHeads.variants[this.obj.posePositions.head || 0]
+									: [],
+							});
 							break;
-						}
-						const partAssets =
-							posePosition[this.obj.posePositions[renderCommand.part] || 0];
-						if (!partAssets) break;
-						drawAssetsUnloaded.push({
-							offset: renderCommand.offset,
-							composite: renderCommand.composite,
-							assets: partAssets,
+						case 'image':
+							drawAssetsUnloaded.push({
+								offset: renderCommand.offset,
+								composite: renderCommand.composite,
+								assets: renderCommand.images,
+							});
+							break;
+						case 'pose-part':
+							const posePosition = pose.positions[renderCommand.part];
+							if (!posePosition || posePosition.length === 0) {
+								break;
+							}
+							const partAssets =
+								posePosition[this.obj.posePositions[renderCommand.part] || 0];
+							if (!partAssets) break;
+							drawAssetsUnloaded.push({
+								offset: renderCommand.offset,
+								composite: renderCommand.composite,
+								assets: partAssets,
+							});
+							break;
+					}
+					console.log(renderCommand, JSON.stringify(drawAssetsUnloaded));
+				}
+
+				const loadedDraws = await Promise.all(
+					drawAssetsUnloaded
+						.filter(drawAsset => drawAsset.assets)
+						.map(drawAsset => loadAssets(drawAsset, rx.hq))
+				);
+
+				for (const loadedDraw of loadedDraws) {
+					for (const asset of loadedDraw.assets) {
+						rx.drawImage({
+							image: asset,
+							composite: loadedDraw.composite,
+							x: loadedDraw.offset[0],
+							y: loadedDraw.offset[1],
 						});
-						break;
+					}
 				}
-				console.log(renderCommand, JSON.stringify(drawAssetsUnloaded));
-			}
 
-			const loadedDraws = await Promise.all(
-				drawAssetsUnloaded
-					.filter(drawAsset => drawAsset.assets)
-					.map(drawAsset => loadAssets(drawAsset, rx.hq))
-			);
-
-			for (const loadedDraw of loadedDraws) {
-				for (const asset of loadedDraw.assets) {
-					rx.drawImage({
-						image: asset,
-						composite: loadedDraw.composite,
-						x: loadedDraw.offset[0],
-						y: loadedDraw.offset[1],
-					});
-				}
-			}
-
-			this.lastVersion = this.obj.version;
-		});
+				this.lastVersion = this.obj.version;
+			},
+			this.hq,
+			false
+		);
 	}
 
 	public get width() {
@@ -126,9 +135,9 @@ export class Character implements IRenderable {
 		if (
 			this.localRenderer === null ||
 			this.lastVersion !== this.obj.version ||
-			this.lq !== !rx.hq
+			this.hq !== rx.hq
 		) {
-			await this.updateLocalCanvas();
+			await this.updateLocalCanvas(!rx.hq);
 		}
 
 		const w = this.width;

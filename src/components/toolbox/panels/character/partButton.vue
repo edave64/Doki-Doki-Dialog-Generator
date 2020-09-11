@@ -7,12 +7,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
 import { getAAsset, getAsset } from '@/asset-manager';
 import environment from '@/environments/environment';
 import { ErrorAsset } from '@/models/error-asset';
 import { IAsset } from '@/store/content';
-import { DeepReadonly } from '../../../../util/readonly';
+import { DeepReadonly } from '@/util/readonly';
+import { defineComponent, Prop } from 'vue';
 
 export interface IPartButtonImage {
 	images: IPartImage[];
@@ -27,21 +27,60 @@ export interface IPartImage {
 
 const spriteSize = 960;
 
-@Component({
-	components: {},
-})
-export default class PartButton extends Vue {
-	@Prop({ required: true }) private readonly part!: IPartButtonImage;
-	@Prop({ required: true }) private readonly value!: number;
-	@Prop({ default: 150, type: Number })
-	private readonly size!: number;
-
-	private lookups: Array<HTMLImageElement | ErrorAsset | null> = [];
-	private loaded = false;
-
-	private async created() {
+export default defineComponent({
+	props: {
+		part: {
+			required: true,
+		} as Prop<IPartButtonImage>,
+		value: {
+			type: Number,
+			required: true,
+		},
+		size: {
+			type: Number,
+			default: 150,
+		},
+	},
+	data: () => ({
+		lookups: [] as Array<HTMLImageElement | ErrorAsset | null>,
+		loaded: false,
+	}),
+	computed: {
+		scaleX(): number {
+			return this.size / this.part!.size[0];
+		},
+		scaleY(): number {
+			return this.size / this.part!.size[1];
+		},
+		backgroundSize(): string {
+			return `${Math.floor(spriteSize * this.scaleX)}px ${Math.floor(
+				spriteSize * this.scaleY
+			)}px`;
+		},
+		backgroundPosition(): string {
+			return (
+				`${Math.floor(this.part!.offset[0] * -this.scaleX)}px ` +
+				`${Math.floor(this.part!.offset[1] * -this.scaleY)}px`
+			);
+		},
+		style(): { [id: string]: string } {
+			const images = (this.lookups.filter(
+				lookup => lookup instanceof HTMLImageElement
+			) as HTMLImageElement[]).map(
+				lookup => `url('${lookup.src.replace("'", "\\'")}')`
+			);
+			return {
+				backgroundImage: images.join(','),
+				height: this.size + 'px',
+				width: this.size + 'px',
+				backgroundPosition: this.backgroundPosition,
+				backgroundSize: this.backgroundSize,
+			};
+		},
+	},
+	async created() {
 		this.lookups = await Promise.all(
-			this.part.images.map((image) => {
+			this.part!.images.map(image => {
 				if (typeof image.asset === 'string') {
 					return getAsset(image.asset, false);
 				} else {
@@ -49,44 +88,8 @@ export default class PartButton extends Vue {
 				}
 			})
 		);
-	}
-
-	private get scaleX(): number {
-		return this.size / this.part.size[0];
-	}
-
-	private get scaleY(): number {
-		return this.size / this.part.size[1];
-	}
-
-	private get backgroundSize(): string {
-		return `${Math.floor(spriteSize * this.scaleX)}px ${Math.floor(
-			spriteSize * this.scaleY
-		)}px`;
-	}
-
-	private get backgroundPosition(): string {
-		return (
-			`${Math.floor(this.part.offset[0] * -this.scaleX)}px ` +
-			`${Math.floor(this.part.offset[1] * -this.scaleY)}px`
-		);
-	}
-
-	private get style(): { [id: string]: string } {
-		const images = (this.lookups.filter(
-			(lookup) => lookup instanceof HTMLImageElement
-		) as HTMLImageElement[]).map(
-			(lookup) => `url('${lookup.src.replace("'", "\\'")}')`
-		);
-		return {
-			backgroundImage: images.join(','),
-			height: this.size + 'px',
-			width: this.size + 'px',
-			backgroundPosition: this.backgroundPosition,
-			backgroundSize: this.backgroundSize,
-		};
-	}
-}
+	},
+});
 </script>
 
 <style lang="scss" scoped>

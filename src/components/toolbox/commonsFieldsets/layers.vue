@@ -33,45 +33,40 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
 import Toggle from '@/components/toggle.vue';
-import { ICommand } from '@/eventbus/command';
-import eventBus from '@/eventbus/event-bus';
-import { IHistorySupport } from '@/plugins/vuex-history';
 import {
 	IObjectSetOnTopAction,
 	IObjectShiftLayerAction,
 	IObject,
 } from '@/store/objects';
+import { defineComponent, Prop } from 'vue';
 
-@Component({
-	components: {
-		Toggle,
+export default defineComponent({
+	components: { Toggle },
+	props: {
+		obj: {
+			required: true,
+		} as Prop<IObject>,
 	},
-})
-export default class Layers extends Vue {
-	@Prop({ required: true }) private obj!: IObject;
-
-	private vuexHistory!: IHistorySupport;
-
-	private shiftLayer(delta: number) {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('objects/shiftLayer', {
-				id: this.obj.id,
-				delta,
-			} as IObjectShiftLayerAction);
-		});
-	}
-
-	private setInFront(newValue: boolean) {
-		this.vuexHistory.transaction(() => {
-			this.$store.dispatch('objects/setOnTop', {
-				id: this.obj.id,
-				onTop: newValue,
-			} as IObjectSetOnTopAction);
-		});
-	}
-}
+	methods: {
+		shiftLayer(delta: number) {
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('objects/shiftLayer', {
+					id: this.obj!.id,
+					delta,
+				} as IObjectShiftLayerAction);
+			});
+		},
+		setInFront(newValue: boolean) {
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('objects/setOnTop', {
+					id: this.obj!.id,
+					onTop: newValue,
+				} as IObjectSetOnTopAction);
+			});
+		},
+	},
+});
 </script>
 
 <style lang="scss" scoped>

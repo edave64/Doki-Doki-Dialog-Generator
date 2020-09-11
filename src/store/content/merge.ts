@@ -4,9 +4,7 @@ import {
 	Character,
 	HeadCollections,
 	Pose,
-	Style,
 	StyleClasses,
-	StyleComponent,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset } from '.';
 
@@ -21,7 +19,7 @@ export function mergeContentPacks(
 		fonts: mergeIdArrays(
 			x.fonts,
 			y.fonts,
-			(obj) => obj.id,
+			obj => obj.id,
 			(xObj, yObj) => ({
 				...xObj,
 				files: mergeArrayUnique(xObj.files, yObj.files),
@@ -30,7 +28,7 @@ export function mergeContentPacks(
 		poemStyles: mergeIdArrays(
 			x.poemStyles,
 			y.poemStyles,
-			(obj) => obj.label,
+			obj => obj.label,
 			() => {
 				throw new Error();
 			}
@@ -39,7 +37,7 @@ export function mergeContentPacks(
 		sprites: mergeIdArrays(
 			x.sprites,
 			y.sprites,
-			(obj) => obj.id,
+			obj => obj.id,
 			(xObj, yObj) => ({
 				id: xObj.id,
 				label: xObj.label,
@@ -49,8 +47,8 @@ export function mergeContentPacks(
 		colors: mergeIdArrays(
 			x.colors,
 			y.colors,
-			(obj) => obj.color,
-			(xObj) => xObj
+			obj => obj.color,
+			xObj => xObj
 		),
 	};
 }
@@ -59,7 +57,7 @@ function mergeBackgrounds<A>(
 	x: Array<Background<A>>,
 	y: Array<Background<A>>
 ): Array<Background<A>> {
-	return mergeIdArrays(x, y, (obj) => obj.id, mergeBackground);
+	return mergeIdArrays(x, y, obj => obj.id, mergeBackground);
 }
 
 function mergeBackground<A>(x: Background<A>, y: Background<A>): Background<A> {
@@ -74,7 +72,7 @@ function mergeCharacters<A>(
 	x: Array<Character<A>>,
 	y: Array<Character<A>>
 ): Array<Character<A>> {
-	return mergeIdArrays(x, y, (obj) => obj.id, mergeCharacter);
+	return mergeIdArrays(x, y, obj => obj.id, mergeCharacter);
 }
 
 function mergeCharacter<A>(x: Character<A>, y: Character<A>): Character<A> {
@@ -86,14 +84,14 @@ function mergeCharacter<A>(x: Character<A>, y: Character<A>): Character<A> {
 		styleGroups: mergeIdArrays(
 			x.styleGroups,
 			y.styleGroups,
-			(obj) => obj.id,
+			obj => obj.id,
 			(xStyleGroup, yStyleGroup) => {
 				return {
 					id: xStyleGroup.id,
 					styleComponents: mergeIdArrays(
 						xStyleGroup.styleComponents,
 						yStyleGroup.styleComponents,
-						(obj) => obj.id,
+						obj => obj.id,
 						(xClasses, yClasses) => {
 							return {
 								id: xClasses.id,
@@ -108,13 +106,13 @@ function mergeCharacter<A>(x: Character<A>, y: Character<A>): Character<A> {
 					styles: mergeIdArrays(
 						xStyleGroup.styles,
 						yStyleGroup.styles,
-						(obj) => JSON.stringify(obj.components),
+						obj => JSON.stringify(obj.components),
 						(xStyle, yStyle) => ({
 							components: xStyle.components,
 							poses: mergeIdArrays(
 								xStyle.poses,
 								yStyle.poses,
-								(obj) => obj.id,
+								obj => obj.id,
 								mergePose
 							),
 						})

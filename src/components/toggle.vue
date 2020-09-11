@@ -1,29 +1,39 @@
 <template>
 	<div>
-		<input :id="_uid" type="checkbox" ref="checkbox" @change="onChange" :checked="value" />
-		<label :for="_uid" class="switch"></label>
-		<label :for="_uid">{{label}}</label>
+		<input
+			:id="_.uid"
+			type="checkbox"
+			ref="checkbox"
+			@change="onChange"
+			:checked="modelValue"
+		/>
+		<label :for="_.uid" class="switch"></label>
+		<label :for="_.uid">{{ label }}</label>
 	</div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 
-@Component({
-	components: {},
-})
-export default class Toggle extends Vue {
-	@Prop({ type: String }) private label!: string | undefined;
-	@Prop({ type: Boolean, default: false }) private value!: boolean;
-
-	private onChange(event: Event) {
-		this.$emit('input', !!(this.$refs.checkbox as HTMLInputElement).checked);
-	}
-
-	private get checkbox(): HTMLInputElement {
-		return this.$refs.checkbox as HTMLInputElement;
-	}
-}
+export default defineComponent({
+	props: {
+		label: String,
+		modelValue: { type: Boolean, default: false },
+	},
+	computed: {
+		checkbox(): HTMLInputElement {
+			return this.$refs.checkbox as HTMLInputElement;
+		},
+	},
+	methods: {
+		onChange(event: Event) {
+			this.$emit(
+				'update:modelValue',
+				!!(this.$refs.checkbox as HTMLInputElement).checked
+			);
+		},
+	},
+});
 </script>
 
 <style lang="scss" scoped>

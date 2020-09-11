@@ -44,6 +44,7 @@ import {
 	textboxRounding,
 	textboxOutlineColorDelta,
 } from '@/constants/textBoxCustom';
+import { DeepReadonly } from '@/util/readonly';
 
 export class TextBox implements IRenderable {
 	public display: boolean = true;
@@ -54,7 +55,7 @@ export class TextBox implements IRenderable {
 	private lastW = 0;
 	private localRenderer = new Renderer(screenWidth, screenHeight);
 
-	public constructor(public obj: ITextBox) {}
+	public constructor(public obj: DeepReadonly<ITextBox>) {}
 
 	public updatedContent(): void {}
 
@@ -105,7 +106,8 @@ export class TextBox implements IRenderable {
 			y: 0,
 			flip: this.obj.flip,
 			shadow: selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
-			opacity: this.obj.opacity,
+			composite: this.obj.composite,
+			filters: this.obj.filters,
 		});
 	}
 

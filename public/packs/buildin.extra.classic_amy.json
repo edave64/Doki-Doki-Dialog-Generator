@@ -79,7 +79,12 @@
 									"positions": {
 										"Left": [["1l{ext}"], ["2l{ext}"]],
 										"Right": [["1r{ext}"]]
-									}
+									},
+									"renderCommands": [
+										{ "type": "pose-part", "part": "Left" },
+										{ "type": "pose-part", "part": "Right" },
+										{ "type": "head" }
+									]
 								},
 								{
 									"id": "crossed_arms",
