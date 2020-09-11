@@ -267,7 +267,6 @@ export default defineComponent({
 		);
 
 		this.vuexHistory.transaction(async () => {
-			debugger;
 			await this.$store.dispatch('content/loadContentPacks', [
 				`${process.env.BASE_URL}packs/buildin.base.backgrounds.json`,
 				`${process.env.BASE_URL}packs/buildin.base.monika.json`,

@@ -128,7 +128,6 @@ export default defineComponent({
 			this.sdCtx!.drawImage(loadingScreen, this.canvasWidth, this.canvasHeight);
 		},
 		display(): void {
-			debugger;
 			if (!this.sdCtx) return;
 			this.showingLast = false;
 			this.sceneRender.paintOnto(
@@ -173,6 +172,7 @@ export default defineComponent({
 			this.$store.commit('ui/setSelection', selectedObject);
 		},
 		onDragStart(e: DragEvent) {
+			debugger;
 			e.preventDefault();
 			if (!this.selection) return;
 			this.draggedObject = this.$store.state.objects.objects[this.selection];
