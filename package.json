@@ -5,7 +5,11 @@
 	"scripts": {
 		"serve": "vue-cli-service serve",
 		"build": "vue-cli-service build",
-		"lint": "vue-cli-service lint"
+		"lint": "vue-cli-service lint",
+		"test:unit": "vue-cli-service test:unit",
+		"assetConversions": "node ./scripts/asset-conversions.js",
+		"build:web": "vue-cli-service build && node ./scripts/build-hashlist.js > ./dist/hash-list.json",
+		"build:electron": "cross-env DDDGElectron=true vue-cli-service build"
 	},
 	"dependencies": {
 		"@edave64/dddg-repo-filters": "^0.4.0",
