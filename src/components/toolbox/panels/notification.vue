@@ -16,7 +16,6 @@
 			<position-and-size :obj="object" />
 			<toggle label="Auto line wrap?" v-model="autoWrap" />
 			<layers :obj="object" />
-			<opacity :obj="object" />
 			<toggle v-model="flip" label="Flip?" />
 			<toggle v-model="renderBackdrop" label="Show backdrop?" />
 			<delete :obj="object" />
@@ -28,12 +27,11 @@
 import Toggle from '@/components/toggle.vue';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
-import Opacity from '@/components/toolbox/commonsFieldsets/opacity.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
 import { PanelMixin } from './panelMixin';
 import TextEditor from '../subpanels/text/text.vue';
 import { INotification } from '../../../store/objectTypes/notification';
-import { ComponentCustomProperties, defineComponent } from 'vue';
+import { defineComponent } from 'vue';
 import { genericSetable } from '@/util/simpleSettable';
 
 const setable = genericSetable<INotification>();
@@ -44,7 +42,6 @@ export default defineComponent({
 		Toggle,
 		PositionAndSize,
 		Layers,
-		Opacity,
 		Delete,
 		TextEditor,
 	},

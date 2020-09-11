@@ -58,7 +58,6 @@
 			</fieldset>
 			<position-and-size :obj="object" />
 			<layers :obj="object" />
-			<opacity :obj="object" />
 			<toggle v-model="closeUp" label="Close up?" />
 			<toggle v-model="flip" label="Flip?" />
 			<delete :obj="object" />
@@ -78,7 +77,6 @@ import {
 import Toggle from '@/components/toggle.vue';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
-import Opacity from '@/components/toolbox/commonsFieldsets/opacity.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
 import Parts from './character/parts.vue';
 import { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
@@ -96,7 +94,6 @@ export default defineComponent({
 		Toggle,
 		PositionAndSize,
 		Layers,
-		Opacity,
 		Delete,
 		Parts,
 	},

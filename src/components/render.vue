@@ -286,7 +286,7 @@ export default defineComponent({
 		},
 	},
 	async created(): Promise<void> {
-		eventBus.subscribe(InvalidateRenderEvent, command => this.invalidateRender);
+		eventBus.subscribe(InvalidateRenderEvent, () => this.invalidateRender);
 		this.$store.subscribe((mut: MutationPayload) => {
 			if (mut.type === 'panels/setPanelPreview') return;
 			if (mut.type === 'panels/currentPanel') return;

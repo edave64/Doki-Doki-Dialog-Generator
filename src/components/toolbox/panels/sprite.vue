@@ -3,7 +3,6 @@
 		<h1>Custom Sprite</h1>
 		<position-and-size :obj="object" />
 		<layers :obj="object" />
-		<opacity :obj="object" />
 		<toggle v-model="flip" label="Flip?" />
 		<delete :obj="object" />
 	</div>
@@ -13,7 +12,6 @@
 import Toggle from '@/components/toggle.vue';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
-import Opacity from '@/components/toolbox/commonsFieldsets/opacity.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
 import { ISprite } from '@/store/objectTypes/sprite';
 import { PanelMixin } from './panelMixin';
@@ -26,7 +24,6 @@ export default defineComponent({
 		Toggle,
 		PositionAndSize,
 		Layers,
-		Opacity,
 		Delete,
 	},
 	computed: {

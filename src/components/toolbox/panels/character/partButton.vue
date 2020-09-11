@@ -8,7 +8,6 @@
 
 <script lang="ts">
 import { getAAsset, getAsset } from '@/asset-manager';
-import environment from '@/environments/environment';
 import { ErrorAsset } from '@/models/error-asset';
 import { IAsset } from '@/store/content';
 import { DeepReadonly } from '@/util/readonly';
@@ -33,7 +32,6 @@ export default defineComponent({
 			required: true,
 		} as Prop<IPartButtonImage>,
 		value: {
-			type: Number,
 			required: true,
 		},
 		size: {

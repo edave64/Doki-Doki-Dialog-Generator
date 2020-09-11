@@ -73,7 +73,6 @@
 			<button @click="resetPosition">Reset position</button>
 			<button @click="splitTextbox">Split textbox</button>
 			<layers :obj="object" />
-			<opacity :obj="object" />
 			<toggle v-model="flip" label="Flip?" />
 
 			<fieldset>
@@ -179,7 +178,6 @@ import {
 import Toggle from '@/components/toggle.vue';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
-import Opacity from '@/components/toolbox/commonsFieldsets/opacity.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
 import Color from '../subpanels/color/color.vue';
 import TextEditor from '../subpanels/text/text.vue';
@@ -195,7 +193,6 @@ export default defineComponent({
 		Toggle,
 		PositionAndSize,
 		Layers,
-		Opacity,
 		Delete,
 		Color,
 		TextEditor,
