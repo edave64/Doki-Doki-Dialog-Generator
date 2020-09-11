@@ -5,7 +5,7 @@
 		:height="bitmapHeight"
 		:width="bitmapWidth"
 		:style="{ width: canvasWidth + 'px', height: canvasHeight + 'px' }"
-		draggable
+		draggable="true"
 		@click="onUiClick"
 		@touchstart="onTouchStart"
 		@dragstart="onDragStart"
