@@ -28,41 +28,33 @@
 				</tr>
 			</tbody>
 		</table>
-		<toggle @input="setInFront" :value="obj.onTop" label="In front?" />
+		<toggle v-model="onTop" label="In front?" />
 	</fieldset>
 </template>
 
 <script lang="ts">
 import Toggle from '@/components/toggle.vue';
-import {
-	IObjectSetOnTopAction,
-	IObjectShiftLayerAction,
-	IObject,
-} from '@/store/objects';
+import { IObjectShiftLayerAction, IObject } from '@/store/objects';
+import { genericSetable } from '@/util/simpleSettable';
 import { defineComponent, Prop } from 'vue';
 
 export default defineComponent({
 	components: { Toggle },
 	props: {
-		obj: {
+		object: {
 			required: true,
 		} as Prop<IObject>,
+	},
+	computed: {
+		onTop: genericSetable<IObject>()('onTop', 'objects/setOnTop', true),
 	},
 	methods: {
 		shiftLayer(delta: number) {
 			this.vuexHistory.transaction(() => {
 				this.$store.dispatch('objects/shiftLayer', {
-					id: this.obj!.id,
+					id: this.object!.id,
 					delta,
 				} as IObjectShiftLayerAction);
-			});
-		},
-		setInFront(newValue: boolean) {
-			this.vuexHistory.transaction(() => {
-				this.$store.dispatch('objects/setOnTop', {
-					id: this.obj!.id,
-					onTop: newValue,
-				} as IObjectSetOnTopAction);
 			});
 		},
 	},

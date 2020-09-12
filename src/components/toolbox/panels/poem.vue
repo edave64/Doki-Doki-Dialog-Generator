@@ -33,7 +33,7 @@
 				</select>
 			</template>
 			<position-and-size :obj="object" />
-			<layers :obj="object" />
+			<layers :object="object" />
 			<toggle v-model="flip" label="Flip?" />
 			<delete :obj="object" />
 		</template>

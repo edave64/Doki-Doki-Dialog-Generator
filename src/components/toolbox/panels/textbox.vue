@@ -72,7 +72,7 @@
 			<position-and-size :obj="object" />
 			<button @click="resetPosition">Reset position</button>
 			<button @click="splitTextbox">Split textbox</button>
-			<layers :obj="object" />
+			<layers :object="object" />
 			<toggle v-model="flip" label="Flip?" />
 
 			<fieldset>

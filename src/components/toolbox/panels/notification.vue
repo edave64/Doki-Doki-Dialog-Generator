@@ -15,7 +15,7 @@
 			</div>
 			<position-and-size :obj="object" />
 			<toggle label="Auto line wrap?" v-model="autoWrap" />
-			<layers :obj="object" />
+			<layers :object="object" />
 			<toggle v-model="flip" label="Flip?" />
 			<toggle v-model="renderBackdrop" label="Show backdrop?" />
 			<delete :obj="object" />

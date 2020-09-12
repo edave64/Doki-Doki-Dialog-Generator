@@ -1,12 +1,6 @@
 <template>
 	<div>
-		<input
-			:id="_.uid"
-			type="checkbox"
-			ref="checkbox"
-			@change="onChange"
-			:checked="modelValue"
-		/>
+		<input :id="_.uid" type="checkbox" ref="checkbox" v-model="value" />
 		<label :for="_.uid" class="switch"></label>
 		<label :for="_.uid">{{ label }}</label>
 	</div>
@@ -21,16 +15,16 @@ export default defineComponent({
 		modelValue: { type: Boolean, default: false },
 	},
 	computed: {
+		value: {
+			get(): boolean {
+				return this.modelValue;
+			},
+			set(value: boolean) {
+				this.$emit('update:modelValue', value);
+			},
+		},
 		checkbox(): HTMLInputElement {
 			return this.$refs.checkbox as HTMLInputElement;
-		},
-	},
-	methods: {
-		onChange(event: Event) {
-			this.$emit(
-				'update:modelValue',
-				!!(this.$refs.checkbox as HTMLInputElement).checked
-			);
 		},
 	},
 });

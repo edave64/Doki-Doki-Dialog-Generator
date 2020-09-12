@@ -2,7 +2,7 @@
 	<div class="panel">
 		<h1>Custom Sprite</h1>
 		<position-and-size :obj="object" />
-		<layers :obj="object" />
+		<layers :object="object" />
 		<toggle v-model="flip" label="Flip?" />
 		<delete :obj="object" />
 	</div>
