@@ -70,9 +70,12 @@ export default defineComponent({
 		MessageConsole,
 		Render,
 		ModalDialog,
-		SingleBox: defineAsyncComponent(() => import('@/components/repo/layouts/SingleBox.vue')),
+		SingleBox: defineAsyncComponent(() =>
+			import('@/components/repo/layouts/SingleBox.vue')
+		),
 		ExpressionBuilder: defineAsyncComponent(() =>
-			import('@/components/content-pack-builder/expression-builder/index.vue')),
+			import('@/components/content-pack-builder/expression-builder/index.vue')
+		),
 	},
 	data: () => ({
 		canvasWidth: 0,
