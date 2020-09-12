@@ -151,8 +151,12 @@ export default defineComponent({
 			this.dialogVisable = true;
 			if (search) {
 				const wait = () => {
-					if (this.$refs.packDialog) {
-						(this.$refs.packDialog as any).setSearch(search);
+					if (
+						this.$refs.packDialog &&
+						(this.$refs.packDialog as any).$refs.packDialog
+					) {
+						// This strange doubling is to get around the async component wrapper
+						(this.$refs.packDialog as any).$refs.packDialog.setSearch(search);
 					} else {
 						setTimeout(wait, packDialogWaitMs);
 					}
