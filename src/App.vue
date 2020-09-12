@@ -56,7 +56,7 @@ import MessageConsole from '@/components/message-console.vue';
 import Render from '@/components/render.vue';
 import ModalDialog from '@/components/ModalDialog.vue';
 import { ISetCurrentMutation } from '@/store/panels';
-import { defineComponent } from 'vue';
+import { defineAsyncComponent, defineComponent } from 'vue';
 
 // tslint:disable-next-line: no-magic-numbers
 const aspectRatio = 16 / 9;
@@ -70,9 +70,9 @@ export default defineComponent({
 		MessageConsole,
 		Render,
 		ModalDialog,
-		SingleBox: () => import('@/components/repo/layouts/SingleBox.vue'),
-		ExpressionBuilder: () =>
-			import('@/components/content-pack-builder/expression-builder/index.vue'),
+		SingleBox: defineAsyncComponent(() => import('@/components/repo/layouts/SingleBox.vue')),
+		ExpressionBuilder: defineAsyncComponent(() =>
+			import('@/components/content-pack-builder/expression-builder/index.vue')),
 	},
 	data: () => ({
 		canvasWidth: 0,
