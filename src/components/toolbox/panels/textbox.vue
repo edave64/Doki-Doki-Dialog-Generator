@@ -89,7 +89,7 @@
 							<button
 								id="textbox_color"
 								class="color-button"
-								:style="{ background: textbox.customColor }"
+								:style="{ background: object.customColor }"
 								@click="colorSelect = 'base'"
 							/>
 						</td>
