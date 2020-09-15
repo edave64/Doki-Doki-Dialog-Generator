@@ -75,8 +75,7 @@
 			<layers :object="object" />
 			<toggle v-model="flip" label="Flip?" />
 
-			<fieldset>
-				<legend>Customization:</legend>
+			<d-fieldset title="Customization:">
 				<toggle label="Controls visible?" v-model="showControls" />
 				<toggle label="Able to skip?" v-model="allowSkipping" />
 				<toggle label="Continue arrow?" v-model="showContinueArrow" />
@@ -159,7 +158,7 @@
 						</tr>
 					</template>
 				</table>
-			</fieldset>
+			</d-fieldset>
 			<delete :obj="object" />
 		</template>
 	</div>
@@ -176,6 +175,7 @@ import {
 	IResetTextboxBounds,
 } from '@/store/objectTypes/textbox';
 import Toggle from '@/components/toggle.vue';
+import DFieldset from '@/components/ui/d-fieldset.vue';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
@@ -191,6 +191,7 @@ const setable = genericSetable<ITextBox>();
 export default defineComponent({
 	components: {
 		Toggle,
+		DFieldset,
 		PositionAndSize,
 		Layers,
 		Delete,

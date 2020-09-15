@@ -1,7 +1,6 @@
 <template>
-	<div :class="{ partList: true, vertical }">
+	<d-flow no-wraping>
 		<button @click="$emit('leave')">Back</button>
-
 		<button
 			@click="
 				$emit('show-expression-dialog', { character: character.characterType })
@@ -53,21 +52,24 @@
 			:key="styleComponent.name"
 			:title="styleComponent.label"
 		>
-			<legend>{{ styleComponent.label }}</legend>
-			<part-button
-				v-for="(button, id) of styleComponent.buttons"
-				:size="130"
-				:key="id"
-				:value="id"
-				:part="button"
-				@click="choose_component(styleComponent.name, id)"
-			/>
+			<d-flow noWraping>
+				<part-button
+					v-for="(button, id) of styleComponent.buttons"
+					:size="130"
+					:key="id"
+					:value="id"
+					:part="button"
+					@click="choose_component(styleComponent.name, id)"
+				/>
+			</d-flow>
 		</d-fieldset>
+	</d-flow>
 </template>
 
 <script lang="ts">
 import { isWebPSupported } from '@/asset-manager';
 import PartButton, { IPartButtonImage, IPartImage } from './partButton.vue';
+import DFlow from '@/components/ui/d-flow.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import {
 	Pose,
@@ -92,7 +94,7 @@ interface IPartStyleGroup {
 }
 
 export default defineComponent({
-	components: { PartButton, DFieldset },
+	components: { PartButton, DFieldset, DFlow },
 	props: {
 		character: {
 			type: Object as PropType<ICharacter>,
@@ -321,39 +323,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.partList {
-	button {
-		display: inline-table;
-		> * {
-			display: table-cell;
-		}
-	}
-	&:not(.vertical) {
-		white-space: nowrap;
-		button {
-			height: 100%;
-			> span {
-				width: 1px;
-				white-space: break-spaces;
-			}
-		}
-	}
-	&.vertical {
-		button {
-			width: 100%;
-		}
-	}
-}
-
-button {
+.icon-button {
 	vertical-align: middle;
-}
-
-fieldset {
-	flex-wrap: nowrap;
-	border: 3px solid #ffbde1;
-	margin-bottom: 0;
-	display: inline-block;
-	vertical-align: middle;
+	width: 100px;
 }
 </style>

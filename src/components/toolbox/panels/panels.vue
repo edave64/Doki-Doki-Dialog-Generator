@@ -1,9 +1,8 @@
 <template>
 	<div class="panel">
 		<h1>Panels</h1>
-		<fieldset class="existing_panels_fieldset">
-			<legend>Existing Panels</legend>
-			<div class="existing_panels">
+		<d-fieldset class="existing_panels_fieldset" title="Existing Panels">
+			<d-flow no-wraping maxSize="350px">
 				<div
 					v-for="(panel, idx) of panelButtons"
 					:key="panel.id"
@@ -16,8 +15,8 @@
 					</div>
 					<div class="panel_nr">{{ idx + 1 }}</div>
 				</div>
-			</div>
-		</fieldset>
+			</d-flow>
+		</d-fieldset>
 		<div class="column">
 			<button @click="addNewPanel">
 				<i class="material-icons">add_to_queue</i> Add new
@@ -33,8 +32,7 @@
 				<i class="material-icons">arrow_downward</i> Move behind
 			</button>
 		</div>
-		<fieldset>
-			<legend>Export</legend>
+		<d-fieldset title="Export">
 			<table>
 				<tr>
 					<td>
@@ -112,7 +110,7 @@
 					</td>
 				</tr>
 			</table>
-		</fieldset>
+		</d-fieldset>
 	</div>
 </template>
 
@@ -130,13 +128,15 @@ import { ITextBox } from '@/store/objectTypes/textbox';
 import { SceneRenderer } from '@/renderables/scene-renderer';
 import { DeepReadonly } from '@/util/readonly';
 import environment from '@/environments/environment';
-import eventBus, { ShowMessageEvent } from '../../../eventbus/event-bus';
+import eventBus, { ShowMessageEvent } from '@/eventbus/event-bus';
 import { screenWidth, screenHeight } from '@/constants/base';
-import { IObject } from '../../../store/objects';
-import { INotification } from '../../../store/objectTypes/notification';
-import { IPoem } from '../../../store/objectTypes/poem';
-import { IChoices } from '../../../store/objectTypes/choices';
+import { IObject } from '@/store/objects';
+import { INotification } from '@/store/objectTypes/notification';
+import { IPoem } from '@/store/objectTypes/poem';
+import { IChoices } from '@/store/objectTypes/choices';
 import { defineComponent } from 'vue';
+import DFieldset from '@/components/ui/d-fieldset.vue';
+import DFlow from '@/components/ui/d-flow.vue';
 
 interface IPanelButton {
 	id: string;
@@ -157,6 +157,7 @@ const qualityWarningThreshold = 70;
 
 export default defineComponent({
 	mixins: [PanelMixin],
+	components: { DFieldset, DFlow },
 	data: () => ({
 		webpSupport: false,
 		heifSupport: false,
@@ -417,8 +418,8 @@ export default defineComponent({
 			}
 		},
 		scrollIntoView(ele: Element) {
-			const parent = ele.parentElement!;
-			const idx = Array.from(parent.children).indexOf(ele);
+			const parent = ele.parentElement!.parentElement!;
+			const idx = Array.from(ele.parentElement!.children).indexOf(ele);
 			if (this.$store.state.ui.vertical) {
 				const scroll =
 					idx * ele.clientHeight -
@@ -522,55 +523,47 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-fieldset {
-	.existing_panels {
-		display: flex;
-		background: #aaaaaa;
-		overflow: auto;
+.panel_button {
+	height: 150px;
+	width: 150px;
+	flex-shrink: 0;
+	padding: 4px;
+	background-size: contain;
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-color: #ffffff;
+	border: #ffbde1 2px solid;
+	display: flex;
+	flex-direction: column;
+	color: #ffffff;
+
+	text-shadow: 0 0 4px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+		1px 1px 0 #000;
+
+	&.active {
+		background-color: #ffbde1;
 	}
+}
 
-	.panel_button {
-		height: 150px;
-		width: 150px;
-		flex-shrink: 0;
-		padding: 4px;
-		background-size: contain;
-		background-position: center center;
-		background-repeat: no-repeat;
-		background-color: #ffffff;
-		border: #ffbde1 2px solid;
-		display: flex;
-		flex-direction: column;
-		color: #ffffff;
+.panel_text {
+	flex-grow: 1;
+	position: relative;
 
-		text-shadow: 0 0 4px #000, -1px -1px 0 #000, 1px -1px 0 #000,
-			-1px 1px 0 #000, 1px 1px 0 #000;
-
-		&.active {
-			background-color: #ffbde1;
-		}
+	p {
+		height: 60px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		white-space: pre;
 	}
+}
 
-	.panel_text {
-		flex-grow: 1;
-		position: relative;
-
-		p {
-			height: 60px;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			position: absolute;
-			top: 0;
-			bottom: 0;
-			left: 0;
-			right: 0;
-			white-space: pre;
-		}
-	}
-
-	.panel_nr {
-		text-align: right;
-	}
+.panel_nr {
+	text-align: right;
 }
 
 #export_ppi,
@@ -633,8 +626,6 @@ small {
 
 		fieldset {
 			.existing_panels {
-				max-width: 350px;
-				height: calc(100% - 16px);
 				flex-direction: row;
 
 				.panel_button {

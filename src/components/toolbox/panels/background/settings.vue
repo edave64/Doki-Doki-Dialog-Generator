@@ -1,6 +1,5 @@
 <template>
-	<fieldset>
-		<legend>Settings:</legend>
+	<d-fieldset class="bg-settings" title="Settings:">
 		<template v-if="isColor">
 			<label for="bg_color">Color:</label>
 			<button
@@ -35,11 +34,12 @@
 				</td>
 			</tr>
 		</table>
-	</fieldset>
+	</d-fieldset>
 </template>
 
 <script lang="ts">
 import Toggle from '@/components/toggle.vue';
+import DFieldset from '@/components/ui/d-fieldset.vue';
 import { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset } from '@/store/content';
 import {
@@ -53,7 +53,7 @@ import { defineComponent } from 'vue';
 import { DeepReadonly } from '@/util/readonly';
 
 export default defineComponent({
-	components: { Toggle },
+	components: { Toggle, DFieldset },
 	computed: {
 		color: {
 			get(): string {
@@ -133,8 +133,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-fieldset {
-	min-height: 135px;
+.bg-settings {
+	height: 100%;
 }
 
 button {

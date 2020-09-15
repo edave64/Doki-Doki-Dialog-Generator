@@ -38,9 +38,3 @@ export default defineComponent({
 	},
 });
 </script>
-
-<style lang="scss" scoped>
-fieldset {
-	border: 3px solid #ffbde1;
-}
-</style>
