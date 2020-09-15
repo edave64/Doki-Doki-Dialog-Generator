@@ -194,7 +194,6 @@ textarea {
 
 .vertical {
 	fieldset {
-		width: calc(100% - 4px);
 		input {
 			width: 60px;
 		}

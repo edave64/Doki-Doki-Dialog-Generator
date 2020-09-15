@@ -2,8 +2,7 @@
 	<div class="panel">
 		<h1>Content Packs</h1>
 		<button @click="addNew">Add new Pack</button>
-		<fieldset>
-			<legend>Installed Packs:</legend>
+		<d-fieldset title="Installed Packs:">
 			<div class="list">
 				<div
 					v-for="pack in packs"
@@ -14,7 +13,7 @@
 					{{ pack.name }}
 				</div>
 			</div>
-		</fieldset>
+		</d-fieldset>
 		<label for="pack_name">Name:</label>
 		<input id="pack_name" :value="name" readonly />
 		<label for="pack_credits">Credits:</label>
@@ -32,6 +31,7 @@
 
 <script lang="ts">
 import { PanelMixin } from './panelMixin';
+import DFieldset from '@/components/ui/d-fieldset.vue';
 import environment from '@/environments/environment';
 import { defineComponent } from 'vue';
 
@@ -47,6 +47,7 @@ interface IPack {
 
 export default defineComponent({
 	mixins: [PanelMixin],
+	components: { DFieldset },
 	data: () => ({
 		selectedPack: null as IPack | null,
 		needRestart: false,
@@ -157,10 +158,6 @@ export default defineComponent({
 p {
 	margin: 4px;
 }
-fieldset {
-	border: 3px solid #ffbde1;
-}
-
 .list {
 	overflow-y: auto;
 	overflow-x: hidden;

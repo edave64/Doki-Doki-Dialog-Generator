@@ -1,7 +1,5 @@
 <template>
-	<fieldset id="layerfs">
-		<legend>Layer:</legend>
-
+	<d-fieldset id="layerfs" title="Layer:">
 		<table>
 			<tbody>
 				<tr>
@@ -29,17 +27,18 @@
 			</tbody>
 		</table>
 		<toggle v-model="onTop" label="In front?" />
-	</fieldset>
+	</d-fieldset>
 </template>
 
 <script lang="ts">
 import Toggle from '@/components/toggle.vue';
+import DFieldset from '@/components/ui/d-fieldset.vue';
 import { IObjectShiftLayerAction, IObject } from '@/store/objects';
 import { genericSetable } from '@/util/simpleSettable';
 import { defineComponent, Prop } from 'vue';
 
 export default defineComponent({
-	components: { Toggle },
+	components: { Toggle, DFieldset },
 	props: {
 		object: {
 			required: true,
@@ -62,10 +61,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-fieldset {
-	border: 3px solid #ffbde1;
-}
-
 table {
 	width: 100%;
 

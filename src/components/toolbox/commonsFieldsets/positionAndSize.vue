@@ -1,6 +1,5 @@
 <template>
-	<fieldset>
-		<legend>Position{{ allowSize ? '/Size' : '' }}:</legend>
+	<d-fieldset :title="'Position' + (allowSize ? '/Size' : '')">
 		<table>
 			<tr>
 				<td colspan="2">
@@ -99,11 +98,12 @@
 				</tr>
 			</template>
 		</table>
-	</fieldset>
+	</d-fieldset>
 </template>
 
 <script lang="ts">
 import Toggle from '@/components/toggle.vue';
+import DFieldset from '@/components/ui/d-fieldset.vue';
 import { IRenderable } from '@/renderables/renderable';
 import { positions, characterPositions } from '@/constants/base';
 import {
@@ -123,7 +123,7 @@ import { ITextBox } from '@/store/objectTypes/textbox';
 import { defineComponent, Prop } from 'vue';
 
 export default defineComponent({
-	components: { Toggle },
+	components: { Toggle, DFieldset },
 	props: {
 		obj: {
 			required: true,
@@ -259,8 +259,6 @@ export interface MoveObject {
 
 <style lang="scss" scoped>
 fieldset {
-	border: 3px solid #ffbde1;
-
 	> table {
 		width: 100%;
 
@@ -279,7 +277,6 @@ fieldset {
 
 .vertical {
 	fieldset {
-		width: calc(100% - 4px);
 		input {
 			width: 64px;
 		}

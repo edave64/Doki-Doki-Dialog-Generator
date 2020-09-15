@@ -10,8 +10,11 @@
 			@show-expression-dialog="$emit('show-expression-dialog', $event)"
 		/>
 		<template v-else>
-			<fieldset v-if="hasMultiplePoses || parts.length > 0" class="pose-list">
-				<legend>Pose:</legend>
+			<d-fieldset
+				v-if="hasMultiplePoses || parts.length > 0"
+				class="pose-list"
+				title="Pose:"
+			>
 				<table>
 					<tbody>
 						<tr v-if="hasMultipleStyles">
@@ -55,7 +58,7 @@
 						</tr>
 					</tbody>
 				</table>
-			</fieldset>
+			</d-fieldset>
 			<position-and-size :obj="object" />
 			<layers :object="object" />
 			<toggle v-model="closeUp" label="Close up?" />
@@ -78,6 +81,7 @@ import Toggle from '@/components/toggle.vue';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
+import DFieldset from '@/components/ui/d-fieldset.vue';
 import Parts from './character/parts.vue';
 import { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset } from '@/store/content';
@@ -96,6 +100,7 @@ export default defineComponent({
 		Layers,
 		Delete,
 		Parts,
+		DFieldset,
 	},
 	data: () => ({
 		panelForParts: null as string | null,
@@ -172,8 +177,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 fieldset {
-	border: 3px solid #ffbde1;
-
 	table {
 		width: 100%;
 	}
@@ -188,7 +191,6 @@ fieldset {
 
 .panel.vertical {
 	fieldset {
-		width: calc(100% - 4px);
 		input {
 			width: 60px;
 		}

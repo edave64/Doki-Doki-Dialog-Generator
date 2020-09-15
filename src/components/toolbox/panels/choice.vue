@@ -8,21 +8,19 @@
 			@leave="textEditor = false"
 		/>
 		<template v-else>
-			<fieldset class="buttons">
-				<legend>Buttons:</legend>
-				<div class="list">
+			<d-fieldset class="buttons" title="Buttons:">
+				<d-flow maxSize="100%" direction="vertical" noWraping>
 					<div
 						v-for="(button, btnIdx) in buttons"
-						:class="{ active: btnIdx === currentIdx }"
+						:class="{ choiceBtn: true, active: btnIdx === currentIdx }"
 						:key="btnIdx"
 						@click="select(btnIdx)"
 					>
 						{{ button.text.trim() === '' ? '[Empty]' : button.text }}
 					</div>
-				</div>
-			</fieldset>
-			<fieldset class="current_button">
-				<legend>Current button:</legend>
+				</d-flow>
+			</d-fieldset>
+			<d-fieldset class="current_button" title="Current button:">
 				<table>
 					<tr>
 						<td colspan="2">
@@ -42,7 +40,7 @@
 						</td>
 					</tr>
 				</table>
-			</fieldset>
+			</d-fieldset>
 			<button @click="addChoice">Add</button>
 			<button @click="removeChoice">Remove</button>
 			<toggle label="Auto line wrap?" v-model="autoWrap" />
@@ -56,6 +54,8 @@
 
 <script lang="ts">
 import Toggle from '@/components/toggle.vue';
+import DFieldset from '@/components/ui/d-fieldset.vue';
+import DFlow from '@/components/ui/d-flow.vue';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
@@ -73,6 +73,8 @@ export default defineComponent({
 	mixins: [PanelMixin],
 	components: {
 		Toggle,
+		DFieldset,
+		DFlow,
 		PositionAndSize,
 		Layers,
 		Delete,
@@ -93,7 +95,7 @@ export default defineComponent({
 		flip: setable('flip', 'objects/setFlip'),
 		autoWrap: setable('autoWrap', 'objects/setAutoWrapping'),
 		// eslint-disable-next-line @typescript-eslint/camelcase
-		button_text: simpleButtonSettable('text', 'objects/setChoiceText'),
+		button_text: simpleButtonSettable('text', 'objects/setChoiceText', true),
 		buttons(): DeepReadonly<IChoice[]> {
 			return this.object.choices;
 		},
@@ -123,7 +125,8 @@ export default defineComponent({
 
 function simpleButtonSettable<K extends keyof IChoice>(
 	key: K,
-	message: string
+	message: string,
+	action = false
 ) {
 	return {
 		get(this: IThis): IChoice[K] {
@@ -131,7 +134,7 @@ function simpleButtonSettable<K extends keyof IChoice>(
 		},
 		set(this: IThis, val: IChoice[K]): void {
 			this.vuexHistory.transaction(() => {
-				this.$store.commit(message, {
+				this.$store[action ? 'dispatch' : 'commit'](message, {
 					id: this.object.id,
 					choiceIdx: this.currentIdx,
 					[key]: val,
@@ -148,35 +151,30 @@ interface IThis extends ComponentCustomProperties {
 </script>
 
 <style lang="scss" scoped>
-fieldset {
-	border: 3px solid #ffbde1;
-	> .list {
-		* {
-			overflow: hidden;
-			width: 100%;
-			height: 24px;
-			text-overflow: ellipsis;
-			padding: 2px;
+.choiceBtn {
+	overflow: hidden;
+	width: 100%;
+	height: 24px;
+	text-overflow: ellipsis;
+	padding: 2px;
 
-			&.active {
-				background-color: #ffbde1;
-			}
-		}
+	&.active {
+		background-color: #ffbde1;
 	}
 }
 
 .current_button {
 	input {
-		width: 145px;
+		width: 130px;
 	}
 }
 
 .panel.vertical {
-	fieldset.buttons {
+	.buttons {
+		max-height: 200px;
 		width: 100%;
 
 		> .list {
-			max-height: 200px;
 			width: 172px;
 
 			* {

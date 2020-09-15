@@ -87,8 +87,7 @@
 									>{{ normalizeName(pose.name) }}</option
 								>
 							</select>
-							<fieldset>
-								<legend>Offset</legend>
+							<d-fieldset title="Offset">
 								<table>
 									<tr>
 										<th>X:</th>
@@ -109,7 +108,7 @@
 										</td>
 									</tr>
 								</table>
-							</fieldset>
+							</d-fieldset>
 							<toggle-box
 								label="Reduce to fit DDDG standard"
 								v-if="headGroup.imagePatching && headGroup.imagePatching.mask"
@@ -151,6 +150,7 @@ import DropTarget from '../../toolbox/drop-target.vue';
 import ToggleBox from '@/components/toggle.vue';
 import environment from '@/environments/environment';
 import { VerticalScrollRedirect } from '@/components/vertical-scroll-redirect';
+import DFieldset from '@/components/ui/d-fieldset.vue';
 import { Character } from '../../../renderables/character';
 import {
 	ContentPack,
@@ -241,7 +241,7 @@ const charDefDefaults = {
 
 export default defineComponent({
 	mixins: [VerticalScrollRedirect],
-	components: { Selection, Selector, ToggleBox, DropTarget },
+	components: { Selection, Selector, ToggleBox, DropTarget, DFieldset },
 	props: {
 		character: {
 			type: String,
@@ -250,7 +250,7 @@ export default defineComponent({
 		initHeadGroup: String,
 	},
 	data: () => ({
-		method: null as null | 'upload' | 'parts',
+		method: 'upload' as null | 'upload' | 'parts',
 		headGroup: null as null | IHeadGroup,
 		uploadsFinished: false,
 		everythingBroken: false,

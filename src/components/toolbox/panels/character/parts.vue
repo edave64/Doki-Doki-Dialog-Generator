@@ -48,9 +48,10 @@
 				$emit('leave');
 			"
 		/>
-		<fieldset
+		<d-fieldset
 			v-for="styleComponent of styleComponents"
 			:key="styleComponent.name"
+			:title="styleComponent.label"
 		>
 			<legend>{{ styleComponent.label }}</legend>
 			<part-button
@@ -61,13 +62,13 @@
 				:part="button"
 				@click="choose_component(styleComponent.name, id)"
 			/>
-		</fieldset>
-	</div>
+		</d-fieldset>
 </template>
 
 <script lang="ts">
 import { isWebPSupported } from '@/asset-manager';
 import PartButton, { IPartButtonImage, IPartImage } from './partButton.vue';
+import DFieldset from '@/components/ui/d-fieldset.vue';
 import {
 	Pose,
 	Character,
@@ -91,7 +92,7 @@ interface IPartStyleGroup {
 }
 
 export default defineComponent({
-	components: { PartButton },
+	components: { PartButton, DFieldset },
 	props: {
 		character: {
 			type: Object as PropType<ICharacter>,
