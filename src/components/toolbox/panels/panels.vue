@@ -618,7 +618,7 @@ small {
 	&:not(.vertical) {
 		.column {
 			display: flex;
-			height: 100%;
+			@include height-100();
 			flex-direction: column;
 			flex-wrap: wrap;
 
@@ -628,7 +628,7 @@ small {
 		}
 
 		.existing_panels_fieldset {
-			height: 100%;
+			@include height-100();
 		}
 
 		fieldset {

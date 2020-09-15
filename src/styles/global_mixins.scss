@@ -1,0 +1,5 @@
+// This fixes a bug in webkit, where 100% height inside a flex can cause a crash
+@mixin height-100() {
+	height: 10000px;
+	max-height: 100%;
+}

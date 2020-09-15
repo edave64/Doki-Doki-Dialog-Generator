@@ -275,8 +275,7 @@ textarea {
 	}
 
 	&:not(.vertical) {
-		height: 100%;
-
+		@include height-100();
 		flex-direction: column;
 	}
 
@@ -308,7 +307,7 @@ textarea {
 
 	&:not(.vertical) {
 		margin-left: 4px;
-		height: 100%;
+		@include height-100();
 		flex-direction: column;
 	}
 

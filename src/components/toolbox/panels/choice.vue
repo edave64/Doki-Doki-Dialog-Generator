@@ -189,9 +189,9 @@ fieldset {
 }
 
 .panel:not(.vertical) {
-	.list {
-		max-height: 140px;
-		max-width: 172px;
+	.buttons {
+		@include height-100();
+		width: 161px;
 	}
 }
 </style>
