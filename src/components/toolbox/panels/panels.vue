@@ -18,19 +18,31 @@
 			</d-flow>
 		</d-fieldset>
 		<div class="column">
-			<button @click="addNewPanel">
-				<i class="material-icons">add_to_queue</i> Add new
-			</button>
-			<button @click="deletePanel" :disabled="!canDeletePanel">
-				<i class="material-icons">remove_from_queue</i> Delete panel
-			</button>
+			<d-button icon="add_to_queue" @click="addNewPanel">
+				Add new
+			</d-button>
+			<d-button
+				icon="remove_from_queue"
+				@click="deletePanel"
+				:disabled="!canDeletePanel"
+			>
+				Delete panel
+			</d-button>
 
-			<button @click="moveAhead" :disabled="!canMoveAhead">
-				<i class="material-icons">arrow_upward</i> Move ahead
-			</button>
-			<button @click="moveBehind" :disabled="!canMoveBehind">
-				<i class="material-icons">arrow_downward</i> Move behind
-			</button>
+			<d-button
+				icon="arrow_upward"
+				@click="moveAhead"
+				:disabled="!canMoveAhead"
+			>
+				Move ahead
+			</d-button>
+			<d-button
+				icon="arrow_downward"
+				@click="moveBehind"
+				:disabled="!canMoveBehind"
+			>
+				Move behind
+			</d-button>
 		</div>
 		<d-fieldset title="Export">
 			<table>
@@ -101,9 +113,9 @@
 				</tr>
 				<tr>
 					<td>
-						<button @click="download">
-							<i class="material-icons">photo_camera</i> Download
-						</button>
+						<d-button icon="photo_camera" @click="download">
+							Download
+						</d-button>
 					</td>
 					<td>
 						<button @click="estimateExportSize">Estimate filesizes</button>
@@ -137,6 +149,7 @@ import { IChoices } from '@/store/objectTypes/choices';
 import { defineComponent } from 'vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
+import DButton from '@/components/ui/d-button.vue';
 
 interface IPanelButton {
 	id: string;
@@ -157,7 +170,7 @@ const qualityWarningThreshold = 70;
 
 export default defineComponent({
 	mixins: [PanelMixin],
-	components: { DFieldset, DFlow },
+	components: { DFieldset, DFlow, DButton },
 	data: () => ({
 		webpSupport: false,
 		heifSupport: false,

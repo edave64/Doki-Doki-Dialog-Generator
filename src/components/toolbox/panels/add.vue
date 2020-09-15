@@ -10,21 +10,30 @@
 		>
 		<h1>Add</h1>
 		<div :class="{ 'group-selector': true, vertical }">
-			<button
+			<d-button
 				:class="{ active: group === 'characters' }"
+				icon-pos="top"
+				icon="emoji_people"
 				@click="group = 'characters'"
 			>
-				<i class="material-icons">emoji_people</i> Characters
-			</button>
-			<button
+				Char&shy;acters
+			</d-button>
+			<d-button
 				:class="{ active: group === 'sprites' }"
+				icon-pos="top"
+				icon="change_history"
 				@click="group = 'sprites'"
 			>
-				<i class="material-icons">change_history</i> Sprites
-			</button>
-			<button :class="{ active: group === 'ui' }" @click="group = 'ui'">
-				<i class="material-icons">view_quilt</i> UI
-			</button>
+				Sprites
+			</d-button>
+			<d-button
+				:class="{ active: group === 'ui' }"
+				icon-pos="top"
+				icon="view_quilt"
+				@click="group = 'ui'"
+			>
+				UI
+			</d-button>
 		</div>
 		<div :class="{ 'item-grid': true, vertical }">
 			<template v-if="group === 'characters'">
@@ -55,17 +64,24 @@
 				>
 					{{ sprite.label }}
 				</div>
-				<button class="btn custom-sprite" @click="$refs.spriteUpload.click()">
-					<i class="material-icons">publish</i>
+
+				<d-button
+					class="custom-sprite"
+					icon="publish"
+					@click="$refs.spriteUpload.click()"
+				>
 					Upload new sprite
 					<input type="file" ref="spriteUpload" @change="onSpriteFileUpload" />
-				</button>
-				<button @click="uploadFromURL">
-					<i class="material-icons">insert_link</i> New sprite from URL
-				</button>
-				<button @click="$emit('show-dialog', 'type: Sprites')">
-					<i class="material-icons">extension</i> Search in content packs
-				</button>
+				</d-button>
+				<d-button icon="insert_link" @click="uploadFromURL">
+					New sprite from URL
+				</d-button>
+				<d-button
+					icon="extension"
+					@click="$emit('show-dialog', 'type: Sprites')"
+				>
+					Search in content packs
+				</d-button>
 			</template>
 			<template v-if="group === 'ui'">
 				<button @click="addTextBox">Textbox</button>
@@ -90,6 +106,7 @@ import {
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { PanelMixin } from './panelMixin';
 import DropTarget from '../drop-target.vue';
+import DButton from '@/components/ui/d-button.vue';
 import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
 import { ICreateChoicesAction } from '../../../store/objectTypes/choices';
 import { ICreateNotificationAction } from '../../../store/objectTypes/notification';
@@ -113,7 +130,7 @@ const uploadedSpritesPack: ContentPack<string> = {
 
 export default defineComponent({
 	mixins: [PanelMixin],
-	components: { DropTarget },
+	components: { DropTarget, DButton },
 	data: () => ({
 		isWebPSupported: null as boolean | null,
 		customAssetCount: 0,
@@ -283,9 +300,6 @@ textarea {
 		flex-grow: 1;
 		&.active {
 			background: white;
-		}
-		.material-icons {
-			display: block;
 		}
 	}
 }

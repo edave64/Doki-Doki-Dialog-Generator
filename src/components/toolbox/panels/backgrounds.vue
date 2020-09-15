@@ -186,12 +186,6 @@ textarea {
 	}
 }
 
-#panels.vertical > .panel {
-	> div {
-		text-align: center;
-	}
-}
-
 .vertical {
 	fieldset {
 		input {
