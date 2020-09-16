@@ -1,140 +1,46 @@
 import { RenderContext } from '@/renderer/rendererContext';
-import { getAsset, getAAsset } from '@/asset-manager';
 import { Renderer } from '@/renderer/renderer';
 import { IRenderable, IHitbox } from './renderable';
-import {
-	ICharacter,
-	getPose,
-	getHeads,
-	CloseUpYOffset,
-	getData,
-} from '@/store/objectTypes/characters';
-import {
-	Pose,
-	Character as CharacterModel,
-	PoseRenderCommand,
-} from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAsset } from '@/store/content';
-import { ErrorAsset } from '../models/error-asset';
 import { DeepReadonly } from '@/util/readonly';
-import { Store } from 'vuex';
-import { IRootState } from '@/store';
+import { SpriteFilter } from '@/store/sprite_options';
 
-export class OffscreenRenderable implements IRenderable {
-	public styleData = {
-		lastBase: '',
-		components: {} as { [component: string]: string },
-	};
+export abstract class OffscreenRenderable implements IRenderable {
 	private hq: boolean = false;
 	private localRenderer: Renderer | null = null;
-	private lastVersion = -1;
+	private lastVersion: any = null;
 	private hitDetectionFallback = false;
 
-	public get id(): string {
-		return this.obj.id;
-	}
+	protected constructor() {}
 
-	public constructor(
-		public readonly obj: DeepReadonly<ICharacter>,
-		private data: DeepReadonly<CharacterModel<IAsset>>
-	) {}
+	protected abstract readonly canvasHeight: number;
+	protected abstract readonly canvasWidth: number;
+	protected abstract renderLocal(rx: RenderContext): Promise<void>;
 
-	public updatedContent(store: Store<DeepReadonly<IRootState>>): void {
-		this.data = getData(store, this.obj);
-	}
+	protected abstract readonly x: number;
+	protected abstract readonly y: number;
+	protected abstract readonly version: any;
+	protected abstract readonly flip: boolean;
+	protected abstract readonly composite: CanvasRenderingContext2D['globalCompositeOperation'];
+	protected abstract readonly filters: DeepReadonly<SpriteFilter[]>;
 
 	public async updateLocalCanvas(hq: boolean) {
-		const pose = getPose(this.data, this.obj) as Pose<IAsset>;
-		this.localRenderer = new Renderer(pose.size[0], pose.size[1]);
+		this.localRenderer = new Renderer(this.canvasWidth, this.canvasHeight);
 		this.hq = hq;
-		await this.localRenderer.render(
-			async rx => {
-				const currentHeads = getHeads(this.data, this.obj);
-
-				const drawAssetsUnloaded: IDrawAssetsUnloaded[] = [];
-
-				for (const renderCommand of pose.renderCommands) {
-					switch (renderCommand.type) {
-						case 'head':
-							drawAssetsUnloaded.push({
-								offset: renderCommand.offset,
-								composite: renderCommand.composite,
-								assets: currentHeads
-									? currentHeads.variants[this.obj.posePositions.head || 0]
-									: [],
-							});
-							break;
-						case 'image':
-							drawAssetsUnloaded.push({
-								offset: renderCommand.offset,
-								composite: renderCommand.composite,
-								assets: renderCommand.images,
-							});
-							break;
-						case 'pose-part':
-							const posePosition = pose.positions[renderCommand.part];
-							if (!posePosition || posePosition.length === 0) {
-								break;
-							}
-							const partAssets =
-								posePosition[this.obj.posePositions[renderCommand.part] || 0];
-							if (!partAssets) break;
-							drawAssetsUnloaded.push({
-								offset: renderCommand.offset,
-								composite: renderCommand.composite,
-								assets: partAssets,
-							});
-							break;
-					}
-					console.log(renderCommand, JSON.stringify(drawAssetsUnloaded));
-				}
-
-				const loadedDraws = await Promise.all(
-					drawAssetsUnloaded
-						.filter(drawAsset => drawAsset.assets)
-						.map(drawAsset => loadAssets(drawAsset, rx.hq))
-				);
-
-				for (const loadedDraw of loadedDraws) {
-					for (const asset of loadedDraw.assets) {
-						rx.drawImage({
-							image: asset,
-							composite: loadedDraw.composite,
-							x: loadedDraw.offset[0],
-							y: loadedDraw.offset[1],
-						});
-					}
-				}
-
-				this.lastVersion = this.obj.version;
-			},
-			this.hq,
-			false
-		);
+		await this.localRenderer.render(this.renderLocal.bind(this));
 	}
 
 	public get width() {
-		const zoom = this.obj.close ? 2 : 1;
-		return this.obj.width * zoom;
+		return this.canvasWidth;
 	}
 
 	public get height() {
-		const zoom = this.obj.close ? 2 : 1;
-		return this.obj.height * zoom;
-	}
-
-	public get x() {
-		return this.obj.x;
-	}
-
-	public get y() {
-		return (this.obj.close ? CloseUpYOffset : 0) + this.obj.y;
+		return this.canvasHeight;
 	}
 
 	public async render(selected: boolean, rx: RenderContext) {
 		if (
 			this.localRenderer === null ||
-			this.lastVersion !== this.obj.version ||
+			this.lastVersion !== this.version ||
 			this.hq !== rx.hq
 		) {
 			await this.updateLocalCanvas(!rx.hq);
@@ -151,10 +57,10 @@ export class OffscreenRenderable implements IRenderable {
 			y,
 			w,
 			h,
-			flip: this.obj.flip,
+			flip: this.flip,
 			shadow: selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
-			composite: this.obj.composite,
-			filters: this.obj.filters,
+			composite: this.composite,
+			filters: this.filters,
 		});
 	}
 
@@ -169,7 +75,7 @@ export class OffscreenRenderable implements IRenderable {
 
 		if (!this.hitDetectionFallback) {
 			try {
-				const flippedX = this.obj.flip ? this.width - scaledX : scaledX;
+				const flippedX = this.flip ? this.width - scaledX : scaledX;
 				const scaleX = this.localRenderer.width / this.width;
 				const scaleY = this.localRenderer.height / this.height;
 				const data = this.localRenderer.getDataAt(
@@ -202,29 +108,4 @@ export class OffscreenRenderable implements IRenderable {
 			y1: this.y + this.height,
 		};
 	}
-}
-
-interface IDrawAssetsUnloaded {
-	offset: DeepReadonly<[number, number]>;
-	assets: DeepReadonly<IAsset[]>;
-	composite: PoseRenderCommand<any>['composite'];
-}
-
-interface IDrawAssets {
-	offset: DeepReadonly<[number, number]>;
-	assets: DeepReadonly<Array<HTMLImageElement | ErrorAsset>>;
-	composite: PoseRenderCommand<any>['composite'];
-}
-
-async function loadAssets(
-	unloaded: IDrawAssetsUnloaded,
-	hq: boolean
-): Promise<IDrawAssets> {
-	return {
-		offset: unloaded.offset,
-		assets: await Promise.all(
-			unloaded.assets.map(asset => getAAsset(asset, hq))
-		),
-		composite: unloaded.composite,
-	};
 }

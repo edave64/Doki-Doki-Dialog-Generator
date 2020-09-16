@@ -20,6 +20,8 @@ import { INotification } from '@/store/objectTypes/notification';
 import { Notification } from '@/renderables/notification';
 import { Poem } from './poem';
 import { IPoem } from '@/store/objectTypes/poem';
+import { ObjectRenderable } from './objectRenderable';
+import { IObject } from '@/store/objects';
 
 export class SceneRenderer {
 	private renderObjectCache = new Map<string, IRenderable>();
@@ -72,7 +74,7 @@ export class SceneRenderer {
 	public objectsAt(x: number, y: number): string[] {
 		return this.getRenderObjects()
 			.filter(renderObject => renderObject.hitTest(x, y))
-			.map(renderObject => renderObject.id);
+			.map(renderObject => ((renderObject as unknown) as { id: string }).id);
 	}
 
 	private async renderCallback(rx: RenderContext): Promise<void> {
@@ -90,8 +92,12 @@ export class SceneRenderer {
 
 			const selection = this.state.ui.selection;
 			for (const object of this.getRenderObjects()) {
-				object.updatedContent(this.store);
-				await object.render(selection === object.id, rx);
+				let selected = false;
+				if (object instanceof ObjectRenderable) {
+					object.updatedContent(this.store);
+					selected = selection === object.id;
+				}
+				await object.render(selected, rx);
 			}
 		} finally {
 			this.lCurrentlyRendering = false;
