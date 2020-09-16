@@ -9,10 +9,6 @@
 import { defineComponent, PropType } from 'vue';
 export default defineComponent({
 	props: {
-		text: {
-			required: true,
-			type: String,
-		},
 		icon: {
 			type: String,
 			required: true,
