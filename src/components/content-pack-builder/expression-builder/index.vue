@@ -267,7 +267,7 @@ export default defineComponent({
 		(window as any).exp = this;
 		this.batchRunner = new WorkBatch<string, string>(
 			this.processExpression.bind(this),
-			async asset => {}
+			async () => {}
 		);
 		if (this.initHeadGroup) {
 			this.headGroup = this.availableHeadGroups.find(

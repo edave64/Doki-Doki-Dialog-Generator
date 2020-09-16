@@ -108,9 +108,9 @@ import { PanelMixin } from './panelMixin';
 import DropTarget from '../drop-target.vue';
 import DButton from '@/components/ui/d-button.vue';
 import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
-import { ICreateChoicesAction } from '../../../store/objectTypes/choices';
-import { ICreateNotificationAction } from '../../../store/objectTypes/notification';
-import { ICreatePoemAction } from '../../../store/objectTypes/poem';
+import { ICreateChoicesAction } from '@/store/objectTypes/choices';
+import { ICreateNotificationAction } from '@/store/objectTypes/notification';
+import { ICreatePoemAction } from '@/store/objectTypes/poem';
 import environment from '@/environments/environment';
 import { defineComponent } from 'vue';
 import { DeepReadonly } from '@/util/readonly';
@@ -177,7 +177,7 @@ export default defineComponent({
 				(this.$refs.spriteDt as any).hide();
 			}
 		},
-		onSpriteFileUpload(e: Event) {
+		onSpriteFileUpload() {
 			const uploadInput = this.$refs.spriteUpload as HTMLInputElement;
 			if (!uploadInput.files) return;
 			for (const file of uploadInput.files) {
