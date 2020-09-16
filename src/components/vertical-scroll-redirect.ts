@@ -8,23 +8,37 @@ export const VerticalScrollRedirect: ComponentOptionsMixin = {
 			if (e.type !== 'wheel') return;
 			if (!e.currentTarget) return;
 			const currentTarget = e.currentTarget as HTMLElement;
-			let target = e.target as HTMLElement;
-
-			while (target !== currentTarget && target) {
-				if (target.scrollHeight > target.clientHeight) {
-					e.stopImmediatePropagation();
-					return false;
-				}
-				target = target.parentElement!;
-			}
+			const target = getComputedStyle(currentTarget);
 
 			const ev = e as WheelEvent;
-			if (ev.deltaY === 0) return;
+			if (ev.deltaY === 0) {
+				return;
+			}
+			if (target.overflowY === 'auto') {
+				if (ev.deltaY > 0) {
+					if (
+						currentTarget.scrollHeight >
+						currentTarget.scrollTop + currentTarget.clientHeight
+					) {
+						e.stopPropagation();
+						return;
+					}
+				} else {
+					if (currentTarget.scrollTop > 0) {
+						e.stopPropagation();
+						return;
+					}
+				}
+			}
+			const oldScrollLeft = currentTarget.scrollLeft;
 			if ((ev as any).mozInputSource) {
 				// Firefox sends wierdly low delta values :/
 				currentTarget.scrollLeft += ev.deltaY * firefoxDeltaFactor;
 			} else {
 				currentTarget.scrollLeft += ev.deltaY;
+			}
+			if (currentTarget.scrollLeft !== oldScrollLeft) {
+				e.stopPropagation();
 			}
 		},
 	},
