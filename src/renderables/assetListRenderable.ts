@@ -10,10 +10,12 @@ import { IObject } from '@/store/objects';
 export abstract class AssetListRenderable<
 	Obj extends IObject
 > extends ObjectRenderable<Obj> {
-	protected abstract getAssetList(): IDrawAssetsUnloaded[];
+	protected abstract getAssetList(): Array<IDrawAssetsUnloaded | IDrawAssets>;
 
 	protected async renderLocal(rx: RenderContext): Promise<void> {
-		const drawAssetsUnloaded: IDrawAssetsUnloaded[] = this.getAssetList();
+		const drawAssetsUnloaded: Array<
+			IDrawAssetsUnloaded | IDrawAssets
+		> = this.getAssetList();
 
 		const loadedDraws = await Promise.all(
 			drawAssetsUnloaded
@@ -36,20 +38,23 @@ export abstract class AssetListRenderable<
 export interface IDrawAssetsUnloaded {
 	offset: DeepReadonly<[number, number]>;
 	assets: DeepReadonly<IAsset[]>;
-	composite: PoseRenderCommand<any>['composite'];
+	composite?: PoseRenderCommand<any>['composite'];
 }
 
-interface IDrawAssets {
+export interface IDrawAssets {
+	loaded: true;
 	offset: DeepReadonly<[number, number]>;
 	assets: DeepReadonly<Array<HTMLImageElement | ErrorAsset>>;
-	composite: PoseRenderCommand<any>['composite'];
+	composite?: PoseRenderCommand<any>['composite'];
 }
 
-async function loadAssets(
-	unloaded: IDrawAssetsUnloaded,
+export async function loadAssets(
+	unloaded: IDrawAssetsUnloaded | IDrawAssets,
 	hq: boolean
 ): Promise<IDrawAssets> {
+	if ('loaded' in unloaded) return unloaded;
 	return {
+		loaded: true,
 		offset: unloaded.offset,
 		assets: await Promise.all(
 			unloaded.assets.map(asset => getAAsset(asset, hq))

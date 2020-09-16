@@ -1,6 +1,5 @@
 import { RenderContext } from '@/renderer/rendererContext';
-import { IRenderable, IHitbox } from './renderable';
-import { Renderer } from '@/renderer/renderer';
+import { IRenderable } from './renderable';
 import { TextRenderer } from '@/renderer/textRenderer/textRenderer';
 import { screenWidth, screenHeight } from '@/constants/base';
 import { IChoices } from '@/store/objectTypes/choices';
@@ -11,117 +10,63 @@ import {
 	ChoicePadding,
 	ChoiceSpacing,
 } from '@/constants/choices';
-import { DeepReadonly } from '@/util/readonly';
+import { ObjectRenderable } from './objectRenderable';
 
-export class Choice implements IRenderable {
-	public display: boolean = true;
-	private lastVersion = -1;
-	private lastX = 0;
-	private lastY = 0;
-	private lastH = 0;
-	private lastW = 0;
-	private localRenderer = new Renderer(screenWidth, screenHeight);
-	private height = 0;
-	private choiceRenderers: TextRenderer[] = [];
+export class Choice extends ObjectRenderable<IChoices> implements IRenderable {
+	protected readonly scaleable = false;
+	protected readonly canvasHeight = screenHeight;
+	protected readonly canvasWidth = screenWidth;
 
-	public constructor(public obj: DeepReadonly<IChoices>) {}
-
-	public get id() {
-		return this.obj.id;
+	private _height: number = 0;
+	public get height(): number {
+		return this._height;
 	}
-
-	public get width(): number {
-		return this.obj.width;
-	}
-
-	public updatedContent(): void {}
-
-	public hitTest(hx: number, hy: number): boolean {
-		const scaledX = hx - (this.obj.x - this.width / 2);
-		const scaledY = hy - (this.obj.y - this.height / 2);
-
-		if (scaledX < 0 || scaledX > this.width) return false;
-		if (scaledY < 0 || scaledY > this.height) return false;
-
+	protected get centeredVertically(): boolean {
 		return true;
 	}
 
-	public getHitbox(): IHitbox {
-		const w2 = this.width / 2;
-		const h2 = this.height / 2;
-		return {
-			x0: this.obj.x - w2,
-			x1: this.obj.x + w2,
-			y0: this.obj.y - h2,
-			y1: this.obj.y + h2,
-		};
-	}
+	private choiceRenderers: TextRenderer[] = [];
 
-	public async render(selected: boolean, rx: RenderContext) {
-		if (
-			this.lastVersion !== this.obj.version ||
-			this.lastX !== this.obj.x ||
-			this.lastY !== this.obj.y ||
-			this.lastH !== this.obj.height ||
-			this.lastW !== this.obj.width
-		) {
-			await this.updateLocalCanvas();
-			this.lastVersion = this.obj.version;
-			this.lastX = this.obj.x;
-			this.lastY = this.obj.y;
+	protected async renderLocal(rx: RenderContext): Promise<void> {
+		await this.updateChoiceBounds();
+		console.log('rerender choice');
+
+		const w = this.obj.width;
+		const h = this.height;
+		const w2 = w / 2;
+		const baseX = this.flip ? screenWidth - this.obj.x : this.obj.x;
+		const x = baseX - w2;
+		let y = this.obj.y - h / 2;
+
+		for (const choiceRenderer of this.choiceRenderers) {
+			await choiceRenderer.loadFonts();
+			const height = choiceRenderer.getHeight(
+				this.obj.autoWrap ? this.obj.width : 0
+			);
+			rx.drawRect({
+				x,
+				y,
+				w,
+				h: height + ChoicePadding * 2,
+				outline: {
+					style: ChoiceButtonBorderColor,
+					width: 3,
+				},
+				fill: {
+					style: ChoiceButtonColor,
+				},
+			});
+			choiceRenderer.fixAlignment(
+				'center',
+				x,
+				x + w,
+				// tslint:disable-next-line: no-magic-numbers
+				y + ChoiceSpacing * 1.25,
+				this.obj.autoWrap ? w : 0
+			);
+			choiceRenderer.render(rx.fsCtx);
+			y += height + ChoicePadding * 2 + ChoiceSpacing;
 		}
-
-		rx.drawImage({
-			image: this.localRenderer,
-			x: 0,
-			y: 0,
-			flip: this.obj.flip,
-			shadow: selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
-			composite: this.obj.composite,
-			filters: this.obj.filters,
-		});
-	}
-
-	private async updateLocalCanvas() {
-		await this.localRenderer.render(async rx => {
-			await this.updateChoiceBounds();
-
-			const w = this.width;
-			const h = this.height;
-			const w2 = w / 2;
-			const x = this.obj.x - w2;
-			let y = this.obj.y - h / 2;
-
-			for (const choiceRenderer of this.choiceRenderers) {
-				await choiceRenderer.loadFonts();
-				const height = choiceRenderer.getHeight(
-					this.obj.autoWrap ? this.obj.width : 0
-				);
-				rx.drawRect({
-					x,
-					y,
-					w,
-					h: height + ChoicePadding * 2,
-					outline: {
-						style: ChoiceButtonBorderColor,
-						width: 3,
-					},
-					fill: {
-						style: ChoiceButtonColor,
-					},
-				});
-				choiceRenderer.fixAlignment(
-					'center',
-					x,
-					x + w,
-					// tslint:disable-next-line: no-magic-numbers
-					y + ChoiceSpacing * 1.25,
-					this.obj.autoWrap ? w : 0
-				);
-				choiceRenderer.render(rx.fsCtx);
-				y += height + ChoicePadding * 2 + ChoiceSpacing;
-			}
-		});
 	}
 
 	private async updateChoiceBounds() {
@@ -129,7 +74,7 @@ export class Choice implements IRenderable {
 			choice => new TextRenderer(choice.text || ' ', ChoiceTextStyle)
 		);
 
-		this.height =
+		this._height =
 			this.choiceRenderers.reduce(
 				(acc, renderer) =>
 					acc +

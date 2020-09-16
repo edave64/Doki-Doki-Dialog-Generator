@@ -3,18 +3,35 @@ import { Renderer } from '@/renderer/renderer';
 import { IRenderable, IHitbox } from './renderable';
 import { DeepReadonly } from '@/util/readonly';
 import { SpriteFilter } from '@/store/sprite_options';
+import { screenHeight, screenWidth } from '@/constants/base';
 
 export abstract class OffscreenRenderable implements IRenderable {
 	private hq: boolean = false;
 	private localRenderer: Renderer | null = null;
 	private lastVersion: any = null;
 	private hitDetectionFallback = false;
+	protected renderable: boolean = false;
 
 	protected constructor() {}
 
+	/**
+	 * A scalable offscreenRenderable has a canvas size independent of the
+	 * display size. * Non-scalable renderables have canvases as big as the
+	 * screen, and are applied without scaling
+	 */
+	protected abstract readonly scaleable: boolean;
+	protected get centeredVertically(): boolean {
+		return false;
+	}
 	protected abstract readonly canvasHeight: number;
 	protected abstract readonly canvasWidth: number;
 	protected abstract renderLocal(rx: RenderContext): Promise<void>;
+
+	private lastWidth = -1;
+	private lastHeight = -1;
+	private lastX = -1;
+	private lastY = -1;
+	private lastFlip: boolean | null = null;
 
 	protected abstract readonly x: number;
 	protected abstract readonly y: number;
@@ -24,7 +41,14 @@ export abstract class OffscreenRenderable implements IRenderable {
 	protected abstract readonly filters: DeepReadonly<SpriteFilter[]>;
 
 	public async updateLocalCanvas(hq: boolean) {
-		this.localRenderer = new Renderer(this.canvasWidth, this.canvasHeight);
+		const width = this.canvasWidth;
+		const height = this.canvasHeight;
+		if (height === 0 && width === 0) {
+			this.renderable = false;
+			return;
+		}
+		this.renderable = true;
+		this.localRenderer = new Renderer(width, height);
 		this.hq = hq;
 		await this.localRenderer.render(this.renderLocal.bind(this));
 	}
@@ -38,18 +62,36 @@ export abstract class OffscreenRenderable implements IRenderable {
 	}
 
 	public async render(selected: boolean, rx: RenderContext) {
-		if (
+		let needRedraw =
 			this.localRenderer === null ||
 			this.lastVersion !== this.version ||
-			this.hq !== rx.hq
-		) {
+			this.hq !== rx.hq;
+
+		if (!this.scaleable) {
+			needRedraw =
+				needRedraw ||
+				this.width !== this.lastWidth ||
+				this.height !== this.lastHeight ||
+				this.x !== this.lastX ||
+				this.y !== this.lastY ||
+				this.flip !== this.lastFlip;
+			this.lastWidth = this.width;
+			this.lastHeight = this.height;
+			this.lastX = this.x;
+			this.lastY = this.y;
+			this.lastFlip = this.flip;
+		}
+
+		if (needRedraw) {
 			await this.updateLocalCanvas(!rx.hq);
 		}
 
-		const w = this.width;
-		const h = this.height;
-		const x = this.x - w / 2;
-		const y = this.y;
+		if (!this.renderable) return;
+
+		const w = this.scaleable ? this.width : screenWidth;
+		const h = this.scaleable ? this.height : screenHeight;
+		const x = this.scaleable ? this.x - w / 2 : 0;
+		const y = this.scaleable ? this.y : 0;
 
 		rx.drawImage({
 			image: this.localRenderer!,
@@ -68,22 +110,30 @@ export abstract class OffscreenRenderable implements IRenderable {
 		if (!this.localRenderer) return false;
 
 		const scaledX = hx - (this.x - this.width / 2);
-		const scaledY = hy - this.y;
+		const scaledY =
+			hy - (this.centeredVertically ? this.y - this.height / 2 : this.y);
 
 		if (scaledX < 0 || scaledX > this.width) return false;
 		if (scaledY < 0 || scaledY > this.height) return false;
 
 		if (!this.hitDetectionFallback) {
 			try {
-				const flippedX = this.flip ? this.width - scaledX : scaledX;
-				const scaleX = this.localRenderer.width / this.width;
-				const scaleY = this.localRenderer.height / this.height;
-				const data = this.localRenderer.getDataAt(
-					Math.round(flippedX * scaleX),
-					Math.round(scaledY * scaleY)
-				);
-				// tslint:disable-next-line: no-magic-numbers
-				return data[3] !== 0;
+				if (this.scaleable) {
+					const flippedX = this.flip ? this.width - scaledX : scaledX;
+					const scaleX = this.localRenderer.width / this.width;
+					const scaleY = this.localRenderer.height / this.height;
+					const data = this.localRenderer.getDataAt(
+						Math.round(flippedX * scaleX),
+						Math.round(scaledY * scaleY)
+					);
+					return data[3] !== 0;
+				} else {
+					const data = this.localRenderer.getDataAt(
+						Math.round(this.flip ? screenWidth - hx : hx),
+						Math.round(hy)
+					);
+					return data[3] !== 0;
+				}
 			} catch (e) {
 				// On chrome for android, the hit test tends to fail because of cross-origin shenanigans, even though
 				// we only ever load from one origin. ¯\_(ツ)_/¯

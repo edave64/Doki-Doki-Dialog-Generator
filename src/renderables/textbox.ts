@@ -1,7 +1,7 @@
 import { RenderContext } from '@/renderer/rendererContext';
 import { getAsset } from '@/asset-manager';
 import { ITextBox } from '@/store/objectTypes/textbox';
-import { IRenderable, IHitbox } from './renderable';
+import { IRenderable } from './renderable';
 import {
 	NameboxTextStyle,
 	ControlsTextStyle,
@@ -44,24 +44,12 @@ import {
 	textboxRounding,
 	textboxOutlineColorDelta,
 } from '@/constants/textBoxCustom';
-import { DeepReadonly } from '@/util/readonly';
+import { ObjectRenderable } from './objectRenderable';
 
-export class TextBox implements IRenderable {
-	public display: boolean = true;
-	private lastVersion = -1;
-	private lastX = 0;
-	private lastY = 0;
-	private lastH = 0;
-	private lastW = 0;
-	private localRenderer = new Renderer(screenWidth, screenHeight);
-
-	public constructor(public obj: DeepReadonly<ITextBox>) {}
-
-	public updatedContent(): void {}
-
-	public get id() {
-		return this.obj.id;
-	}
+export class TextBox extends ObjectRenderable<ITextBox> implements IRenderable {
+	protected readonly scaleable = false;
+	protected readonly canvasHeight = screenHeight;
+	protected readonly canvasWidth = screenWidth;
 
 	public get width(): number {
 		return this.obj.style === 'custom' ? this.obj.width : TextBoxWidth;
@@ -72,43 +60,6 @@ export class TextBox implements IRenderable {
 			(this.obj.style === 'custom' ? this.obj.height : TextBoxHeight) +
 			NameboxHeight
 		);
-	}
-
-	public hitTest(hx: number, hy: number): boolean {
-		const w = this.width;
-		const h = this.height;
-
-		const w2 = w / 2;
-		const x1 = this.obj.x - w2;
-		const x2 = x1 + w;
-		const y1 = this.obj.y;
-		const y2 = y1 + h;
-		return x1 <= hx && x2 >= hx && y1 <= hy && y2 >= hy;
-	}
-
-	public async render(selected: boolean, rx: RenderContext) {
-		if (
-			this.lastVersion !== this.obj.version ||
-			this.lastX !== this.obj.x ||
-			this.lastY !== this.obj.y ||
-			this.lastH !== this.obj.height ||
-			this.lastW !== this.obj.width
-		) {
-			await this.updateLocalCanvas();
-			this.lastVersion = this.obj.version;
-			this.lastX = this.obj.x;
-			this.lastY = this.obj.y;
-		}
-
-		rx.drawImage({
-			image: this.localRenderer,
-			x: 0,
-			y: 0,
-			flip: this.obj.flip,
-			shadow: selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
-			composite: this.obj.composite,
-			filters: this.obj.filters,
-		});
 	}
 
 	public get controlColor(): string {
@@ -150,68 +101,58 @@ export class TextBox implements IRenderable {
 		};
 	}
 
-	public async updateLocalCanvas() {
-		await this.localRenderer.render(async rx => {
-			const w = this.width;
-			const h = this.height;
-			const w2 = w / 2;
-			const x = this.obj.x - w2;
-			const y = this.obj.y;
+	protected async renderLocal(rx: RenderContext): Promise<void> {
+		const w = this.width;
+		const h = this.height;
+		const w2 = w / 2;
+		const baseX = this.flip ? screenWidth - this.obj.x : this.obj.x;
+		const x = baseX - w2;
+		const y = this.obj.y;
 
-			await this.renderBackdrop(rx, x, y + NameboxHeight);
+		await this.renderBackdrop(rx, x, y + NameboxHeight);
 
-			if (this.obj.talkingDefault !== 'No-one') {
-				const name =
-					this.obj.talkingDefault === 'Other'
-						? this.obj.talkingOther
-						: this.obj.talkingDefault;
-				await this.renderNamebox(rx, x + NameboxXOffset, y, name);
-			}
+		if (this.obj.talkingDefault !== 'No-one') {
+			const name =
+				this.obj.talkingDefault === 'Other'
+					? this.obj.talkingOther
+					: this.obj.talkingDefault;
+			await this.renderNamebox(rx, x + NameboxXOffset, y, name);
+		}
 
-			await this.renderText(rx, x, y, this.obj.autoWrap ? w : 0);
+		await this.renderText(rx, x, y, this.obj.autoWrap ? w : 0);
 
-			const bottom = y + h;
-			const controlsY = bottom - ControlsYBottomOffset;
-			const controlsCenter = x + w / 2;
+		const bottom = y + h;
+		const controlsY = bottom - ControlsYBottomOffset;
+		const controlsCenter = x + w / 2;
 
-			if (this.obj.controls) {
-				rx.drawText({
-					text: 'History',
-					x: controlsCenter + ControlsXHistoryOffset,
-					y: controlsY,
-					...this.controlsStyle,
-				});
-				rx.drawText({
-					text: 'Skip',
-					x: controlsCenter + ControlsXSkipOffset,
-					y: controlsY,
-					...(this.obj.skip ? this.controlsStyle : this.controlsDisableStyle),
-				});
-				rx.drawText({
-					text: 'Auto   Save   Load   Settings',
-					x: controlsCenter + ControlsXStuffOffset,
-					y: controlsY,
-					...this.controlsStyle,
-				});
-			}
+		if (this.obj.controls) {
+			rx.drawText({
+				text: 'History',
+				x: controlsCenter + ControlsXHistoryOffset,
+				y: controlsY,
+				...this.controlsStyle,
+			});
+			rx.drawText({
+				text: 'Skip',
+				x: controlsCenter + ControlsXSkipOffset,
+				y: controlsY,
+				...(this.obj.skip ? this.controlsStyle : this.controlsDisableStyle),
+			});
+			rx.drawText({
+				text: 'Auto   Save   Load   Settings',
+				x: controlsCenter + ControlsXStuffOffset,
+				y: controlsY,
+				...this.controlsStyle,
+			});
+		}
 
-			if (this.obj.continue) {
-				rx.drawImage({
-					image: await getAsset('next'),
-					x: x + w - ArrowXRightOffset,
-					y: bottom - ArrowYBottomOffset,
-				});
-			}
-		});
-	}
-
-	public getHitbox(): IHitbox {
-		return {
-			x0: this.obj.x - this.obj.width / 2,
-			x1: this.obj.x + this.obj.width / 2,
-			y0: this.obj.y,
-			y1: this.obj.y + this.obj.height,
-		};
+		if (this.obj.continue) {
+			rx.drawImage({
+				image: await getAsset('next'),
+				x: x + w - ArrowXRightOffset,
+				y: bottom - ArrowYBottomOffset,
+			});
+		}
 	}
 
 	private get nameboxOutlineColor(): string {

@@ -1,64 +1,59 @@
-import { RenderContext } from '@/renderer/rendererContext';
 import { getAAsset } from '@/asset-manager';
-import { IRenderable, IHitbox } from './renderable';
+import { IRenderable } from './renderable';
 import { ISprite } from '@/store/objectTypes/sprite';
 import { DeepReadonly } from '@/util/readonly';
+import {
+	AssetListRenderable,
+	IDrawAssets,
+	IDrawAssetsUnloaded,
+} from './assetListRenderable';
+import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 
 const BaseXPosition = 640;
 
-export class Sprite implements IRenderable {
-	public ratio: number = 0;
-	public lockedRatio: boolean = true;
-	private asset: HTMLImageElement | null = null;
+export class Sprite extends AssetListRenderable<ISprite>
+	implements IRenderable {
+	private assets: IDrawAssets[] | null = null;
+	protected scaleable = true;
+	protected canvasHeight: number = 0;
+	protected canvasWidth: number = 0;
 
-	public get id(): string {
-		return this.obj.id;
+	constructor(obj: DeepReadonly<ISprite>) {
+		super(obj);
+		this.init();
 	}
-	public get infront(): boolean {
-		return this.obj.onTop;
+
+	protected get version(): number {
+		return this.assets === null ? -1 : this.obj.version;
 	}
 
-	public constructor(public readonly obj: DeepReadonly<ISprite>) {}
-
-	public updatedContent(): void {}
-
-	public async render(selected: boolean, rx: RenderContext) {
+	public async init() {
 		const assets = await Promise.all(
 			this.obj.assets.map(asset => getAAsset(asset))
 		);
-		const x = this.obj.x - this.obj.width / 2;
+		let width = 0;
+		let height = 0;
 		for (const asset of assets) {
-			rx.drawImage({
-				image: asset,
-				x,
-				y: this.obj.y,
-				w: this.obj.width,
-				h: this.obj.height,
-				shadow: selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
-				flip: this.obj.flip,
-				filters: this.obj.filters,
-				composite: this.obj.composite,
-			});
+			if (asset instanceof HTMLImageElement) {
+				if (asset.height > height) height = asset.height;
+				if (asset.width > width) width = asset.width;
+			}
 		}
+		this.canvasWidth = width;
+		this.canvasHeight = height;
+		this.assets = [
+			{
+				loaded: true,
+				assets,
+				offset: [0, 0],
+			},
+		];
+		debugger;
+		eventBus.fire(new InvalidateRenderEvent());
+	}
+	protected getAssetList(): (IDrawAssets | IDrawAssetsUnloaded)[] {
+		return this.assets || [];
 	}
 
-	public hitTest(hx: number, hy: number): boolean {
-		const hitX = hx - this.obj.x + this.obj.width / 2;
-		const hitY = hy - this.obj.y;
-		return (
-			hitX >= 0 &&
-			hitX <= this.obj.width &&
-			hitY >= 0 &&
-			hitY <= this.obj.height
-		);
-	}
-
-	public getHitbox(): IHitbox {
-		return {
-			x0: this.obj.x - this.obj.width / 2,
-			x1: this.obj.x + this.obj.width / 2,
-			y0: this.obj.y,
-			y1: this.obj.y + this.obj.height,
-		};
-	}
+	public updatedContent(): void {}
 }

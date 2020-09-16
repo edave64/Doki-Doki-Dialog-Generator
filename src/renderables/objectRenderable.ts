@@ -8,13 +8,11 @@ import { Store } from 'vuex';
 export abstract class ObjectRenderable<
 	Obj extends IObject
 > extends OffscreenRenderable {
-	protected constructor(protected obj: DeepReadonly<Obj>) {
+	public constructor(protected obj: DeepReadonly<Obj>) {
 		super();
 	}
 
-	public abstract updatedContent(
-		current: Store<DeepReadonly<IRootState>>
-	): void;
+	public updatedContent(current: Store<DeepReadonly<IRootState>>): void {}
 	public get id(): string {
 		return this.obj.id;
 	}
