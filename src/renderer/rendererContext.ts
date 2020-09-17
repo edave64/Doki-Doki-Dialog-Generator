@@ -4,8 +4,6 @@ import { ErrorAsset } from '@/models/error-asset';
 import { SpriteFilter } from '@/store/sprite_options';
 import { DeepReadonly } from '@/util/readonly';
 
-const opacityFactor = 100;
-
 export class RenderContext {
 	private aborted: boolean = false;
 
@@ -97,18 +95,43 @@ export class RenderContext {
 	): void {
 		if (this.aborted) throw new RenderAbortedException();
 		if (params.image instanceof ErrorAsset) return;
-		const { image, flip, x, y, w, h, opacity } = {
+		const { image, flip, x, y, w, h, filters, composite } = {
 			flip: false,
 			w: params.image.width,
 			h: params.image.height,
-			opacity: 100,
+			composite: 'source-over',
 			...params,
 		};
 
 		this.fsCtx.save();
 
-		if (opacity < opacityFactor) {
-			this.fsCtx.globalAlpha = opacity / opacityFactor;
+		this.fsCtx.globalCompositeOperation = composite;
+
+		if (filters) {
+			// Safari fallback
+			if (!(('filter' in this.fsCtx) as any)) {
+				let opacityCombined = 1;
+				for (const filter of filters) {
+					if (filter.type === 'opacity') {
+						opacityCombined *= filter.value;
+					}
+				}
+				this.fsCtx.globalAlpha = opacityCombined;
+			} else {
+				const filterList: string[] = [];
+				for (const filter of filters) {
+					if (filter.type === 'drop-shadow') {
+						filterList.push(
+							`drop-shadow(${filter.offsetX}px ${filter.offsetY}px ${filter.blurRadius}px ${filter.color})`
+						);
+					} else if (filter.type === 'hue-rotate') {
+						filterList.push(`hue-rotate(${filter.value}deg)`);
+					} else {
+						filterList.push(`${filter.type}(${filter.value * 100}%)`);
+					}
+				}
+				this.fsCtx.filter = filterList.join(' ');
+			}
 		}
 
 		if (params.shadow) {
