@@ -114,6 +114,12 @@ export default defineComponent({
 		},
 		removeChoice(): void {
 			this.vuexHistory.transaction(() => {
+				if (
+					this.currentIdx === this.object.choices.length - 1 &&
+					this.currentIdx > 0
+				) {
+					this.select(this.currentIdx - 1);
+				}
 				this.$store.dispatch('objects/removeChoice', {
 					id: this.object.id,
 					choiceIdx: this.currentIdx,
