@@ -83,7 +83,7 @@
 
 <script lang="ts">
 import { IAuthor, IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
-import { sanitize } from '@/components/toolbox/panels/character-pack-sanitizer';
+import { sanitize } from '@/components/toolbox/tools/character-pack-sanitizer';
 import environment from '@/environments/environment';
 import { IPackWithState, PackStates } from './types';
 import { defineComponent, PropType } from 'vue';

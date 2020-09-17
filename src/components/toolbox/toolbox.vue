@@ -82,18 +82,18 @@
 </template>
 
 <script lang="ts">
-import SettingsPanel from './panels/settings.vue';
-import AddPanel from './panels/add.vue';
-import CharacterPanel from './panels/character.vue';
-import SpritePanel from './panels/sprite.vue';
-import TextBoxPanel from './panels/textbox.vue';
-import ChoicePanel from './panels/choice.vue';
-import CreditsPanel from './panels/credits.vue';
-import BackgroundsPanel from './panels/backgrounds.vue';
-import ContentPacksPanel from './panels/content-pack.vue';
-import PanelsPanel from './panels/panels.vue';
-import NotificationPanel from './panels/notification.vue';
-import PoemPanel from './panels/poem.vue';
+import SettingsPanel from './tools/settings.vue';
+import AddPanel from './tools/add.vue';
+import CharacterPanel from './tools/character.vue';
+import SpritePanel from './tools/sprite.vue';
+import TextBoxPanel from './tools/textbox.vue';
+import ChoicePanel from './tools/choice.vue';
+import CreditsPanel from './tools/credits.vue';
+import BackgroundsPanel from './tools/backgrounds.vue';
+import ContentPacksPanel from './tools/content-pack.vue';
+import PanelsPanel from './tools/panels.vue';
+import NotificationPanel from './tools/notification.vue';
+import PoemPanel from './tools/poem.vue';
 import { IObject, ObjectTypes } from '@/store/objects';
 import environment from '@/environments/environment';
 import { defineComponent } from 'vue';
