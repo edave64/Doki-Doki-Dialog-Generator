@@ -114,7 +114,7 @@ export default defineComponent({
 		},
 		removeChoice(): void {
 			this.vuexHistory.transaction(() => {
-				this.$store.dispatch('objects/removeChoise', {
+				this.$store.dispatch('objects/removeChoice', {
 					id: this.object.id,
 					choiceIdx: this.currentIdx,
 				} as IRemoveChoiceAction);

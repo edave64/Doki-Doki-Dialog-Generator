@@ -97,11 +97,18 @@ export const choiceActions: ActionTree<IObjectsState, IRootState> = {
 		} as ISetChoicesMutation);
 	},
 
-	removeChoise({ state, commit }, command: IRemoveChoiceAction) {
+	removeChoice({ state, commit }, command: IRemoveChoiceAction) {
 		const obj = state.objects[command.id] as IChoices;
 		const choices = [...obj.choices];
 		if (!choices[command.choiceIdx]) return;
 		choices.splice(command.choiceIdx, 1);
+		// Do not allow empty choices
+		if (choices.length === 0) {
+			choices.push({
+				selected: false,
+				text: '',
+			});
+		}
 		commit('setChoices', {
 			id: command.id,
 			choices,
