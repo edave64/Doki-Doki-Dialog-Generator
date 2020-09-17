@@ -1,17 +1,9 @@
-import { ICommand } from './command';
 import { DeepReadonly } from '@/util/readonly';
 import mitt from 'mitt';
 
 const eventBus = mitt();
 
 export default {
-	fireCommand(command: ICommand) {
-		eventBus.emit('command', command);
-	},
-	subscribeCommand(handler: (ev: ICommand) => void): void {
-		eventBus.on('command', handler as any);
-	},
-
 	fire(event: IEvent) {
 		eventBus.emit(event.kind, event);
 	},
