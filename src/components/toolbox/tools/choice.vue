@@ -63,7 +63,7 @@ import { PanelMixin } from './panelMixin';
 import { IChoices, IRemoveChoiceAction } from '@/store/objectTypes/choices';
 import { IChoice, IAddChoiceAction } from '@/store/objectTypes/choices';
 import { DeepReadonly } from '@/util/readonly';
-import TextEditor from '../subpanels/text/text.vue';
+import TextEditor from '../subtools/text/text.vue';
 import { ComponentCustomProperties, defineComponent } from 'vue';
 import { genericSetable } from '@/util/simpleSettable';
 

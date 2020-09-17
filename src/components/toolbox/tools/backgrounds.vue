@@ -41,7 +41,7 @@ import {
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { ISetCurrentMutation, ISetColorMutation } from '@/store/panels';
 import { PanelMixin } from './panelMixin';
-import Color from '../subpanels/color/color.vue';
+import Color from '../subtools/color/color.vue';
 import { defineComponent } from 'vue';
 
 const uploadedBackgroundsPack: ContentPack<string> = {

@@ -46,7 +46,7 @@ import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSi
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
 import { PanelMixin } from './panelMixin';
-import TextEditor from '../subpanels/text/text.vue';
+import TextEditor from '../subtools/text/text.vue';
 import { IPoem } from '@/store/objectTypes/poem';
 import {
 	poemBackgrounds,
