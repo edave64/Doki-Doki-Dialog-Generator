@@ -46,12 +46,13 @@
 				>
 					<img :src="assetPath(character)" :alt="character.label" />
 				</div>
-				<div
-					class="btn custom-sprite"
+				<d-button
+					class="custom-sprite"
+					icon="extension"
 					@click="$emit('show-dialog', 'type: Characters')"
 				>
-					<i class="material-icons">extension</i> Search in content packs
-				</div>
+					Search in content packs
+				</d-button>
 			</template>
 			<template v-if="group === 'sprites'">
 				<div
