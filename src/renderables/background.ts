@@ -4,9 +4,12 @@ import { screenWidth, screenHeight } from '@/constants/base';
 import { IAsset } from '@/store/content';
 import { ScalingModes } from '@/store/panels';
 import { DeepReadonly } from '@/util/readonly';
-import { IRenderable, IHitbox } from './renderable';
 
-export class Background implements IRenderable {
+export interface IBackgroundRenderer {
+	render(rx: RenderContext): Promise<void>;
+}
+
+export class Background implements IBackgroundRenderer {
 	public constructor(
 		public readonly id: string,
 		public readonly assets: DeepReadonly<IAsset[]>,
@@ -14,9 +17,7 @@ export class Background implements IRenderable {
 		public readonly scale: ScalingModes
 	) {}
 
-	public updatedContent(): void {}
-
-	public async render(selected: boolean, rx: RenderContext): Promise<void> {
+	public async render(rx: RenderContext): Promise<void> {
 		const images = await Promise.all(
 			this.assets.map(asset => getAAsset(asset, rx.hq))
 		);
@@ -62,17 +63,6 @@ export class Background implements IRenderable {
 			});
 		}
 	}
-	public hitTest(hx: number, hy: number): boolean {
-		return true;
-	}
-	public getHitbox(): IHitbox {
-		return {
-			x0: 0,
-			y0: 0,
-			x1: screenWidth,
-			y1: screenHeight,
-		};
-	}
 }
 
 export const color = {
@@ -80,9 +70,7 @@ export const color = {
 	name: 'Static color',
 	color: '#000000',
 
-	updatedContent(): void {},
-
-	async render(selected: boolean, rx: RenderContext): Promise<void> {
+	async render(rx: RenderContext): Promise<void> {
 		rx.drawRect({
 			x: 0,
 			y: 0,
@@ -91,37 +79,11 @@ export const color = {
 			fill: { style: this.color },
 		});
 	},
-
-	hitTest() {
-		return true;
-	},
-
-	getHitbox() {
-		return {
-			x0: 0,
-			y0: 0,
-			x1: screenWidth,
-			y1: screenHeight,
-		};
-	},
 };
 
 export const transparent = {
 	id: 'buildin.transparent',
 	name: 'Transparent',
 	// tslint:disable-next-line: no-empty
-	async render(selected: boolean, rx: RenderContext) {},
-
-	hitTest() {
-		return true;
-	},
-
-	getHitbox() {
-		return {
-			x0: 0,
-			y0: 0,
-			x1: screenWidth,
-			y1: screenHeight,
-		};
-	},
+	async render(rx: RenderContext) {},
 };

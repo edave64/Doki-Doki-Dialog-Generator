@@ -1,5 +1,4 @@
 import { RenderContext } from '@/renderer/rendererContext';
-import { IRenderable } from './renderable';
 import { TextRenderer } from '@/renderer/textRenderer/textRenderer';
 import { screenWidth, screenHeight } from '@/constants/base';
 import { IChoices } from '@/store/objectTypes/choices';
@@ -12,7 +11,7 @@ import {
 } from '@/constants/choices';
 import { ObjectRenderable } from './objectRenderable';
 
-export class Choice extends ObjectRenderable<IChoices> implements IRenderable {
+export class Choice extends ObjectRenderable<IChoices> {
 	protected readonly scaleable = false;
 	protected readonly canvasHeight = screenHeight;
 	protected readonly canvasWidth = screenWidth;

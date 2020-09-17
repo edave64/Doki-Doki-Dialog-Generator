@@ -1,5 +1,4 @@
 import { getAAsset } from '@/asset-manager';
-import { IRenderable } from './renderable';
 import { ISprite } from '@/store/objectTypes/sprite';
 import { DeepReadonly } from '@/util/readonly';
 import {
@@ -11,8 +10,7 @@ import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 
 const BaseXPosition = 640;
 
-export class Sprite extends AssetListRenderable<ISprite>
-	implements IRenderable {
+export class Sprite extends AssetListRenderable<ISprite> {
 	private assets: IDrawAssets[] | null = null;
 	protected scaleable = true;
 	protected canvasHeight: number = 0;

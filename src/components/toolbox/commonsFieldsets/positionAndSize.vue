@@ -104,7 +104,6 @@
 <script lang="ts">
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
-import { IRenderable } from '@/renderables/renderable';
 import { positions, characterPositions } from '@/constants/base';
 import {
 	closestCharacterSlot,
@@ -250,11 +249,6 @@ export default defineComponent({
 		},
 	},
 });
-
-export interface MoveObject {
-	object: IRenderable;
-	move: 'Forward' | 'Backward' | 'Back' | 'Front' | 'Delete';
-}
 </script>
 
 <style lang="scss" scoped>

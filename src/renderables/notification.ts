@@ -1,5 +1,4 @@
 import { RenderContext } from '@/renderer/rendererContext';
-import { IRenderable } from './renderable';
 import { TextRenderer } from '@/renderer/textRenderer/textRenderer';
 import { screenWidth, screenHeight } from '@/constants/base';
 import {
@@ -16,8 +15,7 @@ import {
 } from '@/constants/notification';
 import { ObjectRenderable } from './objectRenderable';
 
-export class Notification extends ObjectRenderable<INotification>
-	implements IRenderable {
+export class Notification extends ObjectRenderable<INotification> {
 	protected readonly canvasHeight: number = screenHeight;
 	protected readonly canvasWidth: number = screenWidth;
 	protected scaleable = false;

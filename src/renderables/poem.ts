@@ -1,5 +1,4 @@
 import { RenderContext } from '@/renderer/rendererContext';
-import { IRenderable } from './renderable';
 import { TextRenderer } from '@/renderer/textRenderer/textRenderer';
 import { screenWidth, screenHeight } from '@/constants/base';
 import { IPoem } from '@/store/objectTypes/poem';
@@ -18,7 +17,7 @@ const consoleTopPadding = 26;
 const consoleLineWrapPadding = 10;
 const poemTopMargin = 10;
 
-export class Poem extends ObjectRenderable<IPoem> implements IRenderable {
+export class Poem extends ObjectRenderable<IPoem> {
 	protected readonly scaleable = false;
 	protected readonly canvasHeight = screenHeight;
 	protected readonly canvasWidth = screenWidth;

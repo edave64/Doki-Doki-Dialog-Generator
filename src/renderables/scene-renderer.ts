@@ -1,7 +1,6 @@
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
-import { IRenderable } from './renderable';
-import { color, Background } from './background';
+import { color, Background, IBackgroundRenderer } from './background';
 import { IPanel } from '@/store/panels';
 import { DeepReadonly } from '@/util/readonly';
 import { ISprite } from '@/store/objectTypes/sprite';
@@ -24,7 +23,7 @@ import { ObjectRenderable } from './objectRenderable';
 import { IObject } from '@/store/objects';
 
 export class SceneRenderer {
-	private renderObjectCache = new Map<string, IRenderable>();
+	private renderObjectCache = new Map<string, ObjectRenderable<IObject>>();
 	private state: DeepReadonly<IRootState>;
 	private lCurrentlyRendering = false;
 	private renderer: Renderer;
@@ -88,7 +87,7 @@ export class SceneRenderer {
 				});
 			}
 
-			await this.getBackgroundRenderer()?.render(false, rx);
+			await this.getBackgroundRenderer()?.render(rx);
 
 			const selection = this.state.ui.selection;
 			for (const object of this.getRenderObjects()) {
@@ -153,7 +152,7 @@ export class SceneRenderer {
 		return this.state.panels.panels[this.panelId];
 	}
 
-	private getBackgroundRenderer(): IRenderable | null {
+	private getBackgroundRenderer(): IBackgroundRenderer | null {
 		const panel = this.panel;
 		switch (panel.background.current) {
 			case 'buildin.static-color':

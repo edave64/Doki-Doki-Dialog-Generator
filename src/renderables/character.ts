@@ -1,4 +1,3 @@
-import { IRenderable } from './renderable';
 import {
 	ICharacter,
 	getPose,
@@ -18,8 +17,7 @@ import {
 	IDrawAssetsUnloaded,
 } from './assetListRenderable';
 
-export class Character extends AssetListRenderable<ICharacter>
-	implements IRenderable {
+export class Character extends AssetListRenderable<ICharacter> {
 	public constructor(
 		obj: DeepReadonly<ICharacter>,
 		private data: DeepReadonly<CharacterModel<IAsset>>

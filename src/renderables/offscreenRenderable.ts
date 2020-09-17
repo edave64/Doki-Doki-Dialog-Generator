@@ -1,11 +1,11 @@
 import { RenderContext } from '@/renderer/rendererContext';
 import { Renderer } from '@/renderer/renderer';
-import { IRenderable, IHitbox } from './renderable';
+import { IHitbox } from './renderable';
 import { DeepReadonly } from '@/util/readonly';
 import { SpriteFilter } from '@/store/sprite_options';
 import { screenHeight, screenWidth } from '@/constants/base';
 
-export abstract class OffscreenRenderable implements IRenderable {
+export abstract class OffscreenRenderable {
 	private hq: boolean = false;
 	private localRenderer: Renderer | null = null;
 	private lastVersion: any = null;

@@ -1,7 +1,6 @@
 import { RenderContext } from '@/renderer/rendererContext';
 import { getAsset } from '@/asset-manager';
 import { ITextBox } from '@/store/objectTypes/textbox';
-import { IRenderable } from './renderable';
 import {
 	NameboxTextStyle,
 	ControlsTextStyle,
@@ -46,7 +45,7 @@ import {
 } from '@/constants/textBoxCustom';
 import { ObjectRenderable } from './objectRenderable';
 
-export class TextBox extends ObjectRenderable<ITextBox> implements IRenderable {
+export class TextBox extends ObjectRenderable<ITextBox> {
 	protected readonly scaleable = false;
 	protected readonly canvasHeight = screenHeight;
 	protected readonly canvasWidth = screenWidth;
