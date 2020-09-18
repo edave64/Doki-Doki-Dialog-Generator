@@ -19,7 +19,11 @@ export default defineComponent({
 			default: 'global',
 		},
 		maxSize: {} as Prop<string | [string, string]>,
+		gap: {
+			type: String,
+			default: '0px',
 		},
+	},
 	computed: {
 		finalDirection(): 'horizontal' | 'vertical' {
 			if (this.direction === 'global') {
@@ -39,6 +43,9 @@ export default defineComponent({
 			{
 				...attrs,
 				class: ['d-flow', this.finalDirection, wrapingClass],
+				style: {
+					gap: this.gap,
+				},
 			},
 			this.$slots.default!()
 		);
