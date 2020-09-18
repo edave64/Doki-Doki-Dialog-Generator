@@ -23,6 +23,7 @@ module.exports = {
 		'@typescript-eslint/no-use-before-define': 'off',
 		'no-case-declarations': 'off',
 		'@typescript-eslint/no-inferrable-types': 'off',
+		'@typescript-eslint/no-empty-interface': 'off',
 		'no-empty': 'off',
 	},
 };
