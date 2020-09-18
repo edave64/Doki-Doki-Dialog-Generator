@@ -45,7 +45,7 @@ import {
 import { IAsset, ReplaceContentPackAction } from '@/store/content';
 import SliderGroup from './sliderGroup.vue';
 import { RGBAColor } from '@/util/colors/rgb';
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { DeepReadonly } from '@/util/readonly';
 
 const generatedPackId = 'dddg.generated.colors';
@@ -60,6 +60,10 @@ export default defineComponent({
 			type: String,
 		},
 		title: { default: '' },
+		format: {
+			type: String as PropType<'rgb' | 'hex'>,
+			default: 'hex',
+		},
 	},
 	data: () => ({
 		mode: 'hsla',
@@ -74,10 +78,20 @@ export default defineComponent({
 		},
 		color: {
 			get(): string {
-				return this.modelValue;
+				if (this.format === 'rgb') {
+					const rgb = RGBAColor.fromCss(this.modelValue);
+					return rgb.toHex();
+				} else {
+					return this.modelValue;
+				}
 			},
 			set(newColor: string) {
-				this.$emit('update:modelValue', newColor);
+				if (this.format === 'rgb') {
+					const rgb = RGBAColor.fromCss(newColor);
+					this.$emit('update:modelValue', rgb.toCss());
+				} else {
+					this.$emit('update:modelValue', newColor);
+				}
 			},
 		},
 	},
@@ -87,7 +101,7 @@ export default defineComponent({
 			// tslint:disable-next-line: no-magic-numbers
 			if (RGBAColor.validHex(hex) && (hex.length === 7 || hex.length === 9)) {
 				console.log('setting updateHex', hex);
-				this.$emit('update:modelValue', hex);
+				this.color = hex;
 			}
 		},
 		addSwatch() {
