@@ -16,6 +16,7 @@ import { IAsset, BackgroundLookup } from '@/store/content';
 import { ErrorAsset } from '@/models/error-asset';
 import { IPanel } from '@/store/panels';
 import { defineComponent } from 'vue';
+import { DeepReadonly } from '@/util/readonly';
 
 export default defineComponent({
 	props: {
@@ -29,7 +30,7 @@ export default defineComponent({
 		assets: [] as Array<HTMLImageElement | ErrorAsset>,
 	}),
 	computed: {
-		background(): Readonly<IPanel['background']> {
+		background(): DeepReadonly<IPanel['background']> {
 			const currentPanel = this.$store.state.panels.currentPanel;
 			return this.$store.state.panels.panels[currentPanel].background;
 		},

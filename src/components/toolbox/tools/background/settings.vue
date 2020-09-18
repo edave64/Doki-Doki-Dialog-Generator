@@ -98,7 +98,7 @@ export default defineComponent({
 		currentBackgroundId(): string {
 			return this.background.current;
 		},
-		background(): Readonly<IPanel['background']> {
+		background(): DeepReadonly<IPanel['background']> {
 			const currentPanel = this.$store.state.panels.currentPanel;
 			return this.$store.state.panels.panels[currentPanel].background;
 		},
