@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, h, PropType, VNode } from 'vue';
+import { defineComponent, h, Prop, PropType, VNode } from 'vue';
 import { VerticalScrollRedirect } from '../vertical-scroll-redirect';
 export default defineComponent({
 	mixins: [VerticalScrollRedirect],
@@ -18,10 +18,8 @@ export default defineComponent({
 			>,
 			default: 'global',
 		},
-		maxSize: {
-			type: String,
+		maxSize: {} as Prop<string | [string, string]>,
 		},
-	},
 	computed: {
 		finalDirection(): 'horizontal' | 'vertical' {
 			if (this.direction === 'global') {
@@ -45,6 +43,10 @@ export default defineComponent({
 			this.$slots.default!()
 		);
 		if (this.maxSize) {
+			const maxSize =
+				this.maxSize instanceof Array
+					? this.maxSize[this.finalDirection === 'horizontal' ? 0 : 1]
+					: this.maxSize;
 			return h(
 				'div',
 				{
@@ -53,7 +55,7 @@ export default defineComponent({
 					style: {
 						[this.finalDirection === 'horizontal'
 							? 'maxWidth'
-							: 'maxHeight']: this.maxSize,
+							: 'maxHeight']: maxSize,
 					},
 				},
 				[flowContainer]
