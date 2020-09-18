@@ -79,14 +79,6 @@ export class SceneRenderer {
 	private async renderCallback(rx: RenderContext): Promise<void> {
 		this.lCurrentlyRendering = true;
 		try {
-			if (rx.preview) {
-				rx.drawImage({
-					x: 0,
-					y: 0,
-					image: await getAsset('backgrounds/transparent'),
-				});
-			}
-
 			await this.getBackgroundRenderer()?.render(rx);
 
 			const selection = this.state.ui.selection;
@@ -97,6 +89,14 @@ export class SceneRenderer {
 					selected = selection === object.id;
 				}
 				await object.render(selected, rx);
+			}
+			if (rx.preview) {
+				rx.drawImage({
+					x: 0,
+					y: 0,
+					composite: 'destination-over',
+					image: await getAsset('backgrounds/transparent'),
+				});
 			}
 		} finally {
 			this.lCurrentlyRendering = false;
