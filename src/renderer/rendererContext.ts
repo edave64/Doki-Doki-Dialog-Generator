@@ -153,6 +153,8 @@ export class RenderContext {
 						);
 					} else if (filter.type === 'hue-rotate') {
 						filterList.push(`hue-rotate(${filter.value}deg)`);
+					} else if (filter.type === 'blur') {
+						filterList.push(`blur(${filter.value}px)`);
 					} else {
 						filterList.push(`${filter.type}(${filter.value * 100}%)`);
 					}
