@@ -13,6 +13,13 @@
 			v-model="textEditorText"
 			@leave="textEditor = ''"
 		/>
+		<image-options
+			v-else-if="imageOptionsOpen"
+			type="object"
+			title="Textbox"
+			:id="object.id"
+			@leave="imageOptionsOpen = false"
+		/>
 		<template v-else>
 			<table class="upper-combos">
 				<tr>
@@ -159,6 +166,7 @@
 					</template>
 				</table>
 			</d-fieldset>
+			<button @click="imageOptionsOpen = true">Image options</button>
 			<delete :obj="object" />
 		</template>
 	</div>
@@ -179,6 +187,7 @@ import DFieldset from '@/components/ui/d-fieldset.vue';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
+import ImageOptions from '@/components/toolbox/subtools/image-options/image-options.vue';
 import Color from '../subtools/color/color.vue';
 import TextEditor from '../subtools/text/text.vue';
 import { defineComponent } from 'vue';
@@ -197,11 +206,13 @@ export default defineComponent({
 		Delete,
 		Color,
 		TextEditor,
+		ImageOptions,
 	},
 	mixins: [PanelMixin],
 	data: () => ({
 		textEditor: '' as '' | 'name' | 'body',
 		colorSelect: '' as '' | 'base' | 'controls' | 'namebox' | 'nameboxStroke',
+		imageOptionsOpen: false,
 	}),
 	computed: {
 		object(): ITextBox {

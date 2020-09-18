@@ -9,6 +9,13 @@
 			@show-dialog="$emit('show-dialog', $event)"
 			@show-expression-dialog="$emit('show-expression-dialog', $event)"
 		/>
+		<image-options
+			v-else-if="imageOptionsOpen"
+			type="object"
+			:title="label"
+			:id="object.id"
+			@leave="imageOptionsOpen = false"
+		/>
 		<template v-else>
 			<d-fieldset
 				v-if="hasMultiplePoses || parts.length > 0"
@@ -63,6 +70,7 @@
 			<layers :object="object" />
 			<toggle v-model="closeUp" label="Close up?" />
 			<toggle v-model="flip" label="Flip?" />
+			<button @click="imageOptionsOpen = true">Image options</button>
 			<delete :obj="object" />
 		</template>
 	</div>
@@ -81,6 +89,7 @@ import Toggle from '@/components/toggle.vue';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
+import ImageOptions from '@/components/toolbox/subtools/image-options/image-options.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import Parts from './character/parts.vue';
 import { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
@@ -101,8 +110,10 @@ export default defineComponent({
 		Delete,
 		Parts,
 		DFieldset,
+		ImageOptions,
 	},
 	data: () => ({
+		imageOptionsOpen: false,
 		panelForParts: null as string | null,
 	}),
 	computed: {

@@ -253,21 +253,21 @@ export default defineComponent({
 
 	&:not(.vertical) {
 		flex-direction: column;
-		height: 100%;
+		@include height-100();
 
 		h2 {
 			writing-mode: vertical-rl;
-			height: 100%;
+			@include height-100();
 		}
 
 		.column {
 			display: flex;
-			height: 100%;
+			@include height-100();
 			flex-direction: column;
 			flex-wrap: wrap;
 
 			textarea {
-				height: 100%;
+				@include height-100();
 			}
 		}
 
@@ -283,7 +283,7 @@ export default defineComponent({
 		.ok-col {
 			width: 32px;
 			button {
-				height: 100%;
+				@include height-100();
 			}
 		}
 	}

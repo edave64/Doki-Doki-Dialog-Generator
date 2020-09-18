@@ -7,6 +7,13 @@
 			v-model="text"
 			@leave="textEditor = false"
 		/>
+		<image-options
+			v-else-if="imageOptionsOpen"
+			type="object"
+			title="Notification"
+			:id="object.id"
+			@leave="imageOptionsOpen = false"
+		/>
 		<template v-else>
 			<div id="notification_text">
 				<label for="notification_text">Text:</label>
@@ -18,6 +25,7 @@
 			<layers :object="object" />
 			<toggle v-model="flip" label="Flip?" />
 			<toggle v-model="renderBackdrop" label="Show backdrop?" />
+			<button @click="imageOptionsOpen = true">Image options</button>
 			<delete :obj="object" />
 		</template>
 	</div>
@@ -28,6 +36,7 @@ import Toggle from '@/components/toggle.vue';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
+import ImageOptions from '@/components/toolbox/subtools/image-options/image-options.vue';
 import { PanelMixin } from './panelMixin';
 import TextEditor from '../subtools/text/text.vue';
 import { INotification } from '../../../store/objectTypes/notification';
@@ -44,8 +53,10 @@ export default defineComponent({
 		Layers,
 		Delete,
 		TextEditor,
+		ImageOptions,
 	},
 	data: () => ({
+		imageOptionsOpen: false,
 		textEditor: false,
 	}),
 	computed: {

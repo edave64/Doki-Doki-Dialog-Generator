@@ -7,6 +7,13 @@
 			v-model="button_text"
 			@leave="textEditor = false"
 		/>
+		<image-options
+			v-else-if="imageOptionsOpen"
+			type="object"
+			title="Choice"
+			:id="object.id"
+			@leave="imageOptionsOpen = false"
+		/>
 		<template v-else>
 			<d-fieldset class="buttons" title="Buttons:">
 				<d-flow maxSize="100%" direction="vertical" noWraping>
@@ -47,6 +54,7 @@
 			<position-and-size :obj="object" />
 			<layers :object="object" />
 			<toggle v-model="flip" label="Flip?" />
+			<button @click="imageOptionsOpen = true">Image options</button>
 			<delete :obj="object" />
 		</template>
 	</div>
@@ -59,6 +67,7 @@ import DFlow from '@/components/ui/d-flow.vue';
 import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
 import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
+import ImageOptions from '@/components/toolbox/subtools/image-options/image-options.vue';
 import { PanelMixin } from './panelMixin';
 import { IChoices, IRemoveChoiceAction } from '@/store/objectTypes/choices';
 import { IChoice, IAddChoiceAction } from '@/store/objectTypes/choices';
@@ -79,8 +88,10 @@ export default defineComponent({
 		Layers,
 		Delete,
 		TextEditor,
+		ImageOptions,
 	},
 	data: () => ({
+		imageOptionsOpen: false,
 		currentIdx: 0,
 		textEditor: false,
 	}),

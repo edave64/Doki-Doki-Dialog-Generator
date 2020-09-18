@@ -1,0 +1,513 @@
+<template>
+	<color
+		v-if="showShadowColor"
+		v-model="shadowColor"
+		format="rgb"
+		@leave="showShadowColor = false"
+	/>
+	<d-flow v-else no-wraping class="image-options-subpanel">
+		<h2>Image options</h2>
+		<div class="column ok-col">
+			<button @click="$emit('leave')">Back</button>
+		</div>
+		<div class="column">
+			<label for="compositionSelect">Compositing Mode:</label
+			><a
+				href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation#Types"
+				target="_blank"
+				rel="noopener noreferrer"
+				>[?]</a
+			>
+			<select id="compositionSelect" v-model="compositionMode" @keydown.stop>
+				<option value="source-over">source-over</option>
+				<!--
+				<option value="source-in">source-in</option>
+				<option value="source-out">source-out</option>
+				-->
+				<option value="source-atop">source-atop</option>
+				<option value="destination-over">destination-over</option>
+				<option value="destination-in">destination-in</option>
+				<option value="destination-in">destination-out</option>
+				<option value="destination-in">destination-atop</option>
+				<option value="lighter">lighter</option>
+				<option value="xor">xor</option>
+				<option value="multiply">multiply</option>
+				<option value="screen">screen</option>
+				<option value="overlay">overlay</option>
+				<option value="darken">darken</option>
+				<option value="lighten">lighten</option>
+				<option value="color-dodge">color-dodge</option>
+				<option value="color-burn">color-burn</option>
+				<option value="hard-light">hard-light</option>
+				<option value="soft-light">soft-light</option>
+				<option value="difference">difference</option>
+				<option value="exclusion">exclusion</option>
+				<option value="hue">hue</option>
+				<option value="saturation">saturation</option>
+				<option value="color">color</option>
+				<option value="luminosity">luminosity</option>
+			</select>
+		</div>
+		<d-fieldset title="Effects">
+			<d-flow class="filter-flow" no-wraping gap="8px">
+				<d-flow direction="vertical" no-wraping>
+					<label for="addEffect">Add new effect</label>
+					<select id="addEffect" v-model="addEffectSelection" @keydown.stop>
+						<option
+							v-for="filterType of filterTypes"
+							:key="filterType"
+							:value="filterType"
+							>{{ getFilterLabel(filterType) }}</option
+						>
+					</select>
+					<button
+						:disabled="addEffectSelection === ''"
+						@click="addFilter"
+						@keydown.stop
+					>
+						Add
+					</button>
+					<button
+						:disabled="!currentFilter"
+						@click="removeFilter"
+						@keydown.stop
+					>
+						Remove
+					</button>
+					<button
+						:disabled="currentFilterIdx === 0"
+						@click="moveFilter(-1)"
+						@keydown.stop
+					>
+						Move up
+					</button>
+					<button
+						:disabled="currentFilterIdx === filters.length - 1"
+						@click="moveFilter(1)"
+						@keydown.stop
+					>
+						Move down
+					</button>
+				</d-flow>
+				<d-flow maxSize="100%" direction="vertical" no-wraping>
+					<div
+						v-for="(filter, filterIdx) in filters"
+						:key="filterIdx"
+						:class="{ choiceBtn: true, active: filterIdx === currentFilterIdx }"
+						@click="selectFilter(filterIdx)"
+					>
+						{{ getFilterText(filter) }}
+					</div>
+				</d-flow>
+				<table v-if="currentFilter" class="value-input-table">
+					<template v-if="currentFilter.type === 'drop-shadow'">
+						<tr>
+							<td>
+								<label for="shadow_color">Color:</label>
+							</td>
+							<td>
+								<button
+									id="shadow_color"
+									class="color-button"
+									:style="{ background: shadowColor }"
+									@click="showShadowColor = true"
+								>
+									&nbsp;
+								</button>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label for="filter_x">X:</label>
+							</td>
+							<td>
+								<input
+									id="filter_x"
+									type="number"
+									v-model.number="shadowX"
+									@keydown.stop
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label for="filter_y">Y:</label>
+							</td>
+							<td>
+								<input
+									id="filter_y"
+									type="number"
+									v-model.number="shadowY"
+									@keydown.stop
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label for="filter_blur">Blur:</label>
+							</td>
+							<td>
+								<input
+									id="filter_blur"
+									type="number"
+									v-model.number="shadowBlur"
+									@keydown.stop
+								/>
+							</td>
+						</tr>
+					</template>
+					<template v-else-if="isPercentFilter">
+						<tr>
+							<td>
+								<label for="filter_value">Value:</label>
+							</td>
+							<td>
+								<input
+									id="filter_value"
+									:value="(currentFilter.value * 100).toFixed()"
+									type="number"
+									:max="maxValue"
+									:min="minValue"
+									@input="
+										setValue({ value: Number($event.target.value / 100) })
+									"
+									@keydown.stop
+								/>%
+							</td>
+						</tr>
+					</template>
+					<template v-else>
+						<tr>
+							<td>
+								<label for="filter_value">Value:</label>
+							</td>
+							<td>
+								<input
+									id="filter_value"
+									:value="currentFilter.value"
+									type="number"
+									:max="maxValue"
+									:min="minValue"
+									@input="setValue({ value: Number($event.target.value) })"
+									@keydown.stop
+								/>
+							</td>
+						</tr>
+					</template>
+				</table>
+			</d-flow>
+		</d-fieldset>
+	</d-flow>
+</template>
+
+<script lang="ts">
+import DFlow from '@/components/ui/d-flow.vue';
+import DFieldset from '@/components/ui/d-fieldset.vue';
+import Color from '@/components/toolbox/subtools/color/color.vue';
+import { defineComponent, Prop, PropType } from 'vue';
+import { CompositeModes } from '@/renderer/rendererContext';
+import { DeepReadonly } from '@/util/readonly';
+import {
+	IHasSpriteFilters,
+	INumericSpriteFilter,
+	percentageValue,
+	SpriteFilter,
+} from '@/store/sprite_options';
+import { exhaust } from '@/util/exhaust';
+import {
+	IAddFilterAction,
+	IMoveFilterAction,
+	IRemoveFilterAction,
+	ISetCompositionMutation,
+	ISetFilterAction,
+} from '@/store/objects';
+
+const filterText: ReadonlyMap<SpriteFilter['type'], string> = new Map<
+	SpriteFilter['type'],
+	string
+>([
+	['blur', 'Blur'],
+	['brightness', 'Brightness'],
+	['contrast', 'Contrast'],
+	['grayscale', 'Grayscale'],
+	['hue-rotate', 'Rotate hue'],
+	['invert', 'Invert colors'],
+	['opacity', 'Opacity'],
+	['saturate', 'Saturate'],
+	['sepia', 'Sepia'],
+	['drop-shadow', 'Drop shadow'],
+]);
+
+const filters: ReadonlyArray<SpriteFilter['type']> = Array.from(
+	filterText.keys()
+).sort();
+
+export default defineComponent({
+	components: { DFlow, DFieldset, Color },
+	props: {
+		type: {
+			type: String as PropType<'object' | 'background' | 'panel'>,
+			required: true,
+		},
+		title: {
+			type: String,
+			required: true,
+		},
+		id: {
+			required: true,
+		} as Prop<string | number>,
+	},
+	data: () => ({
+		addEffectSelection: '' as SpriteFilter['type'] | '',
+		currentFilterIdx: 0,
+		showShadowColor: false,
+	}),
+	computed: {
+		object(): DeepReadonly<IHasSpriteFilters> {
+			switch (this.type) {
+				case 'object':
+					return this.$store.state.objects.objects[this.id!];
+				case 'background':
+					return this.$store.state.panels.panels[this.id!].background;
+				case 'panel':
+					return this.$store.state.panels.panels[this.id!];
+				default:
+					exhaust(this.type);
+					return null!;
+			}
+		},
+		compositionMode: {
+			get(): CompositeModes {
+				return this.object.composite;
+			},
+			set(composite: CompositeModes): void {
+				this.vuexHistory.transaction(() => {
+					switch (this.type) {
+						case 'object':
+							this.$store.commit('objects/setComposition', {
+								id: this.id,
+								composite,
+							} as ISetCompositionMutation);
+							break;
+						case 'background':
+							break;
+						case 'panel':
+							break;
+						default:
+							exhaust(this.type);
+							break;
+					}
+				});
+			},
+		},
+		filters(): DeepReadonly<SpriteFilter[]> {
+			return this.object.filters;
+		},
+		filterTypes(): ReadonlyArray<SpriteFilter['type']> {
+			return filters;
+		},
+		currentFilter(): DeepReadonly<SpriteFilter> | null {
+			return this.filters[this.currentFilterIdx] || null;
+		},
+		isPercentFilter(): boolean {
+			const filter = this.currentFilter;
+			if (!filter) return false;
+			return percentageValue.has(filter.type);
+		},
+		maxValue(): number | undefined {
+			const filter = this.currentFilter;
+			if (!filter) return undefined;
+
+			if (filter.type === 'hue-rotate') return 360;
+			if (
+				filter.type === 'grayscale' ||
+				filter.type === 'sepia' ||
+				filter.type === 'opacity' ||
+				filter.type === 'invert'
+			)
+				return 100;
+
+			return undefined;
+		},
+		minValue(): number | undefined {
+			const filter = this.currentFilter;
+			if (!filter) return undefined;
+
+			switch (filter.type) {
+				case 'blur':
+				case 'brightness':
+				case 'contrast':
+				case 'grayscale':
+				case 'hue-rotate':
+				case 'invert':
+				case 'opacity':
+				case 'saturate':
+				case 'sepia':
+					return 0;
+			}
+
+			return undefined;
+		},
+		shadowColor: {
+			get(): string | undefined {
+				const filter = this.currentFilter;
+				if (!filter) return undefined;
+				if (!('color' in filter)) return undefined;
+				return filter.color;
+			},
+			set(color: string) {
+				this.setValue({ color });
+			},
+		},
+		shadowX: {
+			get(): number | undefined {
+				const filter = this.currentFilter;
+				if (!filter) return undefined;
+				if (!('offsetX' in filter)) return undefined;
+				return filter.offsetX;
+			},
+			set(offsetX: number) {
+				this.setValue({ offsetX });
+			},
+		},
+		shadowY: {
+			get(): number | undefined {
+				const filter = this.currentFilter;
+				if (!filter) return undefined;
+				if (!('offsetY' in filter)) return undefined;
+				return filter.offsetY;
+			},
+			set(offsetY: number) {
+				this.setValue({ offsetY });
+			},
+		},
+		shadowBlur: {
+			get(): number | undefined {
+				const filter = this.currentFilter;
+				if (!filter) return undefined;
+				if (!('blurRadius' in filter)) return undefined;
+				return filter.blurRadius;
+			},
+			set(blurRadius: number) {
+				this.setValue({ blurRadius });
+			},
+		},
+	},
+	methods: {
+		getFilterLabel(type: SpriteFilter['type']): string {
+			return filterText.get(type)!;
+		},
+		getFilterText(filter: SpriteFilter): string {
+			if (percentageValue.has(filter.type)) {
+				return `${filterText.get(filter.type)} ${(
+					(filter as INumericSpriteFilter<any>).value * 100
+				).toFixed()}%`;
+			} else if (filter.type === 'hue-rotate') {
+				return `${filterText.get(filter.type)} ${filter.value.toFixed()}°`;
+			} else if (filter.type === 'blur') {
+				return `${filterText.get(filter.type)} ${filter.value.toFixed()}px`;
+			}
+			return filterText.get(filter.type)!;
+		},
+		addFilter() {
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('objects/addFilter', {
+					id: this.id,
+					type: this.addEffectSelection,
+					idx: this.currentFilterIdx + 1,
+				} as IAddFilterAction);
+			});
+		},
+		selectFilter(idx: number) {
+			this.currentFilterIdx = idx;
+		},
+		removeFilter() {
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('objects/removeFilter', {
+					id: this.id,
+					idx: this.currentFilterIdx,
+				} as IRemoveFilterAction);
+			});
+		},
+		moveFilter(moveBy: number) {
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('objects/moveFilter', {
+					id: this.id,
+					idx: this.currentFilterIdx,
+					moveBy,
+				} as IMoveFilterAction);
+				this.currentFilterIdx += moveBy;
+			});
+		},
+		setValue(value: Omit<ISetFilterAction, 'id' | 'idx'>) {
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('objects/setFilter', {
+					id: this.id,
+					idx: this.currentFilterIdx,
+					...value,
+				} as ISetFilterAction);
+			});
+		},
+	},
+});
+</script>
+
+<style lang="scss" scoped>
+.image-options-subpanel {
+	&.vertical {
+		.column {
+			width: 100%;
+			margin-top: 8px;
+
+			button,
+			select {
+				width: 100%;
+			}
+		}
+	}
+
+	&:not(.vertical) {
+		.column {
+			display: flex;
+			@include height-100();
+			flex-direction: column;
+			flex-wrap: wrap;
+			margin-left: 8px;
+		}
+		.ok-col {
+			width: 42px;
+			button {
+				@include height-100();
+			}
+		}
+
+		.filter-flow {
+			> .vertical {
+				width: auto;
+			}
+		}
+	}
+}
+
+.choiceBtn {
+	overflow: hidden;
+	width: 100%;
+	height: 24px;
+	text-overflow: ellipsis;
+	padding: 2px;
+
+	&.active {
+		background-color: #ffbde1;
+	}
+}
+
+.value-input-table {
+	td {
+		vertical-align: top;
+	}
+	input,
+	.color-button {
+		width: 100px;
+	}
+}
+</style>
