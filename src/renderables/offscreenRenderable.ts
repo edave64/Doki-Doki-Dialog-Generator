@@ -87,6 +87,9 @@ export abstract class OffscreenRenderable {
 			await this.updateLocalCanvas(!rx.hq);
 		}
 
+		this.hq = rx.hq;
+		this.lastVersion = this.version;
+
 		if (!this.renderable) return;
 
 		const w = this.scaleable ? this.width : screenWidth;
