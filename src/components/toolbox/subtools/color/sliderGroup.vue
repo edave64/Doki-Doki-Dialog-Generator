@@ -154,7 +154,6 @@ export default defineComponent({
 				throw new Error(`Invalid color code: ${rgbColor}`);
 			}
 			this.lastRGBEmit = rgbColor;
-			console.log('setting rgb', rgbColor);
 			this.$emit('update:modelValue', rgbColor);
 		},
 		initValues() {

@@ -65,7 +65,6 @@ export default defineComponent({
 				case 'buildin.transparent':
 					return {};
 			}
-			const variant = this.bgData!.variants[0];
 			const urls = (this.assets.filter(
 				img => img instanceof HTMLImageElement
 			) as HTMLImageElement[])

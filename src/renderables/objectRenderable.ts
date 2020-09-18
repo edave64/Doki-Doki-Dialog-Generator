@@ -13,7 +13,7 @@ export abstract class ObjectRenderable<
 		super();
 	}
 
-	public updatedContent(current: Store<DeepReadonly<IRootState>>): void {}
+	public updatedContent(_current: Store<DeepReadonly<IRootState>>): void {}
 	public get id(): string {
 		return this.obj.id;
 	}

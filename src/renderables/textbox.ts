@@ -315,7 +315,7 @@ export class TextBox extends ObjectRenderable<ITextBox> {
 						ctx => {
 							ctx.translate(x, y);
 						},
-						subSubRx => {
+						_subSubRx => {
 							const pattern = subRx.patternFrom(dotPattern);
 							subRx.drawRect({
 								x: 0,

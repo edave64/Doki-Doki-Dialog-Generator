@@ -220,7 +220,6 @@ export default defineComponent({
 				} else if (selection && e.key === 'ArrowDown') {
 					y += e.shiftKey ? 1 : arrowMoveStepSize;
 				} else {
-					console.log(e);
 					return;
 				}
 				this.$store.dispatch('objects/setPosition', {
@@ -228,7 +227,6 @@ export default defineComponent({
 					x,
 					y,
 				} as ISetObjectPositionMutation);
-				console.log(e);
 				return;
 			});
 		},
@@ -237,7 +235,6 @@ export default defineComponent({
 		},
 	},
 	mounted(): void {
-		console.log('Shit be stupid2');
 		window.addEventListener('keypress', e => {
 			if (e.key === 'Escape') {
 				this.vuexHistory.transaction(() => {

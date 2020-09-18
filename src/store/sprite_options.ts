@@ -1,3 +1,5 @@
+import { exhaust } from '@/util/exhaust';
+
 export type SpriteFilter =
 	| INumericSpriteFilter<'blur'>
 	| INumericSpriteFilter<'brightness'>
@@ -110,7 +112,7 @@ export function addFilter(obj: IHasSpriteFilters, type: SpriteFilter['type']) {
 			});
 			return;
 		default:
-			const a: never = type;
+			exhaust(type);
 			throw new Error(`Unexpected filter type "${type}"`);
 	}
 }

@@ -281,14 +281,6 @@ export class RenderContext {
 	}
 }
 
-const optSize = { w: 0, h: 0 };
-const optShadow = {
-	blur: 0,
-	color: 'none',
-	offsetX: 0,
-	offsetY: 0,
-};
-
 export interface IShadow {
 	blur?: number;
 	color?: string;

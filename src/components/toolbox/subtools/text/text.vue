@@ -140,7 +140,6 @@ export default defineComponent({
 	watch: {
 		selectedFont() {
 			if (this.selectedFont === '') return;
-			console.log(this.selectedFont);
 			this.insertCommand('font', this.selectedFont);
 			this.selectedFont = '';
 		},
@@ -154,7 +153,6 @@ export default defineComponent({
 				this.error = '';
 			} catch (e) {
 				this.error = (e as Error).message;
-				console.error(e);
 			}
 			this.$emit('update:modelValue', val);
 		},
