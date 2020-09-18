@@ -4,6 +4,7 @@ import { IHitbox } from './renderable';
 import { DeepReadonly } from '@/util/readonly';
 import { SpriteFilter } from '@/store/sprite_options';
 import { screenHeight, screenWidth } from '@/constants/base';
+import { CompositeModes } from '@/renderer/rendererContext';
 
 export abstract class OffscreenRenderable {
 	private hq: boolean = false;
@@ -37,7 +38,7 @@ export abstract class OffscreenRenderable {
 	protected abstract readonly y: number;
 	protected abstract readonly version: any;
 	protected abstract readonly flip: boolean;
-	protected abstract readonly composite: CanvasRenderingContext2D['globalCompositeOperation'];
+	protected abstract readonly composite: CompositeModes;
 	protected abstract readonly filters: DeepReadonly<SpriteFilter[]>;
 
 	public async updateLocalCanvas(hq: boolean) {

@@ -4,6 +4,7 @@ import { SpriteFilter } from '@/store/sprite_options';
 import { OffscreenRenderable } from './offscreenRenderable';
 import { IRootState } from '@/store';
 import { Store } from 'vuex';
+import { CompositeModes } from '@/renderer/rendererContext';
 
 export abstract class ObjectRenderable<
 	Obj extends IObject
@@ -29,7 +30,7 @@ export abstract class ObjectRenderable<
 	protected get flip(): boolean {
 		return this.obj.flip;
 	}
-	protected get composite(): string {
+	protected get composite(): CompositeModes {
 		return this.obj.composite;
 	}
 	protected get filters(): DeepReadonly<SpriteFilter[]> {

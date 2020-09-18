@@ -4,6 +4,34 @@ import { ErrorAsset } from '@/models/error-asset';
 import { SpriteFilter } from '@/store/sprite_options';
 import { DeepReadonly } from '@/util/readonly';
 
+export type CompositeModes =
+	| 'source-over'
+	| 'source-in'
+	| 'source-out'
+	| 'source-atop'
+	| 'destination-over'
+	| 'destination-in'
+	| 'destination-out'
+	| 'destination-atop'
+	| 'lighter'
+	| 'copy'
+	| 'xor'
+	| 'multiply'
+	| 'screen'
+	| 'overlay'
+	| 'darken'
+	| 'lighten'
+	| 'color-dodge'
+	| 'color-burn'
+	| 'hard-light'
+	| 'soft-light'
+	| 'difference'
+	| 'exclusion'
+	| 'hue'
+	| 'saturation'
+	| 'color'
+	| 'luminosity';
+
 export class RenderContext {
 	private aborted: boolean = false;
 
@@ -87,7 +115,7 @@ export class RenderContext {
 		params: {
 			image: HTMLImageElement | ErrorAsset | Renderer;
 			flip?: boolean;
-			composite?: CanvasRenderingContext2D['globalCompositeOperation'];
+			composite?: CompositeModes;
 		} & IRPos &
 			IOSize &
 			IOShadow &
@@ -99,12 +127,11 @@ export class RenderContext {
 			flip: false,
 			w: params.image.width,
 			h: params.image.height,
-			composite: 'source-over',
+			composite: 'source-over' as 'source-over',
 			...params,
 		};
 
 		this.fsCtx.save();
-
 		this.fsCtx.globalCompositeOperation = composite;
 
 		if (filters) {
@@ -153,10 +180,6 @@ export class RenderContext {
 		this.fsCtx.translate(x + w / 2, y + h / 2);
 		this.fsCtx.scale(flip ? -1 : 1, 1);
 
-		if (params.composite) {
-			this.fsCtx.globalCompositeOperation = params.composite;
-		}
-
 		if (image instanceof Renderer) {
 			image.paintOnto(this.fsCtx, -w / 2, -h / 2, w, h);
 		} else {
@@ -164,6 +187,7 @@ export class RenderContext {
 		}
 
 		this.fsCtx.restore();
+		this.fsCtx.globalCompositeOperation = 'source-over';
 	}
 
 	public drawRect({
@@ -284,7 +308,7 @@ interface IOShadow {
 }
 
 interface IOComposition {
-	composition?: CanvasRenderingContext2D['globalCompositeOperation'];
+	composition?: CompositeModes;
 }
 
 interface IRPos {
