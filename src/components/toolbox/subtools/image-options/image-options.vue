@@ -453,6 +453,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+h2 {
+	text-align: center;
+}
 .image-options-subpanel {
 	&.vertical {
 		.column {
@@ -466,7 +469,11 @@ export default defineComponent({
 		}
 	}
 
-	&:not(.vertical) {
+	&.horizontal {
+		h2 {
+			writing-mode: vertical-rl;
+			@include height-100();
+		}
 		.column {
 			display: flex;
 			@include height-100();
