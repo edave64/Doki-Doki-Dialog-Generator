@@ -308,7 +308,14 @@ export default defineComponent({
 			return this.object.filters;
 		},
 		filterTypes(): ReadonlyArray<SpriteFilter['type']> {
+			try {
+				const canvas = document.createElement('canvas');
+				const context = canvas.getContext('2d')!;
+				if ('filter' in context) {
 			return filters;
+				}
+			} catch (_e) {}
+			return ['opacity'];
 		},
 		currentFilter(): DeepReadonly<SpriteFilter> | null {
 			return this.filters[this.currentFilterIdx] || null;
