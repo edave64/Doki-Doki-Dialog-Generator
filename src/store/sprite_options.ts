@@ -1,3 +1,5 @@
+import { ICommand } from '@/eventbus/command';
+import { CompositeModes } from '@/renderer/rendererContext';
 import { exhaust } from '@/util/exhaust';
 
 export type SpriteFilter =
@@ -24,33 +26,7 @@ export const percentageValue = new Set<SpriteFilter['type']>([
 
 export interface IHasSpriteFilters {
 	filters: SpriteFilter[];
-	composite:
-		| 'source-over'
-		| 'source-in'
-		| 'source-out'
-		| 'source-atop'
-		| 'destination-over'
-		| 'destination-in'
-		| 'destination-out'
-		| 'destination-atop'
-		| 'lighter'
-		| 'copy'
-		| 'xor'
-		| 'multiply'
-		| 'screen'
-		| 'overlay'
-		| 'darken'
-		| 'lighten'
-		| 'color-dodge'
-		| 'color-burn'
-		| 'hard-light'
-		| 'soft-light'
-		| 'difference'
-		| 'exclusion'
-		| 'hue'
-		| 'saturation'
-		| 'color'
-		| 'luminosity';
+	composite: CompositeModes;
 }
 
 export interface INumericSpriteFilter<K extends string> {
@@ -79,42 +55,114 @@ export interface ISetDropShadowFilter {
 	color?: string;
 }
 
-export function addFilter(obj: IHasSpriteFilters, type: SpriteFilter['type']) {
-	const filter = obj.filters.find(f => f.type === type);
-	if (filter) return;
-	switch (type) {
+export function addFilter(
+	action: IAddFilterAction,
+	objLookup: (id: string) => IHasSpriteFilters,
+	setMutation: (mutation: ISetFiltersMutation) => void
+): void {
+	const obj = objLookup(action.id);
+	const filters = [...obj.filters];
+	let newFilter: SpriteFilter;
+	switch (action.type) {
+		case 'hue-rotate':
+			newFilter = {
+				type: action.type,
+				value: 0,
+			};
+			break;
+		case 'sepia':
+		case 'invert':
 		case 'blur':
 		case 'grayscale':
-		case 'hue-rotate':
-		case 'invert':
-		case 'sepia':
-			obj.filters.push({
-				type,
-				value: 0,
-			});
-			return;
 		case 'brightness':
 		case 'contrast':
 		case 'opacity':
 		case 'saturate':
-			obj.filters.push({
-				type,
+			newFilter = {
+				type: action.type,
 				value: 1,
-			});
-			return;
+			};
+			break;
 		case 'drop-shadow':
-			obj.filters.push({
-				type,
+			newFilter = {
+				type: action.type,
 				blurRadius: 0,
 				offsetX: 10,
 				offsetY: 10,
 				color: '#555555',
-			});
-			return;
+			};
+			break;
 		default:
-			exhaust(type);
-			throw new Error(`Unexpected filter type "${type}"`);
+			exhaust(action.type);
 	}
+	filters.splice(action.idx, 0, newFilter);
+
+	setMutation({
+		id: action.id,
+		filters,
+	});
+}
+
+export function removeFilter(
+	action: IRemoveFilterAction,
+	objLookup: (id: string) => IHasSpriteFilters,
+	setMutation: (mutation: ISetFiltersMutation) => void
+) {
+	const obj = objLookup(action.id);
+	const filters = [...obj.filters];
+	filters.splice(action.idx, 1);
+	setMutation({
+		id: action.id,
+		filters,
+	} as ISetFiltersMutation);
+}
+
+export function moveFilter(
+	action: IMoveFilterAction,
+	objLookup: (id: string) => IHasSpriteFilters,
+	setMutation: (mutation: ISetFiltersMutation) => void
+) {
+	const obj = objLookup(action.id);
+	const filters = [...obj.filters];
+	const filter = filters[action.idx];
+	filters.splice(action.idx, 1);
+	filters.splice(action.idx + action.moveBy, 0, filter);
+	setMutation({
+		id: action.id,
+		filters,
+	} as ISetFiltersMutation);
+}
+
+export function setFilter(
+	action: ISetFilterAction,
+	objLookup: (id: string) => IHasSpriteFilters,
+	setMutation: (mutation: ISetFiltersMutation) => void
+) {
+	const obj = objLookup(action.id);
+	const filters = [...obj.filters];
+	const filter = { ...filters[action.idx] } as SpriteFilter;
+	filters[action.idx] = filter;
+
+	if (filter.type === 'drop-shadow') {
+		if (action.blurRadius !== undefined) {
+			filter.blurRadius = action.blurRadius;
+		}
+		if (action.color !== undefined) {
+			filter.color = action.color;
+		}
+		if (action.offsetX !== undefined) {
+			filter.offsetX = action.offsetX;
+		}
+		if (action.offsetY !== undefined) {
+			filter.offsetY = action.offsetY;
+		}
+	} else {
+		filter.value = action.value!;
+	}
+	setMutation({
+		id: action.id,
+		filters,
+	} as ISetFiltersMutation);
 }
 
 export type SetFilterValue = ISetFilterValue | ISetDropShadowFilter;
@@ -125,11 +173,33 @@ export function applyFilter(obj: IHasSpriteFilters, command: SetFilterValue) {
 	Object.assign(filter, command);
 }
 
-export function removeFilter(
-	obj: IHasSpriteFilters,
-	type: SpriteFilter['type']
-) {
-	const filterIdx = obj.filters.findIndex(f => f.type === type);
-	if (filterIdx === -1) return;
-	obj.filters.splice(filterIdx, 1);
+export interface ISetCompositionMutation extends ICommand {
+	readonly composite: CompositeModes;
+}
+
+export interface ISetFiltersMutation extends ICommand {
+	readonly filters: SpriteFilter[];
+}
+
+export interface IAddFilterAction extends ICommand {
+	readonly type: SpriteFilter['type'];
+	readonly idx: number;
+}
+
+export interface IRemoveFilterAction extends ICommand {
+	readonly idx: number;
+}
+
+export interface IMoveFilterAction extends ICommand {
+	readonly idx: number;
+	readonly moveBy: number;
+}
+
+export interface ISetFilterAction extends ICommand {
+	readonly idx: number;
+	readonly value?: number;
+	readonly offsetX?: number;
+	readonly offsetY?: number;
+	readonly blurRadius?: number;
+	readonly color?: string;
 }

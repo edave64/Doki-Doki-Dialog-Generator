@@ -17,9 +17,17 @@ import { IRootState } from '.';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset } from './content';
 import {
+	addFilter,
+	IAddFilterAction,
 	IHasSpriteFilters,
-	percentageValue,
-	SpriteFilter,
+	IMoveFilterAction,
+	IRemoveFilterAction,
+	ISetFilterAction,
+	ISetFiltersMutation,
+	ISetCompositionMutation,
+	moveFilter,
+	removeFilter,
+	setFilter,
 } from './sprite_options';
 import { CompositeModes } from '@/renderer/rendererContext';
 
@@ -267,75 +275,32 @@ export default {
 			}
 		},
 		addFilter({ state, commit }, action: IAddFilterAction) {
-			const obj = state.objects[action.id];
-			const filters = [...obj.filters];
-			let filter: SpriteFilter;
-			if (action.type === 'drop-shadow') {
-				filter = {
-					type: 'drop-shadow',
-					blurRadius: 0,
-					color: 'rgba(0,0,0,0.5)',
-					offsetX: 10,
-					offsetY: 10,
-				};
-			} else {
-				filter = {
-					type: action.type,
-					value: percentageValue.has(action.type) ? 1 : 0,
-				};
-			}
-			filters.splice(action.idx, 0, filter);
-			commit('setFilters', {
-				id: action.id,
-				filters,
-			} as ISetFiltersMutation);
+			addFilter(
+				action,
+				(id: string) => state.objects[id],
+				mutation => commit('setFilters', mutation)
+			);
 		},
 		removeFilter({ state, commit }, action: IRemoveFilterAction) {
-			const obj = state.objects[action.id];
-			const filters = [...obj.filters];
-			filters.splice(action.idx, 1);
-			commit('setFilters', {
-				id: action.id,
-				filters,
-			} as ISetFiltersMutation);
+			removeFilter(
+				action,
+				(id: string) => state.objects[id],
+				mutation => commit('setFilters', mutation)
+			);
 		},
 		moveFilter({ state, commit }, action: IMoveFilterAction) {
-			const obj = state.objects[action.id];
-			const filters = [...obj.filters];
-			const filter = filters[action.idx];
-			filters.splice(action.idx, 1);
-			filters.splice(action.idx + action.moveBy, 0, filter);
-			commit('setFilters', {
-				id: action.id,
-				filters,
-			} as ISetFiltersMutation);
+			moveFilter(
+				action,
+				(id: string) => state.objects[id],
+				mutation => commit('setFilters', mutation)
+			);
 		},
 		setFilter({ state, commit }, action: ISetFilterAction) {
-			const obj = state.objects[action.id];
-			const filters = [...obj.filters];
-			const filter = filters[action.idx];
-
-			if (filter.type === 'drop-shadow') {
-				if (action.blurRadius !== undefined) {
-					filter.blurRadius = action.blurRadius;
-				}
-				if (action.color !== undefined) {
-					filter.color = action.color;
-				}
-				if (action.offsetX !== undefined) {
-					filter.offsetX = action.offsetX;
-				}
-				if (action.offsetY !== undefined) {
-					filter.offsetY = action.offsetY;
-				}
-			} else {
-				filter.value = action.value!;
-			}
-
-			commit('setFilters', {
-				id: action.id,
-				filters,
-			} as ISetFiltersMutation);
+			setFilter(
+				action,
+				(id: string) => state.objects[id],
+				mutation => commit('setFilters', mutation)
+			);
 		},
 		...spriteActions,
 		...characterActions,
@@ -425,35 +390,4 @@ export interface IObjectContentPackRemovalAction extends ICommand {
 export interface ICopyObjectsAction {
 	readonly sourcePanelId: string;
 	readonly targetPanelId: string;
-}
-
-export interface ISetCompositionMutation extends ICommand {
-	readonly composite: CompositeModes;
-}
-
-export interface ISetFiltersMutation extends ICommand {
-	readonly filters: SpriteFilter[];
-}
-
-export interface IAddFilterAction extends ICommand {
-	readonly type: SpriteFilter['type'];
-	readonly idx: number;
-}
-
-export interface IRemoveFilterAction extends ICommand {
-	readonly idx: number;
-}
-
-export interface IMoveFilterAction extends ICommand {
-	readonly idx: number;
-	readonly moveBy: number;
-}
-
-export interface ISetFilterAction extends ICommand {
-	readonly idx: number;
-	readonly value?: number;
-	readonly offsetX?: number;
-	readonly offsetY?: number;
-	readonly blurRadius?: number;
-	readonly color?: string;
 }

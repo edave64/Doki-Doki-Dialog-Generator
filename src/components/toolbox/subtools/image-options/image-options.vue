@@ -48,7 +48,7 @@
 				<option value="luminosity">luminosity</option>
 			</select>
 		</div>
-		<d-fieldset title="Effects">
+		<d-fieldset class="column" title="Effects" style="overflow: hidden">
 			<d-flow class="filter-flow" no-wraping gap="8px">
 				<d-flow direction="vertical" no-wraping>
 					<label for="addEffect">Add new effect</label>
@@ -82,7 +82,9 @@
 						Move up
 					</button>
 					<button
-						:disabled="currentFilterIdx === filters.length - 1"
+						:disabled="
+							currentFilterIdx === filters.length - 1 || filters.length === 0
+						"
 						@click="moveFilter(1)"
 						@keydown.stop
 					>
@@ -220,7 +222,7 @@ import {
 	IRemoveFilterAction,
 	ISetCompositionMutation,
 	ISetFilterAction,
-} from '@/store/objects';
+} from '@/store/sprite_options';
 
 const filterText: ReadonlyMap<SpriteFilter['type'], string> = new Map<
 	SpriteFilter['type'],
@@ -312,7 +314,7 @@ export default defineComponent({
 				const canvas = document.createElement('canvas');
 				const context = canvas.getContext('2d')!;
 				if ('filter' in context) {
-			return filters;
+					return filters;
 				}
 			} catch (_e) {}
 			return ['opacity'];
@@ -420,13 +422,26 @@ export default defineComponent({
 			}
 			return filterText.get(filter.type)!;
 		},
+		objectTypeScope(command: string): string {
+			switch (this.type) {
+				case 'object':
+					return 'objects/' + command;
+				case 'background':
+					return (
+						'objects/background' + command[0].toUpperCase() + command.slice(1)
+					);
+				case 'panel':
+					return 'panels/' + command;
+			}
+		},
 		addFilter() {
 			this.vuexHistory.transaction(() => {
-				this.$store.dispatch('objects/addFilter', {
+				this.$store.dispatch(this.objectTypeScope('addFilter'), {
 					id: this.id,
 					type: this.addEffectSelection,
 					idx: this.currentFilterIdx + 1,
 				} as IAddFilterAction);
+				return;
 			});
 		},
 		selectFilter(idx: number) {
@@ -434,25 +449,27 @@ export default defineComponent({
 		},
 		removeFilter() {
 			this.vuexHistory.transaction(() => {
-				this.$store.dispatch('objects/removeFilter', {
+				this.$store.dispatch(this.objectTypeScope('removeFilter'), {
 					id: this.id,
 					idx: this.currentFilterIdx,
 				} as IRemoveFilterAction);
+				return;
 			});
 		},
 		moveFilter(moveBy: number) {
 			this.vuexHistory.transaction(() => {
-				this.$store.dispatch('objects/moveFilter', {
+				this.$store.dispatch(this.objectTypeScope('moveFilter'), {
 					id: this.id,
 					idx: this.currentFilterIdx,
 					moveBy,
 				} as IMoveFilterAction);
 				this.currentFilterIdx += moveBy;
+				return;
 			});
 		},
 		setValue(value: Omit<ISetFilterAction, 'id' | 'idx'>) {
 			this.vuexHistory.transaction(() => {
-				this.$store.dispatch('objects/setFilter', {
+				this.$store.dispatch(this.objectTypeScope('setFilter'), {
 					id: this.id,
 					idx: this.currentFilterIdx,
 					...value,
