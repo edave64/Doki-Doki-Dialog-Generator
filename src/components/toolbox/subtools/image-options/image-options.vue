@@ -10,7 +10,7 @@
 		<div class="column ok-col">
 			<button @click="$emit('leave')">Back</button>
 		</div>
-		<div class="column">
+		<div class="column" v-if="allowComposition">
 			<label for="compositionSelect">Compositing Mode:</label
 			><a
 				href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation#Types"
@@ -256,6 +256,10 @@ export default defineComponent({
 		id: {
 			required: true,
 		} as Prop<string | number>,
+		allowComposition: {
+			type: Boolean,
+			default: true,
+		},
 	},
 	data: () => ({
 		addEffectSelection: '' as SpriteFilter['type'] | '',
