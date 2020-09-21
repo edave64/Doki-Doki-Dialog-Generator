@@ -258,9 +258,9 @@ export default defineComponent({
 		id: {
 			required: true,
 		} as Prop<string | number>,
-		allowComposition: {
+		noComposition: {
 			type: Boolean,
-			default: true,
+			default: false,
 		},
 	},
 	data: () => ({
@@ -428,7 +428,7 @@ export default defineComponent({
 					return 'objects/' + command;
 				case 'background':
 					return (
-						'objects/background' + command[0].toUpperCase() + command.slice(1)
+						'panels/background' + command[0].toUpperCase() + command.slice(1)
 					);
 				case 'panel':
 					return 'panels/' + command;

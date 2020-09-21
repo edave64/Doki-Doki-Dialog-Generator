@@ -1,7 +1,7 @@
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { color, Background, IBackgroundRenderer } from './background';
-import { IPanel } from '@/store/panels';
+import panels, { IPanel } from '@/store/panels';
 import { DeepReadonly } from '@/util/readonly';
 import { ISprite } from '@/store/objectTypes/sprite';
 import { Sprite } from './sprite';
@@ -24,7 +24,6 @@ import { IObject } from '@/store/objects';
 
 export class SceneRenderer {
 	private renderObjectCache = new Map<string, ObjectRenderable<IObject>>();
-	private state: DeepReadonly<IRootState>;
 	private lCurrentlyRendering = false;
 	private renderer: Renderer;
 
@@ -34,7 +33,6 @@ export class SceneRenderer {
 		readonly canvasWidth: number,
 		readonly canvasHeight: number
 	) {
-		this.state = store.state;
 		this.renderer = new Renderer(canvasWidth, canvasHeight);
 	}
 
@@ -62,12 +60,9 @@ export class SceneRenderer {
 
 	public paintOnto(
 		c: CanvasRenderingContext2D,
-		x: number,
-		y: number,
-		w?: number,
-		h?: number
+		opts: { x: number; y: number; w?: number; h?: number }
 	) {
-		this.renderer.paintOnto(c, x, y, w, h);
+		this.renderer.paintOnto(c, opts);
 	}
 
 	public objectsAt(x: number, y: number): string[] {
@@ -81,7 +76,7 @@ export class SceneRenderer {
 		try {
 			await this.getBackgroundRenderer()?.render(rx);
 
-			const selection = this.state.ui.selection;
+			const selection = this.store.state.ui.selection;
 			for (const object of this.getRenderObjects()) {
 				let selected = false;
 				if (object instanceof ObjectRenderable) {
@@ -90,6 +85,7 @@ export class SceneRenderer {
 				}
 				await object.render(selected, rx);
 			}
+			rx.applyFilters([...this.panel.filters]);
 			if (rx.preview) {
 				rx.drawImage({
 					x: 0,
@@ -104,11 +100,11 @@ export class SceneRenderer {
 	}
 
 	private getRenderObjects() {
-		const objectsState = this.state.objects.panels[this.panelId];
+		const objectsState = this.store.state.objects.panels[this.panelId];
 		const order = objectsState
 			? [...objectsState.order, ...objectsState.onTopOrder]
 			: [];
-		const objects = this.state.objects.objects;
+		const objects = this.store.state.objects.objects;
 		const toUncache = Object.keys(this.renderObjectCache).filter(
 			id => !order.includes(id)
 		);
@@ -149,7 +145,7 @@ export class SceneRenderer {
 	}
 
 	private get panel(): DeepReadonly<IPanel> {
-		return this.state.panels.panels[this.panelId];
+		return this.store.state.panels.panels[this.panelId];
 	}
 
 	private getBackgroundRenderer(): IBackgroundRenderer | null {
@@ -170,7 +166,9 @@ export class SceneRenderer {
 					panel.background.current,
 					variant,
 					panel.background.flipped,
-					panel.background.scaling
+					panel.background.scaling,
+					panel.background.composite,
+					panel.background.filters
 				);
 		}
 	}

@@ -5,8 +5,19 @@
 		>
 		<h1>Background</h1>
 		<color v-if="colorSelect" v-model="bgColor" @leave="colorSelect = false" />
+		<image-options
+			v-if="imageOptions"
+			type="background"
+			title=""
+			:id="$store.state.panels.currentPanel"
+			no-composition
+			@leave="imageOptions = false"
+		/>
 		<template v-else>
-			<background-settings @change-color="colorSelect = true" />
+			<background-settings
+				@change-color="colorSelect = true"
+				@open-image-options="imageOptions = true"
+			/>
 
 			<div class="btn upload-background" @click="$refs.upload.click()">
 				Upload
@@ -33,6 +44,7 @@
 <script lang="ts">
 import BackgroundButton from './background/button.vue';
 import BackgroundSettings from './background/settings.vue';
+import ImageOptions from '../subtools/image-options/image-options.vue';
 import DropTarget from '../drop-target.vue';
 import { IAsset, ReplaceContentPackAction } from '@/store/content';
 import {
@@ -64,9 +76,11 @@ export default defineComponent({
 		BackgroundSettings,
 		DropTarget,
 		Color,
+		ImageOptions,
 	},
 	data: () => ({
 		colorSelect: false,
+		imageOptions: false,
 	}),
 	computed: {
 		bgColor: {

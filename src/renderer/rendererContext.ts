@@ -35,11 +35,29 @@ export type CompositeModes =
 export class RenderContext {
 	private aborted: boolean = false;
 
-	public constructor(
-		public fsCtx: CanvasRenderingContext2D,
+	private constructor(
+		private canvas: HTMLCanvasElement,
+		public readonly fsCtx: CanvasRenderingContext2D,
 		public readonly hq: boolean,
 		public readonly preview: boolean
 	) {}
+
+	public static make(
+		canvas: HTMLCanvasElement,
+		hq: boolean,
+		preview: boolean
+	): RenderContext {
+		return new RenderContext(canvas, canvas.getContext('2d')!, hq, preview);
+	}
+
+	public static makeWithContext(
+		canvas: HTMLCanvasElement,
+		context: CanvasRenderingContext2D,
+		hq: boolean,
+		preview: boolean
+	): RenderContext {
+		return new RenderContext(canvas, context, hq, preview);
+	}
 
 	public drawText(
 		params: { text: string; align?: CanvasTextAlign; font?: string } & IRPos &
@@ -183,7 +201,7 @@ export class RenderContext {
 		this.fsCtx.scale(flip ? -1 : 1, 1);
 
 		if (image instanceof Renderer) {
-			image.paintOnto(this.fsCtx, -w / 2, -h / 2, w, h);
+			image.paintOnto(this.fsCtx, { x: -w / 2, y: -h / 2, w, h });
 		} else {
 			this.fsCtx.drawImage(image as HTMLImageElement, -w / 2, -h / 2, w, h);
 		}
@@ -274,6 +292,44 @@ export class RenderContext {
 		y1: number
 	): CanvasGradient {
 		return this.fsCtx.createLinearGradient(x0, y0, x1, y1);
+	}
+
+	public applyFilters(filters: DeepReadonly<SpriteFilter[]>) {
+		if (filters.length === 0) return;
+		// Safari fallback
+		this.fsCtx.save();
+		if (!(('filter' in this.fsCtx) as any)) {
+			let opacityCombined = 1;
+			for (const filter of filters) {
+				if (filter.type === 'opacity') {
+					opacityCombined *= filter.value;
+				}
+			}
+			this.fsCtx.globalAlpha = opacityCombined;
+		} else {
+			const filterList: string[] = [];
+			for (const filter of filters) {
+				if (filter.type === 'drop-shadow') {
+					filterList.push(
+						`drop-shadow(${filter.offsetX}px ${filter.offsetY}px ${filter.blurRadius}px ${filter.color})`
+					);
+				} else if (filter.type === 'hue-rotate') {
+					filterList.push(`hue-rotate(${filter.value}deg)`);
+				} else if (filter.type === 'blur') {
+					filterList.push(`blur(${filter.value}px)`);
+				} else {
+					filterList.push(`${filter.type}(${filter.value * 100}%)`);
+				}
+			}
+			this.fsCtx.filter = filterList.join(' ');
+		}
+
+		this.fsCtx.drawImage(this.canvas, 0, 0);
+
+		if ('filter' in this.fsCtx) {
+			this.fsCtx.filter = 'none';
+		}
+		this.fsCtx.restore();
 	}
 
 	public abort(): void {

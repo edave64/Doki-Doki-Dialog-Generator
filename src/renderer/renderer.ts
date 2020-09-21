@@ -24,7 +24,12 @@ export class Renderer {
 
 		const ctx = this.previewCanvas.getContext('2d')!;
 		ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
-		const context = (this.runningContext = new RenderContext(ctx, hq, preview));
+		const context = (this.runningContext = RenderContext.makeWithContext(
+			this.previewCanvas,
+			ctx,
+			hq,
+			preview
+		));
 		try {
 			await renderCallback(this.runningContext);
 		} catch (e) {
@@ -50,15 +55,12 @@ export class Renderer {
 
 	public paintOnto(
 		c: CanvasRenderingContext2D,
-		x: number,
-		y: number,
-		w?: number,
-		h?: number
+		opts: { x: number; y: number; w?: number; h?: number }
 	) {
-		if (w && h) {
-			c.drawImage(this.previewCanvas, x, y, w, h);
+		if (opts.w && opts.h) {
+			c.drawImage(this.previewCanvas, opts.x, opts.y, opts.w, opts.h);
 		} else {
-			c.drawImage(this.previewCanvas, x, y);
+			c.drawImage(this.previewCanvas, opts.x, opts.y);
 		}
 	}
 
@@ -72,7 +74,9 @@ export class Renderer {
 
 		const ctx = downloadCanvas.getContext('2d')!;
 		ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
-		await renderCallback(new RenderContext(ctx, true, false));
+		await renderCallback(
+			RenderContext.makeWithContext(downloadCanvas, ctx, true, false)
+		);
 
 		return environment.saveToFile(downloadCanvas, filename);
 	}
@@ -86,7 +90,9 @@ export class Renderer {
 
 		const ctx = downloadCanvas.getContext('2d')!;
 		ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
-		await renderCallback(new RenderContext(ctx, true, false));
+		await renderCallback(
+			RenderContext.makeWithContext(downloadCanvas, ctx, true, false)
+		);
 		return await new Promise<Blob>((resolve, reject) => {
 			downloadCanvas.toBlob(blob => {
 				if (blob) resolve(blob);

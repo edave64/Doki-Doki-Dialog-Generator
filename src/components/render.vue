@@ -106,11 +106,7 @@ export default defineComponent({
 			const loadingScreen = document.createElement('canvas');
 			loadingScreen.height = this.bitmapHeight;
 			loadingScreen.width = this.bitmapWidth;
-			const rctx = new RenderContext(
-				loadingScreen.getContext('2d')!,
-				true,
-				false
-			);
+			const rctx = RenderContext.make(loadingScreen, true, false);
 			rctx.drawText({
 				text: 'Starting...',
 				x: loadingScreen.width / 2,
@@ -130,13 +126,12 @@ export default defineComponent({
 		display(): void {
 			if (!this.sdCtx) return;
 			this.showingLast = false;
-			this.sceneRender.paintOnto(
-				this.sdCtx,
-				0,
-				0,
-				this.bitmapWidth,
-				this.bitmapHeight
-			);
+			this.sceneRender.paintOnto(this.sdCtx, {
+				x: 0,
+				y: 0,
+				w: this.bitmapWidth,
+				h: this.bitmapHeight,
+			});
 		},
 		toRendererCoordinate(x: number, y: number): [number, number] {
 			const sd = this.$refs.sd as HTMLCanvasElement;

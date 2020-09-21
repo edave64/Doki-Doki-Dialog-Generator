@@ -436,7 +436,12 @@ export default defineComponent({
 				const target = this.$refs.target as HTMLCanvasElement;
 				const ctx = target.getContext('2d')!;
 				ctx.clearRect(0, 0, target.width, target.height);
-				renderer.paintOnto(ctx, 0, 0, target.width, target.height);
+				renderer.paintOnto(ctx, {
+					x: 0,
+					y: 0,
+					w: target.width,
+					h: target.height,
+				});
 			});
 		},
 

@@ -1,128 +1,144 @@
 <template>
 	<div class="panel">
 		<h1>Panels</h1>
-		<d-fieldset class="existing_panels_fieldset" title="Existing Panels">
-			<d-flow no-wraping maxSize="350px">
-				<div
-					v-for="(panel, idx) of panelButtons"
-					:key="panel.id"
-					:class="{ panel_button: true, active: panel.id === currentPanel }"
-					:style="`background-image: url('${panel.image}')`"
-					@click="updateCurrentPanel(panel.id)"
-				>
-					<div class="panel_text">
-						<p>{{ panel.text }}</p>
+		<image-options
+			v-if="imageOptions"
+			type="panel"
+			title=""
+			:id="currentPanel"
+			no-composition
+			@leave="
+				imageOptions = false;
+				renderThumbnail();
+			"
+		/>
+		<template v-else>
+			<d-fieldset class="existing_panels_fieldset" title="Existing Panels">
+				<d-flow no-wraping maxSize="350px">
+					<div
+						v-for="(panel, idx) of panelButtons"
+						:key="panel.id"
+						:class="{ panel_button: true, active: panel.id === currentPanel }"
+						:style="`background-image: url('${panel.image}')`"
+						@click="updateCurrentPanel(panel.id)"
+					>
+						<div class="panel_text">
+							<p>{{ panel.text }}</p>
+						</div>
+						<div class="panel_nr">{{ idx + 1 }}</div>
 					</div>
-					<div class="panel_nr">{{ idx + 1 }}</div>
-				</div>
-			</d-flow>
-		</d-fieldset>
-		<div class="column">
-			<d-button icon="add_to_queue" @click="addNewPanel">
-				Add new
-			</d-button>
-			<d-button
-				icon="remove_from_queue"
-				@click="deletePanel"
-				:disabled="!canDeletePanel"
-			>
-				Delete panel
-			</d-button>
+				</d-flow>
+			</d-fieldset>
+			<div class="column">
+				<d-button icon="add_to_queue" @click="addNewPanel">
+					Add new
+				</d-button>
+				<d-button
+					icon="remove_from_queue"
+					@click="deletePanel"
+					:disabled="!canDeletePanel"
+				>
+					Delete panel
+				</d-button>
 
-			<d-button
-				icon="arrow_upward"
-				@click="moveAhead"
-				:disabled="!canMoveAhead"
-			>
-				Move ahead
-			</d-button>
-			<d-button
-				icon="arrow_downward"
-				@click="moveBehind"
-				:disabled="!canMoveBehind"
-			>
-				Move behind
-			</d-button>
-		</div>
-		<d-fieldset title="Export">
-			<table>
-				<tr>
-					<td>
-						<label for="export_format">Format</label>
-					</td>
-					<td>
-						<select id="export_format" v-model="format">
-							<option value="image/png">PNG (lossless)</option>
-							<option value="image/webp" v-if="webpSupport"
-								>WebP (lossy)</option
-							>
-							<option value="image/heif" v-if="heifSupport"
-								>HEIF (lossy)</option
-							>
-							<option value="image/jpeg">JPEG (lossy)</option>
-							<!-- <option value="image/jpeg">WebM (lossy, video)</option>-->
-						</select>
-					</td>
-				</tr>
-				<tr v-if="isLossy">
-					<td>
-						<label for="export_quality">Quality:</label>
-					</td>
-					<td>
-						<input
-							id="export_quality"
-							type="number"
-							min="0"
-							max="100"
-							v-model.number="quality"
-							@keydown.stop
-						/>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<label for="export_ppi">
-							Panels per image:
-							<br /><small>(0 for one single image)</small>
-						</label>
-					</td>
-					<td>
-						<input
-							id="export_ppi"
-							type="number"
-							min="0"
-							v-model.number="ppi"
-							@keydown.stop
-						/>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<label for="export_pages">
-							Panels to export:
-							<br /><small>(Leave empty for all)</small>
-						</label>
-					</td>
-					<td>
-						<input
-							id="export_pages"
-							v-model="pages"
-							placeholder="E.g. 1-5, 8, 11-13"
-						/>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<d-button icon="photo_camera" @click="download">
-							Download
-						</d-button>
-					</td>
-					<td>
-						<button @click="estimateExportSize">Estimate filesizes</button>
-					</td>
-				</tr>
-			</table>
-		</d-fieldset>
+				<d-button
+					icon="arrow_upward"
+					@click="moveAhead"
+					:disabled="!canMoveAhead"
+				>
+					Move ahead
+				</d-button>
+				<d-button
+					icon="arrow_downward"
+					@click="moveBehind"
+					:disabled="!canMoveBehind"
+				>
+					Move behind
+				</d-button>
+				<d-button icon="color_lens" @click="imageOptions = true">
+					Image options
+				</d-button>
+			</div>
+			<d-fieldset title="Export">
+				<table>
+					<tr>
+						<td>
+							<label for="export_format">Format</label>
+						</td>
+						<td>
+							<select id="export_format" v-model="format">
+								<option value="image/png">PNG (lossless)</option>
+								<option value="image/webp" v-if="webpSupport"
+									>WebP (lossy)</option
+								>
+								<option value="image/heif" v-if="heifSupport"
+									>HEIF (lossy)</option
+								>
+								<option value="image/jpeg">JPEG (lossy)</option>
+								<!-- <option value="image/jpeg">WebM (lossy, video)</option>-->
+							</select>
+						</td>
+					</tr>
+					<tr v-if="isLossy">
+						<td>
+							<label for="export_quality">Quality:</label>
+						</td>
+						<td>
+							<input
+								id="export_quality"
+								type="number"
+								min="0"
+								max="100"
+								v-model.number="quality"
+								@keydown.stop
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="export_ppi">
+								Panels per image:
+								<br /><small>(0 for one single image)</small>
+							</label>
+						</td>
+						<td>
+							<input
+								id="export_ppi"
+								type="number"
+								min="0"
+								v-model.number="ppi"
+								@keydown.stop
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="export_pages">
+								Panels to export:
+								<br /><small>(Leave empty for all)</small>
+							</label>
+						</td>
+						<td>
+							<input
+								id="export_pages"
+								v-model="pages"
+								placeholder="E.g. 1-5, 8, 11-13"
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<d-button icon="photo_camera" @click="download">
+								Download
+							</d-button>
+						</td>
+						<td>
+							<button @click="estimateExportSize">Estimate filesizes</button>
+						</td>
+					</tr>
+				</table>
+			</d-fieldset>
+		</template>
 	</div>
 </template>
 
@@ -150,6 +166,7 @@ import { defineComponent } from 'vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import DButton from '@/components/ui/d-button.vue';
+import ImageOptions from '../subtools/image-options/image-options.vue';
 
 interface IPanelButton {
 	id: string;
@@ -170,7 +187,7 @@ const qualityWarningThreshold = 70;
 
 export default defineComponent({
 	mixins: [PanelMixin],
-	components: { DFieldset, DFlow, DButton },
+	components: { DFieldset, DFlow, DButton, ImageOptions },
 	data: () => ({
 		webpSupport: false,
 		heifSupport: false,
@@ -178,6 +195,7 @@ export default defineComponent({
 		pages: '',
 		format: 'image/png',
 		quality: defaultQuality,
+		imageOptions: false,
 	}),
 	computed: {
 		currentPanel(): string {
@@ -234,41 +252,7 @@ export default defineComponent({
 	},
 	async mounted() {
 		this.moveFocusToActivePanel();
-
-		const sceneRenderer = new SceneRenderer(
-			this.$store,
-			this.currentPanel,
-			screenWidth,
-			screenHeight
-		);
-
-		await sceneRenderer.render(false, true);
-
-		const targetCanvas = document.createElement('canvas');
-		targetCanvas.width = screenWidth * thumbnailFactor;
-		targetCanvas.height = screenHeight * thumbnailFactor;
-
-		sceneRenderer.paintOnto(
-			targetCanvas.getContext('2d')!,
-			0,
-			0,
-			targetCanvas.width,
-			targetCanvas.height
-		);
-		targetCanvas.toBlob(
-			blob => {
-				if (!blob) return;
-				const url = URL.createObjectURL(blob);
-				this.vuexHistory.transaction(() => {
-					this.$store.commit('panels/setPanelPreview', {
-						panelId: this.$store.state.panels.currentPanel,
-						url,
-					} as ISetPanelPreviewMutation);
-				});
-			},
-			(await isWebPSupported()) ? 'image/webp' : 'image/jpeg',
-			thumbnailQuality
-		);
+		this.renderThumbnail();
 	},
 	methods: {
 		async download() {
@@ -360,13 +344,12 @@ export default defineComponent({
 
 							await sceneRenderer.render(hq, false);
 
-							sceneRenderer.paintOnto(
-								context,
-								0,
-								screenHeight * panelIdx,
-								screenWidth,
-								screenHeight
-							);
+							sceneRenderer.paintOnto(context, {
+								x: 0,
+								y: screenHeight * panelIdx,
+								w: screenWidth,
+								h: screenHeight,
+							});
 						})
 					);
 
@@ -507,6 +490,41 @@ export default defineComponent({
 					delta: 1,
 				} as IMovePanelAction);
 			});
+		},
+		async renderThumbnail() {
+			const sceneRenderer = new SceneRenderer(
+				this.$store,
+				this.currentPanel,
+				screenWidth,
+				screenHeight
+			);
+
+			await sceneRenderer.render(false, true);
+
+			const targetCanvas = document.createElement('canvas');
+			targetCanvas.width = screenWidth * thumbnailFactor;
+			targetCanvas.height = screenHeight * thumbnailFactor;
+
+			sceneRenderer.paintOnto(targetCanvas.getContext('2d')!, {
+				x: 0,
+				y: 0,
+				w: targetCanvas.width,
+				h: targetCanvas.height,
+			});
+			targetCanvas.toBlob(
+				blob => {
+					if (!blob) return;
+					const url = URL.createObjectURL(blob);
+					this.vuexHistory.transaction(() => {
+						this.$store.commit('panels/setPanelPreview', {
+							panelId: this.$store.state.panels.currentPanel,
+							url,
+						} as ISetPanelPreviewMutation);
+					});
+				},
+				(await isWebPSupported()) ? 'image/webp' : 'image/jpeg',
+				thumbnailQuality
+			);
 		},
 	},
 	watch: {

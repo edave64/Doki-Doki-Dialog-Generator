@@ -1,9 +1,10 @@
-import { RenderContext } from '@/renderer/rendererContext';
+import { CompositeModes, RenderContext } from '@/renderer/rendererContext';
 import { getAAsset } from '@/asset-manager';
 import { screenWidth, screenHeight } from '@/constants/base';
 import { IAsset } from '@/store/content';
 import { ScalingModes } from '@/store/panels';
 import { DeepReadonly } from '@/util/readonly';
+import { SpriteFilter } from '@/store/sprite_options';
 
 export interface IBackgroundRenderer {
 	render(rx: RenderContext): Promise<void>;
@@ -14,7 +15,9 @@ export class Background implements IBackgroundRenderer {
 		public readonly id: string,
 		public readonly assets: DeepReadonly<IAsset[]>,
 		public readonly flip: boolean,
-		public readonly scale: ScalingModes
+		public readonly scale: ScalingModes,
+		public readonly compositeMode: CompositeModes,
+		public readonly filters: DeepReadonly<SpriteFilter[]>
 	) {}
 
 	public async render(rx: RenderContext): Promise<void> {
@@ -60,6 +63,8 @@ export class Background implements IBackgroundRenderer {
 				w,
 				h,
 				flip: this.flip,
+				composite: this.compositeMode,
+				filters: this.filters,
 			});
 		}
 	}

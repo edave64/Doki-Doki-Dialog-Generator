@@ -4,7 +4,6 @@
 			<label for="bg_color">Color:</label>
 			<button
 				id="bg_color"
-				class="color-button"
 				:style="{ background: color }"
 				@click="$emit('change-color')"
 			/>
@@ -31,6 +30,16 @@
 						<option value="1">Stretch</option>
 						<option value="2">Cover</option>
 					</select>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<button
+						id="image_options_button"
+						@click="$emit('open-image-options')"
+					>
+						Image options
+					</button>
 				</td>
 			</tr>
 		</table>
@@ -137,7 +146,7 @@ export default defineComponent({
 	height: 100%;
 }
 
-button {
+button:not(#image_options_button) {
 	width: 24px;
 }
 

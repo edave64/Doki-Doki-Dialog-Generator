@@ -4,7 +4,19 @@ import { IAsset, BackgroundLookup } from './content';
 import { IRootState } from '.';
 import { arraySeeker } from '@/models/seekers';
 import { ICopyObjectsAction, IDeleteAllOfPanel } from './objects';
-import Vue from 'vue';
+import {
+	addFilter,
+	IAddFilterAction,
+	IHasSpriteFilters,
+	IMoveFilterAction,
+	IRemoveFilterAction,
+	ISetCompositionMutation,
+	ISetFilterAction,
+	ISetFiltersMutation,
+	moveFilter,
+	removeFilter,
+	setFilter,
+} from './sprite_options';
 
 export enum ScalingModes {
 	None = 0,
@@ -12,16 +24,18 @@ export enum ScalingModes {
 	Cover = 2,
 }
 
-export interface IPanel {
+export interface IPanel extends IHasSpriteFilters {
 	id: string;
-	background: {
-		current: string;
-		color: string;
-		flipped: boolean;
-		variant: number;
-		scaling: ScalingModes;
-	};
+	background: IPanelBackground;
 	lastRender: string;
+}
+
+interface IPanelBackground extends IHasSpriteFilters {
+	current: string;
+	color: string;
+	flipped: boolean;
+	variant: number;
+	scaling: ScalingModes;
 }
 
 export interface IPanels {
@@ -112,6 +126,22 @@ export default {
 			);
 			delete state.panels[panelId];
 		},
+		setComposition(state, command: ISetCompositionMutation) {
+			const obj = state.panels[command.id];
+			obj.composite = command.composite;
+		},
+		setFilters(state, command: ISetFiltersMutation) {
+			const obj = state.panels[command.id];
+			obj.filters = command.filters;
+		},
+		backgroundSetComposition(state, command: ISetCompositionMutation) {
+			const obj = state.panels[command.id];
+			obj.background.composite = command.composite;
+		},
+		backgroundSetFilters(state, command: ISetFiltersMutation) {
+			const obj = state.panels[command.id];
+			obj.background.filters = command.filters;
+		},
 	},
 	actions: {
 		createPanel({ state, commit }) {
@@ -125,8 +155,12 @@ export default {
 						flipped: false,
 						scaling: ScalingModes.None,
 						variant: 0,
+						composite: 'source-over',
+						filters: [],
 					},
 					lastRender: '',
+					composite: 'source-over',
+					filters: [],
 				},
 			} as ICreatePanel);
 			if (!state.panelOrder) {
@@ -154,6 +188,8 @@ export default {
 					id,
 					background: JSON.parse(JSON.stringify(panel.background)),
 					lastRender: panel.lastRender,
+					composite: panel.composite,
+					filters: JSON.parse(JSON.stringify(panel.filters)),
 				},
 			} as ICreatePanel);
 			dispatch(
@@ -275,6 +311,62 @@ export default {
 			const newIdx = Math.max(oldIdx + delta, 0);
 			collection.splice(newIdx, 0, panelId);
 			commit('setPanelOrder', { panelOrder: collection } as ISetPanelOrder);
+		},
+		addFilter({ state, commit }, action: IAddFilterAction) {
+			addFilter(
+				action,
+				(id: string) => state.panels[id],
+				mutation => commit('setFilters', mutation)
+			);
+		},
+		removeFilter({ state, commit }, action: IRemoveFilterAction) {
+			removeFilter(
+				action,
+				(id: string) => state.panels[id],
+				mutation => commit('setFilters', mutation)
+			);
+		},
+		moveFilter({ state, commit }, action: IMoveFilterAction) {
+			moveFilter(
+				action,
+				(id: string) => state.panels[id],
+				mutation => commit('setFilters', mutation)
+			);
+		},
+		setFilter({ state, commit }, action: ISetFilterAction) {
+			setFilter(
+				action,
+				(id: string) => state.panels[id],
+				mutation => commit('setFilters', mutation)
+			);
+		},
+		backgroundAddFilter({ state, commit }, action: IAddFilterAction) {
+			addFilter(
+				action,
+				(id: string) => state.panels[id].background,
+				mutation => commit('backgroundSetFilters', mutation)
+			);
+		},
+		backgroundRemoveFilter({ state, commit }, action: IRemoveFilterAction) {
+			removeFilter(
+				action,
+				(id: string) => state.panels[id].background,
+				mutation => commit('backgroundSetFilters', mutation)
+			);
+		},
+		backgroundMoveFilter({ state, commit }, action: IMoveFilterAction) {
+			moveFilter(
+				action,
+				(id: string) => state.panels[id].background,
+				mutation => commit('backgroundSetFilters', mutation)
+			);
+		},
+		backgroundSetFilter({ state, commit }, action: ISetFilterAction) {
+			setFilter(
+				action,
+				(id: string) => state.panels[id].background,
+				mutation => commit('backgroundSetFilters', mutation)
+			);
 		},
 	},
 } as Module<IPanels, IRootState>;
