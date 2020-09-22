@@ -76,10 +76,10 @@ export class RGBAColor {
 		throw new Error('Invalid Hex color format length');
 	}
 
-	private static rgbEx = /^rgb\((\d*?)\,(\d*?)\,(\d*?)\)$/i;
-	private static rgbaEx = /^rgba\((\d{1,3})\,(\d{1,3})\,(\d{1,3})\,([\d\.]+)\)$/i;
-	private static hexShortEx = /^\#[0-9A-Z]{3,4}$/i;
-	private static hexLongEx = /^\#[0-9A-Z]{6,8}$/i;
+	private static rgbEx = /^rgb\((\d*?),(\d*?),(\d*?)\)$/i;
+	private static rgbaEx = /^rgba\((\d{1,3}),(\d{1,3}),(\d{1,3}),([\d.]+)\)$/i;
+	private static hexShortEx = /^#[0-9A-Z]{3,4}$/i;
+	private static hexLongEx = /^#[0-9A-Z]{6,8}$/i;
 
 	public constructor(
 		public readonly r: number,
