@@ -4,6 +4,7 @@
 			<label for="bg_color">Color:</label>
 			<button
 				id="bg_color"
+				class="color-button"
 				:style="{ background: color }"
 				@click="$emit('change-color')"
 			/>
@@ -16,11 +17,11 @@
 			</tr>
 			<tr v-if="hasVariants">
 				<td class="arrow-col">
-					<button @click="seekVariant(-1)">&lt;</button>
+					<button class="small-button" @click="seekVariant(-1)">&lt;</button>
 				</td>
 				<td style="text-align:center">Variant</td>
 				<td class="arrow-col">
-					<button @click="seekVariant(1)">&gt;</button>
+					<button class="small-button" @click="seekVariant(1)">&gt;</button>
 				</td>
 			</tr>
 			<tr>
@@ -146,7 +147,7 @@ export default defineComponent({
 	height: 100%;
 }
 
-button:not(#image_options_button) {
+.small-button {
 	width: 24px;
 }
 
