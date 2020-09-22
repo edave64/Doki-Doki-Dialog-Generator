@@ -8,8 +8,6 @@ import {
 } from './assetListRenderable';
 import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 
-const BaseXPosition = 640;
-
 export class Sprite extends AssetListRenderable<ISprite> {
 	private assets: IDrawAssets[] | null = null;
 	protected scaleable = true;
@@ -46,11 +44,18 @@ export class Sprite extends AssetListRenderable<ISprite> {
 				offset: [0, 0],
 			},
 		];
-		debugger;
 		eventBus.fire(new InvalidateRenderEvent());
 	}
 	protected getAssetList(): (IDrawAssets | IDrawAssetsUnloaded)[] {
 		return this.assets || [];
+	}
+
+	public get width() {
+		return this.obj.width;
+	}
+
+	public get height() {
+		return this.obj.height;
 	}
 
 	public updatedContent(): void {}
