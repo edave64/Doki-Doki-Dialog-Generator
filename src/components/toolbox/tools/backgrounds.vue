@@ -6,7 +6,7 @@
 		<h1>Background</h1>
 		<color v-if="colorSelect" v-model="bgColor" @leave="colorSelect = false" />
 		<image-options
-			v-if="imageOptions"
+			v-else-if="imageOptions"
 			type="background"
 			title=""
 			:id="$store.state.panels.currentPanel"
