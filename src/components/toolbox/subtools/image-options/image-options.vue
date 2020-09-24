@@ -10,7 +10,7 @@
 		<div class="column ok-col">
 			<button @click="$emit('leave')">Back</button>
 		</div>
-		<div class="column" v-if="allowComposition">
+		<div class="column" v-if="!noComposition">
 			<label for="compositionSelect">Compositing Mode:</label
 			><a
 				href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation#Types"
@@ -177,6 +177,19 @@
 								/>%
 							</td>
 						</tr>
+						<tr v-if="minValue === 0 && maxValue !== undefined">
+							<td colspan="2">
+								<slider
+									:gradientStops="['#000000', '#ffffff']"
+									label=""
+									:maxValue="maxValue"
+									:modelValue="currentFilter.value * 100"
+									@update:modelValue="
+										setValue({ value: Math.round($event) / 100 })
+									"
+								/>
+							</td>
+						</tr>
 					</template>
 					<template v-else>
 						<tr>
@@ -195,6 +208,27 @@
 								/>
 							</td>
 						</tr>
+						<tr v-if="minValue === 0 && maxValue !== undefined">
+							<td colspan="2">
+								<slider
+									:gradientStops="hueStops"
+									label=""
+									:maxValue="maxValue"
+									:modelValue="currentFilter.value"
+									no-input
+									@update:modelValue="setValue({ value: Math.round($event) })"
+								/>
+								<slider
+									:gradientStops="hueStops"
+									label=""
+									:maxValue="maxValue"
+									:modelValue="currentFilter.value"
+									shift-gradient
+									no-input
+									disabled
+								/>
+							</td>
+						</tr>
 					</template>
 				</table>
 			</d-flow>
@@ -205,6 +239,7 @@
 <script lang="ts">
 import DFlow from '@/components/ui/d-flow.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
+import Slider from '@/components/toolbox/subtools/color/slider.vue';
 import Color from '@/components/toolbox/subtools/color/color.vue';
 import { defineComponent, Prop, PropType } from 'vue';
 import { CompositeModes } from '@/renderer/rendererContext';
@@ -223,6 +258,8 @@ import {
 	ISetCompositionMutation,
 	ISetFilterAction,
 } from '@/store/sprite_options';
+import { IColor } from '@/util/colors/color';
+import { HSLAColor } from '@/util/colors/hsl';
 
 const filterText: ReadonlyMap<SpriteFilter['type'], string> = new Map<
 	SpriteFilter['type'],
@@ -245,7 +282,7 @@ const filters: ReadonlyArray<SpriteFilter['type']> = Array.from(
 ).sort();
 
 export default defineComponent({
-	components: { DFlow, DFieldset, Color },
+	components: { DFlow, DFieldset, Color, Slider },
 	props: {
 		type: {
 			type: String as PropType<'object' | 'background' | 'panel'>,
@@ -405,6 +442,10 @@ export default defineComponent({
 				this.setValue({ blurRadius });
 			},
 		},
+		hueStops(): string[] {
+			const stops = this.eightsStops(i => new HSLAColor(i, 1, 0.5, 1));
+			return stops.map(stop => stop.toRgb().toCss());
+		},
 	},
 	methods: {
 		getFilterLabel(type: SpriteFilter['type']): string {
@@ -475,6 +516,13 @@ export default defineComponent({
 					...value,
 				} as ISetFilterAction);
 			});
+		},
+		eightsStops(gen: (i: number) => IColor): IColor[] {
+			const stops: IColor[] = [];
+			for (let i = 0; i <= 8; ++i) {
+				stops.push(gen(i / 8));
+			}
+			return stops;
 		},
 	},
 });

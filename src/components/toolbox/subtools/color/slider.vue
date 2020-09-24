@@ -1,6 +1,6 @@
 <template>
 	<div :class="{ slider: true, vertical }" @keydown.stop>
-		<label :for="_.uid">{{ label }}</label>
+		<label :for="_.uid" v-if="!noInput">{{ label }}</label>
 		<div>
 			<svg
 				ref="svg"
@@ -16,10 +16,11 @@
 				<defs>
 					<linearGradient
 						:id="`gradient${_.uid}`"
-						x1="0%"
+						:x1="gradientOffset * 100 + '%'"
 						y1="0%"
-						x2="100%"
+						:x2="(gradientOffset + 1) * 100 + '%'"
 						y2="0%"
+						spreadMethod="repeat"
 					>
 						<stop
 							v-for="(color, idx) in gradientStops"
@@ -47,6 +48,7 @@
 			:max="maxValue"
 			:value="modelValue"
 			type="number"
+			v-if="!noInput"
 			@input="$emit('input', parseFloat($event.target.value))"
 			@keydown.stop
 		/>
@@ -76,6 +78,14 @@ export default defineComponent({
 			type: Number,
 			required: true,
 		},
+		shiftGradient: {
+			type: Boolean,
+			default: false,
+		},
+		noInput: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	data: () => ({
 		slideActive: false,
@@ -89,11 +99,15 @@ export default defineComponent({
 			// tslint:disable-next-line: no-magic-numbers
 			return `M${val} 0L${val + 14} 0L${val + 7} 12Z`;
 		},
+		gradientOffset(): number {
+			if (!this.shiftGradient) return 0;
+			if (this.modelValue === 0) return 0;
+			return this.modelValue / this.maxValue;
+		},
 	},
 	methods: {
 		enterSlide(event: MouseEvent | TouchEvent): void {
 			this.slideActive = true;
-			this.gradientStops;
 			this.moveSlide(event);
 		},
 		moveSlide(event: MouseEvent | TouchEvent) {
