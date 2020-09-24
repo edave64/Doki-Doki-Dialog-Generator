@@ -184,6 +184,7 @@
 									label=""
 									:maxValue="maxValue"
 									:modelValue="currentFilter.value * 100"
+									no-input
 									@update:modelValue="
 										setValue({ value: Math.round($event) / 100 })
 									"
