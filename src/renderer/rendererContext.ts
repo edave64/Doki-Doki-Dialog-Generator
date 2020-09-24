@@ -298,17 +298,16 @@ export class RenderContext {
 		if (filters.length === 0) return;
 		// Safari fallback
 		this.fsCtx.save();
-		if (!(('filter' in this.fsCtx) as any)) {
-			let opacityCombined = 1;
-			for (const filter of filters) {
-				if (filter.type === 'opacity') {
-					opacityCombined *= filter.value;
-				}
+		let opacityCombined = 1;
+		for (const filter of filters) {
+			if (filter.type === 'opacity') {
+				opacityCombined *= filter.value;
 			}
-			this.fsCtx.globalAlpha = opacityCombined;
-		} else {
+		}
+		if ('filter' in this.fsCtx) {
 			const filterList: string[] = [];
 			for (const filter of filters) {
+				if (filter.type === 'opacity') continue;
 				if (filter.type === 'drop-shadow') {
 					filterList.push(
 						`drop-shadow(${filter.offsetX}px ${filter.offsetY}px ${filter.blurRadius}px ${filter.color})`
@@ -325,6 +324,13 @@ export class RenderContext {
 		}
 
 		this.fsCtx.drawImage(this.canvas, 0, 0);
+
+		if (opacityCombined !== 1) {
+			this.fsCtx.globalCompositeOperation = 'destination-atop';
+			this.fsCtx.fillStyle = `rgba(0,0,0,${opacityCombined})`;
+			this.fsCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+			this.fsCtx.globalCompositeOperation = 'source-over';
+		}
 
 		if ('filter' in this.fsCtx) {
 			this.fsCtx.filter = 'none';
