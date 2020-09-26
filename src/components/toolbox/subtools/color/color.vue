@@ -17,7 +17,12 @@
 			<slider-group :mode="mode" v-model="color" :relative="true" />
 			<div class="hex-selector">
 				<label class="hex-label" :for="`hex_${_.uid}`">Hex</label>
-				<input :id="`hex_${_.uid}`" :modelValue="color" @input="updateHex" />
+				<input
+					:id="`hex_${_.uid}`"
+					:value="color"
+					@input="updateHex"
+					@keydown.stop
+				/>
 			</div>
 			<button @click="addSwatch">Add as swatch</button>
 		</div>
@@ -54,6 +59,8 @@ export default defineComponent({
 	components: {
 		SliderGroup,
 	},
+	inheritAttrs: false,
+	emits: ['leave', 'update:modelValue'],
 	props: {
 		modelValue: {
 			required: true,
@@ -166,15 +173,15 @@ export default defineComponent({
 
 	&:not(.vertical) {
 		flex-direction: column;
-		height: 100%;
+		@include height-100();
 
 		h2 {
 			writing-mode: vertical-rl;
-			height: 100%;
+			@include height-100();
 		}
 
 		.column {
-			height: 100%;
+			@include height-100();
 		}
 	}
 }
@@ -217,7 +224,7 @@ export default defineComponent({
 
 	&:not(.vertical) {
 		margin-left: 4px;
-		height: 100%;
+		@include height-100();
 		flex-direction: column;
 	}
 

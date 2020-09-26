@@ -49,7 +49,7 @@
 			:value="modelValue"
 			type="number"
 			v-if="!noInput"
-			@input="$emit('input', parseFloat($event.target.value))"
+			@input="$emit('update:modelValue', parseFloat($event.target.value))"
 			@keydown.stop
 		/>
 	</div>
