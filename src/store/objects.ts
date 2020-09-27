@@ -29,7 +29,6 @@ import {
 	removeFilter,
 	setFilter,
 } from './sprite_options';
-import { CompositeModes } from '@/renderer/rendererContext';
 
 export interface IPanel {
 	id: string;
@@ -50,6 +49,7 @@ export interface IObject extends IHasSpriteFilters {
 	y: number;
 	width: number;
 	height: number;
+	rotation: number;
 	preserveRatio: boolean;
 	ratio: number;
 	version: number;
@@ -122,6 +122,13 @@ export default {
 			const obj = state.objects[command.id];
 			obj.preserveRatio = command.preserveRatio;
 			obj.ratio = command.ratio;
+		},
+		setRotation(state, command: ISetSpriteRotationMutation) {
+			const obj = state.objects[command.id];
+			obj.rotation =
+				command.rotation < 0
+					? 360 - (Math.abs(command.rotation) % 360)
+					: command.rotation % 360;
 		},
 		removeObject(state, command: IRemoveObjectMutation) {
 			const obj = state.objects[command.id];
@@ -331,6 +338,10 @@ export interface ISetSpriteSizeMutation extends ICommand {
 export interface ISetSpriteRatioMutation extends ICommand {
 	readonly preserveRatio: boolean;
 	readonly ratio: number;
+}
+
+export interface ISetSpriteRotationMutation extends ICommand {
+	readonly rotation: number;
 }
 
 export interface ISetObjectPositionMutation extends IObjectMutation {

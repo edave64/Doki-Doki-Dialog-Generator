@@ -59,6 +59,7 @@ export const notificationActions: ActionTree<IObjectsState, IRootState> = {
 				y: screenHeight / 2,
 				width: ChoiceButtonWidth,
 				height: 0,
+				rotation: 0,
 				panelId: rootState.panels.currentPanel,
 				flip: false,
 				autoWrap: false,

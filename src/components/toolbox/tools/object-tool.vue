@@ -27,6 +27,10 @@
 			<position-and-size :obj="object" />
 			<layers :object="object" />
 			<toggle v-model="flip" label="Flip?" />
+			<div class="roation-besides">
+				<label for="rotation">Rotation: °</label>
+				<input id="rotation" type="number" v-model="rotation" />
+			</div>
 			<slot name="options" />
 			<button @click="imageOptionsOpen = true">Image options</button>
 			<delete :obj="object" />
@@ -80,6 +84,7 @@ export default defineComponent({
 	}),
 	computed: {
 		flip: setable('flip', 'objects/setFlip'),
+		rotation: setable('rotation', 'objects/setRotation'),
 	},
 });
 
@@ -91,4 +96,17 @@ export interface Handler {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.roation-besides {
+	display: flex;
+	align-items: baseline;
+
+	label {
+		flex-grow: 1;
+	}
+
+	#rotation {
+		width: 48px;
+	}
+}
+</style>

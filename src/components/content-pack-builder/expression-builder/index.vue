@@ -229,6 +229,7 @@ const charDefDefaults = {
 	panelId: '',
 	id: '',
 	y: 0,
+	rotation: 0,
 	preserveRatio: true,
 	ratio: 1,
 	opacity: 100,

@@ -150,6 +150,7 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 		commit('create', {
 			object: {
 				...resetBounds,
+				rotation: 0,
 				panelId: rootState.panels.currentPanel,
 				flip: false,
 				id,
@@ -189,10 +190,7 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 		} as ISetTextBoxStyleMutation);
 	},
 
-	resetTextboxBounds(
-		{ commit, state, dispatch },
-		command: IResetTextboxBounds
-	) {
+	resetTextboxBounds({ commit, state }, command: IResetTextboxBounds) {
 		const obj = state.objects[command.id] as ITextBox;
 		commit('setPosition', {
 			id: command.id,

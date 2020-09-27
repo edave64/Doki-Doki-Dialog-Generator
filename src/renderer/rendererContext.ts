@@ -137,7 +137,8 @@ export class RenderContext {
 		} & IRPos &
 			IOSize &
 			IOShadow &
-			IOFilters
+			IOFilters &
+			IORotation
 	): void {
 		if (this.aborted) throw new RenderAbortedException();
 		if (params.image instanceof ErrorAsset) return;
@@ -199,6 +200,10 @@ export class RenderContext {
 
 		this.fsCtx.translate(x + w / 2, y + h / 2);
 		this.fsCtx.scale(flip ? -1 : 1, 1);
+
+		if (params.rotation) {
+			this.fsCtx.rotate(params.rotation);
+		}
 
 		if (image instanceof Renderer) {
 			image.paintOnto(this.fsCtx, { x: -w / 2, y: -h / 2, w, h });
@@ -387,6 +392,10 @@ interface IOOutline {
 }
 interface IOFilters {
 	filters?: DeepReadonly<SpriteFilter[]>;
+}
+
+interface IORotation {
+	rotation?: number;
 }
 
 interface IOFill {

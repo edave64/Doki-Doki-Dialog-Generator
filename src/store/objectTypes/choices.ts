@@ -60,6 +60,7 @@ export const choiceActions: ActionTree<IObjectsState, IRootState> = {
 				height: 0,
 				panelId: rootState.panels.currentPanel,
 				flip: false,
+				rotation: 0,
 				id,
 				onTop: true,
 				autoWrap: true,

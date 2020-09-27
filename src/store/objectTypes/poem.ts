@@ -51,7 +51,7 @@ export const poemMutations: MutationTree<IObjectsState> = {
 let lastPoemId = 0;
 
 export const poemActions: ActionTree<IObjectsState, IRootState> = {
-	createPoem({ commit, rootState }, command: ICreatePoemAction): string {
+	createPoem({ commit, rootState }, _command: ICreatePoemAction): string {
 		const id = 'poem_' + ++lastPoemId;
 		commit('create', {
 			object: {
@@ -62,6 +62,7 @@ export const poemActions: ActionTree<IObjectsState, IRootState> = {
 				height: defaultPoemHeight,
 				panelId: rootState.panels.currentPanel,
 				flip: false,
+				rotation: 0,
 				id,
 				onTop: true,
 				opacity: 100,
@@ -79,7 +80,7 @@ export const poemActions: ActionTree<IObjectsState, IRootState> = {
 		} as ICreateObjectMutation);
 		return id;
 	},
-	createConsole({ commit, rootState }, command: ICreatePoemAction): string {
+	createConsole({ commit, rootState }, _command: ICreatePoemAction): string {
 		const id = 'poem_' + ++lastPoemId;
 		commit('create', {
 			object: {
@@ -91,6 +92,7 @@ export const poemActions: ActionTree<IObjectsState, IRootState> = {
 				panelId: rootState.panels.currentPanel,
 				flip: false,
 				id,
+				rotation: 0,
 				onTop: true,
 				opacity: 100,
 				type: 'poem',

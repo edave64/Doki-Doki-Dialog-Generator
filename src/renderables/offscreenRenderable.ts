@@ -41,6 +41,7 @@ export abstract class OffscreenRenderable {
 	protected abstract readonly composite: CompositeModes;
 	protected abstract readonly filters: DeepReadonly<SpriteFilter[]>;
 	protected readonly ready = Promise.resolve();
+	protected abstract readonly rotation: number;
 
 	public async updateLocalCanvas(hq: boolean) {
 		await this.ready;
@@ -105,6 +106,7 @@ export abstract class OffscreenRenderable {
 			y,
 			w,
 			h,
+			rotation: this.rotation,
 			flip: this.flip,
 			shadow: selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
 			composite: this.composite,

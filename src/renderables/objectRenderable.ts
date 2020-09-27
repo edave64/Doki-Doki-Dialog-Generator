@@ -30,6 +30,9 @@ export abstract class ObjectRenderable<
 	protected get flip(): boolean {
 		return this.obj.flip;
 	}
+	protected get rotation(): number {
+		return (this.obj.rotation / 180) * Math.PI;
+	}
 	protected get composite(): CompositeModes {
 		return this.obj.composite;
 	}

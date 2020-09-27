@@ -157,6 +157,7 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 				y: BaseCharacterYPos,
 				preserveRatio: true,
 				ratio: 1,
+				rotation: 0,
 				height: 768,
 				width: 768,
 				characterType: command.characterType,
