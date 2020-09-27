@@ -1,80 +1,55 @@
 <template>
-	<div class="panel">
-		<h1>Choice</h1>
-		<text-editor
-			v-if="textEditor"
-			title="Button Text"
-			v-model="button_text"
-			@leave="textEditor = false"
-		/>
-		<image-options
-			v-else-if="imageOptionsOpen"
-			type="object"
-			title="Choice"
-			:id="object.id"
-			@leave="imageOptionsOpen = false"
-		/>
-		<template v-else>
-			<d-fieldset class="buttons" title="Buttons:">
-				<d-flow maxSize="100%" direction="vertical" noWraping>
-					<div
-						v-for="(button, btnIdx) in buttons"
-						:class="{ choiceBtn: true, active: btnIdx === currentIdx }"
-						:key="btnIdx"
-						@click="select(btnIdx)"
-					>
-						{{ button.text.trim() === '' ? '[Empty]' : button.text }}
-					</div>
-				</d-flow>
-			</d-fieldset>
-			<d-fieldset class="current_button" title="Current button:">
-				<table>
-					<tr>
-						<td colspan="2">
-							<label for="choice-button-input">Text</label>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<input
-								id="choice-button-input"
-								v-model="button_text"
-								@keydown.stop
-							/>
-						</td>
-						<td>
-							<button @click="textEditor = true">...</button>
-						</td>
-					</tr>
-				</table>
-			</d-fieldset>
-			<button @click="addChoice">Add</button>
-			<button @click="removeChoice">Remove</button>
-			<toggle label="Auto line wrap?" v-model="autoWrap" />
-			<position-and-size :obj="object" />
-			<layers :object="object" />
-			<toggle v-model="flip" label="Flip?" />
-			<button @click="imageOptionsOpen = true">Image options</button>
-			<delete :obj="object" />
-		</template>
-	</div>
+	<object-tool :object="object" title="Choice" :textHandler="textHandler">
+		<d-fieldset class="buttons" title="Buttons:">
+			<d-flow maxSize="100%" direction="vertical" noWraping>
+				<div
+					v-for="(button, btnIdx) in buttons"
+					:class="{ choiceBtn: true, active: btnIdx === currentIdx }"
+					:key="btnIdx"
+					@click="select(btnIdx)"
+				>
+					{{ button.text.trim() === '' ? '[Empty]' : button.text }}
+				</div>
+			</d-flow>
+		</d-fieldset>
+		<d-fieldset class="current_button" title="Current button:">
+			<table>
+				<tr>
+					<td colspan="2">
+						<label for="choice-button-input">Text</label>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<input
+							id="choice-button-input"
+							v-model="buttonText"
+							@keydown.stop
+						/>
+					</td>
+					<td>
+						<button @click="textEditor = true">...</button>
+					</td>
+				</tr>
+			</table>
+		</d-fieldset>
+		<button @click="addChoice">Add</button>
+		<button @click="removeChoice">Remove</button>
+		<toggle label="Auto line wrap?" v-model="autoWrap" />
+	</object-tool>
 </template>
 
 <script lang="ts">
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
-import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
-import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
-import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
-import ImageOptions from '@/components/toolbox/subtools/image-options/image-options.vue';
 import { PanelMixin } from './panelMixin';
 import { IChoices, IRemoveChoiceAction } from '@/store/objectTypes/choices';
 import { IChoice, IAddChoiceAction } from '@/store/objectTypes/choices';
 import { DeepReadonly } from '@/util/readonly';
-import TextEditor from '../subtools/text/text.vue';
 import { ComponentCustomProperties, defineComponent } from 'vue';
 import { genericSetable } from '@/util/simpleSettable';
+import ObjectTool, { Handler } from './object-tool.vue';
 
 const setable = genericSetable<IChoices>();
 
@@ -84,14 +59,9 @@ export default defineComponent({
 		Toggle,
 		DFieldset,
 		DFlow,
-		PositionAndSize,
-		Layers,
-		Delete,
-		TextEditor,
-		ImageOptions,
+		ObjectTool,
 	},
 	data: () => ({
-		imageOptionsOpen: false,
 		currentIdx: 0,
 		textEditor: false,
 	}),
@@ -103,12 +73,26 @@ export default defineComponent({
 			if (obj.type !== 'choice') return undefined!;
 			return obj as IChoices;
 		},
-		flip: setable('flip', 'objects/setFlip'),
 		autoWrap: setable('autoWrap', 'objects/setAutoWrapping'),
 		// eslint-disable-next-line @typescript-eslint/camelcase
-		button_text: simpleButtonSettable('text', 'objects/setChoiceText', true),
+		buttonText: simpleButtonSettable('text', 'objects/setChoiceText', true),
 		buttons(): DeepReadonly<IChoice[]> {
 			return this.object.choices;
+		},
+		textHandler(): Handler | undefined {
+			if (!this.textEditor) return undefined;
+			return {
+				title: 'Text',
+				get: () => {
+					return this.buttonText;
+				},
+				set: (text: string) => {
+					this.buttonText = text;
+				},
+				leave: () => {
+					this.textEditor = false;
+				},
+			};
 		},
 	},
 	methods: {
@@ -172,6 +156,7 @@ interface IThis extends ComponentCustomProperties {
 	overflow: hidden;
 	width: 100%;
 	height: 24px;
+	max-width: 100%;
 	text-overflow: ellipsis;
 	padding: 2px;
 

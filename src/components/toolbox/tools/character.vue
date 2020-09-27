@@ -1,22 +1,16 @@
 <template>
-	<div class="panel">
-		<h1>{{ label }}</h1>
-		<parts
-			v-if="panelForParts"
-			:character="object"
-			:part="panelForParts"
-			@leave="panelForParts = null"
-			@show-dialog="$emit('show-dialog', $event)"
-			@show-expression-dialog="$emit('show-expression-dialog', $event)"
-		/>
-		<image-options
-			v-else-if="imageOptionsOpen"
-			type="object"
-			:title="label"
-			:id="object.id"
-			@leave="imageOptionsOpen = false"
-		/>
-		<template v-else>
+	<object-tool :object="object" :title="label" :showAltPanel="panelForParts">
+		<template v-slot:alt-panel>
+			<parts
+				v-if="panelForParts"
+				:character="object"
+				:part="panelForParts"
+				@leave="panelForParts = null"
+				@show-dialog="$emit('show-dialog', $event)"
+				@show-expression-dialog="$emit('show-expression-dialog', $event)"
+			/>
+		</template>
+		<template v-slot:default>
 			<d-fieldset
 				v-if="hasMultiplePoses || parts.length > 0"
 				class="pose-list"
@@ -66,14 +60,11 @@
 					</tbody>
 				</table>
 			</d-fieldset>
-			<position-and-size :obj="object" />
-			<layers :object="object" />
-			<toggle v-model="closeUp" label="Close up?" />
-			<toggle v-model="flip" label="Flip?" />
-			<button @click="imageOptionsOpen = true">Image options</button>
-			<delete :obj="object" />
 		</template>
-	</div>
+		<template v-slot:options>
+			<toggle v-model="closeUp" label="Close up?" />
+		</template>
+	</object-tool>
 </template>
 
 <script lang="ts">
@@ -86,10 +77,6 @@ import {
 	ISeekStyleAction,
 } from '@/store/objectTypes/characters';
 import Toggle from '@/components/toggle.vue';
-import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
-import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
-import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
-import ImageOptions from '@/components/toolbox/subtools/image-options/image-options.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import Parts from './character/parts.vue';
 import { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
@@ -98,6 +85,7 @@ import { PanelMixin } from './panelMixin';
 import { DeepReadonly } from '@/util/readonly';
 import { defineComponent } from 'vue';
 import { genericSetable } from '@/util/simpleSettable';
+import ObjectTool from './object-tool.vue';
 
 const setable = genericSetable<ICharacter>();
 
@@ -105,15 +93,11 @@ export default defineComponent({
 	mixins: [PanelMixin],
 	components: {
 		Toggle,
-		PositionAndSize,
-		Layers,
-		Delete,
 		Parts,
 		DFieldset,
-		ImageOptions,
+		ObjectTool,
 	},
 	data: () => ({
-		imageOptionsOpen: false,
 		panelForParts: null as string | null,
 	}),
 	computed: {
