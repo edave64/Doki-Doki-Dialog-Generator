@@ -20,6 +20,7 @@ import {
 import { IAsset } from '../content';
 import { IRootState } from '..';
 import { DeepReadonly } from '@/util/readonly';
+import { baseProps } from './baseObjectProps';
 
 export interface ICharacter extends IObject {
 	type: 'character';
@@ -147,29 +148,23 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 	createCharacters({ rootState, commit }, command: ICreateCharacterAction) {
 		commit('create', {
 			object: {
-				flip: false,
+				...baseProps(),
 				id: 'characters_' + ++lastSpriteId,
 				panelId: rootState.panels.currentPanel,
 				onTop: false,
-				opacity: 100,
 				type: 'character',
-				x: 640,
 				y: BaseCharacterYPos,
 				preserveRatio: true,
 				ratio: 1,
-				rotation: 0,
 				height: 768,
 				width: 768,
 				characterType: command.characterType,
 				close: false,
 				freeMove: false,
-				version: 0,
 				poseId: 0,
 				styleId: 0,
 				styleGroupId: 0,
 				posePositions: {},
-				composite: 'source-over',
-				filters: [],
 			} as ICharacter,
 		} as ICreateObjectMutation);
 	},

@@ -10,6 +10,7 @@ import {
 	ChoiceButtonWidth,
 } from '@/constants/choices';
 import { ISetAutoWrappingMutation } from './textbox';
+import { baseProps } from './baseObjectProps';
 
 export interface IChoice {
 	text: string;
@@ -54,19 +55,15 @@ export const choiceActions: ActionTree<IObjectsState, IRootState> = {
 		const id = 'choice_' + ++lastChoiceId;
 		commit('create', {
 			object: {
-				x: 640,
+				...baseProps(),
 				y: ChoiceY,
 				width: ChoiceButtonWidth,
 				height: 0,
 				panelId: rootState.panels.currentPanel,
-				flip: false,
-				rotation: 0,
 				id,
 				onTop: true,
 				autoWrap: true,
-				opacity: 100,
 				type: 'choice',
-				version: 0,
 				preserveRatio: false,
 				ratio: TextBoxWidth / TextBoxHeight,
 				choiceDistance: ChoiceSpacing,
@@ -77,8 +74,6 @@ export const choiceActions: ActionTree<IObjectsState, IRootState> = {
 					},
 				],
 				customColor: ChoiceButtonColor,
-				composite: 'source-over',
-				filters: [],
 			} as IChoices,
 		} as ICreateObjectMutation);
 		return id;

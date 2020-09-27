@@ -10,6 +10,7 @@ import { MutationTree, ActionTree } from 'vuex';
 import { NameboxY, TextBoxWidth, TextBoxHeight } from '@/constants/textBox';
 import { ISetSpriteSizeMutation } from './characters';
 import { IRootState } from '..';
+import { baseProps } from './baseObjectProps';
 
 export interface ITextBox extends IObject {
 	type: 'textBox';
@@ -142,22 +143,18 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 	createTextBox({ commit, rootState }, command: ICreateTextBoxAction): string {
 		const id = 'textBox_' + ++lastTextBoxId;
 		const resetBounds = command.resetBounds || {
-			x: 640,
 			y: NameboxY,
 			width: TextBoxWidth,
 			height: TextBoxHeight,
 		};
 		commit('create', {
 			object: {
+				...baseProps(),
 				...resetBounds,
-				rotation: 0,
 				panelId: rootState.panels.currentPanel,
-				flip: false,
 				id,
 				onTop: true,
-				opacity: 100,
 				type: 'textBox',
-				version: 0,
 				preserveRatio: false,
 				ratio: TextBoxWidth / TextBoxHeight,
 				continue: true,
@@ -176,8 +173,6 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 				talkingOther: '',
 				text: '',
 				resetBounds,
-				composite: 'source-over',
-				filters: [],
 			} as ITextBox,
 		} as ICreateObjectMutation);
 		return id;

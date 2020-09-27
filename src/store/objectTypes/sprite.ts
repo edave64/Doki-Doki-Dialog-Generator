@@ -4,6 +4,7 @@ import { IObjectsState, ICreateObjectMutation, IObject } from '@/store/objects';
 import { MutationTree, ActionTree } from 'vuex';
 import { IRootState } from '..';
 import { IAsset } from '../content';
+import { baseProps } from './baseObjectProps';
 
 export interface ISprite extends IObject {
 	type: 'sprite';
@@ -20,23 +21,17 @@ export const spriteActions: ActionTree<IObjectsState, IRootState> = {
 		if (!(asset instanceof HTMLImageElement)) return;
 		commit('create', {
 			object: {
+				...baseProps(),
 				assets: command.assets,
-				flip: false,
 				height: asset.height,
 				width: asset.width,
-				rotation: 0,
 				id: 'sprite_' + ++lastSpriteId,
 				panelId: rootState.panels.currentPanel,
 				onTop: false,
-				opacity: 100,
 				preserveRatio: true,
 				ratio: asset.width / asset.height,
 				type: 'sprite',
-				version: 0,
-				x: 640,
 				y: 0,
-				composite: 'source-over',
-				filters: [],
 			} as ISprite,
 		} as ICreateObjectMutation);
 	},

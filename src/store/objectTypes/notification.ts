@@ -10,6 +10,7 @@ import {
 } from '@/constants/choices';
 import { screenHeight, screenWidth } from '@/constants/base';
 import { ISetAutoWrappingMutation } from './textbox';
+import { baseProps } from './baseObjectProps';
 
 export interface INotification extends IObject {
 	type: 'notification';
@@ -55,26 +56,20 @@ export const notificationActions: ActionTree<IObjectsState, IRootState> = {
 		const id = 'notification_' + ++lastNotificationId;
 		commit('create', {
 			object: {
-				x: screenWidth / 2,
+				...baseProps(),
 				y: screenHeight / 2,
 				width: ChoiceButtonWidth,
 				height: 0,
-				rotation: 0,
 				panelId: rootState.panels.currentPanel,
-				flip: false,
 				autoWrap: false,
 				id,
 				onTop: true,
-				opacity: 100,
 				type: 'notification',
-				version: 0,
 				preserveRatio: false,
 				ratio: TextBoxWidth / TextBoxHeight,
 				customColor: ChoiceButtonColor,
 				text: 'Click here to edit notification',
 				backdrop: true,
-				composite: 'source-over',
-				filters: [],
 			} as INotification,
 		} as ICreateObjectMutation);
 		return id;

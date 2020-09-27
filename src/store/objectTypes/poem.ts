@@ -15,6 +15,7 @@ import {
 	defaultConsoleStyle,
 } from '@/constants/poem';
 import { ISetAutoWrappingMutation } from './textbox';
+import { baseProps } from './baseObjectProps';
 
 export interface IPoem extends IObject {
 	type: 'poem';
@@ -84,26 +85,21 @@ export const poemActions: ActionTree<IObjectsState, IRootState> = {
 		const id = 'poem_' + ++lastPoemId;
 		commit('create', {
 			object: {
+				...baseProps(),
 				subType: 'console',
 				x: consoleWidth / 2,
 				y: consoleHeight / 2,
 				width: consoleWidth,
 				height: consoleHeight,
 				panelId: rootState.panels.currentPanel,
-				flip: false,
 				id,
-				rotation: 0,
 				onTop: true,
-				opacity: 100,
 				type: 'poem',
-				version: 0,
 				preserveRatio: false,
 				ratio: consoleWidth / consoleHeight,
 				background: defaultConsoleBackground,
 				font: defaultConsoleStyle,
 				text: '> _\n  \n  Console command\n  Click here to edit',
-				composite: 'source-over',
-				filters: [],
 				autoWrap: true,
 			} as IPoem,
 		} as ICreateObjectMutation);
