@@ -144,7 +144,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .bg-settings {
-	height: 100%;
+	@include height-100();
 }
 
 .small-button {
