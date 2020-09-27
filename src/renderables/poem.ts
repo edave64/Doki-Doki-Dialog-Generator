@@ -31,6 +31,9 @@ export class Poem extends ObjectRenderable<IPoem> {
 	public get width(): number {
 		return this._width;
 	}
+	protected get centeredVertically(): boolean {
+		return true;
+	}
 
 	protected async renderLocal(rx: RenderContext): Promise<void> {
 		const paper = poemBackgrounds[this.obj.background];
