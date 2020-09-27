@@ -291,7 +291,6 @@ export default defineComponent({
 		},
 		title: {
 			type: String,
-			required: true,
 		},
 		id: {
 			required: true,
@@ -301,6 +300,7 @@ export default defineComponent({
 			default: false,
 		},
 	},
+	emits: ['leave'],
 	data: () => ({
 		addEffectSelection: '' as SpriteFilter['type'] | '',
 		currentFilterIdx: 0,
