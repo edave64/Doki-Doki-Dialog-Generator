@@ -198,19 +198,26 @@ export class RenderContext {
 			}
 		}
 
-		this.fsCtx.translate(x + w / 2, y + h / 2);
-		this.fsCtx.scale(flip ? -1 : 1, 1);
-
 		if (params.rotation) {
+			const rotX = params.rotationAnchor ? params.rotationAnchor.x : 0;
+			const rotY = params.rotationAnchor ? params.rotationAnchor.y : 0;
+			if (params.rotationAnchor) {
+				this.fsCtx.translate(rotX, rotY);
+			}
+			this.fsCtx.fillRect(-10, -1, 21, 3);
 			this.fsCtx.rotate(params.rotation);
+			if (params.rotationAnchor) {
+				this.fsCtx.translate(-rotX, -rotY);
+			}
 		}
 
+		this.fsCtx.translate(x + w / 2, y + h / 2);
+		this.fsCtx.scale(flip ? -1 : 1, 1);
 		if (image instanceof Renderer) {
 			image.paintOnto(this.fsCtx, { x: -w / 2, y: -h / 2, w, h });
 		} else {
 			this.fsCtx.drawImage(image as HTMLImageElement, -w / 2, -h / 2, w, h);
 		}
-
 		this.fsCtx.restore();
 		this.fsCtx.globalCompositeOperation = 'source-over';
 	}
@@ -396,6 +403,10 @@ interface IOFilters {
 
 interface IORotation {
 	rotation?: number;
+	rotationAnchor?: {
+		x: number;
+		y: number;
+	};
 }
 
 interface IOFill {

@@ -100,6 +100,23 @@ export abstract class OffscreenRenderable {
 		const x = this.scaleable ? this.x - w / 2 : 0;
 		const y = this.scaleable ? this.y : 0;
 
+		let rotationAnchor: undefined | { x: number; y: number } = undefined;
+
+		if (!this.scaleable) {
+			const hitbox = this.getHitbox();
+			if (this.centeredVertically) {
+				rotationAnchor = {
+					x: this.x,
+					y: this.y,
+				};
+			} else {
+				rotationAnchor = {
+					x: this.x,
+					y: this.y + this.height / 2,
+				};
+			}
+		}
+
 		rx.drawImage({
 			image: this.localRenderer!,
 			x,
@@ -107,6 +124,7 @@ export abstract class OffscreenRenderable {
 			w,
 			h,
 			rotation: this.rotation,
+			rotationAnchor,
 			flip: this.flip,
 			shadow: selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
 			composite: this.composite,

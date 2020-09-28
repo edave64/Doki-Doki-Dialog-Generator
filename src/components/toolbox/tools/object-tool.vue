@@ -29,7 +29,7 @@
 			<toggle v-model="flip" label="Flip?" />
 			<div class="roation-besides">
 				<label for="rotation">Rotation: °</label>
-				<input id="rotation" type="number" v-model="rotation" />
+				<input id="rotation" type="number" v-model="rotation" @keydown.stop />
 			</div>
 			<slot name="options" />
 			<button @click="imageOptionsOpen = true">Image options</button>
