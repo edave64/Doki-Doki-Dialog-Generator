@@ -1,5 +1,8 @@
 <template>
-	<d-fieldset class="bg-settings" title="Settings:">
+	<d-fieldset
+		:class="{ 'bg-settings': true, vertical: vertical }"
+		title="Settings:"
+	>
 		<template v-if="isColor">
 			<label for="bg_color">Color:</label>
 			<button
@@ -65,6 +68,9 @@ import { DeepReadonly } from '@/util/readonly';
 export default defineComponent({
 	components: { Toggle, DFieldset },
 	computed: {
+		vertical(): boolean {
+			return this.$store.state.ui.vertical;
+		},
 		color: {
 			get(): string {
 				return this.background.color;
@@ -143,7 +149,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.bg-settings {
+.bg-settings:not(.vertical) {
 	@include height-100();
 }
 
