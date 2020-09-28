@@ -264,6 +264,10 @@ export default defineComponent({
 		.panel {
 			overflow-x: hidden;
 			overflow-y: auto;
+
+			> * {
+				flex-shrink: 0;
+			}
 		}
 
 		#toolbar,
