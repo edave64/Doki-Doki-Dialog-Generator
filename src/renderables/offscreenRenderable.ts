@@ -40,8 +40,10 @@ export abstract class OffscreenRenderable {
 	protected abstract readonly flip: boolean;
 	protected abstract readonly composite: CompositeModes;
 	protected abstract readonly filters: DeepReadonly<SpriteFilter[]>;
+	protected readonly ready = Promise.resolve();
 
 	public async updateLocalCanvas(hq: boolean) {
+		await this.ready;
 		const width = this.canvasWidth;
 		const height = this.canvasHeight;
 		if (height === 0 && width === 0) {

@@ -9,7 +9,8 @@ import {
 import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 
 export class Sprite extends AssetListRenderable<ISprite> {
-	private assets: IDrawAssets[] | null = null;
+	private assets!: IDrawAssets[];
+	protected ready!: Promise<void>;
 	protected scaleable = true;
 	protected canvasHeight: number = 0;
 	protected canvasWidth: number = 0;
@@ -24,6 +25,10 @@ export class Sprite extends AssetListRenderable<ISprite> {
 	}
 
 	public async init() {
+		let readyResolve!: () => void;
+		this.ready = new Promise((resolve, reject) => {
+			readyResolve = resolve;
+		});
 		const assets = await Promise.all(
 			this.obj.assets.map(asset => getAAsset(asset))
 		);
@@ -44,7 +49,7 @@ export class Sprite extends AssetListRenderable<ISprite> {
 				offset: [0, 0],
 			},
 		];
-		eventBus.fire(new InvalidateRenderEvent());
+		readyResolve();
 	}
 	protected getAssetList(): (IDrawAssets | IDrawAssetsUnloaded)[] {
 		return this.assets || [];
