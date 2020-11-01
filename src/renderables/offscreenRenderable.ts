@@ -7,7 +7,6 @@ import { screenHeight, screenWidth } from '@/constants/base';
 import { CompositeModes } from '@/renderer/rendererContext';
 
 export abstract class OffscreenRenderable {
-	private hq: boolean = false;
 	private localRenderer: Renderer | null = null;
 	private lastVersion: any = null;
 	private hitDetectionFallback = false;
@@ -28,11 +27,12 @@ export abstract class OffscreenRenderable {
 	protected abstract readonly canvasWidth: number;
 	protected abstract renderLocal(rx: RenderContext): Promise<void>;
 
-	private lastWidth = -1;
-	private lastHeight = -1;
-	private lastX = -1;
-	private lastY = -1;
-	private lastFlip: boolean | null = null;
+	protected lastHq: boolean = false;
+	protected lastWidth = -1;
+	protected lastHeight = -1;
+	protected lastX = -1;
+	protected lastY = -1;
+	protected lastFlip: boolean | null = null;
 
 	protected abstract readonly x: number;
 	protected abstract readonly y: number;
@@ -53,7 +53,7 @@ export abstract class OffscreenRenderable {
 		}
 		this.renderable = true;
 		this.localRenderer = new Renderer(width, height);
-		this.hq = hq;
+		this.lastHq = hq;
 		await this.localRenderer.render(this.renderLocal.bind(this));
 	}
 
@@ -65,11 +65,12 @@ export abstract class OffscreenRenderable {
 		return this.canvasHeight;
 	}
 
+	public needsRedraw(): boolean {
+		return this.localRenderer === null || this.lastVersion !== this.version;
+	}
+
 	public async render(selected: boolean, rx: RenderContext) {
-		let needRedraw =
-			this.localRenderer === null ||
-			this.lastVersion !== this.version ||
-			this.hq !== rx.hq;
+		let needRedraw = this.lastHq !== rx.hq || this.needsRedraw();
 
 		if (!this.scaleable) {
 			needRedraw =
@@ -90,7 +91,6 @@ export abstract class OffscreenRenderable {
 			await this.updateLocalCanvas(!rx.hq);
 		}
 
-		this.hq = rx.hq;
 		this.lastVersion = this.version;
 
 		if (!this.renderable) return;
