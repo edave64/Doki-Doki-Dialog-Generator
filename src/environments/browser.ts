@@ -16,6 +16,16 @@ export class Browser implements IEnvironment {
 	});
 	public readonly localRepositoryUrl = '';
 
+	constructor() {
+		window.addEventListener('beforeunload', function(e) {
+			// Cancel the event
+			e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
+			// Chrome requires returnValue to be set
+			e.returnValue =
+				'Are you sure you want to leave? All your progress will be lost!';
+		});
+	}
+
 	public async saveToFile(
 		downloadCanvas: HTMLCanvasElement,
 		filename: string,
