@@ -113,6 +113,7 @@ import { NameboxTextStyle } from '@/constants/textBox';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
+	inheritAttrs: false,
 	components: { Color },
 	props: {
 		modelValue: {
