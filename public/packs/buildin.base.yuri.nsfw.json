@@ -15,7 +15,7 @@
 							"poses": [
 								{
 									"id": "dddg.buildin.yuri:normal",
-									"compatibleHeads": ["straight"],
+									"compatibleHeads": ["dddg.buildin.yuri:straight"],
 									"positions": {
 										"Right": [["2r_cuts{ext}"]]
 									}
