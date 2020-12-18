@@ -46,6 +46,8 @@ import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
 import {
 	ISetObjectPositionMutation,
 	IRemoveObjectAction,
+	ICopyObjectToClipboardAction,
+	IPasteFromClipboardAction,
 } from '@/store/objects';
 import {
 	IShiftCharacterSlotAction,
@@ -170,10 +172,36 @@ export default defineComponent({
 			this.expressionBuilderHeadGroup = e.headGroup;
 		},
 		onKeydown(e: KeyboardEvent) {
+			if (
+				e.target instanceof HTMLInputElement ||
+				e.target instanceof HTMLTextAreaElement
+			) {
+				console.log('skip keydown on potential target');
+				return;
+			}
+
 			this.vuexHistory.transaction(() => {
 				const selection = this.$store.state.objects.objects[
 					this.$store.state.ui.selection!
 				];
+				if (e.ctrlKey) {
+					if (e.key === 'z') {
+						// this.$store.commit('history/undo');
+						e.preventDefault();
+						return;
+					} else if (e.key === 'y') {
+						// this.$store.commit('history/redo');
+						e.preventDefault();
+						return;
+					} else if (e.key === 'v') {
+						this.$store.dispatch(
+							'objects/pasteObjectFromClipboard',
+							{} as IPasteFromClipboardAction
+						);
+						e.preventDefault();
+						return;
+					}
+				}
 				if (!selection) return;
 				if (e.key === 'Delete') {
 					this.$store.dispatch('objects/removeObject', {
@@ -181,12 +209,16 @@ export default defineComponent({
 					} as IRemoveObjectAction);
 					return;
 				}
-				if (e.key === 'z' && e.ctrlKey) {
-					// this.$store.commit('history/undo');
-					e.preventDefault();
-					return;
-				} else if (e.key === 'y' && e.ctrlKey) {
-					// this.$store.commit('history/redo');
+
+				if (e.key === 'c' || e.key === 'x') {
+					this.$store.dispatch('objects/copyObjectToClipboard', {
+						id: selection.id,
+					} as ICopyObjectToClipboardAction);
+					if (e.key === 'x') {
+						this.$store.dispatch('objects/removeObject', {
+							id: selection.id,
+						} as IRemoveObjectAction);
+					}
 					e.preventDefault();
 					return;
 				}

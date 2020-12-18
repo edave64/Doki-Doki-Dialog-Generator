@@ -91,6 +91,9 @@
 				<button @click="addChoice">Choice</button>
 				<button @click="addConsole">Console</button>
 			</template>
+			<button @click="paste" :disabled="!hasClipboardContent">
+				Paste
+			</button>
 		</div>
 	</div>
 </template>
@@ -115,6 +118,7 @@ import { ICreatePoemAction } from '@/store/objectTypes/poem';
 import environment from '@/environments/environment';
 import { defineComponent } from 'vue';
 import { DeepReadonly } from '@/util/readonly';
+import { IPasteFromClipboardAction } from '@/store/objects';
 
 const uploadedSpritesPack: ContentPack<string> = {
 	packId: 'dddg.buildin.uploadedSprites',
@@ -143,6 +147,9 @@ export default defineComponent({
 		},
 		sprites(): DeepReadonly<Array<Sprite<IAsset>>> {
 			return this.$store.state.content.current.sprites;
+		},
+		hasClipboardContent(): boolean {
+			return !!this.$store.state.ui.clipboard;
 		},
 	},
 	methods: {
@@ -230,6 +237,14 @@ export default defineComponent({
 		addConsole() {
 			this.vuexHistory.transaction(async () => {
 				this.$store.dispatch('objects/createConsole', {} as ICreatePoemAction);
+			});
+		},
+		paste() {
+			this.vuexHistory.transaction(async () => {
+				this.$store.dispatch(
+					'objects/pasteObjectFromClipboard',
+					{} as IPasteFromClipboardAction
+				);
 			});
 		},
 		onChosen(id: string) {

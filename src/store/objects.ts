@@ -275,6 +275,24 @@ export default {
 				} as ICreateObjectMutation);
 			}
 		},
+		copyObjectToClipboard(
+			{ commit, state },
+			{ id }: ICopyObjectToClipboardAction
+		) {
+			const oldObject = state.objects[id];
+			commit('ui/setClipboard', JSON.stringify(oldObject), { root: true });
+		},
+		pasteObjectFromClipboard({ commit, rootState }) {
+			if (!rootState.ui.clipboard) return;
+			const oldObject = JSON.parse(rootState.ui.clipboard);
+			commit('create', {
+				object: {
+					...oldObject,
+					id: `copy_${oldObject.id}_${++lastCopyId}`,
+					panelId: rootState.panels.currentPanel,
+				},
+			} as ICreateObjectMutation);
+		},
 		deleteAllOfPanel({ state, dispatch }, { panelId }: IDeleteAllOfPanel) {
 			const panel = state.panels[panelId];
 			for (const id of [...panel.onTopOrder, ...panel.order]) {
@@ -401,4 +419,12 @@ export interface IObjectContentPackRemovalAction extends ICommand {
 export interface ICopyObjectsAction {
 	readonly sourcePanelId: string;
 	readonly targetPanelId: string;
+}
+
+export interface ICopyObjectToClipboardAction {
+	readonly id: string;
+}
+
+export interface IPasteFromClipboardAction {
+	readonly panelId: string;
 }

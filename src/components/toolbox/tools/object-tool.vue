@@ -33,6 +33,7 @@
 			</div>
 			<slot name="options" />
 			<button @click="imageOptionsOpen = true">Image options</button>
+			<button @click="copy">Copy</button>
 			<delete :obj="object" />
 		</template>
 	</div>
@@ -50,7 +51,7 @@ import TextEditor from '../subtools/text/text.vue';
 import { IPoem } from '@/store/objectTypes/poem';
 import { defineComponent, PropType } from 'vue';
 import { genericSetable } from '@/util/simpleSettable';
-import { IObject } from '@/store/objects';
+import { ICopyObjectToClipboardAction, IObject } from '@/store/objects';
 
 const setable = genericSetable<IPoem>();
 
@@ -85,6 +86,15 @@ export default defineComponent({
 	computed: {
 		flip: setable('flip', 'objects/setFlip'),
 		rotation: setable('rotation', 'objects/setRotation'),
+	},
+	methods: {
+		copy() {
+			this.vuexHistory.transaction(async () => {
+				this.$store.dispatch('objects/copyObjectToClipboard', {
+					id: this.object.id,
+				} as ICopyObjectToClipboardAction);
+			});
+		},
 	},
 });
 

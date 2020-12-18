@@ -7,6 +7,7 @@ export interface IUiState {
 	selection: string | null;
 	lqRendering: boolean;
 	lastDownload: string | null;
+	clipboard: string | null;
 }
 
 export default {
@@ -17,6 +18,7 @@ export default {
 		nsfw: false,
 		selection: null,
 		lastDownload: null,
+		clipboard: null,
 	},
 	mutations: {
 		setVertical(state, vertical: boolean) {
@@ -33,6 +35,9 @@ export default {
 		},
 		setLastDownload(state, download: string) {
 			state.lastDownload = download;
+		},
+		setClipboard(state, contents: string) {
+			state.clipboard = contents;
 		},
 	},
 } as Module<IUiState, IRootState>;
