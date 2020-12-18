@@ -4,13 +4,25 @@ import { PoseRenderCommand } from '@edave64/doki-doki-dialog-generator-pack-form
 import { IAsset } from '@/store/content';
 import { ErrorAsset } from '../models/error-asset';
 import { DeepReadonly } from '@/util/readonly';
-import { ObjectRenderable } from './objectRenderable';
 import { IObject } from '@/store/objects';
+import { OffscreenRenderable } from './offscreenRenderable';
 
 export abstract class AssetListRenderable<
 	Obj extends IObject
-> extends ObjectRenderable<Obj> {
+> extends OffscreenRenderable<Obj> {
 	protected abstract getAssetList(): Array<IDrawAssetsUnloaded | IDrawAssets>;
+	protected get canvasDrawWidth(): number {
+		return this.width;
+	}
+	protected get canvasDrawHeight(): number {
+		return this.height;
+	}
+	protected get canvasDrawPosX(): number {
+		return this.x - this.width / 2;
+	}
+	protected get canvasDrawPosY(): number {
+		return this.y;
+	}
 
 	protected async renderLocal(rx: RenderContext): Promise<void> {
 		const drawAssetsUnloaded: Array<

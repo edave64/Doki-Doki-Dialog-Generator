@@ -1,143 +1,79 @@
-import { RenderContext } from '@/renderer/rendererContext';
-import { Renderer } from '@/renderer/renderer';
-import { IHitbox } from './renderable';
-import { DeepReadonly } from '@/util/readonly';
-import { SpriteFilter } from '@/store/sprite_options';
-import { screenHeight, screenWidth } from '@/constants/base';
-import { CompositeModes } from '@/renderer/rendererContext';
-import { ObjectRenderable } from './objectRenderable';
 import { OffscreenRenderable } from './offscreenRenderable';
+import { IObject } from '@/store/objects';
+import { screenHeight, screenWidth } from '@/constants/base';
+import { RenderContext } from '@/renderer/rendererContext';
+import { IHitbox } from './renderable';
 
-export abstract class ScalingRenderable extends OffscreenRenderable {
-	/**
-	 * A scalable offscreenRenderable has a canvas size independent of the
-	 * display size. * Non-scalable renderables have canvases as big as the
-	 * screen, and are applied without scaling
-	 */
-	protected abstract readonly scaleable: boolean;
-	protected get centeredVertically(): boolean {
-		return false;
+export abstract class ScalingRenderable<
+	Obj extends IObject
+> extends OffscreenRenderable<Obj> {
+	protected lastWidth = -1;
+	protected lastHeight = -1;
+	protected lastX = -1;
+	protected lastY = -1;
+	protected lastFlip: boolean | null = null;
+
+	protected readonly canvasHeight = screenHeight;
+	protected readonly canvasWidth = screenWidth;
+	protected readonly canvasDrawHeight = screenHeight;
+	protected readonly canvasDrawWidth = screenWidth;
+	protected readonly canvasDrawPosX = 0;
+	protected readonly canvasDrawPosY = 0;
+
+	public getRenderRotation(): [number, { x: number; y: number } | undefined] {
+		return [0, undefined];
 	}
-	protected abstract readonly canvasHeight: number;
-	protected abstract readonly canvasWidth: number;
-	protected abstract renderLocal(rx: RenderContext): Promise<void>;
 
 	public needsRedraw(): boolean {
-		return this.localRenderer === null || this.lastVersion !== this.version;
+		if (super.needsRedraw()) return true;
+		return (
+			this.width !== this.lastWidth ||
+			this.height !== this.lastHeight ||
+			this.x !== this.lastX ||
+			this.y !== this.lastY ||
+			this.flip !== this.lastFlip
+		);
 	}
 
 	public async updateLocalCanvas(hq: boolean) {
-		await this.ready;
-		const width = this.canvasWidth;
-		const height = this.canvasHeight;
-		if (height === 0 && width === 0) {
-			this.renderable = false;
-			return;
-		}
-		this.renderable = true;
-		this.localRenderer = new Renderer(width, height);
-		this.hq = hq;
-		await this.localRenderer.render(this.renderLocal.bind(this));
+		this.lastWidth = this.width;
+		this.lastHeight = this.height;
+		this.lastX = this.x;
+		this.lastY = this.y;
+		this.lastFlip = this.flip;
+		await super.updateLocalCanvas(hq);
 	}
 
-	public async render(selected: boolean, rx: RenderContext) {
-		let needRedraw =
-			this.localRenderer === null ||
-			this.lastVersion !== this.version ||
-			this.hq !== rx.hq;
+	protected async renderLocal(rx: RenderContext): Promise<void> {
+		if (this.rotation === 0) return this.draw(rx);
+		await rx.customTransform(async trx => {
+			const hitbox = this.getHitbox();
+			const centerX = hitbox.x0 + (hitbox.x1 - hitbox.x0) / 2;
+			const centerY = hitbox.y0 + (hitbox.y1 - hitbox.y0) / 2;
 
-		if (!this.scaleable) {
-			needRedraw =
-				needRedraw ||
-				this.width !== this.lastWidth ||
-				this.height !== this.lastHeight ||
-				this.x !== this.lastX ||
-				this.y !== this.lastY ||
-				this.flip !== this.lastFlip;
-			this.lastWidth = this.width;
-			this.lastHeight = this.height;
-			this.lastX = this.x;
-			this.lastY = this.y;
-			this.lastFlip = this.flip;
-		}
+			const flipNormalizedCenterX = this.flip ? screenWidth - centerX : centerX;
 
-		if (needRedraw) {
-			await this.updateLocalCanvas(!rx.hq);
-		}
-
-		this.hq = rx.hq;
-		this.lastVersion = this.version;
-
-		if (!this.renderable) return;
-
-		const w = this.scaleable ? this.width : screenWidth;
-		const h = this.scaleable ? this.height : screenHeight;
-		const x = this.scaleable ? this.x - w / 2 : 0;
-		const y = this.scaleable ? this.y : 0;
-
-		rx.drawImage({
-			image: this.localRenderer!,
-			x,
-			y,
-			w,
-			h,
-			flip: this.flip,
-			shadow: selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
-			composite: this.composite,
-			filters: this.filters,
-		});
-	}
-
-	public hitTest(hx: number, hy: number): boolean {
-		if (!this.localRenderer) return false;
-
-		const scaledX = hx - (this.x - this.width / 2);
-		const scaledY =
-			hy - (this.centeredVertically ? this.y - this.height / 2 : this.y);
-
-		if (scaledX < 0 || scaledX > this.width) return false;
-		if (scaledY < 0 || scaledY > this.height) return false;
-
-		if (!this.hitDetectionFallback) {
-			try {
-				if (this.scaleable) {
-					const flippedX = this.flip ? this.width - scaledX : scaledX;
-					const scaleX = this.localRenderer.width / this.width;
-					const scaleY = this.localRenderer.height / this.height;
-					const data = this.localRenderer.getDataAt(
-						Math.round(flippedX * scaleX),
-						Math.round(scaledY * scaleY)
-					);
-					return data[3] !== 0;
-				} else {
-					const data = this.localRenderer.getDataAt(
-						Math.round(this.flip ? screenWidth - hx : hx),
-						Math.round(hy)
-					);
-					return data[3] !== 0;
-				}
-			} catch (e) {
-				// On chrome for android, the hit test tends to fail because of cross-origin shenanigans, even though
-				// we only ever load from one origin. ¯\_(ツ)_/¯
-				// So we have a fallback that doesn't read the contents of the canvas. This looses accuracy, but at
-				// least works always.
-				if (e instanceof DOMException && e.message.includes('cross-origin')) {
-					this.hitDetectionFallback = true;
-				} else {
-					throw e;
-				}
-			}
-		}
-
-		return true;
+			trx.translate(flipNormalizedCenterX, centerY);
+			trx.rotate(this.rotation);
+			trx.translate(-flipNormalizedCenterX, -centerY);
+		}, this.draw.bind(this));
 	}
 
 	public getHitbox(): IHitbox {
+		const vCentered = this.centeredVertically;
+		const w2 = this.width / 2;
+		const h2 = this.height / 2;
 		return {
-			x0: this.x - this.width / 2,
-			x1: this.x + this.width / 2,
-			y0: this.y,
-			y1: this.y + this.height,
+			x0: this.x - w2,
+			x1: this.x + w2,
+			y0: vCentered ? this.y - h2 : this.y,
+			y1: vCentered ? this.y + h2 : this.y + this.height,
 		};
+	}
+
+	protected abstract draw(rx: RenderContext): Promise<void>;
+
+	protected get centeredVertically(): boolean {
+		return false;
 	}
 }

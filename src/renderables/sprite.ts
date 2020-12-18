@@ -6,12 +6,10 @@ import {
 	IDrawAssets,
 	IDrawAssetsUnloaded,
 } from './assetListRenderable';
-import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 
 export class Sprite extends AssetListRenderable<ISprite> {
 	private assets!: IDrawAssets[];
 	protected ready!: Promise<void>;
-	protected scaleable = true;
 	protected canvasHeight: number = 0;
 	protected canvasWidth: number = 0;
 

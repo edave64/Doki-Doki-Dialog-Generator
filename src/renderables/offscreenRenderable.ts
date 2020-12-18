@@ -5,43 +5,64 @@ import { DeepReadonly } from '@/util/readonly';
 import { SpriteFilter } from '@/store/sprite_options';
 import { screenHeight, screenWidth } from '@/constants/base';
 import { CompositeModes } from '@/renderer/rendererContext';
+import { IObject } from '@/store/objects';
+import { Store } from 'vuex';
+import { IRootState } from '@/store';
+import { rotateAround } from '@/util/rotation';
 
-export abstract class OffscreenRenderable {
+export abstract class OffscreenRenderable<Obj extends IObject> {
 	private localRenderer: Renderer | null = null;
 	private lastVersion: any = null;
 	private hitDetectionFallback = false;
 	protected renderable: boolean = false;
 
-	protected constructor() {}
+	public constructor(protected obj: DeepReadonly<Obj>) {}
 
-	/**
-	 * A scalable offscreenRenderable has a canvas size independent of the
-	 * display size. * Non-scalable renderables have canvases as big as the
-	 * screen, and are applied without scaling
-	 */
-	protected abstract readonly scaleable: boolean;
-	protected get centeredVertically(): boolean {
-		return false;
-	}
 	protected abstract readonly canvasHeight: number;
 	protected abstract readonly canvasWidth: number;
+
+	// The dimentions used to draw the local canvas onto the target. Is different from `canvasHeight` and `canvasWidth` to allow scaling
+	protected abstract readonly canvasDrawHeight: number;
+	protected abstract readonly canvasDrawWidth: number;
+	protected abstract readonly canvasDrawPosX: number;
+	protected abstract readonly canvasDrawPosY: number;
 	protected abstract renderLocal(rx: RenderContext): Promise<void>;
 
 	protected lastHq: boolean = false;
-	protected lastWidth = -1;
-	protected lastHeight = -1;
-	protected lastX = -1;
-	protected lastY = -1;
-	protected lastFlip: boolean | null = null;
 
-	protected abstract readonly x: number;
-	protected abstract readonly y: number;
-	protected abstract readonly version: any;
-	protected abstract readonly flip: boolean;
-	protected abstract readonly composite: CompositeModes;
-	protected abstract readonly filters: DeepReadonly<SpriteFilter[]>;
 	protected readonly ready = Promise.resolve();
-	protected abstract readonly rotation: number;
+
+	public get id(): string {
+		return this.obj.id;
+	}
+
+	protected get x(): number {
+		return this.obj.x;
+	}
+	protected get y(): number {
+		return this.obj.y;
+	}
+	protected get version(): number {
+		return this.obj.version;
+	}
+	protected get flip(): boolean {
+		return this.obj.flip;
+	}
+	protected get rotation(): number {
+		return (this.obj.rotation / 180) * Math.PI;
+	}
+	protected get composite(): CompositeModes {
+		return this.obj.composite;
+	}
+	protected get filters(): DeepReadonly<SpriteFilter[]> {
+		return this.obj.filters;
+	}
+	protected get width(): number {
+		return this.obj.width;
+	}
+	protected get height(): number {
+		return this.obj.height;
+	}
 
 	public async updateLocalCanvas(hq: boolean) {
 		await this.ready;
@@ -57,73 +78,38 @@ export abstract class OffscreenRenderable {
 		await this.localRenderer.render(this.renderLocal.bind(this));
 	}
 
-	public get width() {
-		return this.canvasWidth;
-	}
-
-	public get height() {
-		return this.canvasHeight;
-	}
-
 	public needsRedraw(): boolean {
 		return this.localRenderer === null || this.lastVersion !== this.version;
 	}
 
+	public getRenderRotation(): [number, { x: number; y: number } | undefined] {
+		return [
+			this.flip ? -this.rotation : this.rotation,
+			{
+				x: this.x,
+				y: this.y + this.height / 2,
+			},
+		];
+	}
+
 	public async render(selected: boolean, rx: RenderContext) {
-		let needRedraw = this.lastHq !== rx.hq || this.needsRedraw();
+		const needRedraw = this.lastHq !== rx.hq || this.needsRedraw();
 
-		if (!this.scaleable) {
-			needRedraw =
-				needRedraw ||
-				this.width !== this.lastWidth ||
-				this.height !== this.lastHeight ||
-				this.x !== this.lastX ||
-				this.y !== this.lastY ||
-				this.flip !== this.lastFlip;
-			this.lastWidth = this.width;
-			this.lastHeight = this.height;
-			this.lastX = this.x;
-			this.lastY = this.y;
-			this.lastFlip = this.flip;
-		}
-
-		if (needRedraw) {
-			await this.updateLocalCanvas(!rx.hq);
-		}
+		if (needRedraw) await this.updateLocalCanvas(!rx.hq);
 
 		this.lastVersion = this.version;
 
 		if (!this.renderable) return;
 
-		const w = this.scaleable ? this.width : screenWidth;
-		const h = this.scaleable ? this.height : screenHeight;
-		const x = this.scaleable ? this.x - w / 2 : 0;
-		const y = this.scaleable ? this.y : 0;
-
-		let rotationAnchor: undefined | { x: number; y: number } = undefined;
-
-		if (!this.scaleable) {
-			const hitbox = this.getHitbox();
-			if (this.centeredVertically) {
-				rotationAnchor = {
-					x: this.x,
-					y: this.y,
-				};
-			} else {
-				rotationAnchor = {
-					x: this.x,
-					y: this.y + this.height / 2,
-				};
-			}
-		}
+		const [rotation, rotationAnchor] = this.getRenderRotation();
 
 		rx.drawImage({
 			image: this.localRenderer!,
-			x,
-			y,
-			w,
-			h,
-			rotation: this.rotation,
+			x: this.canvasDrawPosX,
+			y: this.canvasDrawPosY,
+			w: this.canvasDrawWidth,
+			h: this.canvasDrawHeight,
+			rotation,
 			rotationAnchor,
 			flip: this.flip,
 			shadow: selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
@@ -135,47 +121,74 @@ export abstract class OffscreenRenderable {
 	public hitTest(hx: number, hy: number): boolean {
 		if (!this.localRenderer) return false;
 
-		const scaledX = hx - (this.x - this.width / 2);
-		const scaledY =
-			hy - (this.centeredVertically ? this.y - this.height / 2 : this.y);
+		const hitbox = this.getHitbox();
 
-		if (scaledX < 0 || scaledX > this.width) return false;
-		if (scaledY < 0 || scaledY > this.height) return false;
+		const centerX = hitbox.x0 + (hitbox.x1 - hitbox.x0) / 2;
+		const centerY = hitbox.y0 + (hitbox.y1 - hitbox.y0) / 2;
 
-		if (!this.hitDetectionFallback) {
-			try {
-				if (this.scaleable) {
-					const flippedX = this.flip ? this.width - scaledX : scaledX;
-					const scaleX = this.localRenderer.width / this.width;
-					const scaleY = this.localRenderer.height / this.height;
-					const data = this.localRenderer.getDataAt(
-						Math.round(flippedX * scaleX),
-						Math.round(scaledY * scaleY)
-					);
-					return data[3] !== 0;
-				} else {
-					const data = this.localRenderer.getDataAt(
-						Math.round(this.flip ? screenWidth - hx : hx),
-						Math.round(hy)
-					);
-					return data[3] !== 0;
-				}
-			} catch (e) {
-				// On chrome for android, the hit test tends to fail because of cross-origin shenanigans, even though
-				// we only ever load from one origin. ¯\_(ツ)_/¯
-				// So we have a fallback that doesn't read the contents of the canvas. This looses accuracy, but at
-				// least works always.
-				if (e instanceof DOMException && e.message.includes('cross-origin')) {
-					this.hitDetectionFallback = true;
-				} else {
-					throw e;
-				}
-			}
+		// Rotate the hit backwards, to cancle the rotation of the object
+		const [rotatedHitX, rotatedHitY] = rotateAround(
+			hx,
+			hy,
+			centerX,
+			centerY,
+			this.flip ? this.rotation : -this.rotation
+		);
+
+		const hit =
+			rotatedHitX >= hitbox.x0 &&
+			rotatedHitX <= hitbox.x1 &&
+			rotatedHitY >= hitbox.y0 &&
+			rotatedHitY <= hitbox.y1;
+
+		if (!hit) return false;
+		// We can't do pixel perfect detection and we have a hitbox hit -> true
+		if (this.hitDetectionFallback) return true;
+
+		try {
+			return this.pixelPerfectHitTest(hx, hy);
+		} catch (e) {
+			this.hitDetectionFallback = true;
 		}
 
 		return true;
 	}
 
+	public pixelPerfectHitTest(x: number, y: number): boolean {
+		if (!this.localRenderer) return false;
+		const [angle, anchor] = this.getRenderRotation();
+		const [rotatedHitX, rotatedHitY] = anchor
+			? rotateAround(x, y, anchor.x, anchor.y, -angle)
+			: [x, y];
+
+		const innerX = Math.round(rotatedHitX - this.canvasDrawPosX);
+		const innerY = Math.round(rotatedHitY - this.canvasDrawPosY);
+
+		const canvasDrawWidth = this.canvasDrawWidth;
+		const canvasDrawHeight = this.canvasDrawHeight;
+
+		if (
+			innerX >= 0 &&
+			innerX <= canvasDrawWidth &&
+			innerY >= 0 &&
+			innerY <= canvasDrawHeight
+		) {
+			const flippedX = this.flip ? this.canvasDrawWidth - innerX : innerX;
+			const scaleX = this.canvasWidth / this.canvasDrawWidth;
+			const scaleY = this.canvasHeight / this.canvasDrawHeight;
+			const data = this.localRenderer.getDataAt(
+				Math.round(flippedX * scaleX),
+				Math.round(innerY * scaleY)
+			);
+			return data[3] !== 0;
+		}
+		return false;
+	}
+
+	/**
+	 * Returns the hitbox of the object, *not* taking into account any rotation (as that would just inflate the hitbox and reduce accuracy)
+	 * To manually apply rotation to it, rotate your hit test by `this.rotation` around the center of the hitbox.
+	 */
 	public getHitbox(): IHitbox {
 		return {
 			x0: this.x - this.width / 2,
@@ -184,4 +197,6 @@ export abstract class OffscreenRenderable {
 			y1: this.y + this.height,
 		};
 	}
+
+	public updatedContent(_current: Store<DeepReadonly<IRootState>>): void {}
 }

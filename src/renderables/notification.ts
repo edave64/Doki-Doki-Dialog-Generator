@@ -13,12 +13,9 @@ import {
 	NotificationOkTextStyle,
 	NotificationBackdropColor,
 } from '@/constants/notification';
-import { ObjectRenderable } from './objectRenderable';
+import { ScalingRenderable } from './scalingRenderable';
 
-export class Notification extends ObjectRenderable<INotification> {
-	protected readonly canvasHeight: number = screenHeight;
-	protected readonly canvasWidth: number = screenWidth;
-	protected scaleable = false;
+export class Notification extends ScalingRenderable<INotification> {
 	private _height: number = 0;
 	public get height(): number {
 		return this._height;
@@ -52,7 +49,7 @@ export class Notification extends ObjectRenderable<INotification> {
 		await super.render(selected, rx);
 	}
 
-	protected async renderLocal(rx: RenderContext): Promise<void> {
+	protected async draw(rx: RenderContext): Promise<void> {
 		const textRenderer = new TextRenderer(this.obj.text, NotificationTextStyle);
 		const buttonRenderer = new TextRenderer('OK', NotificationOkTextStyle);
 		await textRenderer.loadFonts();

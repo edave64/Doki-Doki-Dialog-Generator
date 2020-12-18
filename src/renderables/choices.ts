@@ -9,13 +9,9 @@ import {
 	ChoicePadding,
 	ChoiceSpacing,
 } from '@/constants/choices';
-import { ObjectRenderable } from './objectRenderable';
+import { ScalingRenderable } from './scalingRenderable';
 
-export class Choice extends ObjectRenderable<IChoices> {
-	protected readonly scaleable = false;
-	protected readonly canvasHeight = screenHeight;
-	protected readonly canvasWidth = screenWidth;
-
+export class Choice extends ScalingRenderable<IChoices> {
 	private _height: number = 0;
 	public get height(): number {
 		return this._height;
@@ -26,7 +22,7 @@ export class Choice extends ObjectRenderable<IChoices> {
 
 	private choiceRenderers: TextRenderer[] = [];
 
-	protected async renderLocal(rx: RenderContext): Promise<void> {
+	protected async draw(rx: RenderContext): Promise<void> {
 		await this.updateChoiceBounds();
 		console.log('rerender choice');
 

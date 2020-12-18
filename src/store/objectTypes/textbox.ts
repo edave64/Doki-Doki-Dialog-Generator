@@ -5,13 +5,15 @@ import {
 	IObject,
 	ISetObjectPositionMutation,
 	ISetObjectFlipMutation,
+	ISetSpriteRotationMutation,
 } from '@/store/objects';
 import { MutationTree, ActionTree } from 'vuex';
 import { NameboxY, TextBoxWidth, TextBoxHeight } from '@/constants/textBox';
 import { ISetSpriteSizeMutation } from './characters';
 import { IRootState } from '..';
 import { baseProps } from './baseObjectProps';
-
+import { screenWidth } from '@/constants/base';
+import { rotateAround } from '@/util/rotation';
 export interface ITextBox extends IObject {
 	type: 'textBox';
 	text: string;
@@ -133,6 +135,7 @@ export const textBoxMutations: MutationTree<IObjectsState> = {
 		obj.y = command.resetBounds.y;
 		obj.height = command.resetBounds.height;
 		obj.width = command.resetBounds.width;
+		obj.rotation = command.resetBounds.rotation;
 		++obj.version;
 	},
 };
@@ -143,9 +146,11 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 	createTextBox({ commit, rootState }, command: ICreateTextBoxAction): string {
 		const id = 'textBox_' + ++lastTextBoxId;
 		const resetBounds = command.resetBounds || {
+			x: screenWidth / 2,
 			y: NameboxY,
 			width: TextBoxWidth,
 			height: TextBoxHeight,
+			rotation: 0,
 		};
 		commit('create', {
 			object: {
@@ -197,18 +202,46 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 			height: obj.resetBounds.height,
 			width: obj.resetBounds.width,
 		} as ISetSpriteSizeMutation);
+		commit('setRotation', {
+			id: command.id,
+			rotation: obj.resetBounds.rotation,
+		} as ISetSpriteRotationMutation);
 	},
 
 	async splitTextbox({ commit, state, dispatch }, command: ISplitTextbox) {
 		const obj = state.objects[command.id];
 		const newWidth = (obj.width - splitTextboxSpacing) / 2;
+		const centerDistance = newWidth / 2 + splitTextboxSpacing / 2;
+
+		const baseCenter = [obj.x, obj.y];
+		let boxOneCoords = [obj.x - centerDistance, obj.y];
+		let boxTwoCoords = [obj.x + centerDistance, obj.y];
+
+		if (obj.rotation !== 0) {
+			boxOneCoords = rotateAround(
+				boxOneCoords[0],
+				boxOneCoords[1],
+				baseCenter[0],
+				baseCenter[1],
+				(obj.rotation / 180) * Math.PI
+			);
+			boxTwoCoords = rotateAround(
+				boxTwoCoords[0],
+				boxTwoCoords[1],
+				baseCenter[0],
+				baseCenter[1],
+				(obj.rotation / 180) * Math.PI
+			);
+		}
+
 		commit('setResetBounds', {
 			id: command.id,
 			resetBounds: {
-				x: obj.x - newWidth / 2,
-				y: obj.y,
+				x: boxOneCoords[0],
+				y: boxOneCoords[1],
 				width: newWidth,
 				height: obj.height,
+				rotation: obj.rotation,
 			},
 		} as ISetResetBoundsMutation);
 		commit('setStyle', {
@@ -217,10 +250,11 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 		} as ISetTextBoxStyleMutation);
 		const id = (await dispatch('createTextBox', {
 			resetBounds: {
-				x: obj.x + newWidth + splitTextboxSpacing / 2,
-				y: obj.y,
+				x: boxTwoCoords[0],
+				y: boxTwoCoords[1],
 				width: newWidth,
 				height: obj.height,
+				rotation: obj.rotation,
 			},
 		} as ICreateTextBoxAction)) as string;
 		commit('setStyle', {

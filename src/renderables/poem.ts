@@ -10,18 +10,14 @@ import {
 	consoleBackgroundColor,
 } from '@/constants/poem';
 import { getAssetByUrl } from '@/asset-manager';
-import { ObjectRenderable } from './objectRenderable';
+import { ScalingRenderable } from './scalingRenderable';
 
 const consolePadding = -2;
 const consoleTopPadding = 26;
 const consoleLineWrapPadding = 10;
 const poemTopMargin = 10;
 
-export class Poem extends ObjectRenderable<IPoem> {
-	protected readonly scaleable = false;
-	protected readonly canvasHeight = screenHeight;
-	protected readonly canvasWidth = screenWidth;
-
+export class Poem extends ScalingRenderable<IPoem> {
 	private _height: number = 0;
 	public get height(): number {
 		return this._height;
@@ -35,7 +31,7 @@ export class Poem extends ObjectRenderable<IPoem> {
 		return true;
 	}
 
-	protected async renderLocal(rx: RenderContext): Promise<void> {
+	protected async draw(rx: RenderContext): Promise<void> {
 		const paper = poemBackgrounds[this.obj.background];
 		const flippedX = this.flip ? screenWidth - this.obj.x : this.obj.x;
 		let y = this.obj.y;

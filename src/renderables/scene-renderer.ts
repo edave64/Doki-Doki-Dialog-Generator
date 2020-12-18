@@ -19,11 +19,11 @@ import { INotification } from '@/store/objectTypes/notification';
 import { Notification } from '@/renderables/notification';
 import { Poem } from './poem';
 import { IPoem } from '@/store/objectTypes/poem';
-import { ObjectRenderable } from './objectRenderable';
 import { IObject } from '@/store/objects';
+import { OffscreenRenderable } from './offscreenRenderable';
 
 export class SceneRenderer {
-	private renderObjectCache = new Map<string, ObjectRenderable<IObject>>();
+	private renderObjectCache = new Map<string, OffscreenRenderable<IObject>>();
 	private lCurrentlyRendering = false;
 	private renderer: Renderer;
 
@@ -74,12 +74,15 @@ export class SceneRenderer {
 	private async renderCallback(rx: RenderContext): Promise<void> {
 		this.lCurrentlyRendering = true;
 		try {
+			rx.fsCtx.imageSmoothingEnabled = true;
+			rx.fsCtx.imageSmoothingQuality = rx.hq ? 'high' : 'low';
+
 			await this.getBackgroundRenderer()?.render(rx);
 
 			const selection = this.store.state.ui.selection;
 			for (const object of this.getRenderObjects()) {
 				let selected = false;
-				if (object instanceof ObjectRenderable) {
+				if (object instanceof OffscreenRenderable) {
 					object.updatedContent(this.store);
 					selected = selection === object.id;
 				}

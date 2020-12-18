@@ -43,13 +43,9 @@ import {
 	textboxRounding,
 	textboxOutlineColorDelta,
 } from '@/constants/textBoxCustom';
-import { ObjectRenderable } from './objectRenderable';
+import { ScalingRenderable } from './scalingRenderable';
 
-export class TextBox extends ObjectRenderable<ITextBox> {
-	protected readonly scaleable = false;
-	protected readonly canvasHeight = screenHeight;
-	protected readonly canvasWidth = screenWidth;
-
+export class TextBox extends ScalingRenderable<ITextBox> {
 	public get width(): number {
 		return this.obj.style === 'custom' ? this.obj.width : TextBoxWidth;
 	}
@@ -100,7 +96,7 @@ export class TextBox extends ObjectRenderable<ITextBox> {
 		};
 	}
 
-	protected async renderLocal(rx: RenderContext): Promise<void> {
+	protected async draw(rx: RenderContext): Promise<void> {
 		const w = this.width;
 		const h = this.height;
 		const w2 = w / 2;
@@ -193,13 +189,13 @@ export class TextBox extends ObjectRenderable<ITextBox> {
 				color: '#FFFFFF',
 			};
 			w = this.obj.customNameboxWidth;
-			rx.customTransform(
-				ctx => {
+			await rx.customTransform(
+				async ctx => {
 					ctx.beginPath();
 					roundedTopRectangle(ctx, x, y, w, h, nameboxRounding);
 					ctx.clip();
 				},
-				subRx => {
+				async subRx => {
 					const gradient = subRx.linearGradient(x, y, x, y + NameboxHeight);
 					const baseBG = RGBAColor.fromCss(this.nameboxBackgroundColor);
 					// tslint:disable-next-line: no-magic-numbers
@@ -275,8 +271,8 @@ export class TextBox extends ObjectRenderable<ITextBox> {
 				drawDot(dotPatternSize, dotPatternSize);
 				drawDot(dotPatternSize / 2, dotPatternSize / 2);
 			}, true);
-			rx.customTransform(
-				ctx => {
+			await rx.customTransform(
+				async ctx => {
 					ctx.beginPath();
 					roundedRectangle(
 						ctx,
@@ -288,7 +284,7 @@ export class TextBox extends ObjectRenderable<ITextBox> {
 					);
 					ctx.clip();
 				},
-				subRx => {
+				async subRx => {
 					const h = this.obj.height;
 					const w = this.obj.width;
 					const gradient = subRx.linearGradient(x, y, x, y + h);
@@ -311,11 +307,11 @@ export class TextBox extends ObjectRenderable<ITextBox> {
 							width: 6,
 						},
 					});
-					subRx.customTransform(
-						ctx => {
+					await subRx.customTransform(
+						async ctx => {
 							ctx.translate(x, y);
 						},
-						_subSubRx => {
+						async _subSubRx => {
 							const pattern = subRx.patternFrom(dotPattern);
 							subRx.drawRect({
 								x: 0,
