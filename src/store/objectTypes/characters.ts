@@ -90,13 +90,13 @@ export function getData(
 
 export function getDataG(
 	rootGetters: any,
-	state: Readonly<ICharacter>
+	characterType: string
 ): Readonly<Character<IAsset>> {
 	const characters = rootGetters['content/getCharacters'] as Map<
 		Character<IAsset>['id'],
 		Character<IAsset>
 	>;
-	return characters.get(state.characterType)!;
+	return characters.get(characterType)!;
 }
 
 export function getPose(
@@ -145,7 +145,11 @@ export function closestCharacterSlot(pos: number): number {
 let lastSpriteId = 0;
 
 export const characterActions: ActionTree<IObjectsState, IRootState> = {
-	createCharacters({ rootState, commit }, command: ICreateCharacterAction) {
+	createCharacters(
+		{ rootState, rootGetters, commit },
+		command: ICreateCharacterAction
+	) {
+		const char = getDataG(rootGetters, command.characterType);
 		commit('create', {
 			object: {
 				...baseProps(),
@@ -165,6 +169,7 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 				styleId: 0,
 				styleGroupId: 0,
 				posePositions: {},
+				label: char.label || char.id,
 			} as ICharacter,
 		} as ICreateObjectMutation);
 	},
@@ -178,7 +183,7 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 			return;
 		}
 		const obj = state.objects[id] as Readonly<ICharacter>;
-		const pose = getPose(getDataG(rootGetters, obj), obj);
+		const pose = getPose(getDataG(rootGetters, obj.characterType), obj);
 		if (!pose.positions[part]) return;
 		commit('setPosePosition', {
 			id,
@@ -194,7 +199,7 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 
 	seekPose({ state, commit, rootGetters }, { id, delta }: ISeekPoseAction) {
 		const obj = state.objects[id] as Readonly<ICharacter>;
-		const data = getDataG(rootGetters, obj);
+		const data = getDataG(rootGetters, obj.characterType);
 		const poses = data.styleGroups[obj.styleGroupId].styles[obj.styleId].poses;
 		mutatePoseAndPositions(commit, obj, data, change => {
 			change.poseId = arraySeeker(poses, change.poseId, delta);
@@ -203,7 +208,7 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 
 	seekStyle({ state, commit, rootGetters }, { id, delta }: ISeekStyleAction) {
 		const obj = state.objects[id] as Readonly<ICharacter>;
-		const data = getDataG(rootGetters, obj);
+		const data = getDataG(rootGetters, obj.characterType);
 		const linearStyles = data.styleGroups
 			.flatMap((styleGroup, styleGroupIdx) => {
 				return styleGroup.styles.map((style, styleIdx) => {
@@ -232,7 +237,7 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 
 	seekHead({ state, commit, rootGetters }, { id, delta }: ISeekHeadAction) {
 		const obj = state.objects[id] as Readonly<ICharacter>;
-		const data = getDataG(rootGetters, obj);
+		const data = getDataG(rootGetters, obj.characterType);
 		const pose = getPose(data, obj);
 		let currentHeads = getHeads(data, obj);
 		if (!currentHeads) return;
@@ -261,7 +266,7 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 		{ id, part, val }: ISetPartAction
 	): void {
 		const obj = state.objects[id] as Readonly<ICharacter>;
-		const data = getDataG(rootGetters, obj);
+		const data = getDataG(rootGetters, obj.characterType);
 		if (part === 'pose') {
 			mutatePoseAndPositions(commit, obj, data, change => {
 				change.poseId = val;
@@ -282,7 +287,7 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 		{ id, styleGroupId, styleId }: ISetStyleAction
 	) {
 		const obj = state.objects[id] as Readonly<ICharacter>;
-		const data = getDataG(rootGetters, obj);
+		const data = getDataG(rootGetters, obj.characterType);
 		mutatePoseAndPositions(commit, obj, data, change => {
 			change.styleGroupId = styleGroupId;
 			change.styleId = styleId;

@@ -9,5 +9,7 @@ export function baseProps() {
 		x: screenWidth / 2,
 		composite: 'source-over',
 		filters: [],
+		label: null,
+		textboxColor: '#ffa8d2',
 	};
 }

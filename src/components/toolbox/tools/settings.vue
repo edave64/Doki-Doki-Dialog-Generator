@@ -1,6 +1,48 @@
 <template>
 	<div class="panel">
 		<h1>Settings</h1>
+		<Portal target="#modal-messages">
+			<modal-dialog :options="['Apply', 'Cancle']">
+				<div class="modal-scroll-area">
+					<p>
+						Do you want to allow DDDG to save data on your device?
+					</p>
+					<p>
+						By choosing to enable saving data, DDDG can save data to your
+						device, and nowhere else. However, your browser and any installed
+						browserextensions might possibly read and send this data to other
+						servers, e.g. to sync between devices. This is outside of our
+						control. But in general, we recommend only using browsers and
+						browserextensions that you trust with your personal data.
+					</p>
+					<p>
+						No data is ever send by us to external servers. The only things that
+						leave this device are:
+					</p>
+					<ul>
+						<li>
+							Your IP address. This is send by any web requests of scripts and
+							assets and is inevitiable, so that the responses can be send back
+							to your device. We cannot directly access this data, but it is
+							probably stored by Github Inc. (owned by Microsoft), who provide
+							our servers.
+						</li>
+						<li>
+							Access times. Since DDDG loads images on demand, it might be
+							possible to reconstruct what characters and expressions have been
+							used in a dialog from when these files where downloaded from the
+							server by a specific IP. We have, however, no access to this data
+							and don't want it. It is again likely stored by Github Inc. for
+							some time to help diagnose server issues and possible legal
+							requirements.
+						</li>
+					</ul>
+				</div>
+				<p>
+					<input v-model="modalNameInput" />
+				</p>
+			</modal-dialog>
+		</Portal>
 		<toggle
 			v-if="lqAllowed"
 			label="Low quality preview?"

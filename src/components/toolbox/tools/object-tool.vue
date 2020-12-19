@@ -1,6 +1,21 @@
 <template>
 	<div class="panel">
-		<h1>{{ title }}</h1>
+		<h1 :style="{ fontStyle: this.hasLabel ? 'normal' : 'italic' }">
+			<a href="#" @click="enableNameEdit">
+				{{ title }}
+				<span class="icon material-icons" v-if="hasLabel && canEdit">edit</span>
+			</a>
+		</h1>
+		<Portal target="#modal-messages">
+			<modal-dialog :options="['Apply', 'Cancle']">
+				<p>
+					Enter the new name
+				</p>
+				<p>
+					<input v-model="modalNameInput" />
+				</p>
+			</modal-dialog>
+		</Portal>
 		<text-editor
 			v-if="textHandler"
 			:title="textHandler.title"
@@ -82,10 +97,17 @@ export default defineComponent({
 	},
 	data: () => ({
 		imageOptionsOpen: false,
+		canEdit: true,
 	}),
 	computed: {
 		flip: setable('flip', 'objects/setFlip'),
 		rotation: setable('rotation', 'objects/setRotation'),
+		hasLabel(): boolean {
+			return this.object.label !== null;
+		},
+		heading(): string {
+			return this.object.label || this.title || 'Object';
+		},
 	},
 	methods: {
 		copy() {

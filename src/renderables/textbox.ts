@@ -44,8 +44,13 @@ import {
 	textboxOutlineColorDelta,
 } from '@/constants/textBoxCustom';
 import { ScalingRenderable } from './scalingRenderable';
+import { Store } from 'vuex';
+import { DeepReadonly } from 'vue';
+import { IRootState } from '@/store';
 
 export class TextBox extends ScalingRenderable<ITextBox> {
+	protected objectLabel: string | null = null;
+
 	public get width(): number {
 		return this.obj.style === 'custom' ? this.obj.width : TextBoxWidth;
 	}
@@ -95,6 +100,14 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 			},
 		};
 	}
+	public updatedContent(_current: Store<DeepReadonly<IRootState>>): void {
+		const talkingObj = this.obj.talkingObjId;
+		if (talkingObj !== null && talkingObj !== '$other$') {
+			const obj = _current.state.objects.objects[talkingObj];
+			if (!obj) return;
+			this.objectLabel = obj.label;
+		}
+	}
 
 	protected async draw(rx: RenderContext): Promise<void> {
 		const w = this.width;
@@ -106,11 +119,11 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 
 		await this.renderBackdrop(rx, x, y + NameboxHeight);
 
-		if (this.obj.talkingDefault !== 'No-one') {
+		if (this.obj.talkingObjId !== null) {
 			const name =
-				this.obj.talkingDefault === 'Other'
+				this.obj.talkingObjId === '$other$'
 					? this.obj.talkingOther
-					: this.obj.talkingDefault;
+					: this.objectLabel!;
 			await this.renderNamebox(rx, x + NameboxXOffset, y, name);
 		}
 
@@ -396,7 +409,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 			strokeWidth: 4,
 			lineSpacing: 1.2,
 		});
-		if (this.obj.autoQuoting && this.obj.talkingDefault !== 'No-one') {
+		if (this.obj.autoQuoting && this.obj.talkingObjId !== null) {
 			render.quote();
 		}
 		await render.loadFonts();

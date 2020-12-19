@@ -7,7 +7,12 @@ import {
 	fixContentPackRemovalFromCharacter,
 } from './objectTypes/characters';
 import { choiceMutations, choiceActions } from './objectTypes/choices';
-import { textBoxActions, textBoxMutations } from './objectTypes/textbox';
+import {
+	ITextBox,
+	textBoxActions,
+	textBoxMutations,
+	ISetTextBoxTalkingOtherMutation,
+} from './objectTypes/textbox';
 import {
 	notificationMutations,
 	notificationActions,
@@ -55,6 +60,8 @@ export interface IObject extends IHasSpriteFilters {
 	version: number;
 	flip: boolean;
 	onTop: boolean;
+	label: null | string;
+	textboxColor: string;
 }
 
 export type ObjectTypes =
@@ -156,8 +163,20 @@ export default {
 	actions: {
 		removeObject({ state, commit, rootState }, command: IRemoveObjectAction) {
 			const obj = state.objects[command.id];
+			const panel = state.panels[obj.panelId];
 			if (rootState.ui.selection === command.id) {
 				commit('ui/setSelection', null, { root: true });
+			}
+			for (const key of [...panel.onTopOrder, ...panel.order]) {
+				const otherObject = state.objects[key] as ITextBox;
+				if (obj.id === key || otherObject.type !== 'textBox') continue;
+
+				if (otherObject.talkingObjId !== obj.id) continue;
+
+				commit('setTalkingOther', {
+					id: otherObject.id,
+					talkingOther: obj.label || '',
+				} as ISetTextBoxTalkingOtherMutation);
 			}
 			commit('removeFromList', {
 				id: command.id,

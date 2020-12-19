@@ -25,21 +25,12 @@
 						<label for="current_talking">Person talking:</label>
 					</td>
 					<td>
-						<select
-							id="current_talking"
-							v-model="talkingDefaults"
-							@keydown.stop
-						>
-							<option value="No-one">No-one</option>
-							<option value="Sayori">Sayori</option>
-							<option value="Yuri">Yuri</option>
-							<option value="Natsuki">Natsuki</option>
-							<option value="Monika">Monika</option>
-							<option value="FeMC">FeMC</option>
-							<option value="MC">MC</option>
-							<option value="Chad">Chad</option>
-							<option value="Amy">Amy</option>
-							<option value="Other">Other</option>
+						<select id="current_talking" v-model="talkingObjId" @keydown.stop>
+							<option value="$null$">No-one</option>
+							<option v-for="[id, label] in nameList" :key="id" :value="id">{{
+								label
+							}}</option>
+							<option value="$other$">Other</option>
 						</select>
 					</td>
 				</tr>
@@ -169,6 +160,7 @@ import {
 	ISetTextBoxNameboxStrokeMutation,
 	ISplitTextbox,
 	IResetTextboxBounds,
+	ISetTextBoxTalkingObjMutation,
 } from '@/store/objectTypes/textbox';
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
@@ -277,7 +269,19 @@ export default defineComponent({
 				},
 			};
 		},
-		talkingDefaults: setable('talkingDefault', 'objects/setTalkingDefault'),
+		talkingObjId: {
+			get(): string {
+				return this.object.talkingObjId || '$null$';
+			},
+			set(val: string): void {
+				this.vuexHistory.transaction(() => {
+					this.$store.commit('objects/setTalkingObject', {
+						id: this.object.id,
+						talkingObjId: val === '$null$' ? null : val,
+					} as ISetTextBoxTalkingObjMutation);
+				});
+			},
+		},
 		talkingOther: setable('talkingOther', 'objects/setTalkingOther'),
 		showControls: setable('controls', 'objects/setControlsVisible'),
 		allowSkipping: setable('skip', 'objects/setSkipable'),
@@ -294,6 +298,20 @@ export default defineComponent({
 			'customNameboxWidth',
 			'objects/setNameboxWidth'
 		),
+		nameList(): [string, string][] {
+			const panel = this.$store.state.objects.panels[
+				this.$store.state.panels.currentPanel
+			];
+
+			const ret: [string, string][] = [];
+
+			for (const id of [...panel.order, ...panel.onTopOrder]) {
+				const obj = this.$store.state.objects.objects[id];
+				if (obj.label === null) continue;
+				ret.push([id, obj.label!]);
+			}
+			return ret;
+		},
 		textEditorName(): string {
 			if (this.textEditor === 'name') return 'Name';
 			if (this.textEditor === 'body') return 'Dialog';

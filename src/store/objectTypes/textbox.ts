@@ -17,17 +17,7 @@ import { rotateAround } from '@/util/rotation';
 export interface ITextBox extends IObject {
 	type: 'textBox';
 	text: string;
-	talkingDefault:
-		| 'No-one'
-		| 'Sayori'
-		| 'Monika'
-		| 'Natsuki'
-		| 'Yuri'
-		| 'MC'
-		| 'FeMC'
-		| 'Chad'
-		| 'Amy'
-		| 'Other';
+	talkingObjId: null | '$other$' | string;
 	talkingOther: string;
 	style: 'normal' | 'corrupt' | 'custom' | 'none';
 	customColor: string;
@@ -46,6 +36,7 @@ export interface ITextBox extends IObject {
 		y: number;
 		width: number;
 		height: number;
+		rotation: number;
 	};
 }
 
@@ -57,15 +48,15 @@ export const textBoxMutations: MutationTree<IObjectsState> = {
 		obj.text = command.text;
 		++obj.version;
 	},
-	setTalkingDefault(state, command: ISetTextBoxTalkingDefaultMutation) {
+	setTalkingObject(state, command: ISetTextBoxTalkingObjMutation) {
 		const obj = state.objects[command.id] as ITextBox;
-		obj.talkingDefault = command.talkingDefault;
+		obj.talkingObjId = command.talkingObjId;
 		++obj.version;
 	},
 	setTalkingOther(state, command: ISetTextBoxTalkingOtherMutation) {
 		const obj = state.objects[command.id] as ITextBox;
 		obj.talkingOther = command.talkingOther;
-		obj.talkingDefault = 'Other';
+		obj.talkingObjId = '$other$';
 		++obj.version;
 	},
 	setStyle(state, command: ISetTextBoxStyleMutation) {
@@ -174,7 +165,7 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 				customNameboxColor: '#ffeef6',
 				customNameboxWidth: 168,
 				customNameboxStroke: '#bb5599',
-				talkingDefault: 'No-one',
+				talkingObjId: null,
 				talkingOther: '',
 				text: '',
 				resetBounds,
@@ -274,8 +265,8 @@ export interface ISetTextBoxTextMutation extends ICommand {
 	readonly text: string;
 }
 
-export interface ISetTextBoxTalkingDefaultMutation extends ICommand {
-	readonly talkingDefault: ITextBox['talkingDefault'];
+export interface ISetTextBoxTalkingObjMutation extends ICommand {
+	readonly talkingObjId: ITextBox['talkingObjId'];
 }
 
 export interface ISetTextBoxTalkingOtherMutation extends ICommand {

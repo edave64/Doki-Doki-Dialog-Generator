@@ -77,6 +77,8 @@ export const poemActions: ActionTree<IObjectsState, IRootState> = {
 				text: 'New poem\n\nClick here to edit poem',
 				composite: 'source-over',
 				filters: [],
+				label: null,
+				textboxColor: '#ffa8d2',
 			} as IPoem,
 		} as ICreateObjectMutation);
 		return id;

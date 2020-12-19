@@ -420,6 +420,8 @@ export default defineComponent({
 								this.currentUploadedExpression!
 							),
 						},
+						label: null,
+						textboxColor: '',
 					},
 					await this.temporaryCharacterModel
 				);
