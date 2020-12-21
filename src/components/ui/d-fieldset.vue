@@ -29,6 +29,7 @@ export default defineComponent({
 
 legend {
 	line-height: 0px;
+	user-select: none;
 }
 
 fieldset {

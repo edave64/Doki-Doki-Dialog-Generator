@@ -345,4 +345,9 @@ export default defineComponent({
 		}
 	}
 }
+
+h1,
+label {
+	user-select: none;
+}
 </style>
