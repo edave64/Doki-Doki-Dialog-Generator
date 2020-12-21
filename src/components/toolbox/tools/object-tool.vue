@@ -1,21 +1,29 @@
 <template>
 	<div class="panel">
-		<h1 :style="{ fontStyle: this.hasLabel ? 'normal' : 'italic' }">
-			<a href="#" @click="enableNameEdit">
-				{{ title }}
-				<span class="icon material-icons" v-if="hasLabel && canEdit">edit</span>
-			</a>
+		<h1
+			:style="{ fontStyle: this.hasLabel ? 'italic' : 'normal' }"
+			@click="enableNameEdit"
+		>
+			{{ heading }}
+			<span class="icon material-icons">edit</span>
 		</h1>
-		<Portal target="#modal-messages">
-			<modal-dialog :options="['Apply', 'Cancle']">
-				<p>
+		<teleport to="#modal-messages">
+			<modal-dialog
+				:options="['Apply', 'Cancel']"
+				no-base-size
+				class="modal-rename"
+				v-if="showRename"
+				@option="renameOption"
+				@leave="renameOption('Cancel')"
+			>
+				<p class="modal-text">
 					Enter the new name
 				</p>
-				<p>
-					<input v-model="modalNameInput" />
+				<p class="modal-text">
+					<input v-model="modalNameInput" style="width: 100%" />
 				</p>
 			</modal-dialog>
-		</Portal>
+		</teleport>
 		<text-editor
 			v-if="textHandler"
 			:title="textHandler.title"
@@ -24,11 +32,11 @@
 			@leave="textHandler.leave()"
 		/>
 		<color
-			v-else-if="colorHandler"
-			:title="colorHandler.title"
-			:modelValue="colorHandler.get()"
-			@update:modelValue="colorHandler.set($event)"
-			@leave="colorHandler.leave()"
+			v-else-if="finalColorHandler"
+			:title="finalColorHandler.title"
+			:modelValue="finalColorHandler.get()"
+			@update:modelValue="finalColorHandler.set($event)"
+			@leave="finalColorHandler.leave()"
 		/>
 		<image-options
 			v-else-if="imageOptionsOpen"
@@ -47,6 +55,27 @@
 				<input id="rotation" type="number" v-model="rotation" @keydown.stop />
 			</div>
 			<slot name="options" />
+			<d-fieldset v-if="hasLabel" title="Textbox settings">
+				<toggle
+					label="Use custom textbox color"
+					v-model="useCustomTextboxColor"
+				/>
+				<table v-if="useCustomTextboxColor">
+					<tr>
+						<td>
+							<label for="textbox_color">Color:</label>
+						</td>
+						<td>
+							<button
+								id="textbox_color"
+								class="color-button"
+								:style="{ background: object.textboxColor }"
+								@click="selectTextboxColor"
+							/>
+						</td>
+					</tr>
+				</table>
+			</d-fieldset>
 			<button @click="imageOptionsOpen = true">Image options</button>
 			<button @click="copy">Copy</button>
 			<delete :obj="object" />
@@ -66,7 +95,14 @@ import TextEditor from '../subtools/text/text.vue';
 import { IPoem } from '@/store/objectTypes/poem';
 import { defineComponent, PropType } from 'vue';
 import { genericSetable } from '@/util/simpleSettable';
-import { ICopyObjectToClipboardAction, IObject } from '@/store/objects';
+import {
+	ICopyObjectToClipboardAction,
+	IObject,
+	ISetLabelMutation,
+	ISetTextBoxColor,
+} from '@/store/objects';
+import ModalDialog from '@/components/ModalDialog.vue';
+import DFieldset from '@/components/ui/d-fieldset.vue';
 
 const setable = genericSetable<IPoem>();
 
@@ -80,6 +116,8 @@ export default defineComponent({
 		TextEditor,
 		ImageOptions,
 		Color,
+		ModalDialog,
+		DFieldset,
 	},
 	props: {
 		object: {
@@ -98,15 +136,35 @@ export default defineComponent({
 	data: () => ({
 		imageOptionsOpen: false,
 		canEdit: true,
+		modalNameInput: '',
+		showRename: false,
+		localColorHandler: null as Handler | null,
 	}),
 	computed: {
 		flip: setable('flip', 'objects/setFlip'),
 		rotation: setable('rotation', 'objects/setRotation'),
+		finalColorHandler(): Handler | null {
+			return this.localColorHandler || this.colorHandler || null;
+		},
 		hasLabel(): boolean {
 			return this.object.label !== null;
 		},
 		heading(): string {
+			console.log('heading', this.object.label, this.title, 'Object');
 			return this.object.label || this.title || 'Object';
+		},
+		useCustomTextboxColor: {
+			get(): boolean {
+				return this.object.textboxColor !== null;
+			},
+			set(val: boolean) {
+				this.vuexHistory.transaction(async () => {
+					this.$store.commit('objects/setTextboxColor', {
+						id: this.object.id,
+						textboxColor: val ? '#ffa8d2' : null,
+					} as ICopyObjectToClipboardAction);
+				});
+			},
 		},
 	},
 	methods: {
@@ -116,6 +174,38 @@ export default defineComponent({
 					id: this.object.id,
 				} as ICopyObjectToClipboardAction);
 			});
+		},
+		enableNameEdit() {
+			this.modalNameInput = this.object.label || '';
+			this.showRename = true;
+		},
+		renameOption(option: 'Apply' | 'Cancel') {
+			this.showRename = false;
+			if (option === 'Apply') {
+				this.vuexHistory.transaction(async () => {
+					this.$store.commit('objects/setLabel', {
+						id: this.object.id,
+						label: this.modalNameInput,
+					} as ISetLabelMutation);
+				});
+			}
+		},
+		selectTextboxColor() {
+			this.localColorHandler = {
+				title: 'Textbox color',
+				get: () => this.object.textboxColor,
+				set: (color: string) => {
+					this.vuexHistory.transaction(async () => {
+						this.$store.commit('objects/setTextboxColor', {
+							id: this.object.id,
+							textboxColor: color,
+						} as ISetTextBoxColor);
+					});
+				},
+				leave: () => {
+					this.localColorHandler = null;
+				},
+			} as Handler;
 		},
 	},
 });
@@ -139,6 +229,21 @@ export interface Handler {
 
 	#rotation {
 		width: 48px;
+	}
+}
+
+.color-button {
+	height: 24px;
+	width: 48px;
+	vertical-align: middle;
+}
+</style>
+<style lang="scss">
+.modal-rename dialog {
+	padding: 4px;
+	p {
+		font-family: aller;
+		font-size: 24px;
 	}
 }
 </style>

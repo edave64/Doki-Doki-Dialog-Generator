@@ -78,7 +78,7 @@ export const poemActions: ActionTree<IObjectsState, IRootState> = {
 				composite: 'source-over',
 				filters: [],
 				label: null,
-				textboxColor: '#ffa8d2',
+				textboxColor: null,
 			} as IPoem,
 		} as ICreateObjectMutation);
 		return id;

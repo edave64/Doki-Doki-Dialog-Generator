@@ -410,7 +410,7 @@ export default defineComponent({
 							),
 						},
 						label: null,
-						textboxColor: '',
+						textboxColor: null,
 					},
 					await this.temporaryCharacterModel
 				);

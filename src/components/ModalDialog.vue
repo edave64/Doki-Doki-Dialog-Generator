@@ -1,15 +1,33 @@
 <template>
 	<div class="dialog-wrapper" @click="$emit('leave')">
-		<dialog open @click.stop>
+		<dialog open :class="{ 'base-size': !noBaseSize }" @click.stop>
 			<slot />
+			<div v-if="options.length > 0" id="submit-options">
+				<button
+					v-for="option of options"
+					:key="option"
+					class="option"
+					@click="$emit('option', option)"
+				>
+					{{ option }}
+				</button>
+			</div>
 		</dialog>
 	</div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
 
-export default defineComponent({});
+export default defineComponent({
+	props: {
+		noBaseSize: Boolean,
+		options: {
+			type: Array as PropType<string[]>,
+			default: [],
+		},
+	},
+});
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -26,8 +44,6 @@ export default defineComponent({});
 }
 
 dialog {
-	width: 860px;
-	height: 860px;
 	max-width: 90vw;
 	max-height: 90vh;
 	background-attachment: scroll;
@@ -45,5 +61,23 @@ dialog {
 	align-self: center;
 	justify-self: center;
 	margin: auto;
+
+	&.base-size {
+		width: 860px;
+		height: 860px;
+	}
+
+	#submit-options {
+		display: flex;
+		justify-content: space-evenly;
+
+		button.option {
+			border: 0;
+			background: none;
+			font-family: riffic;
+			font-size: 24px;
+			-webkit-text-stroke: 0px white;
+		}
+	}
 }
 </style>

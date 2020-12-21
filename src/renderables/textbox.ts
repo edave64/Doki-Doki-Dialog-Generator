@@ -47,9 +47,10 @@ import { ScalingRenderable } from './scalingRenderable';
 import { Store } from 'vuex';
 import { DeepReadonly } from 'vue';
 import { IRootState } from '@/store';
+import { IObject } from '@/store/objects';
 
 export class TextBox extends ScalingRenderable<ITextBox> {
-	protected objectLabel: string | null = null;
+	protected refObject: IObject | null = null;
 
 	public get width(): number {
 		return this.obj.style === 'custom' ? this.obj.width : TextBoxWidth;
@@ -62,9 +63,29 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		);
 	}
 
+	public get forcedStyle(): ITextBox['style'] {
+		if (
+			this.obj.style === 'normal' &&
+			this.refObject &&
+			this.refObject.textboxColor
+		)
+			return 'custom';
+		return this.obj.style;
+	}
+
+	public get customColor(): string {
+		if (
+			this.obj.style === 'normal' &&
+			this.refObject &&
+			this.refObject.textboxColor
+		)
+			return this.refObject.textboxColor;
+		return this.obj.customColor;
+	}
+
 	public get controlColor(): string {
 		if (this.obj.deriveCustomColors) {
-			const base = RGBAColor.fromCss(this.obj.customColor).toHSL();
+			const base = RGBAColor.fromCss(this.customColor).toHSL();
 			return base
 				.shift(controlColorDelta)
 				.toRgb()
@@ -74,7 +95,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 	}
 
 	public get controlsStyle() {
-		if (this.obj.style !== 'custom') return ControlsTextStyle;
+		if (this.forcedStyle !== 'custom') return ControlsTextStyle;
 		return {
 			...ControlsTextStyle,
 			fill: {
@@ -84,7 +105,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 	}
 
 	public get controlsDisableStyle() {
-		if (this.obj.style !== 'custom') return ControlsTextDisabledStyle;
+		if (this.forcedStyle !== 'custom') return ControlsTextDisabledStyle;
 
 		const col = RGBAColor.fromCss(this.controlColor).toHSL();
 		const disColor = col
@@ -103,10 +124,13 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 	public updatedContent(_current: Store<DeepReadonly<IRootState>>): void {
 		const talkingObj = this.obj.talkingObjId;
 		if (talkingObj !== null && talkingObj !== '$other$') {
-			const obj = _current.state.objects.objects[talkingObj];
-			if (!obj) return;
-			this.objectLabel = obj.label;
+			const obj = _current.state.objects.objects[talkingObj] as IObject;
+			if (obj) {
+				this.refObject = obj;
+				return;
+			}
 		}
+		this.refObject = null;
 	}
 
 	protected async draw(rx: RenderContext): Promise<void> {
@@ -123,7 +147,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 			const name =
 				this.obj.talkingObjId === '$other$'
 					? this.obj.talkingOther
-					: this.objectLabel!;
+					: this.refObject?.label || 'Missing name';
 			await this.renderNamebox(rx, x + NameboxXOffset, y, name);
 		}
 
@@ -165,7 +189,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 
 	private get nameboxOutlineColor(): string {
 		if (this.obj.deriveCustomColors) {
-			const base = RGBAColor.fromCss(this.obj.customColor).toHSL();
+			const base = RGBAColor.fromCss(this.customColor).toHSL();
 			return base
 				.shift(nameboxTextOutlineDelta)
 				.toRgb()
@@ -176,7 +200,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 
 	private get nameboxBackgroundColor(): string {
 		if (this.obj.deriveCustomColors) {
-			const base = RGBAColor.fromCss(this.obj.customColor).toHSL();
+			const base = RGBAColor.fromCss(this.customColor).toHSL();
 			return base
 				.shift(nameboxBackgroundDelta)
 				.toRgb()
@@ -194,7 +218,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		let w: number;
 		const h = NameboxHeight;
 		let style: ITextStyle = NameboxTextStyle;
-		if (this.obj.style === 'custom') {
+		if (this.forcedStyle === 'custom') {
 			style = {
 				...style,
 				strokeColor: this.nameboxOutlineColor,
@@ -234,7 +258,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 					});
 				}
 			);
-		} else if (this.obj.style !== 'none') {
+		} else if (this.forcedStyle !== 'none') {
 			w = NameboxWidth;
 			rx.drawImage({
 				image: await getAsset('namebox'),
@@ -258,8 +282,8 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		x: number,
 		y: number
 	): Promise<void> {
-		if (this.obj.style === 'custom') {
-			const hslColor = RGBAColor.fromCss(this.obj.customColor).toHSL();
+		if (this.forcedStyle === 'custom') {
+			const hslColor = RGBAColor.fromCss(this.customColor).toHSL();
 			const dotPattern = new Renderer(dotPatternSize, dotPatternSize);
 			dotPattern.render(async (dotRx: RenderContext) => {
 				const fill = {
@@ -301,7 +325,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 					const h = this.obj.height;
 					const w = this.obj.width;
 					const gradient = subRx.linearGradient(x, y, x, y + h);
-					const color = RGBAColor.fromHex(this.obj.customColor);
+					const color = RGBAColor.fromHex(this.customColor);
 					gradient.addColorStop(0, color.toCss());
 					gradient.addColorStop(
 						1,
@@ -378,12 +402,12 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 					width: 3,
 				},
 			});
-		} else if (this.obj.style !== 'none') {
-			if (this.obj.style === 'corrupt') {
+		} else if (this.forcedStyle !== 'none') {
+			if (this.forcedStyle === 'corrupt') {
 				x += (TextBoxWidth - TextBoxCorruptedWidth) / 2;
 			}
 			const image = await getAsset(
-				this.obj.style === 'corrupt' ? 'textbox_monika' : 'textbox'
+				this.forcedStyle === 'corrupt' ? 'textbox_monika' : 'textbox'
 			);
 			rx.drawImage({ image, x, y });
 		}

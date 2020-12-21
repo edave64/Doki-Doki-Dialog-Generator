@@ -61,7 +61,7 @@ export interface IObject extends IHasSpriteFilters {
 	flip: boolean;
 	onTop: boolean;
 	label: null | string;
-	textboxColor: string;
+	textboxColor: string | null;
 }
 
 export type ObjectTypes =
@@ -152,6 +152,14 @@ export default {
 		setFilters(state, command: ISetFiltersMutation) {
 			const obj = state.objects[command.id];
 			obj.filters = command.filters;
+		},
+		setLabel(state, command: ISetLabelMutation) {
+			const obj = state.objects[command.id];
+			obj.label = command.label;
+		},
+		setTextboxColor(state, command: ISetTextBoxColor) {
+			const obj = state.objects[command.id];
+			obj.textboxColor = command.textboxColor;
 		},
 		...spriteMutations,
 		...characterMutations,
@@ -283,12 +291,30 @@ export default {
 		) {
 			const sourceOrders = state.panels[sourcePanelId];
 			if (!sourceOrders) return;
-			for (const id of [...sourceOrders.onTopOrder, ...sourceOrders.order]) {
-				const oldObject = state.objects[id];
+			const allSourceIds = [...sourceOrders.onTopOrder, ...sourceOrders.order];
+			const transationTable = new Map<string, string>();
+			for (const sourceId of allSourceIds) {
+				const targetId = `copy_${sourceId}_${++lastCopyId}`;
+				transationTable.set(sourceId, targetId);
+			}
+			for (const sourceId of allSourceIds) {
+				const oldObject = state.objects[sourceId];
+				const newObject: IObject = JSON.parse(JSON.stringify(oldObject));
+				if ('talkingObjId' in newObject) {
+					const newTextbox = newObject as ITextBox;
+					if (
+						newTextbox.talkingObjId !== null &&
+						transationTable.has(newTextbox.talkingObjId)
+					) {
+						newTextbox.talkingObjId = transationTable.get(
+							newTextbox.talkingObjId
+						)!;
+					}
+				}
 				commit('create', {
 					object: {
-						...JSON.parse(JSON.stringify(oldObject)),
-						id: `copy_${oldObject.id}_${++lastCopyId}`,
+						...newObject,
+						id: transationTable.get(sourceId)!,
 						panelId: targetPanelId,
 					},
 				} as ICreateObjectMutation);
@@ -401,6 +427,14 @@ export interface IRemoveFromListMutation extends IObjectMutation {
 export interface IAddToListMutation extends IObjectMutation {
 	readonly onTop: boolean;
 	readonly position: number;
+}
+
+export interface ISetLabelMutation extends ICommand {
+	readonly label: string;
+}
+
+export interface ISetTextBoxColor extends ICommand {
+	readonly textboxColor: string | null;
 }
 
 export interface IObjectShiftLayerAction extends ICommand {

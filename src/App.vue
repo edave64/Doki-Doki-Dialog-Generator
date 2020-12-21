@@ -38,6 +38,7 @@
 			/>
 		</modal-dialog>
 	</div>
+	<div id="modal-messages"></div>
 </template>
 
 <script lang="ts">

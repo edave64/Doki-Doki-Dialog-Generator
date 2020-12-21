@@ -10,6 +10,6 @@ export function baseProps() {
 		composite: 'source-over',
 		filters: [],
 		label: null,
-		textboxColor: '#ffa8d2',
+		textboxColor: null,
 	};
 }
