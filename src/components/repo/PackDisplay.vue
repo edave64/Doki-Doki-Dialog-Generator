@@ -19,9 +19,7 @@
 			v-html="sanitize(pack.disclaimer)"
 		/>
 		<section v-if="pack.source">
-			<a :href="pack.source" target="_blank" rel="noopener noreferrer"
-				>Source</a
-			>
+			<l :to="pack.source">Source</l>
 		</section>
 		<section>
 			<button v-if="addable" @click="add">
@@ -56,19 +54,17 @@
 					<tr v-for="authorId of pack.authors" :key="authorId">
 						<td>{{ authorName(authorId) }}</td>
 						<td>
-							<a
+							<l
 								v-for="link of authorsLinks(authorId)"
 								:key="link.target"
-								:href="link.target"
-								target="_blank"
-								rel="noopener noreferrer"
+								:to="link.target"
 								class="platform_button"
 								><img
 									:title="link.platform"
 									:src="link.icon"
 									height="32"
 									width="32"
-							/></a>
+							/></l>
 						</td>
 					</tr>
 				</tbody>
@@ -88,6 +84,7 @@ import environment from '@/environments/environment';
 import { IPackWithState, PackStates } from './types';
 import { defineComponent, PropType } from 'vue';
 import { IRemovePacksAction } from '@/store';
+import L from '@/components/ui/link.vue';
 
 const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 	['reddit', 'https://reddit.com/u/%1', 'reddit.png'],
@@ -101,6 +98,7 @@ const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 ];
 
 export default defineComponent({
+	components: { L },
 	props: {
 		selected: {
 			type: String,

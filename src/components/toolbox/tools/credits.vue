@@ -1,20 +1,9 @@
 <template>
 	<div class="panel">
 		<h1>Help and Credits</h1>
-		<a
-			class="btn"
-			target="_blank"
-			rel="noopener noreferrer"
-			href="https://github.com/edave64/Doki-Doki-Dialog-Generator/wiki/Version-2:-Dokumentation"
-			>Help</a
-		>
-		<a
-			class="btn"
-			target="_blank"
-			rel="noopener noreferrer"
-			href="https://github.com/edave64/Doki-Doki-Dialog-Generator/"
-			>Fork me on GitHub</a
-		>
+		<l class="btn" to="wiki://Dokumentation">Help</l>
+		<l class="btn" to="github://">Fork me on GitHub</l>
+		<l class="btn" to="wiki://Privacy Statement">Privacy Statement</l>
 		<p>
 			All assets used are IP of Team Salvato and created by them, unless noted
 			otherwise.
@@ -25,112 +14,59 @@
 		</p>
 		<p>
 			Unused House Background by
-			<a
-				target="_blank"
-				rel="noopener noreferrer"
-				href="https://www.deviantart.com/fatelogic/art/VN-Background-Practice-295671161"
-				>Fatelogic</a
+			<l
+				to="https://www.deviantart.com/fatelogic/art/VN-Background-Practice-295671161"
 			>
+				Fatelogic
+			</l>
 		</p>
 		<p>
 			Aller Font by
-			<a
-				target="_blank"
-				rel="noopener noreferrer"
-				href="https://www.daltonmaag.com/library/aller"
-				>Dalton Maag Ltd</a
-			>
+			<l to="https://www.daltonmaag.com/library/aller">Dalton Maag Ltd</l>
 		</p>
 		<p>
 			Riffic Bold Font by
-			<a
-				target="_blank"
-				rel="noopener noreferrer"
-				href="https://www.fontspring.com/fonts/inky-type/riffic"
-				>InkyType</a
-			>
+			<l to="https://www.fontspring.com/fonts/inky-type/riffic">InkyType</l>
 		</p>
 		<p>
 			Verily Serif Mono Font by
-			<a
-				target="_blank"
-				rel="noopener noreferrer"
-				href="https://www.dafont.com/verily-serif-mono.font"
-				>Stephen G. Hartke</a
+			<l to="https://www.dafont.com/verily-serif-mono.font"
+				>Stephen G. Hartke</l
 			>
 		</p>
 		<p>
 			F25 Bank Printer Font by
-			<a
-				target="_blank"
-				rel="noopener noreferrer"
-				href="https://www.dafont.com/f25-bank-printer.font"
-				>F25 Digital Typeface Design</a
+			<l to="https://www.dafont.com/f25-bank-printer.font"
+				>F25 Digital Typeface Design</l
 			>
 		</p>
 		<p>
 			Journal Font by
-			<a
-				target="_blank"
-				rel="noopener noreferrer"
-				href="https://www.dafont.com/journal.font"
-				>Fontourist</a
-			>
+			<l to="https://www.dafont.com/journal.font">Fontourist</l>
 		</p>
 		<p>
 			Hashtag Font by
-			<a
-				target="_blank"
-				rel="noopener noreferrer"
-				href="https://www.dafont.com/hashtag.font"
-			>
-				TitanVex</a
-			>
+			<l to="https://www.dafont.com/hashtag.font"> TitanVex</l>
 		</p>
 		<p>
 			JP Hand Slanted Font by
-			<a
-				target="_blank"
-				rel="noopener noreferrer"
-				href="https://www.dafont.com/jp-hand-slanted.font"
-				>Jonathan Paterson</a
-			>
+			<l to="https://www.dafont.com/jp-hand-slanted.font">Jonathan Paterson</l>
 		</p>
 		<p>
 			As I Lay Dying Font by
-			<a
-				target="_blank"
-				rel="noopener noreferrer"
-				href="https://www.dafont.com/as-i-lay-dying.font"
-				>Moises Esqueda</a
-			>
+			<l to="https://www.dafont.com/as-i-lay-dying.font">Moises Esqueda</l>
 		</p>
 		<p>
 			Damagrafik Script Font by
-			<a
-				target="_blank"
-				rel="noopener noreferrer"
-				href="https://www.dafont.com/damagrafik-script.font"
-				>Davide Terenzi</a
-			>
+			<l to="https://www.dafont.com/damagrafik-script.font">Davide Terenzi</l>
 		</p>
 		<p>
 			Ammy's Handwriting Font by
-			<a
-				target="_blank"
-				rel="noopener noreferrer"
-				href="https://www.dafont.com/ammys-handwriting.font"
-				>Ammy K.</a
-			>
+			<l to="https://www.dafont.com/ammys-handwriting.font">Ammy K.</l>
 		</p>
 		<p>
 			Halogen Font by
-			<a
-				target="_blank"
-				rel="noopener noreferrer"
-				href="https://www.dafont.com/halogen.font"
-				>JLH Fonts</a
-			>
+			<l to="https://www.dafont.com/halogen.font">JLH Fonts</l>
 		</p>
 		<p>
 			MC Classic Sprite by Childish-N
@@ -161,10 +97,12 @@
 
 <script lang="ts">
 import { PanelMixin } from './panelMixin';
+import L from '@/components/ui/link.vue';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
 	mixins: [PanelMixin],
+	components: { L },
 });
 </script>
 

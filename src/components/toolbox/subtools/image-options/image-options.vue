@@ -12,11 +12,9 @@
 		</div>
 		<div class="column" v-if="!noComposition">
 			<label for="compositionSelect">Compositing Mode:</label
-			><a
-				href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation#Types"
-				target="_blank"
-				rel="noopener noreferrer"
-				>[?]</a
+			><l
+				to="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation#Types"
+				>[?]</l
 			>
 			<select id="compositionSelect" v-model="compositionMode" @keydown.stop>
 				<option value="source-over">source-over</option>
@@ -261,6 +259,7 @@ import {
 } from '@/store/sprite_options';
 import { IColor } from '@/util/colors/color';
 import { HSLAColor } from '@/util/colors/hsl';
+import L from '@/components/ui/link.vue';
 
 const filterText: ReadonlyMap<SpriteFilter['type'], string> = new Map<
 	SpriteFilter['type'],
@@ -283,7 +282,7 @@ const filters: ReadonlyArray<SpriteFilter['type']> = Array.from(
 ).sort();
 
 export default defineComponent({
-	components: { DFlow, DFieldset, Color, Slider },
+	components: { DFlow, DFieldset, Color, Slider, L },
 	props: {
 		type: {
 			type: String as PropType<'object' | 'background' | 'panel'>,

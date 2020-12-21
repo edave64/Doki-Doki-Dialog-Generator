@@ -33,20 +33,8 @@
 			<div v-if="!uploadsFinished" class="page">
 				<h2>
 					Upload new '{{ normalizeName(headGroup.name) }}' expressions
-					<a
-						v-if="downloadLink"
-						:href="downloadLink"
-						target="_blank"
-						rel="noopener noreferrer"
-						>(Template)</a
-					>
-					<a
-						v-if="listLink"
-						:href="listLink"
-						target="_blank"
-						rel="noopener noreferrer"
-						>(List)</a
-					>
+					<l v-if="downloadLink" :to="downloadLink">(Template)</l>
+					<l v-if="listLink" :to="listLink">(List)</l>
 				</h2>
 				<drop-target ref="dt" class="drop-target" @drop="addByImageFile"
 					>Drop here to add as a new expression</drop-target
@@ -164,6 +152,7 @@ import { Renderer } from '../../../renderer/renderer';
 import { WorkBatch } from '../../../util/workBatch';
 import { defineComponent } from 'vue';
 import { DeepReadonly } from '@/util/readonly';
+import L from '@/components/ui/link.vue';
 
 const uploadedExpressionsPack: ContentPack<string> = {
 	packId: 'dddg.buildin.uploadedExpressions',
@@ -242,7 +231,7 @@ const charDefDefaults = {
 
 export default defineComponent({
 	mixins: [VerticalScrollRedirect],
-	components: { Selection, Selector, ToggleBox, DropTarget, DFieldset },
+	components: { Selection, Selector, ToggleBox, DropTarget, DFieldset, L },
 	props: {
 		character: {
 			type: String,
