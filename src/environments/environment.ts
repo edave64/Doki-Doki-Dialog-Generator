@@ -1,4 +1,4 @@
-import { Edge } from './edge';
+import { OldEdge } from './edge';
 import { Browser } from './browser';
 import { Electron } from './electron';
 import { Background } from '@/renderables/background';
@@ -8,17 +8,26 @@ export interface IPack {
 	url: string;
 	id: string;
 	credits: string;
-	queuedUninstall: boolean;
-	active: boolean;
+}
+
+export interface EnvCapabilities {
+	optionalSaving: boolean;
+	autoLoading: boolean;
+	localRepo: boolean;
+	backgroundInstall: boolean;
+	lq: boolean;
+}
+
+export interface Settings {
+	lq?: boolean;
+	nsfw?: boolean;
 }
 
 export interface IEnvironment {
-	readonly allowLQ: boolean;
-	readonly isBackgroundInstallingSupported: boolean;
-	readonly isLocalRepoSupported: boolean;
 	readonly localRepositoryUrl: string;
-	readonly isAutoLoadingSupported: boolean;
-	readonly vueState: EnvState;
+	readonly state: EnvState;
+	readonly supports: EnvCapabilities;
+	savingEnabled: boolean;
 
 	saveToFile(
 		canvas: HTMLCanvasElement,
@@ -31,18 +40,23 @@ export interface IEnvironment {
 	prompt(message: string, defaultValue?: string): Promise<string | null>;
 	onPanelChange(handler: (panel: string) => void): void;
 
-	localRepoAdd(url: string): void;
-	localRepoRemove(id: string): void;
+	localRepoInstall(url: string): void;
+	localRepoUninstall(id: string): void;
 	autoLoadAdd(id: string): void;
 	autoLoadRemove(id: string): void;
+
+	saveSettings(settings: Settings): Promise<void>;
+	loadSettings(): Promise<Settings>;
 }
 
 function chooseEnv(): IEnvironment {
+	debugger;
+	console.log(`isElectron: ${(window as any).isElectron ?? 'unknown'}`);
 	if ((window as any).isElectron) {
 		return new Electron();
 	}
 	if (window.navigator.msSaveOrOpenBlob !== undefined) {
-		return new Edge();
+		return new OldEdge();
 	}
 	return new Browser();
 }

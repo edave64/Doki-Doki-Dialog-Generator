@@ -1,22 +1,51 @@
-import { IEnvironment, IPack } from './environment';
+import { EnvCapabilities, IEnvironment, IPack, Settings } from './environment';
 import { Background } from '@/renderables/background';
 import { EnvState } from './envState';
-import { reactive } from 'vue';
+import { DeepReadonly, reactive, ref } from 'vue';
 
 export class Browser implements IEnvironment {
-	public readonly allowLQ = true;
-	public readonly isLocalRepoSupported = false;
-	public readonly isAutoLoadingSupported = false;
-	public readonly isBackgroundInstallingSupported = false;
-	public readonly vueState: EnvState = reactive({
-		active: [],
-		inactive: [],
-		tempInstalled: [],
-		tempUninstalled: [],
+	public readonly state: EnvState = reactive({
+		installed: [],
+		autoAdd: [],
 	});
+
+	public readonly supports: DeepReadonly<EnvCapabilities>;
+
+	private readonly isSavingEnabled = ref(false);
+
 	public readonly localRepositoryUrl = '';
 
+	private loading: Promise<void>;
+
+	public get savingEnabled() {
+		return this.isSavingEnabled.value;
+	}
+
+	public set savingEnabled(value: boolean) {
+		if (value) {
+			localStorage.setItem('saving', 'true');
+			IndexedDBHandler.createDB()
+				.then(() => {
+					this.isSavingEnabled.value = true;
+				})
+				.catch(() => {});
+		} else {
+			// I'm not just setting 'saving' to false because I want there to
+			// be absolutely no trace if you revoke saving.
+			localStorage.clear();
+			IndexedDBHandler.clearDB()
+				.then(() => {
+					this.isSavingEnabled.value = false;
+				})
+				.catch(() => {});
+		}
+	}
+
 	constructor() {
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
+		const self = this;
+		const canSave = IndexedDBHandler.canSave();
+
 		window.addEventListener('beforeunload', function(e) {
 			// Cancel the event
 			e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
@@ -24,6 +53,30 @@ export class Browser implements IEnvironment {
 			e.returnValue =
 				'Are you sure you want to leave? All your progress will be lost!';
 		});
+
+		const supports = reactive({
+			optionalSaving: canSave,
+			get autoLoading(): boolean {
+				return canSave && self.isSavingEnabled.value;
+			},
+			backgroundInstall: false,
+			localRepo: false,
+			lq: true,
+		});
+
+		this.supports = supports;
+
+		if (canSave) {
+			this.loading = (Promise.allSettled([
+				IndexedDBHandler.doesDbExists()
+					.then((itDoes: boolean) => {
+						if (itDoes) this.savingEnabled = itDoes;
+					})
+					.catch(() => {}),
+			]) as any) as Promise<void>;
+		} else {
+			this.loading = Promise.resolve();
+		}
 	}
 
 	public async saveToFile(
@@ -52,11 +105,11 @@ export class Browser implements IEnvironment {
 		);
 	}
 
-	public localRepoAdd(url: string): void {
+	public localRepoInstall(url: string): void {
 		throw new Error('This environment does not support a local repository');
 	}
 
-	public localRepoRemove(id: string): void {
+	public localRepoUninstall(id: string): void {
 		throw new Error('This environment does not support a local repository');
 	}
 
@@ -66,6 +119,18 @@ export class Browser implements IEnvironment {
 
 	public autoLoadRemove(id: string): void {
 		throw new Error('This environment does not support auto loading');
+	}
+
+	public async loadSettings(): Promise<Settings> {
+		await this.loading;
+		if (!this.isSavingEnabled.value) return {};
+		return await IndexedDBHandler.loadSettings();
+	}
+
+	public async saveSettings(settings: Settings): Promise<void> {
+		await this.loading;
+		if (!this.isSavingEnabled.value) return;
+		await IndexedDBHandler.saveSettings(settings);
 	}
 
 	public prompt(
@@ -87,7 +152,11 @@ export class Browser implements IEnvironment {
 		quality: number
 	): Promise<string> {
 		return new Promise((resolve, reject) => {
-			if (canvas.toBlob && window.URL && window.URL.createObjectURL) {
+			const canCreateObjectUrl = !!(window.URL && window.URL.createObjectURL);
+			if (!canCreateObjectUrl)
+				return resolve(canvas.toDataURL(format, quality));
+
+			if (canvas.toBlob) {
 				canvas.toBlob(
 					blob => {
 						if (!blob) {
@@ -99,12 +168,10 @@ export class Browser implements IEnvironment {
 					format,
 					quality
 				);
-			} else if (window.URL && window.URL.createObjectURL) {
-				const url = canvas.toDataURL();
+			} else {
+				const url = canvas.toDataURL(format, quality);
 				const blob = this.dataURItoBlob(url, format);
 				resolve(URL.createObjectURL(blob));
-			} else {
-				resolve(canvas.toDataURL());
 			}
 		});
 	}
@@ -121,3 +188,92 @@ export class Browser implements IEnvironment {
 		return new Blob([arr], { type });
 	}
 }
+
+const IndexedDBHandler = {
+	indexedDB: (window.indexedDB ||
+		(window as any).mozIndexedDB ||
+		(window as any).webkitIndexedDB ||
+		(window as any).msIndexedDB) as IDBFactory,
+	transaction: ((window.IDBTransaction as any) ||
+		(window as any).webkitIDBTransaction ||
+		(window as any).msIDBTransaction) as IDBTransaction,
+
+	db: null as null | Promise<IDBDatabase>,
+
+	canSave(): boolean {
+		return !!(IndexedDBHandler.indexedDB && window.localStorage);
+	},
+
+	// Optimally, this could just check if the database exists. But sadly, that's not standard. So we need to bring
+	// localstorage into this. :/
+	doesDbExists(): Promise<boolean> {
+		const saving = localStorage.getItem('saving');
+		if (saving === 'true') {
+			return Promise.resolve(true);
+		}
+		return Promise.resolve(false);
+	},
+
+	createDB(): Promise<IDBDatabase> {
+		if (IndexedDBHandler.db) return IndexedDBHandler.db;
+		return (IndexedDBHandler.db = new Promise((resolve, reject) => {
+			const req = IndexedDBHandler.indexedDB.open('dddg', 1);
+			req.onerror = event => {
+				reject(event);
+			};
+			req.onupgradeneeded = event => {
+				const db = (event.target! as any).result as IDBDatabase;
+				const oldVer = event.oldVersion || ((event as any).version as number);
+				if (oldVer < 1) {
+					db.createObjectStore('settings');
+				}
+			};
+		}));
+	},
+
+	clearDB(): Promise<void> {
+		return new Promise((resolve, reject) => {
+			if (!IndexedDBHandler.db) return;
+			const req = IndexedDBHandler.indexedDB.deleteDatabase('dddg');
+			req.onerror = event => {
+				reject(event);
+			};
+			req.onsuccess = event => {
+				IndexedDBHandler.db = null;
+				resolve();
+			};
+		});
+	},
+
+	saveSettings<T>(settings: T): Promise<void> {
+		if (!this.db) return Promise.reject('No database');
+		// eslint-disable-next-line no-async-promise-executor
+		return new Promise(async (resolve, reject) => {
+			const transact = (await this.db!).transaction(['settings'], 'readwrite');
+			const settings = transact.objectStore('settings');
+			const req = settings.put({ ...settings }, 0);
+			req.onerror = error => {
+				reject(error);
+			};
+			req.onsuccess = () => {
+				resolve();
+			};
+		});
+	},
+
+	loadSettings<T>(): Promise<T> {
+		if (!this.db) return Promise.reject('No database');
+		// eslint-disable-next-line no-async-promise-executor
+		return new Promise(async (resolve, reject) => {
+			const transact = (await this.db!).transaction(['settings'], 'readwrite');
+			const settings = transact.objectStore('settings');
+			const req = settings.get(0);
+			req.onerror = error => {
+				reject(error);
+			};
+			req.onsuccess = event => {
+				resolve(req.result || {});
+			};
+		});
+	},
+};

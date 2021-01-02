@@ -125,22 +125,22 @@ export default defineComponent({
 			return this.pack.preview.map(preview => `url('${preview}')`).join(',');
 		},
 		activatable(): boolean {
-			if (!environment.isAutoLoadingSupported) return false;
+			if (!environment.supports.autoLoading) return false;
 			if (!(this.pack.state & PackStates.Installed)) return false;
 			return !(this.pack.state & PackStates.Active);
 		},
 		deactivatable(): boolean {
-			if (!environment.isAutoLoadingSupported) return false;
+			if (!environment.supports.autoLoading) return false;
 			if (!(this.pack.state & PackStates.Installed)) return false;
 			return !!(this.pack.state & PackStates.Active);
 		},
 		installable(): boolean {
-			if (!environment.isLocalRepoSupported) return false;
+			if (!environment.supports.localRepo) return false;
 			if (this.pack.state & PackStates.Installed) return false;
 			return true;
 		},
 		uninstallable(): boolean {
-			if (!environment.isLocalRepoSupported) return false;
+			if (!environment.supports.localRepo) return false;
 			if (!(this.pack.state & PackStates.Installed)) return false;
 			return true;
 		},

@@ -80,7 +80,7 @@ export default defineComponent({
 			return this.selectedPack.credits;
 		},
 		activatable(): boolean {
-			if (!environment.isAutoLoadingSupported) return false;
+			if (!environment.supports.autoLoading) return false;
 			if (!this.selectedPack) return false;
 			if (!this.selectedPack.installed) return false;
 			if (this.selectedPack.queuedUninstall) return false;
@@ -88,7 +88,7 @@ export default defineComponent({
 			return !this.selectedPack.active;
 		},
 		deactivatable(): boolean {
-			if (!environment.isAutoLoadingSupported) return false;
+			if (!environment.supports.autoLoading) return false;
 			if (!this.selectedPack) return false;
 			if (!this.selectedPack.installed) return false;
 			if (this.selectedPack.queuedUninstall) return false;
@@ -96,12 +96,12 @@ export default defineComponent({
 			return this.selectedPack.active;
 		},
 		installable(): boolean {
-			if (!environment.isLocalRepoSupported) return false;
+			if (!environment.supports.autoLoading) return false;
 			if (!this.selectedPack) return false;
 			return this.selectedPack.queuedUninstall || !this.selectedPack.installed;
 		},
 		uninstallable(): boolean {
-			if (!environment.isLocalRepoSupported) return false;
+			if (!environment.supports.autoLoading) return false;
 			if (!this.selectedPack) return false;
 			if (this.selectedPack.freshInstall) return false;
 			return !(
@@ -125,7 +125,7 @@ export default defineComponent({
 		},
 		install(): void {
 			if (!this.selectedPack) return;
-			environment.localRepoAdd(this.selectedPack.url);
+			environment.localRepoInstall(this.selectedPack.url);
 			if (this.selectedPack.queuedUninstall) {
 				this.selectedPack.queuedUninstall = false;
 			} else {
@@ -134,7 +134,7 @@ export default defineComponent({
 		},
 		uninstall(): void {
 			if (!this.selectedPack) return;
-			environment.localRepoRemove(this.selectedPack.url);
+			environment.localRepoUninstall(this.selectedPack.url);
 			this.selectedPack.queuedUninstall = true;
 			this.needRestart = true;
 		},

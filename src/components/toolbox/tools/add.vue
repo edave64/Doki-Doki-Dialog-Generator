@@ -160,7 +160,7 @@ export default defineComponent({
 		},
 		assetPath(character: Character<IAsset>) {
 			return character.chibi
-				? environment.allowLQ
+				? environment.supports.lq
 					? character.chibi.lq
 					: character.chibi.hq
 				: '';

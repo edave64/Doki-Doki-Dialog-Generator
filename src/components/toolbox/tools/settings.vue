@@ -1,48 +1,68 @@
 <template>
 	<div class="panel">
 		<h1>Settings</h1>
-		<Portal target="#modal-messages">
-			<modal-dialog :options="['Apply', 'Cancle']">
+		<teleport to="#modal-messages">
+			<modal-dialog
+				:options="['Allow', 'Deny']"
+				v-if="allowSavesModal"
+				@leave="allowSaves('Deny')"
+				@option="allowSaves"
+				no-base-size
+			>
 				<div class="modal-scroll-area">
 					<p>
-						Do you want to allow DDDG to save data on your device?
+						Do you want to allow DDDG to save settings on your device?
 					</p>
 					<p>
-						By choosing to enable saving data, DDDG can save data to your
+						By choosing to enable saving settings, DDDG can save data to your
 						device, and nowhere else. However, your browser and any installed
-						browserextensions might possibly read and send this data to other
+						browser extensions might possibly read and send this data to other
 						servers, e.g. to sync between devices. This is outside of our
 						control. But in general, we recommend only using browsers and
-						browserextensions that you trust with your personal data.
+						browser extensions that you trust with your personal data.
 					</p>
 					<p>
-						No data is ever send by us to external servers. The only things that
-						leave this device are:
+						You can revoke this permission at any time.
 					</p>
-					<ul>
-						<li>
-							Your IP address. This is send by any web requests of scripts and
-							assets and is inevitiable, so that the responses can be send back
-							to your device. We cannot directly access this data, but it is
-							probably stored by Github Inc. (owned by Microsoft), who provide
-							our servers.
-						</li>
-						<li>
-							Access times. Since DDDG loads images on demand, it might be
-							possible to reconstruct what characters and expressions have been
-							used in a dialog from when these files where downloaded from the
-							server by a specific IP. We have, however, no access to this data
-							and don't want it. It is again likely stored by Github Inc. for
-							some time to help diagnose server issues and possible legal
-							requirements.
-						</li>
-					</ul>
+					<p>
+						Our usual <l to="wiki://Privacy Statement">privacy policy</l> still
+						applies.
+					</p>
 				</div>
-				<p>
-					<input v-model="modalNameInput" />
-				</p>
 			</modal-dialog>
-		</Portal>
+			<modal-dialog
+				:options="['Deny', 'Cancle']"
+				v-if="denySavesModal"
+				@leave="denySaves('Cancle')"
+				@option="denySaves"
+				no-base-size
+			>
+				<div class="modal-scroll-area">
+					<p>
+						Do you want to deny DDDG from saving settings on your device?
+					</p>
+					<p>
+						This will cause all your settings to reset when leaving the page.
+					</p>
+					<p>
+						Our usual <l to="wiki://Privacy Statement">privacy policy</l> still
+						applies.
+					</p>
+				</div>
+			</modal-dialog>
+		</teleport>
+		<button
+			v-if="!savesAllowed && savesEnabledInEnv"
+			@click="allowSavesModal = true"
+		>
+			Allow saving options
+		</button>
+		<button
+			v-if="savesAllowed && savesEnabledInEnv"
+			@click="denySavesModal = true"
+		>
+			Deny saving options
+		</button>
 		<toggle
 			v-if="lqAllowed"
 			label="Low quality preview?"
@@ -59,6 +79,8 @@ import { PanelMixin } from './panelMixin';
 import { IRemovePacksAction } from '@/store';
 import environment from '@/environments/environment';
 import { defineComponent } from 'vue';
+import ModalDialog from '@/components/ModalDialog.vue';
+import L from '@/components/ui/link.vue';
 
 const nsfwPacks = {
 	'dddg.buildin.backgrounds.nsfw': `${process.env.BASE_URL}packs/buildin.base.backgrounds.nsfw.json`,
@@ -72,10 +94,16 @@ const paths = Object.values(nsfwPacks);
 
 export default defineComponent({
 	mixins: [PanelMixin],
-	components: { Toggle },
+	components: { Toggle, ModalDialog, L },
+	data: () => ({
+		savesEnabledInEnv: true,
+		savesAllowed: false,
+		allowSavesModal: false,
+		denySavesModal: false,
+	}),
 	computed: {
 		lqAllowed(): boolean {
-			return environment.allowLQ;
+			return environment.supports.lq;
 		},
 		lqRendering: {
 			get(): boolean {
@@ -105,6 +133,20 @@ export default defineComponent({
 					}
 				});
 			},
+		},
+	},
+	methods: {
+		allowSaves(choice: 'Allow' | 'Deny') {
+			this.allowSavesModal = false;
+			if (choice === 'Allow') {
+				this.savesAllowed = true;
+			}
+		},
+		denySaves(choice: 'Deny' | 'Cancel') {
+			this.denySavesModal = false;
+			if (choice === 'Deny') {
+				this.savesAllowed = false;
+			}
 		},
 	},
 });

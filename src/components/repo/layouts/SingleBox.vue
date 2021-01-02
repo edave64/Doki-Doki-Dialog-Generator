@@ -161,7 +161,7 @@ export default defineComponent({
 	async created() {
 		let localPacksPromise: Promise<IPack[]> | [] = [];
 
-		if (environment.isLocalRepoSupported) {
+		if (environment.supports.localRepo) {
 			localPacksPromise = this.fetchJSON(environment.localRepositoryUrl);
 		}
 

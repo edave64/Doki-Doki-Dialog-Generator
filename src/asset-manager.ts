@@ -11,7 +11,7 @@ let heifSupportPromise: Promise<boolean>;
 
 export function isWebPSupported(): Promise<boolean> {
 	if (!webpSupportPromise) {
-		webpSupportPromise = new Promise((resolve, reject) => {
+		webpSupportPromise = new Promise((resolve, _reject) => {
 			const losslessCode =
 				'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA=';
 			const img = document.createElement('img');
@@ -29,7 +29,7 @@ export function isWebPSupported(): Promise<boolean> {
 
 export function isHeifSupported(): Promise<boolean> {
 	if (!heifSupportPromise) {
-		heifSupportPromise = new Promise((resolve, reject) => {
+		heifSupportPromise = new Promise((resolve, _reject) => {
 			const losslessCode =
 				'data:image/heic;base64,AAAAGGZ0eXBoZWljAAAAAG1pZjFoZWljAAAAsW1ldGEAAAAAAAAAIWhkbHIAAAAAAAAAAHBpY3QAXABjAGMAcwBsAGEAAAAADnBpdG0AAAAAAAEAAAAQaWxvYwAAAABEQAAAAAAAI2lpbmYAAAAAAAEAAAAVaW5mZQIAAAAAAQAAaHZjMQAAAABDaXBycAAAACdpcGNvAAAAH2h2Y0NmzGx1ci0AAAAAAABv9HP+//v9bjr3AAAAABRpcG1hAAAAAAAAAAEAAQGBAAAACG1kYXQ=';
 			const img = document.createElement('img');
@@ -56,13 +56,13 @@ export async function getAAsset(
 	asset: IAsset,
 	hq: boolean = true
 ): Promise<HTMLImageElement | ErrorAsset> {
-	return getAssetByUrl(environment.allowLQ && !hq ? asset.lq : asset.hq);
+	return getAssetByUrl(environment.supports.lq && !hq ? asset.lq : asset.hq);
 }
 export async function getAssetByUrl(
 	url: string
 ): Promise<HTMLImageElement | ErrorAsset> {
 	if (!assetCache[url]) {
-		assetCache[url] = new Promise((resolve, reject) => {
+		assetCache[url] = new Promise((resolve, _reject) => {
 			const img = new Image();
 			img.addEventListener('load', () => {
 				resolve(img);

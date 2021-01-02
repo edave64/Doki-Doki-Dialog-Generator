@@ -1,6 +1,6 @@
 import { Browser } from './browser';
 
-export class Edge extends Browser {
+export class OldEdge extends Browser {
 	public async saveToFile(
 		downloadCanvas: HTMLCanvasElement,
 		filename: string,

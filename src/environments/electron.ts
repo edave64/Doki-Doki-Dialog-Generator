@@ -1,4 +1,4 @@
-import { IEnvironment, IPack } from './environment';
+import { EnvCapabilities, IEnvironment, IPack, Settings } from './environment';
 import { registerAssetWithURL, getAsset } from '@/asset-manager';
 import { Background } from '@/renderables/background';
 import eventBus, { ShowMessageEvent } from '@/eventbus/event-bus';
@@ -27,11 +27,9 @@ const installedBackgroundsPack: ContentPack<string> = {
 
 export class Electron implements IEnvironment {
 	public readonly allowLQ = false;
-	public readonly vueState: EnvState = reactive({
-		active: [],
-		inactive: [],
-		tempInstalled: [],
-		tempUninstalled: [],
+	public readonly state: EnvState = reactive({
+		autoAdd: [],
+		installed: [],
 	});
 	public readonly localRepositoryUrl = '/repo/repo.json';
 	public readonly isBackgroundInstallingSupported = true;
@@ -87,6 +85,26 @@ export class Electron implements IEnvironment {
 		);
 		this.electron.ipcRenderer.on('update-ready', e => {});
 		this.electron.ipcRenderer.send('find-customs');
+	}
+	public readonly supports: EnvCapabilities = {
+		autoLoading: true,
+		backgroundInstall: true,
+		localRepo: true,
+		lq: false,
+		optionalSaving: false,
+	};
+	public readonly savingEnabled: boolean = true;
+	localRepoInstall(url: string): void {
+		throw new Error('Method not implemented.');
+	}
+	localRepoUninstall(id: string): void {
+		throw new Error('Method not implemented.');
+	}
+	saveSettings(settings: Settings): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	loadSettings(): Promise<Settings> {
+		throw new Error('Method not implemented.');
 	}
 
 	public localRepoAdd(url: string): void {
