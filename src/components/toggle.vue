@@ -2,7 +2,7 @@
 	<div>
 		<input :id="_.uid" type="checkbox" ref="checkbox" v-model="value" />
 		<label :for="_.uid" class="switch"></label>
-		<label :for="_.uid">{{ label }}</label>
+		<label :for="_.uid" class="toggle_label">{{ label }}</label>
 	</div>
 </template>
 
@@ -57,5 +57,9 @@ input {
 input:checked + .switch {
 	background: url('./toggle/active.svg');
 	background-size: cover;
+}
+
+.toggle_label {
+	user-select: none;
 }
 </style>
