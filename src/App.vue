@@ -61,12 +61,24 @@ import ModalDialog from '@/components/ModalDialog.vue';
 import { ISetCurrentMutation } from '@/store/panels';
 import { defineAsyncComponent, defineComponent } from 'vue';
 import { Repo } from './models/repo';
+import enviroment from '@/environments/environment';
+import { IRemovePacksAction } from './store';
 
 // tslint:disable-next-line: no-magic-numbers
 const aspectRatio = 16 / 9;
 const arrowMoveStepSize = 20;
 const packDialogWaitMs = 50;
 const canvasTooSmallThreshold = 200;
+
+const nsfwPacks = {
+	'dddg.buildin.backgrounds.nsfw': `${process.env.BASE_URL}packs/buildin.base.backgrounds.nsfw.json`,
+	'dddg.buildin.sayori.nsfw': `${process.env.BASE_URL}packs/buildin.base.sayori.nsfw.json`,
+	'dddg.buildin.base.natsuki.nsfw': `${process.env.BASE_URL}packs/buildin.base.natsuki.nsfw.json`,
+	'dddg.buildin.yuri.nsfw': `${process.env.BASE_URL}packs/buildin.base.yuri.nsfw.json`,
+};
+
+const names = new Set(Object.keys(nsfwPacks));
+const paths = Object.values(nsfwPacks);
 
 export default defineComponent({
 	components: {
@@ -111,6 +123,9 @@ export default defineComponent({
 		},
 		userPrefersDarkMode(): boolean | null {
 			return this.$store.state.ui.useDarkTheme;
+		},
+		nsfw(): boolean {
+			return this.$store.state.ui.nsfw;
 		},
 	},
 	methods: {
@@ -285,6 +300,15 @@ export default defineComponent({
 		userPrefersDarkMode() {
 			this.applyTheme();
 		},
+		async nsfw(value: boolean) {
+			if (value) {
+				await this.$store.dispatch('content/loadContentPacks', paths);
+			} else {
+				await this.$store.dispatch('removePacks', {
+					packs: names,
+				} as IRemovePacksAction);
+			}
+		},
 	},
 	mounted(): void {
 		window.addEventListener('keypress', e => {
@@ -316,6 +340,7 @@ export default defineComponent({
 
 		(window as any).app = this;
 		(window as any).store = this.$store;
+		(window as any).env = enviroment;
 
 		document.body.addEventListener(
 			'drop',
@@ -332,7 +357,12 @@ export default defineComponent({
 			true
 		);
 
+		const settings = await enviroment.loadSettings();
+
 		this.vuexHistory.transaction(async () => {
+			this.$store.commit('ui/setLqRendering', settings.lq ?? false);
+			this.$store.commit('ui/setDarkTheme', settings.darkMode ?? null);
+
 			await this.$store.dispatch('content/loadContentPacks', [
 				`${process.env.BASE_URL}packs/buildin.base.backgrounds.json`,
 				`${process.env.BASE_URL}packs/buildin.base.monika.json`,
@@ -358,6 +388,8 @@ export default defineComponent({
 				current: 'dddg.buildin.backgrounds:ddlc.clubroom',
 				panelId: this.$store.state.panels.currentPanel,
 			} as ISetCurrentMutation);
+
+			await this.$store.commit('ui/setNsfw', settings.nsfw ?? false);
 		});
 	},
 });

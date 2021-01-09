@@ -51,14 +51,17 @@
 				</div>
 			</modal-dialog>
 		</teleport>
+		<button v-if="waitOnSaveChange" disabled>
+			Applying...
+		</button>
 		<button
-			v-if="!savesAllowed && savesEnabledInEnv"
+			v-else-if="!savesAllowed && savesEnabledInEnv"
 			@click="allowSavesModal = true"
 		>
 			Allow saving options
 		</button>
 		<button
-			v-if="savesAllowed && savesEnabledInEnv"
+			v-else-if="savesAllowed && savesEnabledInEnv"
 			@click="denySavesModal = true"
 		>
 			Deny saving options
@@ -94,26 +97,26 @@ import { defineComponent } from 'vue';
 import ModalDialog from '@/components/ModalDialog.vue';
 import L from '@/components/ui/link.vue';
 
-const nsfwPacks = {
-	'dddg.buildin.backgrounds.nsfw': `${process.env.BASE_URL}packs/buildin.base.backgrounds.nsfw.json`,
-	'dddg.buildin.sayori.nsfw': `${process.env.BASE_URL}packs/buildin.base.sayori.nsfw.json`,
-	'dddg.buildin.base.natsuki.nsfw': `${process.env.BASE_URL}packs/buildin.base.natsuki.nsfw.json`,
-	'dddg.buildin.yuri.nsfw': `${process.env.BASE_URL}packs/buildin.base.yuri.nsfw.json`,
-};
-
-const names = new Set(Object.keys(nsfwPacks));
-const paths = Object.values(nsfwPacks);
-
 export default defineComponent({
 	mixins: [PanelMixin],
 	components: { Toggle, ModalDialog, L },
 	data: () => ({
 		savesEnabledInEnv: true,
-		savesAllowed: false,
 		allowSavesModal: false,
 		denySavesModal: false,
+		waitOnSaveChange: false,
 	}),
 	computed: {
+		savesAllowed: {
+			get(): boolean {
+				return environment.savingEnabled;
+			},
+			set(allowed: boolean) {
+				this.waitOnSaveChange = true;
+				environment.savingEnabled = allowed;
+				this.saveSettings();
+			},
+		},
 		lqAllowed(): boolean {
 			return environment.supports.lq;
 		},
@@ -125,24 +128,17 @@ export default defineComponent({
 				this.vuexHistory.transaction(async () => {
 					await this.$store.commit('ui/setLqRendering', lqRendering);
 				});
+				this.saveSettings();
 			},
 		},
 		nsfw: {
 			get(): boolean {
-				return !!this.$store.state.content.contentPacks
-					.map(pack => pack.packId)
-					.filter(packId => !!packId)
-					.find(packId => names.has(packId!));
+				return !!this.$store.state.ui.nsfw;
 			},
 			set(value: boolean) {
 				this.vuexHistory.transaction(async () => {
-					if (value) {
-						await this.$store.dispatch('content/loadContentPacks', paths);
-					} else {
-						await this.$store.dispatch('removePacks', {
-							packs: names,
-						} as IRemovePacksAction);
-					}
+					await this.$store.commit('ui/setNsfw', value);
+					this.saveSettings();
 				});
 			},
 		},
@@ -153,8 +149,14 @@ export default defineComponent({
 			set(value: boolean | null) {
 				this.vuexHistory.transaction(async () => {
 					await this.$store.commit('ui/setDarkTheme', value);
+					this.saveSettings();
 				});
 			},
+		},
+	},
+	watch: {
+		savesAllowed() {
+			this.waitOnSaveChange = false;
 		},
 	},
 	methods: {
@@ -169,6 +171,13 @@ export default defineComponent({
 			if (choice === 'Deny') {
 				this.savesAllowed = false;
 			}
+		},
+		saveSettings() {
+			environment.saveSettings({
+				lq: this.$store.state.ui.lqRendering,
+				nsfw: this.$store.state.ui.nsfw,
+				darkMode: this.$store.state.ui.useDarkTheme ?? undefined,
+			});
 		},
 	},
 });

@@ -21,6 +21,7 @@ export interface EnvCapabilities {
 export interface Settings {
 	lq?: boolean;
 	nsfw?: boolean;
+	darkMode?: boolean;
 }
 
 export interface IEnvironment {
@@ -50,8 +51,6 @@ export interface IEnvironment {
 }
 
 function chooseEnv(): IEnvironment {
-	debugger;
-	console.log(`isElectron: ${(window as any).isElectron ?? 'unknown'}`);
 	if ((window as any).isElectron) {
 		return new Electron();
 	}

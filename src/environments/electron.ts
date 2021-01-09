@@ -26,26 +26,18 @@ const installedBackgroundsPack: ContentPack<string> = {
 };
 
 export class Electron implements IEnvironment {
-	public readonly allowLQ = false;
 	public readonly state: EnvState = reactive({
 		autoAdd: [],
 		installed: [],
 	});
 	public readonly localRepositoryUrl = '/repo/repo.json';
-	public readonly isBackgroundInstallingSupported = true;
-	public readonly isLocalRepoSupported = true;
-	public readonly isAutoLoadingSupported = true;
 
-	private electron = (window as any) as IElectronWindow;
-	private promptCache: {
-		[promptId: number]: (resolved: string | null) => void;
-	} = {};
-	private lastPrompt = 0;
+	private readonly electron = (window as any) as IElectronWindow;
 
 	private vuexHistory: IHistorySupport | null = null;
 	private $store: Store<IRootState> | null = null;
 	private bgInvalidation: number | null = null;
-	private pendingContentPacks: string[] = [];
+	private readonly pendingContentPacks: string[] = [];
 
 	constructor() {
 		this.electron.ipcRenderer.on(
@@ -77,15 +69,9 @@ export class Electron implements IEnvironment {
 		this.electron.ipcRenderer.on('push-message', async (e, message: string) => {
 			eventBus.fire(new ShowMessageEvent(message));
 		});
-		this.electron.ipcRenderer.on(
-			'prompt-answered',
-			(e, id: number, value: string | null) => {
-				this.promptCache[id](value);
-			}
-		);
-		this.electron.ipcRenderer.on('update-ready', e => {});
 		this.electron.ipcRenderer.send('find-customs');
 	}
+	public onPanelChange(handler: (panel: string) => void): void {}
 	public readonly supports: EnvCapabilities = {
 		autoLoading: true,
 		backgroundInstall: true,
@@ -94,34 +80,35 @@ export class Electron implements IEnvironment {
 		optionalSaving: false,
 	};
 	public readonly savingEnabled: boolean = true;
-	localRepoInstall(url: string): void {
-		throw new Error('Method not implemented.');
+	public async saveSettings(settings: Settings): Promise<void> {
+		await this.electron.ipcRenderer.sendConvo(
+			'config.set',
+			'nsfw',
+			settings.nsfw
+		);
 	}
-	localRepoUninstall(id: string): void {
-		throw new Error('Method not implemented.');
-	}
-	saveSettings(settings: Settings): Promise<void> {
-		throw new Error('Method not implemented.');
-	}
-	loadSettings(): Promise<Settings> {
-		throw new Error('Method not implemented.');
+	public async loadSettings(): Promise<Settings> {
+		return {
+			lq: await this.electron.ipcRenderer.sendConvo('config.get', 'lq'),
+			nsfw: await this.electron.ipcRenderer.sendConvo('config.get', 'nsfw'),
+			darkMode: await this.electron.ipcRenderer.sendConvo(
+				'config.get',
+				'darkMode'
+			),
+		};
 	}
 
-	public localRepoAdd(url: string): void {
-		console.log('installContentPack', url);
-		this.electron.ipcRenderer.send('install-content-pack', url);
+	public async localRepoInstall(url: string): Promise<void> {
+		await this.electron.ipcRenderer.sendConvo('repo.install', url);
 	}
-	public localRepoRemove(id: string): void {
-		console.log('uninstallContentPack', id);
-		this.electron.ipcRenderer.send('uninstall-content-pack', id);
+	public async localRepoUninstall(id: string): Promise<void> {
+		await this.electron.ipcRenderer.sendConvo('repo.uninstall', id);
 	}
-	public autoLoadAdd(id: string): void {
-		console.log('activateContentPack', id);
-		this.electron.ipcRenderer.send('activate-content-pack', id);
+	public async autoLoadAdd(id: string): Promise<void> {
+		await this.electron.ipcRenderer.sendConvo('auto-load.add', id);
 	}
-	public autoLoadRemove(id: string): void {
-		console.log('deactivateContentPack', id);
-		this.electron.ipcRenderer.send('deactivate-content-pack', id);
+	public async autoLoadRemove(id: string): Promise<void> {
+		await this.electron.ipcRenderer.sendConvo('auto-load.remove', id);
 	}
 
 	public saveToFile(
@@ -138,7 +125,7 @@ export class Electron implements IEnvironment {
 						return;
 					}
 					const buffer = await (blob as any).arrayBuffer();
-					this.electron.ipcRenderer.send(
+					await this.electron.ipcRenderer.sendConvo(
 						'save-file',
 						filename,
 						new Uint8Array(buffer)
@@ -185,25 +172,15 @@ export class Electron implements IEnvironment {
 		this.electron.ipcRenderer.send('uninstall-background', background.id);
 	}
 
-	public prompt(
+	public async prompt(
 		message: string,
 		defaultValue?: string
 	): Promise<string | null> {
-		return new Promise((resolve, reject) => {
-			this.promptCache[++this.lastPrompt] = resolve;
-			this.electron.ipcRenderer.send(
-				'show-prompt',
-				this.lastPrompt,
-				message,
-				defaultValue
-			);
-		});
-	}
-
-	public onPanelChange(handler: (panel: string) => void): void {
-		this.electron.ipcRenderer.on('open-panel', (e, panel: string) => {
-			handler(panel);
-		});
+		return await this.electron.ipcRenderer.sendConvo(
+			'show-prompt',
+			message,
+			defaultValue
+		);
 	}
 
 	public connectToStore(
@@ -257,7 +234,12 @@ interface IpcRenderer {
 		channel: string,
 		listener: (event: IpcRendererEvent, ...args: any[]) => void
 	): void;
+	onConversation(
+		channel: string,
+		listener: (event: IpcRendererEvent, ...args: any[]) => void
+	): void;
 	send(channel: string, ...args: any[]): void;
+	sendConvo<T>(channel: string, ...args: any[]): Promise<T>;
 }
 
 interface IpcRendererEvent extends Event {

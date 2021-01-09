@@ -16,6 +16,7 @@ export class Browser implements IEnvironment {
 	public readonly localRepositoryUrl = '';
 
 	private loading: Promise<void>;
+	private creatingDB?: Promise<IDBDatabase | void>;
 
 	public get savingEnabled() {
 		return this.isSavingEnabled.value;
@@ -24,18 +25,19 @@ export class Browser implements IEnvironment {
 	public set savingEnabled(value: boolean) {
 		if (value) {
 			localStorage.setItem('saving', 'true');
-			IndexedDBHandler.createDB()
-				.then(() => {
-					this.isSavingEnabled.value = true;
-				})
-				.catch(() => {});
+			this.creatingDB = IndexedDBHandler.createDB();
+			this.creatingDB!.then(() => {
+				this.creatingDB = undefined;
+				this.isSavingEnabled.value = true;
+			}).catch(() => {});
 		} else {
 			// I'm not just setting 'saving' to false because I want there to
 			// be absolutely no trace if you revoke saving.
 			localStorage.clear();
-			IndexedDBHandler.clearDB()
+			this.isSavingEnabled.value = false;
+			this.creatingDB = IndexedDBHandler.clearDB()
 				.then(() => {
-					this.isSavingEnabled.value = false;
+					this.creatingDB = undefined;
 				})
 				.catch(() => {});
 		}
@@ -67,13 +69,10 @@ export class Browser implements IEnvironment {
 		this.supports = supports;
 
 		if (canSave) {
-			this.loading = (Promise.allSettled([
-				IndexedDBHandler.doesDbExists()
-					.then((itDoes: boolean) => {
-						if (itDoes) this.savingEnabled = itDoes;
-					})
-					.catch(() => {}),
-			]) as any) as Promise<void>;
+			this.loading = (async () => {
+				const exists = await IndexedDBHandler.doesDbExists();
+				this.savingEnabled = exists;
+			})();
 		} else {
 			this.loading = Promise.resolve();
 		}
@@ -123,14 +122,29 @@ export class Browser implements IEnvironment {
 
 	public async loadSettings(): Promise<Settings> {
 		await this.loading;
-		if (!this.isSavingEnabled.value) return {};
-		return await IndexedDBHandler.loadSettings();
+		await this.creatingDB;
+		const base = {
+			darkMode: undefined,
+			lq: true,
+			nsfw: false,
+		};
+		if (!this.isSavingEnabled.value) return base;
+		return {
+			...base,
+			...(await IndexedDBHandler.loadSettings()),
+		};
 	}
 
 	public async saveSettings(settings: Settings): Promise<void> {
 		await this.loading;
+		await this.creatingDB;
 		if (!this.isSavingEnabled.value) return;
 		await IndexedDBHandler.saveSettings(settings);
+	}
+
+	public async isInitialized(): Promise<void> {
+		await this.loading;
+		await this.creatingDB;
 	}
 
 	public prompt(
@@ -223,23 +237,29 @@ const IndexedDBHandler = {
 			};
 			req.onupgradeneeded = event => {
 				const db = (event.target! as any).result as IDBDatabase;
-				const oldVer = event.oldVersion || ((event as any).version as number);
+				const oldVer = event.oldVersion ?? ((event as any).version as number);
 				if (oldVer < 1) {
 					db.createObjectStore('settings');
 				}
+			};
+			req.onsuccess = event => {
+				resolve(req.result);
 			};
 		}));
 	},
 
 	clearDB(): Promise<void> {
 		return new Promise((resolve, reject) => {
-			if (!IndexedDBHandler.db) return;
+			if (!IndexedDBHandler.db) {
+				resolve();
+				return;
+			}
 			const req = IndexedDBHandler.indexedDB.deleteDatabase('dddg');
+			IndexedDBHandler.db = null;
 			req.onerror = event => {
 				reject(event);
 			};
 			req.onsuccess = event => {
-				IndexedDBHandler.db = null;
 				resolve();
 			};
 		});
@@ -250,8 +270,8 @@ const IndexedDBHandler = {
 		// eslint-disable-next-line no-async-promise-executor
 		return new Promise(async (resolve, reject) => {
 			const transact = (await this.db!).transaction(['settings'], 'readwrite');
-			const settings = transact.objectStore('settings');
-			const req = settings.put({ ...settings }, 0);
+			const store = transact.objectStore('settings');
+			const req = store.put({ ...settings }, 0);
 			req.onerror = error => {
 				reject(error);
 			};
@@ -265,9 +285,9 @@ const IndexedDBHandler = {
 		if (!this.db) return Promise.reject('No database');
 		// eslint-disable-next-line no-async-promise-executor
 		return new Promise(async (resolve, reject) => {
-			const transact = (await this.db!).transaction(['settings'], 'readwrite');
-			const settings = transact.objectStore('settings');
-			const req = settings.get(0);
+			const transact = (await this.db!).transaction(['settings'], 'readonly');
+			const store = transact.objectStore('settings');
+			const req = store.get(0);
 			req.onerror = error => {
 				reject(error);
 			};
