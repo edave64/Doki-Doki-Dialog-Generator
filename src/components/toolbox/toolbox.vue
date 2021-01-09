@@ -5,29 +5,33 @@
 				:class="{ active: panel === 'add' }"
 				@click="setPanel('add')"
 				title="Add new objects to the scene"
+				aria-label="Add new objects to the scene"
 			>
-				<i class="material-icons">add_box</i>
+				<i class="material-icons" aria-hidden="true">add_box</i>
 			</button>
 			<button
 				:class="{ active: panel === 'backgrounds' }"
 				@click="setPanel('backgrounds')"
+				aria-label="Change the current background"
 				title="Change the current background"
 			>
-				<i class="material-icons">panorama</i>
+				<i class="material-icons" aria-hidden="true">panorama</i>
 			</button>
 			<button
 				:class="{ active: panel === 'panels' }"
 				title="Panels"
+				aria-label="Panels"
 				@click="setPanel('panels')"
 			>
-				<i class="material-icons">view_module</i>
+				<i class="material-icons" aria-hidden="true">view_module</i>
 			</button>
 			<button
 				:class="{ active: panel === 'settings' }"
 				title="Settings"
+				aria-label="Settings"
 				@click="setPanel('settings')"
 			>
-				<i class="material-icons">settings_applications</i>
+				<i class="material-icons" aria-hidden="true">settings_applications</i>
 			</button>
 		</div>
 		<settings-panel v-if="panel === 'settings'" />
@@ -54,28 +58,32 @@
 				:class="{ active: panel === 'help_credits' }"
 				@click="setPanel('help_credits')"
 				title="Help &amp; Credits"
+				aria-label="Help &amp; Credits"
 			>
-				<i class="material-icons">help</i>
+				<i class="material-icons" aria-hidden="true">help</i>
 			</button>
 			<button
 				:class="{ active: panel === 'packs' }"
 				@click="$emit('show-dialog')"
 				title="Content packs"
+				aria-label="Content packs"
 			>
-				<i class="material-icons">extension</i>
+				<i class="material-icons" aria-hidden="true">extension</i>
 			</button>
 			<button
 				@click="$emit('show-prev-render')"
 				title="Show last downloaded panel"
+				aria-label="Show last downloaded panel"
 				:disabled="!hasPrevRender"
 			>
-				<i class="material-icons">flip_to_back</i>
+				<i class="material-icons" aria-hidden="true">flip_to_back</i>
 			</button>
 			<button
 				title="Take a screenshot of the current scene"
+				aria-label="Take a screenshot of the current scene"
 				@click="$emit('download')"
 			>
-				<i class="material-icons">photo_camera</i>
+				<i class="material-icons" aria-hidden="true">photo_camera</i>
 			</button>
 		</div>
 	</div>

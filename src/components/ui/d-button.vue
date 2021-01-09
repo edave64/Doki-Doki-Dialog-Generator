@@ -1,6 +1,6 @@
 <template>
 	<button :class="[iconPos]" :disabled="disabled">
-		<div class="material-icons">{{ icon }}</div>
+		<div class="material-icons" aria-hidden="true">{{ icon }}</div>
 		<div class="content"><slot /></div>
 	</button>
 </template>
