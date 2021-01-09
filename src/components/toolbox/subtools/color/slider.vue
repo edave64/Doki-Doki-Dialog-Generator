@@ -30,14 +30,14 @@
 						/>
 					</linearGradient>
 				</defs>
-				<g stroke="#ffbde1">
+				<g>
 					<path
 						d="M7 0H262V24H7z"
 						stroke-width="2"
 						paint-order="fill stroke markers"
 						:fill="`url(#gradient${_.uid})`"
 					/>
-					<path :d="pointerPath" stroke-width="2" fill="#000000" />
+					<path :d="pointerPath" stroke-width="2" class="slider-pointer" />
 				</g>
 			</svg>
 		</div>
@@ -173,6 +173,16 @@ export default defineComponent({
 			display: table-cell;
 			vertical-align: middle;
 		}
+	}
+}
+
+svg g {
+	stroke: $default-border;
+	stroke: var(--border);
+
+	.slider-pointer {
+		fill: $default-text;
+		fill: var(--text);
 	}
 }
 </style>

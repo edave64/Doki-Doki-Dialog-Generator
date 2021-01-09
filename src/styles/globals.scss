@@ -1,3 +1,5 @@
+@import './global_mixins.scss';
+
 html,
 body {
 	width: 100vw;
@@ -18,22 +20,30 @@ body {
 
 h1 {
 	font-size: 24px;
-	color: black;
+	color: $default-text;
+	color: var(--text);
 	font-family: riffic, sans-serif;
 	text-align: center;
 }
 
 input,
 textarea {
-	border: 2px solid #ffbde1;
+	border: 2px solid $default-border;
+	border: 2px solid var(--border);
 }
 
 button,
 select,
 .btn {
-	border: 2px solid #ffbde1;
-	background: #ffe6f4;
 	padding: 1px;
+
+	border: 2px solid $default-border;
+	border: 2px solid var(--border);
+
+	background: $default-accent-background;
+	background: var(--accent-background);
+	color: $default-text;
+	color: var(--text);
 }
 
 button,
@@ -55,4 +65,49 @@ button,
 
 input[type='number'] {
 	text-align: right;
+}
+
+input,
+textarea {
+	background: $default-native-background;
+	background: var(--native-background);
+	color: $default-text;
+	color: var(--text);
+}
+
+a {
+	color: var(--link);
+}
+
+body {
+	--native-background: #ffffff;
+	--accent-background: #ffe6f4;
+	--border: #ffbde1;
+	--text: #000000;
+	--error: #880000;
+	--link: #0000ee;
+	--modal-backdrop: rgba(0, 0, 0, 0.5);
+	--modal-backdrop-light: rgba(0, 0, 0, 0.25);
+
+	color: $default-text;
+	color: var(--text);
+
+	background: $default-native-background;
+	background: var(--native-background);
+}
+
+body.dark-theme {
+	--native-background: #242424;
+	--accent-background: #200f19;
+	--border: #5b2545;
+	--text: #ffffff;
+	--error: #ff5555;
+	--link: #6666ee;
+	--modal-backdrop: rgba(255, 255, 255, 0.5);
+	--modal-backdrop-light: rgba(255, 255, 255, 0.75);
+
+	p {
+		color: $default-text;
+		color: var(--text);
+	}
 }

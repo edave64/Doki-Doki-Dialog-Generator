@@ -162,7 +162,8 @@ p {
 	overflow-y: auto;
 	overflow-x: hidden;
 	.active {
-		background-color: #ffbde1;
+		background-color: $default-border;
+		background-color: var(--border);
 	}
 }
 

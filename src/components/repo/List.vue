@@ -283,19 +283,24 @@ table {
 	border-collapse: collapse;
 	min-width: 100%;
 	user-select: none;
+	color: $default-text;
+	color: var(--text);
 	.focused {
-		background: #ffe6f4;
+		background: $default-accent-background;
+		background: var(--accent-background);
 	}
 }
 tbody:focus {
 	outline: 0;
 	.focused {
-		background: #ffbde1;
+		background: $default-border;
+		background: var(--border);
 	}
 }
 tr:hover,
 th:hover {
-	background: #ffe6f4;
+	background: $default-accent-background;
+	background: var(--accent-background);
 	cursor: pointer;
 }
 th,
@@ -304,10 +309,14 @@ td {
 	min-height: 42px;
 }
 th {
-	background: white;
+	background: $default-native-background;
+	background: var(--native-background);
 	position: sticky;
 	top: 0;
-	box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 1);
+	color: $default-text;
+	color: var(--text);
+	box-shadow: 0 2px 2px -1px $default-text;
+	box-shadow: 0 2px 2px -1px var(--text);
 
 	> div {
 		display: flex;

@@ -315,7 +315,8 @@ textarea {
 	button {
 		flex-grow: 1;
 		&.active {
-			background: white;
+			background: $default-native-background;
+			background: var(--native-background);
 		}
 	}
 }
@@ -349,7 +350,8 @@ textarea {
 
 .item-grid {
 	.sprite {
-		box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.5);
+		box-shadow: inset 0 0 1px 3px $default-modal-backdrop;
+		box-shadow: inset 0 0 1px 3px var(--modal-backdrop);
 		height: 256px;
 		width: 256px;
 		background-size: contain !important;

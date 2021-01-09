@@ -27,8 +27,10 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 button {
-	border: 2px solid #ffbde1;
-	background: #ffe6f4;
+	border: 2px solid $default-border;
+	border: 2px solid var(--border);
+	background: $default-accent-background;
+	background: var(--accent-background);
 	padding: 1px;
 	display: flex;
 	text-align: center;

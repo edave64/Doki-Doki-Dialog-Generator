@@ -196,15 +196,18 @@ a {
 	left: 8px;
 	right: 8px;
 	z-index: 2;
-	border: 2px solid #ffbde1;
-	background: #fff;
+	border: 2px solid $default-border;
+	border: 2px solid var(--border);
+	background-color: $default-native-background;
+	background-color: var(--native-background);
 	max-height: calc(100vh - 56px);
 	overflow: auto;
 	box-shadow: 0px 2px 4px 4px rgba(255, 189, 225, 1);
 
 	code {
 		padding: 2px;
-		background: #ffe6f4;
+		background: $default-accent-background;
+		background: var(--accent-background);
 		font-family: monospace;
 		white-space: nowrap;
 	}
@@ -213,23 +216,27 @@ a {
 .help {
 	height: 42px;
 	width: 40px;
-	border: 2px solid #ffbde1;
+	border: 2px solid $default-border;
+	border: 2px solid var(--border);
 	border-left: 0;
 
 	&.toggled {
-		background-color: #ffbde1;
+		background-color: $default-border;
+		background-color: var(--border);
 	}
 }
 
 .input {
 	display: block;
 	width: calc(100% - 40px);
-	border: 2px solid #ffbde1;
+	border: 2px solid $default-border;
+	border: 2px solid var(--border);
 	padding: 8px;
 	height: 42px;
 	overflow: hidden;
 	white-space: nowrap;
-	background: #ffe6f4 url(./search.svg);
+	background: $default-accent-background url(./search.svg);
+	background: var(--accent-background) url(./search.svg);
 	background-repeat: no-repeat;
 	background-size: contain;
 	background-position: right center;
@@ -239,7 +246,8 @@ a {
 .suggestions {
 	border: 2px black solid;
 	border-top: 0;
-	background: white;
+	background: $default-native-background;
+	background: var(--native-background);
 
 	.suggestion {
 		border: 0;

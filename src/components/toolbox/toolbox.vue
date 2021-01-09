@@ -181,8 +181,10 @@ export default defineComponent({
 
 <style lang="scss">
 #panels {
-	background-color: #ffffff;
-	border: 3px solid #ffbde1;
+	background-color: $default-native-background;
+	background-color: var(--native-background);
+	border: 3px solid $default-border;
+	border: 3px solid var(--border);
 	position: absolute;
 	display: flex;
 	overflow: hidden;
@@ -226,11 +228,13 @@ export default defineComponent({
 				border-bottom: none;
 
 				&:nth-child(4) {
-					border-bottom: 3px solid #ffbde1;
+					border: 3px solid $default-border;
+					border: 3px solid var(--border);
 				}
 
 				&.active {
-					border-right: 3px solid white;
+					border-right: 3px solid $default-native-background;
+					border-right: 3px solid var(--native-background);
 				}
 			}
 		}
@@ -239,11 +243,13 @@ export default defineComponent({
 			button {
 				border-bottom: none;
 				&:nth-child(4) {
-					border-top: 3px solid #ffbde1;
+					border: 3px solid $default-border;
+					border: 3px solid var(--border);
 				}
 
 				&.active {
-					border-left: 3px solid white;
+					border-left: 3px solid $default-native-background;
+					border-left: 3px solid var(--native-background);
 				}
 			}
 		}
@@ -279,11 +285,13 @@ export default defineComponent({
 			button {
 				border-right: none;
 				&:nth-child(4) {
-					border-right: 3px solid #ffbde1;
+					border-right: 3px solid $default-border;
+					border-right: 3px solid var(--border);
 				}
 
 				&.active {
-					border-bottom: 3px solid white;
+					border-bottom: 3px solid $default-native-background;
+					border-bottom: 3px solid var(--native-background);
 				}
 			}
 		}
@@ -294,11 +302,13 @@ export default defineComponent({
 				border-left: none;
 
 				&:nth-child(4) {
-					border-right: 3px solid #ffbde1;
+					border-right: 3px solid $default-border;
+					border-right: 3px solid var(--border);
 				}
 
 				&.active {
-					border-top: 3px solid white;
+					border-top: 3px solid $default-native-background;
+					border-top: 3px solid var(--native-background);
 				}
 			}
 		}
@@ -312,15 +322,18 @@ export default defineComponent({
 			width: 48px;
 			height: 48px;
 			line-height: 48px;
-			background-color: #ffe6f4;
-			border: 3px solid #ffbde1;
+			background-color: $default-accent-background;
+			background-color: var(--accent-background);
+			border: 3px solid $default-border;
+			border: 3px solid var(--border);
 
 			i {
 				vertical-align: sub;
 			}
 
 			&.active {
-				background: white;
+				background: $default-native-background;
+				background: var(--native-background);
 			}
 		}
 	}
@@ -332,15 +345,18 @@ export default defineComponent({
 			width: 48px;
 			height: 48px;
 			line-height: 48px;
-			background-color: #ffe6f4;
-			border: 3px solid #ffbde1;
+			background-color: $default-accent-background;
+			background-color: var(--accent-background);
+			border: 3px solid $default-border;
+			border: 3px solid var(--border);
 
 			i {
 				vertical-align: sub;
 			}
 
 			&.active {
-				background: white;
+				background: $default-native-background;
+				background: var(--native-background);
 			}
 		}
 	}

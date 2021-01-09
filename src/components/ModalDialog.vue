@@ -47,7 +47,8 @@ dialog {
 	max-width: 90vw;
 	max-height: 90vh;
 	background-attachment: scroll;
-	background-color: #ffffff;
+	background-color: $default-native-background;
+	background-color: var(--native-background);
 	background-position: right center;
 	background-repeat: no-repeat;
 	background-size: contain;
@@ -56,7 +57,8 @@ dialog {
 	align-self: center;
 	overflow: hidden;
 	padding: 0;
-	border: 4px solid #ffbde1;
+	border: 4px solid $default-border;
+	border: 4px solid var(--border);
 	overflow: hidden;
 	align-self: center;
 	justify-self: center;
@@ -76,7 +78,6 @@ dialog {
 			background: none;
 			font-family: riffic;
 			font-size: 24px;
-			-webkit-text-stroke: 0px white;
 		}
 	}
 }

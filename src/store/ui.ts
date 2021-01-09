@@ -8,6 +8,7 @@ export interface IUiState {
 	lqRendering: boolean;
 	lastDownload: string | null;
 	clipboard: string | null;
+	useDarkTheme: boolean | null;
 }
 
 export default {
@@ -19,6 +20,7 @@ export default {
 		selection: null,
 		lastDownload: null,
 		clipboard: null,
+		useDarkTheme: null,
 	},
 	mutations: {
 		setVertical(state, vertical: boolean) {
@@ -38,6 +40,9 @@ export default {
 		},
 		setClipboard(state, contents: string) {
 			state.clipboard = contents;
+		},
+		setDarkTheme(state, theme: boolean | null) {
+			state.useDarkTheme = theme;
 		},
 	},
 } as Module<IUiState, IRootState>;

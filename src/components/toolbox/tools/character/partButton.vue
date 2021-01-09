@@ -95,13 +95,15 @@ export default defineComponent({
 	margin-top: 4px;
 	text-shadow: 0 0 2px black;
 	color: white;
-	box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.5);
+	box-shadow: inset 0 0 1px 3px $default-modal-backdrop;
+	box-shadow: inset 0 0 1px 3px var(--modal-backdrop);
 	text-align: center;
 	user-select: none;
 	vertical-align: middle;
 
 	&.active {
-		box-shadow: inset 0 0 1px 3px rgba(255, 255, 255, 0.5);
+		box-shadow: inset 0 0 1px 3px $default-modal-backdrop-light;
+		box-shadow: inset 0 0 1px 3px var(--modal-backdrop-light);
 	}
 }
 

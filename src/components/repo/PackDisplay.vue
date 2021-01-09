@@ -220,13 +220,6 @@ interface AuthorLink {
 }
 </script>
 
-<style lang="scss">
-.pack-display {
-	ul {
-		margin-left: 20px;
-	}
-}
-</style>
 <style scoped lang="scss">
 .platform_button {
 	margin-right: 6px;
@@ -245,7 +238,8 @@ interface AuthorLink {
 	width: 100%;
 	height: 100%;
 	background-attachment: scroll;
-	background-color: #ffffff;
+	background-color: $default-native-background;
+	background-color: var(--native-background);
 	background-position: right center;
 	background-repeat: no-repeat;
 	background-size: contain;
@@ -272,10 +266,20 @@ interface AuthorLink {
 			rgba(255, 255, 255, 1) 25%,
 			rgba(255, 255, 255, 0) 75%
 		);
+		background: linear-gradient(
+			90deg,
+			var(--pack-display-start) 25%,
+			var(--pack-display-end) 75%
+		);
 		width: 100%;
+		color: $default-text;
+		color: var(--text);
 
 		text-shadow: 0 0 4px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff,
 			-1px 1px 0 #fff, 1px 1px 0 #fff;
+		text-shadow: 0 0 4px var(--native-background),
+			-1px -1px 0 var(--native-background), 1px -1px 0 var(--native-background),
+			-1px 1px 0 var(--native-background), 1px 1px 0 var(--native-background);
 	}
 
 	footer:last-child,
@@ -302,5 +306,21 @@ interface AuthorLink {
 			position: relative;
 		}
 	}
+
+	>>> ul {
+		margin-left: 20px;
+	}
+}
+</style>
+
+<style lang="scss">
+body {
+	--pack-display-start: rgba(255, 255, 255, 1);
+	--pack-display-end: rgba(255, 255, 255, 0);
+}
+
+body.dark-theme {
+	--pack-display-start: rgba(23, 23, 23, 1);
+	--pack-display-end: rgba(23, 23, 23, 0);
 }
 </style>

@@ -70,6 +70,18 @@
 			v-model="lqRendering"
 		/>
 		<toggle label="NSFW Mode?" v-model="nsfw" />
+		<table>
+			<tr>
+				<td><label>Theme:</label></td>
+				<td>
+					<select v-model="theme">
+						<option :value="null">System</option>
+						<option :value="false">Light</option>
+						<option :value="true">Dark</option>
+					</select>
+				</td>
+			</tr>
+		</table>
 	</div>
 </template>
 
@@ -131,6 +143,16 @@ export default defineComponent({
 							packs: names,
 						} as IRemovePacksAction);
 					}
+				});
+			},
+		},
+		theme: {
+			get(): boolean | null {
+				return this.$store.state.ui.useDarkTheme;
+			},
+			set(value: boolean | null) {
+				this.vuexHistory.transaction(async () => {
+					await this.$store.commit('ui/setDarkTheme', value);
 				});
 			},
 		},

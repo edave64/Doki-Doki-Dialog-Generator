@@ -60,6 +60,7 @@ import Render from '@/components/render.vue';
 import ModalDialog from '@/components/ModalDialog.vue';
 import { ISetCurrentMutation } from '@/store/panels';
 import { defineAsyncComponent, defineComponent } from 'vue';
+import { Repo } from './models/repo';
 
 // tslint:disable-next-line: no-magic-numbers
 const aspectRatio = 16 / 9;
@@ -92,6 +93,7 @@ export default defineComponent({
 		expressionBuilderVisible: false,
 		expressionBuilderCharacter: '',
 		expressionBuilderHeadGroup: undefined as string | undefined,
+		systemPrefersDarkMode: false,
 	}),
 	computed: {
 		isSafari(): boolean {
@@ -103,6 +105,12 @@ export default defineComponent({
 			navigator.userAgent.indexOf('CriOS') === -1 &&
 			navigator.userAgent.indexOf('FxiOS') === -1
 		);*/
+		},
+		useDarkTheme(): boolean {
+			return this.userPrefersDarkMode ?? this.systemPrefersDarkMode;
+		},
+		userPrefersDarkMode(): boolean | null {
+			return this.$store.state.ui.useDarkTheme;
 		},
 	},
 	methods: {
@@ -266,6 +274,17 @@ export default defineComponent({
 		destroyed(): void {
 			window.removeEventListener('keydown', this.onKeydown);
 		},
+		applyTheme(): void {
+			document.body.classList.toggle('dark-theme', this.useDarkTheme);
+		},
+	},
+	watch: {
+		systemPrefersDarkMode() {
+			this.applyTheme();
+		},
+		userPrefersDarkMode() {
+			this.applyTheme();
+		},
 	},
 	mounted(): void {
 		window.addEventListener('keypress', e => {
@@ -276,6 +295,15 @@ export default defineComponent({
 				});
 			}
 		});
+
+		if (window.matchMedia) {
+			/* The viewport is less than, or equal to, 700 pixels wide */
+			const matcher = window.matchMedia('(prefers-color-scheme: dark)');
+			this.systemPrefersDarkMode = matcher.matches;
+			matcher.addListener(match => {
+				this.systemPrefersDarkMode = match.matches;
+			});
+		}
 	},
 	async created(): Promise<void> {
 		// Moving this to the "mounted"-handler crashes safari over version 12.

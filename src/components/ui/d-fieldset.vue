@@ -21,7 +21,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .fieldset_contents {
 	margin-top: 0.5em;
 	height: calc(100% - 0.5em);
@@ -33,7 +33,8 @@ legend {
 }
 
 fieldset {
-	border: 3px solid #ffbde1;
+	border: 3px solid $default-border;
+	border: 3px solid var(--border);
 	height: 100%;
 }
 .fieldset_wrapper {

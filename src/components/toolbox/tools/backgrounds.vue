@@ -173,16 +173,11 @@ textarea {
 
 .upload-background {
 	margin-top: 4px;
-	background-size: cover;
-	text-shadow: 0 0 2px white;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.5);
 	height: 48px;
 	min-height: 48px;
-	text-align: center;
-	user-select: none;
 	text-align: center;
 	user-select: none;
 

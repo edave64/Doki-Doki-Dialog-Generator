@@ -43,7 +43,7 @@ export default defineComponent({
 	},
 });
 </script>
-<style lang="css" scoped>
+<style lang="scss" scoped>
 div {
 	position: absolute;
 	top: 0;
@@ -54,9 +54,8 @@ div {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	color: white;
-	text-shadow: 2px black;
-	font-size: 24px;
+	color: $default-native-background;
+	color: var(--native-background);
 	text-shadow: 0 0 4px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
 		1px 1px 0 #000;
 	font-size: 24px;

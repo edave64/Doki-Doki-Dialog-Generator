@@ -562,17 +562,21 @@ export default defineComponent({
 	background-size: contain;
 	background-position: center center;
 	background-repeat: no-repeat;
-	background-color: #ffffff;
-	border: #ffbde1 2px solid;
+	background-color: $default-native-background;
+	background-color: var(--native-background);
+	border: 2px solid $default-border;
+	border: 2px solid var(--border);
 	display: flex;
 	flex-direction: column;
-	color: #ffffff;
+	background-color: $default-native-background;
+	background-color: var(--native-background);
 
 	text-shadow: 0 0 4px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
 		1px 1px 0 #000;
 
 	&.active {
-		background-color: #ffbde1;
+		background-color: $default-border;
+		background-color: var(--border);
 	}
 }
 
