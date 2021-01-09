@@ -45,7 +45,7 @@
 					<td>{{ pack.characters.join(', ') }}</td>
 					<td>{{ pack.kind.join(', ') }}</td>
 					<td>{{ pack.authors.join(', ') }}</td>
-					<td>{{ translatePackState(pack.state) }}</td>
+					<td>{{ translatePackState(pack) }}</td>
 				</tr>
 			</transition-group>
 		</table>
@@ -54,19 +54,19 @@
 
 <script lang="ts">
 import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
-import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import run from '@edave64/dddg-repo-filters/dist/main';
-import { PackStates, IPackWithState } from './types';
-import { exhaust } from '@/util/exhaust';
 import { defineComponent, PropType } from 'vue';
+import { Pack, Repo } from '@/models/repo';
+import { DeepReadonly } from '@/util/readonly';
 
 const pageKeyMoveBy = 10;
 
 export default defineComponent({
 	props: {
 		search: { type: String, required: true },
-		authors: { type: Object as PropType<IAuthors>, required: true },
-		packs: { type: Object as PropType<IPackWithState[]>, required: true },
+		repo: {
+			type: Object as PropType<Repo>,
+		},
 		disabled: {
 			type: Boolean,
 			default: false,
@@ -79,11 +79,17 @@ export default defineComponent({
 		wordCache: {} as { [id: string]: Set<string> },
 	}),
 	computed: {
-		list(): IPackWithState[] {
+		packs(): DeepReadonly<Pack[]> {
+			if (!this.repo) return [];
+			return this.repo.getPacks();
+		},
+		list(): DeepReadonly<Pack[]> {
 			const filtered = this.filterList(this.packs, this.search);
 			if (this.sort && filtered.length > 0) {
 				const sort = this.sort as keyof IPack;
-				let sortFunc: ((a: IPack, b: IPack) => number) | undefined;
+				let sortFunc:
+					| ((a: DeepReadonly<IPack>, b: DeepReadonly<IPack>) => number)
+					| undefined;
 				if (typeof filtered[0][sort] === 'string') {
 					sortFunc = (a, b) => a.name.localeCompare(b.name);
 				} else if (filtered[0][sort] instanceof Array) {
@@ -102,7 +108,7 @@ export default defineComponent({
 			}
 			return filtered;
 		},
-		listById(): Map<string, IPack> {
+		listById(): DeepReadonly<Map<string, IPack>> {
 			return new Map(this.packs.map(pack => [pack.id, pack]));
 		},
 		uniqueCharacters(): string[] {
@@ -232,21 +238,21 @@ export default defineComponent({
 				this.desc = false;
 			}
 		},
-		filterList(list: IPackWithState[], search: string): IPackWithState[] {
+		filterList(
+			list: DeepReadonly<Array<Pack>>,
+			search: string
+		): Array<DeepReadonly<Pack>> {
 			if (!search) return [...list];
-			return run(search, this.authors, list) as IPackWithState[];
+			return run(
+				search,
+				this.repo ? this.repo!.getAuthors() : {},
+				list as any
+			) as Pack[];
 		},
-		translatePackState(state: PackStates) {
-			switch (state) {
-				case PackStates.Unknown:
-					return 'Not added';
-				case PackStates.Installed:
-					return 'Installed';
-				case PackStates.Active:
-					return 'Active';
-				default:
-					exhaust(state);
-			}
+		translatePackState(state: Pack) {
+			if (state.loaded) return 'Active';
+			if (state.installed) return 'Installed';
+			return '';
 		},
 	},
 	watch: {

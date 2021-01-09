@@ -309,6 +309,7 @@ export default defineComponent({
 		// Moving this to the "mounted"-handler crashes safari over version 12.
 		// My best guess is because it runs in a microtask, which have been added in that Version.
 		this.updateArea();
+		Repo.setStore(this.$store);
 		window.addEventListener('resize', this.updateArea);
 		window.removeEventListener('keydown', this.onKeydown);
 		window.addEventListener('keydown', this.onKeydown);

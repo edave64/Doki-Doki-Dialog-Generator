@@ -13,8 +13,7 @@
 				class="list"
 				ref="list"
 				:search="search"
-				:authors="authors"
-				:packs="packsArgmented"
+				:repo="repo"
 				:disabled="!!selected"
 				@selected="onSelect"
 				@select-search-bar="$refs.searchBar.focus()"
@@ -24,8 +23,7 @@
 			<pack-display
 				ref="dialog"
 				class="pack-display"
-				:authors="authors"
-				:packs="packsArgmented"
+				:repo="repo"
 				:selected="selected"
 				show-back
 				@leave="leavePackDisplay"
@@ -44,6 +42,8 @@ import { SelectedEvent, IPackWithState, PackStates } from '../types';
 import PackDisplay from '../PackDisplay.vue';
 import environment from '@/environments/environment';
 import { defineComponent } from 'vue';
+import { Pack, Repo } from '@/models/repo';
+import { DeepReadonly } from '@/util/readonly';
 
 const repoUrl = 'https://edave64.github.io/Doki-Doki-Dialog-Generator-Packs/';
 
@@ -55,79 +55,16 @@ export default defineComponent({
 	},
 	data: () => ({
 		search: '',
+		packs: [] as DeepReadonly<Pack[]>,
 		authors: {} as IAuthors,
-		packs: [] as IPack[],
-		localPacks: [] as IPack[],
+		repo: null as null | Repo,
 		selected: null as string | null,
 	}),
-	computed: {
-		packsArgmented(): IPackWithState[] {
-			const loadedPacks = this.$store.state.content.contentPacks;
-			const repoPacks = this.packs;
-
-			const repoLookup = new Map(repoPacks.map(pack => [pack.id, pack]));
-			const loadedLookup = new Map(
-				loadedPacks.map(pack => [pack.packId, pack])
-			);
-			const localLookup = new Map(this.localPacks.map(pack => [pack.id, pack]));
-
-			const installedRet: IPackWithState[] = loadedPacks.map(pack => {
-				const repoPack = repoLookup.get(pack.packId!);
-				const isLoaded = loadedLookup.has(pack.packId!)
-					? PackStates.Active
-					: PackStates.Unknown;
-				const isInstalled = localLookup.has(pack.packId!)
-					? PackStates.Installed
-					: PackStates.Unknown;
-				const state: PackStates = isLoaded | isInstalled;
-
-				if (repoPack) {
-					return {
-						...repoPack,
-						state,
-					} as IPackWithState;
-				} else {
-					return {
-						state,
-						id: pack.packId,
-						characters: [],
-						name: pack.packId,
-						inLocalRepo: false,
-						preview: [],
-						kind: [],
-						description: '',
-						dddg1Path: '',
-						dddg2Path: '',
-						searchWords: [],
-						authors: [],
-					} as IPackWithState;
-				}
-			});
-
-			const notInstalledPacks = repoPacks
-				.filter(pack => !loadedLookup.has(pack.id))
-				.map(pack => {
-					return {
-						...pack,
-						state: PackStates.Unknown,
-					} as IPackWithState;
-				});
-
-			return [
-				...installedRet.filter(ret => !ret.id.startsWith('dddg.buildin.')),
-				...notInstalledPacks,
-			];
-		},
-	},
 	methods: {
 		focus(): void {},
 		setSearch(str: string): void {
 			this.selected = null;
 			this.search = str;
-		},
-		async fetchJSON<A>(path: string): Promise<A> {
-			const req = await fetch(path);
-			return await req.json();
 		},
 		leavePackDisplay(moveFocus: boolean) {
 			this.selected = null;
@@ -159,17 +96,10 @@ export default defineComponent({
 		},
 	},
 	async created() {
-		let localPacksPromise: Promise<IPack[]> | [] = [];
-
-		if (environment.supports.localRepo) {
-			localPacksPromise = this.fetchJSON(environment.localRepositoryUrl);
-		}
-
-		[this.packs, this.authors, this.localPacks] = await Promise.all([
-			this.fetchJSON<IPack[]>(repoUrl + 'repo.json'),
-			this.fetchJSON<IAuthors>(repoUrl + 'people.json'),
-			localPacksPromise,
-		]);
+		const repo = await Repo.getInstance();
+		this.repo = repo;
+		this.packs = repo.getPacks();
+		this.authors = repo.getAuthors();
 	},
 });
 </script>

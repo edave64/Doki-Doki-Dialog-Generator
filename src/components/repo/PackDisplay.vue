@@ -24,11 +24,11 @@
 		<section>
 			<button v-if="addable" @click="add">
 				<i class="material-icons">add</i>
-				Add {{ installable ? 'Temporarily' : '' }}
+				Activate {{ installable ? 'Temporarily' : '' }}
 			</button>
 			<button v-if="removable" @click="remove">
 				<i class="material-icons">remove</i>
-				Remove {{ uninstallable ? 'Temporarily' : '' }}
+				Deactivate {{ uninstallable ? 'Temporarily' : '' }}
 			</button>
 			<button v-if="installable" @click="add">
 				<i class="material-icons">add</i>
@@ -37,14 +37,6 @@
 			<button v-if="uninstallable" @click="remove">
 				<i class="material-icons">remove</i>
 				Uninstall
-			</button>
-			<button v-if="activatable" @click="add">
-				<i class="material-icons">add</i>
-				Activate
-			</button>
-			<button v-if="deactivatable" @click="remove">
-				<i class="material-icons">remove</i>
-				Deactivate
 			</button>
 		</section>
 		<section>
@@ -85,6 +77,8 @@ import { IPackWithState, PackStates } from './types';
 import { defineComponent, PropType } from 'vue';
 import { IRemovePacksAction } from '@/store';
 import L from '@/components/ui/link.vue';
+import { Pack, Repo } from '@/models/repo';
+import { DeepReadonly } from '@/util/readonly';
 
 const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 	['reddit', 'https://reddit.com/u/%1', 'reddit.png'],
@@ -104,12 +98,8 @@ export default defineComponent({
 			type: String,
 			required: true,
 		},
-		authors: {
-			type: Object as PropType<IAuthors>,
-			require: true,
-		},
-		packs: {
-			type: Object as PropType<IPackWithState[]>,
+		repo: {
+			type: Object as PropType<Repo>,
 			require: true,
 		},
 		showBack: {
@@ -118,40 +108,25 @@ export default defineComponent({
 		},
 	},
 	computed: {
-		pack(): IPackWithState {
-			return this.packs!.find(pack => pack.id === this.selected)!;
+		pack(): DeepReadonly<Pack> {
+			return this.repo!.getPack(this.selected);
 		},
 		backgroundImage(): string {
 			return this.pack.preview.map(preview => `url('${preview}')`).join(',');
 		},
-		activatable(): boolean {
-			if (!environment.supports.autoLoading) return false;
-			if (!(this.pack.state & PackStates.Installed)) return false;
-			return !(this.pack.state & PackStates.Active);
-		},
-		deactivatable(): boolean {
-			if (!environment.supports.autoLoading) return false;
-			if (!(this.pack.state & PackStates.Installed)) return false;
-			return !!(this.pack.state & PackStates.Active);
-		},
 		installable(): boolean {
 			if (!environment.supports.localRepo) return false;
-			if (this.pack.state & PackStates.Installed) return false;
-			return true;
+			return !this.pack.installed;
 		},
 		uninstallable(): boolean {
 			if (!environment.supports.localRepo) return false;
-			if (!(this.pack.state & PackStates.Installed)) return false;
-			return true;
+			return this.pack.installed;
 		},
 		removable(): boolean {
-			return !!(this.pack.state & PackStates.Active);
+			return this.pack.loaded;
 		},
 		addable(): boolean {
-			return this.pack.state === PackStates.Unknown;
-		},
-		isAdded(): boolean {
-			return false;
+			return !this.pack.loaded;
 		},
 	},
 	methods: {
@@ -159,12 +134,12 @@ export default defineComponent({
 			(this.$refs.toFocus as HTMLElement).focus();
 		},
 		authorName(authorId: string) {
-			const author = this.authors![authorId];
+			const author = this.repo!.getAuthor(authorId);
 			if (author && author.currentName) return author.currentName;
 			return authorId;
 		},
 		authorsLinks(authorId: string): AuthorLink[] {
-			const author = this.authors![authorId];
+			const author = this.repo!.getAuthor(authorId);
 			if (!author) return [];
 			return linkablePlatforms
 				.filter(platform => author[platform[0]])
