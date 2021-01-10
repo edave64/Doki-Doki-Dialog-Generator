@@ -1,5 +1,6 @@
 import { ITextStyle } from '@/renderer/textRenderer/textRenderer';
 import { BaseTextStyle } from './textBox';
+import { nameboxStrokeDefaultColor } from './textBoxCustom';
 
 // tslint:disable: no-magic-numbers
 export const NotificationBackgroundColor = '#ffe6f4';
@@ -13,7 +14,7 @@ export const NotificationOkTextStyle: ITextStyle = {
 	...BaseTextStyle,
 	fontName: 'riffic',
 	fontSize: 24,
-	strokeColor: '#bb5599',
+	strokeColor: nameboxStrokeDefaultColor,
 	strokeWidth: 8,
 	letterSpacing: 1,
 	color: 'white',

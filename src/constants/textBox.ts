@@ -1,5 +1,6 @@
 import { ITextStyle } from '@/renderer/textRenderer/textRenderer';
 import { screenWidth } from '@/constants/base';
+import { nameboxStrokeDefaultColor } from './textBoxCustom';
 
 // tslint:disable: no-magic-numbers
 export const TextBoxWidth = 816;
@@ -50,7 +51,7 @@ export const NameboxTextStyle: ITextStyle = {
 	...BaseTextStyle,
 	fontName: 'riffic',
 	fontSize: 24,
-	strokeColor: '#bb5599',
+	strokeColor: nameboxStrokeDefaultColor,
 	strokeWidth: 6,
 	color: 'white',
 	letterSpacing: 1,

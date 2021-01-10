@@ -8,7 +8,9 @@ export class HSLAColor implements IColor {
 		public readonly s: number,
 		public readonly l: number,
 		public readonly a: number
-	) {}
+	) {
+		Object.freeze(this);
+	}
 
 	public toCss(): string {
 		if (this.a >= 1) {
