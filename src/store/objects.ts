@@ -294,7 +294,7 @@ export default {
 			const allSourceIds = [...sourceOrders.onTopOrder, ...sourceOrders.order];
 			const transationTable = new Map<string, string>();
 			for (const sourceId of allSourceIds) {
-				const targetId = `copy_${sourceId}_${++lastCopyId}`;
+				const targetId = `copy_${++lastCopyId}`;
 				transationTable.set(sourceId, targetId);
 			}
 			for (const sourceId of allSourceIds) {
@@ -333,7 +333,7 @@ export default {
 			commit('create', {
 				object: {
 					...oldObject,
-					id: `copy_${oldObject.id}_${++lastCopyId}`,
+					id: `copy_${++lastCopyId}`,
 					panelId: rootState.panels.currentPanel,
 				},
 			} as ICreateObjectMutation);
