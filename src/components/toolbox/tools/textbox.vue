@@ -65,6 +65,26 @@
 					<table v-if="textBoxStyle === 'custom'">
 						<tr>
 							<td>
+								<label for="custom_namebox_width">Namebox width:</label>
+							</td>
+							<td>
+								<input
+									id="custom_namebox_width"
+									type="number"
+									style="width: 48px;"
+									v-model.number="customNameboxWidth"
+									:disabled="overrideColor"
+									@keydown.stop
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<toggle v-model="overrideColor" label="Override color" />
+							</td>
+						</tr>
+						<tr v-if="overrideColor">
+							<td>
 								<label for="textbox_color">Color:</label>
 							</td>
 							<td>
@@ -76,21 +96,7 @@
 								/>
 							</td>
 						</tr>
-						<tr>
-							<td>
-								<label for="custom_namebox_width">Namebox width:</label>
-							</td>
-							<td>
-								<input
-									id="custom_namebox_width"
-									type="number"
-									style="width: 48px;"
-									v-model.number="customNameboxWidth"
-									@keydown.stop
-								/>
-							</td>
-						</tr>
-						<tr>
+						<tr v-if="overrideColor">
 							<td colspan="2">
 								<toggle
 									id="derive_custom_colors"
@@ -99,7 +105,7 @@
 								/>
 							</td>
 						</tr>
-						<template v-if="!deriveCustomColors">
+						<template v-if="overrideColor && !deriveCustomColors">
 							<tr>
 								<td>
 									<label for="custom_controls_color">Controls Color:</label>
@@ -290,6 +296,7 @@ export default defineComponent({
 		showContinueArrow: setable('continue', 'objects/setContinueArrow'),
 		dialog: setable('text', 'objects/setText'),
 		textBoxStyle: setable('style', 'objects/setStyle'),
+		overrideColor: setable('overrideColor', 'objects/setColorOverride'),
 		deriveCustomColors: setable(
 			'deriveCustomColors',
 			'objects/setDeriveCustomColors'

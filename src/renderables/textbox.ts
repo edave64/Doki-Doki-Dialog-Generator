@@ -42,6 +42,7 @@ import {
 	textboxRoundingBuffer,
 	textboxRounding,
 	textboxOutlineColorDelta,
+	textboxDefaultColor,
 } from '@/constants/textBoxCustom';
 import { ScalingRenderable } from './scalingRenderable';
 import { Store } from 'vuex';
@@ -74,13 +75,10 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 	}
 
 	public get customColor(): string {
-		if (
-			this.obj.style === 'normal' &&
-			this.refObject &&
-			this.refObject.textboxColor
-		)
+		if (this.obj.overrideColor) return this.obj.customColor;
+		if (this.refObject && this.refObject.textboxColor)
 			return this.refObject.textboxColor;
-		return this.obj.customColor;
+		return textboxDefaultColor;
 	}
 
 	public get controlColor(): string {

@@ -14,12 +14,19 @@ import { IRootState } from '..';
 import { baseProps } from './baseObjectProps';
 import { screenWidth } from '@/constants/base';
 import { rotateAround } from '@/util/rotation';
+import {
+	controlsDefaultColor,
+	nameboxDefaultColor,
+	nameboxStrokeDefaultColor,
+	textboxDefaultColor,
+} from '@/constants/textBoxCustom';
 export interface ITextBox extends IObject {
 	type: 'textBox';
 	text: string;
 	talkingObjId: null | '$other$' | string;
 	talkingOther: string;
 	style: 'normal' | 'corrupt' | 'custom' | 'none';
+	overrideColor: boolean;
 	customColor: string;
 	deriveCustomColors: boolean;
 	customControlsColor: string;
@@ -129,6 +136,11 @@ export const textBoxMutations: MutationTree<IObjectsState> = {
 		obj.rotation = command.resetBounds.rotation;
 		++obj.version;
 	},
+	setColorOverride(state, command: ISetColorOverrideMutation) {
+		const obj = state.objects[command.id] as ITextBox;
+		obj.overrideColor = command.overrideColor;
+		++obj.version;
+	},
 };
 
 let lastTextBoxId = 0;
@@ -159,12 +171,13 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 				autoQuoting: true,
 				autoWrap: true,
 				style: 'normal',
-				customColor: '#ffa8d2',
+				overrideColor: false,
+				customColor: textboxDefaultColor,
 				deriveCustomColors: true,
-				customControlsColor: '#552222',
-				customNameboxColor: '#ffeef6',
+				customControlsColor: controlsDefaultColor,
+				customNameboxColor: nameboxDefaultColor,
 				customNameboxWidth: 168,
-				customNameboxStroke: '#bb5599',
+				customNameboxStroke: nameboxStrokeDefaultColor,
 				talkingObjId: null,
 				talkingOther: '',
 				text: '',
@@ -311,6 +324,10 @@ export interface ISetAutoWrappingMutation extends ICommand {
 
 export interface ISetResetBoundsMutation extends ICommand {
 	readonly resetBounds: ITextBox['resetBounds'];
+}
+
+export interface ISetColorOverrideMutation extends ICommand {
+	readonly overrideColor: boolean;
 }
 
 export interface ISetTextBoxControlsSkipMutation extends ICommand {

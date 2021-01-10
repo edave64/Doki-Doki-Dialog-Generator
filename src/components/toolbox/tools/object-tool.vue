@@ -103,6 +103,7 @@ import {
 } from '@/store/objects';
 import ModalDialog from '@/components/ModalDialog.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
+import { textboxDefaultColor } from '@/constants/textBoxCustom';
 
 const setable = genericSetable<IPoem>();
 
@@ -161,7 +162,7 @@ export default defineComponent({
 				this.vuexHistory.transaction(async () => {
 					this.$store.commit('objects/setTextboxColor', {
 						id: this.object.id,
-						textboxColor: val ? '#ffa8d2' : null,
+						textboxColor: val ? textboxDefaultColor : null,
 					} as ICopyObjectToClipboardAction);
 				});
 			},
