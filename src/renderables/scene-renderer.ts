@@ -83,7 +83,7 @@ export class SceneRenderer {
 			for (const object of this.getRenderObjects()) {
 				let selected = false;
 				if (object instanceof OffscreenRenderable) {
-					object.updatedContent(this.store);
+					object.updatedContent(this.store, this.panelId);
 					selected = selection === object.id;
 				}
 				await object.render(selected, rx);

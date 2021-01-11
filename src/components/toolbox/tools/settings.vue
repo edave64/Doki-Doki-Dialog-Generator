@@ -73,6 +73,10 @@
 			v-model="lqRendering"
 		/>
 		<toggle label="NSFW Mode?" v-model="nsfw" />
+		<toggle
+			label="Enlarge talking objects? (Default value)"
+			v-model="defaultCharacterTalkingZoom"
+		/>
 		<table>
 			<tr>
 				<td><label>Theme:</label></td>
@@ -101,7 +105,6 @@ export default defineComponent({
 	mixins: [PanelMixin],
 	components: { Toggle, ModalDialog, L },
 	data: () => ({
-		savesEnabledInEnv: true,
 		allowSavesModal: false,
 		denySavesModal: false,
 		waitOnSaveChange: false,
@@ -116,6 +119,9 @@ export default defineComponent({
 				environment.savingEnabled = allowed;
 				this.saveSettings();
 			},
+		},
+		savesEnabledInEnv(): boolean {
+			return environment.supports.optionalSaving;
 		},
 		lqAllowed(): boolean {
 			return environment.supports.lq;
@@ -138,6 +144,17 @@ export default defineComponent({
 			set(value: boolean) {
 				this.vuexHistory.transaction(async () => {
 					await this.$store.commit('ui/setNsfw', value);
+					this.saveSettings();
+				});
+			},
+		},
+		defaultCharacterTalkingZoom: {
+			get(): boolean {
+				return !!this.$store.state.ui.defaultCharacterTalkingZoom;
+			},
+			set(value: boolean) {
+				this.vuexHistory.transaction(async () => {
+					await this.$store.commit('ui/setDefaultCharacterTalkingZoom', value);
 					this.saveSettings();
 				});
 			},
@@ -177,6 +194,8 @@ export default defineComponent({
 				lq: this.$store.state.ui.lqRendering,
 				nsfw: this.$store.state.ui.nsfw,
 				darkMode: this.$store.state.ui.useDarkTheme ?? undefined,
+				defaultCharacterTalkingZoom: this.$store.state.ui
+					.defaultCharacterTalkingZoom,
 			});
 		},
 	},

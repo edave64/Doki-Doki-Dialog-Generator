@@ -62,6 +62,7 @@ export interface IObject extends IHasSpriteFilters {
 	onTop: boolean;
 	label: null | string;
 	textboxColor: string | null;
+	enlargeWhenTalking: boolean;
 }
 
 export type ObjectTypes =
@@ -160,6 +161,11 @@ export default {
 		setTextboxColor(state, command: ISetTextBoxColor) {
 			const obj = state.objects[command.id];
 			obj.textboxColor = command.textboxColor;
+		},
+		setEnlargeWhenTalking(state, command: ISetEnlargeWhenTalkingMutation) {
+			const obj = state.objects[command.id] as ITextBox;
+			obj.enlargeWhenTalking = command.enlargeWhenTalking;
+			++obj.version;
 		},
 		...spriteMutations,
 		...characterMutations,
@@ -435,6 +441,10 @@ export interface ISetLabelMutation extends ICommand {
 
 export interface ISetTextBoxColor extends ICommand {
 	readonly textboxColor: string | null;
+}
+
+export interface ISetEnlargeWhenTalkingMutation extends ICommand {
+	readonly enlargeWhenTalking: boolean;
 }
 
 export interface IObjectShiftLayerAction extends ICommand {

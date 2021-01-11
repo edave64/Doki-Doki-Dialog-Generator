@@ -79,6 +79,7 @@ export const poemActions: ActionTree<IObjectsState, IRootState> = {
 				filters: [],
 				label: null,
 				textboxColor: null,
+				enlargeWhenTalking: true,
 			} as IPoem,
 		} as ICreateObjectMutation);
 		return id;

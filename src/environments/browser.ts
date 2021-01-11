@@ -123,10 +123,11 @@ export class Browser implements IEnvironment {
 	public async loadSettings(): Promise<Settings> {
 		await this.loading;
 		await this.creatingDB;
-		const base = {
+		const base: Settings = {
 			darkMode: undefined,
 			lq: true,
 			nsfw: false,
+			defaultCharacterTalkingZoom: true,
 		};
 		if (!this.isSavingEnabled.value) return base;
 		return {

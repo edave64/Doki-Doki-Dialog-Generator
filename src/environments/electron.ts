@@ -86,15 +86,31 @@ export class Electron implements IEnvironment {
 			'nsfw',
 			settings.nsfw
 		);
+		await this.electron.ipcRenderer.sendConvo(
+			'config.set',
+			'darkMode',
+			settings.darkMode ?? undefined
+		);
+		await this.electron.ipcRenderer.sendConvo(
+			'config.set',
+			'defaultCharacterTalkingZoom',
+			settings.defaultCharacterTalkingZoom
+		);
 	}
 	public async loadSettings(): Promise<Settings> {
 		return {
-			lq: await this.electron.ipcRenderer.sendConvo('config.get', 'lq'),
-			nsfw: await this.electron.ipcRenderer.sendConvo('config.get', 'nsfw'),
-			darkMode: await this.electron.ipcRenderer.sendConvo(
-				'config.get',
-				'darkMode'
-			),
+			lq: false,
+			nsfw:
+				(await this.electron.ipcRenderer.sendConvo('config.get', 'nsfw')) ??
+				false,
+			darkMode:
+				(await this.electron.ipcRenderer.sendConvo('config.get', 'darkMode')) ??
+				undefined,
+			defaultCharacterTalkingZoom:
+				(await this.electron.ipcRenderer.sendConvo(
+					'config.get',
+					'defaultCharacterTalkingZoom'
+				)) ?? undefined,
 		};
 	}
 

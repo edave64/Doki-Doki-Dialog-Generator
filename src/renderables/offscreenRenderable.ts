@@ -9,6 +9,7 @@ import { IObject } from '@/store/objects';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { rotateAround } from '@/util/rotation';
+import { ITextBox } from '@/store/objectTypes/textbox';
 
 export abstract class OffscreenRenderable<Obj extends IObject> {
 	private localRenderer: Renderer | null = null;
@@ -198,5 +199,8 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 		};
 	}
 
-	public updatedContent(_current: Store<DeepReadonly<IRootState>>): void {}
+	public updatedContent(
+		_current: Store<DeepReadonly<IRootState>>,
+		panelId: string
+	): void {}
 }

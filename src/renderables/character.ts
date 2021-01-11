@@ -25,7 +25,11 @@ export class Character extends AssetListRenderable<ICharacter> {
 		super(obj);
 	}
 
-	public updatedContent(store: Store<DeepReadonly<IRootState>>): void {
+	public updatedContent(
+		store: Store<DeepReadonly<IRootState>>,
+		panelId: string
+	): void {
+		super.updatedContent(store, panelId);
 		this.data = getData(store, this.obj);
 	}
 
@@ -82,13 +86,17 @@ export class Character extends AssetListRenderable<ICharacter> {
 		return pose.size[0];
 	}
 
+	public get zoom(): number {
+		let zoom = 1;
+		if (this.obj.close) zoom *= 2;
+		return zoom;
+	}
+
 	public get width() {
-		const zoom = this.obj.close ? 2 : 1;
-		return this.obj.width * zoom;
+		return this.obj.width * this.zoom;
 	}
 
 	public get height() {
-		const zoom = this.obj.close ? 2 : 1;
-		return this.obj.height * zoom;
+		return this.obj.height * this.zoom;
 	}
 }

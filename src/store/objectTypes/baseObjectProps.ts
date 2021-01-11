@@ -11,5 +11,6 @@ export function baseProps() {
 		filters: [],
 		label: null,
 		textboxColor: null,
+		enlargeWhenTalking: false,
 	};
 }

@@ -57,6 +57,11 @@
 			<slot name="options" />
 			<d-fieldset v-if="hasLabel" title="Textbox settings">
 				<toggle
+					label="Enlarge when talking"
+					v-model="enlargeWhenTalking"
+					v-if="object.type === 'character' || object.type === 'sprite'"
+				/>
+				<toggle
 					label="Use custom textbox color"
 					v-model="useCustomTextboxColor"
 				/>
@@ -144,6 +149,10 @@ export default defineComponent({
 	computed: {
 		flip: setable('flip', 'objects/setFlip'),
 		rotation: setable('rotation', 'objects/setRotation'),
+		enlargeWhenTalking: setable(
+			'enlargeWhenTalking',
+			'objects/setEnlargeWhenTalking'
+		),
 		finalColorHandler(): Handler | null {
 			return this.localColorHandler || this.colorHandler || null;
 		},

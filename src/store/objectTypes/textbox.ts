@@ -330,6 +330,10 @@ export interface ISetColorOverrideMutation extends ICommand {
 	readonly overrideColor: boolean;
 }
 
+export interface ISetColorOverrideMutation extends ICommand {
+	readonly overrideColor: boolean;
+}
+
 export interface ISetTextBoxControlsSkipMutation extends ICommand {
 	readonly skip: boolean;
 }

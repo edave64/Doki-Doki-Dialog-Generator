@@ -9,6 +9,7 @@ export interface IUiState {
 	lastDownload: string | null;
 	clipboard: string | null;
 	useDarkTheme: boolean | null;
+	defaultCharacterTalkingZoom: boolean;
 }
 
 export default {
@@ -21,6 +22,7 @@ export default {
 		lastDownload: null,
 		clipboard: null,
 		useDarkTheme: null,
+		defaultCharacterTalkingZoom: true,
 	},
 	mutations: {
 		setVertical(state, vertical: boolean) {
@@ -43,6 +45,9 @@ export default {
 		},
 		setDarkTheme(state, theme: boolean | null) {
 			state.useDarkTheme = theme;
+		},
+		setDefaultCharacterTalkingZoom(state, zoom: boolean) {
+			state.defaultCharacterTalkingZoom = zoom;
 		},
 	},
 } as Module<IUiState, IRootState>;

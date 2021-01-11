@@ -170,6 +170,7 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 				styleGroupId: 0,
 				posePositions: {},
 				label: char.label || char.id,
+				enlargeWhenTalking: rootState.ui.defaultCharacterTalkingZoom,
 			} as ICharacter,
 		} as ICreateObjectMutation);
 	},

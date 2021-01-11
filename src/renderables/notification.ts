@@ -28,8 +28,6 @@ export class Notification extends ScalingRenderable<INotification> {
 		return true;
 	}
 
-	public updatedContent(): void {}
-
 	public get id() {
 		return this.obj.id;
 	}

@@ -22,6 +22,7 @@ export interface Settings {
 	lq?: boolean;
 	nsfw?: boolean;
 	darkMode?: boolean;
+	defaultCharacterTalkingZoom?: boolean;
 }
 
 export interface IEnvironment {

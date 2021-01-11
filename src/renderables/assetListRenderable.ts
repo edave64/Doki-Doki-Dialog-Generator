@@ -6,22 +6,46 @@ import { ErrorAsset } from '../models/error-asset';
 import { DeepReadonly } from '@/util/readonly';
 import { IObject } from '@/store/objects';
 import { OffscreenRenderable } from './offscreenRenderable';
+import { Store } from 'vuex';
+import { IRootState } from '@/store';
+import { ITextBox } from '@/store/objectTypes/textbox';
 
 export abstract class AssetListRenderable<
 	Obj extends IObject
 > extends OffscreenRenderable<Obj> {
+	protected refTextbox: ITextBox | null = null;
 	protected abstract getAssetList(): Array<IDrawAssetsUnloaded | IDrawAssets>;
 	protected get canvasDrawWidth(): number {
-		return this.width;
+		return this.width * this.textboxZoom;
 	}
 	protected get canvasDrawHeight(): number {
-		return this.height;
+		return this.height * this.textboxZoom;
 	}
 	protected get canvasDrawPosX(): number {
-		return this.x - this.width / 2;
+		return this.x - this.width / 2 + (this.height - this.canvasDrawHeight) / 2;
 	}
 	protected get canvasDrawPosY(): number {
-		return this.y;
+		return this.y + (this.height - this.canvasDrawHeight);
+	}
+
+	protected get textboxZoom(): number {
+		return this.obj.enlargeWhenTalking && this.refTextbox ? 1.05 : 1;
+	}
+
+	public updatedContent(
+		_current: Store<DeepReadonly<IRootState>>,
+		panelId: string
+	): void {
+		const panel = _current.state.objects.panels[panelId];
+		const inPanel = [...panel.order, ...panel.onTopOrder];
+		this.refTextbox = null;
+		for (const key of inPanel) {
+			const obj = _current.state.objects.objects[key] as ITextBox;
+			if (obj.type === 'textBox' && obj.talkingObjId === this.obj.id) {
+				this.refTextbox = obj;
+				return;
+			}
+		}
 	}
 
 	protected async renderLocal(rx: RenderContext): Promise<void> {

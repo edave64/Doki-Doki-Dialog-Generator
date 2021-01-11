@@ -362,6 +362,10 @@ export default defineComponent({
 		this.vuexHistory.transaction(async () => {
 			this.$store.commit('ui/setLqRendering', settings.lq ?? false);
 			this.$store.commit('ui/setDarkTheme', settings.darkMode ?? null);
+			this.$store.commit(
+				'ui/setDefaultCharacterTalkingZoom',
+				settings.defaultCharacterTalkingZoom ?? true
+			);
 
 			await this.$store.dispatch('content/loadContentPacks', [
 				`${process.env.BASE_URL}packs/buildin.base.backgrounds.json`,

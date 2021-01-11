@@ -411,6 +411,7 @@ export default defineComponent({
 						},
 						label: null,
 						textboxColor: null,
+						enlargeWhenTalking: false,
 					},
 					await this.temporaryCharacterModel
 				);

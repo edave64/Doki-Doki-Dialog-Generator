@@ -119,7 +119,12 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 			},
 		};
 	}
-	public updatedContent(_current: Store<DeepReadonly<IRootState>>): void {
+	public updatedContent(
+		_current: Store<DeepReadonly<IRootState>>,
+		panelId: string
+	): void {
+		super.updatedContent(_current, panelId);
+
 		const talkingObj = this.obj.talkingObjId;
 		if (talkingObj !== null && talkingObj !== '$other$') {
 			const obj = _current.state.objects.objects[talkingObj] as IObject;

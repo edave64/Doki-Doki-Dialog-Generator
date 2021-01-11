@@ -32,6 +32,7 @@ export const spriteActions: ActionTree<IObjectsState, IRootState> = {
 				ratio: asset.width / asset.height,
 				type: 'sprite',
 				y: 0,
+				enlargeWhenTalking: rootState.ui.defaultCharacterTalkingZoom,
 			} as ISprite,
 		} as ICreateObjectMutation);
 	},

@@ -53,6 +53,11 @@ export class Sprite extends AssetListRenderable<ISprite> {
 		return this.assets || [];
 	}
 
+	public get zoom() {
+		if (this.obj.enlargeWhenTalking && this.refTextbox) return 1.05;
+		return 1;
+	}
+
 	public get width() {
 		return this.obj.width;
 	}
@@ -60,6 +65,4 @@ export class Sprite extends AssetListRenderable<ISprite> {
 	public get height() {
 		return this.obj.height;
 	}
-
-	public updatedContent(): void {}
 }
