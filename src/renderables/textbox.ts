@@ -218,7 +218,8 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		if (this.refObject && this.refObject.nameboxWidth !== null) {
 			return this.refObject.nameboxWidth;
 		}
-		if (this.obj.nameboxWidth !== null) return this.obj.nameboxWidth;
+		if (this.obj.customNameboxWidth !== null)
+			return this.obj.customNameboxWidth;
 		return NameboxWidth;
 	}
 
