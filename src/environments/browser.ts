@@ -205,14 +205,25 @@ export class Browser implements IEnvironment {
 }
 
 const IndexedDBHandler = {
-	indexedDB: (window.indexedDB ||
-		(window as any).mozIndexedDB ||
-		(window as any).webkitIndexedDB ||
-		(window as any).msIndexedDB) as IDBFactory,
-	transaction: ((window.IDBTransaction as any) ||
-		(window as any).webkitIDBTransaction ||
-		(window as any).msIDBTransaction) as IDBTransaction,
-
+	indexedDB: (() => {
+		try {
+			return (window.indexedDB ||
+				(window as any).mozIndexedDB ||
+				(window as any).webkitIndexedDB ||
+				(window as any).msIndexedDB) as IDBFactory;
+		} catch (e) {
+			return null;
+		}
+	})(),
+	transaction: (() => {
+		try {
+			return ((window.IDBTransaction as any) ||
+				(window as any).webkitIDBTransaction ||
+				(window as any).msIDBTransaction) as IDBTransaction;
+		} catch (e) {
+			return null;
+		}
+	})(),
 	db: null as null | Promise<IDBDatabase>,
 
 	canSave(): boolean {
@@ -232,7 +243,7 @@ const IndexedDBHandler = {
 	createDB(): Promise<IDBDatabase> {
 		if (IndexedDBHandler.db) return IndexedDBHandler.db;
 		return (IndexedDBHandler.db = new Promise((resolve, reject) => {
-			const req = IndexedDBHandler.indexedDB.open('dddg', 1);
+			const req = IndexedDBHandler.indexedDB!.open('dddg', 1);
 			req.onerror = event => {
 				reject(event);
 			};
@@ -255,7 +266,7 @@ const IndexedDBHandler = {
 				resolve();
 				return;
 			}
-			const req = IndexedDBHandler.indexedDB.deleteDatabase('dddg');
+			const req = IndexedDBHandler.indexedDB!.deleteDatabase('dddg');
 			IndexedDBHandler.db = null;
 			req.onerror = event => {
 				reject(event);
