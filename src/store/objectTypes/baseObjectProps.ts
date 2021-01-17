@@ -12,5 +12,6 @@ export function baseProps() {
 		label: null,
 		textboxColor: null,
 		enlargeWhenTalking: false,
+		nameboxWidth: null,
 	};
 }

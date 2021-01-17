@@ -65,8 +65,8 @@
 					label="Use custom textbox color"
 					v-model="useCustomTextboxColor"
 				/>
-				<table v-if="useCustomTextboxColor">
-					<tr>
+				<table>
+					<tr v-if="useCustomTextboxColor">
 						<td>
 							<label for="textbox_color">Color:</label>
 						</td>
@@ -76,6 +76,19 @@
 								class="color-button"
 								:style="{ background: object.textboxColor }"
 								@click="selectTextboxColor"
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="namebox_width">Namebox width:</label>
+						</td>
+						<td>
+							<input
+								id="namebox_width"
+								type="number"
+								:placeholder="defaultNameboxWidth"
+								v-model.lazy="nameboxWidth"
 							/>
 						</td>
 					</tr>
@@ -104,11 +117,13 @@ import {
 	ICopyObjectToClipboardAction,
 	IObject,
 	ISetLabelMutation,
+	ISetNameboxWidthMutation,
 	ISetTextBoxColor,
 } from '@/store/objects';
 import ModalDialog from '@/components/ModalDialog.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import { textboxDefaultColor } from '@/constants/textBoxCustom';
+import { NameboxWidth } from '@/constants/textBox';
 
 const setable = genericSetable<IPoem>();
 
@@ -153,6 +168,27 @@ export default defineComponent({
 			'enlargeWhenTalking',
 			'objects/setEnlargeWhenTalking'
 		),
+		nameboxWidth: {
+			get(): string {
+				debugger;
+				const val = this.object.nameboxWidth;
+				if (val === null) return '';
+				return val + '';
+			},
+			set(value: string) {
+				debugger;
+				const val = value.trim() === '' ? null : parseInt(value);
+				this.vuexHistory.transaction(async () => {
+					this.$store.commit('objects/setObjectNameboxWidth', {
+						id: this.object.id,
+						nameboxWidth: val,
+					} as ISetNameboxWidthMutation);
+				});
+			},
+		},
+		defaultNameboxWidth(): number {
+			return NameboxWidth;
+		},
 		finalColorHandler(): Handler | null {
 			return this.localColorHandler || this.colorHandler || null;
 		},
@@ -246,6 +282,10 @@ export interface Handler {
 	height: 24px;
 	width: 48px;
 	vertical-align: middle;
+}
+
+#namebox_width {
+	width: 5em;
 }
 </style>
 <style lang="scss">

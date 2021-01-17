@@ -68,7 +68,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		if (
 			this.obj.style === 'normal' &&
 			this.refObject &&
-			this.refObject.textboxColor
+			(this.refObject.textboxColor || this.refObject.nameboxWidth !== null)
 		)
 			return 'custom';
 		return this.obj.style;
@@ -212,6 +212,16 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		return this.obj.customNameboxColor;
 	}
 
+	private get nameboxWidth(): number {
+		debugger;
+		if (this.forcedStyle !== 'custom') return NameboxWidth;
+		if (this.refObject && this.refObject.nameboxWidth !== null) {
+			return this.refObject.nameboxWidth;
+		}
+		if (this.obj.nameboxWidth !== null) return this.obj.nameboxWidth;
+		return NameboxWidth;
+	}
+
 	private async renderNamebox(
 		rx: RenderContext,
 		x: number,
@@ -228,7 +238,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 				strokeWidth: 6,
 				color: '#FFFFFF',
 			};
-			w = this.obj.customNameboxWidth;
+			w = this.nameboxWidth;
 			await rx.customTransform(
 				async ctx => {
 					ctx.beginPath();
@@ -262,14 +272,14 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 				}
 			);
 		} else if (this.forcedStyle !== 'none') {
-			w = NameboxWidth;
+			w = this.nameboxWidth;
 			rx.drawImage({
 				image: await getAsset('namebox'),
 				x,
 				y,
 			});
 		} else {
-			w = NameboxWidth;
+			w = this.nameboxWidth;
 		}
 
 		const render = new TextRenderer(name, style);
