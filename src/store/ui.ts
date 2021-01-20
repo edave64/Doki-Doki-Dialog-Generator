@@ -10,6 +10,7 @@ export interface IUiState {
 	clipboard: string | null;
 	useDarkTheme: boolean | null;
 	defaultCharacterTalkingZoom: boolean;
+	pickColor: boolean;
 }
 
 export default {
@@ -23,6 +24,7 @@ export default {
 		clipboard: null,
 		useDarkTheme: null,
 		defaultCharacterTalkingZoom: true,
+		pickColor: false,
 	},
 	mutations: {
 		setVertical(state, vertical: boolean) {
@@ -48,6 +50,9 @@ export default {
 		},
 		setDefaultCharacterTalkingZoom(state, zoom: boolean) {
 			state.defaultCharacterTalkingZoom = zoom;
+		},
+		setColorPicker(state, pickColor: boolean) {
+			state.pickColor = pickColor;
 		},
 	},
 } as Module<IUiState, IRootState>;

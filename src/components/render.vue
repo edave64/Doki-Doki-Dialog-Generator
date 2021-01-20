@@ -4,7 +4,7 @@
 		ref="sd"
 		:height="bitmapHeight"
 		:width="bitmapWidth"
-		:style="{ width: canvasWidth + 'px', height: canvasHeight + 'px' }"
+		:style="{ width: canvasWidth + 'px', height: canvasHeight + 'px', cursor }"
 		draggable="true"
 		@click="onUiClick"
 		@touchstart="onTouchStart"
@@ -24,7 +24,10 @@
 import { MutationPayload } from 'vuex';
 import { RenderContext } from '@/renderer/rendererContext';
 import { registerAsset } from '@/asset-manager';
-import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
+import eventBus, {
+	ColorPickedEvent,
+	InvalidateRenderEvent,
+} from '@/eventbus/event-bus';
 import { IObject, ISetObjectPositionMutation } from '@/store/objects';
 import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
 import { SceneRenderer } from '../renderables/scene-renderer';
@@ -71,6 +74,12 @@ export default defineComponent({
 		},
 		bitmapWidth(): number {
 			return screenWidth;
+		},
+		pickerMode(): boolean {
+			return this.$store.state.ui.pickColor;
+		},
+		cursor(): 'default' | 'crosshair' {
+			return this.pickerMode ? 'crosshair' : 'default';
 		},
 	},
 	methods: {
@@ -142,12 +151,24 @@ export default defineComponent({
 			return [sx, sy];
 		},
 		onUiClick(e: MouseEvent): void {
+			const [sx, sy] = this.toRendererCoordinate(e.clientX, e.clientY);
+
+			if (this.pickerMode) {
+				const data = this.sdCtx.getImageData(sx, sy, 1, 1).data;
+				const hex = `rgba(${data[0].toString()},${data[1].toString()},${data[2].toString()},${(
+					data[3] / 255
+				).toString()})`;
+				this.vuexHistory.transaction(() => {
+					this.$store.commit('ui/setColorPicker', false);
+					eventBus.fire(new ColorPickedEvent(hex));
+				});
+				return;
+			}
+
 			if (this.dropPreventClick) {
 				this.dropPreventClick = false;
 				return;
 			}
-
-			const [sx, sy] = this.toRendererCoordinate(e.clientX, e.clientY);
 
 			const objects = this.sceneRender.objectsAt(sx, sy);
 
@@ -164,7 +185,9 @@ export default defineComponent({
 			}
 
 			if (this.$store.state.ui.selection === selectedObject) return;
-			this.$store.commit('ui/setSelection', selectedObject);
+			this.vuexHistory.transaction(() => {
+				this.$store.commit('ui/setSelection', selectedObject);
+			});
 		},
 		onDragStart(e: DragEvent) {
 			e.preventDefault();

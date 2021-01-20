@@ -57,6 +57,11 @@ export class ShowMessageEvent implements IEvent {
 	public constructor(public message: string) {}
 }
 
+export class ColorPickedEvent implements IEvent {
+	public static readonly kind = 'ColorPickedEvent';
+	public readonly kind = 'ColorPickedEvent';
+	public constructor(public color: string) {}
+}
 export class VueErrorEvent implements IEvent {
 	public static readonly kind = 'VueErrorEvent';
 	public readonly kind = 'VueErrorEvent';

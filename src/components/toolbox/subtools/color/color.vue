@@ -25,6 +25,7 @@
 				/>
 			</div>
 			<button @click="addSwatch">Add as swatch</button>
+			<d-button icon="colorize" @click="pickColor">Pick color</d-button>
 		</div>
 		<div id="color-swatches" :class="{ vertical }">
 			<button
@@ -49,15 +50,18 @@ import {
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset, ReplaceContentPackAction } from '@/store/content';
 import SliderGroup from './sliderGroup.vue';
+import DButton from '../../../ui/d-button.vue';
 import { RGBAColor } from '@/util/colors/rgb';
 import { defineComponent, PropType } from 'vue';
 import { DeepReadonly } from '@/util/readonly';
+import eventBus, { ColorPickedEvent } from '@/eventbus/event-bus';
 
 const generatedPackId = 'dddg.generated.colors';
 
 export default defineComponent({
 	components: {
 		SliderGroup,
+		DButton,
 	},
 	inheritAttrs: false,
 	emits: ['leave', 'update:modelValue'],
@@ -102,7 +106,16 @@ export default defineComponent({
 			},
 		},
 	},
+	mounted() {
+		eventBus.subscribe(ColorPickedEvent, this.settingColor);
+	},
+	unmounted() {
+		eventBus.unsubscribe(ColorPickedEvent, this.settingColor);
+	},
 	methods: {
+		settingColor(ev: ColorPickedEvent) {
+			this.color = RGBAColor.fromCss(ev.color).toHex();
+		},
 		updateHex(event: Event) {
 			const hex = (event.target as HTMLInputElement).value;
 			// tslint:disable-next-line: no-magic-numbers
@@ -144,6 +157,11 @@ export default defineComponent({
 					contentPack: newPack,
 					processed: true,
 				} as ReplaceContentPackAction);
+			});
+		},
+		pickColor(): void {
+			this.vuexHistory.transaction(() => {
+				this.$store.commit('ui/setColorPicker', true);
 			});
 		},
 	},
