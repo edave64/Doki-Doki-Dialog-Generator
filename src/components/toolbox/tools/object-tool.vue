@@ -170,13 +170,11 @@ export default defineComponent({
 		),
 		nameboxWidth: {
 			get(): string {
-				debugger;
 				const val = this.object.nameboxWidth;
 				if (val === null) return '';
 				return val + '';
 			},
 			set(value: string) {
-				debugger;
 				const val = value.trim() === '' ? null : parseInt(value);
 				this.vuexHistory.transaction(async () => {
 					this.$store.commit('objects/setObjectNameboxWidth', {

@@ -213,7 +213,6 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 	}
 
 	private get nameboxWidth(): number {
-		debugger;
 		if (this.forcedStyle !== 'custom') return NameboxWidth;
 		if (this.refObject && this.refObject.nameboxWidth !== null) {
 			return this.refObject.nameboxWidth;

@@ -26,6 +26,11 @@ h1 {
 	text-align: center;
 }
 
+h2 {
+	color: $default-text;
+	color: var(--text);
+}
+
 input,
 textarea {
 	border: 2px solid $default-border;
@@ -79,6 +84,11 @@ a {
 	color: var(--link);
 }
 
+p {
+	color: $default-text;
+	color: var(--text);
+}
+
 body {
 	--native-background: #ffffff;
 	--accent-background: #ffe6f4;
@@ -105,9 +115,4 @@ body.dark-theme {
 	--link: #6666ee;
 	--modal-backdrop: rgba(255, 255, 255, 0.5);
 	--modal-backdrop-light: rgba(255, 255, 255, 0.75);
-
-	p {
-		color: $default-text;
-		color: var(--text);
-	}
 }

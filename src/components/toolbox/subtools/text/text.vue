@@ -223,7 +223,8 @@ export default defineComponent({
 
 	h2 {
 		font-size: 20px;
-		color: black;
+		color: $default-text;
+		color: var(--text);
 		font-family: riffic, sans-serif;
 		text-align: center;
 	}

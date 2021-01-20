@@ -531,6 +531,8 @@ export default defineComponent({
 <style lang="scss" scoped>
 h2 {
 	text-align: center;
+	color: $default-text;
+	color: var(--text);
 }
 .image-options-subpanel {
 	&.vertical {

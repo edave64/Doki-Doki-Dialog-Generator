@@ -230,6 +230,8 @@ interface AuthorLink {
 
 	h2 {
 		font-size: 14px;
+		color: $default-text;
+		color: var(--text);
 	}
 
 	section,
