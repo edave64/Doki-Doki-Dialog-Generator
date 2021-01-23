@@ -11,7 +11,7 @@
 					<td>
 						<label for="text_style">Style:</label>
 					</td>
-					<td>
+					<td colspan="2">
 						<select id="text_style" v-model="textBoxStyle" @keydown.stop>
 							<option value="normal">Normal</option>
 							<option value="corrupt">Corrupt</option>
@@ -33,6 +33,17 @@
 							<option value="$other$">Other</option>
 						</select>
 					</td>
+					<td>
+						<button
+							title="Jump to talking character"
+							@click="jumpToCharacter"
+							:disabled="
+								talkingObjId === '$null$' || talkingObjId === '$other$'
+							"
+						>
+							>
+						</button>
+					</td>
 				</tr>
 				<tr>
 					<td>
@@ -40,6 +51,8 @@
 					</td>
 					<td>
 						<input id="custom_name" v-model="talkingOther" @keydown.stop />
+					</td>
+					<td>
 						<button @click="textEditor = 'name'">...</button>
 					</td>
 				</tr>
@@ -358,6 +371,11 @@ export default defineComponent({
 				this.$store.dispatch('objects/resetTextboxBounds', {
 					id: this.object.id,
 				} as IResetTextboxBounds);
+			});
+		},
+		jumpToCharacter(): void {
+			this.vuexHistory.transaction(() => {
+				this.$store.commit('ui/setSelection', this.talkingObjId);
 			});
 		},
 	},
