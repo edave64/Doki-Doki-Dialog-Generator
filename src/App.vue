@@ -249,7 +249,7 @@ export default defineComponent({
 
 				if (selection.type === 'character') {
 					const character = selection as ICharacter;
-					if (character.freeMove) {
+					if (!character.freeMove) {
 						if (e.key === 'ArrowLeft') {
 							this.$store.dispatch('objects/shiftCharacterSlot', {
 								id: character.id,
