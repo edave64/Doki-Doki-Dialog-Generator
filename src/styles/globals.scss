@@ -51,6 +51,15 @@ select,
 	color: var(--text);
 }
 
+button:disabled,
+select:disabled,
+.btn:disabled {
+	background: $default-border;
+	background: var(--border);
+	color: $default-text-disabled;
+	color: var(--text-disabled);
+}
+
 button,
 .btn {
 	padding: 2px;
@@ -80,6 +89,12 @@ textarea {
 	color: var(--text);
 }
 
+input:disabled,
+textarea:disabled {
+	color: $default-text-disabled;
+	color: var(--text-disabled);
+}
+
 a {
 	color: var(--link);
 }
@@ -94,6 +109,7 @@ body {
 	--accent-background: #ffe6f4;
 	--border: #ffbde1;
 	--text: #000000;
+	--text-disabled: rgba(20, 20, 20, 0.5);
 	--error: #880000;
 	--link: #0000ee;
 	--modal-backdrop: rgba(0, 0, 0, 0.5);
@@ -111,6 +127,7 @@ body.dark-theme {
 	--accent-background: #200f19;
 	--border: #5b2545;
 	--text: #ffffff;
+	--text-disabled: rgba(220, 220, 220, 0.5);
 	--error: #ff5555;
 	--link: #6666ee;
 	--modal-backdrop: rgba(255, 255, 255, 0.5);
