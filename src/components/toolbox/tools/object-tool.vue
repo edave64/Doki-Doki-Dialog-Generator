@@ -50,10 +50,35 @@
 			<position-and-size :obj="object" />
 			<layers :object="object" />
 			<toggle v-model="flip" label="Flip?" />
-			<div class="roation-besides">
-				<label for="rotation">Rotation: °</label>
-				<input id="rotation" type="number" v-model="rotation" @keydown.stop />
-			</div>
+			<table class="input-table">
+				<tr>
+					<td><label for="rotation">Rotation: °</label></td>
+					<td>
+						<input
+							id="rotation"
+							class="smol"
+							type="number"
+							v-model="rotation"
+							@keydown.stop
+						/>
+					</td>
+				</tr>
+				<tr v-if="object.type === 'character' || object.type === 'sprite'">
+					<td><label for="zoom">Zoom: </label></td>
+					<td>
+						<input
+							id="zoom"
+							type="number"
+							class="smol"
+							step="1"
+							min="0"
+							v-model="zoom"
+							@keydown.stop
+						/>
+					</td>
+				</tr>
+			</table>
+
 			<slot name="options" />
 			<d-fieldset v-if="hasLabel" title="Textbox settings">
 				<toggle
@@ -118,6 +143,7 @@ import {
 	IObject,
 	ISetLabelMutation,
 	ISetNameboxWidthMutation,
+	ISetObjectZoomMutation,
 	ISetTextBoxColor,
 } from '@/store/objects';
 import ModalDialog from '@/components/ModalDialog.vue';
@@ -181,6 +207,19 @@ export default defineComponent({
 						id: this.object.id,
 						nameboxWidth: val,
 					} as ISetNameboxWidthMutation);
+				});
+			},
+		},
+		zoom: {
+			get(): number {
+				return this.object.zoom * 100;
+			},
+			set(zoom: number): void {
+				this.vuexHistory.transaction(async () => {
+					this.$store.commit('objects/setObjectZoom', {
+						id: this.object.id,
+						zoom: zoom / 100,
+					} as ISetObjectZoomMutation);
 				});
 			},
 		},
@@ -263,16 +302,15 @@ export interface Handler {
 </script>
 
 <style lang="scss" scoped>
-.roation-besides {
-	display: flex;
-	align-items: baseline;
-
-	label {
-		flex-grow: 1;
+.panel.vertical {
+	.input-table {
+		width: 100%;
 	}
+}
 
-	#rotation {
-		width: 48px;
+.input-table {
+	input {
+		width: 64px;
 	}
 }
 

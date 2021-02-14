@@ -9,6 +9,7 @@ import { OffscreenRenderable } from './offscreenRenderable';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { ITextBox } from '@/store/objectTypes/textbox';
+import { IHitbox } from './renderable';
 
 export abstract class AssetListRenderable<
 	Obj extends IObject
@@ -16,10 +17,10 @@ export abstract class AssetListRenderable<
 	protected refTextbox: ITextBox | null = null;
 	protected abstract getAssetList(): Array<IDrawAssetsUnloaded | IDrawAssets>;
 	protected get canvasDrawWidth(): number {
-		return this.width * this.textboxZoom;
+		return this.width * this.objZoom;
 	}
 	protected get canvasDrawHeight(): number {
-		return this.height * this.textboxZoom;
+		return this.height * this.objZoom;
 	}
 	protected get canvasDrawPosX(): number {
 		return this.x - this.width / 2 + (this.height - this.canvasDrawHeight) / 2;
@@ -28,8 +29,23 @@ export abstract class AssetListRenderable<
 		return this.y + (this.height - this.canvasDrawHeight);
 	}
 
-	protected get textboxZoom(): number {
-		return this.obj.enlargeWhenTalking && this.refTextbox ? 1.05 : 1;
+	protected get objZoom(): number {
+		const textboxZoom =
+			this.obj.enlargeWhenTalking && this.refTextbox ? 1.05 : 1;
+		return textboxZoom * this.obj.zoom;
+	}
+
+	public getHitbox(): IHitbox {
+		const base = super.getHitbox();
+		const zoomWidthDelta = this.width * (this.objZoom - 1);
+		const zoomHeightDelta = this.height * (this.objZoom - 1);
+
+		return {
+			x0: base.x0 - zoomWidthDelta / 2,
+			x1: base.x1 + zoomWidthDelta / 2,
+			y0: base.y0 - zoomHeightDelta,
+			y1: base.y1,
+		};
 	}
 
 	public updatedContent(

@@ -64,6 +64,7 @@ export interface IObject extends IHasSpriteFilters {
 	textboxColor: string | null;
 	enlargeWhenTalking: boolean;
 	nameboxWidth: null | number;
+	zoom: number;
 }
 
 export type ObjectTypes =
@@ -171,6 +172,11 @@ export default {
 		setObjectNameboxWidth(state, command: ISetNameboxWidthMutation) {
 			const obj = state.objects[command.id] as ITextBox;
 			obj.nameboxWidth = command.nameboxWidth;
+			++obj.version;
+		},
+		setObjectZoom(state, command: ISetObjectZoomMutation) {
+			const obj = state.objects[command.id] as ITextBox;
+			obj.zoom = command.zoom;
 			++obj.version;
 		},
 		...spriteMutations,
@@ -455,6 +461,10 @@ export interface ISetEnlargeWhenTalkingMutation extends ICommand {
 
 export interface ISetNameboxWidthMutation extends ICommand {
 	readonly nameboxWidth: null | number;
+}
+
+export interface ISetObjectZoomMutation extends ICommand {
+	readonly zoom: number;
 }
 
 export interface IObjectShiftLayerAction extends ICommand {

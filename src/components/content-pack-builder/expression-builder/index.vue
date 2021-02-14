@@ -413,6 +413,7 @@ export default defineComponent({
 						textboxColor: null,
 						enlargeWhenTalking: false,
 						nameboxWidth: null,
+						zoom: 1,
 					},
 					await this.temporaryCharacterModel
 				);

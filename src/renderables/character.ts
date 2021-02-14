@@ -71,7 +71,6 @@ export class Character extends AssetListRenderable<ICharacter> {
 					});
 					break;
 			}
-			console.log(renderCommand, JSON.stringify(drawAssetsUnloaded));
 		}
 		return drawAssetsUnloaded;
 	}
@@ -86,17 +85,17 @@ export class Character extends AssetListRenderable<ICharacter> {
 		return pose.size[0];
 	}
 
-	public get zoom(): number {
+	public get closeZoom(): number {
 		let zoom = 1;
 		if (this.obj.close) zoom *= 2;
 		return zoom;
 	}
 
 	public get width() {
-		return this.obj.width * this.zoom;
+		return this.obj.width * this.closeZoom;
 	}
 
 	public get height() {
-		return this.obj.height * this.zoom;
+		return this.obj.height * this.closeZoom;
 	}
 }

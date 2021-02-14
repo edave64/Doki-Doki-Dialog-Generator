@@ -52,17 +52,4 @@ export class Sprite extends AssetListRenderable<ISprite> {
 	protected getAssetList(): (IDrawAssets | IDrawAssetsUnloaded)[] {
 		return this.assets || [];
 	}
-
-	public get zoom() {
-		if (this.obj.enlargeWhenTalking && this.refTextbox) return 1.05;
-		return 1;
-	}
-
-	public get width() {
-		return this.obj.width;
-	}
-
-	public get height() {
-		return this.obj.height;
-	}
 }
