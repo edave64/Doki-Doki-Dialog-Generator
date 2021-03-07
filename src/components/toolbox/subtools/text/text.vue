@@ -257,7 +257,8 @@ export default defineComponent({
 
 		h2 {
 			writing-mode: vertical-rl;
-			@include height-100();
+			height: inherit;
+			width: min-content;
 		}
 
 		.column {
