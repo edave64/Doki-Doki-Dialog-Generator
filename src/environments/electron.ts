@@ -9,6 +9,8 @@ import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { ReplaceContentPackAction } from '@/store/content';
 import { reactive } from 'vue';
+import { Pack, Repo } from '@/models/repo';
+import { DeepReadonly } from '@/util/readonly';
 
 const packs: IPack[] = [];
 
@@ -28,9 +30,8 @@ const installedBackgroundsPack: ContentPack<string> = {
 export class Electron implements IEnvironment {
 	public readonly state: EnvState = reactive({
 		autoAdd: [],
-		installed: [],
 	});
-	public readonly localRepositoryUrl = '/repo/repo.json';
+	public readonly localRepositoryUrl = '/repo/';
 
 	private readonly electron = (window as any) as IElectronWindow;
 
@@ -69,7 +70,20 @@ export class Electron implements IEnvironment {
 		this.electron.ipcRenderer.on('push-message', async (e, message: string) => {
 			eventBus.fire(new ShowMessageEvent(message));
 		});
-		this.electron.ipcRenderer.send('find-customs');
+		this.electron.ipcRenderer.onConversation(
+			'load-packs',
+			async (e, packIds: string[]) => {
+				const repo = await Repo.getInstance();
+				const packUrls = packIds.map(id => {
+					const pack = repo.getPack(id);
+					return pack.dddg2Path || pack.dddg1Path;
+				});
+				this.vuexHistory!.transaction(async () => {
+					await this.$store!.dispatch('content/loadContentPacks', packUrls);
+				});
+			}
+		);
+		this.electron.ipcRenderer.send('init');
 	}
 	public onPanelChange(handler: (panel: string) => void): void {}
 	public readonly supports: EnvCapabilities = {

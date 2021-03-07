@@ -5,7 +5,6 @@ import { DeepReadonly, reactive, ref } from 'vue';
 
 export class Browser implements IEnvironment {
 	public readonly state: EnvState = reactive({
-		installed: [],
 		autoAdd: [],
 	});
 
