@@ -251,6 +251,7 @@ export default defineComponent({
 		h1 {
 			writing-mode: vertical-rl;
 			height: 100%;
+			width: min-content;
 		}
 	}
 
