@@ -357,6 +357,7 @@ export default defineComponent({
 			true
 		);
 
+		enviroment.connectToStore(this.vuexHistory, this.$store);
 		const settings = await enviroment.loadSettings();
 
 		this.vuexHistory.transaction(async () => {

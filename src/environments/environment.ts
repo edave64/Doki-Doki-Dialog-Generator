@@ -3,6 +3,10 @@ import { Browser } from './browser';
 import { Electron } from './electron';
 import { Background } from '@/renderables/background';
 import { EnvState } from './envState';
+import { IHistorySupport } from '@/plugins/vuex-history';
+import { Store } from 'vuex';
+import { IRootState } from '@/store';
+import { DeepReadonly } from '@/util/readonly';
 
 export interface IPack {
 	url: string;
@@ -49,6 +53,10 @@ export interface IEnvironment {
 
 	saveSettings(settings: Settings): Promise<void>;
 	loadSettings(): Promise<Settings>;
+	connectToStore(
+		vuexHistory: IHistorySupport,
+		store: Store<DeepReadonly<IRootState>>
+	): void;
 }
 
 function chooseEnv(): IEnvironment {

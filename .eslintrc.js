@@ -27,5 +27,6 @@ module.exports = {
 		'no-empty': 'off',
 		'no-prototype-builtins': 'off',
 		'no-constant-condition': 'off',
+		'no-async-promise-executor': 'off',
 	},
 };

@@ -36,14 +36,14 @@ export class Electron implements IEnvironment {
 	private readonly electron = (window as any) as IElectronWindow;
 
 	private vuexHistory: IHistorySupport | null = null;
-	private $store: Store<IRootState> | null = null;
+	private $store: Store<DeepReadonly<IRootState>> | null = null;
 	private bgInvalidation: number | null = null;
 	private readonly pendingContentPacks: string[] = [];
 
 	constructor() {
 		this.electron.ipcRenderer.on(
 			'add-persistent-content-pack',
-			async (e, filePath: string) => {
+			async (filePath: string) => {
 				if (!this.$store || !this.vuexHistory) {
 					this.pendingContentPacks.push(filePath);
 					return;
@@ -55,7 +55,7 @@ export class Electron implements IEnvironment {
 		);
 		this.electron.ipcRenderer.on(
 			'add-persistent-background',
-			async (e, filepath: string) => {
+			async (filepath: string) => {
 				const name = 'persistentBg-' + filepath;
 				const parts = filepath.split('/');
 				registerAssetWithURL(name, filepath);
@@ -67,12 +67,12 @@ export class Electron implements IEnvironment {
 				this.invalidateInstalledBGs();
 			}
 		);
-		this.electron.ipcRenderer.on('push-message', async (e, message: string) => {
+		this.electron.ipcRenderer.on('push-message', async (message: string) => {
 			eventBus.fire(new ShowMessageEvent(message));
 		});
 		this.electron.ipcRenderer.onConversation(
 			'load-packs',
-			async (e, packIds: string[]) => {
+			async (packIds: string[]) => {
 				const repo = await Repo.getInstance();
 				const packUrls = packIds.map(id => {
 					const pack = repo.getPack(id);
@@ -81,6 +81,16 @@ export class Electron implements IEnvironment {
 				this.vuexHistory!.transaction(async () => {
 					await this.$store!.dispatch('content/loadContentPacks', packUrls);
 				});
+			}
+		);
+		this.electron.ipcRenderer.onConversation(
+			'auto-load.changed',
+			async (packIds: string[]) => {
+				debugger;
+				console.log('toast1', packIds);
+				/* eslint-disable-next-line prefer-rest-params */
+				console.log('toast2', arguments);
+				this.state.autoAdd = packIds;
 			}
 		);
 		this.electron.ipcRenderer.send('init');
@@ -215,7 +225,7 @@ export class Electron implements IEnvironment {
 
 	public connectToStore(
 		vuexHistory: IHistorySupport,
-		store: Store<IRootState>
+		store: Store<DeepReadonly<IRootState>>
 	) {
 		this.vuexHistory = vuexHistory;
 		this.$store = store;
@@ -260,19 +270,8 @@ interface IElectronWindow {
 }
 
 interface IpcRenderer {
-	on(
-		channel: string,
-		listener: (event: IpcRendererEvent, ...args: any[]) => void
-	): void;
-	onConversation(
-		channel: string,
-		listener: (event: IpcRendererEvent, ...args: any[]) => void
-	): void;
+	on(channel: string, listener: (...args: any[]) => void): void;
+	onConversation(channel: string, listener: (...args: any[]) => void): void;
 	send(channel: string, ...args: any[]): void;
 	sendConvo<T>(channel: string, ...args: any[]): Promise<T>;
-}
-
-interface IpcRendererEvent extends Event {
-	sender: IpcRenderer;
-	senderId: number;
 }

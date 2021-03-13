@@ -38,6 +38,11 @@
 				<i class="material-icons">remove</i>
 				Uninstall
 			</button>
+			<toggle
+				v-if="autoloadEnabled"
+				label="Load on startup"
+				v-model="autoload"
+			/>
 		</section>
 		<section>
 			<h3>Authors</h3>
@@ -70,15 +75,15 @@
 </template>
 
 <script lang="ts">
-import { IAuthor, IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
+import { IAuthor } from '@edave64/dddg-repo-filters/dist/authors';
 import { sanitize } from '@/components/toolbox/tools/character-pack-sanitizer';
 import environment from '@/environments/environment';
-import { IPackWithState, PackStates } from './types';
 import { defineComponent, PropType } from 'vue';
 import { IRemovePacksAction } from '@/store';
 import L from '@/components/ui/link.vue';
 import { Pack, Repo } from '@/models/repo';
 import { DeepReadonly } from '@/util/readonly';
+import Toggle from '../toggle.vue';
 
 const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 	['reddit', 'https://reddit.com/u/%1', 'reddit.png'],
@@ -92,7 +97,7 @@ const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 ];
 
 export default defineComponent({
-	components: { L },
+	components: { L, Toggle },
 	props: {
 		selected: {
 			type: String,
@@ -127,6 +132,21 @@ export default defineComponent({
 		},
 		addable(): boolean {
 			return !this.pack.loaded;
+		},
+		autoloadEnabled(): boolean {
+			return environment.supports.autoLoading;
+		},
+		autoload: {
+			get(): boolean {
+				return environment.state.autoAdd.includes(this.selected);
+			},
+			set(val: boolean): void {
+				if (val) {
+					environment.autoLoadAdd(this.selected);
+				} else {
+					environment.autoLoadRemove(this.selected);
+				}
+			},
 		},
 	},
 	methods: {

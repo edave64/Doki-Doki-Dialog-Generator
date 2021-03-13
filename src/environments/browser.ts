@@ -2,6 +2,10 @@ import { EnvCapabilities, IEnvironment, IPack, Settings } from './environment';
 import { Background } from '@/renderables/background';
 import { EnvState } from './envState';
 import { DeepReadonly, reactive, ref } from 'vue';
+import { Repo } from '@/models/repo';
+import { IHistorySupport } from '@/plugins/vuex-history';
+import { Store } from 'vuex';
+import { IRootState } from '@/store';
 
 export class Browser implements IEnvironment {
 	public readonly state: EnvState = reactive({
@@ -9,6 +13,9 @@ export class Browser implements IEnvironment {
 	});
 
 	public readonly supports: DeepReadonly<EnvCapabilities>;
+
+	private vuexHistory: IHistorySupport | null = null;
+	private $store: Store<DeepReadonly<IRootState>> | null = null;
 
 	private readonly isSavingEnabled = ref(false);
 
@@ -75,6 +82,30 @@ export class Browser implements IEnvironment {
 		} else {
 			this.loading = Promise.resolve();
 		}
+
+		this.loading.then(async () => {
+			if (this.creatingDB) await this.creatingDB;
+			if (this.savingEnabled) {
+				const autoload = (await IndexedDBHandler.loadAutoload()) || [];
+				this.state.autoAdd = autoload;
+				const repo = await Repo.getInstance();
+				const packUrls = autoload.map(id => {
+					const pack = repo.getPack(id);
+					return pack.dddg2Path || pack.dddg1Path;
+				});
+				this.vuexHistory!.transaction(async () => {
+					await this.$store!.dispatch('content/loadContentPacks', packUrls);
+				});
+			}
+		});
+	}
+
+	public connectToStore(
+		vuexHistory: IHistorySupport,
+		store: Store<DeepReadonly<IRootState>>
+	) {
+		this.vuexHistory = vuexHistory;
+		this.$store = store;
 	}
 
 	public async saveToFile(
@@ -112,11 +143,25 @@ export class Browser implements IEnvironment {
 	}
 
 	public autoLoadAdd(id: string): void {
-		throw new Error('This environment does not support auto loading');
+		(async () => {
+			await this.loading;
+			await this.creatingDB;
+			await IndexedDBHandler.saveAutoload([...this.state.autoAdd, id]);
+			this.state.autoAdd.push(id);
+		})();
 	}
 
 	public autoLoadRemove(id: string): void {
-		throw new Error('This environment does not support auto loading');
+		(async () => {
+			await this.loading;
+			await this.creatingDB;
+
+			await IndexedDBHandler.saveAutoload(
+				this.state.autoAdd.filter(x => x != id)
+			);
+			const idx = this.state.autoAdd.indexOf(id);
+			this.state.autoAdd.splice(idx, 1);
+		})();
 	}
 
 	public async loadSettings(): Promise<Settings> {
@@ -242,7 +287,7 @@ const IndexedDBHandler = {
 	createDB(): Promise<IDBDatabase> {
 		if (IndexedDBHandler.db) return IndexedDBHandler.db;
 		return (IndexedDBHandler.db = new Promise((resolve, reject) => {
-			const req = IndexedDBHandler.indexedDB!.open('dddg', 1);
+			const req = IndexedDBHandler.indexedDB!.open('dddg', 2);
 			req.onerror = event => {
 				reject(event);
 			};
@@ -250,6 +295,10 @@ const IndexedDBHandler = {
 				const db = (event.target! as any).result as IDBDatabase;
 				const oldVer = event.oldVersion ?? ((event as any).version as number);
 				if (oldVer < 1) {
+					db.createObjectStore('settings');
+				}
+				if (oldVer === 1) {
+					db.deleteObjectStore('settings');
 					db.createObjectStore('settings');
 				}
 			};
@@ -276,34 +325,57 @@ const IndexedDBHandler = {
 		});
 	},
 
+	saveAutoload(autoloads: string[]): Promise<void> {
+		return this.objectStorePromise('readwrite', async store => {
+			await this.reqPromise(store.put([...autoloads], 'autoload'));
+		});
+	},
+
+	loadAutoload(): Promise<string[]> {
+		return this.objectStorePromise('readonly', async store => {
+			return await this.reqPromise<string[]>(store.get('autoload'));
+		});
+	},
+
 	saveSettings<T>(settings: T): Promise<void> {
-		if (!this.db) return Promise.reject('No database');
-		// eslint-disable-next-line no-async-promise-executor
-		return new Promise(async (resolve, reject) => {
-			const transact = (await this.db!).transaction(['settings'], 'readwrite');
-			const store = transact.objectStore('settings');
-			const req = store.put({ ...settings }, 0);
-			req.onerror = error => {
-				reject(error);
-			};
-			req.onsuccess = () => {
-				resolve();
-			};
+		return this.objectStorePromise('readwrite', async store => {
+			await this.reqPromise(store.put({ ...settings }, 'settings'));
 		});
 	},
 
 	loadSettings<T>(): Promise<T> {
+		return this.objectStorePromise('readonly', async store => {
+			return await this.reqPromise<T>(store.get('settings'));
+		});
+	},
+
+	objectStorePromise<T>(
+		mode: 'readonly' | 'readwrite',
+		callback: (store: IDBObjectStore) => Promise<T>
+	): Promise<T> {
 		if (!this.db) return Promise.reject('No database');
-		// eslint-disable-next-line no-async-promise-executor
 		return new Promise(async (resolve, reject) => {
-			const transact = (await this.db!).transaction(['settings'], 'readonly');
+			const transact = (await this.db!).transaction(['settings'], mode);
 			const store = transact.objectStore('settings');
-			const req = store.get(0);
+
+			try {
+				resolve(await callback(store));
+			} catch (e) {
+				reject(e);
+			}
+		});
+	},
+
+	/**
+	 * Turns a database request into a promise to more easily use it in asyncronous code
+	 */
+	reqPromise<T>(req: IDBRequest<T>): Promise<T> {
+		return new Promise((resolve, reject) => {
 			req.onerror = error => {
 				reject(error);
 			};
 			req.onsuccess = event => {
-				resolve(req.result || {});
+				resolve(req.result);
 			};
 		});
 	},
