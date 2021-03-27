@@ -1,4 +1,4 @@
-import { EnvCapabilities, IEnvironment, IPack, Settings } from './environment';
+import { EnvCapabilities, Folder, IEnvironment, Settings } from './environment';
 import { registerAssetWithURL, getAsset } from '@/asset-manager';
 import { Background } from '@/renderables/background';
 import eventBus, { ShowMessageEvent } from '@/eventbus/event-bus';
@@ -9,8 +9,11 @@ import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { ReplaceContentPackAction } from '@/store/content';
 import { reactive } from 'vue';
-import { Pack, Repo } from '@/models/repo';
+import { Repo } from '@/models/repo';
 import { DeepReadonly } from '@/util/readonly';
+import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
+import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
+import { JSONContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/jsonFormat';
 
 const packs: IPack[] = [];
 
@@ -30,6 +33,7 @@ const installedBackgroundsPack: ContentPack<string> = {
 export class Electron implements IEnvironment {
 	public readonly state: EnvState = reactive({
 		autoAdd: [],
+		downloadLocation: '',
 	});
 	public readonly localRepositoryUrl = '/repo/';
 
@@ -70,6 +74,12 @@ export class Electron implements IEnvironment {
 		this.electron.ipcRenderer.on('push-message', async (message: string) => {
 			eventBus.fire(new ShowMessageEvent(message));
 		});
+		this.electron.ipcRenderer.on(
+			'config.downloadFolderUpdate',
+			async (location: string) => {
+				this.state.downloadLocation = location;
+			}
+		);
 		this.electron.ipcRenderer.onConversation(
 			'load-packs',
 			async (packIds: string[]) => {
@@ -86,14 +96,30 @@ export class Electron implements IEnvironment {
 		this.electron.ipcRenderer.onConversation(
 			'auto-load.changed',
 			async (packIds: string[]) => {
-				debugger;
-				console.log('toast1', packIds);
-				/* eslint-disable-next-line prefer-rest-params */
-				console.log('toast2', arguments);
 				this.state.autoAdd = packIds;
 			}
 		);
-		this.electron.ipcRenderer.send('init');
+		this.electron.ipcRenderer.onConversation('reload-repo', async () => {
+			await (await Repo.getInstance()).reloadLocalRepo();
+		});
+		this.electron.ipcRenderer.onConversation(
+			'replace-pack',
+			async (contentPack: ContentPack<string>) => {
+				this.vuexHistory!.transaction(async () => {
+					await this.$store!.dispatch('content/replaceContentPack', {
+						processed: false,
+						contentPack,
+					} as ReplaceContentPackAction);
+				});
+			}
+		);
+		this.electron.ipcRenderer.send('init-dddg');
+	}
+	public updateDownloadFolder(): void {
+		this.electron.ipcRenderer.send('config.newDownloadFolder');
+	}
+	public openFolder(folder: Folder): void {
+		this.electron.ipcRenderer.send('open-folder', folder);
 	}
 	public onPanelChange(handler: (panel: string) => void): void {}
 	public readonly supports: EnvCapabilities = {
@@ -102,6 +128,8 @@ export class Electron implements IEnvironment {
 		localRepo: true,
 		lq: false,
 		optionalSaving: false,
+		setDownloadFolder: true,
+		openableFolders: new Set(['downloads', 'backgrounds', 'sprites']),
 	};
 	public readonly savingEnabled: boolean = true;
 	public async saveSettings(settings: Settings): Promise<void> {
@@ -138,8 +166,17 @@ export class Electron implements IEnvironment {
 		};
 	}
 
-	public async localRepoInstall(url: string): Promise<void> {
-		await this.electron.ipcRenderer.sendConvo('repo.install', url);
+	public async localRepoInstall(
+		url: string,
+		repo: IPack,
+		authors: IAuthors
+	): Promise<void> {
+		await this.electron.ipcRenderer.sendConvo(
+			'repo.install',
+			url,
+			repo,
+			authors
+		);
 	}
 	public async localRepoUninstall(id: string): Promise<void> {
 		await this.electron.ipcRenderer.sendConvo('repo.uninstall', id);

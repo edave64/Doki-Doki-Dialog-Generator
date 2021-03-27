@@ -83,6 +83,13 @@
 				>
 					Search in content packs
 				</d-button>
+				<d-button
+					v-if="showSpritesFolder"
+					icon="folder"
+					@click="openSpritesFolder"
+				>
+					Open sprites folder
+				</d-button>
 			</template>
 			<template v-if="group === 'ui'">
 				<button @click="addTextBox">Textbox</button>
@@ -115,7 +122,7 @@ import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
 import { ICreateChoicesAction } from '@/store/objectTypes/choices';
 import { ICreateNotificationAction } from '@/store/objectTypes/notification';
 import { ICreatePoemAction } from '@/store/objectTypes/poem';
-import environment from '@/environments/environment';
+import environment, { Folder } from '@/environments/environment';
 import { defineComponent } from 'vue';
 import { DeepReadonly } from '@/util/readonly';
 import { IPasteFromClipboardAction } from '@/store/objects';
@@ -150,6 +157,11 @@ export default defineComponent({
 		},
 		hasClipboardContent(): boolean {
 			return !!this.$store.state.ui.clipboard;
+		},
+		showSpritesFolder(): boolean {
+			return (environment.supports.openableFolders as ReadonlySet<Folder>).has(
+				'sprites'
+			);
 		},
 	},
 	methods: {
@@ -270,6 +282,9 @@ export default defineComponent({
 					processed: false,
 				} as ReplaceContentPackAction);
 			});
+		},
+		openSpritesFolder() {
+			environment.openFolder('sprites');
 		},
 	},
 	async created() {

@@ -125,7 +125,6 @@ export default defineComponent({
 		},
 		install(): void {
 			if (!this.selectedPack) return;
-			environment.localRepoInstall(this.selectedPack.url);
 			if (this.selectedPack.queuedUninstall) {
 				this.selectedPack.queuedUninstall = false;
 			} else {

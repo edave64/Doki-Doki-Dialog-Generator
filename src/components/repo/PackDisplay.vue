@@ -24,19 +24,19 @@
 		<section>
 			<button v-if="addable" @click="add">
 				<i class="material-icons">add</i>
-				Activate {{ installable ? 'Temporarily' : '' }}
+				Activate
 			</button>
 			<button v-if="removable" @click="remove">
 				<i class="material-icons">remove</i>
-				Deactivate {{ uninstallable ? 'Temporarily' : '' }}
+				Deactivate
 			</button>
-			<button v-if="installable" @click="add">
+			<button v-if="installable" @click="install">
 				<i class="material-icons">add</i>
-				Install
+				Store locally
 			</button>
-			<button v-if="uninstallable" @click="remove">
+			<button v-if="uninstallable" @click="uninstall">
 				<i class="material-icons">remove</i>
-				Uninstall
+				Remove locally
 			</button>
 			<toggle
 				v-if="autoloadEnabled"
@@ -75,7 +75,7 @@
 </template>
 
 <script lang="ts">
-import { IAuthor } from '@edave64/dddg-repo-filters/dist/authors';
+import { IAuthor, IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import { sanitize } from '@/components/toolbox/tools/character-pack-sanitizer';
 import environment from '@/environments/environment';
 import { defineComponent, PropType } from 'vue';
@@ -84,6 +84,7 @@ import L from '@/components/ui/link.vue';
 import { Pack, Repo } from '@/models/repo';
 import { DeepReadonly } from '@/util/readonly';
 import Toggle from '../toggle.vue';
+import { IPack } from 'node_modules/@edave64/dddg-repo-filters/dist/pack';
 
 const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 	['reddit', 'https://reddit.com/u/%1', 'reddit.png'],
@@ -176,24 +177,29 @@ export default defineComponent({
 		sanitize(credits: string) {
 			return sanitize(credits);
 		},
-		/*
 		install(): void {
-			if (!this.installedPack) return;
-			environment.installContentPack(
-				this.pack.dddg2Path || this.pack.dddg1Path
-			);
-			if (this.installedPack.queuedUninstall) {
-				this.installedPack.queuedUninstall = false;
-			} else {
-				this.installedPack.installed = true;
+			if (this.pack.installed) return;
+			const authors: IAuthors = {};
+			for (const key of this.pack.authors) {
+				authors[key] = { ...this.repo!.getAuthor(key) };
 			}
+
+			const pack: any = JSON.parse(JSON.stringify(this.pack));
+			delete pack.autoloading;
+			delete pack.online;
+			delete pack.loaded;
+			delete pack.installed;
+
+			environment.localRepoInstall(
+				this.pack.dddg2Path || this.pack.dddg1Path,
+				pack,
+				authors
+			);
 		},
 		uninstall(): void {
-			if (!this.installedPack) return;
-			environment.uninstallContentPack(this.installedPack.url);
-			this.installedPack.queuedUninstall = true;
+			if (!this.pack.installed) return;
+			environment.localRepoUninstall(this.pack.id);
 		},
-		*/
 		async remove(): Promise<void> {
 			await this.$store.dispatch('removePacks', {
 				packs: new Set([this.pack.id]),

@@ -56,6 +56,7 @@ export class Repo {
 
 	private static async fetchJSON<A>(path: string): Promise<A> {
 		const req = await fetch(path);
+		if (!req.ok) throw new Error('Could not load json');
 		return await req!.json();
 	}
 
@@ -70,6 +71,7 @@ export class Repo {
 		localRepo: LoadedRepo | null,
 		private $store: Store<DeepReadonly<IRootState>>
 	) {
+		(window as any).repo = this;
 		if (!onlineRepo) {
 			onlineRepo = { authors: {}, packs: [] };
 			eventBus.fire(new ShowMessageEvent("Couldn't load remote repository."));
@@ -109,14 +111,22 @@ export class Repo {
 				...onlinePacks.map(pack => pack.id),
 			]
 				.filter(packId => {
-					if (packId.startsWith('dddg.buildin.')) return false;
+					if (
+						packId.startsWith('dddg.buildin.') ||
+						packId.startsWith('dddg.desktop.')
+					)
+						return false;
 					if (addedPacks.has(packId)) return false;
 					addedPacks.add(packId);
 					return true;
 				})
 				.map(packId => {
 					return {
-						...(onlineRepoLookup.get(packId) ?? {}),
+						...(onlineRepoLookup.get(packId) ?? {
+							characters: [],
+							kind: [],
+							authors: [],
+						}),
 						...(localRepoLookup.get(packId) ?? {}),
 						autoloading: autoloads.has(packId),
 						installed: localRepoLookup.has(packId),
@@ -140,6 +150,12 @@ export class Repo {
 
 		// Stop Vue from breaking this object.
 		Object.freeze(this);
+	}
+
+	public async reloadLocalRepo() {
+		this.localRepo.value = environment.supports.localRepo
+			? await Repo.loadRepo(environment.localRepositoryUrl)
+			: null;
 	}
 
 	public getPacks(): DeepReadonly<Pack[]> {

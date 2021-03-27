@@ -1,4 +1,4 @@
-import { EnvCapabilities, IEnvironment, IPack, Settings } from './environment';
+import { EnvCapabilities, Folder, IEnvironment, Settings } from './environment';
 import { Background } from '@/renderables/background';
 import { EnvState } from './envState';
 import { DeepReadonly, reactive, ref } from 'vue';
@@ -6,12 +6,14 @@ import { Repo } from '@/models/repo';
 import { IHistorySupport } from '@/plugins/vuex-history';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
+import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
+import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 
 export class Browser implements IEnvironment {
 	public readonly state: EnvState = reactive({
 		autoAdd: [],
+		downloadLocation: 'Default download folder',
 	});
-
 	public readonly supports: DeepReadonly<EnvCapabilities>;
 
 	private vuexHistory: IHistorySupport | null = null;
@@ -70,6 +72,8 @@ export class Browser implements IEnvironment {
 			backgroundInstall: false,
 			localRepo: false,
 			lq: true,
+			setDownloadFolder: false,
+			openableFolders: new Set([]),
 		});
 
 		this.supports = supports;
@@ -98,6 +102,12 @@ export class Browser implements IEnvironment {
 				});
 			}
 		});
+	}
+	updateDownloadFolder(): void {
+		throw new Error('Method not implemented.');
+	}
+	openFolder(folder: Folder): void {
+		throw new Error('Method not implemented.');
 	}
 
 	public connectToStore(
@@ -134,7 +144,7 @@ export class Browser implements IEnvironment {
 		);
 	}
 
-	public localRepoInstall(url: string): void {
+	public localRepoInstall(url: string, repo: IPack, authors: IAuthors): void {
 		throw new Error('This environment does not support a local repository');
 	}
 

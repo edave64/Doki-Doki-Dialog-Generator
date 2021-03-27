@@ -7,6 +7,8 @@ import { IHistorySupport } from '@/plugins/vuex-history';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { DeepReadonly } from '@/util/readonly';
+import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
+import { IPack as ICPack } from '@edave64/dddg-repo-filters/dist/pack';
 
 export interface IPack {
 	url: string;
@@ -14,12 +16,16 @@ export interface IPack {
 	credits: string;
 }
 
+export type Folder = 'downloads' | 'sprites' | 'backgrounds';
+
 export interface EnvCapabilities {
+	setDownloadFolder: boolean;
 	optionalSaving: boolean;
 	autoLoading: boolean;
 	localRepo: boolean;
 	backgroundInstall: boolean;
 	lq: boolean;
+	openableFolders: ReadonlySet<Folder>;
 }
 
 export interface Settings {
@@ -32,7 +38,7 @@ export interface Settings {
 export interface IEnvironment {
 	readonly localRepositoryUrl: string;
 	readonly state: EnvState;
-	readonly supports: EnvCapabilities;
+	readonly supports: DeepReadonly<EnvCapabilities>;
 	savingEnabled: boolean;
 
 	saveToFile(
@@ -43,10 +49,12 @@ export interface IEnvironment {
 	): Promise<string>;
 	installBackground(background: Background): void;
 	uninstallBackground(background: Background): void;
+	updateDownloadFolder(): void;
+	openFolder(folder: Folder): void;
 	prompt(message: string, defaultValue?: string): Promise<string | null>;
 	onPanelChange(handler: (panel: string) => void): void;
 
-	localRepoInstall(url: string): void;
+	localRepoInstall(url: string, repo: ICPack, authors: IAuthors): void;
 	localRepoUninstall(id: string): void;
 	autoLoadAdd(id: string): void;
 	autoLoadRemove(id: string): void;

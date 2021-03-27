@@ -26,11 +26,18 @@
 			<button class="upload-background" @click="addByUrl">Add by URL</button>
 			<button
 				class="upload-background"
-				title="Not yet implemented"
 				@click="$emit('show-dialog', 'type: Backgrounds')"
 			>
 				<i class="material-icons">extension</i> Search in content packs
 			</button>
+			<d-button
+				v-if="showBackgroundsFolder"
+				icon="folder"
+				class="upload-background"
+				@click="openBackgroundFolder"
+			>
+				Open sprites folder
+			</d-button>
 			<background-button
 				v-for="background of backgrounds"
 				:key="background"
@@ -55,6 +62,8 @@ import { ISetCurrentMutation, ISetColorMutation } from '@/store/panels';
 import { PanelMixin } from './panelMixin';
 import Color from '../subtools/color/color.vue';
 import { defineComponent } from 'vue';
+import environment, { Folder } from '@/environments/environment';
+import DButton from '@/components/ui/d-button.vue';
 
 const uploadedBackgroundsPack: ContentPack<string> = {
 	packId: 'dddg.buildin.uploadedBackgrounds',
@@ -77,6 +86,7 @@ export default defineComponent({
 		DropTarget,
 		Color,
 		ImageOptions,
+		DButton,
 	},
 	data: () => ({
 		colorSelect: false,
@@ -106,6 +116,11 @@ export default defineComponent({
 				'buildin.static-color',
 				'buildin.transparent',
 			];
+		},
+		showBackgroundsFolder(): boolean {
+			return (environment.supports.openableFolders as ReadonlySet<Folder>).has(
+				'backgrounds'
+			);
 		},
 	},
 	methods: {
@@ -161,6 +176,9 @@ export default defineComponent({
 			}
 			e.dataTransfer.effectAllowed = 'link';
 			(this.$refs.dt as any).show();
+		},
+		openBackgroundFolder() {
+			environment.openFolder('backgrounds');
 		},
 	},
 });

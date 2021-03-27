@@ -89,6 +89,21 @@
 				</td>
 			</tr>
 		</table>
+
+		<table v-if="showDownloadFolder" class="downloadTable">
+			<tr>
+				<td><label>Download folder:</label></td>
+				<td>{{ downloadFolder }}</td>
+				<td>
+					<button @click="setDownloadFolder">
+						Set
+					</button>
+					<button @click="openDownloadFolder">
+						Open
+					</button>
+				</td>
+			</tr>
+		</table>
 	</div>
 </template>
 
@@ -170,6 +185,12 @@ export default defineComponent({
 				});
 			},
 		},
+		showDownloadFolder(): boolean {
+			return environment.supports.setDownloadFolder;
+		},
+		downloadFolder(): string {
+			return environment.state.downloadLocation;
+		},
 	},
 	watch: {
 		savesAllowed() {
@@ -198,6 +219,12 @@ export default defineComponent({
 					.defaultCharacterTalkingZoom,
 			});
 		},
+		setDownloadFolder() {
+			environment.updateDownloadFolder();
+		},
+		openDownloadFolder() {
+			environment.openFolder('downloads');
+		},
 	},
 });
 </script>
@@ -210,6 +237,13 @@ export default defineComponent({
 
 			textarea {
 				width: 100%;
+			}
+		}
+
+		.downloadTable {
+			td {
+				display: table-row;
+				line-break: anywhere;
 			}
 		}
 	}
