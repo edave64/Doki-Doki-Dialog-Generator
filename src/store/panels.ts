@@ -153,7 +153,7 @@ export default {
 						color: '#000000',
 						current: transparentId,
 						flipped: false,
-						scaling: ScalingModes.None,
+						scaling: ScalingModes.Cover,
 						variant: 0,
 						composite: 'source-over',
 						filters: [],

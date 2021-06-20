@@ -36,7 +36,11 @@ export class Electron implements IEnvironment {
 		downloadLocation: '',
 	});
 	public readonly localRepositoryUrl = '/repo/';
+	public get gameMode(): 'ddlc' | 'ddlc_plus' | null {
+		return this._gameMode;
+	}
 
+	private _gameMode: 'ddlc' | 'ddlc_plus' | null = null;
 	private readonly electron = (window as any) as IElectronWindow;
 
 	private vuexHistory: IHistorySupport | null = null;
@@ -67,6 +71,7 @@ export class Electron implements IEnvironment {
 					id: name,
 					variants: [[name]],
 					label: parts[parts.length - 1],
+					scaling: 'none',
 				});
 				this.invalidateInstalledBGs();
 			}
@@ -148,6 +153,11 @@ export class Electron implements IEnvironment {
 			'defaultCharacterTalkingZoom',
 			settings.defaultCharacterTalkingZoom
 		);
+	}
+	public async loadGameMode() {
+		this._gameMode =
+			(await this.electron.ipcRenderer.sendConvo('config.get', 'gameMode')) ||
+			'ddlc';
 	}
 	public async loadSettings(): Promise<Settings> {
 		return {

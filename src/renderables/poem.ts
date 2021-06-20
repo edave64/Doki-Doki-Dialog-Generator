@@ -1,16 +1,9 @@
 import { RenderContext } from '@/renderer/rendererContext';
 import { TextRenderer } from '@/renderer/textRenderer/textRenderer';
-import { screenWidth, screenHeight } from '@/constants/base';
 import { IPoem } from '@/store/objectTypes/poem';
-import {
-	poemBackgrounds,
-	poemTextStyles,
-	poemTopPadding,
-	poemPadding,
-	consoleBackgroundColor,
-} from '@/constants/poem';
 import { getAssetByUrl } from '@/asset-manager';
 import { ScalingRenderable } from './scalingRenderable';
+import getConstants from '@/constants';
 
 const consolePadding = -2;
 const consoleTopPadding = 26;
@@ -32,12 +25,15 @@ export class Poem extends ScalingRenderable<IPoem> {
 	}
 
 	protected async draw(rx: RenderContext): Promise<void> {
-		const paper = poemBackgrounds[this.obj.background];
-		const flippedX = this.flip ? screenWidth - this.obj.x : this.obj.x;
+		const constants = getConstants();
+		const paper = constants.Poem.poemBackgrounds[this.obj.background];
+		const flippedX = this.flip
+			? constants.Base.screenWidth - this.obj.x
+			: this.obj.x;
 		let y = this.obj.y;
 		let x = flippedX + poemTopMargin;
-		let padding = poemPadding;
-		let topPadding = poemTopPadding;
+		let padding = constants.Poem.poemPadding;
+		let topPadding = constants.Poem.poemTopPadding;
 		let lineWrapPadding = padding * 2;
 
 		if (paper.file === 'internal:console') {
@@ -49,7 +45,7 @@ export class Poem extends ScalingRenderable<IPoem> {
 				y: this.obj.y - h / 2,
 				h,
 				w,
-				fill: { style: consoleBackgroundColor },
+				fill: { style: constants.Poem.consoleBackgroundColor },
 			});
 			padding = consolePadding;
 			topPadding = consoleTopPadding;
@@ -72,7 +68,7 @@ export class Poem extends ScalingRenderable<IPoem> {
 		y -= this.height / 2;
 		x -= this.width / 2;
 
-		const style = poemTextStyles[this.obj.font];
+		const style = constants.Poem.poemTextStyles[this.obj.font];
 		const render = new TextRenderer(this.obj.text, style);
 		await render.loadFonts();
 

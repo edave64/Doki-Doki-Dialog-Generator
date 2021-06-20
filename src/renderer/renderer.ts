@@ -1,16 +1,17 @@
 import { RenderContext } from './rendererContext';
 import { RenderAbortedException } from './renderAbortedException';
 import environment from '@/environments/environment';
-import { screenWidth, screenHeight } from '@/constants/base';
+import getConstants from '@/constants';
 
 export class Renderer {
 	private previewCanvas: HTMLCanvasElement;
 	private runningContext: RenderContext | null = null;
 
-	public constructor(w: number = screenWidth, h: number = screenHeight) {
+	public constructor(w?: number, h?: number) {
+		const constants = getConstants();
 		this.previewCanvas = document.createElement('canvas');
-		this.previewCanvas.width = w;
-		this.previewCanvas.height = h;
+		this.previewCanvas.width = w ?? constants.Base.screenWidth;
+		this.previewCanvas.height = h ?? constants.Base.screenHeight;
 	}
 
 	public async render(

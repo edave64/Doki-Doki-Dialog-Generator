@@ -39,7 +39,7 @@ import {
 	poemBackgrounds,
 	poemTextStyles,
 	IPoemTextStyle,
-} from '@/constants/poem';
+} from '@/constants/game_modes/ddlc/poem';
 import { defineComponent } from 'vue';
 import { genericSetable } from '@/util/simpleSettable';
 import ObjectTool, { Handler } from './object-tool.vue';

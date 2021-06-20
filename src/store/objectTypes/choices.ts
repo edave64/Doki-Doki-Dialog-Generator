@@ -1,16 +1,10 @@
 import { ICommand } from '@/eventbus/command';
 import { IObjectsState, ICreateObjectMutation, IObject } from '@/store/objects';
 import { MutationTree, ActionTree } from 'vuex';
-import { TextBoxWidth, TextBoxHeight } from '@/constants/textBox';
 import { IRootState } from '..';
-import {
-	ChoiceSpacing,
-	ChoiceButtonColor,
-	ChoiceY,
-	ChoiceButtonWidth,
-} from '@/constants/choices';
 import { ISetAutoWrappingMutation } from './textbox';
 import { baseProps } from './baseObjectProps';
+import getConstants from '@/constants';
 
 export interface IChoice {
 	text: string;
@@ -52,12 +46,13 @@ let lastChoiceId = 0;
 
 export const choiceActions: ActionTree<IObjectsState, IRootState> = {
 	createChoice({ commit, rootState }, command: ICreateChoicesAction): string {
+		const constants = getConstants();
 		const id = 'choice_' + ++lastChoiceId;
 		commit('create', {
 			object: {
 				...baseProps(),
-				y: ChoiceY,
-				width: ChoiceButtonWidth,
+				y: constants.Choices.ChoiceY,
+				width: constants.Choices.ChoiceButtonWidth,
 				height: 0,
 				panelId: rootState.panels.currentPanel,
 				id,
@@ -65,15 +60,15 @@ export const choiceActions: ActionTree<IObjectsState, IRootState> = {
 				autoWrap: true,
 				type: 'choice',
 				preserveRatio: false,
-				ratio: TextBoxWidth / TextBoxHeight,
-				choiceDistance: ChoiceSpacing,
+				ratio: constants.TextBox.TextBoxWidth / constants.TextBox.TextBoxHeight,
+				choiceDistance: constants.Choices.ChoiceSpacing,
 				choices: [
 					{
 						selected: false,
 						text: 'Click here to edit choice',
 					},
 				],
-				customColor: ChoiceButtonColor,
+				customColor: constants.Choices.ChoiceButtonColor,
 			} as IChoices,
 		} as ICreateObjectMutation);
 		return id;

@@ -16,6 +16,12 @@ export class Browser implements IEnvironment {
 	});
 	public readonly supports: DeepReadonly<EnvCapabilities>;
 
+	public get gameMode(): 'ddlc' | 'ddlc_plus' | null {
+		return this._gameMode;
+	}
+
+	private _gameMode: 'ddlc' | 'ddlc_plus' | null = null;
+
 	private vuexHistory: IHistorySupport | null = null;
 	private $store: Store<DeepReadonly<IRootState>> | null = null;
 
@@ -102,6 +108,26 @@ export class Browser implements IEnvironment {
 				});
 			}
 		});
+	}
+	public async loadGameMode(): Promise<void> {
+		const searchParams = new URLSearchParams(location.search);
+		const getMode = searchParams.get('mode');
+		if (getMode === 'ddlc' || getMode === 'ddlc_plus') {
+			this._gameMode = getMode;
+			return;
+		}
+
+		await this.loading;
+		await this.creatingDB;
+		let stored: string = '';
+		if (this.isSavingEnabled.value) {
+			stored = await IndexedDBHandler.loadGameMode();
+		}
+		let value: this['gameMode'] = 'ddlc';
+		if (stored === 'ddlc' || stored === 'ddlc_plus') {
+			value = stored;
+		}
+		this._gameMode = value;
 	}
 	updateDownloadFolder(): void {
 		throw new Error('Method not implemented.');
@@ -297,7 +323,7 @@ const IndexedDBHandler = {
 	createDB(): Promise<IDBDatabase> {
 		if (IndexedDBHandler.db) return IndexedDBHandler.db;
 		return (IndexedDBHandler.db = new Promise((resolve, reject) => {
-			const req = IndexedDBHandler.indexedDB!.open('dddg', 2);
+			const req = IndexedDBHandler.indexedDB!.open('dddg', 3);
 			req.onerror = event => {
 				reject(event);
 			};
@@ -347,6 +373,12 @@ const IndexedDBHandler = {
 		});
 	},
 
+	loadGameMode(): Promise<string> {
+		return this.objectStorePromise('readonly', async store => {
+			return await this.reqPromise<string>(store.get('gameMode'));
+		});
+	},
+
 	saveSettings<T>(settings: T): Promise<void> {
 		return this.objectStorePromise('readwrite', async store => {
 			await this.reqPromise(store.put({ ...settings }, 'settings'));
@@ -363,7 +395,7 @@ const IndexedDBHandler = {
 		mode: 'readonly' | 'readwrite',
 		callback: (store: IDBObjectStore) => Promise<T>
 	): Promise<T> {
-		if (!this.db) return Promise.reject('No database');
+		if (!this.db) return Promise.reject(new Error('No database'));
 		return new Promise(async (resolve, reject) => {
 			const transact = (await this.db!).transaction(['settings'], mode);
 			const store = transact.objectStore('settings');

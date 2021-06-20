@@ -1,16 +1,10 @@
 import { ICommand } from '@/eventbus/command';
 import { IObjectsState, ICreateObjectMutation, IObject } from '@/store/objects';
 import { MutationTree, ActionTree } from 'vuex';
-import { TextBoxWidth, TextBoxHeight } from '@/constants/textBox';
 import { IRootState } from '..';
-import {
-	ChoiceButtonColor,
-	ChoiceY,
-	ChoiceButtonWidth,
-} from '@/constants/choices';
-import { screenHeight, screenWidth } from '@/constants/base';
 import { ISetAutoWrappingMutation } from './textbox';
 import { baseProps } from './baseObjectProps';
+import getConstants from '@/constants';
 
 export interface INotification extends IObject {
 	type: 'notification';
@@ -53,12 +47,13 @@ export const notificationActions: ActionTree<IObjectsState, IRootState> = {
 		{ commit, rootState },
 		command: ICreateNotificationAction
 	): string {
+		const constants = getConstants();
 		const id = 'notification_' + ++lastNotificationId;
 		commit('create', {
 			object: {
 				...baseProps(),
-				y: screenHeight / 2,
-				width: ChoiceButtonWidth,
+				y: constants.Base.screenHeight / 2,
+				width: constants.Choices.ChoiceButtonWidth,
 				height: 0,
 				panelId: rootState.panels.currentPanel,
 				autoWrap: false,
@@ -66,8 +61,8 @@ export const notificationActions: ActionTree<IObjectsState, IRootState> = {
 				onTop: true,
 				type: 'notification',
 				preserveRatio: false,
-				ratio: TextBoxWidth / TextBoxHeight,
-				customColor: ChoiceButtonColor,
+				ratio: constants.TextBox.TextBoxWidth / constants.TextBox.TextBoxHeight,
+				customColor: constants.Choices.ChoiceButtonColor,
 				text: 'Click here to edit notification',
 				backdrop: true,
 			} as INotification,

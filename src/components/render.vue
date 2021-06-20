@@ -32,8 +32,8 @@ import { IObject, ISetObjectPositionMutation } from '@/store/objects';
 import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
 import { SceneRenderer } from '../renderables/scene-renderer';
 import { DeepReadonly } from '../util/readonly';
-import { screenHeight, screenWidth } from '@/constants/base';
 import { defineComponent } from 'vue';
+import getConstants from '@/constants';
 
 export default defineComponent({
 	props: {
@@ -70,10 +70,10 @@ export default defineComponent({
 			);
 		},
 		bitmapHeight(): number {
-			return screenHeight;
+			return getConstants().Base.screenHeight;
 		},
 		bitmapWidth(): number {
-			return screenWidth;
+			return getConstants().Base.screenWidth;
 		},
 		pickerMode(): boolean {
 			return this.$store.state.ui.pickColor;

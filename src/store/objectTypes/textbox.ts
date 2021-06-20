@@ -8,31 +8,34 @@ import {
 	ISetSpriteRotationMutation,
 } from '@/store/objects';
 import { MutationTree, ActionTree } from 'vuex';
-import { NameboxY, TextBoxWidth, TextBoxHeight } from '@/constants/textBox';
 import { ISetSpriteSizeMutation } from './characters';
 import { IRootState } from '..';
 import { baseProps } from './baseObjectProps';
-import { screenWidth } from '@/constants/base';
 import { rotateAround } from '@/util/rotation';
-import {
-	controlsDefaultColor,
-	nameboxDefaultColor,
-	nameboxStrokeDefaultColor,
-	textboxDefaultColor,
-} from '@/constants/textBoxCustom';
+import getConstants from '@/constants';
+import { rendererLookup } from '@/renderables/textbox';
+import { between } from '@/util/math';
+
 export interface ITextBox extends IObject {
 	type: 'textBox';
 	text: string;
 	talkingObjId: null | '$other$' | string;
 	talkingOther: string;
-	style: 'normal' | 'corrupt' | 'custom' | 'none';
+	style:
+		| 'normal'
+		| 'normal_plus'
+		| 'corrupt'
+		| 'corrupt_plus'
+		| 'custom'
+		| 'custom_plus'
+		| 'none';
 	overrideColor: boolean;
 	customColor: string;
 	deriveCustomColors: boolean;
 	customControlsColor: string;
 	customNameboxColor: string;
 	customNameboxStroke: string;
-	customNameboxWidth: number;
+	customNameboxWidth: number | null;
 	controls: boolean;
 	skip: boolean;
 	autoQuoting: boolean;
@@ -147,12 +150,16 @@ let lastTextBoxId = 0;
 
 export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 	createTextBox({ commit, rootState }, command: ICreateTextBoxAction): string {
+		const constants = getConstants();
 		const id = 'textBox_' + ++lastTextBoxId;
+		const style = constants.TextBox.DefaultTextboxStyle;
+		const renderer = rendererLookup[style];
+
 		const resetBounds = command.resetBounds || {
-			x: screenWidth / 2,
-			y: NameboxY,
-			width: TextBoxWidth,
-			height: TextBoxHeight,
+			x: renderer.defaultX,
+			y: renderer.defaultY,
+			width: renderer.defaultWidth,
+			height: renderer.defaultHeight,
 			rotation: 0,
 		};
 		commit('create', {
@@ -164,20 +171,20 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 				onTop: true,
 				type: 'textBox',
 				preserveRatio: false,
-				ratio: TextBoxWidth / TextBoxHeight,
+				ratio: constants.TextBox.TextBoxWidth / constants.TextBox.TextBoxHeight,
 				continue: true,
 				controls: true,
 				skip: true,
 				autoQuoting: true,
 				autoWrap: true,
-				style: 'normal',
+				style,
 				overrideColor: false,
-				customColor: textboxDefaultColor,
+				customColor: constants.TextBoxCustom.textboxDefaultColor,
 				deriveCustomColors: true,
-				customControlsColor: controlsDefaultColor,
-				customNameboxColor: nameboxDefaultColor,
-				customNameboxWidth: 168,
-				customNameboxStroke: nameboxStrokeDefaultColor,
+				customControlsColor: constants.TextBoxCustom.controlsDefaultColor,
+				customNameboxColor: constants.TextBoxCustom.nameboxDefaultColor,
+				customNameboxWidth: null,
+				customNameboxStroke: constants.TextBoxCustom.nameboxStrokeDefaultColor,
 				talkingObjId: null,
 				talkingOther: '',
 				text: '',
@@ -187,7 +194,75 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 		return id;
 	},
 
-	setStyle({ commit }, command: ISetTextBoxStyleAction) {
+	setStyle({ state, commit }, command: ISetTextBoxStyleAction) {
+		const constants = getConstants();
+		const obj = state.objects[command.id] as ITextBox;
+		const oldRenderer = rendererLookup[obj.style];
+		const newRenderer = rendererLookup[command.style];
+
+		const safetyMargin = 10;
+
+		let updatePos = false;
+		const posUpdate = {
+			id: command.id,
+			x: obj.x,
+			y: obj.y,
+		};
+		let updateSize = false;
+		const sizeUpdate = {
+			id: command.id,
+			width: obj.width,
+			height: obj.height,
+		};
+
+		if (!newRenderer.resizable) {
+			updateSize = true;
+			sizeUpdate.width = newRenderer.defaultWidth;
+			sizeUpdate.height = newRenderer.defaultHeight;
+		} else {
+			if (oldRenderer.defaultWidth !== newRenderer.defaultWidth) {
+				updateSize = true;
+				sizeUpdate.width = Math.max(
+					sizeUpdate.width +
+						newRenderer.defaultWidth -
+						oldRenderer.defaultWidth,
+					safetyMargin
+				);
+			}
+			if (oldRenderer.defaultHeight !== newRenderer.defaultHeight) {
+				updateSize = true;
+				sizeUpdate.height = Math.max(
+					sizeUpdate.height +
+						newRenderer.defaultHeight -
+						oldRenderer.defaultHeight,
+					safetyMargin
+				);
+			}
+		}
+		if (oldRenderer.defaultX !== newRenderer.defaultX) {
+			updatePos = true;
+			posUpdate.x = between(
+				-sizeUpdate.width + safetyMargin,
+				posUpdate.x + newRenderer.defaultX - oldRenderer.defaultX,
+				constants.Base.screenWidth - safetyMargin
+			);
+		}
+		if (oldRenderer.defaultY !== newRenderer.defaultY) {
+			updatePos = true;
+			posUpdate.y = between(
+				-sizeUpdate.height + safetyMargin,
+				posUpdate.y + newRenderer.defaultY - oldRenderer.defaultY,
+				constants.Base.screenHeight - safetyMargin
+			);
+		}
+
+		if (updatePos) {
+			commit('setPosition', posUpdate as ISetObjectPositionMutation);
+		}
+		if (updateSize) {
+			commit('setSize', sizeUpdate as ISetSpriteSizeMutation);
+		}
+
 		commit('setStyle', {
 			id: command.id,
 			style: command.style,

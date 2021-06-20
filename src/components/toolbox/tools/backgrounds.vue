@@ -156,6 +156,7 @@ export default defineComponent({
 				id,
 				label,
 				variants: [[url]],
+				scaling: 'none',
 			});
 			this.vuexHistory.transaction(() => {
 				this.$store.dispatch('content/replaceContentPack', {

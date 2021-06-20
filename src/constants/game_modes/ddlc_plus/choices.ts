@@ -1,6 +1,6 @@
 import { HSLAColor } from '@/util/colors/hsl';
-import { screenHeight } from './base';
 import { ITextStyle } from '@/renderer/textRenderer/textRenderer';
+import { screenHeight } from './base';
 
 // tslint:disable: no-magic-numbers
 export const nameboxTextOutlineDelta = new HSLAColor(
@@ -12,11 +12,12 @@ export const nameboxTextOutlineDelta = new HSLAColor(
 
 export const ChoiceButtonColor = '#ffe6f4';
 export const ChoiceButtonBorderColor = '#ffbde1';
-export const ChoiceButtonWidth = 420;
-export const ChoiceSpacing = 22;
-export const ChoiceX = 640;
-export const ChoiceYOffset = 270;
-export const ChoicePadding = 7;
+export const ChoiceButtonWidth = 630;
+export const ChoiceSpacing = 33;
+export const ChoiceX = 960;
+export const ChoiceYOffset = 405;
+export const ChoicePadding = 10.5;
+export const Outline = 4.5;
 
 export const ChoiceY = (screenHeight - ChoiceYOffset) / 2;
 
@@ -24,7 +25,7 @@ export const ChoiceTextStyle: ITextStyle = {
 	alpha: 1,
 	color: 'black',
 	fontName: 'aller',
-	fontSize: 24,
+	fontSize: 36,
 	isBold: false,
 	isItalic: false,
 	isStrikethrough: false,

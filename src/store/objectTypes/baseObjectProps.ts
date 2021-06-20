@@ -1,4 +1,4 @@
-import { screenWidth } from '@/constants/base';
+import getConstants from '@/constants';
 
 export function baseProps() {
 	return {
@@ -6,7 +6,7 @@ export function baseProps() {
 		rotation: 0,
 		version: 0,
 		opacity: 100,
-		x: screenWidth / 2,
+		x: getConstants().Base.screenWidth / 2,
 		composite: 'source-over',
 		filters: [],
 		label: null,

@@ -1,17 +1,20 @@
 import { ITextStyle } from '@/renderer/textRenderer/textRenderer';
-import { screenWidth } from '@/constants/base';
+import { screenWidth } from './base';
 import { nameboxStrokeDefaultColor } from './textBoxCustom';
 
 // tslint:disable: no-magic-numbers
 export const TextBoxWidth = 816;
 export const TextBoxCorruptedWidth = 900;
 export const TextBoxHeight = 146;
-export const TextBoxY = 568;
 export const TextBoxKerning = 0;
 export const TextBoxLineHeight = 29;
 export const TextBoxCorruptedKerning = 8;
 export const TextBoxTextXOffset = 38;
-export const TextBoxTextYOffset = 50;
+export const TextBoxTextYOffset = 44;
+export const TextBoxBottomSpacing = 6;
+
+export const HdSpacing = 93;
+export const HdSideMargin = 404;
 
 export const TextBoxTextCorruptedXOffset = 9;
 export const TextBoxTextCorruptedYOffset = 9;
@@ -71,8 +74,9 @@ export const ControlsTextDisabledStyle = {
 		style: '#a66',
 	},
 };
-
+/*
 export const TextBoxStyle = {
+	...BaseTextStyle,
 	align: 'left' as CanvasTextAlign,
 	font: '24px aller',
 	outline: {
@@ -83,7 +87,7 @@ export const TextBoxStyle = {
 		style: '#fff',
 	},
 };
-
+*/
 export const TextBoxCorruptedStyle = {
 	align: 'left' as CanvasTextAlign,
 	font: '24px verily',
@@ -96,16 +100,30 @@ export const TextBoxCorruptedStyle = {
 	},
 };
 
+export const TextBoxStyle = {
+	alpha: 1,
+	color: '#ffffff',
+	fontName: 'aller',
+	fontSize: 24,
+	isBold: false,
+	isItalic: false,
+	isStrikethrough: false,
+	isUnderlined: false,
+	letterSpacing: 0,
+	strokeColor: '#523140',
+	strokeWidth: 4,
+	lineSpacing: 1.2,
+};
+
 export const TextBoxX = screenWidth / 2 - TextBoxWidth / 2; // 232
 export const TextBoxCorruptedX = screenWidth / 2 - TextBoxCorruptedWidth / 2;
 export const TextBoxTextX = TextBoxX + TextBoxTextXOffset;
-export const TextBoxTextY = TextBoxY + TextBoxTextYOffset;
 
-export const NameboxY = TextBoxY - NameboxHeight;
 export const NameboxX = TextBoxX + NameboxXOffset;
 export const NameboxTextX = NameboxX + NameboxWidth / 2;
-export const NameboxTextY = NameboxY + NameboxTextYOffset;
 
 export const ControlsXHistory = TextBoxX + ControlsXHistoryOffset;
 export const ControlsXSkip = TextBoxX + ControlsXSkipOffset;
 export const ControlsXStuff = TextBoxX + ControlsXStuffOffset;
+
+export const DefaultTextboxStyle = 'normal';

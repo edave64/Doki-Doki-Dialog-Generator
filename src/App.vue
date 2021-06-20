@@ -357,6 +357,7 @@ export default defineComponent({
 			true
 		);
 
+		await enviroment.loadGameMode();
 		enviroment.connectToStore(this.vuexHistory, this.$store);
 		const settings = await enviroment.loadSettings();
 

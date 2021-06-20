@@ -14,6 +14,12 @@ export const positions = [
 	'4-4',
 ];
 
+export const sdCharacterScaleFactor = 1;
+export const hdCharacterScaleFactor = 1 / 1.5;
+
+export const CloseUpYOffset = -74;
+export const BaseCharacterYPos = -26;
+
 export const characterPositions = [
 	200,
 	240,
