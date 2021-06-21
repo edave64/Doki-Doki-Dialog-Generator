@@ -39,7 +39,11 @@ export class AssetFailureEvent implements IEvent {
 	public readonly kind = 'AssetFailureEvent';
 	public constructor(public path: string) {}
 }
-
+export class FailureEvent implements IEvent {
+	public static readonly kind = 'FailureEvent';
+	public readonly kind = 'FailureEvent';
+	public constructor(public message: string) {}
+}
 export class CustomAssetFailureEvent implements IEvent {
 	public static readonly kind = 'CustomAssetFailureEvent';
 	public readonly kind = 'CustomAssetFailureEvent';
