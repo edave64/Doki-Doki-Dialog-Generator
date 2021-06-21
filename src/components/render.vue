@@ -39,6 +39,7 @@ export default defineComponent({
 	props: {
 		canvasWidth: { default: 0 },
 		canvasHeight: { default: 0 },
+		preLoading: { type: Boolean },
 	},
 	data: () => ({
 		sdCtx: null! as CanvasRenderingContext2D,
@@ -70,9 +71,11 @@ export default defineComponent({
 			);
 		},
 		bitmapHeight(): number {
+			this.preLoading;
 			return getConstants().Base.screenHeight;
 		},
 		bitmapWidth(): number {
+			this.preLoading;
 			return getConstants().Base.screenWidth;
 		},
 		pickerMode(): boolean {

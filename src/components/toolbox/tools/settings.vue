@@ -50,6 +50,23 @@
 					</p>
 				</div>
 			</modal-dialog>
+			<modal-dialog
+				:options="[
+					inPlusMode ? 'Enter Classic Mode' : 'Enter Plus mode',
+					'Stay',
+				]"
+				v-if="showModeDialog"
+				@leave="showModeDialog = false"
+				@option="modeChange"
+				no-base-size
+			>
+				<div class="modal-scroll-area">
+					<p>
+						WARNING: Swiching modes will discard everything you have done in
+						this session. All dialouge will be lost!
+					</p>
+				</div>
+			</modal-dialog>
 		</teleport>
 		<button v-if="waitOnSaveChange" disabled>
 			Applying...
@@ -65,6 +82,14 @@
 			@click="denySavesModal = true"
 		>
 			Deny saving options
+		</button>
+		<button @click="showModeDialog = true">
+			<template v-if="inPlusMode">
+				Enter Classic Mode
+			</template>
+			<template v-else>
+				Enter DDLC Plus Mode
+			</template>
 		</button>
 		<toggle
 			v-if="lqAllowed"
@@ -110,11 +135,11 @@
 <script lang="ts">
 import Toggle from '@/components/toggle.vue';
 import { PanelMixin } from './panelMixin';
-import { IRemovePacksAction } from '@/store';
 import environment from '@/environments/environment';
 import { defineComponent } from 'vue';
 import ModalDialog from '@/components/ModalDialog.vue';
 import L from '@/components/ui/link.vue';
+import { safeAsync } from '@/util/errors';
 
 export default defineComponent({
 	mixins: [PanelMixin],
@@ -123,6 +148,7 @@ export default defineComponent({
 		allowSavesModal: false,
 		denySavesModal: false,
 		waitOnSaveChange: false,
+		showModeDialog: false,
 	}),
 	computed: {
 		savesAllowed: {
@@ -134,6 +160,9 @@ export default defineComponent({
 				environment.savingEnabled = allowed;
 				this.saveSettings();
 			},
+		},
+		inPlusMode(): boolean {
+			return environment.gameMode === 'ddlc_plus';
 		},
 		savesEnabledInEnv(): boolean {
 			return environment.supports.optionalSaving;
@@ -209,6 +238,18 @@ export default defineComponent({
 			if (choice === 'Deny') {
 				this.savesAllowed = false;
 			}
+		},
+		modeChange(choice: 'Enter Classic Mode' | 'Enter Plus mode' | 'Stay') {
+			safeAsync('changing modes', async () => {
+				const baseLoc = `${location.protocol}//${location.host}${location.pathname}`;
+				if (choice === 'Enter Classic Mode') {
+					await environment.saveGameMode('ddlc');
+					location.href = `${baseLoc}?mode=ddlc`;
+				} else if (choice === 'Enter Plus mode') {
+					await environment.saveGameMode('ddlc_plus');
+					location.href = `${baseLoc}?mode=ddlc_plus`;
+				}
+			});
 		},
 		saveSettings() {
 			environment.saveSettings({

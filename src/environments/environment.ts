@@ -63,6 +63,7 @@ export interface IEnvironment {
 	saveSettings(settings: Settings): Promise<void>;
 	loadSettings(): Promise<Settings>;
 	loadGameMode(): Promise<void>;
+	saveGameMode(mode: IEnvironment['gameMode']): Promise<void>;
 	connectToStore(
 		vuexHistory: IHistorySupport,
 		store: Store<DeepReadonly<IRootState>>

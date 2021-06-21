@@ -129,6 +129,11 @@ export class Browser implements IEnvironment {
 		}
 		this._gameMode = value;
 	}
+	public async saveGameMode(mode: Browser['gameMode']): Promise<void> {
+		if (this.isSavingEnabled.value) {
+			await IndexedDBHandler.saveGameMode(mode);
+		}
+	}
 	updateDownloadFolder(): void {
 		throw new Error('Method not implemented.');
 	}
@@ -361,21 +366,25 @@ const IndexedDBHandler = {
 		});
 	},
 
+	loadAutoload(): Promise<string[]> {
+		return this.objectStorePromise('readonly', async store => {
+			return await this.reqPromise<string[]>(store.get('autoload'));
+		});
+	},
 	saveAutoload(autoloads: string[]): Promise<void> {
 		return this.objectStorePromise('readwrite', async store => {
 			await this.reqPromise(store.put([...autoloads], 'autoload'));
 		});
 	},
 
-	loadAutoload(): Promise<string[]> {
-		return this.objectStorePromise('readonly', async store => {
-			return await this.reqPromise<string[]>(store.get('autoload'));
-		});
-	},
-
 	loadGameMode(): Promise<string> {
 		return this.objectStorePromise('readonly', async store => {
 			return await this.reqPromise<string>(store.get('gameMode'));
+		});
+	},
+	saveGameMode(mode: IEnvironment['gameMode']): Promise<void> {
+		return this.objectStorePromise('readwrite', async store => {
+			await this.reqPromise(store.put(mode, 'gameMode'));
 		});
 	},
 

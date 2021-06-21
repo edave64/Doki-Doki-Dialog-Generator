@@ -8,6 +8,7 @@
 				ref="render"
 				:canvasWidth="canvasWidth"
 				:canvasHeight="canvasHeight"
+				:preLoading="preLoading"
 			/>
 		</div>
 		<message-console />
@@ -106,6 +107,7 @@ export default defineComponent({
 		expressionBuilderCharacter: '',
 		expressionBuilderHeadGroup: undefined as string | undefined,
 		systemPrefersDarkMode: false,
+		preLoading: true,
 	}),
 	computed: {
 		isSafari(): boolean {
@@ -358,6 +360,7 @@ export default defineComponent({
 		);
 
 		await enviroment.loadGameMode();
+		this.preLoading = false;
 		enviroment.connectToStore(this.vuexHistory, this.$store);
 		const settings = await enviroment.loadSettings();
 
