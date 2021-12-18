@@ -16,6 +16,7 @@
 							<option value="normal">Normal</option>
 							<option value="corrupt">Corrupt</option>
 							<option value="custom">Custom</option>
+							<option value="custom_plus">Custom (Plus)</option>
 							<option value="none">None</option>
 						</select>
 					</td>
@@ -69,13 +70,13 @@
 		<template v-slot:options>
 			<d-fieldset
 				title="Customization:"
-				:class="textBoxStyle === 'custom' ? 'customization-set' : ''"
+				:class="customizable ? 'customization-set' : ''"
 			>
 				<d-flow direction="vertical" maxSize="100%" no-wraping>
 					<toggle label="Controls visible?" v-model="showControls" />
 					<toggle label="Able to skip?" v-model="allowSkipping" />
 					<toggle label="Continue arrow?" v-model="showContinueArrow" />
-					<table v-if="textBoxStyle === 'custom'">
+					<table v-if="customizable">
 						<tr>
 							<td>
 								<label for="custom_namebox_width">Namebox width:</label>
@@ -85,6 +86,7 @@
 									id="custom_namebox_width"
 									type="number"
 									style="width: 48px;"
+									:placeholder="nameboxWidthDefault"
 									v-model.number="customNameboxWidth"
 									:disabled="overrideColor"
 									@keydown.stop
@@ -189,6 +191,7 @@ import { exhaust } from '@/util/exhaust';
 import { PanelMixin } from './panelMixin';
 import { genericSetable } from '@/util/simpleSettable';
 import ObjectTool, { Handler } from './object-tool.vue';
+import getConstants from '@/constants';
 
 const setable = genericSetable<ITextBox>();
 
@@ -205,6 +208,12 @@ export default defineComponent({
 		colorSelect: '' as '' | 'base' | 'controls' | 'namebox' | 'nameboxStroke',
 	}),
 	computed: {
+		customizable(): boolean {
+			return this.textBoxStyle.startsWith('custom');
+		},
+		nameboxWidthDefault(): number {
+			return getConstants().TextBox.NameboxWidth;
+		},
 		object(): ITextBox {
 			const obj = this.$store.state.objects.objects[
 				this.$store.state.ui.selection!
@@ -308,7 +317,7 @@ export default defineComponent({
 		autoWrap: setable('autoWrap', 'objects/setAutoWrapping'),
 		showContinueArrow: setable('continue', 'objects/setContinueArrow'),
 		dialog: setable('text', 'objects/setText'),
-		textBoxStyle: setable('style', 'objects/setStyle'),
+		textBoxStyle: setable('style', 'objects/setStyle', true),
 		overrideColor: setable('overrideColor', 'objects/setColorOverride'),
 		deriveCustomColors: setable(
 			'deriveCustomColors',

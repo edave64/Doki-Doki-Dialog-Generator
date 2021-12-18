@@ -1,10 +1,10 @@
 import { CompositeModes, RenderContext } from '@/renderer/rendererContext';
 import { getAAsset } from '@/asset-manager';
-import { screenWidth, screenHeight } from '@/constants/base';
 import { IAsset } from '@/store/content';
 import { ScalingModes } from '@/store/panels';
 import { DeepReadonly } from '@/util/readonly';
 import { SpriteFilter } from '@/store/sprite_options';
+import getConstants from '@/constants';
 
 export interface IBackgroundRenderer {
 	render(rx: RenderContext): Promise<void>;
@@ -21,6 +21,7 @@ export class Background implements IBackgroundRenderer {
 	) {}
 
 	public async render(rx: RenderContext): Promise<void> {
+		const { screenWidth, screenHeight } = getConstants().Base;
 		const images = await Promise.all(
 			this.assets.map(asset => getAAsset(asset, rx.hq))
 		);
@@ -76,6 +77,7 @@ export const color = {
 	color: '#000000',
 
 	async render(rx: RenderContext): Promise<void> {
+		const { screenWidth, screenHeight } = getConstants().Base;
 		rx.drawRect({
 			x: 0,
 			y: 0,

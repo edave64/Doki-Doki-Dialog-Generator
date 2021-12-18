@@ -109,8 +109,8 @@
 <script lang="ts">
 import Color from '../color/color.vue';
 import { TextRenderer } from '@/renderer/textRenderer/textRenderer';
-import { NameboxTextStyle } from '@/constants/textBox';
 import { defineComponent } from 'vue';
+import getConstants from '@/constants';
 
 export default defineComponent({
 	inheritAttrs: false,
@@ -147,10 +147,11 @@ export default defineComponent({
 	},
 	methods: {
 		onValueChanged() {
+			const constants = getConstants();
 			const val = (this.$refs.textArea as HTMLTextAreaElement).value;
 			try {
 				// tslint:disable-next-line: no-unused-expression
-				new TextRenderer(val, NameboxTextStyle);
+				new TextRenderer(val, constants.TextBox.NameboxTextStyle);
 				this.error = '';
 			} catch (e) {
 				this.error = (e as Error).message;

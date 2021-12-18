@@ -32,13 +32,14 @@ import { IObject, ISetObjectPositionMutation } from '@/store/objects';
 import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
 import { SceneRenderer } from '../renderables/scene-renderer';
 import { DeepReadonly } from '../util/readonly';
-import { screenHeight, screenWidth } from '@/constants/base';
 import { defineComponent } from 'vue';
+import getConstants from '@/constants';
 
 export default defineComponent({
 	props: {
 		canvasWidth: { default: 0 },
 		canvasHeight: { default: 0 },
+		preLoading: { type: Boolean },
 	},
 	data: () => ({
 		sdCtx: null! as CanvasRenderingContext2D,
@@ -70,10 +71,12 @@ export default defineComponent({
 			);
 		},
 		bitmapHeight(): number {
-			return screenHeight;
+			this.preLoading;
+			return getConstants().Base.screenHeight;
 		},
 		bitmapWidth(): number {
-			return screenWidth;
+			this.preLoading;
+			return getConstants().Base.screenWidth;
 		},
 		pickerMode(): boolean {
 			return this.$store.state.ui.pickColor;

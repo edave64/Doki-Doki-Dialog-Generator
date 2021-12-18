@@ -459,6 +459,9 @@ export default defineComponent({
 					styleGroups: [],
 					label: '',
 					chibi: '',
+					size: [960, 960],
+					defaultScale: [0.8, 0.8],
+					hd: false,
 				} as CharacterModel<string>;
 				uploadedExpressionsPack.characters.push(character);
 			}
@@ -649,6 +652,9 @@ export default defineComponent({
 
 			return {
 				id: this.character,
+				size: [960, 960],
+				defaultScale: [0.8, 0.8],
+				hd: false,
 				heads: {
 					'dddg.temp1:default': {
 						variants: this.expressionModels,

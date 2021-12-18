@@ -4,6 +4,9 @@
 		<p v-for="(message, i) in messages" :key="message + '_' + i">
 			{{ message }}
 		</p>
+		<p v-for="(error, i) in errors" class="error" :key="error + '_' + i">
+			{{ error }} <a href="#" @click="dismissError(i)">[Dismiss]</a>
+		</p>
 	</div>
 </template>
 
@@ -11,6 +14,7 @@
 import EventBus, {
 	AssetFailureEvent,
 	CustomAssetFailureEvent,
+	FailureEvent,
 	ShowMessageEvent,
 	VueErrorEvent,
 } from '@/eventbus/event-bus';
@@ -29,6 +33,7 @@ export default defineComponent({
 	},
 	data: () => ({
 		messages: [] as string[],
+		errors: [] as string[],
 		showLoading: false,
 		showLoadingTimeout: 0,
 		hideLoadingTimeout: 0,
@@ -54,6 +59,10 @@ export default defineComponent({
 			setTimeout(() => {
 				this.messages.shift();
 			}, longHidingTime);
+		});
+
+		EventBus.subscribe(FailureEvent, ev => {
+			this.errors.push(ev.message);
 		});
 
 		EventBus.subscribe(ShowMessageEvent, ev => {
@@ -101,6 +110,9 @@ export default defineComponent({
 				}
 			}
 		},
+		dismissError(i: number) {
+			this.errors.splice(i, 1);
+		},
 	},
 
 	watch: {
@@ -125,6 +137,15 @@ export default defineComponent({
 	&:not(.vertical) {
 		bottom: 200px;
 		left: 0;
+	}
+
+	.error {
+		color: #660000;
+		font-weight: bolder;
+
+		a {
+			user-select: none;
+		}
 	}
 }
 </style>

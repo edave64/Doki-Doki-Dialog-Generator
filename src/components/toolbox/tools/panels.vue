@@ -157,7 +157,6 @@ import { SceneRenderer } from '@/renderables/scene-renderer';
 import { DeepReadonly } from '@/util/readonly';
 import environment from '@/environments/environment';
 import eventBus, { ShowMessageEvent } from '@/eventbus/event-bus';
-import { screenWidth, screenHeight } from '@/constants/base';
 import { IObject } from '@/store/objects';
 import { INotification } from '@/store/objectTypes/notification';
 import { IPoem } from '@/store/objectTypes/poem';
@@ -167,6 +166,7 @@ import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import DButton from '@/components/ui/d-button.vue';
 import ImageOptions from '../subtools/image-options/image-options.vue';
+import getConstants from '@/constants';
 
 interface IPanelButton {
 	id: string;
@@ -326,11 +326,12 @@ export default defineComponent({
 			hq: boolean,
 			mapper: (imageIdx: number, canvas: HTMLCanvasElement) => Promise<T>
 		): Promise<T[]> {
+			const baseConst = getConstants().Base;
 			return await Promise.all(
 				distribution.map(async (image, imageIdx) => {
 					const targetCanvas = document.createElement('canvas');
-					targetCanvas.width = screenWidth;
-					targetCanvas.height = screenHeight * image.length;
+					targetCanvas.width = baseConst.screenWidth;
+					targetCanvas.height = baseConst.screenHeight * image.length;
 					const context = targetCanvas.getContext('2d')!;
 
 					await Promise.all(
@@ -338,17 +339,17 @@ export default defineComponent({
 							const sceneRenderer = new SceneRenderer(
 								this.$store,
 								image[panelIdx],
-								screenWidth,
-								screenHeight
+								baseConst.screenWidth,
+								baseConst.screenHeight
 							);
 
 							await sceneRenderer.render(hq, false);
 
 							sceneRenderer.paintOnto(context, {
 								x: 0,
-								y: screenHeight * panelIdx,
-								w: screenWidth,
-								h: screenHeight,
+								y: baseConst.screenHeight * panelIdx,
+								w: baseConst.screenWidth,
+								h: baseConst.screenHeight,
 							});
 						})
 					);
@@ -492,18 +493,19 @@ export default defineComponent({
 			});
 		},
 		async renderThumbnail() {
+			const baseConst = getConstants().Base;
 			const sceneRenderer = new SceneRenderer(
 				this.$store,
 				this.currentPanel,
-				screenWidth,
-				screenHeight
+				baseConst.screenWidth,
+				baseConst.screenHeight
 			);
 
 			await sceneRenderer.render(false, true);
 
 			const targetCanvas = document.createElement('canvas');
-			targetCanvas.width = screenWidth * thumbnailFactor;
-			targetCanvas.height = screenHeight * thumbnailFactor;
+			targetCanvas.width = baseConst.screenWidth * thumbnailFactor;
+			targetCanvas.height = baseConst.screenHeight * thumbnailFactor;
 
 			sceneRenderer.paintOnto(targetCanvas.getContext('2d')!, {
 				x: 0,

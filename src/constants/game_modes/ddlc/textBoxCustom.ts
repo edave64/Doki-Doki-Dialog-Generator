@@ -67,3 +67,4 @@ export const textboxOutlineColorDelta = new HSLAColor(
 	0.10784313725490202,
 	0
 );
+export const textboxOutlineWidth = 3;

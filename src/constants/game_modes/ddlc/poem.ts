@@ -1,5 +1,5 @@
 import { ITextStyle } from '@/renderer/textRenderer/textRenderer';
-import { screenWidth, screenHeight } from '@/constants/base';
+import { screenHeight, screenWidth } from './base';
 
 // tslint:disable: no-magic-numbers
 export const poemBackgrounds = [

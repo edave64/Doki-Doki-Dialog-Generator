@@ -1,15 +1,8 @@
 import { RenderContext } from '@/renderer/rendererContext';
 import { TextRenderer } from '@/renderer/textRenderer/textRenderer';
-import { screenWidth, screenHeight } from '@/constants/base';
 import { IChoices } from '@/store/objectTypes/choices';
-import {
-	ChoiceTextStyle,
-	ChoiceButtonBorderColor,
-	ChoiceButtonColor,
-	ChoicePadding,
-	ChoiceSpacing,
-} from '@/constants/choices';
 import { ScalingRenderable } from './scalingRenderable';
+import getConstants from '@/constants';
 
 export class Choice extends ScalingRenderable<IChoices> {
 	private _height: number = 0;
@@ -24,12 +17,14 @@ export class Choice extends ScalingRenderable<IChoices> {
 
 	protected async draw(rx: RenderContext): Promise<void> {
 		await this.updateChoiceBounds();
-		console.log('rerender choice');
 
+		const constants = getConstants();
 		const w = this.obj.width;
 		const h = this.height;
 		const w2 = w / 2;
-		const baseX = this.flip ? screenWidth - this.obj.x : this.obj.x;
+		const baseX = this.flip
+			? constants.Base.screenWidth - this.obj.x
+			: this.obj.x;
 		const x = baseX - w2;
 		let y = this.obj.y - h / 2;
 
@@ -42,13 +37,13 @@ export class Choice extends ScalingRenderable<IChoices> {
 				x,
 				y,
 				w,
-				h: height + ChoicePadding * 2,
+				h: height + constants.Choices.ChoicePadding * 2,
 				outline: {
-					style: ChoiceButtonBorderColor,
-					width: 3,
+					style: constants.Choices.ChoiceButtonBorderColor,
+					width: constants.Choices.Outline,
 				},
 				fill: {
-					style: ChoiceButtonColor,
+					style: constants.Choices.ChoiceButtonColor,
 				},
 			});
 			choiceRenderer.fixAlignment(
@@ -56,17 +51,22 @@ export class Choice extends ScalingRenderable<IChoices> {
 				x,
 				x + w,
 				// tslint:disable-next-line: no-magic-numbers
-				y + ChoiceSpacing * 1.25,
+				y + constants.Choices.ChoiceSpacing * 1.25,
 				this.obj.autoWrap ? w : 0
 			);
 			choiceRenderer.render(rx.fsCtx);
-			y += height + ChoicePadding * 2 + ChoiceSpacing;
+			y +=
+				height +
+				constants.Choices.ChoicePadding * 2 +
+				constants.Choices.ChoiceSpacing;
 		}
 	}
 
 	private async updateChoiceBounds() {
+		const constants = getConstants();
 		this.choiceRenderers = this.obj.choices.map(
-			choice => new TextRenderer(choice.text || ' ', ChoiceTextStyle)
+			choice =>
+				new TextRenderer(choice.text || ' ', constants.Choices.ChoiceTextStyle)
 		);
 
 		this._height =
@@ -74,7 +74,7 @@ export class Choice extends ScalingRenderable<IChoices> {
 				(acc, renderer) =>
 					acc +
 					renderer.getHeight(this.obj.autoWrap ? this.obj.width : 0) +
-					ChoicePadding * 2,
+					constants.Choices.ChoicePadding * 2,
 				0
 			) +
 			this.obj.choiceDistance * (this.obj.choices.length - 1);

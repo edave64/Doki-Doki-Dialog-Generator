@@ -37,6 +37,7 @@ export interface Settings {
 
 export interface IEnvironment {
 	readonly localRepositoryUrl: string;
+	readonly gameMode: 'ddlc' | 'ddlc_plus' | null;
 	readonly state: EnvState;
 	readonly supports: DeepReadonly<EnvCapabilities>;
 	savingEnabled: boolean;
@@ -61,6 +62,8 @@ export interface IEnvironment {
 
 	saveSettings(settings: Settings): Promise<void>;
 	loadSettings(): Promise<Settings>;
+	loadGameMode(): Promise<void>;
+	saveGameMode(mode: IEnvironment['gameMode']): Promise<void>;
 	connectToStore(
 		vuexHistory: IHistorySupport,
 		store: Store<DeepReadonly<IRootState>>

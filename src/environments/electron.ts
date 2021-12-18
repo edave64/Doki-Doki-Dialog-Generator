@@ -13,7 +13,6 @@ import { Repo } from '@/models/repo';
 import { DeepReadonly } from '@/util/readonly';
 import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
-import { JSONContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/jsonFormat';
 
 const packs: IPack[] = [];
 
@@ -36,7 +35,11 @@ export class Electron implements IEnvironment {
 		downloadLocation: '',
 	});
 	public readonly localRepositoryUrl = '/repo/';
+	public get gameMode(): 'ddlc' | 'ddlc_plus' | null {
+		return this._gameMode;
+	}
 
+	private _gameMode: 'ddlc' | 'ddlc_plus' | null = null;
 	private readonly electron = (window as any) as IElectronWindow;
 
 	private vuexHistory: IHistorySupport | null = null;
@@ -67,6 +70,7 @@ export class Electron implements IEnvironment {
 					id: name,
 					variants: [[name]],
 					label: parts[parts.length - 1],
+					scaling: 'none',
 				});
 				this.invalidateInstalledBGs();
 			}
@@ -148,6 +152,14 @@ export class Electron implements IEnvironment {
 			'defaultCharacterTalkingZoom',
 			settings.defaultCharacterTalkingZoom
 		);
+	}
+	public async loadGameMode() {
+		this._gameMode =
+			(await this.electron.ipcRenderer.sendConvo('config.get', 'gameMode')) ||
+			'ddlc';
+	}
+	public async saveGameMode(mode: Electron['gameMode']): Promise<void> {
+		await this.electron.ipcRenderer.sendConvo('config.set', 'gameMode', mode);
 	}
 	public async loadSettings(): Promise<Settings> {
 		return {

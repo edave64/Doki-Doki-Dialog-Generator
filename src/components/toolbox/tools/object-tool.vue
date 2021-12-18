@@ -1,7 +1,7 @@
 <template>
 	<div class="panel">
 		<h1
-			:style="{ fontStyle: this.hasLabel ? 'italic' : 'normal' }"
+			:style="{ fontStyle: hasLabel ? 'italic' : 'normal' }"
 			@click="enableNameEdit"
 		>
 			{{ heading }}
@@ -148,8 +148,7 @@ import {
 } from '@/store/objects';
 import ModalDialog from '@/components/ModalDialog.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
-import { textboxDefaultColor } from '@/constants/textBoxCustom';
-import { NameboxWidth } from '@/constants/textBox';
+import getConstants from '@/constants';
 
 const setable = genericSetable<IPoem>();
 
@@ -224,7 +223,7 @@ export default defineComponent({
 			},
 		},
 		defaultNameboxWidth(): number {
-			return NameboxWidth;
+			return getConstants().TextBox.NameboxWidth;
 		},
 		finalColorHandler(): Handler | null {
 			return this.localColorHandler || this.colorHandler || null;
@@ -244,7 +243,9 @@ export default defineComponent({
 				this.vuexHistory.transaction(async () => {
 					this.$store.commit('objects/setTextboxColor', {
 						id: this.object.id,
-						textboxColor: val ? textboxDefaultColor : null,
+						textboxColor: val
+							? getConstants().TextBoxCustom.textboxDefaultColor
+							: null,
 					} as ICopyObjectToClipboardAction);
 				});
 			},

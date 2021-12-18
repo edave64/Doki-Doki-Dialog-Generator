@@ -2,20 +2,9 @@ import { ICommand } from '@/eventbus/command';
 import { IObjectsState, ICreateObjectMutation, IObject } from '@/store/objects';
 import { MutationTree, ActionTree } from 'vuex';
 import { IRootState } from '..';
-import {
-	defaultPoemBackground,
-	defaultX,
-	defaultY,
-	defaultPoemWidth,
-	defaultPoemHeight,
-	consoleHeight,
-	consoleWidth,
-	defaultPoemStyle,
-	defaultConsoleBackground,
-	defaultConsoleStyle,
-} from '@/constants/poem';
 import { ISetAutoWrappingMutation } from './textbox';
 import { baseProps } from './baseObjectProps';
+import getConstants from '@/constants';
 
 export interface IPoem extends IObject {
 	type: 'poem';
@@ -53,14 +42,15 @@ let lastPoemId = 0;
 
 export const poemActions: ActionTree<IObjectsState, IRootState> = {
 	createPoem({ commit, rootState }, _command: ICreatePoemAction): string {
+		const constants = getConstants();
 		const id = 'poem_' + ++lastPoemId;
 		commit('create', {
 			object: {
 				subType: 'poem',
-				x: defaultX,
-				y: defaultY,
-				width: defaultPoemWidth,
-				height: defaultPoemHeight,
+				x: constants.Poem.defaultX,
+				y: constants.Poem.defaultY,
+				width: constants.Poem.defaultPoemWidth,
+				height: constants.Poem.defaultPoemHeight,
 				panelId: rootState.panels.currentPanel,
 				flip: false,
 				rotation: 0,
@@ -71,9 +61,10 @@ export const poemActions: ActionTree<IObjectsState, IRootState> = {
 				version: 0,
 				preserveRatio: false,
 				autoWrap: true,
-				ratio: defaultPoemWidth / defaultPoemHeight,
-				background: defaultPoemBackground,
-				font: defaultPoemStyle,
+				ratio:
+					constants.Poem.defaultPoemWidth / constants.Poem.defaultPoemHeight,
+				background: constants.Poem.defaultPoemBackground,
+				font: constants.Poem.defaultPoemStyle,
 				text: 'New poem\n\nClick here to edit poem',
 				composite: 'source-over',
 				filters: [],
@@ -87,23 +78,24 @@ export const poemActions: ActionTree<IObjectsState, IRootState> = {
 		return id;
 	},
 	createConsole({ commit, rootState }, _command: ICreatePoemAction): string {
+		const constants = getConstants();
 		const id = 'poem_' + ++lastPoemId;
 		commit('create', {
 			object: {
 				...baseProps(),
 				subType: 'console',
-				x: consoleWidth / 2,
-				y: consoleHeight / 2,
-				width: consoleWidth,
-				height: consoleHeight,
+				x: constants.Poem.consoleWidth / 2,
+				y: constants.Poem.consoleHeight / 2,
+				width: constants.Poem.consoleWidth,
+				height: constants.Poem.consoleHeight,
 				panelId: rootState.panels.currentPanel,
 				id,
 				onTop: true,
 				type: 'poem',
 				preserveRatio: false,
-				ratio: consoleWidth / consoleHeight,
-				background: defaultConsoleBackground,
-				font: defaultConsoleStyle,
+				ratio: constants.Poem.consoleWidth / constants.Poem.consoleHeight,
+				background: constants.Poem.defaultConsoleBackground,
+				font: constants.Poem.defaultConsoleStyle,
 				text: '> _\n  \n  Console command\n  Click here to edit',
 				autoWrap: true,
 			} as IPoem,

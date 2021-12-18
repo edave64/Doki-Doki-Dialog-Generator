@@ -42,6 +42,9 @@ export function mergeContentPacks(
 				id: xObj.id,
 				label: xObj.label,
 				variants: [...xObj.variants, ...yObj.variants],
+				defaultScale: xObj.defaultScale,
+				hd: xObj.hd,
+				sdVersion: xObj.sdVersion || yObj.sdVersion,
 			})
 		),
 		colors: mergeIdArrays(
@@ -65,6 +68,8 @@ function mergeBackground<A>(x: Background<A>, y: Background<A>): Background<A> {
 		id: x.id,
 		label: x.label,
 		variants: [...x.variants, ...y.variants],
+		scaling: x.scaling,
+		sdVersion: x.sdVersion || y.sdVersion,
 	};
 }
 
@@ -81,6 +86,10 @@ function mergeCharacter<A>(x: Character<A>, y: Character<A>): Character<A> {
 		id: x.id,
 		label: x.label,
 		heads: mergeHeadCollections(x.heads, y.heads),
+		defaultScale: x.defaultScale,
+		hd: x.hd,
+		size: x.size,
+		sdVersion: x.sdVersion,
 		styleGroups: mergeIdArrays(
 			x.styleGroups,
 			y.styleGroups,

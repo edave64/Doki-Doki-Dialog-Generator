@@ -104,7 +104,6 @@
 <script lang="ts">
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
-import { positions, characterPositions } from '@/constants/base';
 import {
 	closestCharacterSlot,
 	ISetFreeMoveMutation,
@@ -120,6 +119,8 @@ import {
 } from '@/store/objects';
 import { ITextBox } from '@/store/objectTypes/textbox';
 import { defineComponent, Prop } from 'vue';
+import getConstants from '@/constants';
+import { rendererLookup } from '@/renderables/textbox';
 
 export default defineComponent({
 	components: { Toggle, DFieldset },
@@ -163,7 +164,7 @@ export default defineComponent({
 				this.vuexHistory.transaction(() => {
 					this.$store.dispatch('objects/setPosition', {
 						id: this.obj!.id,
-						x: characterPositions[value],
+						x: getConstants().Base.characterPositions[value],
 						y: this.obj!.y,
 					} as ISetPositionAction);
 				});
@@ -225,8 +226,9 @@ export default defineComponent({
 		},
 		allowSize(): boolean {
 			const obj = this.obj!;
-			if (obj.type === 'textBox' && (obj as ITextBox).style !== 'custom') {
-				return false;
+			if (obj.type === 'textBox') {
+				const renderer = rendererLookup[(obj as ITextBox).style];
+				return renderer.resizable;
 			}
 			if (obj.type === 'character' && !(obj as ICharacter).freeMove) {
 				return false;
@@ -237,7 +239,7 @@ export default defineComponent({
 			return 'freeMove' in this.obj!;
 		},
 		positionNames(): string[] {
-			return positions;
+			return getConstants().Base.positions;
 		},
 
 		isFirstPos(): boolean {
@@ -245,7 +247,7 @@ export default defineComponent({
 		},
 
 		isLastPos(): boolean {
-			return this.pos === positions.length - 1;
+			return this.pos === getConstants().Base.positions.length - 1;
 		},
 	},
 });

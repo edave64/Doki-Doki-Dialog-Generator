@@ -1,19 +1,8 @@
 import { RenderContext } from '@/renderer/rendererContext';
 import { TextRenderer } from '@/renderer/textRenderer/textRenderer';
-import { screenWidth, screenHeight } from '@/constants/base';
-import {
-	ChoiceButtonBorderColor,
-	ChoiceButtonColor,
-} from '@/constants/choices';
 import { INotification } from '@/store/objectTypes/notification';
-import {
-	NotificationTextStyle,
-	NotificationPadding,
-	NotificationSpacing,
-	NotificationOkTextStyle,
-	NotificationBackdropColor,
-} from '@/constants/notification';
 import { ScalingRenderable } from './scalingRenderable';
+import getConstants from '@/constants';
 
 export class Notification extends ScalingRenderable<INotification> {
 	private _height: number = 0;
@@ -33,14 +22,15 @@ export class Notification extends ScalingRenderable<INotification> {
 	}
 
 	public async render(selected: boolean, rx: RenderContext) {
+		const constants = getConstants();
 		if (this.obj.backdrop) {
 			rx.drawRect({
 				x: 0,
 				y: 0,
-				w: screenWidth,
-				h: screenHeight,
+				w: constants.Base.screenWidth,
+				h: constants.Base.screenHeight,
 				fill: {
-					style: NotificationBackdropColor,
+					style: getConstants().Notification.NotificationBackdropColor,
 				},
 			});
 		}
@@ -48,13 +38,20 @@ export class Notification extends ScalingRenderable<INotification> {
 	}
 
 	protected async draw(rx: RenderContext): Promise<void> {
-		const textRenderer = new TextRenderer(this.obj.text, NotificationTextStyle);
-		const buttonRenderer = new TextRenderer('OK', NotificationOkTextStyle);
+		const constants = getConstants();
+		const textRenderer = new TextRenderer(
+			this.obj.text,
+			constants.Notification.NotificationTextStyle
+		);
+		const buttonRenderer = new TextRenderer(
+			'OK',
+			constants.Notification.NotificationOkTextStyle
+		);
 		await textRenderer.loadFonts();
 		await buttonRenderer.loadFonts();
 
 		const lineWrap = this.obj.autoWrap
-			? this.obj.width - NotificationPadding * 2
+			? this.obj.width - constants.Notification.NotificationPadding * 2
 			: 0;
 
 		const textWidth = this.obj.autoWrap ? lineWrap : textRenderer.getWidth();
@@ -65,15 +62,18 @@ export class Notification extends ScalingRenderable<INotification> {
 		const buttonHeight = buttonRenderer.getHeight(lineWrap);
 
 		const w = (this._width =
-			Math.max(textWidth, buttonWidth) + NotificationPadding * 2);
+			Math.max(textWidth, buttonWidth) +
+			constants.Notification.NotificationPadding * 2);
 		const h = (this._height =
 			textHeight +
-			NotificationPadding * 2 +
-			NotificationSpacing +
+			constants.Notification.NotificationPadding * 2 +
+			constants.Notification.NotificationSpacing +
 			buttonHeight);
 
 		const w2 = w / 2;
-		const baseX = this.flip ? screenWidth - this.obj.x : this.obj.x;
+		const baseX = this.flip
+			? constants.Base.screenWidth - this.obj.x
+			: this.obj.x;
 		const x = baseX - w2;
 		const y = this.obj.y - h / 2;
 
@@ -83,11 +83,11 @@ export class Notification extends ScalingRenderable<INotification> {
 			w,
 			h,
 			outline: {
-				style: ChoiceButtonBorderColor,
+				style: constants.Choices.ChoiceButtonBorderColor,
 				width: 3,
 			},
 			fill: {
-				style: ChoiceButtonColor,
+				style: constants.Choices.ChoiceButtonColor,
 			},
 		});
 		textRenderer.fixAlignment(
@@ -95,7 +95,7 @@ export class Notification extends ScalingRenderable<INotification> {
 			x,
 			x + w,
 			// tslint:disable-next-line: no-magic-numbers
-			y + NotificationPadding * 1.5,
+			y + constants.Notification.NotificationPadding * 1.5,
 			lineWrap
 		);
 		textRenderer.render(rx.fsCtx);
@@ -104,7 +104,7 @@ export class Notification extends ScalingRenderable<INotification> {
 			x,
 			x + w,
 			// tslint:disable-next-line: no-magic-numbers
-			y + h - NotificationPadding,
+			y + h - constants.Notification.NotificationPadding,
 			lineWrap
 		);
 		buttonRenderer.render(rx.fsCtx);

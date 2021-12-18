@@ -1,8 +1,9 @@
 import { OffscreenRenderable } from './offscreenRenderable';
 import { IObject } from '@/store/objects';
-import { screenHeight, screenWidth } from '@/constants/base';
 import { RenderContext } from '@/renderer/rendererContext';
 import { IHitbox } from './renderable';
+import getConstants from '@/constants';
+import { DeepReadonly } from '@/util/readonly';
 
 export abstract class ScalingRenderable<
 	Obj extends IObject
@@ -13,12 +14,21 @@ export abstract class ScalingRenderable<
 	protected lastY = -1;
 	protected lastFlip: boolean | null = null;
 
-	protected readonly canvasHeight = screenHeight;
-	protected readonly canvasWidth = screenWidth;
-	protected readonly canvasDrawHeight = screenHeight;
-	protected readonly canvasDrawWidth = screenWidth;
+	protected readonly canvasHeight: number;
+	protected readonly canvasWidth: number;
+	protected readonly canvasDrawHeight: number;
+	protected readonly canvasDrawWidth: number;
 	protected readonly canvasDrawPosX = 0;
 	protected readonly canvasDrawPosY = 0;
+
+	public constructor(obj: DeepReadonly<Obj>) {
+		super(obj);
+		const constants = getConstants().Base;
+		this.canvasHeight = constants.screenHeight;
+		this.canvasWidth = constants.screenWidth;
+		this.canvasDrawHeight = constants.screenHeight;
+		this.canvasDrawWidth = constants.screenWidth;
+	}
 
 	public getRenderRotation(): [number, { x: number; y: number } | undefined] {
 		return [0, undefined];
@@ -45,13 +55,16 @@ export abstract class ScalingRenderable<
 	}
 
 	protected async renderLocal(rx: RenderContext): Promise<void> {
+		const constants = getConstants().Base;
 		if (this.rotation === 0) return this.draw(rx);
 		await rx.customTransform(async trx => {
 			const hitbox = this.getHitbox();
 			const centerX = hitbox.x0 + (hitbox.x1 - hitbox.x0) / 2;
 			const centerY = hitbox.y0 + (hitbox.y1 - hitbox.y0) / 2;
 
-			const flipNormalizedCenterX = this.flip ? screenWidth - centerX : centerX;
+			const flipNormalizedCenterX = this.flip
+				? constants.screenWidth - centerX
+				: centerX;
 
 			trx.translate(flipNormalizedCenterX, centerY);
 			trx.rotate(this.rotation);

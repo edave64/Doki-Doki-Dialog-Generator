@@ -8,7 +8,6 @@ import {
 	IRemoveObjectAction,
 } from '@/store/objects';
 import { MutationTree, ActionTree, Store, Commit, ActionContext } from 'vuex';
-import { characterPositions } from '@/constants/base';
 import { arraySeeker } from '@/models/seekers';
 import { IHistoryOptions } from '@/plugins/vuex-history';
 import {
@@ -21,6 +20,7 @@ import { IAsset } from '../content';
 import { IRootState } from '..';
 import { DeepReadonly } from '@/util/readonly';
 import { baseProps } from './baseObjectProps';
+import getConstants from '@/constants';
 
 export interface ICharacter extends IObject {
 	type: 'character';
@@ -34,9 +34,6 @@ export interface ICharacter extends IObject {
 		[id: string]: number;
 	};
 }
-
-export const CloseUpYOffset = -74;
-export const BaseCharacterYPos = -26;
 
 export const characterMutations: MutationTree<IObjectsState> = {
 	setPose(state, command: ISetPoseMutation) {
@@ -71,8 +68,9 @@ export const characterMutations: MutationTree<IObjectsState> = {
 		const obj = state.objects[command.id] as ICharacter;
 		obj.freeMove = command.freeMove;
 		if (!obj.freeMove) {
-			obj.x = characterPositions[closestCharacterSlot(obj.x)];
-			obj.y = BaseCharacterYPos;
+			const constants = getConstants();
+			obj.x = constants.Base.characterPositions[closestCharacterSlot(obj.x)];
+			obj.y = constants.Base.BaseCharacterYPos;
 		}
 	},
 };
@@ -136,7 +134,8 @@ export function getHeads(
 }
 
 export function closestCharacterSlot(pos: number): number {
-	const sorted = characterPositions
+	const constants = getConstants();
+	const sorted = constants.Base.characterPositions
 		.map((x, idx) => ({ pos: Math.abs(pos - x), idx }))
 		.sort((a, b) => a.pos - b.pos);
 	return sorted[0].idx;
@@ -149,7 +148,11 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 		{ rootState, rootGetters, commit },
 		command: ICreateCharacterAction
 	) {
+		const constants = getConstants();
 		const char = getDataG(rootGetters, command.characterType);
+		const charScale = char.hd
+			? constants.Base.hdCharacterScaleFactor
+			: constants.Base.sdCharacterScaleFactor;
 		commit('create', {
 			object: {
 				...baseProps(),
@@ -157,11 +160,11 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 				panelId: rootState.panels.currentPanel,
 				onTop: false,
 				type: 'character',
-				y: BaseCharacterYPos,
+				y: constants.Base.BaseCharacterYPos,
 				preserveRatio: true,
 				ratio: 1,
-				height: 768,
-				width: 768,
+				width: char.size[0] * char.defaultScale[0] * charScale,
+				height: char.size[1] * char.defaultScale[1] * charScale,
 				characterType: command.characterType,
 				close: false,
 				freeMove: false,
@@ -307,10 +310,13 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 				y,
 			} as ISetObjectPositionMutation);
 		} else {
+			const constants = getConstants();
 			commit('setPosition', {
 				id,
-				x: characterPositions[closestCharacterSlot(x)],
-				y: BaseCharacterYPos + (obj.close ? CloseUpYOffset : 0),
+				x: constants.Base.characterPositions[closestCharacterSlot(x)],
+				y:
+					constants.Base.BaseCharacterYPos +
+					(obj.close ? constants.Base.CloseUpYOffset : 0),
 			} as ISetObjectPositionMutation);
 		}
 	},
@@ -320,17 +326,18 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 		{ id, delta }: IShiftCharacterSlotAction
 	): void {
 		const obj = state.objects[id] as ICharacter;
+		const constants = getConstants();
 		const currentSlotNr = closestCharacterSlot(obj.x);
 		let newSlotNr = currentSlotNr + delta;
 		if (newSlotNr < 0) {
 			newSlotNr = 0;
 		}
-		if (newSlotNr >= characterPositions.length) {
-			newSlotNr = characterPositions.length - 1;
+		if (newSlotNr >= constants.Base.characterPositions.length) {
+			newSlotNr = constants.Base.characterPositions.length - 1;
 		}
 		commit('setPosition', {
 			id,
-			x: characterPositions[newSlotNr],
+			x: constants.Base.characterPositions[newSlotNr],
 			y: obj.y,
 		} as ISetObjectPositionMutation);
 	},

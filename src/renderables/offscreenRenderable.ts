@@ -3,13 +3,11 @@ import { Renderer } from '@/renderer/renderer';
 import { IHitbox } from './renderable';
 import { DeepReadonly } from '@/util/readonly';
 import { SpriteFilter } from '@/store/sprite_options';
-import { screenHeight, screenWidth } from '@/constants/base';
 import { CompositeModes } from '@/renderer/rendererContext';
 import { IObject } from '@/store/objects';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { rotateAround } from '@/util/rotation';
-import { ITextBox } from '@/store/objectTypes/textbox';
 
 export abstract class OffscreenRenderable<Obj extends IObject> {
 	private localRenderer: Renderer | null = null;
@@ -17,7 +15,7 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 	private hitDetectionFallback = false;
 	protected renderable: boolean = false;
 
-	public constructor(protected obj: DeepReadonly<Obj>) {}
+	public constructor(public obj: DeepReadonly<Obj>) {}
 
 	protected abstract readonly canvasHeight: number;
 	protected abstract readonly canvasWidth: number;
