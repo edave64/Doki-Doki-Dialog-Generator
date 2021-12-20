@@ -114,7 +114,9 @@ export class RGBAColor {
 	public toHSL(): HSLAColor {
 		let { r, g, b } = this;
 		const { a } = this;
-		(r /= 255), (g /= 255), (b /= 255);
+		r /= 255;
+		g /= 255;
+		b /= 255;
 		const max = Math.max(r, g, b);
 		const min = Math.min(r, g, b);
 		let h: number;

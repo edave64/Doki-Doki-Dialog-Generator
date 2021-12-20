@@ -37,8 +37,8 @@
 					<l v-if="listLink" :to="listLink">(List)</l>
 				</h2>
 				<drop-target ref="dt" class="drop-target" @drop="addByImageFile"
-					>Drop here to add as a new expression</drop-target
-				>
+					>Drop here to add as a new expression
+				</drop-target>
 				<div class="expression_list_wrapper">
 					<div class="expression_list" @wheel.passive="verticalScrollRedirect">
 						<button @click="$refs.upload.click()">
@@ -72,8 +72,8 @@
 									v-for="(pose, idx) of previewPoses"
 									:key="idx"
 									:value="idx"
-									>{{ normalizeName(pose.name) }}</option
-								>
+									>{{ normalizeName(pose.name) }}
+								</option>
 							</select>
 							<d-fieldset title="Offset">
 								<table>
@@ -139,17 +139,17 @@ import ToggleBox from '@/components/toggle.vue';
 import environment from '@/environments/environment';
 import { VerticalScrollRedirect } from '@/components/vertical-scroll-redirect';
 import DFieldset from '@/components/ui/d-fieldset.vue';
-import { Character } from '../../../renderables/character';
+import { Character } from '@/renderables/character';
 import {
-	ContentPack,
 	Character as CharacterModel,
-	Pose,
+	ContentPack,
 	IHeadCommand,
+	Pose,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAsset, ReplaceContentPackAction } from '../../../store/content';
-import { getAssetByUrl } from '../../../asset-manager';
-import { Renderer } from '../../../renderer/renderer';
-import { WorkBatch } from '../../../util/workBatch';
+import { IAsset, ReplaceContentPackAction } from '@/store/content';
+import { getAssetByUrl } from '@/asset-manager';
+import { Renderer } from '@/renderer/renderer';
+import { WorkBatch } from '@/util/workBatch';
 import { defineComponent } from 'vue';
 import { DeepReadonly } from '@/util/readonly';
 import L from '@/components/ui/link.vue';
@@ -421,6 +421,7 @@ export default defineComponent({
 				return;
 			}
 
+			// noinspection ES6MissingAwait
 			this.$nextTick(async () => {
 				if (this.uploadsFinished) return;
 				const renderer = new Renderer(pose.width, pose.height);

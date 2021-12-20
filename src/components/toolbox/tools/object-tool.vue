@@ -254,7 +254,7 @@ export default defineComponent({
 	methods: {
 		copy() {
 			this.vuexHistory.transaction(async () => {
-				this.$store.dispatch('objects/copyObjectToClipboard', {
+				await this.$store.dispatch('objects/copyObjectToClipboard', {
 					id: this.object.id,
 				} as ICopyObjectToClipboardAction);
 			});
@@ -328,8 +328,9 @@ export interface Handler {
 <style lang="scss">
 .modal-rename dialog {
 	padding: 4px;
+
 	p {
-		font-family: aller;
+		font-family: aller sans-serif;
 		font-size: 24px;
 	}
 }

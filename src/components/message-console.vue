@@ -52,7 +52,7 @@ export default defineComponent({
 			}, shortHidingTime);
 		});
 
-		EventBus.subscribe(CustomAssetFailureEvent, ev => {
+		EventBus.subscribe(CustomAssetFailureEvent, _ev => {
 			this.messages.push(
 				'Failed to load custom asset. Try to download it manually and then upload it.'
 			);
@@ -126,7 +126,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 #messageConsole {
 	font-family: monospace;
-	text-shadow: 0px 0px 4px #ffffff;
+	text-shadow: 0 0 4px #ffffff;
 	position: absolute;
 
 	&.vertical {

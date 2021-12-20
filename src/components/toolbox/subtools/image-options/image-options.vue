@@ -11,11 +11,11 @@
 			<button @click="$emit('leave')">Back</button>
 		</div>
 		<div class="column" v-if="!noComposition">
-			<label for="compositionSelect">Compositing Mode:</label
-			><l
+			<label for="compositionSelect">Compositing Mode:</label>
+			<l
 				to="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation#Types"
-				>[?]</l
-			>
+				>[?]
+			</l>
 			<select id="compositionSelect" v-model="compositionMode" @keydown.stop>
 				<option value="source-over">source-over</option>
 				<!--
@@ -55,8 +55,8 @@
 							v-for="filterType of filterTypes"
 							:key="filterType"
 							:value="filterType"
-							>{{ getFilterLabel(filterType) }}</option
-						>
+							>{{ getFilterLabel(filterType) }}
+						</option>
 					</select>
 					<button
 						:disabled="addEffectSelection === ''"
@@ -162,6 +162,7 @@
 								<label for="filter_value">Value:</label>
 							</td>
 							<td>
+								<!--suppress XmlDuplicatedId -->
 								<input
 									id="filter_value"
 									:value="(currentFilter.value * 100).toFixed()"
@@ -196,6 +197,7 @@
 								<label for="filter_value">Value:</label>
 							</td>
 							<td>
+								<!--suppress XmlDuplicatedId -->
 								<input
 									id="filter_value"
 									:value="currentFilter.value"
@@ -244,19 +246,17 @@ import { defineComponent, Prop, PropType } from 'vue';
 import { CompositeModes } from '@/renderer/rendererContext';
 import { DeepReadonly } from '@/util/readonly';
 import {
+	IAddFilterAction,
 	IHasSpriteFilters,
+	IMoveFilterAction,
 	INumericSpriteFilter,
+	IRemoveFilterAction,
+	ISetCompositionMutation,
+	ISetFilterAction,
 	percentageValue,
 	SpriteFilter,
 } from '@/store/sprite_options';
 import { exhaust } from '@/util/exhaust';
-import {
-	IAddFilterAction,
-	IMoveFilterAction,
-	IRemoveFilterAction,
-	ISetCompositionMutation,
-	ISetFilterAction,
-} from '@/store/sprite_options';
 import { IColor } from '@/util/colors/color';
 import { HSLAColor } from '@/util/colors/hsl';
 import L from '@/components/ui/link.vue';
@@ -531,9 +531,12 @@ export default defineComponent({
 <style lang="scss" scoped>
 h2 {
 	text-align: center;
+	//noinspection CssOverwrittenProperties
 	color: $default-text;
+	//noinspection CssOverwrittenProperties
 	color: var(--text);
 }
+
 .image-options-subpanel {
 	&.vertical {
 		.column {
@@ -553,6 +556,7 @@ h2 {
 			height: inherit;
 			width: min-content;
 		}
+
 		.column {
 			display: flex;
 			@include height-100();
@@ -560,8 +564,10 @@ h2 {
 			flex-wrap: wrap;
 			margin-left: 8px;
 		}
+
 		.ok-col {
 			width: 42px;
+
 			button {
 				@include height-100();
 			}
@@ -583,7 +589,9 @@ h2 {
 	padding: 2px;
 
 	&.active {
+		//noinspection CssOverwrittenProperties
 		background-color: $default-border;
+		//noinspection CssOverwrittenProperties
 		background-color: var(--border);
 	}
 }
@@ -592,6 +600,7 @@ h2 {
 	td {
 		vertical-align: top;
 	}
+
 	input,
 	.color-button {
 		width: 100px;

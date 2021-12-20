@@ -45,12 +45,11 @@ export default defineComponent({
 	text-shadow: 0 0 4px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
 		1px 1px 0 #000;
 	color: white;
-	display: flex;
 	align-items: center;
-	justify-content: center;
+	//noinspection CssOverwrittenProperties
 	box-shadow: inset 0 0 1px 3px $default-modal-backdrop;
-	box-shadow: inset 0 0 1px 3px --modal-backdrop;
-	text-align: center;
+	//noinspection CssOverwrittenProperties
+	box-shadow: inset 0 0 1px 3px var(--modal-backdrop);
 	user-select: none;
 }
 </style>

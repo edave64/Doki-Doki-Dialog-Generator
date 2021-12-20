@@ -173,6 +173,7 @@ export default defineComponent({
 	display: flex;
 	flex-wrap: wrap;
 
+	//noinspection CssOverwrittenProperties
 	h2 {
 		font-size: 20px;
 		color: $default-text;
@@ -208,6 +209,7 @@ export default defineComponent({
 
 .hex-selector {
 	display: table;
+
 	label {
 		text-align: right;
 		width: 100px;

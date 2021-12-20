@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent, h, Prop, PropType, VNode } from 'vue';
 import { VerticalScrollRedirect } from '../vertical-scroll-redirect';
+
 export default defineComponent({
 	mixins: [VerticalScrollRedirect],
 	props: {
@@ -81,6 +82,7 @@ export default defineComponent({
 });
 </script>
 
+<!--suppress CssUnusedSymbol -->
 <style lang="scss" scoped>
 ::v-slotted(.d-flow-scroll-container) {
 	&.horizontal {
@@ -88,6 +90,7 @@ export default defineComponent({
 		overflow-x: auto;
 		overflow-y: hidden;
 	}
+
 	&.vertical {
 		width: 100%;
 		overflow-x: hidden;
@@ -105,12 +108,15 @@ export default defineComponent({
 
 	&.vertical {
 		flex-direction: column;
+
 		> * {
 			flex-shrink: 0;
 		}
+
 		&.no-wraping {
 			align-items: center;
 			width: 100%;
+
 			> * {
 				width: 100%;
 			}
@@ -119,12 +125,15 @@ export default defineComponent({
 
 	&.horizontal {
 		flex-direction: row;
+
 		> * {
 			flex-shrink: 0;
 		}
+
 		&.no-wraping {
 			align-items: center;
 			@include height-100();
+
 			> * {
 				@include height-100();
 			}

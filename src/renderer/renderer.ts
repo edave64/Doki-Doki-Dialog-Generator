@@ -4,7 +4,7 @@ import environment from '@/environments/environment';
 import getConstants from '@/constants';
 
 export class Renderer {
-	private previewCanvas: HTMLCanvasElement;
+	private readonly previewCanvas: HTMLCanvasElement;
 	private runningContext: RenderContext | null = null;
 
 	public constructor(w?: number, h?: number) {
@@ -69,37 +69,36 @@ export class Renderer {
 		renderCallback: (rc: RenderContext) => Promise<void>,
 		filename: string
 	): Promise<string> {
-		const downloadCanvas = document.createElement('canvas');
-		downloadCanvas.width = this.previewCanvas.width;
-		downloadCanvas.height = this.previewCanvas.height;
-
-		const ctx = downloadCanvas.getContext('2d')!;
-		ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
-		await renderCallback(
-			RenderContext.makeWithContext(downloadCanvas, ctx, true, false)
-		);
-
-		return environment.saveToFile(downloadCanvas, filename);
+		const downloadCanvas = await this.drawToCanvas(renderCallback);
+		return await environment.saveToFile(downloadCanvas, filename);
 	}
 
 	public async renderToBlob(
 		renderCallback: (rc: RenderContext) => Promise<void>
 	): Promise<Blob> {
-		const downloadCanvas = document.createElement('canvas');
-		downloadCanvas.width = this.previewCanvas.width;
-		downloadCanvas.height = this.previewCanvas.height;
+		const downloadCanvas = await this.drawToCanvas(renderCallback);
 
-		const ctx = downloadCanvas.getContext('2d')!;
-		ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
-		await renderCallback(
-			RenderContext.makeWithContext(downloadCanvas, ctx, true, false)
-		);
 		return await new Promise<Blob>((resolve, reject) => {
 			downloadCanvas.toBlob(blob => {
 				if (blob) resolve(blob);
 				else reject();
 			});
 		});
+	}
+
+	private async drawToCanvas(
+		renderCallback: (rc: RenderContext) => Promise<void>
+	): Promise<HTMLCanvasElement> {
+		const downloadCanvas = document.createElement('canvas');
+		downloadCanvas.width = this.previewCanvas.width;
+		downloadCanvas.height = this.previewCanvas.height;
+
+		const ctx = downloadCanvas.getContext('2d')!;
+		ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
+		await renderCallback(
+			RenderContext.makeWithContext(downloadCanvas, ctx, true, false)
+		);
+		return downloadCanvas;
 	}
 
 	public getDataAt(x: number, y: number): Uint8ClampedArray {

@@ -1,5 +1,5 @@
 import { EnvCapabilities, Folder, IEnvironment, Settings } from './environment';
-import { registerAssetWithURL, getAsset } from '@/asset-manager';
+import { getAsset, registerAssetWithURL } from '@/asset-manager';
 import { Background } from '@/renderables/background';
 import eventBus, { ShowMessageEvent } from '@/eventbus/event-bus';
 import { EnvState } from '@/environments/envState';
@@ -35,6 +35,7 @@ export class Electron implements IEnvironment {
 		downloadLocation: '',
 	});
 	public readonly localRepositoryUrl = '/repo/';
+
 	public get gameMode(): 'ddlc' | 'ddlc_plus' | null {
 		return this._gameMode;
 	}
@@ -55,7 +56,7 @@ export class Electron implements IEnvironment {
 					this.pendingContentPacks.push(filePath);
 					return;
 				}
-				this.vuexHistory.transaction(async () => {
+				await this.vuexHistory.transaction(async () => {
 					await this.$store!.dispatch('content/loadContentPacks', filePath);
 				});
 			}
@@ -65,7 +66,7 @@ export class Electron implements IEnvironment {
 			async (filepath: string) => {
 				const name = 'persistentBg-' + filepath;
 				const parts = filepath.split('/');
-				registerAssetWithURL(name, filepath);
+				await registerAssetWithURL(name, filepath);
 				installedBackgroundsPack.backgrounds.push({
 					id: name,
 					variants: [[name]],
@@ -92,7 +93,7 @@ export class Electron implements IEnvironment {
 					const pack = repo.getPack(id);
 					return pack.dddg2Path || pack.dddg1Path;
 				});
-				this.vuexHistory!.transaction(async () => {
+				await this.vuexHistory!.transaction(async () => {
 					await this.$store!.dispatch('content/loadContentPacks', packUrls);
 				});
 			}
@@ -109,7 +110,7 @@ export class Electron implements IEnvironment {
 		this.electron.ipcRenderer.onConversation(
 			'replace-pack',
 			async (contentPack: ContentPack<string>) => {
-				this.vuexHistory!.transaction(async () => {
+				await this.vuexHistory!.transaction(async () => {
 					await this.$store!.dispatch('content/replaceContentPack', {
 						processed: false,
 						contentPack,
@@ -119,13 +120,17 @@ export class Electron implements IEnvironment {
 		);
 		this.electron.ipcRenderer.send('init-dddg');
 	}
+
 	public updateDownloadFolder(): void {
 		this.electron.ipcRenderer.send('config.newDownloadFolder');
 	}
+
 	public openFolder(folder: Folder): void {
 		this.electron.ipcRenderer.send('open-folder', folder);
 	}
-	public onPanelChange(handler: (panel: string) => void): void {}
+
+	public onPanelChange(_handler: (panel: string) => void): void {}
+
 	public readonly supports: EnvCapabilities = {
 		autoLoading: true,
 		backgroundInstall: true,
@@ -136,6 +141,7 @@ export class Electron implements IEnvironment {
 		openableFolders: new Set(['downloads', 'backgrounds', 'sprites']),
 	};
 	public readonly savingEnabled: boolean = true;
+
 	public async saveSettings(settings: Settings): Promise<void> {
 		await this.electron.ipcRenderer.sendConvo(
 			'config.set',
@@ -153,14 +159,17 @@ export class Electron implements IEnvironment {
 			settings.defaultCharacterTalkingZoom
 		);
 	}
+
 	public async loadGameMode() {
 		this._gameMode =
 			(await this.electron.ipcRenderer.sendConvo('config.get', 'gameMode')) ||
 			'ddlc';
 	}
+
 	public async saveGameMode(mode: Electron['gameMode']): Promise<void> {
 		await this.electron.ipcRenderer.sendConvo('config.set', 'gameMode', mode);
 	}
+
 	public async loadSettings(): Promise<Settings> {
 		return {
 			lq: false,
@@ -190,12 +199,15 @@ export class Electron implements IEnvironment {
 			authors
 		);
 	}
+
 	public async localRepoUninstall(id: string): Promise<void> {
 		await this.electron.ipcRenderer.sendConvo('repo.uninstall', id);
 	}
+
 	public async autoLoadAdd(id: string): Promise<void> {
 		await this.electron.ipcRenderer.sendConvo('auto-load.add', id);
 	}
+
 	public async autoLoadRemove(id: string): Promise<void> {
 		await this.electron.ipcRenderer.sendConvo('auto-load.remove', id);
 	}
@@ -256,7 +268,7 @@ export class Electron implements IEnvironment {
 			const img = await fetch(asset.src);
 			const blob = await img.blob();
 			const newUrl = URL.createObjectURL(blob);
-			registerAssetWithURL(background.assets[0].hq, newUrl);
+			await registerAssetWithURL(background.assets[0].hq, newUrl);
 		}
 		this.electron.ipcRenderer.send('uninstall-background', background.id);
 	}
@@ -305,8 +317,8 @@ export class Electron implements IEnvironment {
 		}
 		if (!this.vuexHistory || !this.$store) return;
 
-		this.vuexHistory.transaction(() => {
-			this.$store!.dispatch('content/replaceContentPack', {
+		this.vuexHistory.transaction(async () => {
+			await this.$store!.dispatch('content/replaceContentPack', {
 				contentPack: installedBackgroundsPack,
 			} as ReplaceContentPackAction);
 		});
@@ -320,7 +332,10 @@ interface IElectronWindow {
 
 interface IpcRenderer {
 	on(channel: string, listener: (...args: any[]) => void): void;
+
 	onConversation(channel: string, listener: (...args: any[]) => void): void;
+
 	send(channel: string, ...args: any[]): void;
+
 	sendConvo<T>(channel: string, ...args: any[]): Promise<T>;
 }

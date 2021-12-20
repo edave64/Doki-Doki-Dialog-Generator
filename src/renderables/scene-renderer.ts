@@ -1,12 +1,12 @@
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
-import { color, Background, IBackgroundRenderer } from './background';
-import panels, { IPanel } from '@/store/panels';
+import { Background, color, IBackgroundRenderer } from './background';
+import { IPanel } from '@/store/panels';
 import { DeepReadonly } from '@/util/readonly';
 import { ISprite } from '@/store/objectTypes/sprite';
 import { Sprite } from './sprite';
 import { Character } from './character';
-import { ICharacter, getData } from '@/store/objectTypes/characters';
+import { getData, ICharacter } from '@/store/objectTypes/characters';
 import { ITextBox } from '@/store/objectTypes/textbox';
 import { TextBox } from './textbox';
 import { Choice } from './choices';
@@ -82,10 +82,8 @@ export class SceneRenderer {
 			const selection = this.store.state.ui.selection;
 			for (const object of this.getRenderObjects()) {
 				let selected = false;
-				if (object instanceof OffscreenRenderable) {
-					object.updatedContent(this.store, this.panelId);
-					selected = selection === object.id;
-				}
+				object.updatedContent(this.store, this.panelId);
+				selected = selection === object.id;
 				await object.render(selected, rx);
 			}
 			rx.applyFilters([...this.panel.filters]);

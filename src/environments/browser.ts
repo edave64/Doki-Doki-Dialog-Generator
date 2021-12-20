@@ -29,7 +29,7 @@ export class Browser implements IEnvironment {
 
 	public readonly localRepositoryUrl = '';
 
-	private loading: Promise<void>;
+	private readonly loading: Promise<void>;
 	private creatingDB?: Promise<IDBDatabase | void>;
 
 	public get savingEnabled() {
@@ -70,7 +70,7 @@ export class Browser implements IEnvironment {
 				'Are you sure you want to leave? All your progress will be lost!';
 		});
 
-		const supports = reactive({
+		this.supports = reactive({
 			optionalSaving: canSave,
 			get autoLoading(): boolean {
 				return canSave && self.isSavingEnabled.value;
@@ -82,12 +82,9 @@ export class Browser implements IEnvironment {
 			openableFolders: new Set([]),
 		});
 
-		this.supports = supports;
-
 		if (canSave) {
 			this.loading = (async () => {
-				const exists = await IndexedDBHandler.doesDbExists();
-				this.savingEnabled = exists;
+				this.savingEnabled = await IndexedDBHandler.doesDbExists();
 			})();
 		} else {
 			this.loading = Promise.resolve();
@@ -103,12 +100,13 @@ export class Browser implements IEnvironment {
 					const pack = repo.getPack(id);
 					return pack.dddg2Path || pack.dddg1Path;
 				});
-				this.vuexHistory!.transaction(async () => {
+				await this.vuexHistory!.transaction(async () => {
 					await this.$store!.dispatch('content/loadContentPacks', packUrls);
 				});
 			}
 		});
 	}
+
 	public async loadGameMode(): Promise<void> {
 		const searchParams = new URLSearchParams(location.search);
 		const getMode = searchParams.get('mode');
@@ -129,15 +127,18 @@ export class Browser implements IEnvironment {
 		}
 		this._gameMode = value;
 	}
+
 	public async saveGameMode(mode: Browser['gameMode']): Promise<void> {
 		if (this.isSavingEnabled.value) {
 			await IndexedDBHandler.saveGameMode(mode);
 		}
 	}
+
 	updateDownloadFolder(): void {
 		throw new Error('Method not implemented.');
 	}
-	openFolder(folder: Folder): void {
+
+	openFolder(_folder: Folder): void {
 		throw new Error('Method not implemented.');
 	}
 
@@ -165,21 +166,25 @@ export class Browser implements IEnvironment {
 		return url;
 	}
 
-	public installBackground(background: Background): boolean {
+	public installBackground(_background: Background): boolean {
 		throw new Error('This environment does not support installing backgrounds');
 	}
 
-	public uninstallBackground(background: Background): boolean {
+	public uninstallBackground(_background: Background): boolean {
 		throw new Error(
 			'This environment does not support uninstalling backgrounds'
 		);
 	}
 
-	public localRepoInstall(url: string, repo: IPack, authors: IAuthors): void {
+	public localRepoInstall(
+		_url: string,
+		_repo: IPack,
+		_authors: IAuthors
+	): void {
 		throw new Error('This environment does not support a local repository');
 	}
 
-	public localRepoUninstall(id: string): void {
+	public localRepoUninstall(_id: string): void {
 		throw new Error('This environment does not support a local repository');
 	}
 
@@ -237,12 +242,12 @@ export class Browser implements IEnvironment {
 		message: string,
 		defaultValue?: string
 	): Promise<string | null> {
-		return new Promise((resolve, reject) => {
+		return new Promise((resolve, _reject) => {
 			resolve(prompt(message, defaultValue));
 		});
 	}
 
-	public onPanelChange(handler: (panel: string) => void): void {
+	public onPanelChange(_handler: (panel: string) => void): void {
 		return;
 	}
 
@@ -343,7 +348,7 @@ const IndexedDBHandler = {
 					db.createObjectStore('settings');
 				}
 			};
-			req.onsuccess = event => {
+			req.onsuccess = _event => {
 				resolve(req.result);
 			};
 		}));
@@ -360,7 +365,7 @@ const IndexedDBHandler = {
 			req.onerror = event => {
 				reject(event);
 			};
-			req.onsuccess = event => {
+			req.onsuccess = _event => {
 				resolve();
 			};
 		});
@@ -425,7 +430,7 @@ const IndexedDBHandler = {
 			req.onerror = error => {
 				reject(error);
 			};
-			req.onsuccess = event => {
+			req.onsuccess = _event => {
 				resolve(req.result);
 			};
 		});

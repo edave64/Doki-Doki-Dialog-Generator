@@ -24,7 +24,7 @@ export class Sprite extends AssetListRenderable<ISprite> {
 
 	public async init() {
 		let readyResolve!: () => void;
-		this.ready = new Promise((resolve, reject) => {
+		this.ready = new Promise((resolve, _reject) => {
 			readyResolve = resolve;
 		});
 		const assets = await Promise.all(

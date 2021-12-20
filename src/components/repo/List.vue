@@ -249,7 +249,7 @@ export default defineComponent({
 				list as any
 			) as Pack[];
 		},
-		translatePackState(state: Pack) {
+		translatePackState(state: DeepReadonly<Pack>) {
 			if (state.loaded) return 'Active';
 			if (state.installed) return 'Installed';
 			return '';
@@ -277,51 +277,66 @@ export default defineComponent({
 	opacity: 1;
 	transition: all 0.15s;
 }
-.tbody-group-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
+
+.tbody-group-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */
+ {
 	opacity: 0;
 }
 
 .spacer {
 	flex-grow: 1;
 }
+
 table {
 	text-align: left;
 	border-collapse: collapse;
 	min-width: 100%;
 	user-select: none;
+	//noinspection CssOverwrittenProperties
 	color: $default-text;
+	//noinspection CssOverwrittenProperties
 	color: var(--text);
+
 	.focused {
 		background: $default-accent-background;
 		background: var(--accent-background);
 	}
 }
+
 tbody:focus {
 	outline: 0;
+
 	.focused {
 		background: $default-border;
 		background: var(--border);
 	}
 }
+
 tr:hover,
 th:hover {
 	background: $default-accent-background;
 	background: var(--accent-background);
 	cursor: pointer;
 }
+
 th,
 td {
 	padding: 0.25rem;
 	min-height: 42px;
 }
+
 th {
 	background: $default-native-background;
 	background: var(--native-background);
 	position: sticky;
 	top: 0;
+	//noinspection CssOverwrittenProperties
 	color: $default-text;
+	//noinspection CssOverwrittenProperties
 	color: var(--text);
+	//noinspection CssOverwrittenProperties
 	box-shadow: 0 2px 2px -1px $default-text;
+	//noinspection CssOverwrittenProperties
 	box-shadow: 0 2px 2px -1px var(--text);
 
 	> div {
@@ -329,6 +344,7 @@ th {
 		justify-content: space-between;
 	}
 }
+
 footer {
 	padding-top: 8px;
 	color: #444;

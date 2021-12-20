@@ -54,7 +54,9 @@ div {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	//noinspection CssOverwrittenProperties
 	color: $default-native-background;
+	//noinspection CssOverwrittenProperties
 	color: var(--native-background);
 	text-shadow: 0 0 4px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
 		1px 1px 0 #000;

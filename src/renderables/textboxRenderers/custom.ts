@@ -4,7 +4,6 @@ import { DdlcBase } from './ddlc_base';
 import { RenderContext } from '@/renderer/rendererContext';
 import getConstants from '@/constants';
 import { getAsset } from '@/asset-manager';
-import environment from '@/environments/environment';
 import { roundedRectangle, roundedTopRectangle } from '@/renderer/pathTools';
 import {
 	dotColorDelta,
@@ -33,12 +32,15 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 	public static get resizable() {
 		return true;
 	}
+
 	public get height() {
 		return this.obj.height + TBConstants.NameboxHeight;
 	}
+
 	public get width() {
 		return this.obj.width;
 	}
+
 	public get nameboxWidth() {
 		if (this.refObject && this.refObject.nameboxWidth !== null) {
 			return this.refObject.nameboxWidth;
@@ -47,15 +49,19 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 			return this.obj.customNameboxWidth;
 		return TBConstants.NameboxWidth;
 	}
+
 	public get nameboxHeight() {
 		return TBConstants.NameboxHeight;
 	}
+
 	public get nameboxOffsetX() {
 		return TBConstants.NameboxXOffset;
 	}
+
 	public get nameboxOffsetY() {
 		return TBConstants.NameboxTextYOffset;
 	}
+
 	public get nameboxStyle() {
 		return {
 			...TBConstants.NameboxTextStyle,
@@ -63,9 +69,11 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 			color: '#FFFFFF',
 		};
 	}
+
 	public get textOffsetX() {
 		return TBConstants.TextBoxTextXOffset;
 	}
+
 	public get textOffsetY() {
 		return TBConstants.TextBoxTextYOffset;
 	}
@@ -139,6 +147,7 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 			}
 		);
 	}
+
 	protected async renderBackdrop(
 		rx: RenderContext,
 		x: number,
@@ -146,7 +155,7 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 	): Promise<void> {
 		const hslColor = RGBAColor.fromCss(this.customColor).toHSL();
 		const dotPattern = new Renderer(dotPatternSize, dotPatternSize);
-		dotPattern.render(async (dotRx: RenderContext) => {
+		await dotPattern.render(async (dotRx: RenderContext) => {
 			const fill = {
 				style: hslColor
 					.shift(dotColorDelta)
@@ -303,6 +312,7 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 			});
 		}
 	}
+
 	public appliesTo(type: string): boolean {
 		return type === Custom.id;
 	}

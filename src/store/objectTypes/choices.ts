@@ -1,6 +1,6 @@
 import { ICommand } from '@/eventbus/command';
-import { IObjectsState, ICreateObjectMutation, IObject } from '@/store/objects';
-import { MutationTree, ActionTree } from 'vuex';
+import { ICreateObjectMutation, IObject, IObjectsState } from '@/store/objects';
+import { ActionTree, MutationTree } from 'vuex';
 import { IRootState } from '..';
 import { ISetAutoWrappingMutation } from './textbox';
 import { baseProps } from './baseObjectProps';
@@ -45,7 +45,7 @@ export const choiceMutations: MutationTree<IObjectsState> = {
 let lastChoiceId = 0;
 
 export const choiceActions: ActionTree<IObjectsState, IRootState> = {
-	createChoice({ commit, rootState }, command: ICreateChoicesAction): string {
+	createChoice({ commit, rootState }, _command: ICreateChoicesAction): string {
 		const constants = getConstants();
 		const id = 'choice_' + ++lastChoiceId;
 		commit('create', {

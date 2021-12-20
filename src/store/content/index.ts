@@ -1,8 +1,8 @@
 import { Module } from 'vuex';
 import {
-	ContentPack,
-	Character,
 	Background,
+	Character,
+	ContentPack,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import {
 	assetWalker,
@@ -214,9 +214,9 @@ async function convertContentPack(
 		['ext', '{lq:.lq:}.{format:webp:webp:png:png}'],
 	]);
 
-	const ret = assetWalker(
+	return assetWalker(
 		pack,
-		(path: string, type: 'image' | 'font'): IAsset => {
+		(path: string, _type: 'image' | 'font'): IAsset => {
 			const hq = normalizePath(path, replacementMap, types, false);
 			const lq = normalizePath(path, replacementMap, types, true);
 
@@ -227,7 +227,6 @@ async function convertContentPack(
 			};
 		}
 	) as ContentPack<IAsset>;
-	return ret;
 }
 
 function error(msg: string, payload?: any): never {

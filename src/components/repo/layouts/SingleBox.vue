@@ -35,17 +35,13 @@
 <script lang="ts">
 /* tslint:disable:no-bitwise */
 import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
-import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 import SearchBar from '../SearchBar.vue';
 import List from '../List.vue';
-import { SelectedEvent, IPackWithState, PackStates } from '../types';
+import { SelectedEvent } from '../types';
 import PackDisplay from '../PackDisplay.vue';
-import environment from '@/environments/environment';
 import { defineComponent } from 'vue';
 import { Pack, Repo } from '@/models/repo';
 import { DeepReadonly } from '@/util/readonly';
-
-const repoUrl = 'https://edave64.github.io/Doki-Doki-Dialog-Generator-Packs/';
 
 export default defineComponent({
 	components: {

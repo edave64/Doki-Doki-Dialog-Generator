@@ -1,7 +1,7 @@
 <template>
 	<object-tool :object="object" title="Notification" :textHandler="textHandler">
 		<template v-slot:default>
-			<div id="notification_text">
+			<div id="notification_text_wrapper">
 				<label for="notification_text">Text:</label>
 				<textarea v-model="text" id="notification_text" @keydown.stop />
 				<button @click="textEditor = true">Formatting</button>
@@ -17,7 +17,7 @@
 import Toggle from '@/components/toggle.vue';
 import ObjectTool, { Handler } from './object-tool.vue';
 import { PanelMixin } from './panelMixin';
-import { INotification } from '../../../store/objectTypes/notification';
+import { INotification } from '@/store/objectTypes/notification';
 import { defineComponent } from 'vue';
 import { genericSetable } from '@/util/simpleSettable';
 
@@ -71,7 +71,7 @@ export default defineComponent({
 
 .panel {
 	&.vertical {
-		#notification_text {
+		#notification_text_wrapper {
 			width: 173px;
 
 			textarea {

@@ -43,27 +43,23 @@
 </template>
 
 <script lang="ts">
-// App.vue has currently so many responsiblities that it's best to break it into chunks
-import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
+import { ICreateTextBoxAction } from "@/store/objectTypes/textbox";
 import {
-	ISetObjectPositionMutation,
-	IRemoveObjectAction,
 	ICopyObjectToClipboardAction,
 	IPasteFromClipboardAction,
-} from '@/store/objects';
-import {
-	IShiftCharacterSlotAction,
-	ICharacter,
-} from '@/store/objectTypes/characters';
-import ToolBox from '@/components/toolbox/toolbox.vue';
-import MessageConsole from '@/components/message-console.vue';
-import Render from '@/components/render.vue';
-import ModalDialog from '@/components/ModalDialog.vue';
-import { ISetCurrentMutation } from '@/store/panels';
-import { defineAsyncComponent, defineComponent } from 'vue';
-import { Repo } from './models/repo';
-import enviroment from '@/environments/environment';
-import { IRemovePacksAction } from './store';
+	IRemoveObjectAction,
+	ISetObjectPositionMutation
+} from "@/store/objects";
+import { ICharacter, IShiftCharacterSlotAction } from "@/store/objectTypes/characters";
+import ToolBox from "@/components/toolbox/toolbox.vue";
+import MessageConsole from "@/components/message-console.vue";
+import Render from "@/components/render.vue";
+import ModalDialog from "@/components/ModalDialog.vue";
+import { ISetCurrentMutation } from "@/store/panels";
+import { defineAsyncComponent, defineComponent } from "vue";
+import { Repo } from "./models/repo";
+import enviroment from "@/environments/environment";
+import { IRemovePacksAction } from "./store";
 
 // tslint:disable-next-line: no-magic-numbers
 const aspectRatio = 16 / 9;
@@ -71,11 +67,13 @@ const arrowMoveStepSize = 20;
 const packDialogWaitMs = 50;
 const canvasTooSmallThreshold = 200;
 
+const baseUrl = import.meta.env.BASE_URL || '';
+
 const nsfwPacks = {
-	'dddg.buildin.backgrounds.nsfw': `${process.env.BASE_URL}packs/buildin.base.backgrounds.nsfw.json`,
-	'dddg.buildin.sayori.nsfw': `${process.env.BASE_URL}packs/buildin.base.sayori.nsfw.json`,
-	'dddg.buildin.base.natsuki.nsfw': `${process.env.BASE_URL}packs/buildin.base.natsuki.nsfw.json`,
-	'dddg.buildin.yuri.nsfw': `${process.env.BASE_URL}packs/buildin.base.yuri.nsfw.json`,
+	'dddg.buildin.backgrounds.nsfw': `${baseUrl}packs/buildin.base.backgrounds.nsfw.json`,
+	'dddg.buildin.sayori.nsfw': `${baseUrl}packs/buildin.base.sayori.nsfw.json`,
+	'dddg.buildin.base.natsuki.nsfw': `${baseUrl}packs/buildin.base.natsuki.nsfw.json`,
+	'dddg.buildin.yuri.nsfw': `${baseUrl}packs/buildin.base.yuri.nsfw.json`,
 };
 
 const names = new Set(Object.keys(nsfwPacks));
@@ -364,7 +362,7 @@ export default defineComponent({
 		enviroment.connectToStore(this.vuexHistory, this.$store);
 		const settings = await enviroment.loadSettings();
 
-		this.vuexHistory.transaction(async () => {
+		await this.vuexHistory.transaction(async () => {
 			this.$store.commit('ui/setLqRendering', settings.lq ?? false);
 			this.$store.commit('ui/setDarkTheme', settings.darkMode ?? null);
 			this.$store.commit(
@@ -373,22 +371,22 @@ export default defineComponent({
 			);
 
 			await this.$store.dispatch('content/loadContentPacks', [
-				`${process.env.BASE_URL}packs/buildin.base.backgrounds.json`,
-				`${process.env.BASE_URL}packs/buildin.base.monika.json`,
-				`${process.env.BASE_URL}packs/buildin.base.sayori.json`,
-				`${process.env.BASE_URL}packs/buildin.base.natsuki.json`,
-				`${process.env.BASE_URL}packs/buildin.base.yuri.json`,
-				`${process.env.BASE_URL}packs/buildin.extra.mc.json`,
-				`${process.env.BASE_URL}packs/buildin.extra.mc_chad.json`,
-				`${process.env.BASE_URL}packs/buildin.extra.mc_classic.json`,
-				`${process.env.BASE_URL}packs/buildin.extra.femc.json`,
-				`${process.env.BASE_URL}packs/buildin.extra.classic_amy.json`,
-				`${process.env.BASE_URL}packs/buildin.extra.amy.json`,
+				`${baseUrl}packs/buildin.base.backgrounds.json`,
+				`${baseUrl}packs/buildin.base.monika.json`,
+				`${baseUrl}packs/buildin.base.sayori.json`,
+				`${baseUrl}packs/buildin.base.natsuki.json`,
+				`${baseUrl}packs/buildin.base.yuri.json`,
+				`${baseUrl}packs/buildin.extra.mc.json`,
+				`${baseUrl}packs/buildin.extra.mc_chad.json`,
+				`${baseUrl}packs/buildin.extra.mc_classic.json`,
+				`${baseUrl}packs/buildin.extra.femc.json`,
+				`${baseUrl}packs/buildin.extra.classic_amy.json`,
+				`${baseUrl}packs/buildin.extra.amy.json`,
 			]);
 
 			await this.$store.dispatch('panels/createPanel');
 			if (Object.keys(this.$store.state.objects.objects).length === 0) {
-				this.$store.dispatch(
+				await this.$store.dispatch(
 					'objects/createTextBox',
 					{} as ICreateTextBoxAction
 				);

@@ -69,11 +69,11 @@
 							<select id="export_format" v-model="format">
 								<option value="image/png">PNG (lossless)</option>
 								<option value="image/webp" v-if="webpSupport"
-									>WebP (lossy)</option
-								>
+									>WebP (lossy)
+								</option>
 								<option value="image/heif" v-if="heifSupport"
-									>HEIF (lossy)</option
-								>
+									>HEIF (lossy)
+								</option>
 								<option value="image/jpeg">JPEG (lossy)</option>
 								<!-- <option value="image/jpeg">WebM (lossy, video)</option>-->
 							</select>
@@ -145,13 +145,13 @@
 <script lang="ts">
 import { PanelMixin } from './panelMixin';
 import {
-	IDuplicatePanelAction,
-	ISetCurrentPanelMutation,
 	IDeletePanelAction,
-	ISetPanelPreviewMutation,
+	IDuplicatePanelAction,
 	IMovePanelAction,
+	ISetCurrentPanelMutation,
+	ISetPanelPreviewMutation,
 } from '@/store/panels';
-import { isWebPSupported, isHeifSupported } from '@/asset-manager';
+import { isHeifSupported, isWebPSupported } from '@/asset-manager';
 import { ITextBox } from '@/store/objectTypes/textbox';
 import { SceneRenderer } from '@/renderables/scene-renderer';
 import { DeepReadonly } from '@/util/readonly';
@@ -252,7 +252,7 @@ export default defineComponent({
 	},
 	async mounted() {
 		this.moveFocusToActivePanel();
-		this.renderThumbnail();
+		this.renderThumbnail().catch(() => {});
 	},
 	methods: {
 		async download() {
@@ -273,7 +273,7 @@ export default defineComponent({
 				distribution,
 				true,
 				async (imageIdx: number, canvas: HTMLCanvasElement) => {
-					environment.saveToFile(
+					await environment.saveToFile(
 						canvas,
 						`${prefix}_${imageIdx}.${extension}`,
 						format,
@@ -381,7 +381,7 @@ export default defineComponent({
 				else {
 					const from = Math.max(parseInt(match[3], 10) - 1, min);
 					const to = Math.min(parseInt(match[4], 10) - 1, max);
-					if (from === undefined || to === undefined || from > to) continue;
+					if (from == undefined || to == undefined || from > to) continue;
 					for (let i = from; i <= to; ++i) {
 						listedPages.push(i);
 					}
@@ -418,16 +418,14 @@ export default defineComponent({
 			const parent = ele.parentElement!.parentElement!;
 			const idx = Array.from(ele.parentElement!.children).indexOf(ele);
 			if (this.$store.state.ui.vertical) {
-				const scroll =
+				parent.scrollTop =
 					idx * ele.clientHeight -
 					parent.clientHeight / 2 +
 					ele.clientHeight / 2;
-				parent.scrollTop = scroll;
 				parent.scrollLeft = 0;
 			} else {
-				const scroll =
+				parent.scrollLeft =
 					idx * ele.clientWidth - parent.clientWidth / 2 + ele.clientWidth / 2;
-				parent.scrollLeft = scroll;
 				parent.scrollTop = 0;
 			}
 		},
@@ -448,10 +446,11 @@ export default defineComponent({
 		},
 		async addNewPanel() {
 			await this.vuexHistory.transaction(async () => {
-				this.$store.dispatch('panels/duplicatePanel', {
+				await this.$store.dispatch('panels/duplicatePanel', {
 					panelId: this.$store.state.panels.currentPanel,
 				} as IDuplicatePanelAction);
 			});
+			// noinspection ES6MissingAwait
 			this.$nextTick(() => {
 				this.moveFocusToActivePanel();
 			});
@@ -468,7 +467,7 @@ export default defineComponent({
 		},
 		deletePanel() {
 			this.vuexHistory.transaction(async () => {
-				this.$store.dispatch('panels/delete', {
+				await this.$store.dispatch('panels/delete', {
 					panelId: this.$store.state.panels.currentPanel,
 				} as IDeletePanelAction);
 			});
@@ -477,16 +476,16 @@ export default defineComponent({
 			});
 		},
 		moveAhead() {
-			this.vuexHistory.transaction(() => {
-				this.$store.dispatch('panels/move', {
+			this.vuexHistory.transaction(async () => {
+				await this.$store.dispatch('panels/move', {
 					panelId: this.currentPanel,
 					delta: -1,
 				} as IMovePanelAction);
 			});
 		},
 		moveBehind() {
-			this.vuexHistory.transaction(() => {
-				this.$store.dispatch('panels/move', {
+			this.vuexHistory.transaction(async () => {
+				await this.$store.dispatch('panels/move', {
 					panelId: this.currentPanel,
 					delta: 1,
 				} as IMovePanelAction);
@@ -564,20 +563,23 @@ export default defineComponent({
 	background-size: contain;
 	background-position: center center;
 	background-repeat: no-repeat;
+	//noinspection CssOverwrittenProperties
 	background-color: $default-native-background;
+	//noinspection CssOverwrittenProperties
 	background-color: var(--native-background);
 	border: 2px solid $default-border;
+	//noinspection CssOverwrittenProperties
 	border: 2px solid var(--border);
 	display: flex;
 	flex-direction: column;
-	background-color: $default-native-background;
-	background-color: var(--native-background);
 
 	text-shadow: 0 0 4px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
 		1px 1px 0 #000;
 
 	&.active {
+		//noinspection CssOverwrittenProperties
 		background-color: $default-border;
+		//noinspection CssOverwrittenProperties
 		background-color: var(--border);
 	}
 }
@@ -625,6 +627,7 @@ small {
 
 		fieldset {
 			width: 100%;
+
 			.existing_panels {
 				max-height: 350px;
 				width: 100%;
@@ -638,6 +641,7 @@ small {
 
 			table {
 				width: 100%;
+
 				td {
 					width: 100%;
 					display: table-row;
@@ -645,6 +649,7 @@ small {
 			}
 		}
 	}
+
 	&:not(.vertical) {
 		.column {
 			display: flex;

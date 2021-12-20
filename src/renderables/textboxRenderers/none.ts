@@ -2,7 +2,6 @@ import { ITextboxRenderer } from '../textbox';
 import * as TBConstants from '@/constants/game_modes/ddlc/textBox';
 import { DdlcBase } from './ddlc_base';
 import { RenderContext } from '@/renderer/rendererContext';
-import environment from '@/environments/environment';
 
 export class None extends DdlcBase implements ITextboxRenderer {
 	static readonly id = 'none';
@@ -41,7 +40,7 @@ export class None extends DdlcBase implements ITextboxRenderer {
 		return TBConstants.TextBoxStyle;
 	}
 
-	public async render(rx: RenderContext): Promise<void> {}
+	public async render(_rx: RenderContext): Promise<void> {}
 	public appliesTo(type: string): boolean {
 		return type === None.id;
 	}

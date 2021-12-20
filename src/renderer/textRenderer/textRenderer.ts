@@ -1,4 +1,4 @@
-import { tokenize, Token, ICommandToken } from './tokenizer';
+import { ICommandToken, Token, tokenize } from './tokenizer';
 
 import textCommands from './textCommands';
 import { exhaust } from '@/util/exhaust';
@@ -54,7 +54,7 @@ export class TextRenderer {
 	}
 
 	public rebuildParts() {
-		this.renderParts = this.getRenderParts(this.tokens, this.baseStyle);
+		this.renderParts = TextRenderer.getRenderParts(this.tokens, this.baseStyle);
 	}
 
 	public async loadFonts() {
@@ -83,7 +83,7 @@ export class TextRenderer {
 
 		if (neededToLoad) {
 			const tokens = tokenize(this.str);
-			this.renderParts = this.getRenderParts(tokens, this.baseStyle);
+			this.renderParts = TextRenderer.getRenderParts(tokens, this.baseStyle);
 		}
 	}
 
@@ -234,7 +234,7 @@ export class TextRenderer {
 		let renderParts = this.renderParts;
 
 		if (maxLineWidth > 0) {
-			renderParts = this.applyLineWrapping(
+			renderParts = TextRenderer.applyLineWrapping(
 				this.renderParts.slice(0),
 				maxLineWidth
 			);
@@ -285,7 +285,10 @@ export class TextRenderer {
 		const renderParts =
 			maxLineWidth === 0
 				? this.renderParts
-				: this.applyLineWrapping(this.renderParts.slice(0), maxLineWidth);
+				: TextRenderer.applyLineWrapping(
+						this.renderParts.slice(0),
+						maxLineWidth
+				  );
 
 		for (const item of renderParts) {
 			lineHeight = Math.max(lineHeight, item.height);
@@ -323,7 +326,10 @@ export class TextRenderer {
 		return maxLineWidth;
 	}
 
-	private getRenderParts(tokens: Token[], baseStyle: ITextStyle): RenderItem[] {
+	private static getRenderParts(
+		tokens: Token[],
+		baseStyle: ITextStyle
+	): RenderItem[] {
 		const renderParts: RenderItem[] = [];
 		const styleStack: ITextStyle[] = [];
 		const tagStack: Array<ICommandToken | null> = [];
@@ -388,7 +394,7 @@ export class TextRenderer {
 		return renderParts;
 	}
 
-	private applyLineWrapping(
+	private static applyLineWrapping(
 		parts: RenderItem[],
 		maxLineWidth: number
 	): RenderItem[] {
@@ -416,7 +422,6 @@ export class TextRenderer {
 							x: 0,
 							y: 0,
 						});
-						continue;
 					} else {
 						currentLineWidth += item.width;
 						lastBreakLineWidth = currentLineWidth;

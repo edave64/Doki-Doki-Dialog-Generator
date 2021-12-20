@@ -32,12 +32,15 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 	public static get resizable() {
 		return true;
 	}
+
 	public get height() {
 		return this.obj.height + TBConstants.NameboxHeight;
 	}
+
 	public get width() {
 		return this.obj.width;
 	}
+
 	public get nameboxWidth() {
 		if (this.refObject && this.refObject.nameboxWidth !== null) {
 			return this.refObject.nameboxWidth;
@@ -46,15 +49,19 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 			return this.obj.customNameboxWidth;
 		return TBConstants.NameboxWidth;
 	}
+
 	public get nameboxHeight() {
 		return TBConstants.NameboxHeight;
 	}
+
 	public get nameboxOffsetX() {
 		return TBConstants.NameboxXOffset;
 	}
+
 	public get nameboxOffsetY() {
 		return TBConstants.NameboxTextYOffset;
 	}
+
 	public get nameboxStyle() {
 		return {
 			...TBConstants.NameboxTextStyle,
@@ -62,12 +69,15 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 			color: '#FFFFFF',
 		};
 	}
+
 	public get textOffsetX() {
 		return TBConstants.TextBoxTextXOffset;
 	}
+
 	public get textOffsetY() {
 		return TBConstants.TextBoxTextYOffset;
 	}
+
 	public get textboxStyle() {
 		return TBConstants.TextBoxStyle;
 	}
@@ -141,6 +151,7 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 			}
 		);
 	}
+
 	protected async renderBackdrop(
 		rx: RenderContext,
 		x: number,
@@ -148,7 +159,7 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 	): Promise<void> {
 		const hslColor = RGBAColor.fromCss(this.customColor).toHSL();
 		const dotPattern = new Renderer(dotPatternSize, dotPatternSize);
-		dotPattern.render(async (dotRx: RenderContext) => {
+		await dotPattern.render(async (dotRx: RenderContext) => {
 			const fill = {
 				style: hslColor
 					.shift(dotColorDelta)
@@ -305,6 +316,7 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 			});
 		}
 	}
+
 	public appliesTo(type: string): boolean {
 		return type === CustomPlus.id;
 	}

@@ -72,16 +72,16 @@ import PartButton, { IPartButtonImage, IPartImage } from './partButton.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import {
-	Pose,
 	Character,
+	Pose,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset } from '@/store/content';
 import {
-	getPose,
-	ISetPosePositionMutation,
-	ISetPartAction,
 	getData,
+	getPose,
 	ICharacter,
+	ISetPartAction,
+	ISetPosePositionMutation,
 	ISetStyleAction,
 } from '@/store/objectTypes/characters';
 import { DeepReadonly } from '@/util/readonly';
@@ -251,8 +251,7 @@ export default defineComponent({
 			};
 		},
 		updatePose(styleGroupId?: number) {
-			if (styleGroupId === undefined)
-				styleGroupId = this.character.styleGroupId;
+			if (styleGroupId == undefined) styleGroupId = this.character.styleGroupId;
 
 			const data = this.charData;
 			const styleGroups = data.styleGroups[styleGroupId];
@@ -263,8 +262,8 @@ export default defineComponent({
 				});
 				if (subSelect.length > 0) selection = subSelect;
 			}
-			this.vuexHistory.transaction(() => {
-				this.$store.dispatch('objects/setCharStyle', {
+			this.vuexHistory.transaction(async () => {
+				await this.$store.dispatch('objects/setCharStyle', {
 					id: this.character.id,
 					styleGroupId,
 					styleId: styleGroups.styles.indexOf(selection[0]),

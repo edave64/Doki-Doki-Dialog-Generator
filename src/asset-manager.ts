@@ -1,10 +1,7 @@
-import EventBus, {
-	AssetFailureEvent,
-	CustomAssetFailureEvent,
-} from './eventbus/event-bus';
-import { ErrorAsset } from './models/error-asset';
-import { IAsset } from './store/content';
-import environment from './environments/environment';
+import EventBus, { AssetFailureEvent, CustomAssetFailureEvent } from "./eventbus/event-bus";
+import { ErrorAsset } from "./models/error-asset";
+import { IAsset } from "./store/content";
+import environment from "./environments/environment";
 
 let webpSupportPromise: Promise<boolean>;
 let heifSupportPromise: Promise<boolean>;
@@ -52,12 +49,13 @@ const assetCache: {
 } = {};
 const customAssets: { [id: string]: Promise<HTMLImageElement> } = {};
 
-export async function getAAsset(
+export function getAAsset(
 	asset: IAsset,
 	hq: boolean = true
 ): Promise<HTMLImageElement | ErrorAsset> {
 	return getAssetByUrl(environment.supports.lq && !hq ? asset.lq : asset.hq);
 }
+
 export async function getAssetByUrl(
 	url: string
 ): Promise<HTMLImageElement | ErrorAsset> {
@@ -81,7 +79,8 @@ export async function getAssetByUrl(
 
 	return assetCache[url]!;
 }
-export const baseUrl = process.env.BASE_URL === '' ? '.' : process.env.BASE_URL;
+
+export const baseUrl = import.meta.env.BASE_URL || '.';
 
 export async function getAsset(
 	asset: string,
@@ -94,25 +93,13 @@ export async function getAsset(
 	const url = `${baseUrl}/assets/${asset}${hq ? '' : '.lq'}${
 		(await isWebPSupported()) ? '.webp' : '.png'
 	}`.replace(/\/+/, '/');
-	return getAssetByUrl(url);
+	return await getAssetByUrl(url);
 }
 
 export function registerAsset(asset: string, file: File): string {
 	const url = URL.createObjectURL(file);
-	customAssets[asset] = new Promise((resolve, reject) => {
-		const img = new Image();
-		img.addEventListener('load', () => {
-			resolve(img);
-		});
-		img.addEventListener('error', error => {
-			EventBus.fire(new CustomAssetFailureEvent(error));
-			reject(`Failed to load "${url}"`);
-		});
-		img.crossOrigin = 'Anonymous';
-		img.src = url;
-		img.style.display = 'none';
-		document.body.appendChild(img);
-	});
+	// noinspection JSIgnoredPromiseFromCall
+	registerAssetWithURL(asset, url);
 	return url;
 }
 

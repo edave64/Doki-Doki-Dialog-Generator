@@ -163,14 +163,17 @@ export default defineComponent({
 h3 {
 	margin: 40px 0 0;
 }
+
 ul {
 	list-style-type: none;
 	padding: 0;
 }
+
 li {
 	display: inline-block;
 	margin: 0 10px;
 }
+
 a {
 	color: #42b983;
 }
@@ -197,12 +200,15 @@ a {
 	right: 8px;
 	z-index: 2;
 	border: 2px solid $default-border;
+	//noinspection CssOverwrittenProperties
 	border: 2px solid var(--border);
+	//noinspection CssOverwrittenProperties
 	background-color: $default-native-background;
+	//noinspection CssOverwrittenProperties
 	background-color: var(--native-background);
 	max-height: calc(100vh - 56px);
 	overflow: auto;
-	box-shadow: 0px 2px 4px 4px rgba(255, 189, 225, 1);
+	box-shadow: 0 2px 4px 4px rgba(255, 189, 225, 1);
 
 	code {
 		padding: 2px;
@@ -217,11 +223,14 @@ a {
 	height: 42px;
 	width: 40px;
 	border: 2px solid $default-border;
+	//noinspection CssOverwrittenProperties
 	border: 2px solid var(--border);
 	border-left: 0;
 
 	&.toggled {
+		//noinspection CssOverwrittenProperties
 		background-color: $default-border;
+		//noinspection CssOverwrittenProperties
 		background-color: var(--border);
 	}
 }
@@ -230,17 +239,18 @@ a {
 	display: block;
 	width: calc(100% - 40px);
 	border: 2px solid $default-border;
+	//noinspection CssOverwrittenProperties
 	border: 2px solid var(--border);
-	padding: 8px;
 	height: 42px;
 	overflow: hidden;
 	white-space: nowrap;
 	background: $default-accent-background url(./search.svg);
+	//noinspection CssOverwrittenProperties
 	background: var(--accent-background) url(./search.svg);
 	background-repeat: no-repeat;
 	background-size: contain;
 	background-position: right center;
-	padding-right: 64px;
+	padding: 8px 64px 8px 8px;
 }
 
 .suggestions {
@@ -254,6 +264,7 @@ a {
 		line-height: 24px;
 		padding: 4px;
 	}
+
 	.suggestion {
 		border: 0;
 		line-height: 24px;

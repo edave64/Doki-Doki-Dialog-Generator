@@ -1,20 +1,20 @@
 import { ICommand } from '@/eventbus/command';
 import {
-	IObjectsState,
 	ICreateObjectMutation,
 	IObject,
-	ISetPositionAction,
-	ISetObjectPositionMutation,
+	IObjectsState,
 	IRemoveObjectAction,
+	ISetObjectPositionMutation,
+	ISetPositionAction,
 } from '@/store/objects';
-import { MutationTree, ActionTree, Store, Commit, ActionContext } from 'vuex';
+import { ActionContext, ActionTree, Commit, MutationTree, Store } from 'vuex';
 import { arraySeeker } from '@/models/seekers';
 import { IHistoryOptions } from '@/plugins/vuex-history';
 import {
 	Character,
-	Pose,
-	HeadCollection,
 	ContentPack,
+	HeadCollection,
+	Pose,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAsset } from '../content';
 import { IRootState } from '..';
@@ -129,8 +129,7 @@ export function getHeads(
 	if (!compatibleHeads || compatibleHeads.length === 0) {
 		return null;
 	}
-	const heads = data.heads[compatibleHeads[headTypeId]];
-	return heads;
+	return data.heads[compatibleHeads[headTypeId]];
 }
 
 export function closestCharacterSlot(pos: number): number {
@@ -354,7 +353,7 @@ export async function fixContentPackRemovalFromCharacter(
 	);
 	if (!oldCharData) {
 		console.error('Character data is missing. Dropping the character.');
-		context.dispatch('removeObject', {
+		await context.dispatch('removeObject', {
 			id,
 		} as IRemoveObjectAction);
 		return;
@@ -369,7 +368,7 @@ export async function fixContentPackRemovalFromCharacter(
 	);
 	if (!newCharData) {
 		console.error('Character data is missing. Dropping the character.');
-		context.dispatch('removeObject', {
+		await context.dispatch('removeObject', {
 			id,
 		} as IRemoveObjectAction);
 		return;

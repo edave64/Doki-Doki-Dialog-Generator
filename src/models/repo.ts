@@ -17,7 +17,7 @@ export class Repo {
 	private static instance: null | Promise<Repo>;
 	public static setStore: ($store: Store<DeepReadonly<IRootState>>) => void;
 	private static $store: Promise<Store<DeepReadonly<IRootState>>> = new Promise(
-		(resolve, reject) => {
+		(resolve, _reject) => {
 			Repo.setStore = resolve;
 		}
 	);
@@ -30,7 +30,7 @@ export class Repo {
 	private static async createInstance(): Promise<Repo> {
 		const onlineRepoLoading = Repo.loadRepo(repoUrl);
 		const localRepoLoading = environment.supports.localRepo
-			? Repo.loadRepo(environment.localRepositoryUrl)
+			? await Repo.loadRepo(environment.localRepositoryUrl)
 			: null;
 
 		const [onlineRepoLoaded, localRepoLoaded, $store] = await Promise.all([
@@ -88,14 +88,12 @@ export class Repo {
 		this.combinedList = computed(() => {
 			const onlineRepo = this.onlineRepo.value;
 			const onlinePacks = onlineRepo?.packs ?? [];
-			const onlineAuthors = onlineRepo?.authors ?? {};
 			const onlineRepoLookup = new Map(
 				onlinePacks.map(pack => [pack.id, pack])
 			);
 
 			const localRepo = this.localRepo.value;
 			const localPacks = localRepo?.packs ?? [];
-			const localAuthors = localRepo?.authors ?? {};
 			const localRepoLookup = new Map(localPacks.map(pack => [pack.id, pack]));
 
 			const autoloads = new Set(environment.state.autoAdd);

@@ -47,7 +47,9 @@ dialog {
 	max-width: 90vw;
 	max-height: 90vh;
 	background-attachment: scroll;
+	//noinspection CssOverwrittenProperties
 	background-color: $default-native-background;
+	//noinspection CssOverwrittenProperties
 	background-color: var(--native-background);
 	background-position: right center;
 	background-repeat: no-repeat;
@@ -58,8 +60,11 @@ dialog {
 	overflow: hidden;
 	padding: 0;
 	border: 4px solid $default-border;
+	//noinspection CssOverwrittenProperties
 	border: 4px solid var(--border);
+	//noinspection CssOverwrittenProperties
 	overflow: hidden;
+	//noinspection CssOverwrittenProperties
 	align-self: center;
 	justify-self: center;
 	margin: auto;
@@ -76,7 +81,7 @@ dialog {
 		button.option {
 			border: 0;
 			background: none;
-			font-family: riffic;
+			font-family: riffic sans-serif;
 			font-size: 24px;
 		}
 	}

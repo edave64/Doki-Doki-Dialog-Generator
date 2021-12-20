@@ -61,6 +61,7 @@
 									:src="link.icon"
 									height="32"
 									width="32"
+									alt=""
 							/></l>
 						</td>
 					</tr>
@@ -84,7 +85,6 @@ import L from '@/components/ui/link.vue';
 import { Pack, Repo } from '@/models/repo';
 import { DeepReadonly } from '@/util/readonly';
 import Toggle from '../toggle.vue';
-import { IPack } from 'node_modules/@edave64/dddg-repo-filters/dist/pack';
 
 const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 	['reddit', 'https://reddit.com/u/%1', 'reddit.png'],
@@ -239,7 +239,9 @@ interface AuthorLink {
 	width: 100%;
 	height: 100%;
 	background-attachment: scroll;
+	//noinspection CssOverwrittenProperties
 	background-color: $default-native-background;
+	//noinspection CssOverwrittenProperties
 	background-color: var(--native-background);
 	background-position: right center;
 	background-repeat: no-repeat;
@@ -256,7 +258,9 @@ interface AuthorLink {
 
 	h2 {
 		font-size: 14px;
+		//noinspection CssOverwrittenProperties
 		color: $default-text;
+		//noinspection CssOverwrittenProperties
 		color: var(--text);
 	}
 
@@ -264,22 +268,28 @@ interface AuthorLink {
 	header,
 	footer {
 		padding: 16px;
+		//noinspection CssOverwrittenProperties
 		background: linear-gradient(
 			90deg,
 			rgba(255, 255, 255, 1) 25%,
 			rgba(255, 255, 255, 0) 75%
 		);
+		//noinspection CssOverwrittenProperties
 		background: linear-gradient(
 			90deg,
 			var(--pack-display-start) 25%,
 			var(--pack-display-end) 75%
 		);
 		width: 100%;
+		//noinspection CssOverwrittenProperties
 		color: $default-text;
+		//noinspection CssOverwrittenProperties
 		color: var(--text);
 
+		//noinspection CssOverwrittenProperties
 		text-shadow: 0 0 4px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff,
 			-1px 1px 0 #fff, 1px 1px 0 #fff;
+		//noinspection CssOverwrittenProperties
 		text-shadow: 0 0 4px var(--native-background),
 			-1px -1px 0 var(--native-background), 1px -1px 0 var(--native-background),
 			-1px 1px 0 var(--native-background), 1px 1px 0 var(--native-background);
@@ -310,7 +320,7 @@ interface AuthorLink {
 		}
 	}
 
-	>>> ul {
+	> ul {
 		margin-left: 20px;
 	}
 }

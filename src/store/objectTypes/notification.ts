@@ -1,6 +1,6 @@
 import { ICommand } from '@/eventbus/command';
-import { IObjectsState, ICreateObjectMutation, IObject } from '@/store/objects';
-import { MutationTree, ActionTree } from 'vuex';
+import { ICreateObjectMutation, IObject, IObjectsState } from '@/store/objects';
+import { ActionTree, MutationTree } from 'vuex';
 import { IRootState } from '..';
 import { ISetAutoWrappingMutation } from './textbox';
 import { baseProps } from './baseObjectProps';
@@ -45,7 +45,7 @@ let lastNotificationId = 0;
 export const notificationActions: ActionTree<IObjectsState, IRootState> = {
 	createNotification(
 		{ commit, rootState },
-		command: ICreateNotificationAction
+		_command: ICreateNotificationAction
 	): string {
 		const constants = getConstants();
 		const id = 'notification_' + ++lastNotificationId;

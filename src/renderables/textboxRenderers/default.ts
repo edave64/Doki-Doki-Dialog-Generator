@@ -4,7 +4,6 @@ import { DdlcBase } from './ddlc_base';
 import { RenderContext } from '@/renderer/rendererContext';
 import getConstants from '@/constants';
 import { getAsset } from '@/asset-manager';
-import environment from '@/environments/environment';
 import { ITextBox } from '@/store/objectTypes/textbox';
 
 export class Default extends DdlcBase implements ITextboxRenderer {

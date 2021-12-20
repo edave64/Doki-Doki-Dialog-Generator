@@ -95,14 +95,18 @@ export default defineComponent({
 	margin-top: 4px;
 	text-shadow: 0 0 2px black;
 	color: white;
+	//noinspection CssOverwrittenProperties
 	box-shadow: inset 0 0 1px 3px $default-modal-backdrop;
+	//noinspection CssOverwrittenProperties
 	box-shadow: inset 0 0 1px 3px var(--modal-backdrop);
 	text-align: center;
 	user-select: none;
 	vertical-align: middle;
 
 	&.active {
+		//noinspection CssOverwrittenProperties
 		box-shadow: inset 0 0 1px 3px $default-modal-backdrop-light;
+		//noinspection CssOverwrittenProperties
 		box-shadow: inset 0 0 1px 3px var(--modal-backdrop-light);
 	}
 }

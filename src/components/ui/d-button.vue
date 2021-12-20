@@ -1,12 +1,15 @@
 <template>
 	<button :class="[iconPos]" :disabled="disabled">
 		<div class="material-icons" aria-hidden="true">{{ icon }}</div>
-		<div class="content"><slot /></div>
+		<div class="content">
+			<slot />
+		</div>
 	</button>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
+
 export default defineComponent({
 	props: {
 		icon: {
@@ -26,6 +29,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+//noinspection CssOverwrittenProperties
 button {
 	border: 2px solid $default-border;
 	border: 2px solid var(--border);
@@ -39,10 +43,12 @@ button {
 
 	&.left {
 		flex-direction: row;
+
 		> .content {
 			flex-grow: 1;
 		}
 	}
+
 	&.top {
 		flex-direction: column;
 	}

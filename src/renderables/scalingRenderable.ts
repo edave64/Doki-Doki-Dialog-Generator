@@ -56,7 +56,7 @@ export abstract class ScalingRenderable<
 
 	protected async renderLocal(rx: RenderContext): Promise<void> {
 		const constants = getConstants().Base;
-		if (this.rotation === 0) return this.draw(rx);
+		if (this.rotation === 0) return await this.draw(rx);
 		await rx.customTransform(async trx => {
 			const hitbox = this.getHitbox();
 			const centerX = hitbox.x0 + (hitbox.x1 - hitbox.x0) / 2;

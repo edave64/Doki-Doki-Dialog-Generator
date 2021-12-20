@@ -44,8 +44,12 @@ import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import { PanelMixin } from './panelMixin';
-import { IChoices, IRemoveChoiceAction } from '@/store/objectTypes/choices';
-import { IChoice, IAddChoiceAction } from '@/store/objectTypes/choices';
+import {
+	IAddChoiceAction,
+	IChoice,
+	IChoices,
+	IRemoveChoiceAction,
+} from '@/store/objectTypes/choices';
 import { DeepReadonly } from '@/util/readonly';
 import { ComponentCustomProperties, defineComponent } from 'vue';
 import { genericSetable } from '@/util/simpleSettable';
@@ -160,6 +164,7 @@ interface IThis extends ComponentCustomProperties {
 	text-overflow: ellipsis;
 	padding: 2px;
 
+	//noinspection CssOverwrittenProperties
 	&.active {
 		background-color: $default-border;
 		background-color: var(--border);

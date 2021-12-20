@@ -1,8 +1,8 @@
 <template>
 	<div class="panel" @dragenter="dragEnter" @mouseleave="$refs.dt.hide()">
 		<drop-target ref="dt" class="drop-target" @drop="addImageFile"
-			>Drop here to add as a new background</drop-target
-		>
+			>Drop here to add as a new background
+		</drop-target>
 		<h1>Background</h1>
 		<color v-if="colorSelect" v-model="bgColor" @leave="colorSelect = false" />
 		<image-options
@@ -58,7 +58,7 @@ import {
 	Background,
 	ContentPack,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { ISetCurrentMutation, ISetColorMutation } from '@/store/panels';
+import { ISetColorMutation, ISetCurrentMutation } from '@/store/panels';
 import { PanelMixin } from './panelMixin';
 import Color from '../subtools/color/color.vue';
 import { defineComponent } from 'vue';
@@ -130,7 +130,7 @@ export default defineComponent({
 				panelId: this.$store.state.panels.currentPanel,
 			} as ISetCurrentMutation);
 		},
-		onFileUpload(e: Event) {
+		onFileUpload(_e: Event) {
 			const uploadInput = this.$refs.upload as HTMLInputElement;
 			if (!uploadInput.files) return;
 			for (const file of uploadInput.files) {
@@ -205,7 +205,7 @@ textarea {
 	}
 }
 
-#panels:not(.vertical) > .panel {
+.panel:not(.vertical) {
 	> div,
 	button {
 		&:not(.drop-target) {

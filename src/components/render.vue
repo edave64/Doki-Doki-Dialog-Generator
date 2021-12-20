@@ -16,8 +16,8 @@
 		@dragover="onDragOver"
 		@drop="onDrop"
 		@mouseenter="onMouseEnter"
-		>HTML5 is required to use the Doki Doki Dialog Generator.</canvas
-	>
+		>HTML5 is required to use the Doki Doki Dialog Generator.
+	</canvas>
 </template>
 
 <script lang="ts">
@@ -30,8 +30,8 @@ import eventBus, {
 } from '@/eventbus/event-bus';
 import { IObject, ISetObjectPositionMutation } from '@/store/objects';
 import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
-import { SceneRenderer } from '../renderables/scene-renderer';
-import { DeepReadonly } from '../util/readonly';
+import { SceneRenderer } from '@/renderables/scene-renderer';
+import { DeepReadonly } from '@/util/readonly';
 import { defineComponent } from 'vue';
 import getConstants from '@/constants';
 
@@ -89,7 +89,7 @@ export default defineComponent({
 		async download(): Promise<void> {
 			const url = await this.sceneRender.download();
 
-			this.vuexHistory.transaction(async () => {
+			await this.vuexHistory.transaction(async () => {
 				const oldUrl = this.$store.state.ui.lastDownload;
 
 				this.$store.commit('ui/setLastDownload', url);
@@ -269,7 +269,7 @@ export default defineComponent({
 					const name = 'dropCustomAsset' + ++this.dropSpriteCount;
 					const url = registerAsset(name, item.getAsFile()!);
 
-					this.vuexHistory.transaction(async () => {
+					await this.vuexHistory.transaction(async () => {
 						await this.$store.dispatch('objects/createSprite', {
 							assets: [
 								{

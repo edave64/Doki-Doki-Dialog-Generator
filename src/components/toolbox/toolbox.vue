@@ -189,9 +189,12 @@ export default defineComponent({
 
 <style lang="scss">
 #panels {
+	//noinspection CssOverwrittenProperties
 	background-color: $default-native-background;
+	//noinspection CssOverwrittenProperties
 	background-color: var(--native-background);
 	border: 3px solid $default-border;
+	//noinspection CssOverwrittenProperties
 	border: 3px solid var(--border);
 	position: absolute;
 	display: flex;
@@ -237,6 +240,7 @@ export default defineComponent({
 
 				&:nth-child(4) {
 					border: 3px solid $default-border;
+					//noinspection CssOverwrittenProperties
 					border: 3px solid var(--border);
 				}
 
@@ -250,8 +254,10 @@ export default defineComponent({
 		#toolbar-end {
 			button {
 				border-bottom: none;
+
 				&:nth-child(4) {
 					border: 3px solid $default-border;
+					//noinspection CssOverwrittenProperties
 					border: 3px solid var(--border);
 				}
 
@@ -293,6 +299,7 @@ export default defineComponent({
 		#toolbar {
 			button {
 				border-right: none;
+
 				&:nth-child(4) {
 					border-right: 3px solid $default-border;
 					border-right: 3px solid var(--border);
@@ -307,6 +314,7 @@ export default defineComponent({
 
 		#toolbar-end {
 			margin-bottom: -3px;
+
 			button {
 				border-left: none;
 
@@ -326,14 +334,18 @@ export default defineComponent({
 	#toolbar {
 		margin-top: -3px;
 		margin-left: -3px;
+
 		button {
 			outline: 0;
 			width: 48px;
 			height: 48px;
 			line-height: 48px;
+			//noinspection CssOverwrittenProperties
 			background-color: $default-accent-background;
+			//noinspection CssOverwrittenProperties
 			background-color: var(--accent-background);
 			border: 3px solid $default-border;
+			//noinspection CssOverwrittenProperties
 			border: 3px solid var(--border);
 
 			i {
@@ -349,14 +361,18 @@ export default defineComponent({
 
 	#toolbar-end {
 		margin-right: -3px;
+
 		button {
 			outline: 0;
 			width: 48px;
 			height: 48px;
 			line-height: 48px;
+			//noinspection CssOverwrittenProperties
 			background-color: $default-accent-background;
+			//noinspection CssOverwrittenProperties
 			background-color: var(--accent-background);
 			border: 3px solid $default-border;
+			//noinspection CssOverwrittenProperties
 			border: 3px solid var(--border);
 
 			i {

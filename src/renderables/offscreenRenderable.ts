@@ -1,9 +1,8 @@
-import { RenderContext } from '@/renderer/rendererContext';
+import { CompositeModes, RenderContext } from '@/renderer/rendererContext';
 import { Renderer } from '@/renderer/renderer';
 import { IHitbox } from './renderable';
 import { DeepReadonly } from '@/util/readonly';
 import { SpriteFilter } from '@/store/sprite_options';
-import { CompositeModes } from '@/renderer/rendererContext';
 import { IObject } from '@/store/objects';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
@@ -199,6 +198,6 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 
 	public updatedContent(
 		_current: Store<DeepReadonly<IRootState>>,
-		panelId: string
+		_panelId: string
 	): void {}
 }

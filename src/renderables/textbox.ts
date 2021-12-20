@@ -1,10 +1,8 @@
 import { RenderContext } from '@/renderer/rendererContext';
 import { ITextBox } from '@/store/objectTypes/textbox';
-import { RGBAColor } from '@/util/colors/rgb';
-import { TextRenderer, ITextStyle } from '@/renderer/textRenderer/textRenderer';
+import { ITextStyle, TextRenderer } from '@/renderer/textRenderer/textRenderer';
 import { ScalingRenderable } from './scalingRenderable';
 import { Store } from 'vuex';
-import { DeepReadonly } from 'vue';
 import { IRootState } from '@/store';
 import { IObject } from '@/store/objects';
 import getConstants from '@/constants';
@@ -14,15 +12,16 @@ import { Corrupted } from './textboxRenderers/corrupt';
 import { Custom } from './textboxRenderers/custom';
 import { None } from './textboxRenderers/none';
 import { CustomPlus } from './textboxRenderers/custom_plus';
+import { DeepReadonly } from '@/util/readonly';
 
-export const styleRenderers: DeepReadonly<ITextboxRendererClass[]> = [
+export const styleRenderers: ReadonlyArray<ITextboxRendererClass> = [
 	Default,
 	Corrupted,
 	Custom,
 	None,
 	CustomPlus,
 ];
-export const rendererLookup: DeepReadonly<{
+export const rendererLookup: Readonly<{
 	[id: string]: ITextboxRendererClass;
 }> = (() => {
 	const ret: { [id: string]: ITextboxRendererClass } = {};
@@ -34,7 +33,7 @@ export const rendererLookup: DeepReadonly<{
 	return ret;
 })();
 
-export function getStyles(): ITextboxRendererClass[] {
+export function getStyles(): DeepReadonly<ITextboxRendererClass>[] {
 	const ret = [...styleRenderers];
 	const gameMode = environment.gameMode;
 	ret.sort((a, b) => {
@@ -109,7 +108,6 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		const constants = getConstants();
 		const styleRenderer = this.textboxRenderer;
 		const w = styleRenderer.width;
-		const h = styleRenderer.height;
 		const w2 = w / 2;
 		const baseX = this.flip
 			? constants.Base.screenWidth - this.obj.x

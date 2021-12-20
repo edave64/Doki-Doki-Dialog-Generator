@@ -6,8 +6,8 @@
 		@mouseleave="hideDropTarget"
 	>
 		<drop-target ref="spriteDt" class="drop-target" @drop="addCustomSpriteFile"
-			>Drop here to add as a new sprite</drop-target
-		>
+			>Drop here to add as a new sprite
+		</drop-target>
 		<h1>Add</h1>
 		<div :class="{ 'group-selector': true, vertical }">
 			<d-button
@@ -106,26 +106,24 @@
 </template>
 
 <script lang="ts">
-import { isWebPSupported } from '@/asset-manager';
-import { ICreateCharacterAction } from '@/store/objectTypes/characters';
-import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
-import { IAsset, ReplaceContentPackAction } from '@/store/content';
-import {
-	Character,
-	ContentPack,
-	Sprite,
-} from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { PanelMixin } from './panelMixin';
-import DropTarget from '../drop-target.vue';
-import DButton from '@/components/ui/d-button.vue';
-import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
-import { ICreateChoicesAction } from '@/store/objectTypes/choices';
-import { ICreateNotificationAction } from '@/store/objectTypes/notification';
-import { ICreatePoemAction } from '@/store/objectTypes/poem';
-import environment, { Folder } from '@/environments/environment';
-import { defineComponent } from 'vue';
-import { DeepReadonly } from '@/util/readonly';
-import { IPasteFromClipboardAction } from '@/store/objects';
+import { defineComponent } from "vue";
+import { isWebPSupported } from "@/asset-manager";
+import { ICreateCharacterAction } from "@/store/objectTypes/characters";
+import { ICreateTextBoxAction } from "@/store/objectTypes/textbox";
+import { IAsset, ReplaceContentPackAction } from "@/store/content";
+import { Character, ContentPack, Sprite } from "@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model";
+import { PanelMixin } from "./panelMixin";
+import DropTarget from "../drop-target.vue";
+import DButton from "@/components/ui/d-button.vue";
+import { ICreateSpriteAction } from "@/store/objectTypes/sprite";
+import { ICreateChoicesAction } from "@/store/objectTypes/choices";
+import { ICreateNotificationAction } from "@/store/objectTypes/notification";
+import { ICreatePoemAction } from "@/store/objectTypes/poem";
+import environment, { Folder } from "@/environments/environment";
+import { DeepReadonly } from "@/util/readonly";
+import { IPasteFromClipboardAction } from "@/store/objects";
+
+defineComponent;
 
 const uploadedSpritesPack: ContentPack<string> = {
 	packId: 'dddg.buildin.uploadedSprites',
@@ -211,7 +209,7 @@ export default defineComponent({
 			this.addNewCustomSprite(lastSegment, url);
 		},
 		async addSpriteToScene(sprite: Sprite<IAsset>) {
-			this.vuexHistory.transaction(async () => {
+			await this.vuexHistory.transaction(async () => {
 				await this.$store.dispatch('objects/createSprite', {
 					assets: sprite.variants[0],
 				} as ICreateSpriteAction);
@@ -219,7 +217,7 @@ export default defineComponent({
 		},
 		addTextBox() {
 			this.vuexHistory.transaction(async () => {
-				this.$store.dispatch(
+				await this.$store.dispatch(
 					'objects/createTextBox',
 					{} as ICreateTextBoxAction
 				);
@@ -227,7 +225,7 @@ export default defineComponent({
 		},
 		addChoice() {
 			this.vuexHistory.transaction(async () => {
-				this.$store.dispatch(
+				await this.$store.dispatch(
 					'objects/createChoice',
 					{} as ICreateChoicesAction
 				);
@@ -235,7 +233,7 @@ export default defineComponent({
 		},
 		addDialog() {
 			this.vuexHistory.transaction(async () => {
-				this.$store.dispatch(
+				await this.$store.dispatch(
 					'objects/createNotification',
 					{} as ICreateNotificationAction
 				);
@@ -243,17 +241,23 @@ export default defineComponent({
 		},
 		addPoem() {
 			this.vuexHistory.transaction(async () => {
-				this.$store.dispatch('objects/createPoem', {} as ICreatePoemAction);
+				await this.$store.dispatch(
+					'objects/createPoem',
+					{} as ICreatePoemAction
+				);
 			});
 		},
 		addConsole() {
 			this.vuexHistory.transaction(async () => {
-				this.$store.dispatch('objects/createConsole', {} as ICreatePoemAction);
+				await this.$store.dispatch(
+					'objects/createConsole',
+					{} as ICreatePoemAction
+				);
 			});
 		},
 		paste() {
 			this.vuexHistory.transaction(async () => {
-				this.$store.dispatch(
+				await this.$store.dispatch(
 					'objects/pasteObjectFromClipboard',
 					{} as IPasteFromClipboardAction
 				);
@@ -261,7 +265,7 @@ export default defineComponent({
 		},
 		onChosen(id: string) {
 			this.vuexHistory.transaction(async () => {
-				this.$store.dispatch('objects/createCharacters', {
+				await this.$store.dispatch('objects/createCharacters', {
 					characterType: id,
 				} as ICreateCharacterAction);
 			});
@@ -331,6 +335,7 @@ textarea {
 
 	button {
 		flex-grow: 1;
+
 		&.active {
 			background: $default-native-background;
 			background: var(--native-background);
@@ -366,6 +371,7 @@ textarea {
 }
 
 .item-grid {
+	//noinspection CssOverwrittenProperties
 	.sprite {
 		box-shadow: inset 0 0 1px 3px $default-modal-backdrop;
 		box-shadow: inset 0 0 1px 3px var(--modal-backdrop);

@@ -1,3 +1,4 @@
+<!--suppress CssNoGenericFontName -->
 <template>
 	<color v-if="colorSelector" v-model="selectedColor" @leave="applyColor" />
 	<div v-else :class="{ 'text-subpanel': true, vertical }">
@@ -69,32 +70,32 @@
 			<select v-model="selectedFont" class="style-button">
 				<option value>Font</option>
 				<option value="aller" style="font-family: aller"
-					>Aller (Textbox)</option
-				>
+					>Aller (Textbox)
+				</option>
 				<option value="riffic" style="font-family: riffic"
-					>Riffic (Bold text)</option
-				>
+					>Riffic (Bold text)
+				</option>
 				<option value="hashtag" style="font-family: hashtag"
-					>Hashtag (Sayori)</option
-				>
+					>Hashtag (Sayori)
+				</option>
 				<option value="ammy_handwriting" style="font-family: ammy_handwriting"
-					>Ammy's Handwriting (Natsuki)</option
-				>
+					>Ammy's Handwriting (Natsuki)
+				</option>
 				<option value="journal" style="font-family: journal"
-					>Journal (Monika)</option
-				>
+					>Journal (Monika)
+				</option>
 				<option value="jp_hand_slanted" style="font-family: jp_hand_slanted"
-					>JP Hand Slanted (Yuri)</option
-				>
+					>JP Hand Slanted (Yuri)
+				</option>
 				<option value="damagrafik_script" style="font-family: damagrafik_script"
-					>Damagrafik (Yuri, Act 2)</option
-				>
+					>Damagrafik (Yuri, Act 2)
+				</option>
 				<option value="as_i_lay_dying" style="font-family: as_i_lay_dying"
-					>As I Lay Dying (Yuri, Act Unused)</option
-				>
+					>As I Lay Dying (Yuri, Act Unused)
+				</option>
 				<option value="halogen" style="font-family: halogen"
-					>Halogen (MC)</option
-				>
+					>Halogen (MC)
+				</option>
 			</select>
 			<button @click="selectColor('text')" class="style-button">
 				Text color
@@ -224,7 +225,9 @@ export default defineComponent({
 
 	h2 {
 		font-size: 20px;
+		//noinspection CssOverwrittenProperties
 		color: $default-text;
+		//noinspection CssOverwrittenProperties
 		color: var(--text);
 		font-family: riffic, sans-serif;
 		text-align: center;
@@ -282,8 +285,10 @@ export default defineComponent({
 			height: 100%;
 			width: 168px;
 		}
+
 		.ok-col {
 			width: 32px;
+
 			button {
 				@include height-100();
 			}
@@ -293,6 +298,7 @@ export default defineComponent({
 
 .hex-selector {
 	display: table;
+
 	label {
 		text-align: right;
 		width: 100px;

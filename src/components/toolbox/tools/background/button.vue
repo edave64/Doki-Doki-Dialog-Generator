@@ -12,7 +12,7 @@
 <script lang="ts">
 import { getAAsset } from '@/asset-manager';
 import { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAsset, BackgroundLookup } from '@/store/content';
+import { BackgroundLookup, IAsset } from '@/store/content';
 import { ErrorAsset } from '@/models/error-asset';
 import { IPanel } from '@/store/panels';
 import { defineComponent } from 'vue';
@@ -86,6 +86,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+//noinspection CssOverwrittenProperties
 .background {
 	margin-top: 4px;
 	background-size: cover;

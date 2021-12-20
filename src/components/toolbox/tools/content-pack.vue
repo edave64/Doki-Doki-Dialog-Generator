@@ -157,9 +157,11 @@ export default defineComponent({
 p {
 	margin: 4px;
 }
+
 .list {
 	overflow-y: auto;
 	overflow-x: hidden;
+	//noinspection CssOverwrittenProperties
 	.active {
 		background-color: $default-border;
 		background-color: var(--border);

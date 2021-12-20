@@ -143,6 +143,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .slider {
 	display: table;
+
 	label {
 		text-align: right;
 		width: 100px;
@@ -177,11 +178,15 @@ export default defineComponent({
 }
 
 svg g {
+	//noinspection CssOverwrittenProperties
 	stroke: $default-border;
+	//noinspection CssOverwrittenProperties
 	stroke: var(--border);
 
 	.slider-pointer {
+		//noinspection CssOverwrittenProperties
 		fill: $default-text;
+		//noinspection CssOverwrittenProperties
 		fill: var(--text);
 	}
 }

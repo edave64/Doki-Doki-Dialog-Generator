@@ -1,5 +1,4 @@
-import { Store } from 'vuex';
-import { State } from './store';
+import { IHistorySupport } from './plugins/vuex-history';
 
 declare module '@vue/runtime-core' {
 	interface ComponentCustomProperties {

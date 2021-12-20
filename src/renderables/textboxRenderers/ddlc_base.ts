@@ -2,14 +2,13 @@ import getConstants from '@/constants';
 import {
 	ControlsTextDisabledStyle,
 	ControlsTextStyle,
-	TextBoxWidth,
-	TextBoxHeight,
-	NameboxHeight,
-	ControlsYBottomOffset,
 	ControlsXHistoryOffset,
 	ControlsXSkipOffset,
 	ControlsXStuffOffset,
+	NameboxHeight,
+	TextBoxHeight,
 	TextBoxStyle,
+	TextBoxWidth,
 } from '@/constants/game_modes/ddlc/textBox';
 import { RenderContext } from '@/renderer/rendererContext';
 import { DeepReadonly } from 'vue';

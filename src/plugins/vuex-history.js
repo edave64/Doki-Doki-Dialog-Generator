@@ -3,8 +3,8 @@ import { reactive } from 'vue';
 export default {
 	/**
 	 *
-	 * @param {Vue} Vue
-	 * @param {{}} options
+	 * @param {Vue} vueApp
+	 * @param {{resetStateMutation: string, mutations: {}}} options
 	 */
 	install(vueApp, options = {}) {
 		if (!vueApp.config.globalProperties.$store) {
@@ -48,7 +48,6 @@ export default {
 
 		/**
 		 * @param {Vue} vm
-		 * @param {*} mutation
 		 */
 		async function replayAll(vm) {
 			const oldTransactions = vm.data.done.slice(0);
@@ -62,16 +61,14 @@ export default {
 		const mutationProperiesCache = {};
 
 		/**
-		 *
-		 * @param {IHistoryOptions} options
-		 * @param {*} name
+		 * @param {string} name
 		 */
 		function getMutationProperties(name) {
 			if (!mutationProperiesCache[name]) {
 				const parts = name.split('/');
 				const mutationProperties = {
-					ignore: mutation => false,
-					combinable: (oldMutation, newMutation) => false,
+					ignore: _mutation => false,
+					combinable: (_oldMutation, _newMutation) => false,
 					combinator: (oldMutation, newMutation) => newMutation,
 				};
 				let currentWildcard = '';
@@ -146,7 +143,7 @@ export default {
 			 * @param {transactionCallback} callback
 			 */
 			transaction(callback) {
-				return new Promise((resolve, reject) => {
+				return new Promise((resolve, _reject) => {
 					const exec = async () => {
 						history.currentTransaction = [];
 						try {
