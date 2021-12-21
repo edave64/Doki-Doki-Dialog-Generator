@@ -1,22 +1,24 @@
 {
-  "name": "dddg",
-  "version": "0.0.0",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@edave64/dddg-repo-filters": "^0.4.0",
-    "@edave64/doki-doki-dialog-generator-pack-format": "^2.0.0",
-    "mitt": "^3.0.0",
-    "typescript": "^4.5.4",
-    "vue": "^3.2.25",
-    "vuex": "^4.0.2"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^2.0.0",
-    "sass": "^1.45.0",
-    "vite": "^2.7.2"
-  }
+	"name": "dddg",
+	"version": "0.0.0",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview",
+		"build:web": "vite build && node ./scripts/build-hashlist.js > ./dist/hash-list.json",
+		"build:electron": "cross-env DDDGElectron=true vite build"
+	},
+	"dependencies": {
+		"@edave64/dddg-repo-filters": "^0.4.0",
+		"@edave64/doki-doki-dialog-generator-pack-format": "^2.0.0",
+		"mitt": "^3.0.0",
+		"typescript": "^4.5.4",
+		"vue": "^3.2.25",
+		"vuex": "^4.0.2"
+	},
+	"devDependencies": {
+		"@vitejs/plugin-vue": "^2.0.0",
+		"sass": "^1.45.0",
+		"vite": "^2.7.2"
+	}
 }

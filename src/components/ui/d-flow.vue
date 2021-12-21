@@ -61,9 +61,8 @@ export default defineComponent({
 					ref: 'scrollContainer',
 					class: ['d-flow-scroll-container', this.finalDirection],
 					style: {
-						[this.finalDirection === 'horizontal'
-							? 'maxWidth'
-							: 'maxHeight']: maxSize,
+						[this.finalDirection === 'horizontal' ? 'maxWidth' : 'maxHeight']:
+							maxSize,
 					},
 				},
 				[flowContainer]
@@ -84,7 +83,7 @@ export default defineComponent({
 
 <!--suppress CssUnusedSymbol -->
 <style lang="scss" scoped>
-::v-slotted(.d-flow-scroll-container) {
+.d-flow-scroll-container {
 	&.horizontal {
 		height: 100%;
 		overflow-x: auto;
@@ -98,7 +97,7 @@ export default defineComponent({
 	}
 }
 
-::v-slotted(.d-flow) {
+.d-flow {
 	display: flex;
 	flex-wrap: wrap;
 
@@ -109,7 +108,7 @@ export default defineComponent({
 	&.vertical {
 		flex-direction: column;
 
-		> * {
+		> :deep(*) {
 			flex-shrink: 0;
 		}
 
@@ -117,7 +116,7 @@ export default defineComponent({
 			align-items: center;
 			width: 100%;
 
-			> * {
+			> :deep(*) {
 				width: 100%;
 			}
 		}
