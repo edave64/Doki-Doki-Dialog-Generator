@@ -69,12 +69,14 @@
 			<l to="https://www.dafont.com/halogen.font">JLH Fonts</l>
 		</p>
 		<p>
-			MC Classic Sprite by Childish-N
-			<br />MC Classic Chibi by GyleToTheRescue
-		</p>
-		<p>
 			MC Sprite by Childish-N
 			<br />MC Casual Sprite by SlightlySimple <br />MC Chibi by SlightlySimple
+		</p>
+		<p>
+			<l to="https://www.reddit.com/ofkg59">Concept MC</l> by StormBlazed76,
+			<l to="https://www.reddit.com/og6shh">red</l> and
+			<l to="https://www.reddit.com/oft3vb">yellow</l> eyes by YinuS_WinneR,
+			<l to="https://www.reddit.com/ofof3o">chibi</l> by Hadrosaur838
 		</p>
 		<p>
 			MC Chad Sprite by Cylent-Nite
@@ -85,7 +87,13 @@
 			FeMC Sprite by Meddy-sin
 			<br />FeMC Casual Sprite by SlightlySimple
 		</p>
-		<p>Classic Amy Sprite by Meddy-sin</p>
+		<p>
+			<l to="https://www.reddit.com/oizaow">Concept FeMC</l> by ShidoDraws,
+			<l to="https://www.reddit.com/oosuxu"
+				>additional poses, expressions and chibi</l
+			>
+			by SlightlySimple
+		</p>
 		<p>Amy Sprite by Meddy-sin and SlightlySimple</p>
 		<p>Special thanks to SlightlySimple for testing and technical help</p>
 		<p>

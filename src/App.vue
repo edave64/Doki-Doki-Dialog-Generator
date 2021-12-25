@@ -377,10 +377,10 @@ export default defineComponent({
 				`${baseUrl}packs/buildin.base.natsuki.json`,
 				`${baseUrl}packs/buildin.base.yuri.json`,
 				`${baseUrl}packs/buildin.extra.mc.json`,
+				`${baseUrl}packs/buildin.extra.concept_mc.json`,
 				`${baseUrl}packs/buildin.extra.mc_chad.json`,
-				`${baseUrl}packs/buildin.extra.mc_classic.json`,
 				`${baseUrl}packs/buildin.extra.femc.json`,
-				`${baseUrl}packs/buildin.extra.classic_amy.json`,
+				`${baseUrl}packs/buildin.extra.concept_femc.json`,
 				`${baseUrl}packs/buildin.extra.amy.json`,
 			]);
 
