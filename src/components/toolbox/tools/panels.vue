@@ -108,6 +108,7 @@
 								min="0"
 								v-model.number="ppi"
 								@keydown.stop
+								@blur="if (ppi === '') ppi = 0;"
 							/>
 						</td>
 					</tr>
@@ -399,6 +400,9 @@ export default defineComponent({
 		},
 		getPanelDistibution(): DeepReadonly<string[][]> {
 			const panelOrder = this.getLimitedPanelList();
+			if (isNaN(parseInt(this.ppi))) {
+				this.ppi = 0;
+			}
 			if (this.ppi === 0) return [panelOrder];
 			const images: string[][] = [];
 			for (let imageI = 0; imageI < panelOrder.length / this.ppi; ++imageI) {
