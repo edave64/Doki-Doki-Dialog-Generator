@@ -43,23 +43,26 @@
 </template>
 
 <script lang="ts">
-import { ICreateTextBoxAction } from "@/store/objectTypes/textbox";
+import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
 import {
 	ICopyObjectToClipboardAction,
 	IPasteFromClipboardAction,
 	IRemoveObjectAction,
-	ISetObjectPositionMutation
-} from "@/store/objects";
-import { ICharacter, IShiftCharacterSlotAction } from "@/store/objectTypes/characters";
-import ToolBox from "@/components/toolbox/toolbox.vue";
-import MessageConsole from "@/components/message-console.vue";
-import Render from "@/components/render.vue";
-import ModalDialog from "@/components/ModalDialog.vue";
-import { ISetCurrentMutation } from "@/store/panels";
-import { defineAsyncComponent, defineComponent } from "vue";
-import { Repo } from "./models/repo";
-import enviroment from "@/environments/environment";
-import { IRemovePacksAction } from "./store";
+	ISetObjectPositionMutation,
+} from '@/store/objects';
+import {
+	ICharacter,
+	IShiftCharacterSlotAction,
+} from '@/store/objectTypes/characters';
+import ToolBox from '@/components/toolbox/toolbox.vue';
+import MessageConsole from '@/components/message-console.vue';
+import Render from '@/components/render.vue';
+import ModalDialog from '@/components/ModalDialog.vue';
+import { ISetCurrentMutation } from '@/store/panels';
+import { defineAsyncComponent, defineComponent } from 'vue';
+import { Repo } from './models/repo';
+import enviroment from '@/environments/environment';
+import { IRemovePacksAction } from './store';
 
 // tslint:disable-next-line: no-magic-numbers
 const aspectRatio = 16 / 9;
@@ -85,11 +88,12 @@ export default defineComponent({
 		MessageConsole,
 		Render,
 		ModalDialog,
-		SingleBox: defineAsyncComponent(() =>
-			import('@/components/repo/layouts/SingleBox.vue')
+		SingleBox: defineAsyncComponent(
+			() => import('@/components/repo/layouts/SingleBox.vue')
 		),
-		ExpressionBuilder: defineAsyncComponent(() =>
-			import('@/components/content-pack-builder/expression-builder/index.vue')
+		ExpressionBuilder: defineAsyncComponent(
+			() =>
+				import('@/components/content-pack-builder/expression-builder/index.vue')
 		),
 	},
 	data: () => ({
@@ -177,12 +181,9 @@ export default defineComponent({
 			this.dialogVisable = true;
 			if (search) {
 				const wait = () => {
-					if (
-						this.$refs.packDialog &&
-						(this.$refs.packDialog as any).$refs.packDialog
-					) {
+					if (this.$refs.packDialog) {
 						// This strange doubling is to get around the async component wrapper
-						(this.$refs.packDialog as any).$refs.packDialog.setSearch(search);
+						(this.$refs.packDialog as any).setSearch(search);
 					} else {
 						setTimeout(wait, packDialogWaitMs);
 					}
@@ -205,9 +206,8 @@ export default defineComponent({
 			}
 
 			this.vuexHistory.transaction(() => {
-				const selection = this.$store.state.objects.objects[
-					this.$store.state.ui.selection!
-				];
+				const selection =
+					this.$store.state.objects.objects[this.$store.state.ui.selection!];
 				if (e.ctrlKey) {
 					if (e.key === 'z') {
 						// this.$store.commit('history/undo');
@@ -311,7 +311,7 @@ export default defineComponent({
 		},
 	},
 	mounted(): void {
-		window.addEventListener('keypress', e => {
+		window.addEventListener('keypress', (e) => {
 			if (e.key === 'Escape') {
 				this.vuexHistory.transaction(() => {
 					if (this.$store.state.ui.selection === null) return;
@@ -324,7 +324,7 @@ export default defineComponent({
 			/* The viewport is less than, or equal to, 700 pixels wide */
 			const matcher = window.matchMedia('(prefers-color-scheme: dark)');
 			this.systemPrefersDarkMode = matcher.matches;
-			matcher.addListener(match => {
+			matcher.addListener((match) => {
 				this.systemPrefersDarkMode = match.matches;
 			});
 		}

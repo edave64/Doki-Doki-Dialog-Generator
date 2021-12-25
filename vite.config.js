@@ -9,6 +9,7 @@ export default defineConfig({
 			'@': '/src/',
 		},
 	},
+
 	css: {
 		preprocessorOptions: {
 			scss: {

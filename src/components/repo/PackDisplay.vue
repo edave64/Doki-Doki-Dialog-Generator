@@ -199,8 +199,12 @@ export default defineComponent({
 				authors
 			);
 		},
-		uninstall(): void {
-			if (!this.pack.installed) return;
+		async uninstall(): Promise<void> {
+			const pack = this.pack;
+			if (!pack.installed) return;
+			if ((pack as any).repoUrl && !this.repo?.hasPack(pack.id, true)) {
+				await this.repo!.loadTempPack((pack as any).repoUrl);
+			}
 			environment.localRepoUninstall(this.pack.id);
 		},
 		async remove(): Promise<void> {

@@ -6,7 +6,7 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"build:web": "vite build && node ./scripts/build-hashlist.js > ./dist/hash-list.json",
-		"build:electron": "cross-env DDDGElectron=true vite build"
+		"build:electron": "vite build"
 	},
 	"dependencies": {
 		"@edave64/dddg-repo-filters": "^0.4.0",

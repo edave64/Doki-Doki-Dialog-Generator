@@ -172,7 +172,10 @@ export class Repo {
 		return this.combinedList.value;
 	}
 
-	public hasPack(id: string): boolean {
+	public hasPack(id: string, onlineOnly: boolean = false): boolean {
+		if (onlineOnly) {
+			return !!this.onlineRepo.value?.packs.find((pack) => pack.id === id);
+		}
 		return !!this.getPacks().find((pack) => pack.id === id);
 	}
 

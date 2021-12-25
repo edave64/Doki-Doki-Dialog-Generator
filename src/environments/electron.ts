@@ -41,7 +41,7 @@ export class Electron implements IEnvironment {
 	}
 
 	private _gameMode: 'ddlc' | 'ddlc_plus' | null = null;
-	private readonly electron = (window as any) as IElectronWindow;
+	private readonly electron = window as any as IElectronWindow;
 
 	private vuexHistory: IHistorySupport | null = null;
 	private $store: Store<DeepReadonly<IRootState>> | null = null;
@@ -89,10 +89,16 @@ export class Electron implements IEnvironment {
 			'load-packs',
 			async (packIds: string[]) => {
 				const repo = await Repo.getInstance();
-				const packUrls = packIds.map(id => {
-					const pack = repo.getPack(id);
-					return pack.dddg2Path || pack.dddg1Path;
-				});
+				const packUrls = await Promise.all(
+					packIds.map(async (compoundId) => {
+						const [id, url] = compoundId.split(';', 2) as [string, string?];
+						if (url && !repo.hasPack(id)) {
+							await repo.loadTempPack(url);
+						}
+						const pack = repo.getPack(id);
+						return pack.dddg2Path || pack.dddg1Path;
+					})
+				);
 				await this.vuexHistory!.transaction(async () => {
 					await this.$store!.dispatch('content/loadContentPacks', packUrls);
 				});
@@ -220,7 +226,7 @@ export class Electron implements IEnvironment {
 	): Promise<string> {
 		return new Promise((resolve, reject) => {
 			downloadCanvas.toBlob(
-				async blob => {
+				async (blob) => {
 					if (!blob) {
 						reject();
 						return;

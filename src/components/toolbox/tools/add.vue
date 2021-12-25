@@ -98,30 +98,32 @@
 				<button @click="addChoice">Choice</button>
 				<button @click="addConsole">Console</button>
 			</template>
-			<button @click="paste" :disabled="!hasClipboardContent">
-				Paste
-			</button>
+			<button @click="paste" :disabled="!hasClipboardContent">Paste</button>
 		</div>
 	</div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { isWebPSupported } from "@/asset-manager";
-import { ICreateCharacterAction } from "@/store/objectTypes/characters";
-import { ICreateTextBoxAction } from "@/store/objectTypes/textbox";
-import { IAsset, ReplaceContentPackAction } from "@/store/content";
-import { Character, ContentPack, Sprite } from "@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model";
-import { PanelMixin } from "./panelMixin";
-import DropTarget from "../drop-target.vue";
-import DButton from "@/components/ui/d-button.vue";
-import { ICreateSpriteAction } from "@/store/objectTypes/sprite";
-import { ICreateChoicesAction } from "@/store/objectTypes/choices";
-import { ICreateNotificationAction } from "@/store/objectTypes/notification";
-import { ICreatePoemAction } from "@/store/objectTypes/poem";
-import environment, { Folder } from "@/environments/environment";
-import { DeepReadonly } from "@/util/readonly";
-import { IPasteFromClipboardAction } from "@/store/objects";
+import { defineComponent } from 'vue';
+import { isWebPSupported } from '@/asset-manager';
+import { ICreateCharacterAction } from '@/store/objectTypes/characters';
+import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
+import { IAsset, ReplaceContentPackAction } from '@/store/content';
+import {
+	Character,
+	ContentPack,
+	Sprite,
+} from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { PanelMixin } from './panelMixin';
+import DropTarget from '../drop-target.vue';
+import DButton from '@/components/ui/d-button.vue';
+import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
+import { ICreateChoicesAction } from '@/store/objectTypes/choices';
+import { ICreateNotificationAction } from '@/store/objectTypes/notification';
+import { ICreatePoemAction } from '@/store/objectTypes/poem';
+import environment, { Folder } from '@/environments/environment';
+import { DeepReadonly } from '@/util/readonly';
+import { IPasteFromClipboardAction } from '@/store/objects';
 
 defineComponent;
 
@@ -165,7 +167,7 @@ export default defineComponent({
 	methods: {
 		assetSpriteBackground(sprite: Sprite<IAsset>) {
 			return sprite.variants[0]
-				.map(variant => `url('${variant.lq}')`)
+				.map((variant) => `url('${variant.lq}')`)
 				.join(',');
 		},
 		assetPath(character: Character<IAsset>) {
@@ -179,7 +181,7 @@ export default defineComponent({
 			if (!e.dataTransfer) return;
 			e.dataTransfer.effectAllowed = 'none';
 			if (
-				!Array.from(e.dataTransfer.items).find(item =>
+				!Array.from(e.dataTransfer.items).find((item) =>
 					item.type.match(/^image.*$/)
 				)
 			) {

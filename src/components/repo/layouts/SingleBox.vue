@@ -115,11 +115,6 @@ export default defineComponent({
 					this.selected = packId;
 				}
 			} catch (e) {
-				`Error
-
-"loadTempPack@http://localhost:3000/src/models/repo.ts:152:13\nasync*add_repo_pack@http://localhost:3000/src/components/repo/layouts/SingleBox.vue:65:35\nAsync*_sfc_render/_cache[3]@http://localhost:3000/src/components/repo/layouts/SingleBox.vue:123:86\ncallWithErrorHandling@http://localhost:3000/node_modules/.vite/chunk-RJ4ENSUM.js?v=286e4238:6314:18\ncallWithAsyncErrorHandling@http://localhost:3000/node_modules/.vite/chunk-RJ4ENSUM.js?v=286e4238:6322:38\ninvoker@http://localhost:3000/node_modules/.vite/chunk-RJ4ENSUM.js?v=286e4238:7327:33\n"
-
-Error while loading external pack`;
 				eventBus.fire(
 					new VueErrorEvent(e as Error, 'Error while loading external pack')
 				);
