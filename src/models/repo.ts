@@ -2,7 +2,7 @@ import { IPack as IPrimitivePack } from '@edave64/dddg-repo-filters/dist/pack';
 import { IAuthor, IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import environment from '@/environments/environment';
 import eventBus, { ShowMessageEvent } from '@/eventbus/event-bus';
-import { computed, ComputedRef, DeepReadonly, ref, Ref } from 'vue';
+import { computed, ComputedRef, DeepReadonly, reactive, ref, Ref } from 'vue';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 
@@ -62,6 +62,10 @@ export class Repo {
 
 	private readonly onlineRepo: Ref<LoadedRepo | null>;
 	private readonly localRepo: Ref<LoadedRepo | null>;
+	private readonly tempRepo: LoadedRepo = reactive({
+		authors: {},
+		packs: [],
+	});
 
 	private readonly combinedList: ComputedRef<DeepReadonly<Pack[]>>;
 	private readonly authors: ComputedRef<DeepReadonly<IAuthors>>;
@@ -89,26 +93,33 @@ export class Repo {
 			const onlineRepo = this.onlineRepo.value;
 			const onlinePacks = onlineRepo?.packs ?? [];
 			const onlineRepoLookup = new Map(
-				onlinePacks.map(pack => [pack.id, pack])
+				onlinePacks.map((pack) => [pack.id, pack])
 			);
 
 			const localRepo = this.localRepo.value;
 			const localPacks = localRepo?.packs ?? [];
-			const localRepoLookup = new Map(localPacks.map(pack => [pack.id, pack]));
+			const localRepoLookup = new Map(
+				localPacks.map((pack) => [pack.id, pack])
+			);
+
+			const tempRepo = this.tempRepo;
+			const tempPacks = tempRepo.packs;
+			const tempRepoLookup = new Map(tempPacks.map((pack) => [pack.id, pack]));
 
 			const autoloads = new Set(environment.state.autoAdd);
 			const loadedPackOrder = this.$store.state.content.contentPacks
-				.map(pack => pack.packId)
-				.filter(packId => !!packId) as string[];
+				.map((pack) => pack.packId)
+				.filter((packId) => !!packId) as string[];
 			const loadedPacksSet = new Set(loadedPackOrder) as Set<string>;
 
 			const addedPacks = new Set();
 			return [
 				...loadedPackOrder,
-				...localPacks.map(pack => pack.id),
-				...onlinePacks.map(pack => pack.id),
+				...localPacks.map((pack) => pack.id),
+				...onlinePacks.map((pack) => pack.id),
+				...tempPacks.map((pack) => pack.id),
 			]
-				.filter(packId => {
+				.filter((packId) => {
 					if (
 						packId.startsWith('dddg.buildin.') ||
 						packId.startsWith('dddg.desktop.')
@@ -118,7 +129,7 @@ export class Repo {
 					addedPacks.add(packId);
 					return true;
 				})
-				.map(packId => {
+				.map((packId) => {
 					return {
 						...(onlineRepoLookup.get(packId) ?? {
 							characters: [],
@@ -126,9 +137,10 @@ export class Repo {
 							authors: [],
 						}),
 						...(localRepoLookup.get(packId) ?? {}),
+						...(tempRepoLookup.get(packId) ?? {}),
 						autoloading: autoloads.has(packId),
 						installed: localRepoLookup.has(packId),
-						online: onlineRepoLookup.has(packId),
+						online: onlineRepoLookup.has(packId) || tempRepoLookup.has(packId),
 						loaded: loadedPacksSet.has(packId),
 					} as Pack;
 				});
@@ -160,8 +172,12 @@ export class Repo {
 		return this.combinedList.value;
 	}
 
+	public hasPack(id: string): boolean {
+		return !!this.getPacks().find((pack) => pack.id === id);
+	}
+
 	public getPack(id: string): DeepReadonly<Pack> {
-		return this.getPacks().find(pack => pack.id === id)!;
+		return this.getPacks().find((pack) => pack.id === id)!;
 	}
 
 	public getAuthor(id: string): DeepReadonly<IAuthor | null> {
@@ -170,6 +186,45 @@ export class Repo {
 
 	public getAuthors(): DeepReadonly<IAuthors> {
 		return this.authors.value;
+	}
+
+	public async loadTempPack(url: string): Promise<string> {
+		const req = fetch(url);
+		let res: Response;
+		try {
+			res = await req;
+		} catch (e) {
+			throw new Error(`Failed to load '${url}'`);
+		}
+		let body: any;
+		try {
+			body = await res.json();
+		} catch (e) {
+			throw new Error(
+				`The contents of '${url}' is not a valid JSON: ${(e as Error).message}`
+			);
+		}
+		if (!body.pack) {
+			throw new Error(`The json file '${url}' does not contain any packages`);
+		}
+		if (body.authors) {
+			for (const key in body.authors) {
+				if (this.tempRepo.authors[key]) {
+					this.tempRepo.authors[key] = body.authors[key];
+				}
+			}
+		}
+
+		const pack = body.pack;
+		let ret = pack.id;
+
+		pack.repoUrl = url;
+
+		if (!this.tempRepo.packs.find((x) => x.id === pack.id)) {
+			this.tempRepo.packs.push(pack);
+		}
+
+		return ret;
 	}
 }
 

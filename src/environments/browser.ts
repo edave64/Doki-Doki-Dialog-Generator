@@ -62,7 +62,7 @@ export class Browser implements IEnvironment {
 		const self = this;
 		const canSave = IndexedDBHandler.canSave();
 
-		window.addEventListener('beforeunload', function(e) {
+		window.addEventListener('beforeunload', function (e) {
 			// Cancel the event
 			e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
 			// Chrome requires returnValue to be set
@@ -96,10 +96,16 @@ export class Browser implements IEnvironment {
 				const autoload = (await IndexedDBHandler.loadAutoload()) || [];
 				this.state.autoAdd = autoload;
 				const repo = await Repo.getInstance();
-				const packUrls = autoload.map(id => {
-					const pack = repo.getPack(id);
-					return pack.dddg2Path || pack.dddg1Path;
-				});
+				const packUrls = await Promise.all(
+					autoload.map(async (compoundId) => {
+						const [id, url] = compoundId.split(';', 2) as [string, string?];
+						if (url && !repo.hasPack(id)) {
+							await repo.loadTempPack(url);
+						}
+						const pack = repo.getPack(id);
+						return pack.dddg2Path || pack.dddg1Path;
+					})
+				);
 				await this.vuexHistory!.transaction(async () => {
 					await this.$store!.dispatch('content/loadContentPacks', packUrls);
 				});
@@ -188,26 +194,32 @@ export class Browser implements IEnvironment {
 		throw new Error('This environment does not support a local repository');
 	}
 
-	public autoLoadAdd(id: string): void {
-		(async () => {
-			await this.loading;
-			await this.creatingDB;
-			await IndexedDBHandler.saveAutoload([...this.state.autoAdd, id]);
-			this.state.autoAdd.push(id);
-		})();
+	public async autoLoadAdd(id: string): Promise<void> {
+		await this.loading;
+		await this.creatingDB;
+		await IndexedDBHandler.saveAutoload([...this.state.autoAdd, id]);
+		this.state.autoAdd.push(id);
 	}
 
-	public autoLoadRemove(id: string): void {
-		(async () => {
-			await this.loading;
-			await this.creatingDB;
+	public async autoLoadRemove(id: string): Promise<void> {
+		await this.loading;
+		await this.creatingDB;
 
-			await IndexedDBHandler.saveAutoload(
-				this.state.autoAdd.filter(x => x != id)
-			);
-			const idx = this.state.autoAdd.indexOf(id);
-			this.state.autoAdd.splice(idx, 1);
-		})();
+		const packId = this.normalizePackId(id);
+
+		await IndexedDBHandler.saveAutoload(
+			this.state.autoAdd.filter((x) => this.normalizePackId(x) != packId)
+		);
+		const idx = this.state.autoAdd.indexOf(id);
+		this.state.autoAdd.splice(idx, 1);
+	}
+
+	public normalizePackId(id: string): string {
+		const parts = id.split(';');
+		if (parts.length === 1) {
+			return parts[0];
+		}
+		return parts[parts.length - 1];
 	}
 
 	public async loadSettings(): Promise<Settings> {
@@ -263,7 +275,7 @@ export class Browser implements IEnvironment {
 
 			if (canvas.toBlob) {
 				canvas.toBlob(
-					blob => {
+					(blob) => {
 						if (!blob) {
 							reject();
 							return;
@@ -334,10 +346,10 @@ const IndexedDBHandler = {
 		if (IndexedDBHandler.db) return IndexedDBHandler.db;
 		return (IndexedDBHandler.db = new Promise((resolve, reject) => {
 			const req = IndexedDBHandler.indexedDB!.open('dddg', 3);
-			req.onerror = event => {
+			req.onerror = (event) => {
 				reject(event);
 			};
-			req.onupgradeneeded = event => {
+			req.onupgradeneeded = (event) => {
 				const db = (event.target! as any).result as IDBDatabase;
 				const oldVer = event.oldVersion ?? ((event as any).version as number);
 				if (oldVer < 1) {
@@ -348,7 +360,7 @@ const IndexedDBHandler = {
 					db.createObjectStore('settings');
 				}
 			};
-			req.onsuccess = _event => {
+			req.onsuccess = (_event) => {
 				resolve(req.result);
 			};
 		}));
@@ -362,45 +374,45 @@ const IndexedDBHandler = {
 			}
 			const req = IndexedDBHandler.indexedDB!.deleteDatabase('dddg');
 			IndexedDBHandler.db = null;
-			req.onerror = event => {
+			req.onerror = (event) => {
 				reject(event);
 			};
-			req.onsuccess = _event => {
+			req.onsuccess = (_event) => {
 				resolve();
 			};
 		});
 	},
 
 	loadAutoload(): Promise<string[]> {
-		return this.objectStorePromise('readonly', async store => {
+		return this.objectStorePromise('readonly', async (store) => {
 			return await this.reqPromise<string[]>(store.get('autoload'));
 		});
 	},
 	saveAutoload(autoloads: string[]): Promise<void> {
-		return this.objectStorePromise('readwrite', async store => {
+		return this.objectStorePromise('readwrite', async (store) => {
 			await this.reqPromise(store.put([...autoloads], 'autoload'));
 		});
 	},
 
 	loadGameMode(): Promise<string> {
-		return this.objectStorePromise('readonly', async store => {
+		return this.objectStorePromise('readonly', async (store) => {
 			return await this.reqPromise<string>(store.get('gameMode'));
 		});
 	},
 	saveGameMode(mode: IEnvironment['gameMode']): Promise<void> {
-		return this.objectStorePromise('readwrite', async store => {
+		return this.objectStorePromise('readwrite', async (store) => {
 			await this.reqPromise(store.put(mode, 'gameMode'));
 		});
 	},
 
 	saveSettings<T>(settings: T): Promise<void> {
-		return this.objectStorePromise('readwrite', async store => {
+		return this.objectStorePromise('readwrite', async (store) => {
 			await this.reqPromise(store.put({ ...settings }, 'settings'));
 		});
 	},
 
 	loadSettings<T>(): Promise<T> {
-		return this.objectStorePromise('readonly', async store => {
+		return this.objectStorePromise('readonly', async (store) => {
 			return await this.reqPromise<T>(store.get('settings'));
 		});
 	},
@@ -427,10 +439,10 @@ const IndexedDBHandler = {
 	 */
 	reqPromise<T>(req: IDBRequest<T>): Promise<T> {
 		return new Promise((resolve, reject) => {
-			req.onerror = error => {
+			req.onerror = (error) => {
 				reject(error);
 			};
-			req.onsuccess = _event => {
+			req.onsuccess = (_event) => {
 				resolve(req.result);
 			};
 		});

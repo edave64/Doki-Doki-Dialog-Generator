@@ -15,9 +15,14 @@
 				:search="search"
 				:repo="repo"
 				:disabled="!!selected"
+				v-if="!isRepoUrl"
 				@selected="onSelect"
 				@select-search-bar="$refs.searchBar.focus()"
 			/>
+			<div class="ask-download">
+				Do you want to download the pack from '{{ search }}'?
+				<button @click="add_repo_pack">Add package</button>
+			</div>
 		</div>
 		<div class="page fly-right" v-if="selected">
 			<pack-display
@@ -33,7 +38,6 @@
 </template>
 
 <script lang="ts">
-/* tslint:disable:no-bitwise */
 import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import SearchBar from '../SearchBar.vue';
 import List from '../List.vue';
@@ -42,12 +46,15 @@ import PackDisplay from '../PackDisplay.vue';
 import { defineComponent } from 'vue';
 import { Pack, Repo } from '@/models/repo';
 import { DeepReadonly } from '@/util/readonly';
+import Button from '@/components/toolbox/tools/background/button.vue';
+import eventBus, { VueErrorEvent } from '@/eventbus/event-bus';
 
 export default defineComponent({
 	components: {
 		SearchBar,
 		List,
 		PackDisplay,
+		Button,
 	},
 	data: () => ({
 		search: '',
@@ -56,6 +63,15 @@ export default defineComponent({
 		repo: null as null | Repo,
 		selected: null as string | null,
 	}),
+	computed: {
+		isRepoUrl() {
+			return (
+				this.search.endsWith('.json') &&
+				(this.search.startsWith('http://') ||
+					this.search.startsWith('https://'))
+			);
+		},
+	},
 	methods: {
 		focus(): void {},
 		setSearch(str: string): void {
@@ -90,6 +106,25 @@ export default defineComponent({
 		focusListHandler() {
 			(this.$refs.list as any).focus();
 		},
+		async add_repo_pack() {
+			try {
+				const repo = await Repo.getInstance();
+				const packId = await repo.loadTempPack(this.search);
+				this.search = '';
+				if (packId) {
+					this.selected = packId;
+				}
+			} catch (e) {
+				`Error
+
+"loadTempPack@http://localhost:3000/src/models/repo.ts:152:13\nasync*add_repo_pack@http://localhost:3000/src/components/repo/layouts/SingleBox.vue:65:35\nAsync*_sfc_render/_cache[3]@http://localhost:3000/src/components/repo/layouts/SingleBox.vue:123:86\ncallWithErrorHandling@http://localhost:3000/node_modules/.vite/chunk-RJ4ENSUM.js?v=286e4238:6314:18\ncallWithAsyncErrorHandling@http://localhost:3000/node_modules/.vite/chunk-RJ4ENSUM.js?v=286e4238:6322:38\ninvoker@http://localhost:3000/node_modules/.vite/chunk-RJ4ENSUM.js?v=286e4238:7327:33\n"
+
+Error while loading external pack`;
+				eventBus.fire(
+					new VueErrorEvent(e as Error, 'Error while loading external pack')
+				);
+			}
+		},
 	},
 	async created() {
 		const repo = await Repo.getInstance();
@@ -113,6 +148,20 @@ export default defineComponent({
 .page {
 	height: 100%;
 	width: 100%;
+}
+
+.ask-download {
+	//noinspection CssOverwrittenProperties
+	color: $default-text;
+	//noinspection CssOverwrittenProperties
+	color: var(--text);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: calc(100% - 58px);
+	padding: 8px;
+	text-align: center;
+	flex-direction: column;
 }
 
 .fly-right.fly-enter {

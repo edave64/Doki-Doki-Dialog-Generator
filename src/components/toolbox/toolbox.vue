@@ -35,7 +35,6 @@
 			</button>
 		</div>
 		<settings-panel v-if="panel === 'settings'" />
-		<content-packs-panel v-else-if="panel === 'packs'" />
 		<backgrounds-panel
 			v-else-if="panel === 'backgrounds'"
 			@show-dialog="$emit('show-dialog', $event)"
@@ -98,7 +97,6 @@ import TextBoxPanel from './tools/textbox.vue';
 import ChoicePanel from './tools/choice.vue';
 import CreditsPanel from './tools/credits.vue';
 import BackgroundsPanel from './tools/backgrounds.vue';
-import ContentPacksPanel from './tools/content-pack.vue';
 import PanelsPanel from './tools/panels.vue';
 import NotificationPanel from './tools/notification.vue';
 import PoemPanel from './tools/poem.vue';
@@ -127,7 +125,6 @@ export default defineComponent({
 		TextBoxPanel,
 		ChoicePanel,
 		SpritePanel,
-		ContentPacksPanel,
 		PanelsPanel,
 		NotificationPanel,
 		PoemPanel,

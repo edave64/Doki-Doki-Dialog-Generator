@@ -118,7 +118,7 @@ export default defineComponent({
 			return this.repo!.getPack(this.selected);
 		},
 		backgroundImage(): string {
-			return this.pack.preview.map(preview => `url('${preview}')`).join(',');
+			return this.pack.preview.map((preview) => `url('${preview}')`).join(',');
 		},
 		installable(): boolean {
 			if (!environment.supports.localRepo) return false;
@@ -142,10 +142,13 @@ export default defineComponent({
 				return environment.state.autoAdd.includes(this.selected);
 			},
 			set(val: boolean): void {
+				let loadId = this.selected;
+				const pack = this.pack;
+				if (pack && pack.repoUrl) loadId += `;${pack.repoUrl}`;
 				if (val) {
-					environment.autoLoadAdd(this.selected);
+					environment.autoLoadAdd(loadId);
 				} else {
-					environment.autoLoadRemove(this.selected);
+					environment.autoLoadRemove(loadId);
 				}
 			},
 		},
@@ -163,8 +166,8 @@ export default defineComponent({
 			const author = this.repo!.getAuthor(authorId);
 			if (!author) return [];
 			return linkablePlatforms
-				.filter(platform => author[platform[0]])
-				.map(platform => {
+				.filter((platform) => author[platform[0]])
+				.map((platform) => {
 					const value = author[platform[0]]!;
 					const target = platform[1].replace('%1', value);
 					return {

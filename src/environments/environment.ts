@@ -57,8 +57,8 @@ export interface IEnvironment {
 
 	localRepoInstall(url: string, repo: ICPack, authors: IAuthors): void;
 	localRepoUninstall(id: string): void;
-	autoLoadAdd(id: string): void;
-	autoLoadRemove(id: string): void;
+	autoLoadAdd(id: string): Promise<void>;
+	autoLoadRemove(id: string): Promise<void>;
 
 	saveSettings(settings: Settings): Promise<void>;
 	loadSettings(): Promise<Settings>;
