@@ -126,6 +126,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 #messageConsole {
 	font-family: monospace;
+	color: #000;
 	text-shadow: 0 0 4px #ffffff;
 	position: absolute;
 
@@ -137,6 +138,10 @@ export default defineComponent({
 	&:not(.vertical) {
 		bottom: 200px;
 		left: 0;
+	}
+
+	p {
+		color: #000;
 	}
 
 	.error {
