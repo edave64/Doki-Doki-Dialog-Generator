@@ -418,18 +418,14 @@ export default defineComponent({
 				this.scrollIntoView(active);
 			}
 		},
-		scrollIntoView(ele: Element) {
+		scrollIntoView(ele: HTMLElement) {
 			const parent = ele.parentElement!.parentElement!;
 			const idx = Array.from(ele.parentElement!.children).indexOf(ele);
 			if (this.$store.state.ui.vertical) {
-				parent.scrollTop =
-					idx * ele.clientHeight -
-					parent.clientHeight / 2 +
-					ele.clientHeight / 2;
+				parent.scrollTop = ele.offsetTop - parent.clientHeight / 2;
 				parent.scrollLeft = 0;
 			} else {
-				parent.scrollLeft =
-					idx * ele.clientWidth - parent.clientWidth / 2 + ele.clientWidth / 2;
+				parent.scrollLeft = ele.offsetLeft - parent.clientWidth / 2;
 				parent.scrollTop = 0;
 			}
 		},
@@ -593,6 +589,7 @@ export default defineComponent({
 	position: relative;
 
 	p {
+		color: #fff;
 		height: 60px;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -607,6 +604,7 @@ export default defineComponent({
 
 .panel_nr {
 	text-align: right;
+	color: #fff;
 }
 
 #export_ppi,
