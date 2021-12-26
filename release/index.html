@@ -1,24 +1,37 @@
-<!DOCTYPE html><html lang=en><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><link rel=icon href=favicon.png><link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel=stylesheet><title>Doki Doki Dialog Generator</title><style>@font-face {
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<link rel="icon" href="./favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link
+			href="https://fonts.googleapis.com/icon?family=Material+Icons"
+			rel="stylesheet"
+		/>
+		<title>Doki Doki Dialog Generator</title>
+		<style>
+			@font-face {
 				font-family: aller;
 				font-weight: normal;
 				font-style: normal;
-				src: url(assets/fonts/aller/aller.woff2) format('woff2'),
-					url(assets/fonts/aller/aller.woff) format('woff'),
-					url(assets/fonts/aller/aller.ttf) format('truetype'),
-					url(assets/fonts/aller/aller.otf) format('opentype');
+				src: url(./assets/fonts/aller/aller.woff2) format('woff2'),
+					url(./assets/fonts/aller/aller.woff) format('woff'),
+					url(./assets/fonts/aller/aller.ttf) format('truetype'),
+					url(./assets/fonts/aller/aller.otf) format('opentype');
 			}
 
 			@font-face {
 				font-family: verily;
 				font-weight: normal;
 				font-style: normal;
-				src: url(assets/fonts/VerilySerifMono/VerilySerifMono.woff2)
+				src: url(./assets/fonts/VerilySerifMono/VerilySerifMono.woff2)
 						format('woff2'),
-					url(assets/fonts/VerilySerifMono/VerilySerifMono.woff)
+					url(./assets/fonts/VerilySerifMono/VerilySerifMono.woff)
 						format('woff'),
-					url(assets/fonts/VerilySerifMono/VerilySerifMono.ttf)
+					url(./assets/fonts/VerilySerifMono/VerilySerifMono.ttf)
 						format('truetype'),
-					url(assets/fonts/VerilySerifMono/VerilySerifMono.otf)
+					url(./assets/fonts/VerilySerifMono/VerilySerifMono.otf)
 						format('opentype');
 			}
 
@@ -26,23 +39,23 @@
 				font-family: riffic;
 				font-weight: normal;
 				font-style: normal;
-				src: url(assets/fonts/riffic/riffic.woff2) format('woff2'),
-					url(assets/fonts/riffic/riffic.woff) format('woff'),
-					url(assets/fonts/riffic/riffic.otf) format('opentype'),
-					url(assets/fonts/riffic/riffic.ttf) format('truetype');
+				src: url(./assets/fonts/riffic/riffic.woff2) format('woff2'),
+					url(./assets/fonts/riffic/riffic.woff) format('woff'),
+					url(./assets/fonts/riffic/riffic.otf) format('opentype'),
+					url(./assets/fonts/riffic/riffic.ttf) format('truetype');
 			}
 
 			@font-face {
 				font-family: ammy_handwriting;
 				font-weight: normal;
 				font-style: normal;
-				src: url(assets/fonts/ammys_handwriting/ammys_handwriting.woff2)
+				src: url(./assets/fonts/ammys_handwriting/ammys_handwriting.woff2)
 						format('woff2'),
-					url(assets/fonts/ammys_handwriting/ammys_handwriting.woff)
+					url(./assets/fonts/ammys_handwriting/ammys_handwriting.woff)
 						format('woff'),
-					url(assets/fonts/ammys_handwriting/ammys_handwriting.ttf)
+					url(./assets/fonts/ammys_handwriting/ammys_handwriting.ttf)
 						format('truetype'),
-					url(assets/fonts/ammys_handwriting/ammys_handwriting.otf)
+					url(./assets/fonts/ammys_handwriting/ammys_handwriting.otf)
 						format('opentype');
 			}
 
@@ -50,24 +63,23 @@
 				font-family: journal;
 				font-weight: normal;
 				font-style: normal;
-				src: url(assets/fonts/journal/journal.woff2)
-						format('woff2'),
-					url(assets/fonts/journal/journal.woff) format('woff'),
-					url(assets/fonts/journal/journal.ttf) format('truetype'),
-					url(assets/fonts/journal/journal.otf) format('opentype');
+				src: url(./assets/fonts/journal/journal.woff2) format('woff2'),
+					url(./assets/fonts/journal/journal.woff) format('woff'),
+					url(./assets/fonts/journal/journal.ttf) format('truetype'),
+					url(./assets/fonts/journal/journal.otf) format('opentype');
 			}
 
 			@font-face {
 				font-family: jp_hand_slanted;
 				font-weight: normal;
 				font-style: normal;
-				src: url(assets/fonts/jp_hand_slanted/jp_hand_slanted.woff2)
+				src: url(./assets/fonts/jp_hand_slanted/jp_hand_slanted.woff2)
 						format('woff2'),
-					url(assets/fonts/jp_hand_slanted/jp_hand_slanted.woff)
+					url(./assets/fonts/jp_hand_slanted/jp_hand_slanted.woff)
 						format('woff'),
-					url(assets/fonts/jp_hand_slanted/jp_hand_slanted.ttf)
+					url(./assets/fonts/jp_hand_slanted/jp_hand_slanted.ttf)
 						format('truetype'),
-					url(assets/fonts/jp_hand_slanted/jp_hand_slanted.otf)
+					url(./assets/fonts/jp_hand_slanted/jp_hand_slanted.otf)
 						format('opentype');
 			}
 
@@ -75,13 +87,13 @@
 				font-family: damagrafik_script;
 				font-weight: normal;
 				font-style: normal;
-				src: url(assets/fonts/damagrafik_script/DamagrafikScript-Regular.woff2)
+				src: url(./assets/fonts/damagrafik_script/DamagrafikScript-Regular.woff2)
 						format('woff2'),
-					url(assets/fonts/damagrafik_script/DamagrafikScript-Regular.woff)
+					url(./assets/fonts/damagrafik_script/DamagrafikScript-Regular.woff)
 						format('woff'),
-					url(assets/fonts/damagrafik_script/DamagrafikScript-Regular.ttf)
+					url(./assets/fonts/damagrafik_script/DamagrafikScript-Regular.ttf)
 						format('truetype'),
-					url(assets/fonts/damagrafik_script/DamagrafikScript-Regular.otf)
+					url(./assets/fonts/damagrafik_script/DamagrafikScript-Regular.otf)
 						format('opentype');
 			}
 
@@ -89,13 +101,12 @@
 				font-family: as_i_lay_dying;
 				font-weight: normal;
 				font-style: normal;
-				src: url(assets/fonts/as_i_lay_dying/as_i_lay_dying.woff2)
+				src: url(./assets/fonts/as_i_lay_dying/as_i_lay_dying.woff2)
 						format('woff2'),
-					url(assets/fonts/as_i_lay_dying/as_i_lay_dying.woff)
-						format('woff'),
-					url(assets/fonts/as_i_lay_dying/as_i_lay_dying.ttf)
+					url(./assets/fonts/as_i_lay_dying/as_i_lay_dying.woff) format('woff'),
+					url(./assets/fonts/as_i_lay_dying/as_i_lay_dying.ttf)
 						format('truetype'),
-					url(assets/fonts/as_i_lay_dying/as_i_lay_dying.otf)
+					url(./assets/fonts/as_i_lay_dying/as_i_lay_dying.otf)
 						format('opentype');
 			}
 
@@ -103,24 +114,23 @@
 				font-family: halogen;
 				font-weight: normal;
 				font-style: normal;
-				src: url(assets/fonts/halogen/halogen.woff2)
-						format('woff2'),
-					url(assets/fonts/halogen/halogen.woff) format('woff'),
-					url(assets/fonts/halogen/halogen.ttf) format('truetype'),
-					url(assets/fonts/halogen/halogen.otf) format('opentype');
+				src: url(./assets/fonts/halogen/halogen.woff2) format('woff2'),
+					url(./assets/fonts/halogen/halogen.woff) format('woff'),
+					url(./assets/fonts/halogen/halogen.ttf) format('truetype'),
+					url(./assets/fonts/halogen/halogen.otf) format('opentype');
 			}
 
 			@font-face {
 				font-family: f25_bank_printer;
 				font-weight: normal;
 				font-style: normal;
-				src: url(assets/fonts/f25_bank_printer/F25_Bank_Printer.woff2)
+				src: url(./assets/fonts/f25_bank_printer/F25_Bank_Printer.woff2)
 						format('woff2'),
-					url(assets/fonts/f25_bank_printer/F25_Bank_Printer.woff)
+					url(./assets/fonts/f25_bank_printer/F25_Bank_Printer.woff)
 						format('woff'),
-					url(assets/fonts/f25_bank_printer/F25_Bank_Printer.ttf)
+					url(./assets/fonts/f25_bank_printer/F25_Bank_Printer.ttf)
 						format('truetype'),
-					url(assets/fonts/f25_bank_printer/F25_Bank_Printer.otf)
+					url(./assets/fonts/f25_bank_printer/F25_Bank_Printer.otf)
 						format('opentype');
 			}
 
@@ -128,9 +138,18 @@
 				font-family: hashtag;
 				font-weight: normal;
 				font-style: normal;
-				src: url(assets/fonts/hashtag/hashtag.woff2)
-						format('woff2'),
-					url(assets/fonts/hashtag/hashtag.woff) format('woff'),
-					url(assets/fonts/hashtag/hashtag.ttf) format('truetype'),
-					url(assets/fonts/hashtag/hashtag.otf) format('opentype');
-			}</style><link href=css/chunk-084c2570.797ebd56.css rel=prefetch><link href=css/chunk-64406563.308ae515.css rel=prefetch><link href=js/chunk-084c2570.83e5545f.js rel=prefetch><link href=js/chunk-64406563.1f262b86.js rel=prefetch><link href=css/app.244fe633.css rel=preload as=style><link href=js/app.b9b945eb.js rel=preload as=script><link href=js/chunk-vendors.76bb1c29.js rel=preload as=script><link href=css/app.244fe633.css rel=stylesheet></head><body><div aria-label="This application is used to create images and likely unusable with screenreaders. Sorry."></div><noscript><strong>We're sorry but doki-doki-dialog-generator doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id=app></div><script src=js/chunk-vendors.76bb1c29.js></script><script src=js/app.b9b945eb.js></script></body></html>
+				src: url(./assets/fonts/hashtag/hashtag.woff2) format('woff2'),
+					url(./assets/fonts/hashtag/hashtag.woff) format('woff'),
+					url(./assets/fonts/hashtag/hashtag.ttf) format('truetype'),
+					url(./assets/fonts/hashtag/hashtag.otf) format('opentype');
+			}
+		</style>
+		<script type="module" crossorigin src="./assets/index.72b8620f.js"></script>
+		<link rel="modulepreload" href="./assets/vendor.cc880211.js">
+		<link rel="stylesheet" href="./assets/index.519ae640.css">
+	</head>
+	<body>
+		<div id="app"></div>
+		
+	</body>
+</html>

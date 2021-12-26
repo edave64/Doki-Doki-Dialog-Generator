@@ -1,0 +1,73 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.concept_femc",
+	"packCredits": "",
+	"folder": "/concept_femc/",
+	"characters": [
+		{
+			"id": "ddlc.fan.concept_femc",
+			"label": "FeMC",
+			"chibi": "chibi{ext}",
+			"styleGroups": [
+				{
+					"id": "uniform",
+					"styles": [
+						{
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight"],
+									"positions": {
+										"Variant": [["1{ext}"], ["2{ext}"], ["2a{ext}"], ["3{ext}"]]
+									}
+								}
+							]
+						}
+					]
+				}
+			],
+			"heads": {
+				"straight": {
+					"variants": [
+						["a{ext}"],
+						["b{ext}"],
+						["c{ext}"],
+						["d{ext}"],
+						["e{ext}"],
+						["f{ext}"],
+						["g{ext}"],
+						["h{ext}"],
+						["i{ext}"],
+						["j{ext}"],
+						["k{ext}"],
+						["l{ext}"],
+						["m{ext}"],
+						["n{ext}"],
+						["o{ext}"],
+						["p{ext}"],
+						["q{ext}"],
+						["r{ext}"],
+						["s{ext}"],
+						["t{ext}"],
+						["u{ext}"],
+						["v{ext}"],
+						["w{ext}"],
+						["x{ext}"],
+						["y{ext}"],
+						["z{ext}"],
+						["aa{ext}"],
+						["ab{ext}"],
+						["ac{ext}"],
+						["ad{ext}"],
+						["ae{ext}"],
+						["af{ext}"],
+						["ag{ext}"],
+						["ah{ext}"],
+						["ai{ext}"]
+					]
+				}
+			}
+		}
+	]
+}

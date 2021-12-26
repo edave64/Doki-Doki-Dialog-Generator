@@ -8,7 +8,7 @@
 			"id": "ddlc.clubroom",
 			"label": "Clubroom",
 			"folder": "/backgrounds/",
-			"variants": [["club{ext}"]]
+			"variants": [["club{ext}"], ["club-sm-intro{ext}"], ["club_morning{ext}"]]
 		},
 		{
 			"id": "ddlc.closet",
@@ -27,6 +27,18 @@
 			"label": "Classroom",
 			"folder": "/backgrounds/",
 			"variants": [["class{ext}"]]
+		},
+		{
+			"id": "ddlc.musicroom",
+			"label": "Music room",
+			"folder": "/backgrounds/",
+			"variants": [["musicroom{ext}"]]
+		},
+		{
+			"id": "ddlc.stairwell",
+			"label": "Stairwell",
+			"folder": "/backgrounds/",
+			"variants": [["stairwell{ext}"]]
 		},
 		{
 			"id": "ddlc.street",
