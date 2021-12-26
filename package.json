@@ -1,6 +1,6 @@
 {
-	"name": "dddg",
-	"version": "0.0.0",
+	"name": "doki-doki-dialog-generator",
+	"version": "2.3.0",
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build",

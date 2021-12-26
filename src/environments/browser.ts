@@ -134,10 +134,12 @@ export class Browser implements IEnvironment {
 		this._gameMode = value;
 	}
 
-	public async saveGameMode(mode: Browser['gameMode']): Promise<void> {
+	public async setGameMode(mode: Browser['gameMode']): Promise<void> {
 		if (this.isSavingEnabled.value) {
 			await IndexedDBHandler.saveGameMode(mode);
 		}
+		const baseLoc = `${location.protocol}//${location.host}${location.pathname}`;
+		location.href = `${baseLoc}?mode=${mode}`;
 	}
 
 	updateDownloadFolder(): void {

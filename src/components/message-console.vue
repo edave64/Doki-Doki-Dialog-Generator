@@ -45,14 +45,14 @@ export default defineComponent({
 	},
 	created() {
 		this.onLoadingChange(this.loading);
-		EventBus.subscribe(AssetFailureEvent, ev => {
+		EventBus.subscribe(AssetFailureEvent, (ev) => {
 			this.messages.push(`Failed to load asset '${ev.path}'`);
 			setTimeout(() => {
 				this.messages.shift();
 			}, shortHidingTime);
 		});
 
-		EventBus.subscribe(CustomAssetFailureEvent, _ev => {
+		EventBus.subscribe(CustomAssetFailureEvent, (_ev) => {
 			this.messages.push(
 				'Failed to load custom asset. Try to download it manually and then upload it.'
 			);
@@ -61,18 +61,18 @@ export default defineComponent({
 			}, longHidingTime);
 		});
 
-		EventBus.subscribe(FailureEvent, ev => {
+		EventBus.subscribe(FailureEvent, (ev) => {
 			this.errors.push(ev.message);
 		});
 
-		EventBus.subscribe(ShowMessageEvent, ev => {
+		EventBus.subscribe(ShowMessageEvent, (ev) => {
 			this.messages.push(ev.message);
 			setTimeout(() => {
 				this.messages.shift();
 			}, longHidingTime);
 		});
 
-		EventBus.subscribe(VueErrorEvent, ev => {
+		EventBus.subscribe(VueErrorEvent, (ev) => {
 			this.messages.push(ev.error.name);
 			this.messages.push(JSON.stringify(ev.error.stack));
 			this.messages.push(ev.info);

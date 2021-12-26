@@ -81,7 +81,7 @@ dialog {
 		button.option {
 			border: 0;
 			background: none;
-			font-family: riffic sans-serif;
+			font-family: riffic, sans-serif;
 			font-size: 24px;
 		}
 	}

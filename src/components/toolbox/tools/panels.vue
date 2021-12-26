@@ -30,9 +30,7 @@
 				</d-flow>
 			</d-fieldset>
 			<div class="column">
-				<d-button icon="add_to_queue" @click="addNewPanel">
-					Add new
-				</d-button>
+				<d-button icon="add_to_queue" @click="addNewPanel"> Add new </d-button>
 				<d-button
 					icon="remove_from_queue"
 					@click="deletePanel"
@@ -68,11 +66,11 @@
 						<td>
 							<select id="export_format" v-model="format">
 								<option value="image/png">PNG (lossless)</option>
-								<option value="image/webp" v-if="webpSupport"
-									>WebP (lossy)
+								<option value="image/webp" v-if="webpSupport">
+									WebP (lossy)
 								</option>
-								<option value="image/heif" v-if="heifSupport"
-									>HEIF (lossy)
+								<option value="image/heif" v-if="heifSupport">
+									HEIF (lossy)
 								</option>
 								<option value="image/jpeg">JPEG (lossy)</option>
 								<!-- <option value="image/jpeg">WebM (lossy, video)</option>-->
@@ -213,13 +211,13 @@ export default defineComponent({
 
 		panelButtons(): IPanelButton[] {
 			const panelOrder = this.$store.state.panels.panelOrder;
-			return panelOrder.map(id => {
+			return panelOrder.map((id) => {
 				const panel = this.$store.state.panels.panels[id];
 				const objectOrders = this.$store.state.objects.panels[id];
 				const txtBox = objectOrders
 					? ([] as string[])
 							.concat(objectOrders.order, objectOrders.onTopOrder)
-							.map(objId => this.$store.state.objects.objects[objId])
+							.map((objId) => this.$store.state.objects.objects[objId])
 							.map(this.extractObjectText)
 					: [];
 				return {
@@ -293,7 +291,7 @@ export default defineComponent({
 				async (imageIdx: number, canvas: HTMLCanvasElement) => {
 					return new Promise<number>((resolve, reject) => {
 						canvas.toBlob(
-							blob => {
+							(blob) => {
 								if (!blob) {
 									reject(`Image ${imageIdx + 1} could not be rendered.`);
 									return;
@@ -307,7 +305,7 @@ export default defineComponent({
 				}
 			);
 			const readableSizes = sizes.map(
-				size => ((size * estimateFactor) / 1024 / 1024).toFixed(2) + 'MiB'
+				(size) => ((size * estimateFactor) / 1024 / 1024).toFixed(2) + 'MiB'
 			);
 			const filePluralize = readableSizes.length > 1 ? 'files' : 'file';
 			const itPluralize = readableSizes.length > 1 ? 'These' : 'It';
@@ -396,7 +394,7 @@ export default defineComponent({
 			return listedPages
 				.sort((a, b) => a - b)
 				.filter((value, idx, ary) => ary[idx - 1] !== value)
-				.map(pageIdx => this.$store.state.panels.panelOrder[pageIdx]);
+				.map((pageIdx) => this.$store.state.panels.panelOrder[pageIdx]);
 		},
 		getPanelDistibution(): DeepReadonly<string[][]> {
 			const panelOrder = this.getLimitedPanelList();
@@ -439,7 +437,7 @@ export default defineComponent({
 					return (obj as IPoem).text;
 				case 'choice':
 					return (obj as IChoices).choices
-						.map(choice => `[${choice.text}]`)
+						.map((choice) => `[${choice.text}]`)
 						.join('\n');
 			}
 			return '';
@@ -513,7 +511,7 @@ export default defineComponent({
 				h: targetCanvas.height,
 			});
 			targetCanvas.toBlob(
-				blob => {
+				(blob) => {
 					if (!blob) return;
 					const url = URL.createObjectURL(blob);
 					this.vuexHistory.transaction(() => {

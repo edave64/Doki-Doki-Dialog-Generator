@@ -10,9 +10,7 @@
 				no-base-size
 			>
 				<div class="modal-scroll-area">
-					<p>
-						Do you want to allow DDDG to save settings on your device?
-					</p>
+					<p>Do you want to allow DDDG to save settings on your device?</p>
 					<p>
 						By choosing to enable saving settings, DDDG can save data to your
 						device, and nowhere else. However, your browser and any installed
@@ -21,9 +19,7 @@
 						control. But in general, we recommend only using browsers and
 						browser extensions that you trust with your personal data.
 					</p>
-					<p>
-						You can revoke this permission at any time.
-					</p>
+					<p>You can revoke this permission at any time.</p>
 					<p>
 						Our usual <l to="wiki://Privacy Statement">privacy policy</l> still
 						applies.
@@ -38,9 +34,7 @@
 				no-base-size
 			>
 				<div class="modal-scroll-area">
-					<p>
-						Do you want to deny DDDG from saving settings on your device?
-					</p>
+					<p>Do you want to deny DDDG from saving settings on your device?</p>
 					<p>
 						This will cause all your settings to reset when leaving the page.
 					</p>
@@ -68,9 +62,7 @@
 				</div>
 			</modal-dialog>
 		</teleport>
-		<button v-if="waitOnSaveChange" disabled>
-			Applying...
-		</button>
+		<button v-if="waitOnSaveChange" disabled>Applying...</button>
 		<button
 			v-else-if="!savesAllowed && savesEnabledInEnv"
 			@click="allowSavesModal = true"
@@ -84,12 +76,8 @@
 			Deny saving options
 		</button>
 		<button @click="showModeDialog = true">
-			<template v-if="inPlusMode">
-				Enter Classic Mode
-			</template>
-			<template v-else>
-				Enter DDLC Plus Mode
-			</template>
+			<template v-if="inPlusMode"> Enter Classic Mode </template>
+			<template v-else> Enter DDLC Plus Mode </template>
 		</button>
 		<toggle
 			v-if="lqAllowed"
@@ -120,12 +108,8 @@
 				<td><label>Download folder:</label></td>
 				<td>{{ downloadFolder }}</td>
 				<td>
-					<button @click="setDownloadFolder">
-						Set
-					</button>
-					<button @click="openDownloadFolder">
-						Open
-					</button>
+					<button @click="setDownloadFolder">Set</button>
+					<button @click="openDownloadFolder">Open</button>
 				</td>
 			</tr>
 		</table>
@@ -241,13 +225,12 @@ export default defineComponent({
 		},
 		modeChange(choice: 'Enter Classic Mode' | 'Enter Plus mode' | 'Stay') {
 			safeAsync('changing modes', async () => {
-				const baseLoc = `${location.protocol}//${location.host}${location.pathname}`;
 				if (choice === 'Enter Classic Mode') {
-					await environment.saveGameMode('ddlc');
-					location.href = `${baseLoc}?mode=ddlc`;
+					await environment.setGameMode('ddlc');
 				} else if (choice === 'Enter Plus mode') {
-					await environment.saveGameMode('ddlc_plus');
-					location.href = `${baseLoc}?mode=ddlc_plus`;
+					await environment.setGameMode('ddlc_plus');
+				} else {
+					this.showModeDialog = false;
 				}
 			});
 		},
@@ -256,8 +239,8 @@ export default defineComponent({
 				lq: this.$store.state.ui.lqRendering,
 				nsfw: this.$store.state.ui.nsfw,
 				darkMode: this.$store.state.ui.useDarkTheme ?? undefined,
-				defaultCharacterTalkingZoom: this.$store.state.ui
-					.defaultCharacterTalkingZoom,
+				defaultCharacterTalkingZoom:
+					this.$store.state.ui.defaultCharacterTalkingZoom,
 			});
 		},
 		setDownloadFolder() {

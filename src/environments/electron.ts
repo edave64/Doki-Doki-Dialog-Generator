@@ -124,6 +124,27 @@ export class Electron implements IEnvironment {
 				});
 			}
 		);
+		let updateNotified = false;
+		this.electron.ipcRenderer.on(
+			'update.progress',
+			(progress: number | 'done') => {
+				if (progress === 'done') {
+					updateNotified = false;
+					eventBus.fire(
+						new ShowMessageEvent(
+							'An update is ready and will be installed once DDDG closes.'
+						)
+					);
+				} else if (!updateNotified) {
+					updateNotified = true;
+					eventBus.fire(
+						new ShowMessageEvent(
+							'An update is ready and will be installed once DDDG closes.'
+						)
+					);
+				}
+			}
+		);
 		this.electron.ipcRenderer.send('init-dddg');
 	}
 
@@ -172,8 +193,9 @@ export class Electron implements IEnvironment {
 			'ddlc';
 	}
 
-	public async saveGameMode(mode: Electron['gameMode']): Promise<void> {
+	public async setGameMode(mode: Electron['gameMode']): Promise<void> {
 		await this.electron.ipcRenderer.sendConvo('config.set', 'gameMode', mode);
+		this.electron.ipcRenderer.send('reload');
 	}
 
 	public async loadSettings(): Promise<Settings> {

@@ -1,5 +1,5 @@
 <template>
-	<div id="panels" :class="{ vertical }">
+	<div id="panels" :class="{ vertical }" @scroll="resetScroll" ref="panels">
 		<div id="toolbar">
 			<button
 				:class="{ active: panel === 'add' }"
@@ -167,6 +167,13 @@ export default defineComponent({
 			if (this.selection) {
 				if (this.$store.state.ui.selection === null) return;
 				this.$store.commit('ui/setSelection', null);
+			}
+		},
+		resetScroll() {
+			console.log('resetting scrolls');
+			if (this.$refs.panels instanceof HTMLElement) {
+				this.$refs.panels.scrollTop = 0;
+				this.$refs.panels.scrollLeft = 0;
 			}
 		},
 	},
