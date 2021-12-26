@@ -122,7 +122,9 @@ export class Repo {
 				.filter((packId) => {
 					if (
 						packId.startsWith('dddg.buildin.') ||
-						packId.startsWith('dddg.desktop.')
+						packId.startsWith('dddg.desktop.') ||
+						packId === 'concept_femc.shido_draws.edave64' ||
+						packId === 'mc.storm_blaze.edave64'
 					)
 						return false;
 					if (addedPacks.has(packId)) return false;
