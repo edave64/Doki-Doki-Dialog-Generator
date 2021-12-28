@@ -40,7 +40,7 @@ export default {
 
 		async function replayTransaction(vm, transaction) {
 			return await vm.transaction(() => {
-				transaction.forEach(mutation => {
+				transaction.forEach((mutation) => {
 					replayMutation(vm, mutation);
 				});
 			});
@@ -67,7 +67,7 @@ export default {
 			if (!mutationProperiesCache[name]) {
 				const parts = name.split('/');
 				const mutationProperties = {
-					ignore: _mutation => false,
+					ignore: (_mutation) => false,
 					combinable: (_oldMutation, _newMutation) => false,
 					combinator: (oldMutation, newMutation) => newMutation,
 				};
@@ -93,6 +93,8 @@ export default {
 			data: reactive({
 				done: [],
 				undone: [],
+				snapshots: [],
+				transactionsSinceSnapshot: 0,
 				newMutation: true,
 				ignoreMutations: options.ignoreMutations || [],
 				currentTransaction: null,
@@ -102,7 +104,7 @@ export default {
 			initialize() {
 				if (history.initialized) return;
 				history.initialized = true;
-				$store.subscribe(mutation => {
+				$store.subscribe((mutation) => {
 					const exec = () => {
 						if (
 							mutation.type === options.resetStateMutation ||
@@ -125,11 +127,11 @@ export default {
 					}
 				});
 			},
-			redo() {
+			async redo() {
 				if (history.data.undone.length <= 0) return;
 				const commit = history.data.undone.pop();
 				history.newMutation = false;
-				replayTransaction(history, commit);
+				await replayTransaction(history, commit);
 				history.newMutation = true;
 			},
 			async undo() {
@@ -140,12 +142,40 @@ export default {
 				history.newMutation = true;
 			},
 			/**
+			 * @returns {Promise<void>}
+			 * @async
+			 */
+			clearHistory() {
+				return new Promise((resolve, _reject) => {
+					const exec = async () => {
+						history.currentTransaction = [];
+						history.transactionsSinceSnapshot = 0;
+						history.data.undone = [];
+						history.data.done = [];
+						resolve();
+
+						history.currentTransaction = null;
+						if (history.data.transactionQueue.length > 0) {
+							history.data.transactionQueue.shift()();
+						}
+					};
+					if (history.currentTransaction) {
+						history.data.transactionQueue.push(exec);
+					} else {
+						exec();
+					}
+				});
+			},
+			/**
 			 * @param {transactionCallback} callback
+			 * @returns {Promise<void>}
+			 * @async
 			 */
 			transaction(callback) {
 				return new Promise((resolve, _reject) => {
 					const exec = async () => {
 						history.currentTransaction = [];
+						history.transactionsSinceSnapshot++;
 						try {
 							await callback();
 						} catch (e) {
@@ -188,7 +218,7 @@ export default {
 
 						history.currentTransaction = null;
 						if (history.data.transactionQueue.length > 0) {
-							history.data.transactionQueue.pop()();
+							history.data.transactionQueue.shift()();
 						}
 
 						resolve();
@@ -201,6 +231,8 @@ export default {
 				});
 			},
 		};
+
+		window.storeHistory = history;
 
 		vueApp.config.globalProperties.vuexHistory = history;
 		history.initialize();

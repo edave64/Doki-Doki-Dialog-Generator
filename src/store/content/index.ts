@@ -28,12 +28,7 @@ export interface IAsset {
 }
 
 function baseDir(url: string): string {
-	return (
-		url
-			.split('/')
-			.slice(0, -1)
-			.join('/') + '/'
-	);
+	return url.split('/').slice(0, -1).join('/') + '/';
 }
 
 // These types are assumed to always be supported
@@ -68,28 +63,9 @@ export default {
 		},
 	},
 	actions: {
-		async contentPack({ commit, state }, contentPack: ContentPack<string>) {
-			const convertedPack = (await convertContentPack(
-				contentPack
-			)) as ContentPack<IAsset>;
-			const existingPacks = new Set(state.contentPacks.map(x => x.packId!));
-			for (const dependency of contentPack.dependencies) {
-				if (!existingPacks.has(dependency)) {
-					throw new Error(
-						`Missing dependency '${dependency}'. Refusing to install ${contentPack.packId}`
-					);
-				}
-			}
-			commit('setContentPacks', [...state.contentPacks, convertedPack]);
-			commit(
-				'setCurrentContent',
-				mergeContentPacks(state.current, convertedPack)
-			);
-		},
-
 		async removeContentPacks({ commit, state }, packIds: Set<string>) {
 			const newContentPacks = sortByDependencies(
-				state.contentPacks.filter(pack => !packIds.has(pack.packId!))
+				state.contentPacks.filter((pack) => !packIds.has(pack.packId!))
 			);
 			commit('setContentPacks', newContentPacks);
 			commit(
@@ -109,7 +85,7 @@ export default {
 				: await convertContentPack(action.contentPack);
 			let packs = state.contentPacks;
 			const packIdx = packs.findIndex(
-				pack => pack.packId === action.contentPack.packId
+				(pack) => pack.packId === action.contentPack.packId
 			);
 			if (packIdx === -1) {
 				packs.push(convertedPack);
@@ -126,12 +102,12 @@ export default {
 			);
 		},
 
-		async loadContentPacks({ dispatch }, urls: string | string[]) {
+		async loadContentPacks({ commit, state }, urls: string | string[]) {
 			if (typeof urls === 'string') {
 				urls = [urls];
 			}
 			const contentPacks = await Promise.all(
-				urls.map(async url => {
+				urls.map(async (url) => {
 					const response = await fetch(url);
 					if (!response.ok) {
 						error(
@@ -153,9 +129,10 @@ export default {
 							'/': baseDir(location.href) + 'assets/',
 						};
 						if (json.version === '2.0') {
-							contentPack = normalizeContentPack(json, paths) as ContentPack<
-								string
-							>;
+							contentPack = normalizeContentPack(
+								json,
+								paths
+							) as ContentPack<string>;
 						} else {
 							contentPack = convertV1(
 								normalizeCharacterV1(json, paths),
@@ -170,11 +147,27 @@ export default {
 				})
 			);
 
-			for (const contentPack of contentPacks) {
-				await dispatch('contentPack', contentPack);
-			}
+			const convertedPacks = await Promise.all(
+				contentPacks.map((contentPack) => convertContentPack(contentPack))
+			);
 
-			return contentPacks.map(x => x.packId);
+			const existingPacks = new Set(state.contentPacks.map((x) => x.packId!));
+			let combinedPack = state.current;
+
+			for (const convertedPack of convertedPacks) {
+				for (const dependency of convertedPack.dependencies) {
+					if (!existingPacks.has(dependency)) {
+						throw new Error(
+							`Missing dependency '${dependency}'. Refusing to install ${convertedPack.packId}`
+						);
+					}
+				}
+				combinedPack = mergeContentPacks(combinedPack, convertedPack);
+			}
+			commit('setContentPacks', [...state.contentPacks, ...convertedPacks]);
+			commit('setCurrentContent', combinedPack);
+
+			return contentPacks.map((x) => x.packId);
 		},
 	},
 	getters: {
@@ -214,19 +207,16 @@ async function convertContentPack(
 		['ext', '{lq:.lq:}.{format:webp:webp:png:png}'],
 	]);
 
-	return assetWalker(
-		pack,
-		(path: string, _type: 'image' | 'font'): IAsset => {
-			const hq = normalizePath(path, replacementMap, types, false);
-			const lq = normalizePath(path, replacementMap, types, true);
+	return assetWalker(pack, (path: string, _type: 'image' | 'font'): IAsset => {
+		const hq = normalizePath(path, replacementMap, types, false);
+		const lq = normalizePath(path, replacementMap, types, true);
 
-			return {
-				hq,
-				lq,
-				sourcePack: pack.packId || 'buildIn',
-			};
-		}
-	) as ContentPack<IAsset>;
+		return {
+			hq,
+			lq,
+			sourcePack: pack.packId || 'buildIn',
+		};
+	}) as ContentPack<IAsset>;
 }
 
 function error(msg: string, payload?: any): never {
