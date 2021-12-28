@@ -67,8 +67,8 @@ export class SceneRenderer {
 
 	public objectsAt(x: number, y: number): string[] {
 		return this.getRenderObjects()
-			.filter(renderObject => renderObject.hitTest(x, y))
-			.map(renderObject => ((renderObject as unknown) as { id: string }).id);
+			.filter((renderObject) => renderObject.hitTest(x, y))
+			.map((renderObject) => (renderObject as unknown as { id: string }).id);
 	}
 
 	private async renderCallback(rx: RenderContext): Promise<void> {
@@ -91,6 +91,8 @@ export class SceneRenderer {
 				rx.drawImage({
 					x: 0,
 					y: 0,
+					h: this.canvasHeight,
+					w: this.canvasWidth,
 					composite: 'destination-over',
 					image: await getAsset('backgrounds/transparent'),
 				});
@@ -107,14 +109,14 @@ export class SceneRenderer {
 			: [];
 		const objects = this.store.state.objects.objects;
 		const toUncache = Object.keys(this.renderObjectCache).filter(
-			id => !order.includes(id)
+			(id) => !order.includes(id)
 		);
 
 		for (const id of toUncache) {
 			this.renderObjectCache.delete(id);
 		}
 
-		return order.map(id => {
+		return order.map((id) => {
 			let renderObject = this.renderObjectCache.get(id);
 			if (!renderObject) {
 				const obj = objects[id];
