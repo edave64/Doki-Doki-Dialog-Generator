@@ -74,7 +74,7 @@ export abstract class DdlcPlusBase {
 			combinedLength += width;
 		}
 
-		const spacing = Math.min((w - combinedLength) / texts.length, 78);
+		const spacing = Math.min((w - combinedLength) / (texts.length + 2), 78);
 
 		let controlX = x + (w - combinedLength - spacing * (texts.length - 1)) / 2;
 		for (let i = 0; i < texts.length; ++i) {
