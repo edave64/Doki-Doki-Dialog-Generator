@@ -111,7 +111,7 @@ export default defineComponent({
 		backgrounds(): Array<Background<IAsset>['id']> {
 			return [
 				...this.$store.state.content.current.backgrounds.map(
-					background => background.id
+					(background) => background.id
 				),
 				'buildin.static-color',
 				'buildin.transparent',
@@ -163,13 +163,13 @@ export default defineComponent({
 					contentPack: uploadedBackgroundsPack,
 				} as ReplaceContentPackAction);
 				this.setBackground(id);
-			});
+			}, true);
 		},
 		dragEnter(e: DragEvent) {
 			if (!e.dataTransfer) return;
 			e.dataTransfer.effectAllowed = 'none';
 			if (
-				!Array.from(e.dataTransfer.items).find(item =>
+				!Array.from(e.dataTransfer.items).find((item) =>
 					item.type.match(/^image.*$/)
 				)
 			) {

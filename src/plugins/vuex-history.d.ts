@@ -3,7 +3,10 @@ import { PluginObject } from 'vue';
 export declare interface IHistorySupport {
 	undo(): Promise<void>;
 	redo(): Promise<void>;
-	transaction(callback: () => Promise<void> | void): Promise<void>;
+	transaction(
+		callback: () => Promise<void> | void,
+		notUndoable = false
+	): Promise<void>;
 }
 
 export declare interface IHistoryOptions {

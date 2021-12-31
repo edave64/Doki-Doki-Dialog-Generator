@@ -89,6 +89,9 @@ export default {
 			return mutationProperiesCache[name];
 		}
 
+		const snapshotAfter = 25;
+		const snapshotNr = 3;
+
 		const history = {
 			data: reactive({
 				done: [],
@@ -142,40 +145,15 @@ export default {
 				history.newMutation = true;
 			},
 			/**
-			 * @returns {Promise<void>}
-			 * @async
-			 */
-			clearHistory() {
-				return new Promise((resolve, _reject) => {
-					const exec = async () => {
-						history.currentTransaction = [];
-						history.transactionsSinceSnapshot = 0;
-						history.data.undone = [];
-						history.data.done = [];
-						resolve();
-
-						history.currentTransaction = null;
-						if (history.data.transactionQueue.length > 0) {
-							history.data.transactionQueue.shift()();
-						}
-					};
-					if (history.currentTransaction) {
-						history.data.transactionQueue.push(exec);
-					} else {
-						exec();
-					}
-				});
-			},
-			/**
 			 * @param {transactionCallback} callback
+			 * @param {boolean|undefined} notUndoable
 			 * @returns {Promise<void>}
 			 * @async
 			 */
-			transaction(callback) {
+			transaction(callback, notUndoable) {
 				return new Promise((resolve, _reject) => {
 					const exec = async () => {
 						history.currentTransaction = [];
-						history.transactionsSinceSnapshot++;
 						try {
 							await callback();
 						} catch (e) {
@@ -186,34 +164,50 @@ export default {
 							// So replaying that is equivalent to undoing the transaction.
 							//replayAll(this);
 						}
-						const lastUndo = history.data.done[history.data.done.length - 1];
-						if (
-							history.currentTransaction.length === 1 &&
-							lastUndo &&
-							lastUndo.length === 1
-						) {
-							const options = getMutationProperties(
-								history.currentTransaction[0].type
-							);
+						if (notUndoable) {
+							history.transactionsSinceSnapshot = 0;
+							history.data.undone = [];
+							history.data.done = [];
+							history.data.snapshots = [];
+						} else {
+							const lastUndo = history.data.done[history.data.done.length - 1];
 							if (
-								options.combinable(lastUndo[0], history.currentTransaction[0])
+								history.currentTransaction.length === 1 &&
+								lastUndo &&
+								lastUndo.length === 1
 							) {
-								const combination = options.combinator(
-									lastUndo[0],
-									history.currentTransaction[0]
+								const options = getMutationProperties(
+									history.currentTransaction[0].type
 								);
-								history.data.done.pop();
-								if (combination) {
-									history.currentTransaction = [combination];
-								} else {
-									// Returning a non-truthy value in the combinator simply eliminates both transactions.
-									// So if the user manually undoes an action, you can just pretend it never happened.
-									history.currentTransaction = [];
+								if (
+									options.combinable(lastUndo[0], history.currentTransaction[0])
+								) {
+									const combination = options.combinator(
+										lastUndo[0],
+										history.currentTransaction[0]
+									);
+									history.transactionsSinceSnapshot--;
+									history.data.done.pop();
+									if (combination) {
+										history.currentTransaction = [combination];
+									} else {
+										// Returning a non-truthy value in the combinator simply eliminates both transactions.
+										// So if the user manually undoes an action, you can just pretend it never happened.
+										history.currentTransaction = [];
+									}
 								}
 							}
+							if (history.currentTransaction.length > 0) {
+								history.transactionsSinceSnapshot++;
+								history.data.done.push(history.currentTransaction);
+							}
 						}
-						if (history.currentTransaction.length > 0) {
-							history.data.done.push(history.currentTransaction);
+
+						if (
+							notUndoable ||
+							history.transactionsSinceSnapshot >= snapshotAfter
+						) {
+							history.takeSnapshot();
 						}
 
 						history.currentTransaction = null;
@@ -229,6 +223,16 @@ export default {
 						exec();
 					}
 				});
+			},
+
+			takeSnapshot() {
+				history.transactionsSinceSnapshot = 0;
+				history.data.snapshots.push(JSON.parse(JSON.stringify($store.state)));
+
+				if (history.data.snapshots.length > snapshotNr) {
+					history.data.done.splice(0, snapshotAfter);
+					history.data.snapshots.splice(0, 1);
+				}
 			},
 		};
 

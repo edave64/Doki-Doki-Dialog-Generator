@@ -108,7 +108,7 @@ export class Browser implements IEnvironment {
 				);
 				await this.vuexHistory!.transaction(async () => {
 					await this.$store!.dispatch('content/loadContentPacks', packUrls);
-				});
+				}, true);
 			}
 		});
 	}

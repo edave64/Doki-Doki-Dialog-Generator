@@ -124,10 +124,10 @@ export default defineComponent({
 			}
 		},
 		addSwatch() {
-			if (this.swatches.find(swatch => swatch.color === this.color)) return;
+			if (this.swatches.find((swatch) => swatch.color === this.color)) return;
 
 			const existingPack = this.$store.state.content.contentPacks.find(
-				pack => pack.packId === 'generatedPackId'
+				(pack) => pack.packId === 'generatedPackId'
 			) || {
 				packId: generatedPackId,
 				packCredits: [''],
@@ -157,7 +157,7 @@ export default defineComponent({
 					contentPack: newPack,
 					processed: true,
 				} as ReplaceContentPackAction);
-			});
+			}, true);
 		},
 		pickColor(): void {
 			this.vuexHistory.transaction(() => {

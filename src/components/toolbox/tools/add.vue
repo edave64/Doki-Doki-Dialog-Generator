@@ -289,7 +289,7 @@ export default defineComponent({
 					contentPack: uploadedSpritesPack,
 					processed: false,
 				} as ReplaceContentPackAction);
-			});
+			}, true);
 		},
 		openSpritesFolder() {
 			environment.openFolder('sprites');

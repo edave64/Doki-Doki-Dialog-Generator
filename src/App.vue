@@ -397,7 +397,7 @@ export default defineComponent({
 			} as ISetCurrentMutation);
 
 			await this.$store.commit('ui/setNsfw', settings.nsfw ?? false);
-		});
+		}, true);
 	},
 });
 

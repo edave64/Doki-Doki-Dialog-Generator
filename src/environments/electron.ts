@@ -58,7 +58,7 @@ export class Electron implements IEnvironment {
 				}
 				await this.vuexHistory.transaction(async () => {
 					await this.$store!.dispatch('content/loadContentPacks', filePath);
-				});
+				}, true);
 			}
 		);
 		this.electron.ipcRenderer.on(
@@ -101,7 +101,7 @@ export class Electron implements IEnvironment {
 				);
 				await this.vuexHistory!.transaction(async () => {
 					await this.$store!.dispatch('content/loadContentPacks', packUrls);
-				});
+				}, true);
 			}
 		);
 		this.electron.ipcRenderer.onConversation(
@@ -121,7 +121,7 @@ export class Electron implements IEnvironment {
 						processed: false,
 						contentPack,
 					} as ReplaceContentPackAction);
-				});
+				}, true);
 			}
 		);
 		let updateNotified = false;
@@ -326,7 +326,7 @@ export class Electron implements IEnvironment {
 					'content/loadContentPacks',
 					this.pendingContentPacks
 				);
-			});
+			}, true);
 		}
 	}
 
@@ -349,7 +349,7 @@ export class Electron implements IEnvironment {
 			await this.$store!.dispatch('content/replaceContentPack', {
 				contentPack: installedBackgroundsPack,
 			} as ReplaceContentPackAction);
-		});
+		}, true);
 	}
 }
 
