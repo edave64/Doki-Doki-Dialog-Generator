@@ -6,7 +6,11 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"build:web": "vite build && node ./scripts/build-hashlist.js > ./dist/hash-list.json",
-		"build:electron": "vite build"
+		"build:electron": "vite build",
+		"sync:release": "rsync -av --delete ./dist/ ../dist/release/",
+		"sync:pre": "rsync -av --delete ./dist/ ../dist/pre/",
+		"sync:win": "rsync -av --delete --exclude=assets/**.lq.webp --exclude=assets/**.png ./dist/ ../Desktop-Version/dddgWeb/",
+		"sync:linux": "rsync -av --delete --exclude=assets/**.lq.webp --exclude=assets/**.png ./dist/ ../Desktop-Version-linux/dddgWeb/"
 	},
 	"dependencies": {
 		"@edave64/dddg-repo-filters": "^0.4.0",
