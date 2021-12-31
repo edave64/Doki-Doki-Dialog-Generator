@@ -288,7 +288,9 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 	},
 
 	async splitTextbox({ commit, state, dispatch }, command: ISplitTextbox) {
-		const obj = state.objects[command.id];
+		const obj = state.objects[command.id] as ITextBox;
+		if (obj.type !== 'textBox') return;
+
 		const newWidth = (obj.width - splitTextboxSpacing) / 2;
 		const centerDistance = newWidth / 2 + splitTextboxSpacing / 2;
 
@@ -323,10 +325,13 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 				rotation: obj.rotation,
 			},
 		} as ISetResetBoundsMutation);
-		commit('setStyle', {
-			id: command.id,
-			style: 'custom',
-		} as ISetTextBoxStyleMutation);
+		const newStyle = obj.style === 'custom_plus' ? 'custom_plus' : 'custom';
+		if (obj.style !== newStyle) {
+			commit('setStyle', {
+				id: command.id,
+				style: newStyle,
+			} as ISetTextBoxStyleMutation);
+		}
 		const id = (await dispatch('createTextBox', {
 			resetBounds: {
 				x: boxTwoCoords[0],
@@ -338,7 +343,7 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 		} as ICreateTextBoxAction)) as string;
 		commit('setStyle', {
 			id,
-			style: 'custom',
+			style: newStyle,
 		} as ISetTextBoxStyleMutation);
 		if (obj.flip) {
 			commit('setFlip', {
