@@ -166,6 +166,7 @@ import DFlow from '@/components/ui/d-flow.vue';
 import DButton from '@/components/ui/d-button.vue';
 import ImageOptions from '../subtools/image-options/image-options.vue';
 import getConstants from '@/constants';
+import { safeAsync } from '@/util/errors';
 
 interface IPanelButton {
 	id: string;
@@ -490,40 +491,42 @@ export default defineComponent({
 			});
 		},
 		async renderThumbnail() {
-			const baseConst = getConstants().Base;
-			const sceneRenderer = new SceneRenderer(
-				this.$store,
-				this.currentPanel,
-				baseConst.screenWidth,
-				baseConst.screenHeight
-			);
+			await safeAsync('render thumbnail', async () => {
+				const baseConst = getConstants().Base;
+				const sceneRenderer = new SceneRenderer(
+					this.$store,
+					this.currentPanel,
+					baseConst.screenWidth,
+					baseConst.screenHeight
+				);
 
-			await sceneRenderer.render(false, true);
+				await sceneRenderer.render(false, true);
 
-			const targetCanvas = document.createElement('canvas');
-			targetCanvas.width = baseConst.screenWidth * thumbnailFactor;
-			targetCanvas.height = baseConst.screenHeight * thumbnailFactor;
+				const targetCanvas = document.createElement('canvas');
+				targetCanvas.width = baseConst.screenWidth * thumbnailFactor;
+				targetCanvas.height = baseConst.screenHeight * thumbnailFactor;
 
-			sceneRenderer.paintOnto(targetCanvas.getContext('2d')!, {
-				x: 0,
-				y: 0,
-				w: targetCanvas.width,
-				h: targetCanvas.height,
+				sceneRenderer.paintOnto(targetCanvas.getContext('2d')!, {
+					x: 0,
+					y: 0,
+					w: targetCanvas.width,
+					h: targetCanvas.height,
+				});
+				targetCanvas.toBlob(
+					(blob) => {
+						if (!blob) return;
+						const url = URL.createObjectURL(blob);
+						this.vuexHistory.transaction(() => {
+							this.$store.commit('panels/setPanelPreview', {
+								panelId: this.$store.state.panels.currentPanel,
+								url,
+							} as ISetPanelPreviewMutation);
+						});
+					},
+					(await isWebPSupported()) ? 'image/webp' : 'image/jpeg',
+					thumbnailQuality
+				);
 			});
-			targetCanvas.toBlob(
-				(blob) => {
-					if (!blob) return;
-					const url = URL.createObjectURL(blob);
-					this.vuexHistory.transaction(() => {
-						this.$store.commit('panels/setPanelPreview', {
-							panelId: this.$store.state.panels.currentPanel,
-							url,
-						} as ISetPanelPreviewMutation);
-					});
-				},
-				(await isWebPSupported()) ? 'image/webp' : 'image/jpeg',
-				thumbnailQuality
-			);
 		},
 	},
 	watch: {
