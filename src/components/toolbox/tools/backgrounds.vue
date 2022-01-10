@@ -36,7 +36,7 @@
 				class="upload-background"
 				@click="openBackgroundFolder"
 			>
-				Open sprites folder
+				Open backgrounds folder
 			</d-button>
 			<background-button
 				v-for="background of backgrounds"
@@ -111,7 +111,7 @@ export default defineComponent({
 		backgrounds(): Array<Background<IAsset>['id']> {
 			return [
 				...this.$store.state.content.current.backgrounds.map(
-					background => background.id
+					(background) => background.id
 				),
 				'buildin.static-color',
 				'buildin.transparent',
@@ -169,7 +169,7 @@ export default defineComponent({
 			if (!e.dataTransfer) return;
 			e.dataTransfer.effectAllowed = 'none';
 			if (
-				!Array.from(e.dataTransfer.items).find(item =>
+				!Array.from(e.dataTransfer.items).find((item) =>
 					item.type.match(/^image.*$/)
 				)
 			) {
