@@ -244,9 +244,9 @@ a {
 	height: 42px;
 	overflow: hidden;
 	white-space: nowrap;
-	background: $default-accent-background url(./search.svg);
+	background: $default-accent-background;
 	//noinspection CssOverwrittenProperties
-	background: var(--accent-background) url(./search.svg);
+	background: var(--accent-background);
 	background-repeat: no-repeat;
 	background-size: contain;
 	background-position: right center;
@@ -287,5 +287,14 @@ a {
 			background: lightcyan;
 		}
 	}
+}
+</style>
+
+<style lang="scss">
+body .search-area .input {
+	background-image: url(./search.svg);
+}
+body.dark-theme .search-area .input {
+	background-image: url(./search-bright.svg);
 }
 </style>
