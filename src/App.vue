@@ -384,6 +384,8 @@ export default defineComponent({
 				`${baseUrl}packs/buildin.extra.amy.json`,
 			]);
 
+			await enviroment.loadContentPacks();
+
 			await this.$store.dispatch('panels/createPanel');
 			if (Object.keys(this.$store.state.objects.objects).length === 0) {
 				await this.$store.dispatch(

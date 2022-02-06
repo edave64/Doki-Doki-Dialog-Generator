@@ -26,6 +26,7 @@ export interface EnvCapabilities {
 	backgroundInstall: boolean;
 	lq: boolean;
 	openableFolders: ReadonlySet<Folder>;
+	assetCaching: boolean;
 }
 
 export interface Settings {
@@ -59,6 +60,8 @@ export interface IEnvironment {
 	localRepoUninstall(id: string): void;
 	autoLoadAdd(id: string): Promise<void>;
 	autoLoadRemove(id: string): Promise<void>;
+
+	loadContentPacks(): void;
 
 	saveSettings(settings: Settings): Promise<void>;
 	loadSettings(): Promise<Settings>;
