@@ -1,7 +1,10 @@
-import EventBus, { AssetFailureEvent, CustomAssetFailureEvent } from "./eventbus/event-bus";
-import { ErrorAsset } from "./models/error-asset";
-import { IAsset } from "./store/content";
-import environment from "./environments/environment";
+import EventBus, {
+	AssetFailureEvent,
+	CustomAssetFailureEvent,
+} from './eventbus/event-bus';
+import { ErrorAsset } from './models/error-asset';
+import { IAsset } from './store/content';
+import environment from './environments/environment';
 
 let webpSupportPromise: Promise<boolean>;
 let heifSupportPromise: Promise<boolean>;
@@ -47,7 +50,8 @@ export function isHeifSupported(): Promise<boolean> {
 const assetCache: {
 	[url: string]: Promise<HTMLImageElement | ErrorAsset> | undefined;
 } = {};
-const customAssets: { [id: string]: Promise<HTMLImageElement> } = {};
+const customAssets: { [id: string]: Promise<HTMLImageElement> | undefined } =
+	{};
 
 export function getAAsset(
 	asset: IAsset,
@@ -60,24 +64,45 @@ export async function getAssetByUrl(
 	url: string
 ): Promise<HTMLImageElement | ErrorAsset> {
 	if (!assetCache[url]) {
-		assetCache[url] = new Promise((resolve, _reject) => {
-			const img = new Image();
-			img.addEventListener('load', () => {
-				resolve(img);
-			});
-			img.addEventListener('error', () => {
-				EventBus.fire(new AssetFailureEvent(url));
-				assetCache[url] = undefined;
-				resolve(new ErrorAsset());
-			});
-			img.crossOrigin = 'Anonymous';
-			img.src = url;
-			img.style.display = 'none';
-			document.body.appendChild(img);
-		});
+		assetCache[url] = (async (): Promise<HTMLImageElement | ErrorAsset> => {
+			try {
+				return await imagePromise(url);
+			} catch (e) {
+				// Webp files sometimes fail to load on safari. Fallback to png
+				if (url.endsWith('.webp')) {
+					try {
+						return await imagePromise(url.replace(/\.webp$/, '.png'));
+					} catch (e) {
+						EventBus.fire(new AssetFailureEvent(url));
+						assetCache[url] = undefined;
+						return new ErrorAsset();
+					}
+				} else {
+					EventBus.fire(new AssetFailureEvent(url));
+					assetCache[url] = undefined;
+					return new ErrorAsset();
+				}
+			}
+		})();
 	}
 
 	return assetCache[url]!;
+}
+
+function imagePromise(url): Promise<HTMLImageElement> {
+	return new Promise((resolve, reject) => {
+		const img = new Image();
+		img.addEventListener('load', () => {
+			resolve(img);
+		});
+		img.addEventListener('error', (e) => {
+			reject(e);
+		});
+		img.crossOrigin = 'Anonymous';
+		img.src = url;
+		img.style.display = 'none';
+		document.body.appendChild(img);
+	});
 }
 
 export const baseUrl = import.meta.env.BASE_URL || '.';
@@ -87,7 +112,7 @@ export async function getAsset(
 	hq: boolean = true
 ): Promise<HTMLImageElement | ErrorAsset> {
 	if (customAssets[asset]) {
-		return customAssets[asset];
+		return !customAssets[asset];
 	}
 
 	const url = `${baseUrl}/assets/${asset}${hq ? '' : '.lq'}${
@@ -112,13 +137,17 @@ export function registerAssetWithURL(
 		img.addEventListener('load', () => {
 			resolve(img);
 		});
-		img.addEventListener('error', error => {
+		img.addEventListener('error', (error) => {
 			EventBus.fire(new CustomAssetFailureEvent(error));
 			reject(`Failed to load "${url}"`);
 		});
 		img.crossOrigin = 'Anonymous';
 		img.src = url;
 		img.style.display = 'none';
-		document.body.appendChild(img);
+		if (environment.supports.assetCaching) {
+			document.body.appendChild(img);
+		} else {
+			customAssets[asset] = undefined;
+		}
 	}));
 }
