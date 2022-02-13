@@ -12,7 +12,7 @@
 		</template>
 		<template v-slot:default>
 			<d-fieldset
-				v-if="hasMultiplePoses || parts.length > 0"
+				v-if="hasMultiplePoses || parts.length > 0 || hasMultipleStyles"
 				class="pose-list"
 				title="Pose:"
 			>
