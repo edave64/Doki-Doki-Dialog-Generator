@@ -1,6 +1,6 @@
 <template>
 	<div
-		:class="{ part: true, active: false /*background === value*/ }"
+		:class="{ part: true, active: part?.active }"
 		:style="style"
 		@click="$emit('click')"
 	></div>
@@ -17,6 +17,7 @@ export interface IPartButtonImage {
 	images: IPartImage[];
 	size: DeepReadonly<[number, number]>;
 	offset: DeepReadonly<[number, number]>;
+	active: boolean;
 }
 
 export interface IPartImage {
@@ -120,6 +121,8 @@ export default defineComponent({
 		box-shadow: inset 0 0 1px 3px $default-modal-backdrop-light;
 		//noinspection CssOverwrittenProperties
 		box-shadow: inset 0 0 1px 3px var(--modal-backdrop-light);
+		background-color: $default-modal-backdrop-light !important;
+		background-color: var(--modal-backdrop-light) !important;
 	}
 }
 

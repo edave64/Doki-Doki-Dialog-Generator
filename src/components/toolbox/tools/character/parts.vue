@@ -130,6 +130,7 @@ export default defineComponent({
 						size: styleComponents.styles[0].poses[0].size,
 						offset: [0, 0],
 						images: [{ offset: [0, 0], asset: variant }],
+						active: false,
 					};
 				}
 				return { label: component.label, name: component.id, buttons };
@@ -144,6 +145,8 @@ export default defineComponent({
 			const currentPose = getPose(data, this.character);
 			switch (this.part) {
 				case 'head':
+					const activeHeadTypeIdx = this.character.posePositions.headType || 0;
+					const activeHeadIdx = this.character.posePositions.head || 0;
 					for (
 						let headKeyIdx = 0;
 						headKeyIdx < currentPose.compatibleHeads.length;
@@ -159,6 +162,8 @@ export default defineComponent({
 								images: headImages.map(
 									(image): IPartImage => ({ asset: image, offset: [0, 0] })
 								),
+								active:
+									activeHeadIdx === headIdx && activeHeadTypeIdx === headKeyIdx,
 							};
 						}
 					}
@@ -176,13 +181,21 @@ export default defineComponent({
 					) {
 						const pose = currentStyle.poses[poseIdx];
 						ret[poseIdx] = this.generatePosePreview(pose);
+						(ret[poseIdx] as any).active = poseIdx === this.character.poseId;
 					}
 					return ret;
 				case 'style':
-					for (const styleGroup of data.styleGroups) {
+					for (
+						let styleIdx = 0;
+						styleIdx < data.styleGroups.length;
+						++styleIdx
+					) {
+						const styleGroup = data.styleGroups[styleIdx];
 						ret[styleGroup.id] = this.generatePosePreview(
 							styleGroup.styles[0].poses[0]
 						);
+						(ret[styleGroup.id] as any).active =
+							styleIdx === this.character.styleGroupId;
 					}
 					return ret;
 
@@ -201,6 +214,7 @@ export default defineComponent({
 					})),
 					size,
 					offset,
+					active: partIdx === (this.character.posePositions[this.part] || 0),
 				};
 			}
 			return ret;
@@ -226,7 +240,7 @@ export default defineComponent({
 			const data = this.charData;
 			const heads = data.heads[pose.compatibleHeads[0]];
 			const head = heads ? heads.variants[0] : null;
-			let images: IAsset[] = [];
+			let images: Array<IPartImage> = [];
 
 			for (const command of pose.renderCommands) {
 				switch (command.type) {
@@ -260,6 +274,7 @@ export default defineComponent({
 				images,
 				size: pose.previewSize,
 				offset: pose.previewOffset,
+				active: false,
 			};
 		},
 		updatePose(styleGroupId?: number) {
