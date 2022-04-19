@@ -31,13 +31,8 @@ export const VerticalScrollRedirect: ComponentOptionsMixin = {
 				}
 			}
 			const oldScrollLeft = currentTarget.scrollLeft;
-			if ((ev as any).mozInputSource) {
-				// Firefox sends wierdly low delta values :/
-				currentTarget.scrollLeft += ev.deltaY * firefoxDeltaFactor;
-			} else {
-				// noinspection JSSuspiciousNameCombination
-				currentTarget.scrollLeft += ev.deltaY;
-			}
+			// noinspection JSSuspiciousNameCombination
+			currentTarget.scrollLeft += ev.deltaY;
 			if (currentTarget.scrollLeft !== oldScrollLeft) {
 				e.stopPropagation();
 			}
