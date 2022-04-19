@@ -65,7 +65,9 @@ dialog {
 	//noinspection CssOverwrittenProperties
 	overflow: hidden;
 	//noinspection CssOverwrittenProperties
-	align-self: center;
+	color: $default-text;
+	//noinspection CssOverwrittenProperties
+	color: var(--text);
 	justify-self: center;
 	margin: auto;
 

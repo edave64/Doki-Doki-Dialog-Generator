@@ -186,34 +186,36 @@ export default {
 							// So replaying that is equivalent to undoing the transaction.
 							//replayAll(this);
 						}
-						const lastUndo = history.data.done[history.data.done.length - 1];
-						if (
-							history.currentTransaction.length === 1 &&
-							lastUndo &&
-							lastUndo.length === 1
-						) {
-							const options = getMutationProperties(
-								history.currentTransaction[0].type
-							);
+						if (false) {
+							const lastUndo = history.data.done[history.data.done.length - 1];
 							if (
-								options.combinable(lastUndo[0], history.currentTransaction[0])
+								history.currentTransaction.length === 1 &&
+								lastUndo &&
+								lastUndo.length === 1
 							) {
-								const combination = options.combinator(
-									lastUndo[0],
-									history.currentTransaction[0]
+								const options = getMutationProperties(
+									history.currentTransaction[0].type
 								);
-								history.data.done.pop();
-								if (combination) {
-									history.currentTransaction = [combination];
-								} else {
-									// Returning a non-truthy value in the combinator simply eliminates both transactions.
-									// So if the user manually undoes an action, you can just pretend it never happened.
-									history.currentTransaction = [];
+								if (
+									options.combinable(lastUndo[0], history.currentTransaction[0])
+								) {
+									const combination = options.combinator(
+										lastUndo[0],
+										history.currentTransaction[0]
+									);
+									history.data.done.pop();
+									if (combination) {
+										history.currentTransaction = [combination];
+									} else {
+										// Returning a non-truthy value in the combinator simply eliminates both transactions.
+										// So if the user manually undoes an action, you can just pretend it never happened.
+										history.currentTransaction = [];
+									}
 								}
 							}
-						}
-						if (history.currentTransaction.length > 0) {
-							history.data.done.push(history.currentTransaction);
+							if (history.currentTransaction.length > 0) {
+								history.data.done.push(history.currentTransaction);
+							}
 						}
 
 						history.currentTransaction = null;

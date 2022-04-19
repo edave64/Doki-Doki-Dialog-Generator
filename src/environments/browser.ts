@@ -9,6 +9,12 @@ import { IRootState } from '@/store';
 import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 
+const ua = navigator.userAgent;
+var iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
+var webkit = !!ua.match(/WebKit/i);
+
+const mobileSafari = iOS && webkit && !ua.match(/CriOS/i);
+
 export class Browser implements IEnvironment {
 	public readonly state: EnvState = reactive({
 		autoAdd: [],
@@ -31,6 +37,9 @@ export class Browser implements IEnvironment {
 
 	private readonly loading: Promise<void>;
 	private creatingDB?: Promise<IDBDatabase | void>;
+
+	private loadingContentPacksAllowed: Promise<void>;
+	public loadContentPacks!: () => void;
 
 	public get savingEnabled() {
 		return this.isSavingEnabled.value;
@@ -70,6 +79,10 @@ export class Browser implements IEnvironment {
 				'Are you sure you want to leave? All your progress will be lost!';
 		});
 
+		this.loadingContentPacksAllowed = new Promise((resolve, reject) => {
+			this.loadContentPacks = () => resolve();
+		});
+
 		this.supports = reactive({
 			optionalSaving: canSave,
 			get autoLoading(): boolean {
@@ -80,6 +93,7 @@ export class Browser implements IEnvironment {
 			lq: true,
 			setDownloadFolder: false,
 			openableFolders: new Set([]),
+			assetCaching: !mobileSafari,
 		});
 
 		if (canSave) {
@@ -91,6 +105,7 @@ export class Browser implements IEnvironment {
 		}
 
 		this.loading.then(async () => {
+			await this.loadingContentPacksAllowed;
 			if (this.creatingDB) await this.creatingDB;
 			if (this.savingEnabled) {
 				const autoload = (await IndexedDBHandler.loadAutoload()) || [];

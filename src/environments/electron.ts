@@ -48,10 +48,18 @@ export class Electron implements IEnvironment {
 	private bgInvalidation: number | null = null;
 	private readonly pendingContentPacks: string[] = [];
 
+	private loadingContentPacksAllowed: Promise<void>;
+	public loadContentPacks!: () => void;
+
 	constructor() {
+		this.loadingContentPacksAllowed = new Promise((resolve, reject) => {
+			this.loadContentPacks = () => resolve();
+		});
+
 		this.electron.ipcRenderer.on(
 			'add-persistent-content-pack',
 			async (filePath: string) => {
+				await this.loadingContentPacksAllowed;
 				if (!this.$store || !this.vuexHistory) {
 					this.pendingContentPacks.push(filePath);
 					return;
@@ -166,6 +174,7 @@ export class Electron implements IEnvironment {
 		optionalSaving: false,
 		setDownloadFolder: true,
 		openableFolders: new Set(['downloads', 'backgrounds', 'sprites']),
+		assetCaching: true,
 	};
 	public readonly savingEnabled: boolean = true;
 

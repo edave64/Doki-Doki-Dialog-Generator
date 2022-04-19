@@ -23,7 +23,7 @@ function scanFolder(folderName) {
 				reject(err);
 				return;
 			}
-			const subPromises = files.map(file => {
+			const subPromises = files.map((file) => {
 				return new Promise((subResolve, subReject) => {
 					fs.lstat(path.join(folderName, file), (statErr, stat) => {
 						if (statErr) {
@@ -31,8 +31,9 @@ function scanFolder(folderName) {
 						}
 
 						if (stat.isDirectory()) {
+							if (file === 'mask') return;
 							scanFolder(path.join(folderName, file) + '/')
-								.then(subFolder => {
+								.then((subFolder) => {
 									subFolders.push(subFolder);
 									subResolve();
 								})
@@ -53,7 +54,7 @@ function scanFolder(folderName) {
 						subfolders: subFolders,
 					})
 				)
-				.catch(reason => reject(reason));
+				.catch((reason) => reject(reason));
 		});
 	});
 }
@@ -69,11 +70,11 @@ function queueAssetConversions(folder) {
 	}
 
 	const allPNGs = folder.files
-		.filter(file => file.endsWith('.png') && !file.endsWith('.lq.png'))
-		.map(file => file.slice(0, -4));
+		.filter((file) => file.endsWith('.png') && !file.endsWith('.lq.png'))
+		.map((file) => file.slice(0, -4));
 
 	const pngsWithoutLQ = allPNGs.filter(
-		png => !folder.files.includes(png + '.lq.png')
+		(png) => !folder.files.includes(png + '.lq.png')
 	);
 	if (pngsWithoutLQ.length > 0) {
 		for (const pngWithoutLQ of pngsWithoutLQ) {
@@ -91,7 +92,7 @@ function queueAssetConversions(folder) {
 	}
 
 	const pngsWithoutHQWebp = allPNGs.filter(
-		png => !folder.files.includes(png + '.webp')
+		(png) => !folder.files.includes(png + '.webp')
 	);
 	for (const png of pngsWithoutHQWebp) {
 		ret.push(() =>
@@ -105,7 +106,7 @@ function queueAssetConversions(folder) {
 	}
 
 	const pngsWithoutLQWebp = allPNGs.filter(
-		png => !folder.files.includes(png + '.lq.webp')
+		(png) => !folder.files.includes(png + '.lq.webp')
 	);
 	for (const png of pngsWithoutLQWebp) {
 		ret.push(() =>
