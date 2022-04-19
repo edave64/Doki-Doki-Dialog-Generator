@@ -103,7 +103,8 @@
 				],
 				"sideways": {
 					"variants": [["a2{ext}"], ["b2{ext}"]],
-					"offset": [135, 75]
+					"offset": [135, 75],
+					"previewOffset": [200,50]
 				}
 			}
 		}
