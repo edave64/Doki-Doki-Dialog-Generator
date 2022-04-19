@@ -46,6 +46,7 @@
 				choose(index);
 				$emit('leave');
 			"
+			@quick-click="choose(index)"
 		/>
 		<d-fieldset
 			v-for="styleComponent of styleComponents"

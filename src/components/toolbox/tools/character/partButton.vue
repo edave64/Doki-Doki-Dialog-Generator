@@ -3,6 +3,7 @@
 		:class="{ part: true, active: part?.active }"
 		:style="style"
 		@click="$emit('click')"
+		@contextmenu="quickClick"
 	></div>
 </template>
 
@@ -99,6 +100,12 @@ export default defineComponent({
 				}
 			})
 		);
+	},
+	methods: {
+		quickClick(e: MouseEvent) {
+			e.preventDefault();
+			this.$emit('quick-click');
+		},
 	},
 });
 </script>
