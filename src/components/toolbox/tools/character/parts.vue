@@ -118,10 +118,9 @@ export default defineComponent({
 		},
 		styleComponents(): DeepReadonly<IPartStyleGroup[]> {
 			if (this.part !== 'style') return [];
-			const styleComponents = this.charData.styleGroups[
-				this.character.styleGroupId
-			];
-			return styleComponents.styleComponents.map(component => {
+			const styleComponents =
+				this.charData.styleGroups[this.character.styleGroupId];
+			return styleComponents.styleComponents.map((component) => {
 				const buttons: IPartStyleGroup['buttons'] = {};
 				for (const key in component.variants) {
 					// eslint-disable-next-line no-prototype-builtins
@@ -212,9 +211,11 @@ export default defineComponent({
 	},
 	methods: {
 		updateStyleData(): void {
-			const baseStyle = this.charData.styleGroups[this.character.styleGroupId]
-				.styles[this.character.styleId];
-			this.stylePriorities = Object.keys(baseStyle.components).map(key => [
+			const baseStyle =
+				this.charData.styleGroups[this.character.styleGroupId].styles[
+					this.character.styleId
+				];
+			this.stylePriorities = Object.keys(baseStyle.components).map((key) => [
 				key,
 				baseStyle.components[key],
 			]);
@@ -233,19 +234,30 @@ export default defineComponent({
 						// eslint-disable-next-line no-case-declarations
 						const part = pose.positions[command.part];
 						if (!part || part.length === 0) break;
-						images = images.concat(part[0] as IAsset[]);
+						images = images.concat(
+							part[0].map((x) => ({ asset: x, offset: command.offset }))
+						);
 						break;
 					case 'head':
-						if (head) images = images.concat(head);
+						if (head) {
+							images = images.concat(
+								head.map((x) => ({
+									asset: x,
+									offset: command.offset,
+								}))
+							);
+						}
 						break;
 					case 'image':
-						images = images.concat(command.images);
+						images = images.concat(
+							command.images.map((x) => ({ asset: x, offset: command.offset }))
+						);
 						break;
 				}
 			}
 
 			return {
-				images: images.map(image => ({ asset: image, offset: [0, 0] })),
+				images,
 				size: pose.previewSize,
 				offset: pose.previewOffset,
 			};
@@ -257,7 +269,7 @@ export default defineComponent({
 			const styleGroups = data.styleGroups[styleGroupId];
 			let selection = styleGroups.styles;
 			for (const priority of this.stylePriorities) {
-				const subSelect = selection.filter(style => {
+				const subSelect = selection.filter((style) => {
 					return style.components[priority[0]] === priority[1];
 				});
 				if (subSelect.length > 0) selection = subSelect;
@@ -273,12 +285,12 @@ export default defineComponent({
 		choose(index: string) {
 			if (this.part === 'style') {
 				this.updatePose(
-					this.charData.styleGroups.findIndex(group => group.id === index)
+					this.charData.styleGroups.findIndex((group) => group.id === index)
 				);
 			} else if (this.part === 'head') {
 				const [headTypeIdx, headIdx] = index
 					.split('_', 2)
-					.map(part => parseInt(part, 10));
+					.map((part) => parseInt(part, 10));
 				this.$store.commit('objects/setPosePosition', {
 					id: this.character.id,
 					posePositions: {
@@ -293,7 +305,7 @@ export default defineComponent({
 		// eslint-disable-next-line @typescript-eslint/camelcase
 		choose_component(component: string, id: string) {
 			const prioIdx = this.stylePriorities.findIndex(
-				stylePriority => stylePriority[0] === component
+				(stylePriority) => stylePriority[0] === component
 			);
 			this.stylePriorities.splice(prioIdx, 1);
 			this.stylePriorities.unshift([component, id]);

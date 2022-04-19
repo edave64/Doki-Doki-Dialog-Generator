@@ -61,24 +61,36 @@ export default defineComponent({
 				`${Math.floor(this.part!.offset[1] * -this.scaleY)}px`
 			);
 		},
+		background() {
+			let ret = '';
+			const size = this.backgroundSize;
+			const globalOffset = this.part!.offset || [0, 0];
+			for (let i = 0; i < this.part!.images.length; ++i) {
+				const image = this.part!.images[i];
+				const lookup = this.lookups[i];
+				if (!(lookup instanceof HTMLImageElement)) continue;
+				if (i > 0) ret += ', ';
+				const localOffset = image.offset || [0, 0];
+				const pos =
+					`${Math.floor(
+						(globalOffset[0] - localOffset[0]) * -this.scaleX
+					)}px ` +
+					`${Math.floor((globalOffset[1] - localOffset[1]) * -this.scaleY)}px`;
+				ret += `url('${lookup.src.replace("'", "\\'")}') ${pos} / ${size}`;
+			}
+			return ret;
+		},
 		style(): { [id: string]: string } {
-			const images = (this.lookups.filter(
-				lookup => lookup instanceof HTMLImageElement
-			) as HTMLImageElement[]).map(
-				lookup => `url('${lookup.src.replace("'", "\\'")}')`
-			);
 			return {
-				backgroundImage: images.join(','),
 				height: this.size + 'px',
 				width: this.size + 'px',
-				backgroundPosition: this.backgroundPosition,
-				backgroundSize: this.backgroundSize,
+				background: this.background,
 			};
 		},
 	},
 	async created() {
 		this.lookups = await Promise.all(
-			this.part!.images.map(image => {
+			this.part!.images.map((image) => {
 				if (typeof image.asset === 'string') {
 					return getAsset(image.asset, false);
 				} else {
