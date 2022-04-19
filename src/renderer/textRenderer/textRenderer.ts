@@ -53,6 +53,17 @@ export class TextRenderer {
 		this.rebuildParts();
 	}
 
+	public static errorSafe(str: string, baseStyle: ITextStyle) {
+		try {
+			return new TextRenderer(str, baseStyle);
+		} catch (e) {
+			return new TextRenderer(
+				'{color=#f00}' + (e as Error).message.replace(/\{/g, '\\{'),
+				baseStyle
+			);
+		}
+	}
+
 	public rebuildParts() {
 		this.renderParts = TextRenderer.getRenderParts(this.tokens, this.baseStyle);
 	}

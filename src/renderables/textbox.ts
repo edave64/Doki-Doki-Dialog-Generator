@@ -138,7 +138,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		const w = styleRenderer.nameboxWidth;
 		const style: ITextStyle = styleRenderer.nameboxStyle;
 
-		const render = new TextRenderer(name, style);
+		const render = TextRenderer.errorSafe(name, style);
 		await render.loadFonts();
 
 		render.fixAlignment(
@@ -158,7 +158,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		baseY: number,
 		maxLineWidth: number
 	): Promise<void> {
-		const render = new TextRenderer(
+		const render = TextRenderer.errorSafe(
 			this.obj.text,
 			this.textboxRenderer.textboxStyle
 		);
