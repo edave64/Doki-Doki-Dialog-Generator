@@ -61,6 +61,15 @@ export class ShowMessageEvent implements IEvent {
 	public constructor(public message: string) {}
 }
 
+export class ResolvableErrorEvent implements IEvent {
+	public static readonly kind = 'ResolvableErrorEvent';
+	public readonly kind = 'ResolvableErrorEvent';
+	public constructor(
+		public message: string,
+		public actions: { name: string; exec: () => void }[]
+	) {}
+}
+
 export class ColorPickedEvent implements IEvent {
 	public static readonly kind = 'ColorPickedEvent';
 	public readonly kind = 'ColorPickedEvent';

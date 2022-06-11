@@ -1,7 +1,10 @@
 import { EnvCapabilities, Folder, IEnvironment, Settings } from './environment';
 import { getAsset, registerAssetWithURL } from '@/asset-manager';
 import { Background } from '@/renderables/background';
-import eventBus, { ShowMessageEvent } from '@/eventbus/event-bus';
+import eventBus, {
+	ResolvableErrorEvent,
+	ShowMessageEvent,
+} from '@/eventbus/event-bus';
 import { EnvState } from '@/environments/envState';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IHistorySupport } from '@/plugins/vuex-history';
@@ -47,6 +50,7 @@ export class Electron implements IEnvironment {
 	private $store: Store<DeepReadonly<IRootState>> | null = null;
 	private bgInvalidation: number | null = null;
 	private readonly pendingContentPacks: string[] = [];
+	private readonly pendingContentPacksReplace: ReplaceContentPackAction[] = [];
 
 	private loadingContentPacksAllowed: Promise<void>;
 	public loadContentPacks!: () => void;
@@ -107,6 +111,10 @@ export class Electron implements IEnvironment {
 						return pack.dddg2Path || pack.dddg1Path;
 					})
 				);
+				if (!this.$store || !this.vuexHistory) {
+					packUrls.forEach((url) => this.pendingContentPacks.push(url));
+					return;
+				}
 				await this.vuexHistory!.transaction(async () => {
 					await this.$store!.dispatch('content/loadContentPacks', packUrls);
 				});
@@ -124,11 +132,32 @@ export class Electron implements IEnvironment {
 		this.electron.ipcRenderer.onConversation(
 			'replace-pack',
 			async (contentPack: ContentPack<string>) => {
-				await this.vuexHistory!.transaction(async () => {
-					await this.$store!.dispatch('content/replaceContentPack', {
-						processed: false,
-						contentPack,
-					} as ReplaceContentPackAction);
+				const action: ReplaceContentPackAction = {
+					processed: false,
+					contentPack,
+				};
+				if (!this.$store || !this.vuexHistory) {
+					this.pendingContentPacksReplace.push(action);
+				} else {
+					await this.vuexHistory!.transaction(async () => {
+						await this.$store!.dispatch('content/replaceContentPack', action);
+					});
+				}
+			}
+		);
+		this.electron.ipcRenderer.onConversation(
+			'resolvable-error',
+			(message: string, actions: string[]) => {
+				return new Promise((resolve, reject) => {
+					eventBus.fire(
+						new ResolvableErrorEvent(
+							message,
+							actions.map((action) => ({
+								exec: () => resolve(action),
+								name: action,
+							}))
+						)
+					);
 				});
 			}
 		);
@@ -153,7 +182,6 @@ export class Electron implements IEnvironment {
 				}
 			}
 		);
-		this.electron.ipcRenderer.send('init-dddg');
 	}
 
 	public updateDownloadFolder(): void {
@@ -329,14 +357,19 @@ export class Electron implements IEnvironment {
 		this.$store = store;
 		this.invalidateInstalledBGs();
 
-		if (this.pendingContentPacks.length > 0) {
-			this.vuexHistory.transaction(async () => {
+		this.vuexHistory.transaction(async () => {
+			if (this.pendingContentPacks.length > 0) {
 				await this.$store!.dispatch(
 					'content/loadContentPacks',
 					this.pendingContentPacks
 				);
-			});
-		}
+			}
+			if (this.pendingContentPacksReplace.length > 0) {
+				for (const action in this.pendingContentPacksReplace) {
+					await this.$store!.dispatch('content/replaceContentPack', action);
+				}
+			}
+		});
 	}
 
 	private invalidateInstalledBGs() {
