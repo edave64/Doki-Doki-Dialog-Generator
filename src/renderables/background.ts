@@ -1,6 +1,6 @@
 import { CompositeModes, RenderContext } from '@/renderer/rendererContext';
 import { getAAsset } from '@/asset-manager';
-import { IAsset } from '@/store/content';
+import { IAssetSwitch } from '@/store/content';
 import { ScalingModes } from '@/store/panels';
 import { DeepReadonly } from '@/util/readonly';
 import { SpriteFilter } from '@/store/sprite_options';
@@ -13,7 +13,7 @@ export interface IBackgroundRenderer {
 export class Background implements IBackgroundRenderer {
 	public constructor(
 		public readonly id: string,
-		public readonly assets: DeepReadonly<IAsset[]>,
+		public readonly assets: DeepReadonly<IAssetSwitch[]>,
 		public readonly flip: boolean,
 		public readonly scale: ScalingModes,
 		public readonly compositeMode: CompositeModes,
@@ -23,10 +23,9 @@ export class Background implements IBackgroundRenderer {
 	public async render(rx: RenderContext): Promise<void> {
 		const { screenWidth, screenHeight } = getConstants().Base;
 		const images = await Promise.all(
-			this.assets.map(asset => getAAsset(asset, rx.hq))
+			this.assets.map((asset) => getAAsset(asset, rx.hq))
 		);
 		for (const image of images) {
-			if (!(image instanceof HTMLImageElement)) return;
 			let x = 0;
 			let y = 0;
 			let w = image.width;

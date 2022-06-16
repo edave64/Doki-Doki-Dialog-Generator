@@ -1,6 +1,6 @@
 import { Module } from 'vuex';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAsset, BackgroundLookup } from './content';
+import { IAssetSwitch, BackgroundLookup } from './content';
 import { IRootState } from '.';
 import { arraySeeker } from '@/models/seekers';
 import { ICopyObjectsAction, IDeleteAllOfPanel } from './objects';
@@ -262,18 +262,18 @@ export default {
 		},
 		async fixContentPackRemoval(
 			{ state, rootGetters, commit, rootState },
-			oldContent: ContentPack<IAsset>
+			oldContent: ContentPack<IAssetSwitch>
 		) {
 			for (const panel of Object.values(state.panels)) {
 				const oldBackground = oldContent.backgrounds.find(
-					x => x.id === panel.background.current
+					(x) => x.id === panel.background.current
 				);
 				// Probably build in?
 				if (!oldBackground) return;
 
-				const newBackground = (rootGetters[
-					'content/getBackgrounds'
-				] as BackgroundLookup).get(panel.background.current);
+				const newBackground = (
+					rootGetters['content/getBackgrounds'] as BackgroundLookup
+				).get(panel.background.current);
 
 				if (!newBackground) {
 					if (rootState.content.current.backgrounds[0]) {
@@ -294,7 +294,7 @@ export default {
 					oldBackground.variants[panel.background.variant]
 				);
 				const newVariantIdx = newBackground.variants.findIndex(
-					variant => JSON.stringify(variant) === oldVariantJSON
+					(variant) => JSON.stringify(variant) === oldVariantJSON
 				);
 				if (newVariantIdx !== panel.background.variant) {
 					commit('setBackgroundVariant', {
@@ -316,56 +316,56 @@ export default {
 			addFilter(
 				action,
 				(id: string) => state.panels[id],
-				mutation => commit('setFilters', mutation)
+				(mutation) => commit('setFilters', mutation)
 			);
 		},
 		removeFilter({ state, commit }, action: IRemoveFilterAction) {
 			removeFilter(
 				action,
 				(id: string) => state.panels[id],
-				mutation => commit('setFilters', mutation)
+				(mutation) => commit('setFilters', mutation)
 			);
 		},
 		moveFilter({ state, commit }, action: IMoveFilterAction) {
 			moveFilter(
 				action,
 				(id: string) => state.panels[id],
-				mutation => commit('setFilters', mutation)
+				(mutation) => commit('setFilters', mutation)
 			);
 		},
 		setFilter({ state, commit }, action: ISetFilterAction) {
 			setFilter(
 				action,
 				(id: string) => state.panels[id],
-				mutation => commit('setFilters', mutation)
+				(mutation) => commit('setFilters', mutation)
 			);
 		},
 		backgroundAddFilter({ state, commit }, action: IAddFilterAction) {
 			addFilter(
 				action,
 				(id: string) => state.panels[id].background,
-				mutation => commit('backgroundSetFilters', mutation)
+				(mutation) => commit('backgroundSetFilters', mutation)
 			);
 		},
 		backgroundRemoveFilter({ state, commit }, action: IRemoveFilterAction) {
 			removeFilter(
 				action,
 				(id: string) => state.panels[id].background,
-				mutation => commit('backgroundSetFilters', mutation)
+				(mutation) => commit('backgroundSetFilters', mutation)
 			);
 		},
 		backgroundMoveFilter({ state, commit }, action: IMoveFilterAction) {
 			moveFilter(
 				action,
 				(id: string) => state.panels[id].background,
-				mutation => commit('backgroundSetFilters', mutation)
+				(mutation) => commit('backgroundSetFilters', mutation)
 			);
 		},
 		backgroundSetFilter({ state, commit }, action: ISetFilterAction) {
 			setFilter(
 				action,
 				(id: string) => state.panels[id].background,
-				mutation => commit('backgroundSetFilters', mutation)
+				(mutation) => commit('backgroundSetFilters', mutation)
 			);
 		},
 	},

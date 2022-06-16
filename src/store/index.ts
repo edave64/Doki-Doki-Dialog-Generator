@@ -2,7 +2,7 @@ import { createStore } from 'vuex';
 import objects, { IObjectsState } from './objects';
 import ui, { IUiState } from './ui';
 import panels, { IPanels } from './panels';
-import content, { IContentState, IAsset } from './content';
+import content, { IContentState, IAssetSwitch } from './content';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 
 export interface IRootState {
@@ -27,7 +27,7 @@ export default createStore({
 			{ dispatch, commit, state },
 			{ packs }: IRemovePacksAction
 		) {
-			const oldState: ContentPack<IAsset> = JSON.parse(
+			const oldState: ContentPack<IAssetSwitch> = JSON.parse(
 				JSON.stringify(state.content.current)
 			);
 

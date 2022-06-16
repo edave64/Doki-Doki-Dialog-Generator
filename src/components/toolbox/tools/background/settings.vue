@@ -22,7 +22,7 @@
 				<td class="arrow-col">
 					<button class="small-button" @click="seekVariant(-1)">&lt;</button>
 				</td>
-				<td style="text-align:center">Variant</td>
+				<td style="text-align: center">Variant</td>
 				<td class="arrow-col">
 					<button class="small-button" @click="seekVariant(1)">&gt;</button>
 				</td>
@@ -54,7 +54,7 @@
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAsset } from '@/store/content';
+import { IAssetSwitch } from '@/store/content';
 import {
 	ISetColorMutation,
 	ISetFlipMutation,
@@ -118,10 +118,10 @@ export default defineComponent({
 			const currentPanel = this.$store.state.panels.currentPanel;
 			return this.$store.state.panels.panels[currentPanel].background;
 		},
-		bgData(): DeepReadonly<Background<IAsset>> | null {
+		bgData(): DeepReadonly<Background<IAssetSwitch>> | null {
 			return (
 				this.$store.state.content.current.backgrounds.find(
-					background => background.id === this.currentBackgroundId
+					(background) => background.id === this.currentBackgroundId
 				) || null
 			);
 		},

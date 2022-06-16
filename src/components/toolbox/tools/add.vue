@@ -108,7 +108,7 @@ import { defineComponent } from 'vue';
 import { isWebPSupported } from '@/asset-manager';
 import { ICreateCharacterAction } from '@/store/objectTypes/characters';
 import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
-import { IAsset, ReplaceContentPackAction } from '@/store/content';
+import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
 import {
 	Character,
 	ContentPack,
@@ -149,10 +149,10 @@ export default defineComponent({
 		group: 'characters' as 'characters' | 'sprites' | 'ui',
 	}),
 	computed: {
-		characters(): DeepReadonly<Array<Character<IAsset>>> {
+		characters(): DeepReadonly<Array<Character<IAssetSwitch>>> {
 			return this.$store.state.content.current.characters;
 		},
-		sprites(): DeepReadonly<Array<Sprite<IAsset>>> {
+		sprites(): DeepReadonly<Array<Sprite<IAssetSwitch>>> {
 			return this.$store.state.content.current.sprites;
 		},
 		hasClipboardContent(): boolean {
@@ -165,12 +165,12 @@ export default defineComponent({
 		},
 	},
 	methods: {
-		assetSpriteBackground(sprite: Sprite<IAsset>) {
+		assetSpriteBackground(sprite: Sprite<IAssetSwitch>) {
 			return sprite.variants[0]
 				.map((variant) => `url('${variant.lq}')`)
 				.join(',');
 		},
-		assetPath(character: Character<IAsset>) {
+		assetPath(character: Character<IAssetSwitch>) {
 			return character.chibi
 				? environment.supports.lq
 					? character.chibi.lq
@@ -210,7 +210,8 @@ export default defineComponent({
 			const lastSegment = url.split('/').slice(-1)[0];
 			this.addNewCustomSprite(lastSegment, url);
 		},
-		async addSpriteToScene(sprite: Sprite<IAsset>) {
+		async addSpriteToScene(sprite: Sprite<IAssetSwitch>) {
+			debugger;
 			await this.vuexHistory.transaction(async () => {
 				await this.$store.dispatch('objects/createSprite', {
 					assets: sprite.variants[0],

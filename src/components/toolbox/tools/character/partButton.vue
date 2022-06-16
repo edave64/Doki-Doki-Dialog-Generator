@@ -9,8 +9,9 @@
 
 <script lang="ts">
 import { getAAsset, getAsset } from '@/asset-manager';
-import { ErrorAsset } from '@/models/error-asset';
-import { IAsset } from '@/store/content';
+import { IAsset } from '@/render-utils/assets/asset';
+import { ImageAsset } from '@/render-utils/assets/image-asset';
+import { IAssetSwitch } from '@/store/content';
 import { DeepReadonly } from '@/util/readonly';
 import { defineComponent, Prop } from 'vue';
 
@@ -22,7 +23,7 @@ export interface IPartButtonImage {
 }
 
 export interface IPartImage {
-	asset: IAsset | string;
+	asset: IAssetSwitch | string;
 	offset: DeepReadonly<[number, number]>;
 }
 
@@ -32,7 +33,7 @@ export default defineComponent({
 	props: {
 		part: {
 			required: true,
-		} as Prop<IPartButtonImage>,
+		} as Prop<DeepReadonly<IPartButtonImage>>,
 		value: {
 			required: true,
 		},
@@ -42,7 +43,7 @@ export default defineComponent({
 		},
 	},
 	data: () => ({
-		lookups: [] as Array<HTMLImageElement | ErrorAsset | null>,
+		lookups: [] as Array<IAsset | null>,
 		loaded: false,
 	}),
 	computed: {
@@ -70,7 +71,7 @@ export default defineComponent({
 			for (let i = 0; i < this.part!.images.length; ++i) {
 				const image = this.part!.images[i];
 				const lookup = this.lookups[i];
-				if (!(lookup instanceof HTMLImageElement)) continue;
+				if (!(lookup instanceof ImageAsset)) continue;
 				if (i > 0) ret += ', ';
 				const localOffset = image.offset || [0, 0];
 				const pos =
@@ -78,7 +79,7 @@ export default defineComponent({
 						(globalOffset[0] - localOffset[0]) * -this.scaleX
 					)}px ` +
 					`${Math.floor((globalOffset[1] - localOffset[1]) * -this.scaleY)}px`;
-				ret += `url('${lookup.src.replace("'", "\\'")}') ${pos} / ${size}`;
+				ret += `url('${lookup.html.src.replace("'", "\\'")}') ${pos} / ${size}`;
 			}
 			return ret;
 		},

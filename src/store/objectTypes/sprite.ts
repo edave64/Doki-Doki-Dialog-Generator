@@ -3,12 +3,13 @@ import { getAAsset } from '@/asset-manager';
 import { IObjectsState, ICreateObjectMutation, IObject } from '@/store/objects';
 import { MutationTree, ActionTree } from 'vuex';
 import { IRootState } from '..';
-import { IAsset } from '../content';
+import { IAssetSwitch } from '../content';
 import { baseProps } from './baseObjectProps';
+import { ImageAsset } from '@/render-utils/assets/image-asset';
 
 export interface ISprite extends IObject {
 	type: 'sprite';
-	assets: IAsset[];
+	assets: IAssetSwitch[];
 }
 
 export const spriteMutations: MutationTree<IObjectsState> = {};
@@ -18,7 +19,8 @@ let lastSpriteId = 0;
 export const spriteActions: ActionTree<IObjectsState, IRootState> = {
 	async createSprite({ commit, rootState }, command: ICreateSpriteAction) {
 		const asset = await getAAsset(command.assets[0], false);
-		if (!(asset instanceof HTMLImageElement)) return;
+		debugger;
+		if (!(asset instanceof ImageAsset)) return;
 		commit('create', {
 			object: {
 				...baseProps(),
@@ -39,5 +41,5 @@ export const spriteActions: ActionTree<IObjectsState, IRootState> = {
 };
 
 export interface ICreateSpriteAction extends ICommand {
-	readonly assets: IAsset[];
+	readonly assets: IAssetSwitch[];
 }

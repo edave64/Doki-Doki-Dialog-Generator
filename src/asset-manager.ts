@@ -2,9 +2,11 @@ import EventBus, {
 	AssetFailureEvent,
 	CustomAssetFailureEvent,
 } from './eventbus/event-bus';
-import { ErrorAsset } from './models/error-asset';
-import { IAsset } from './store/content';
+import { ErrorAsset } from './render-utils/assets/error-asset';
+import { IAssetSwitch } from './store/content';
 import environment from './environments/environment';
+import { IAsset } from './render-utils/assets/asset';
+import { ImageAsset } from './render-utils/assets/image-asset';
 
 let webpSupportPromise: Promise<boolean>;
 let heifSupportPromise: Promise<boolean>;
@@ -48,23 +50,20 @@ export function isHeifSupported(): Promise<boolean> {
 }
 
 const assetCache: {
-	[url: string]: Promise<HTMLImageElement | ErrorAsset> | undefined;
+	[url: string]: Promise<IAsset> | undefined;
 } = {};
-const customAssets: { [id: string]: Promise<HTMLImageElement> | undefined } =
-	{};
+const customAssets: { [id: string]: Promise<IAsset> | undefined } = {};
 
 export function getAAsset(
-	asset: IAsset,
+	asset: IAssetSwitch,
 	hq: boolean = true
-): Promise<HTMLImageElement | ErrorAsset> {
+): Promise<IAsset> {
 	return getAssetByUrl(environment.supports.lq && !hq ? asset.lq : asset.hq);
 }
 
-export async function getAssetByUrl(
-	url: string
-): Promise<HTMLImageElement | ErrorAsset> {
+export async function getAssetByUrl(url: string): Promise<IAsset> {
 	if (!assetCache[url]) {
-		assetCache[url] = (async (): Promise<HTMLImageElement | ErrorAsset> => {
+		assetCache[url] = (async (): Promise<IAsset> => {
 			try {
 				return await imagePromise(url);
 			} catch (e) {
@@ -89,11 +88,11 @@ export async function getAssetByUrl(
 	return assetCache[url]!;
 }
 
-function imagePromise(url): Promise<HTMLImageElement> {
+function imagePromise(url: string): Promise<ImageAsset> {
 	return new Promise((resolve, reject) => {
 		const img = new Image();
 		img.addEventListener('load', () => {
-			resolve(img);
+			resolve(new ImageAsset(img));
 		});
 		img.addEventListener('error', (e) => {
 			reject(e);
@@ -110,7 +109,7 @@ export const baseUrl = import.meta.env.BASE_URL || '.';
 export async function getAsset(
 	asset: string,
 	hq: boolean = true
-): Promise<HTMLImageElement | ErrorAsset> {
+): Promise<IAsset> {
 	if (customAssets[asset]) {
 		return !customAssets[asset];
 	}
@@ -131,11 +130,11 @@ export function registerAsset(asset: string, file: File): string {
 export function registerAssetWithURL(
 	asset: string,
 	url: string
-): Promise<HTMLImageElement> {
+): Promise<IAsset> {
 	return (customAssets[asset] = new Promise((resolve, reject) => {
 		const img = new Image();
 		img.addEventListener('load', () => {
-			resolve(img);
+			resolve(new ImageAsset(img));
 		});
 		img.addEventListener('error', (error) => {
 			EventBus.fire(new CustomAssetFailureEvent(error));

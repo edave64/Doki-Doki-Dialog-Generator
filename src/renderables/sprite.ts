@@ -28,15 +28,13 @@ export class Sprite extends AssetListRenderable<ISprite> {
 			readyResolve = resolve;
 		});
 		const assets = await Promise.all(
-			this.obj.assets.map(asset => getAAsset(asset))
+			this.obj.assets.map((asset) => getAAsset(asset))
 		);
 		let width = 0;
 		let height = 0;
 		for (const asset of assets) {
-			if (asset instanceof HTMLImageElement) {
-				if (asset.height > height) height = asset.height;
-				if (asset.width > width) width = asset.width;
-			}
+			if (asset.height > height) height = asset.height;
+			if (asset.width > width) width = asset.width;
 		}
 		this.canvasWidth = width;
 		this.canvasHeight = height;

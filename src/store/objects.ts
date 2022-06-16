@@ -20,7 +20,7 @@ import {
 import { poemMutations, poemActions } from './objectTypes/poem';
 import { IRootState } from '.';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAsset } from './content';
+import { IAssetSwitch } from './content';
 import {
 	addFilter,
 	IAddFilterAction,
@@ -290,8 +290,8 @@ export default {
 				width,
 			} as ISetSpriteSizeMutation);
 		},
-		fixContentPackRemoval(context, oldContent: ContentPack<IAsset>) {
-			Object.values(context.state.objects).map(obj => {
+		fixContentPackRemoval(context, oldContent: ContentPack<IAssetSwitch>) {
+			Object.values(context.state.objects).map((obj) => {
 				switch (obj.type) {
 					case 'character':
 						fixContentPackRemovalFromCharacter(context, obj.id, oldContent);
@@ -366,28 +366,28 @@ export default {
 			addFilter(
 				action,
 				(id: string) => state.objects[id],
-				mutation => commit('setFilters', mutation)
+				(mutation) => commit('setFilters', mutation)
 			);
 		},
 		removeFilter({ state, commit }, action: IRemoveFilterAction) {
 			removeFilter(
 				action,
 				(id: string) => state.objects[id],
-				mutation => commit('setFilters', mutation)
+				(mutation) => commit('setFilters', mutation)
 			);
 		},
 		moveFilter({ state, commit }, action: IMoveFilterAction) {
 			moveFilter(
 				action,
 				(id: string) => state.objects[id],
-				mutation => commit('setFilters', mutation)
+				(mutation) => commit('setFilters', mutation)
 			);
 		},
 		setFilter({ state, commit }, action: ISetFilterAction) {
 			setFilter(
 				action,
 				(id: string) => state.objects[id],
-				mutation => commit('setFilters', mutation)
+				(mutation) => commit('setFilters', mutation)
 			);
 		},
 		...spriteActions,
@@ -496,7 +496,7 @@ export interface ISetPositionAction extends ICommand {
 }
 
 export interface IObjectContentPackRemovalAction extends ICommand {
-	readonly oldPack: ContentPack<IAsset>;
+	readonly oldPack: ContentPack<IAssetSwitch>;
 }
 
 export interface ICopyObjectsAction {

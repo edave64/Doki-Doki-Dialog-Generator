@@ -8,7 +8,7 @@ import {
 	Pose,
 	Character as CharacterModel,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAsset } from '@/store/content';
+import { IAssetSwitch } from '@/store/content';
 import { DeepReadonly } from '@/util/readonly';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
@@ -20,7 +20,7 @@ import {
 export class Character extends AssetListRenderable<ICharacter> {
 	public constructor(
 		obj: DeepReadonly<ICharacter>,
-		private data: DeepReadonly<CharacterModel<IAsset>>
+		private data: DeepReadonly<CharacterModel<IAssetSwitch>>
 	) {
 		super(obj);
 	}
@@ -34,7 +34,7 @@ export class Character extends AssetListRenderable<ICharacter> {
 	}
 
 	protected getAssetList(): IDrawAssetsUnloaded[] {
-		const pose = getPose(this.data, this.obj) as Pose<IAsset>;
+		const pose = getPose(this.data, this.obj) as Pose<IAssetSwitch>;
 		const currentHeads = getHeads(this.data, this.obj);
 		const drawAssetsUnloaded: IDrawAssetsUnloaded[] = [];
 
@@ -77,11 +77,11 @@ export class Character extends AssetListRenderable<ICharacter> {
 
 	protected scaleable = true;
 	protected get canvasHeight(): number {
-		const pose = getPose(this.data, this.obj) as Pose<IAsset>;
+		const pose = getPose(this.data, this.obj) as Pose<IAssetSwitch>;
 		return pose.size[1];
 	}
 	protected get canvasWidth(): number {
-		const pose = getPose(this.data, this.obj) as Pose<IAsset>;
+		const pose = getPose(this.data, this.obj) as Pose<IAssetSwitch>;
 		return pose.size[0];
 	}
 

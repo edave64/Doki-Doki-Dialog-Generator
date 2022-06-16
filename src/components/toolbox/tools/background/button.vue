@@ -12,11 +12,12 @@
 <script lang="ts">
 import { getAAsset } from '@/asset-manager';
 import { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { BackgroundLookup, IAsset } from '@/store/content';
-import { ErrorAsset } from '@/models/error-asset';
+import { BackgroundLookup, IAssetSwitch } from '@/store/content';
 import { IPanel } from '@/store/panels';
 import { defineComponent } from 'vue';
 import { DeepReadonly } from '@/util/readonly';
+import { IAsset } from '@/render-utils/assets/asset';
+import { ImageAsset } from '@/render-utils/assets/image-asset';
 
 export default defineComponent({
 	props: {
@@ -27,7 +28,7 @@ export default defineComponent({
 	},
 	data: () => ({
 		isWebPSupported: null as boolean | null,
-		assets: [] as Array<HTMLImageElement | ErrorAsset>,
+		assets: [] as IAsset[],
 	}),
 	computed: {
 		background(): DeepReadonly<IPanel['background']> {
@@ -35,10 +36,9 @@ export default defineComponent({
 			return this.$store.state.panels.panels[currentPanel].background;
 		},
 
-		bgData(): Background<IAsset> | null {
-			const backgrounds: BackgroundLookup = this.$store.getters[
-				'content/getBackgrounds'
-			];
+		bgData(): Background<IAssetSwitch> | null {
+			const backgrounds: BackgroundLookup =
+				this.$store.getters['content/getBackgrounds'];
 			return backgrounds.get(this.backgroundId) || null;
 		},
 
@@ -65,10 +65,9 @@ export default defineComponent({
 				case 'buildin.transparent':
 					return {};
 			}
-			const urls = (this.assets.filter(
-				img => img instanceof HTMLImageElement
-			) as HTMLImageElement[])
-				.map(img => `url('${img.src}')`)
+			const urls = this.assets
+				.filter((img) => img instanceof ImageAsset)
+				.map((img) => `url('${(img as ImageAsset).html.src}')`)
 				.join(',');
 			return {
 				backgroundImage: urls,
@@ -78,7 +77,7 @@ export default defineComponent({
 	async created() {
 		if (this.bgData) {
 			this.assets = await Promise.all(
-				this.bgData.variants[0].map(asset => getAAsset(asset, false))
+				this.bgData.variants[0].map((asset) => getAAsset(asset, false))
 			);
 		}
 	},

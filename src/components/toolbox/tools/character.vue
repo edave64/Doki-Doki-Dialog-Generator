@@ -80,7 +80,7 @@ import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import Parts from './character/parts.vue';
 import { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAsset } from '@/store/content';
+import { IAssetSwitch } from '@/store/content';
 import { PanelMixin } from './panelMixin';
 import { DeepReadonly } from '@/util/readonly';
 import { defineComponent } from 'vue';
@@ -111,7 +111,7 @@ export default defineComponent({
 			if (obj.type !== 'character') return undefined!;
 			return obj as ICharacter;
 		},
-		charData(): DeepReadonly<Character<IAsset>> {
+		charData(): DeepReadonly<Character<IAssetSwitch>> {
 			return getData(this.$store, this.object);
 		},
 		label(): string {

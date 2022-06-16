@@ -1,8 +1,9 @@
 import { RenderAbortedException } from './renderAbortedException';
 import { Renderer } from './renderer';
-import { ErrorAsset } from '@/models/error-asset';
+import { ErrorAsset } from '@/render-utils/assets/error-asset';
 import { SpriteFilter } from '@/store/sprite_options';
 import { DeepReadonly } from '@/util/readonly';
+import { IAsset } from '@/render-utils/assets/asset';
 
 export type CompositeModes =
 	| 'source-over'
@@ -67,7 +68,13 @@ export class RenderContext {
 		if (this.aborted) throw new RenderAbortedException();
 		this.fsCtx.save();
 
-		const { font, align, x = 0, y = 0, text = '' } = {
+		const {
+			font,
+			align,
+			x = 0,
+			y = 0,
+			text = '',
+		} = {
 			...{
 				font: '20px aller',
 				align: 'left' as CanvasTextAlign,
@@ -104,7 +111,11 @@ export class RenderContext {
 		if (this.aborted) throw new RenderAbortedException();
 		this.fsCtx.save();
 
-		const { font, align, text = '' } = {
+		const {
+			font,
+			align,
+			text = '',
+		} = {
 			...{
 				font: '20px aller',
 				align: 'left' as CanvasTextAlign,
@@ -131,7 +142,7 @@ export class RenderContext {
 
 	public drawImage(
 		params: {
-			image: HTMLImageElement | ErrorAsset | Renderer;
+			image: IAsset | Renderer;
 			flip?: boolean;
 			composite?: CompositeModes;
 		} & IRPos &
@@ -204,7 +215,7 @@ export class RenderContext {
 			if (params.rotationAnchor) {
 				this.fsCtx.translate(rotX, rotY);
 			}
-			this.fsCtx.fillRect(-10, -1, 21, 3);
+			//this.fsCtx.fillRect(-10, -1, 21, 3);
 			this.fsCtx.rotate(params.rotation);
 			if (params.rotationAnchor) {
 				this.fsCtx.translate(-rotX, -rotY);
@@ -216,7 +227,7 @@ export class RenderContext {
 		if (image instanceof Renderer) {
 			image.paintOnto(this.fsCtx, { x: -w / 2, y: -h / 2, w, h });
 		} else {
-			this.fsCtx.drawImage(image as HTMLImageElement, -w / 2, -h / 2, w, h);
+			image.paintOnto(this.fsCtx);
 		}
 		this.fsCtx.restore();
 		this.fsCtx.globalCompositeOperation = 'source-over';
@@ -282,7 +293,7 @@ export class RenderContext {
 			image = (image as any).previewCanvas;
 		}
 		return this.fsCtx.createPattern(
-			(image as any) as CanvasImageSource,
+			image as any as CanvasImageSource,
 			repetition
 		)!;
 	}

@@ -17,11 +17,11 @@ import { mergeContentPacks } from './merge';
 import { IRootState } from '..';
 
 export interface IContentState {
-	contentPacks: Array<ContentPack<IAsset>>;
-	current: ContentPack<IAsset>;
+	contentPacks: Array<ContentPack<IAssetSwitch>>;
+	current: ContentPack<IAssetSwitch>;
 }
 
-export interface IAsset {
+export interface IAssetSwitch {
 	hq: string;
 	lq: string;
 	sourcePack: string;
@@ -35,8 +35,8 @@ function baseDir(url: string): string {
 const baseTypes = new Set(['png', 'gif', 'bmp', 'svg']);
 
 export type BackgroundLookup = Map<
-	Background<IAsset>['id'],
-	Background<IAsset>
+	Background<IAssetSwitch>['id'],
+	Background<IAssetSwitch>
 >;
 
 export default {
@@ -55,10 +55,16 @@ export default {
 		},
 	},
 	mutations: {
-		setContentPacks(state: IContentState, packs: Array<ContentPack<IAsset>>) {
+		setContentPacks(
+			state: IContentState,
+			packs: Array<ContentPack<IAssetSwitch>>
+		) {
 			state.contentPacks = packs;
 		},
-		setCurrentContent(state: IContentState, content: ContentPack<IAsset>) {
+		setCurrentContent(
+			state: IContentState,
+			content: ContentPack<IAssetSwitch>
+		) {
 			state.current = content;
 		},
 	},
@@ -70,8 +76,8 @@ export default {
 			commit('setContentPacks', newContentPacks);
 			commit(
 				'setCurrentContent',
-				(newContentPacks as Array<ContentPack<IAsset>>).reduce((acc, value) =>
-					mergeContentPacks(acc, value)
+				(newContentPacks as Array<ContentPack<IAssetSwitch>>).reduce(
+					(acc, value) => mergeContentPacks(acc, value)
 				)
 			);
 		},
@@ -96,7 +102,7 @@ export default {
 			commit('setContentPacks', packs);
 			commit(
 				'setCurrentContent',
-				(packs as Array<ContentPack<IAsset>>).reduce((acc, value) =>
+				(packs as Array<ContentPack<IAssetSwitch>>).reduce((acc, value) =>
 					mergeContentPacks(acc, value)
 				)
 			);
@@ -173,15 +179,21 @@ export default {
 	getters: {
 		getCharacters({
 			current,
-		}): Map<Character<IAsset>['id'], Character<IAsset>> {
-			const ret = new Map<Character<IAsset>['id'], Character<IAsset>>();
+		}): Map<Character<IAssetSwitch>['id'], Character<IAssetSwitch>> {
+			const ret = new Map<
+				Character<IAssetSwitch>['id'],
+				Character<IAssetSwitch>
+			>();
 			for (const character of current.characters) {
 				ret.set(character.id, character);
 			}
 			return ret;
 		},
 		getBackgrounds({ current }): BackgroundLookup {
-			const ret = new Map<Background<IAsset>['id'], Background<IAsset>>();
+			const ret = new Map<
+				Background<IAssetSwitch>['id'],
+				Background<IAssetSwitch>
+			>();
 			for (const background of current.backgrounds) {
 				ret.set(background.id, background);
 			}
@@ -191,14 +203,14 @@ export default {
 } as Module<IContentState, IRootState>;
 
 function sortByDependencies(
-	packs: Array<ContentPack<IAsset>>
-): Array<ContentPack<IAsset>> {
+	packs: Array<ContentPack<IAssetSwitch>>
+): Array<ContentPack<IAssetSwitch>> {
 	return packs;
 }
 
 async function convertContentPack(
 	pack: ContentPack<string>
-): Promise<ContentPack<IAsset>> {
+): Promise<ContentPack<IAssetSwitch>> {
 	const types: ReadonlySet<string> = new Set(
 		(await isWebPSupported()) ? ['webp', ...baseTypes] : baseTypes
 	);
@@ -207,16 +219,19 @@ async function convertContentPack(
 		['ext', '{lq:.lq:}.{format:webp:webp:png:png}'],
 	]);
 
-	return assetWalker(pack, (path: string, _type: 'image' | 'font'): IAsset => {
-		const hq = normalizePath(path, replacementMap, types, false);
-		const lq = normalizePath(path, replacementMap, types, true);
+	return assetWalker(
+		pack,
+		(path: string, _type: 'image' | 'font'): IAssetSwitch => {
+			const hq = normalizePath(path, replacementMap, types, false);
+			const lq = normalizePath(path, replacementMap, types, true);
 
-		return {
-			hq,
-			lq,
-			sourcePack: pack.packId || 'buildIn',
-		};
-	}) as ContentPack<IAsset>;
+			return {
+				hq,
+				lq,
+				sourcePack: pack.packId || 'buildIn',
+			};
+		}
+	) as ContentPack<IAssetSwitch>;
 }
 
 function error(msg: string, payload?: any): never {
@@ -231,7 +246,7 @@ export type ReplaceContentPackAction =
 			processed: false;
 	  }
 	| {
-			contentPack: ContentPack<IAsset>;
+			contentPack: ContentPack<IAssetSwitch>;
 			processed: true;
 	  };
 // tslint:enable: indent
