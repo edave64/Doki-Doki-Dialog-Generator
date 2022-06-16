@@ -4,6 +4,8 @@ This tools allows you to create scenes that look like they are from the game Dok
 
 A desktop version for window and linux is available [here](https://github.com/edave64/dddg-desktop-version/releases).
 
+The web version is hosted [here](https://edave64.github.io/Doki-Doki-Dialog-Generator/release/).
+
 ## Project setup
 
 To get all dependencies of the project, run:
