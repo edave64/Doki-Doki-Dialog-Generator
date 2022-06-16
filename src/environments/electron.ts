@@ -182,6 +182,7 @@ export class Electron implements IEnvironment {
 				}
 			}
 		);
+		this.electron.ipcRenderer.send('init-dddg');
 	}
 
 	public updateDownloadFolder(): void {
@@ -365,7 +366,7 @@ export class Electron implements IEnvironment {
 				);
 			}
 			if (this.pendingContentPacksReplace.length > 0) {
-				for (const action in this.pendingContentPacksReplace) {
+				for (const action of this.pendingContentPacksReplace) {
 					await this.$store!.dispatch('content/replaceContentPack', action);
 				}
 			}
