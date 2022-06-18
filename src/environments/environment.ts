@@ -77,7 +77,7 @@ function chooseEnv(): IEnvironment {
 	if ((window as any).isElectron) {
 		return new Electron();
 	}
-	if (window.navigator.msSaveOrOpenBlob !== undefined) {
+	if ('msSaveOrOpenBlob' in window.navigator) {
 		return new OldEdge();
 	}
 	return new Browser();

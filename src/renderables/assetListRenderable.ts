@@ -76,7 +76,7 @@ export abstract class AssetListRenderable<
 		for (const loadedDraw of loadedDraws) {
 			for (const asset of loadedDraw.assets) {
 				rx.drawImage({
-					image: asset,
+					image: asset as IAsset,
 					composite: loadedDraw.composite,
 					x: loadedDraw.offset[0],
 					y: loadedDraw.offset[1],

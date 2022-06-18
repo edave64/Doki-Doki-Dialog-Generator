@@ -16,9 +16,8 @@ export class WorkBatch<P, R> {
 	});
 	private pendingData: P[] = [];
 	private currentlyRunning = new Set<P>();
-	private resolveCurrentRun:
-		| null
-		| ((data: Array<R | undefined>) => void) = null;
+	private resolveCurrentRun: null | ((data: Array<R | undefined>) => void) =
+		null;
 	private rejectCurrentRun: null | (() => void) = null;
 	private returnData: Array<R | undefined> = [];
 
@@ -79,7 +78,7 @@ export class WorkBatch<P, R> {
 		try {
 			ret = await this.runner(data, isRunning);
 		} catch (e) {
-			this.reject(e);
+			this.reject(e as Error);
 		}
 		if (isRunning()) {
 			++this.state.completed;

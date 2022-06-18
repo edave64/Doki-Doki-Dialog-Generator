@@ -9,7 +9,7 @@ import {
 
 export class Sprite extends AssetListRenderable<ISprite> {
 	private assets!: IDrawAssets[];
-	protected ready!: Promise<void>;
+	protected ready: Promise<void> = null!;
 	protected canvasHeight: number = 0;
 	protected canvasWidth: number = 0;
 

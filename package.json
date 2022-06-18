@@ -5,6 +5,7 @@
 		"dev": "vite",
 		"build": "vite build",
 		"preview": "vite preview",
+		"typeCheck": "tsc --noEmit",
 		"assetConversions": "node ./scripts/asset-conversions.js",
 		"build:web": "vite build && node ./scripts/build-hashlist.js > ./dist/hash-list.json",
 		"build:electron": "vite build",

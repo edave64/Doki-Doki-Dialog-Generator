@@ -5,7 +5,7 @@ export class ImageAsset implements IAsset {
 	public readonly width: number;
 	public readonly height: number;
 
-	constructor(public readonly html: DeepReadonly<HTMLImageElement>) {
+	constructor(public readonly html: HTMLImageElement) {
 		this.width = html.width;
 		this.height = html.height;
 	}
