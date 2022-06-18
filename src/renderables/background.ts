@@ -2,7 +2,7 @@ import { CompositeModes, RenderContext } from '@/renderer/rendererContext';
 import { getAAsset } from '@/asset-manager';
 import { IAssetSwitch } from '@/store/content';
 import { ScalingModes } from '@/store/panels';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 import { SpriteFilter } from '@/store/sprite_options';
 import getConstants from '@/constants';
 

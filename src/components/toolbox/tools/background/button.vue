@@ -15,7 +15,7 @@ import { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist
 import { BackgroundLookup, IAssetSwitch } from '@/store/content';
 import { IPanel } from '@/store/panels';
 import { defineComponent } from 'vue';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 import { IAsset } from '@/render-utils/assets/asset';
 import { ImageAsset } from '@/render-utils/assets/image-asset';
 

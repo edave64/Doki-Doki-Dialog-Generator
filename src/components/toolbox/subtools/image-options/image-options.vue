@@ -55,7 +55,8 @@
 							v-for="filterType of filterTypes"
 							:key="filterType"
 							:value="filterType"
-							>{{ getFilterLabel(filterType) }}
+						>
+							{{ getFilterLabel(filterType) }}
 						</option>
 					</select>
 					<button
@@ -244,7 +245,7 @@ import Slider from '@/components/toolbox/subtools/color/slider.vue';
 import Color from '@/components/toolbox/subtools/color/color.vue';
 import { defineComponent, Prop, PropType } from 'vue';
 import { CompositeModes } from '@/renderer/rendererContext';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
 import {
 	IAddFilterAction,
 	IHasSpriteFilters,
@@ -256,7 +257,6 @@ import {
 	percentageValue,
 	SpriteFilter,
 } from '@/store/sprite_options';
-import { exhaust } from '@/util/exhaust';
 import { IColor } from '@/util/colors/color';
 import { HSLAColor } from '@/util/colors/hsl';
 import L from '@/components/ui/link.vue';
@@ -315,8 +315,7 @@ export default defineComponent({
 				case 'panel':
 					return this.$store.state.panels.panels[this.id!];
 				default:
-					exhaust(this.type);
-					return null!;
+					throw new UnreachableCaseError(this.type);
 			}
 		},
 		compositionMode: {
@@ -337,8 +336,7 @@ export default defineComponent({
 						case 'panel':
 							break;
 						default:
-							exhaust(this.type);
-							break;
+							throw new UnreachableCaseError(this.type);
 					}
 				});
 			},
@@ -443,8 +441,8 @@ export default defineComponent({
 			},
 		},
 		hueStops(): string[] {
-			const stops = this.eightsStops(i => new HSLAColor(i, 1, 0.5, 1));
-			return stops.map(stop => stop.toRgb().toCss());
+			const stops = this.eightsStops((i) => new HSLAColor(i, 1, 0.5, 1));
+			return stops.map((stop) => stop.toRgb().toCss());
 		},
 	},
 	methods: {

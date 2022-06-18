@@ -1,4 +1,4 @@
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 import mitt from 'mitt';
 
 const eventBus = mitt();

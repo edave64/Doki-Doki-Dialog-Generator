@@ -1,6 +1,6 @@
 import { ICommand } from '@/eventbus/command';
 import { CompositeModes } from '@/renderer/rendererContext';
-import { exhaust } from '@/util/exhaust';
+import { UnreachableCaseError } from 'ts-essentials';
 
 export type SpriteFilter =
 	| INumericSpriteFilter<'blur'>
@@ -93,7 +93,7 @@ export function addFilter(
 			};
 			break;
 		default:
-			exhaust(action.type);
+			throw new UnreachableCaseError(action.type);
 	}
 	filters.splice(action.idx, 0, newFilter);
 
@@ -168,7 +168,7 @@ export function setFilter(
 export type SetFilterValue = ISetFilterValue | ISetDropShadowFilter;
 
 export function applyFilter(obj: IHasSpriteFilters, command: SetFilterValue) {
-	const filter = obj.filters.find(f => f.type === command.type);
+	const filter = obj.filters.find((f) => f.type === command.type);
 	if (!filter) return;
 	Object.assign(filter, command);
 }

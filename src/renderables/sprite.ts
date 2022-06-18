@@ -1,6 +1,6 @@
 import { getAAsset } from '@/asset-manager';
 import { ISprite } from '@/store/objectTypes/sprite';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 import {
 	AssetListRenderable,
 	IDrawAssets,

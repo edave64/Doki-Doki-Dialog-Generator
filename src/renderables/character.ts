@@ -9,7 +9,7 @@ import {
 	Character as CharacterModel,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAssetSwitch } from '@/store/content';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import {

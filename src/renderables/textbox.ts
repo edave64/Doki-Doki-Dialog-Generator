@@ -12,7 +12,7 @@ import { Corrupted } from './textboxRenderers/corrupt';
 import { Custom } from './textboxRenderers/custom';
 import { None } from './textboxRenderers/none';
 import { CustomPlus } from './textboxRenderers/custom_plus';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 
 export const styleRenderers: ReadonlyArray<ITextboxRendererClass> = [
 	Default,

@@ -28,9 +28,9 @@
 					<td>
 						<select id="current_talking" v-model="talkingObjId" @keydown.stop>
 							<option value="$null$">No-one</option>
-							<option v-for="[id, label] in nameList" :key="id" :value="id">{{
-								label
-							}}</option>
+							<option v-for="[id, label] in nameList" :key="id" :value="id">
+								{{ label }}
+							</option>
 							<option value="$other$">Other</option>
 						</select>
 					</td>
@@ -85,7 +85,7 @@
 								<input
 									id="custom_namebox_width"
 									type="number"
-									style="width: 48px;"
+									style="width: 48px"
 									:placeholder="nameboxWidthDefault"
 									v-model.number="customNameboxWidth"
 									:disabled="overrideColor"
@@ -187,11 +187,11 @@ import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import { defineComponent } from 'vue';
-import { exhaust } from '@/util/exhaust';
 import { PanelMixin } from './panelMixin';
 import { genericSetable } from '@/util/simpleSettable';
 import ObjectTool, { Handler } from './object-tool.vue';
 import getConstants from '@/constants';
+import { UnreachableCaseError } from 'ts-essentials';
 
 const setable = genericSetable<ITextBox>();
 
@@ -215,9 +215,8 @@ export default defineComponent({
 			return getConstants().TextBox.NameboxWidth;
 		},
 		object(): ITextBox {
-			const obj = this.$store.state.objects.objects[
-				this.$store.state.ui.selection!
-			];
+			const obj =
+				this.$store.state.objects.objects[this.$store.state.ui.selection!];
 			if (obj.type !== 'textBox') return undefined!;
 			return obj as ITextBox;
 		},
@@ -256,8 +255,7 @@ export default defineComponent({
 						case 'nameboxStroke':
 							return this.object.customNameboxStroke;
 						default:
-							exhaust(this.colorSelect);
-							return '';
+							throw new UnreachableCaseError(this.colorSelect);
 					}
 				},
 				set: (color: string) => {
@@ -328,9 +326,8 @@ export default defineComponent({
 			'objects/setNameboxWidth'
 		),
 		nameList(): [string, string][] {
-			const panel = this.$store.state.objects.panels[
-				this.$store.state.panels.currentPanel
-			];
+			const panel =
+				this.$store.state.objects.panels[this.$store.state.panels.currentPanel];
 
 			const ret: [string, string][] = [];
 
@@ -362,8 +359,7 @@ export default defineComponent({
 				case 'nameboxStroke':
 					return 'Namebox text stroke';
 				default:
-					exhaust(this.colorSelect);
-					return '';
+					throw new UnreachableCaseError(this.colorSelect);
 			}
 		},
 	},

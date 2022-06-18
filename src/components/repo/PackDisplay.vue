@@ -83,7 +83,7 @@ import { defineComponent, PropType } from 'vue';
 import { IRemovePacksAction } from '@/store';
 import L from '@/components/ui/link.vue';
 import { Pack, Repo } from '@/models/repo';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 import Toggle from '../toggle.vue';
 
 const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [

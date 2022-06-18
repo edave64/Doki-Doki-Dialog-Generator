@@ -122,7 +122,7 @@ import { ICreateChoicesAction } from '@/store/objectTypes/choices';
 import { ICreateNotificationAction } from '@/store/objectTypes/notification';
 import { ICreatePoemAction } from '@/store/objectTypes/poem';
 import environment, { Folder } from '@/environments/environment';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 import { IPasteFromClipboardAction } from '@/store/objects';
 
 defineComponent;

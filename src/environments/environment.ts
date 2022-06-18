@@ -6,7 +6,7 @@ import { EnvState } from './envState';
 import { IHistorySupport } from '@/plugins/vuex-history';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import { IPack as ICPack } from '@edave64/dddg-repo-filters/dist/pack';
 

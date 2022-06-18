@@ -13,7 +13,7 @@ import { IRootState } from '@/store';
 import { ReplaceContentPackAction } from '@/store/content';
 import { reactive } from 'vue';
 import { Repo } from '@/models/repo';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 

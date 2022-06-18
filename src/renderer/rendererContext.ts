@@ -2,8 +2,8 @@ import { RenderAbortedException } from './renderAbortedException';
 import { Renderer } from './renderer';
 import { ErrorAsset } from '@/render-utils/assets/error-asset';
 import { SpriteFilter } from '@/store/sprite_options';
-import { DeepReadonly } from '@/util/readonly';
 import { IAsset } from '@/render-utils/assets/asset';
+import { DeepReadonly } from 'ts-essentials';
 
 export type CompositeModes =
 	| 'source-over'

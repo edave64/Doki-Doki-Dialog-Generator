@@ -72,7 +72,8 @@
 									v-for="(pose, idx) of previewPoses"
 									:key="idx"
 									:value="idx"
-									>{{ normalizeName(pose.name) }}
+								>
+									{{ normalizeName(pose.name) }}
 								</option>
 							</select>
 							<d-fieldset title="Offset">
@@ -151,7 +152,7 @@ import { getAssetByUrl } from '@/asset-manager';
 import { Renderer } from '@/renderer/renderer';
 import { WorkBatch } from '@/util/workBatch';
 import { defineComponent } from 'vue';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 import L from '@/components/ui/link.vue';
 
 const uploadedExpressionsPack: ContentPack<string> = {
@@ -261,7 +262,7 @@ export default defineComponent({
 		);
 		if (this.initHeadGroup) {
 			this.headGroup = this.availableHeadGroups.find(
-				group => group.name === this.initHeadGroup
+				(group) => group.name === this.initHeadGroup
 			)!;
 		}
 		this.applySingleHeadGroup();
@@ -333,7 +334,7 @@ export default defineComponent({
 				asset.width + this.offsetX,
 				asset.height + this.offsetY
 			);
-			const blob = await renderer.renderToBlob(async rx => {
+			const blob = await renderer.renderToBlob(async (rx) => {
 				rx.drawImage({
 					image: asset,
 					x: this.offsetX,
@@ -425,7 +426,7 @@ export default defineComponent({
 			this.$nextTick(async () => {
 				if (this.uploadsFinished) return;
 				const renderer = new Renderer(pose.width, pose.height);
-				await renderer.render(async rx => {
+				await renderer.render(async (rx) => {
 					await charRenderer.render(false, rx);
 				});
 
@@ -445,13 +446,13 @@ export default defineComponent({
 			this.uploadsFinished = true;
 			const processedExpressions = (
 				await this.batchRunner.run(this.uploadedExpressions)
-			).filter(exp => exp) as string[];
+			).filter((exp) => exp) as string[];
 
 			const storeCharacter = this.$store.state.content.current.characters.find(
-				char => char.id === this.character
+				(char) => char.id === this.character
 			)!;
 			let character = uploadedExpressionsPack.characters.find(
-				char => char.id === this.character
+				(char) => char.id === this.character
 			);
 			if (!character) {
 				character = {
@@ -534,7 +535,7 @@ export default defineComponent({
 			if (!e.dataTransfer) return;
 			e.dataTransfer.effectAllowed = 'none';
 			if (
-				!Array.from(e.dataTransfer.items).find(item =>
+				!Array.from(e.dataTransfer.items).find((item) =>
 					item.type.match(/^image.*$/)
 				)
 			) {
@@ -551,19 +552,19 @@ export default defineComponent({
 	computed: {
 		characterData(): DeepReadonly<CharacterModel<IAsset>> {
 			return this.$store.state.content.current.characters.find(
-				char => char.id === this.character
+				(char) => char.id === this.character
 			)!;
 		},
 
 		availableHeadGroups(): IHeadGroup[] {
 			const characterData = this.characterData;
 			const headTypes = Object.keys(characterData.heads);
-			return headTypes.map(headTypeKey => {
+			return headTypes.map((headTypeKey) => {
 				const headType = characterData.heads[headTypeKey];
 
 				return {
 					name: headTypeKey,
-					preview: headType.variants[0].map(asset => asset.lq),
+					preview: headType.variants[0].map((asset) => asset.lq),
 					partsFiles: partFiles[headTypeKey] || [],
 					imagePatching: {
 						mask: masks[headTypeKey],
@@ -575,7 +576,7 @@ export default defineComponent({
 
 		hasParts(): boolean {
 			return !!this.availableHeadGroups.find(
-				headGroup => headGroup.partsFiles.length > 0
+				(headGroup) => headGroup.partsFiles.length > 0
 			);
 		},
 
@@ -634,7 +635,7 @@ export default defineComponent({
 		},
 
 		expressionModels(): IAsset[][] {
-			return this.uploadedExpressions.map(expression => [
+			return this.uploadedExpressions.map((expression) => [
 				{
 					hq: expression,
 					lq: expression,
@@ -646,7 +647,7 @@ export default defineComponent({
 		temporaryCharacterModel(): CharacterModel<IAsset> {
 			const poses = this.previewPoses;
 			const character = this.$store.state.content.current.characters.find(
-				char => char.id === this.character
+				(char) => char.id === this.character
 			)!;
 			const offsetX = this.offsetX;
 			const offsetY = this.offsetY;
@@ -673,11 +674,10 @@ export default defineComponent({
 								poses: poses.map((pose, idx) => {
 									const styleGroup = character.styleGroups[pose.styleGroupId];
 									const style = styleGroup.styles[pose.styleId];
-									const renderCommands = style.poses[
-										pose.poseId
-									].renderCommands.slice(0);
+									const renderCommands =
+										style.poses[pose.poseId].renderCommands.slice(0);
 									let headIdx = renderCommands.findIndex(
-										command => command.type === 'head'
+										(command) => command.type === 'head'
 									);
 									const headRenderCommand = renderCommands[headIdx];
 									const newHeadCommand: IHeadCommand = {

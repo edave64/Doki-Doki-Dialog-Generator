@@ -2,7 +2,7 @@ import { RenderContext } from '@/renderer/rendererContext';
 import { getAAsset } from '@/asset-manager';
 import { PoseRenderCommand } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAssetSwitch } from '@/store/content';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 import { IObject } from '@/store/objects';
 import { OffscreenRenderable } from './offscreenRenderable';
 import { Store } from 'vuex';

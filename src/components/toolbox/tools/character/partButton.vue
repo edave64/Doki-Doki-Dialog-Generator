@@ -12,7 +12,7 @@ import { getAAsset, getAsset } from '@/asset-manager';
 import { IAsset } from '@/render-utils/assets/asset';
 import { ImageAsset } from '@/render-utils/assets/image-asset';
 import { IAssetSwitch } from '@/store/content';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 import { defineComponent, Prop } from 'vue';
 
 export interface IPartButtonImage {

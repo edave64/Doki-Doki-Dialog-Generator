@@ -45,7 +45,7 @@ import { SelectedEvent } from '../types';
 import PackDisplay from '../PackDisplay.vue';
 import { defineComponent } from 'vue';
 import { Pack, Repo } from '@/models/repo';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 import Button from '@/components/toolbox/tools/background/button.vue';
 import eventBus, { VueErrorEvent } from '@/eventbus/event-bus';
 

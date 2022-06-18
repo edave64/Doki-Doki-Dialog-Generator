@@ -85,7 +85,7 @@ import {
 	ISetPosePositionMutation,
 	ISetStyleAction,
 } from '@/store/objectTypes/characters';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 import { defineComponent, PropType } from 'vue';
 
 interface IPartStyleGroup {

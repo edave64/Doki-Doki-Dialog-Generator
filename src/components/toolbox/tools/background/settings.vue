@@ -63,7 +63,7 @@ import {
 	IPanel,
 } from '@/store/panels';
 import { defineComponent } from 'vue';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 
 export default defineComponent({
 	components: { Toggle, DFieldset },

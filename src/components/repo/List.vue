@@ -57,7 +57,7 @@ import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 import run from '@edave64/dddg-repo-filters/dist/main';
 import { defineComponent, PropType } from 'vue';
 import { Pack, Repo } from '@/models/repo';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 
 const pageKeyMoveBy = 10;
 
@@ -109,13 +109,13 @@ export default defineComponent({
 			return filtered;
 		},
 		listById(): DeepReadonly<Map<string, IPack>> {
-			return new Map(this.packs.map(pack => [pack.id, pack]));
+			return new Map(this.packs.map((pack) => [pack.id, pack]));
 		},
 		uniqueCharacters(): string[] {
 			return Array.from(
 				new Set(
-					this.packs.flatMap(pack =>
-						pack.characters.map(char => char.toLowerCase())
+					this.packs.flatMap((pack) =>
+						pack.characters.map((char) => char.toLowerCase())
 					)
 				)
 			);
@@ -126,7 +126,9 @@ export default defineComponent({
 			((this.$refs.tbody as any).$el as HTMLElement).focus();
 		},
 		keydownHandler(event: KeyboardEvent) {
-			const indexOf = this.list.findIndex(pack => pack.id === this.focusedItem);
+			const indexOf = this.list.findIndex(
+				(pack) => pack.id === this.focusedItem
+			);
 			console.log(indexOf);
 			switch (event.key) {
 				case 'Enter':
@@ -278,8 +280,7 @@ export default defineComponent({
 	transition: all 0.15s;
 }
 
-.tbody-group-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */
- {
+.tbody-group-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
 	opacity: 0;
 }
 

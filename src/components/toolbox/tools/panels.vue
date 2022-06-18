@@ -153,7 +153,7 @@ import {
 import { isHeifSupported, isWebPSupported } from '@/asset-manager';
 import { ITextBox } from '@/store/objectTypes/textbox';
 import { SceneRenderer } from '@/renderables/scene-renderer';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 import environment from '@/environments/environment';
 import eventBus, { ShowMessageEvent } from '@/eventbus/event-bus';
 import { IObject } from '@/store/objects';

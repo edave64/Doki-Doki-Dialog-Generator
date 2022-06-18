@@ -31,7 +31,7 @@ import eventBus, {
 import { IObject, ISetObjectPositionMutation } from '@/store/objects';
 import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
 import { SceneRenderer } from '@/renderables/scene-renderer';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 import { defineComponent } from 'vue';
 import getConstants from '@/constants';
 
@@ -175,7 +175,7 @@ export default defineComponent({
 
 			const objects = this.sceneRender.objectsAt(sx, sy);
 
-			const currentObjectIdx = objects.findIndex(id => id === this.selection);
+			const currentObjectIdx = objects.findIndex((id) => id === this.selection);
 			let selectedObject: string | null;
 
 			if (currentObjectIdx === 0) {

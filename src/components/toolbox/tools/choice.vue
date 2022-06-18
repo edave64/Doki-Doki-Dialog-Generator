@@ -50,7 +50,7 @@ import {
 	IChoices,
 	IRemoveChoiceAction,
 } from '@/store/objectTypes/choices';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 import { ComponentCustomProperties, defineComponent } from 'vue';
 import { genericSetable } from '@/util/simpleSettable';
 import ObjectTool, { Handler } from './object-tool.vue';
@@ -71,9 +71,8 @@ export default defineComponent({
 	}),
 	computed: {
 		object(): IChoices {
-			const obj = this.$store.state.objects.objects[
-				this.$store.state.ui.selection!
-			];
+			const obj =
+				this.$store.state.objects.objects[this.$store.state.ui.selection!];
 			if (obj.type !== 'choice') return undefined!;
 			return obj as IChoices;
 		},

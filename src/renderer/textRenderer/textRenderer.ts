@@ -1,7 +1,7 @@
 import { ICommandToken, Token, tokenize } from './tokenizer';
 
 import textCommands from './textCommands';
-import { exhaust } from '@/util/exhaust';
+import { UnreachableCaseError } from 'ts-essentials';
 
 export interface ITextStyle {
 	fontName: string;
@@ -178,6 +178,8 @@ export class TextRenderer {
 					}
 					lastChar = i;
 					break;
+				default:
+					throw new UnreachableCaseError(state);
 			}
 		}
 
@@ -337,7 +339,8 @@ export class TextRenderer {
 		let currentStyle = baseStyle;
 		let currentTag: ICommandToken | null = null;
 		for (const token of tokens) {
-			switch (token.type) {
+			const type = token.type;
+			switch (type) {
 				case 'command':
 					if (TextRenderer.textCommands.has(token.commandName)) {
 						styleStack.push(currentStyle);
@@ -389,6 +392,9 @@ export class TextRenderer {
 							y: 0,
 						});
 					}
+					break;
+				default:
+					throw new UnreachableCaseError(type);
 			}
 		}
 		return renderParts;
@@ -448,7 +454,7 @@ export class TextRenderer {
 					}
 				}
 			} else {
-				exhaust(item);
+				throw new UnreachableCaseError(item);
 			}
 		}
 

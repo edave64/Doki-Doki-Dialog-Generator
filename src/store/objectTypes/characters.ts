@@ -18,7 +18,7 @@ import {
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAssetSwitch } from '../content';
 import { IRootState } from '..';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 import { baseProps } from './baseObjectProps';
 import getConstants from '@/constants';
 

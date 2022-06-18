@@ -2,7 +2,7 @@ import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { Background, color, IBackgroundRenderer } from './background';
 import { IPanel } from '@/store/panels';
-import { DeepReadonly } from '@/util/readonly';
+import { DeepReadonly } from 'ts-essentials';
 import { ISprite } from '@/store/objectTypes/sprite';
 import { Sprite } from './sprite';
 import { Character } from './character';
