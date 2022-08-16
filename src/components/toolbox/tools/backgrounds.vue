@@ -9,7 +9,7 @@
 			v-else-if="imageOptions"
 			type="background"
 			title=""
-			:id="$store.state.panels.currentPanel"
+			:panel-id="$store.state.panels.currentPanel"
 			no-composition
 			@leave="imageOptions = false"
 		/>
@@ -53,7 +53,7 @@ import BackgroundButton from './background/button.vue';
 import BackgroundSettings from './background/settings.vue';
 import ImageOptions from '../subtools/image-options/image-options.vue';
 import DropTarget from '../drop-target.vue';
-import { IAsset, ReplaceContentPackAction } from '@/store/content';
+import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
 import {
 	Background,
 	ContentPack,
@@ -108,7 +108,7 @@ export default defineComponent({
 				});
 			},
 		},
-		backgrounds(): Array<Background<IAsset>['id']> {
+		backgrounds(): Array<Background<IAssetSwitch>['id']> {
 			return [
 				...this.$store.state.content.current.backgrounds.map(
 					(background) => background.id
@@ -124,7 +124,7 @@ export default defineComponent({
 		},
 	},
 	methods: {
-		setBackground(id: Background<IAsset>['id']) {
+		setBackground(id: Background<IAssetSwitch>['id']) {
 			this.$store.commit('panels/setCurrentBackground', {
 				current: id,
 				panelId: this.$store.state.panels.currentPanel,
@@ -148,7 +148,7 @@ export default defineComponent({
 			this.addNewCustomBackground(lastSegment, lastSegment, url);
 		},
 		addNewCustomBackground(
-			id: Background<IAsset>['id'],
+			id: Background<IAssetSwitch>['id'],
 			label: string,
 			url: string
 		) {

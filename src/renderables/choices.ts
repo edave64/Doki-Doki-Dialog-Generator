@@ -65,7 +65,7 @@ export class Choice extends ScalingRenderable<IChoices> {
 	private async updateChoiceBounds() {
 		const constants = getConstants();
 		this.choiceRenderers = this.obj.choices.map(
-			choice =>
+			(choice) =>
 				new TextRenderer(choice.text || ' ', constants.Choices.ChoiceTextStyle)
 		);
 

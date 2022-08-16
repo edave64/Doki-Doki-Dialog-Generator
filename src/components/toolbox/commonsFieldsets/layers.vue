@@ -45,13 +45,14 @@ export default defineComponent({
 		} as Prop<IObject>,
 	},
 	computed: {
-		onTop: genericSetable<IObject>()('onTop', 'objects/setOnTop', true),
+		onTop: genericSetable<IObject>()('onTop', 'panels/setOnTop', true),
 	},
 	methods: {
 		shiftLayer(delta: number) {
 			this.vuexHistory.transaction(() => {
-				this.$store.dispatch('objects/shiftLayer', {
+				this.$store.dispatch('panels/shiftLayer', {
 					id: this.object!.id,
+					panelId: this.object!.panelId,
 					delta,
 				} as IObjectShiftLayerAction);
 			});

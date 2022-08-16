@@ -88,7 +88,7 @@ export async function getAssetByUrl(url: string): Promise<IAsset> {
 	})());
 }
 
-export const baseUrl = import.meta.env.BASE_URL || '.';
+export const baseUrl = (import.meta as any).env.BASE_URL || '.';
 
 export async function getAsset(
 	asset: string,

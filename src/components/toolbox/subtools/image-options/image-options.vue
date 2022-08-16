@@ -243,6 +243,8 @@ import DFlow from '@/components/ui/d-flow.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import Slider from '@/components/toolbox/subtools/color/slider.vue';
 import Color from '@/components/toolbox/subtools/color/color.vue';
+import { IObject, ISetCompositionMutation } from '@/store/objects';
+import { IPanel } from '@/store/panels';
 import { defineComponent, Prop, PropType } from 'vue';
 import { CompositeModes } from '@/renderer/rendererContext';
 import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
@@ -252,7 +254,6 @@ import {
 	IMoveFilterAction,
 	INumericSpriteFilter,
 	IRemoveFilterAction,
-	ISetCompositionMutation,
 	ISetFilterAction,
 	percentageValue,
 	SpriteFilter,
@@ -291,9 +292,10 @@ export default defineComponent({
 		title: {
 			type: String,
 		},
-		id: {
+		id: {} as Prop<IObject['id']>,
+		panelId: {
 			required: true,
-		} as Prop<string | number>,
+		} as Prop<IPanel['id']>,
 		noComposition: {
 			type: Boolean,
 			default: false,
@@ -309,11 +311,13 @@ export default defineComponent({
 		object(): DeepReadonly<IHasSpriteFilters> {
 			switch (this.type) {
 				case 'object':
-					return this.$store.state.objects.objects[this.id!];
+					return this.$store.state.panels.panels[this.panelId!].objects[
+						this.id!
+					];
 				case 'background':
-					return this.$store.state.panels.panels[this.id!].background;
+					return this.$store.state.panels.panels[this.panelId!].background;
 				case 'panel':
-					return this.$store.state.panels.panels[this.id!];
+					return this.$store.state.panels.panels[this.panelId!];
 				default:
 					throw new UnreachableCaseError(this.type);
 			}
@@ -326,8 +330,9 @@ export default defineComponent({
 				this.vuexHistory.transaction(() => {
 					switch (this.type) {
 						case 'object':
-							this.$store.commit('objects/setComposition', {
+							this.$store.commit('panels/setComposition', {
 								id: this.id,
+								panelId: this.panelId,
 								composite,
 							} as ISetCompositionMutation);
 							break;
@@ -464,7 +469,7 @@ export default defineComponent({
 		objectTypeScope(command: string): string {
 			switch (this.type) {
 				case 'object':
-					return 'objects/' + command;
+					return 'panels/object_' + command;
 				case 'background':
 					return (
 						'panels/background' + command[0].toUpperCase() + command.slice(1)
@@ -477,6 +482,7 @@ export default defineComponent({
 			this.vuexHistory.transaction(() => {
 				this.$store.dispatch(this.objectTypeScope('addFilter'), {
 					id: this.id,
+					panelId: this.panelId,
 					type: this.addEffectSelection,
 					idx: this.currentFilterIdx + 1,
 				} as IAddFilterAction);
@@ -490,6 +496,7 @@ export default defineComponent({
 			this.vuexHistory.transaction(() => {
 				this.$store.dispatch(this.objectTypeScope('removeFilter'), {
 					id: this.id,
+					panelId: this.panelId,
 					idx: this.currentFilterIdx,
 				} as IRemoveFilterAction);
 				return;
@@ -499,6 +506,7 @@ export default defineComponent({
 			this.vuexHistory.transaction(() => {
 				this.$store.dispatch(this.objectTypeScope('moveFilter'), {
 					id: this.id,
+					panelId: this.panelId,
 					idx: this.currentFilterIdx,
 					moveBy,
 				} as IMoveFilterAction);
@@ -506,10 +514,11 @@ export default defineComponent({
 				return;
 			});
 		},
-		setValue(value: Omit<ISetFilterAction, 'id' | 'idx'>) {
+		setValue(value: Omit<ISetFilterAction, 'id' | 'panelId' | 'idx'>) {
 			this.vuexHistory.transaction(() => {
 				this.$store.dispatch(this.objectTypeScope('setFilter'), {
 					id: this.id,
+					panelId: this.panelId,
 					idx: this.currentFilterIdx,
 					...value,
 				} as ISetFilterAction);

@@ -52,5 +52,10 @@ button {
 	&.top {
 		flex-direction: column;
 	}
+
+	&:active {
+		background: $default-border;
+		background: var(--border);
+	}
 }
 </style>

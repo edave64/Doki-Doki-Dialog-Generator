@@ -24,7 +24,7 @@ function scanFolder(folderName) {
 				reject(err);
 				return;
 			}
-			const subPromises = files.map(file => {
+			const subPromises = files.map((file) => {
 				return new Promise((subResolve, subReject) => {
 					fs.lstat(join(folderName, file), (statErr, stat) => {
 						if (statErr) {
@@ -33,7 +33,7 @@ function scanFolder(folderName) {
 
 						if (stat.isDirectory()) {
 							scanFolder(join(folderName, file) + '/')
-								.then(subFolder => {
+								.then((subFolder) => {
 									subFolders.push(subFolder);
 									subResolve();
 								})
@@ -54,7 +54,7 @@ function scanFolder(folderName) {
 						subfolders: subFolders,
 					})
 				)
-				.catch(reason => reject(reason));
+				.catch((reason) => reject(reason));
 		});
 	});
 }
@@ -71,11 +71,10 @@ async function queueAssetConversions(folder, hashes) {
 
 	if (folder.files) {
 		await Promise.all(
-			folder.files.map(async file => {
+			folder.files.map(async (file) => {
 				const fileLocalPath = join(localPath, file);
-				return (hashes[
-					fileLocalPath.replace(distRegexp, '')
-				] = await checksumFile(fileLocalPath));
+				return (hashes[fileLocalPath.replace(distRegexp, '')] =
+					await checksumFile(fileLocalPath));
 			})
 		);
 	}
@@ -83,7 +82,7 @@ async function queueAssetConversions(folder, hashes) {
 	if (folder.subfolders) {
 		await Promise.all(
 			folder.subfolders.map(
-				async subfolder => await queueAssetConversions(subfolder, hashes)
+				async (subfolder) => await queueAssetConversions(subfolder, hashes)
 			)
 		);
 	}
@@ -93,8 +92,8 @@ function checksumFile(path) {
 	return new Promise((resolve, reject) => {
 		const hash = crypto.createHash('SHA512');
 		const stream = fs.createReadStream(join(path));
-		stream.on('error', err => reject(err));
-		stream.on('data', chunk => hash.update(chunk));
+		stream.on('error', (err) => reject(err));
+		stream.on('data', (chunk) => hash.update(chunk));
 		stream.on('end', () => resolve(hash.digest('base64')));
 	});
 }

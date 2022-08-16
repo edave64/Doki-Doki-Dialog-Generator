@@ -15,13 +15,21 @@
 
 <script lang="ts">
 import Toggle from '@/components/toggle.vue';
+import { IPanel } from '@/store/panels';
+import { DeepReadonly } from 'ts-essentials';
 import ObjectTool, { Handler } from './object-tool.vue';
 import { PanelMixin } from './panelMixin';
-import { INotification } from '@/store/objectTypes/notification';
+import {
+	INotification,
+	NotificationSimpleProperties,
+} from '@/store/objectTypes/notification';
 import { defineComponent } from 'vue';
-import { genericSetable } from '@/util/simpleSettable';
+import { genericSimpleSetter } from '@/util/simpleSettable';
 
-const setable = genericSetable<INotification>();
+const setableN = genericSimpleSetter<
+	INotification,
+	NotificationSimpleProperties
+>('panels/setNotificationProperty');
 
 export default defineComponent({
 	mixins: [PanelMixin],
@@ -33,10 +41,13 @@ export default defineComponent({
 		textEditor: false,
 	}),
 	computed: {
-		object(): INotification {
-			const obj = this.$store.state.objects.objects[
-				this.$store.state.ui.selection!
+		currentPanel(): DeepReadonly<IPanel> {
+			return this.$store.state.panels.panels[
+				this.$store.state.panels.currentPanel
 			];
+		},
+		object(): INotification {
+			const obj = this.currentPanel.objects[this.$store.state.ui.selection!];
 			if (obj.type !== 'notification') return undefined!;
 			return obj as INotification;
 		},
@@ -55,9 +66,9 @@ export default defineComponent({
 				},
 			};
 		},
-		text: setable('text', 'objects/setNotificationText'),
-		autoWrap: setable('autoWrap', 'objects/setAutoWrapping'),
-		renderBackdrop: setable('backdrop', 'objects/setNotificationBackdrop'),
+		text: setableN('text'),
+		autoWrap: setableN('autoWrap'),
+		renderBackdrop: setableN('backdrop'),
 	},
 });
 </script>

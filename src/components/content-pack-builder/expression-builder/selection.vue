@@ -23,7 +23,7 @@ export default defineComponent({
 	computed: {
 		background(): string {
 			return this.images
-				.map(i => `center / contain no-repeat url('${i}')`)
+				.map((i) => `center / contain no-repeat url('${i}')`)
 				.join(',');
 		},
 	},

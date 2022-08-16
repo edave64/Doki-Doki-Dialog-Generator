@@ -1,18 +1,25 @@
-import { Module } from 'vuex';
-import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAssetSwitch, BackgroundLookup } from './content';
-import { IRootState } from '.';
 import { arraySeeker } from '@/models/seekers';
-import { ICopyObjectsAction, IDeleteAllOfPanel } from './objects';
+import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { Module } from 'vuex';
+import { IRootState } from '.';
+import { BackgroundLookup, IAssetSwitch } from './content';
+import {
+	actions as objectActions,
+	IDeleteAllOfPanel,
+	IObject,
+	ISetCompositionMutation,
+	ISetFiltersMutation,
+	mutations as objectMutations,
+	fixContentPackRemoval as objectsFixContentPackRemoval,
+} from './objects';
+import { ITextBox } from './objectTypes/textbox';
 import {
 	addFilter,
 	IAddFilterAction,
 	IHasSpriteFilters,
 	IMoveFilterAction,
 	IRemoveFilterAction,
-	ISetCompositionMutation,
 	ISetFilterAction,
-	ISetFiltersMutation,
 	moveFilter,
 	removeFilter,
 	setFilter,
@@ -25,9 +32,13 @@ export enum ScalingModes {
 }
 
 export interface IPanel extends IHasSpriteFilters {
-	id: string;
+	id: number;
 	background: IPanelBackground;
 	lastRender: string;
+	lastObjId: IObject['id'];
+	order: IObject['id'][];
+	onTopOrder: IObject['id'][];
+	objects: { [id: IObject['id']]: IObject };
 }
 
 interface IPanelBackground extends IHasSpriteFilters {
@@ -39,9 +50,10 @@ interface IPanelBackground extends IHasSpriteFilters {
 }
 
 export interface IPanels {
-	panels: { [id: string]: IPanel };
-	panelOrder: string[];
-	currentPanel: string;
+	lastPanelId: IPanel['id'];
+	panels: { [id: IPanel['id']]: IPanel };
+	panelOrder: IPanel['id'][];
+	currentPanel: IPanel['id'];
 }
 
 export const transparentId = 'buildin.transparent';
@@ -50,9 +62,9 @@ export const staticColorId = 'buildin.static-color';
 let lastPanelNum = 0;
 
 const previewManager = {
-	panelToUrl: new Map<string, string>(),
-	urlToPanel: new Map<string, string[]>(),
-	register(panelId: string, url: string) {
+	panelToUrl: new Map<IPanel['id'], string>(),
+	urlToPanel: new Map<string, IPanel['id'][]>(),
+	register(panelId: IPanel['id'], url: string) {
 		if (this.panelToUrl.has(panelId)) {
 			if (this.panelToUrl.get(panelId) === url) return;
 			this.unregister(panelId, this.panelToUrl.get(panelId)!);
@@ -64,7 +76,7 @@ const previewManager = {
 			this.urlToPanel.set(url, [panelId]);
 		}
 	},
-	unregister(panelId: string, url: string) {
+	unregister(panelId: IPanel['id'], url: string) {
 		if (this.urlToPanel.has(url)) {
 			const panels = this.urlToPanel.get(url)!;
 			panels.splice(panels.indexOf(panelId), 1);
@@ -80,6 +92,7 @@ const previewManager = {
 export default {
 	namespaced: true,
 	state: {
+		lastPanelId: -1,
 		panels: {},
 		panelOrder: [],
 		currentPanel: null!,
@@ -93,6 +106,7 @@ export default {
 			previewManager.register(panelId, url);
 		},
 		createPanel(state, { panel }: ICreatePanel) {
+			state.lastPanelId = panel.id;
 			state.panels[panel.id] = panel;
 		},
 		setPanelOrder(state, { panelOrder }: ISetPanelOrder) {
@@ -127,25 +141,26 @@ export default {
 			delete state.panels[panelId];
 		},
 		setComposition(state, command: ISetCompositionMutation) {
-			const obj = state.panels[command.id];
+			const obj = state.panels[command.panelId];
 			obj.composite = command.composite;
 		},
 		setFilters(state, command: ISetFiltersMutation) {
-			const obj = state.panels[command.id];
+			const obj = state.panels[command.panelId];
 			obj.filters = command.filters;
 		},
 		backgroundSetComposition(state, command: ISetCompositionMutation) {
-			const obj = state.panels[command.id];
+			const obj = state.panels[command.panelId];
 			obj.background.composite = command.composite;
 		},
 		backgroundSetFilters(state, command: ISetFiltersMutation) {
-			const obj = state.panels[command.id];
+			const obj = state.panels[command.panelId];
 			obj.background.filters = command.filters;
 		},
+		...objectMutations,
 	},
 	actions: {
 		createPanel({ state, commit }) {
-			const id = 'panel' + ++lastPanelNum;
+			const id = state.lastPanelId + 1;
 			commit('createPanel', {
 				panel: {
 					id,
@@ -161,6 +176,10 @@ export default {
 					lastRender: '',
 					composite: 'source-over',
 					filters: [],
+					objects: {},
+					onTopOrder: [],
+					order: [],
+					lastObjId: -1,
 				},
 			} as ICreatePanel);
 			if (!state.panelOrder) {
@@ -175,31 +194,45 @@ export default {
 			commit('setCurrentPanel', {
 				panelId: id,
 			} as ISetCurrentPanelMutation);
+			return id;
 		},
-		duplicatePanel(
-			{ state, commit, dispatch },
-			{ panelId }: IDuplicatePanelAction
-		) {
+		duplicatePanel({ state, commit }, { panelId }: IDuplicatePanelAction) {
 			const panel = state.panels[panelId];
-			const id = 'panel' + ++lastPanelNum;
+			const id = state.lastPanelId + 1;
 			previewManager.register(id, panel.lastRender);
+			const newPanel = JSON.parse(JSON.stringify(panel)) as IPanel;
+			let nextObjectId = 0;
+			const transationTable = new Map<IObject['id'], IObject['id']>();
+			const newObjects: IPanel['objects'] = {};
+
+			for (const key in newPanel.objects) {
+				transationTable.set(+key, ++nextObjectId);
+			}
+
+			for (const key in newPanel.objects) {
+				const obj = newPanel.objects[key];
+				newObjects[transationTable.get(+key)!] = obj;
+				if ('talkingObjId' in obj) {
+					const newTextbox = obj as ITextBox;
+					if (
+						newTextbox.talkingObjId !== null &&
+						newTextbox.talkingObjId !== '$other$' &&
+						transationTable.has(newTextbox.talkingObjId)
+					) {
+						newTextbox.talkingObjId = transationTable.get(
+							newTextbox.talkingObjId
+						)!;
+					}
+				}
+			}
+
 			commit('createPanel', {
 				panel: {
-					id,
-					background: JSON.parse(JSON.stringify(panel.background)),
-					lastRender: panel.lastRender,
-					composite: panel.composite,
-					filters: JSON.parse(JSON.stringify(panel.filters)),
+					...newPanel,
+					nextObjectId,
+					objects: newObjects,
 				},
 			} as ICreatePanel);
-			dispatch(
-				'objects/copyObjects',
-				{
-					sourcePanelId: panelId,
-					targetPanelId: id,
-				} as ICopyObjectsAction,
-				{ root: true }
-			);
 			const oldIdx = state.panelOrder.indexOf(panelId);
 			commit('setPanelOrder', {
 				panelOrder: [
@@ -250,7 +283,7 @@ export default {
 				],
 			} as ISetPanelOrder);
 			dispatch(
-				'objects/deleteAllOfPanel',
+				'panels/deleteAllOfPanel',
 				{
 					panelId,
 				} as IDeleteAllOfPanel,
@@ -261,9 +294,10 @@ export default {
 			} as IDeletePanelMutation);
 		},
 		async fixContentPackRemoval(
-			{ state, rootGetters, commit, rootState },
+			context,
 			oldContent: ContentPack<IAssetSwitch>
 		) {
+			const { state, rootGetters, commit, rootState } = context;
 			for (const panel of Object.values(state.panels)) {
 				const oldBackground = oldContent.backgrounds.find(
 					(x) => x.id === panel.background.current
@@ -303,6 +337,8 @@ export default {
 					} as ISetVariantMutation);
 				}
 			}
+
+			await objectsFixContentPackRemoval(context, oldContent);
 		},
 		move({ state, commit }, { panelId, delta }: IMovePanelAction) {
 			const collection = [...state.panelOrder];
@@ -315,81 +351,82 @@ export default {
 		addFilter({ state, commit }, action: IAddFilterAction) {
 			addFilter(
 				action,
-				(id: string) => state.panels[id],
+				() => state.panels[action.panelId],
 				(mutation) => commit('setFilters', mutation)
 			);
 		},
 		removeFilter({ state, commit }, action: IRemoveFilterAction) {
 			removeFilter(
 				action,
-				(id: string) => state.panels[id],
+				() => state.panels[action.panelId],
 				(mutation) => commit('setFilters', mutation)
 			);
 		},
 		moveFilter({ state, commit }, action: IMoveFilterAction) {
 			moveFilter(
 				action,
-				(id: string) => state.panels[id],
+				() => state.panels[action.panelId],
 				(mutation) => commit('setFilters', mutation)
 			);
 		},
 		setFilter({ state, commit }, action: ISetFilterAction) {
 			setFilter(
 				action,
-				(id: string) => state.panels[id],
+				() => state.panels[action.panelId],
 				(mutation) => commit('setFilters', mutation)
 			);
 		},
 		backgroundAddFilter({ state, commit }, action: IAddFilterAction) {
 			addFilter(
 				action,
-				(id: string) => state.panels[id].background,
+				() => state.panels[action.panelId].background,
 				(mutation) => commit('backgroundSetFilters', mutation)
 			);
 		},
 		backgroundRemoveFilter({ state, commit }, action: IRemoveFilterAction) {
 			removeFilter(
 				action,
-				(id: string) => state.panels[id].background,
+				() => state.panels[action.panelId].background,
 				(mutation) => commit('backgroundSetFilters', mutation)
 			);
 		},
 		backgroundMoveFilter({ state, commit }, action: IMoveFilterAction) {
 			moveFilter(
 				action,
-				(id: string) => state.panels[id].background,
+				() => state.panels[action.panelId].background,
 				(mutation) => commit('backgroundSetFilters', mutation)
 			);
 		},
 		backgroundSetFilter({ state, commit }, action: ISetFilterAction) {
 			setFilter(
 				action,
-				(id: string) => state.panels[id].background,
+				() => state.panels[action.panelId].background,
 				(mutation) => commit('backgroundSetFilters', mutation)
 			);
 		},
+		...objectActions,
 	},
 } as Module<IPanels, IRootState>;
 
 export interface ISetCurrentPanelMutation {
-	readonly panelId: string;
+	readonly panelId: IPanel['id'];
 }
 
 export interface IDeletePanelMutation {
-	readonly panelId: string;
+	readonly panelId: IPanel['id'];
 }
 
 export interface ISetPanelPreviewMutation {
-	readonly panelId: string;
+	readonly panelId: IPanel['id'];
 	readonly url: string;
 }
 
 export interface IDuplicatePanelAction {
-	readonly panelId: string;
+	readonly panelId: IPanel['id'];
 }
 
 export interface IDeletePanelAction {
-	readonly panelId: string;
+	readonly panelId: IPanel['id'];
 }
 
 export interface ICreatePanel {
@@ -397,31 +434,31 @@ export interface ICreatePanel {
 }
 
 export interface ISetPanelOrder {
-	readonly panelOrder: string[];
+	readonly panelOrder: IPanel['id'][];
 }
 
 export interface ISetCurrentMutation {
-	readonly panelId: string;
+	readonly panelId: IPanel['id'];
 	readonly current: string;
 }
 
 export interface ISetColorMutation {
-	readonly panelId: string;
+	readonly panelId: IPanel['id'];
 	readonly color: string;
 }
 
 export interface ISetFlipMutation {
-	readonly panelId: string;
+	readonly panelId: IPanel['id'];
 	readonly flipped: boolean;
 }
 
 export interface ISetVariantMutation {
-	readonly panelId: string;
+	readonly panelId: IPanel['id'];
 	readonly variant: number;
 }
 
 export interface ISetScalingMutation {
-	readonly panelId: string;
+	readonly panelId: IPanel['id'];
 	readonly scaling: ScalingModes;
 }
 
@@ -430,6 +467,6 @@ export interface ISeekVariantAction {
 }
 
 export interface IMovePanelAction {
-	readonly panelId: string;
+	readonly panelId: IPanel['id'];
 	readonly delta: number;
 }

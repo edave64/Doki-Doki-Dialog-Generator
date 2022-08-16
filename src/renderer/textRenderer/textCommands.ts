@@ -3,21 +3,21 @@ import { ITextStyle } from './textRenderer';
 type Command = (style: ITextStyle, parameter?: string) => ITextStyle;
 
 export default new Map<string, Command>([
-	paramlessOp('i', style => ({ ...style, isItalic: true })),
-	paramlessOp('b', style => ({ ...style, isBold: true })),
-	paramlessOp('u', style => ({ ...style, isUnderlined: true })),
-	paramlessOp('s', style => ({
+	paramlessOp('i', (style) => ({ ...style, isItalic: true })),
+	paramlessOp('b', (style) => ({ ...style, isBold: true })),
+	paramlessOp('u', (style) => ({ ...style, isUnderlined: true })),
+	paramlessOp('s', (style) => ({
 		...style,
 		isStrikethrough: true,
 	})),
-	paramlessOp('plain', style => ({
+	paramlessOp('plain', (style) => ({
 		...style,
 		isStrikethrough: false,
 		isUnderlined: false,
 		isBold: false,
 		isItalic: false,
 	})),
-	paramlessOp('edited', style => ({
+	paramlessOp('edited', (style) => ({
 		...style,
 		fontName: 'verily',
 		strokeColor: '#000000',

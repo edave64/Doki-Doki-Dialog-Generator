@@ -48,7 +48,7 @@ import {
 	Color,
 	ContentPack,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAsset, ReplaceContentPackAction } from '@/store/content';
+import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
 import SliderGroup from './sliderGroup.vue';
 import DButton from '../../../ui/d-button.vue';
 import { RGBAColor } from '@/util/colors/rgb';
@@ -141,7 +141,7 @@ export default defineComponent({
 				colors: [],
 			};
 
-			const newPack: ContentPack<IAsset> = {
+			const newPack: ContentPack<IAssetSwitch> = {
 				...existingPack,
 				colors: [
 					...existingPack.colors,

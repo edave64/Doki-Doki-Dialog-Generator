@@ -1,8 +1,11 @@
-import { ICommand } from '@/eventbus/command';
-import { ICreateObjectMutation, IObject, IObjectsState } from '@/store/objects';
+import {
+	ICreateObjectMutation,
+	IObject,
+	IObjectMutation,
+} from '@/store/objects';
+import { IPanel, IPanels } from '@/store/panels';
 import { ActionTree, MutationTree } from 'vuex';
 import { IRootState } from '..';
-import { ISetAutoWrappingMutation } from './textbox';
 import { baseProps } from './baseObjectProps';
 import getConstants from '@/constants';
 
@@ -14,41 +17,28 @@ export interface INotification extends IObject {
 	autoWrap: boolean;
 }
 
-export const notificationMutations: MutationTree<IObjectsState> = {
-	setNotificationColor(state, command: ISetChoiceColorMutation) {
-		const obj = state.objects[command.id] as INotification;
-		obj.customColor = command.customColor;
-		++obj.version;
-	},
-	setNotificationText(state, { id, text }: ISetNotificationTextMutation) {
-		const obj = state.objects[id] as INotification;
-		obj.text = text;
-		++obj.version;
-	},
-	setNotificationBackdrop(
-		state,
-		{ id, backdrop }: ISetNotificationBackdropMutation
+export const notificationMutations: MutationTree<IPanels> = {
+	setNotificationProperty<T extends NotificationSimpleProperties>(
+		state: IPanels,
+		command: ISetNotificationProperty<T>
 	) {
-		const obj = state.objects[id] as INotification;
-		obj.backdrop = backdrop;
-		++obj.version;
-	},
-	setAutoWrapping(state, command: ISetAutoWrappingMutation) {
-		const obj = state.objects[command.id] as INotification;
-		obj.autoWrap = command.autoWrap;
+		const obj = state.panels[command.panelId].objects[
+			command.id
+		] as INotification;
+		obj[command.key] = command.value;
 		++obj.version;
 	},
 };
 
 let lastNotificationId = 0;
 
-export const notificationActions: ActionTree<IObjectsState, IRootState> = {
+export const notificationActions: ActionTree<IPanels, IRootState> = {
 	createNotification(
-		{ commit, rootState },
-		_command: ICreateNotificationAction
-	): string {
+		{ commit, rootState, state },
+		command: ICreateNotificationAction
+	): IObject['id'] {
 		const constants = getConstants();
-		const id = 'notification_' + ++lastNotificationId;
+		const id = state.panels[command.panelId].lastObjId + 1;
 		commit('create', {
 			object: {
 				...baseProps(),
@@ -71,16 +61,18 @@ export const notificationActions: ActionTree<IObjectsState, IRootState> = {
 	},
 };
 
-export interface ISetNotificationTextMutation extends ICommand {
-	readonly text: INotification['text'];
+export type NotificationSimpleProperties = Exclude<
+	keyof INotification,
+	keyof IObject
+>;
+
+export interface ISetNotificationProperty<
+	T extends NotificationSimpleProperties
+> extends IObjectMutation {
+	readonly key: T;
+	readonly value: INotification[T];
 }
 
-export interface ISetNotificationBackdropMutation extends ICommand {
-	readonly backdrop: INotification['backdrop'];
+export interface ICreateNotificationAction {
+	readonly panelId: IPanel['id'];
 }
-
-export interface ISetChoiceColorMutation extends ICommand {
-	readonly customColor: INotification['customColor'];
-}
-
-export interface ICreateNotificationAction extends ICommand {}

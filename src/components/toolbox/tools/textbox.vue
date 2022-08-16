@@ -63,7 +63,7 @@
 			<toggle label="Auto line wrap?" v-model="autoWrap" />
 			<div id="dialog_text_wrapper">
 				<label for="dialog_text">Dialog:</label>
-				<textarea v-model="dialog" id="dialog_text" @keydown.stop />
+				<textarea v-model="dialog" id="dialog_text" @keydown.stop></textarea>
 				<button @click="textEditor = 'body'">Formatting</button>
 			</div>
 		</template>
@@ -175,25 +175,27 @@
 <script lang="ts">
 import {
 	ITextBox,
-	ISetTextBoxCustomColorMutation,
-	ISetTextBoxCustomControlsColorMutation,
-	ISetTextBoxNameboxColorMutation,
-	ISetTextBoxNameboxStrokeMutation,
+	textboxProperty,
 	ISplitTextbox,
 	IResetTextboxBounds,
 	ISetTextBoxTalkingObjMutation,
+	TextBoxSimpleProperties,
 } from '@/store/objectTypes/textbox';
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
+import { IPanel } from '@/store/panels';
 import { defineComponent } from 'vue';
 import { PanelMixin } from './panelMixin';
-import { genericSetable } from '@/util/simpleSettable';
+import { genericSetable, genericSimpleSetter } from '@/util/simpleSettable';
 import ObjectTool, { Handler } from './object-tool.vue';
 import getConstants from '@/constants';
-import { UnreachableCaseError } from 'ts-essentials';
+import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
 
 const setable = genericSetable<ITextBox>();
+const tbSetable = genericSimpleSetter<ITextBox, TextBoxSimpleProperties>(
+	'panels/setTextBoxProperty'
+);
 
 export default defineComponent({
 	components: {
@@ -208,6 +210,11 @@ export default defineComponent({
 		colorSelect: '' as '' | 'base' | 'controls' | 'namebox' | 'nameboxStroke',
 	}),
 	computed: {
+		currentPanel(): DeepReadonly<IPanel> {
+			return this.$store.state.panels.panels[
+				this.$store.state.panels.currentPanel
+			];
+		},
 		customizable(): boolean {
 			return this.textBoxStyle.startsWith('custom');
 		},
@@ -215,8 +222,7 @@ export default defineComponent({
 			return getConstants().TextBox.NameboxWidth;
 		},
 		object(): ITextBox {
-			const obj =
-				this.$store.state.objects.objects[this.$store.state.ui.selection!];
+			const obj = this.currentPanel.objects[this.$store.state.ui.selection!];
 			if (obj.type !== 'textBox') return undefined!;
 			return obj as ITextBox;
 		},
@@ -260,34 +266,20 @@ export default defineComponent({
 				},
 				set: (color: string) => {
 					this.vuexHistory.transaction(() => {
-						switch (this.colorSelect) {
-							case '':
-								return;
-							case 'base':
-								this.$store.commit('objects/setCustomColor', {
-									id: this.object.id,
-									color,
-								} as ISetTextBoxCustomColorMutation);
-								return;
-							case 'controls':
-								this.$store.commit('objects/setControlsColor', {
-									id: this.object.id,
-									customControlsColor: color,
-								} as ISetTextBoxCustomControlsColorMutation);
-								return;
-							case 'namebox':
-								this.$store.commit('objects/setNameboxColor', {
-									id: this.object.id,
-									customNameboxColor: color,
-								} as ISetTextBoxNameboxColorMutation);
-								return;
-							case 'nameboxStroke':
-								this.$store.commit('objects/setNameboxStroke', {
-									id: this.object.id,
-									customNameboxStroke: color,
-								} as ISetTextBoxNameboxStrokeMutation);
-								return;
-						}
+						const panelId = this.currentPanel.id;
+						const id = this.object.id;
+						let colorKey = {
+							base: 'customColor',
+							controls: 'customControlsColor',
+							namebox: 'customNameboxColor',
+							nameboxStroke: 'customNameboxStroke',
+							'': undefined,
+						}[this.colorSelect] as TextBoxSimpleProperties | undefined;
+						if (color === undefined) return;
+						this.$store.commit(
+							'panels/setTextBoxProperty',
+							textboxProperty(panelId, id, 'customNameboxStroke', colorKey!)
+						);
 					});
 				},
 				leave: () => {
@@ -301,38 +293,32 @@ export default defineComponent({
 			},
 			set(val: string): void {
 				this.vuexHistory.transaction(() => {
-					this.$store.commit('objects/setTalkingObject', {
+					this.$store.commit('panels/setTalkingObject', {
 						id: this.object.id,
+						panelId: this.object.panelId,
 						talkingObjId: val === '$null$' ? null : val,
 					} as ISetTextBoxTalkingObjMutation);
 				});
 			},
 		},
-		talkingOther: setable('talkingOther', 'objects/setTalkingOther'),
-		showControls: setable('controls', 'objects/setControlsVisible'),
-		allowSkipping: setable('skip', 'objects/setSkipable'),
-		autoQuoting: setable('autoQuoting', 'objects/setAutoQuoting'),
-		autoWrap: setable('autoWrap', 'objects/setAutoWrapping'),
-		showContinueArrow: setable('continue', 'objects/setContinueArrow'),
-		dialog: setable('text', 'objects/setText'),
-		textBoxStyle: setable('style', 'objects/setStyle', true),
-		overrideColor: setable('overrideColor', 'objects/setColorOverride'),
-		deriveCustomColors: setable(
-			'deriveCustomColors',
-			'objects/setDeriveCustomColors'
-		),
-		customNameboxWidth: setable(
-			'customNameboxWidth',
-			'objects/setNameboxWidth'
-		),
+		talkingOther: setable('talkingOther', 'panels/setTalkingOther'),
+		textBoxStyle: setable('style', 'panels/setStyle', true),
+		showControls: tbSetable('controls'),
+		allowSkipping: tbSetable('skip'),
+		autoQuoting: tbSetable('autoQuoting'),
+		autoWrap: tbSetable('autoWrap'),
+		showContinueArrow: tbSetable('continue'),
+		dialog: tbSetable('text'),
+		overrideColor: tbSetable('overrideColor'),
+		deriveCustomColors: tbSetable('deriveCustomColors'),
+		customNameboxWidth: tbSetable('customNameboxWidth'),
 		nameList(): [string, string][] {
-			const panel =
-				this.$store.state.objects.panels[this.$store.state.panels.currentPanel];
+			const panel = this.currentPanel;
 
 			const ret: [string, string][] = [];
 
 			for (const id of [...panel.order, ...panel.onTopOrder]) {
-				const obj = this.$store.state.objects.objects[id];
+				const obj = panel.objects[id];
 				if (obj.label === null) continue;
 				ret.push([id, obj.label!]);
 			}
@@ -366,15 +352,17 @@ export default defineComponent({
 	methods: {
 		splitTextbox(): void {
 			this.vuexHistory.transaction(() => {
-				this.$store.dispatch('objects/splitTextbox', {
+				this.$store.dispatch('panels/splitTextbox', {
 					id: this.object.id,
+					panelId: this.object.panelId,
 				} as ISplitTextbox);
 			});
 		},
 		resetPosition(): void {
 			this.vuexHistory.transaction(() => {
-				this.$store.dispatch('objects/resetTextboxBounds', {
+				this.$store.dispatch('panels/resetTextboxBounds', {
 					id: this.object.id,
+					panelId: this.object.panelId,
 				} as IResetTextboxBounds);
 			});
 		},

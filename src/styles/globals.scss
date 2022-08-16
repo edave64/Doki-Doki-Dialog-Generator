@@ -59,6 +59,11 @@ select,
 	color: $default-text;
 	//noinspection CssOverwrittenProperties
 	color: var(--text);
+
+	&:active {
+		background: $default-border;
+		background: var(--border);
+	}
 }
 
 button:disabled,

@@ -2,7 +2,7 @@ import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { Background, color, IBackgroundRenderer } from './background';
 import { IPanel } from '@/store/panels';
-import { DeepReadonly } from 'ts-essentials';
+import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
 import { ISprite } from '@/store/objectTypes/sprite';
 import { Sprite } from './sprite';
 import { Character } from './character';
@@ -23,13 +23,16 @@ import { IObject } from '@/store/objects';
 import { OffscreenRenderable } from './offscreenRenderable';
 
 export class SceneRenderer {
-	private renderObjectCache = new Map<string, OffscreenRenderable<IObject>>();
+	private renderObjectCache = new Map<
+		IObject['id'],
+		OffscreenRenderable<IObject>
+	>();
 	private lCurrentlyRendering = false;
 	private renderer: Renderer;
 
 	public constructor(
 		private store: Store<DeepReadonly<IRootState>>,
-		private panelId: string,
+		private panelId: IPanel['id'],
 		readonly canvasWidth: number,
 		readonly canvasHeight: number
 	) {
@@ -65,10 +68,10 @@ export class SceneRenderer {
 		this.renderer.paintOnto(c, opts);
 	}
 
-	public objectsAt(x: number, y: number): string[] {
+	public objectsAt(x: number, y: number): IObject['id'][] {
 		return this.getRenderObjects()
 			.filter((renderObject) => renderObject.hitTest(x, y))
-			.map((renderObject) => (renderObject as unknown as { id: string }).id);
+			.map((renderObject) => renderObject.id);
 	}
 
 	private async renderCallback(rx: RenderContext): Promise<void> {
@@ -102,13 +105,13 @@ export class SceneRenderer {
 		}
 	}
 
-	private getRenderObjects() {
-		const objectsState = this.store.state.objects.panels[this.panelId];
+	private getRenderObjects(): OffscreenRenderable<IObject>[] {
+		const objectsState = this.store.state.panels.panels[this.panelId];
 		const order = objectsState
 			? [...objectsState.order, ...objectsState.onTopOrder]
 			: [];
-		const objects = this.store.state.objects.objects;
-		const toUncache = Object.keys(this.renderObjectCache).filter(
+		const objects = objectsState.objects;
+		const toUncache = Array.from(this.renderObjectCache.keys()).filter(
 			(id) => !order.includes(id)
 		);
 
@@ -120,7 +123,8 @@ export class SceneRenderer {
 			let renderObject = this.renderObjectCache.get(id);
 			if (!renderObject) {
 				const obj = objects[id];
-				switch (obj.type) {
+				const type = obj.type;
+				switch (type) {
 					case 'sprite':
 						renderObject = new Sprite(obj as DeepReadonly<ISprite>);
 						break;
@@ -140,10 +144,12 @@ export class SceneRenderer {
 					case 'poem':
 						renderObject = new Poem(obj as DeepReadonly<IPoem>);
 						break;
+					default:
+						throw new UnreachableCaseError(type);
 				}
 				this.renderObjectCache.set(id, renderObject);
 			}
-			return renderObject;
+			return renderObject!;
 		});
 	}
 

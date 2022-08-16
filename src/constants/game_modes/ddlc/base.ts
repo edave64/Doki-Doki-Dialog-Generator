@@ -21,13 +21,5 @@ export const CloseUpYOffset = -74;
 export const BaseCharacterYPos = -26;
 
 export const characterPositions = [
-	200,
-	240,
-	400,
-	493,
-	640,
-	786,
-	880,
-	1040,
-	1080,
+	200, 240, 400, 493, 640, 786, 880, 1040, 1080,
 ];

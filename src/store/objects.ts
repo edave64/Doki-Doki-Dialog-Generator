@@ -1,5 +1,4 @@
-import { Module } from 'vuex';
-import { ICommand } from '@/eventbus/command';
+import { ActionContext, ActionTree, MutationTree } from 'vuex';
 import { spriteMutations, spriteActions } from './objectTypes/sprite';
 import {
 	characterActions,
@@ -28,28 +27,23 @@ import {
 	IMoveFilterAction,
 	IRemoveFilterAction,
 	ISetFilterAction,
-	ISetFiltersMutation,
-	ISetCompositionMutation,
 	moveFilter,
 	removeFilter,
 	setFilter,
+	SpriteFilter,
 } from './sprite_options';
-
-export interface IPanel {
-	id: string;
-	order: string[];
-	onTopOrder: string[];
-}
+import { IPanel, IPanels } from './panels';
+import { CompositeModes } from '@/renderer/rendererContext';
 
 export interface IObjectsState {
-	objects: { [id: string]: IObject };
-	panels: { [id: string]: IPanel };
+	nextPanelId: bigint;
+	nextObjectId: bigint;
 }
 
 export interface IObject extends IHasSpriteFilters {
 	type: ObjectTypes;
-	panelId: string;
-	id: string;
+	panelId: IPanel['id'];
+	id: number;
 	x: number;
 	y: number;
 	width: number;
@@ -77,351 +71,373 @@ export type ObjectTypes =
 
 let lastCopyId = 0;
 
-export default {
-	namespaced: true,
-	state: {
-		objects: {},
-		panels: {},
+export const mutations: MutationTree<IPanels> = {
+	create(state, { object }: ICreateObjectMutation) {
+		const panel = state.panels[object.panelId];
+		if (object.id > panel.lastObjId) panel.lastObjId = object.id;
+		panel.objects[object.id] = object;
+		const collection = object.onTop ? panel.onTopOrder : panel.order;
+		collection.push(object.id);
 	},
-	mutations: {
-		create(state, { object }: ICreateObjectMutation) {
-			if (!state.panels[object.panelId]) {
-				state.panels[object.panelId] = {
-					id: object.panelId,
-					onTopOrder: [],
-					order: [],
-				};
-			}
-			const panel = state.panels[object.panelId];
-			const collection = object.onTop ? panel.onTopOrder : panel.order;
-			state.objects[object.id] = object;
-			collection.push(object.id);
-		},
-		removeFromList(state, command: IRemoveFromListMutation) {
-			const obj = state.objects[command.id];
-			const panel = state.panels[obj.panelId];
-			const collection = command.onTop ? panel.onTopOrder : panel.order;
-			const idx = collection.indexOf(command.id);
-			collection.splice(idx, 1);
-		},
-		addToList(state, command: IAddToListMutation) {
-			const obj = state.objects[command.id];
-			const panel = state.panels[obj.panelId];
-			const collection = command.onTop ? panel.onTopOrder : panel.order;
-			collection.splice(command.position, 0, command.id);
-		},
-		setOnTop(state, command: ISetOnTopMutation) {
-			const obj = state.objects[command.id];
-			obj.onTop = command.onTop;
-		},
-		setPosition(state, command: ISetObjectPositionMutation) {
-			const obj = state.objects[command.id];
-			obj.x = command.x;
-			obj.y = command.y;
-		},
-		setFlip(state, command: ISetObjectFlipMutation) {
-			const obj = state.objects[command.id];
-			obj.flip = command.flip;
-		},
-		setSize(state, command: ISetSpriteSizeMutation) {
-			const obj = state.objects[command.id];
-			obj.width = command.width;
-			obj.height = command.height;
-		},
-		setRatio(state, command: ISetSpriteRatioMutation) {
-			const obj = state.objects[command.id];
-			obj.preserveRatio = command.preserveRatio;
-			obj.ratio = command.ratio;
-		},
-		setRotation(state, command: ISetSpriteRotationMutation) {
-			const obj = state.objects[command.id];
-			obj.rotation =
-				command.rotation < 0
-					? 360 - (Math.abs(command.rotation) % 360)
-					: command.rotation % 360;
-		},
-		removeObject(state, command: IRemoveObjectMutation) {
-			const obj = state.objects[command.id];
-			delete state.objects[command.id];
-			const panel = state.panels[obj.panelId];
-			if (panel.onTopOrder.length === 0 && panel.order.length === 0) {
-				delete state.panels[obj.panelId];
-			}
-		},
-		setComposition(state, command: ISetCompositionMutation) {
-			const obj = state.objects[command.id];
-			obj.composite = command.composite;
-		},
-		setFilters(state, command: ISetFiltersMutation) {
-			const obj = state.objects[command.id];
-			obj.filters = command.filters;
-		},
-		setLabel(state, command: ISetLabelMutation) {
-			const obj = state.objects[command.id];
-			obj.label = command.label;
-		},
-		setTextboxColor(state, command: ISetTextBoxColor) {
-			const obj = state.objects[command.id];
-			obj.textboxColor = command.textboxColor;
-		},
-		setEnlargeWhenTalking(state, command: ISetEnlargeWhenTalkingMutation) {
-			const obj = state.objects[command.id] as ITextBox;
-			obj.enlargeWhenTalking = command.enlargeWhenTalking;
-			++obj.version;
-		},
-		setObjectNameboxWidth(state, command: ISetNameboxWidthMutation) {
-			const obj = state.objects[command.id] as ITextBox;
-			obj.nameboxWidth = command.nameboxWidth;
-			++obj.version;
-		},
-		setObjectZoom(state, command: ISetObjectZoomMutation) {
-			const obj = state.objects[command.id] as ITextBox;
-			obj.zoom = command.zoom;
-			++obj.version;
-		},
-		...spriteMutations,
-		...characterMutations,
-		...textBoxMutations,
-		...choiceMutations,
-		...notificationMutations,
-		...poemMutations,
+	removeFromList(state, command: IRemoveFromListMutation) {
+		const panel = state.panels[command.panelId];
+		const collection = command.onTop ? panel.onTopOrder : panel.order;
+		const idx = collection.indexOf(command.id);
+		collection.splice(idx, 1);
 	},
-	actions: {
-		removeObject({ state, commit, rootState }, command: IRemoveObjectAction) {
-			const obj = state.objects[command.id];
-			const panel = state.panels[obj.panelId];
-			if (rootState.ui.selection === command.id) {
-				commit('ui/setSelection', null, { root: true });
-			}
-			for (const key of [...panel.onTopOrder, ...panel.order]) {
-				const otherObject = state.objects[key] as ITextBox;
-				if (obj.id === key || otherObject.type !== 'textBox') continue;
+	addToList(state, command: IAddToListMutation) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id];
+		const collection = command.onTop ? panel.onTopOrder : panel.order;
+		collection.splice(command.position, 0, command.id);
+	},
+	setOnTop(state, command: ISetOnTopMutation) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id];
+		obj.onTop = command.onTop;
+	},
+	setPosition(state, command: ISetObjectPositionMutation) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id];
+		obj.x = command.x;
+		obj.y = command.y;
+	},
+	setFlip(state, command: ISetObjectFlipMutation) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id];
+		obj.flip = command.flip;
+	},
+	setSize(state, command: ISetSpriteSizeMutation) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id];
+		obj.width = command.width;
+		obj.height = command.height;
+	},
+	setRatio(state, command: ISetSpriteRatioMutation) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id];
+		obj.preserveRatio = command.preserveRatio;
+		obj.ratio = command.ratio;
+	},
+	setRotation(state, command: ISetSpriteRotationMutation) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id];
+		obj.rotation =
+			command.rotation < 0
+				? 360 - (Math.abs(command.rotation) % 360)
+				: command.rotation % 360;
+	},
+	removeObject(state, command: IRemoveObjectMutation) {
+		const panel = state.panels[command.panelId];
+		delete panel.objects[command.id];
+	},
+	setComposition(state, command: ISetCompositionMutation) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id];
+		obj.composite = command.composite;
+	},
+	object_setFilters(state, command: ISetFiltersMutation) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id];
+		obj.filters = command.filters;
+	},
+	setLabel(state, command: ISetLabelMutation) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id];
+		obj.label = command.label;
+	},
+	setTextboxColor(state, command: ISetTextBoxColor) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id];
+		obj.textboxColor = command.textboxColor;
+	},
+	setEnlargeWhenTalking(state, command: ISetEnlargeWhenTalkingMutation) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id] as ITextBox;
+		obj.enlargeWhenTalking = command.enlargeWhenTalking;
+		++obj.version;
+	},
+	setObjectNameboxWidth(state, command: ISetNameboxWidthMutation) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id] as ITextBox;
+		obj.nameboxWidth = command.nameboxWidth;
+		++obj.version;
+	},
+	setObjectZoom(state, command: ISetObjectZoomMutation) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id] as ITextBox;
+		obj.zoom = command.zoom;
+		++obj.version;
+	},
+	...spriteMutations,
+	...characterMutations,
+	...textBoxMutations,
+	...choiceMutations,
+	...notificationMutations,
+	...poemMutations,
+};
 
-				if (otherObject.talkingObjId !== obj.id) continue;
+export const actions: ActionTree<IPanels, IRootState> = {
+	removeObject({ state, commit, rootState }, command: IRemoveObjectAction) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id];
+		if (rootState.ui.selection === command.id) {
+			commit('ui/setSelection', null, { root: true });
+		}
+		for (const key of [...panel.onTopOrder, ...panel.order]) {
+			const otherObject = panel.objects[key] as ITextBox;
+			if (obj.id === key || otherObject.type !== 'textBox') continue;
 
-				commit('setTalkingOther', {
-					id: otherObject.id,
-					talkingOther: obj.label || '',
-				} as ISetTextBoxTalkingOtherMutation);
-			}
-			commit('removeFromList', {
-				id: command.id,
-				onTop: obj.onTop,
-			} as IRemoveFromListMutation);
-			commit('removeObject', {
-				id: command.id,
-			} as IRemoveObjectMutation);
-		},
-		setPosition({ state, commit, dispatch }, command: ISetPositionAction) {
-			const obj = state.objects[command.id];
-			if (obj.type === 'character') {
-				dispatch('setCharacterPosition', command as ISetPositionAction);
-			} else {
-				commit('setPosition', command as ISetObjectPositionMutation);
-			}
-		},
-		setOnTop({ state, commit }, command: IObjectSetOnTopAction) {
-			const obj = state.objects[command.id];
-			const panel = state.panels[obj.panelId];
-			if (obj.onTop === command.onTop) return;
-			commit('removeFromList', {
-				id: command.id,
-				onTop: obj.onTop,
-			} as IRemoveFromListMutation);
-			commit('addToList', {
-				id: command.id,
-				position: (command.onTop ? panel.onTopOrder : panel.order).length,
-				onTop: command.onTop,
-			} as IRemoveFromListMutation);
-			commit('setOnTop', {
-				id: command.id,
-				onTop: command.onTop,
-			} as ISetOnTopMutation);
-		},
-		shiftLayer({ state, commit }, command: IObjectShiftLayerAction) {
-			const obj = state.objects[command.id];
-			const panel = state.panels[obj.panelId];
-			const collection = obj.onTop ? panel.onTopOrder : panel.order;
-			const position = collection.indexOf(obj.id);
+			if (otherObject.talkingObjId !== obj.id) continue;
 
-			let newPosition = position + command.delta;
-			if (newPosition < 0) {
-				newPosition = 0;
-			}
-			if (newPosition > collection.length) {
-				newPosition = collection.length;
-			}
-			commit('removeFromList', {
-				id: command.id,
-				onTop: obj.onTop,
-			} as IRemoveFromListMutation);
-			commit('addToList', {
-				id: command.id,
-				position: newPosition,
-				onTop: obj.onTop,
-			} as IAddToListMutation);
-		},
-		setPreserveRatio({ commit, state }, command: ISetRatioAction) {
-			const obj = state.objects[command.id];
-			const ratio = command.preserveRatio ? obj.width / obj.height : 0;
-			commit('setRatio', {
-				id: command.id,
-				preserveRatio: command.preserveRatio,
-				ratio,
-			} as ISetSpriteRatioMutation);
-		},
-		setWidth({ commit, state }, command: ISetWidthAction) {
-			const obj = state.objects[command.id];
-			const height = !obj.preserveRatio
-				? obj.height
-				: command.width / obj.ratio;
-			commit('setSize', {
-				id: command.id,
-				height,
-				width: command.width,
-			} as ISetSpriteSizeMutation);
-		},
-		setHeight({ commit, state }, command: ISetHeightAction) {
-			const obj = state.objects[command.id];
-			const width = !obj.preserveRatio ? obj.width : command.height * obj.ratio;
-			commit('setSize', {
-				id: command.id,
-				height: command.height,
-				width,
-			} as ISetSpriteSizeMutation);
-		},
-		fixContentPackRemoval(context, oldContent: ContentPack<IAssetSwitch>) {
-			Object.values(context.state.objects).map((obj) => {
-				switch (obj.type) {
-					case 'character':
-						fixContentPackRemovalFromCharacter(context, obj.id, oldContent);
-						return;
-					case 'sprite':
-						return;
-					case 'textBox':
-						return;
+			commit('setTalkingOther', {
+				id: otherObject.id,
+				talkingOther: obj.label || '',
+			} as ISetTextBoxTalkingOtherMutation);
+		}
+		commit('removeFromList', {
+			id: command.id,
+			panelId: command.panelId,
+			onTop: obj.onTop,
+		} as IRemoveFromListMutation);
+		commit('removeObject', {
+			id: command.id,
+			panelId: command.panelId,
+		} as IRemoveObjectMutation);
+	},
+	setPosition({ state, commit, dispatch }, command: ISetPositionAction) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id];
+		if (obj.type === 'character') {
+			dispatch('setCharacterPosition', command as ISetPositionAction);
+		} else {
+			commit('setPosition', command as ISetObjectPositionMutation);
+		}
+	},
+	setOnTop({ state, commit }, command: IObjectSetOnTopAction) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id];
+		if (obj.onTop === command.onTop) return;
+		commit('removeFromList', {
+			panelId: command.panelId,
+			id: command.id,
+			onTop: obj.onTop,
+		} as IRemoveFromListMutation);
+		commit('addToList', {
+			id: command.id,
+			panelId: command.panelId,
+			position: (command.onTop ? panel.onTopOrder : panel.order).length,
+			onTop: command.onTop,
+		} as IRemoveFromListMutation);
+		commit('setOnTop', {
+			panelId: command.panelId,
+			id: command.id,
+			onTop: command.onTop,
+		} as ISetOnTopMutation);
+	},
+	shiftLayer({ state, commit }, command: IObjectShiftLayerAction) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id];
+		const collection = obj.onTop ? panel.onTopOrder : panel.order;
+		const position = collection.indexOf(obj.id);
+
+		let newPosition = position + command.delta;
+		if (newPosition < 0) {
+			newPosition = 0;
+		}
+		if (newPosition > collection.length) {
+			newPosition = collection.length;
+		}
+		commit('removeFromList', {
+			panelId: command.panelId,
+			id: command.id,
+			onTop: obj.onTop,
+		} as IRemoveFromListMutation);
+		commit('addToList', {
+			panelId: command.panelId,
+			id: command.id,
+			position: newPosition,
+			onTop: obj.onTop,
+		} as IAddToListMutation);
+	},
+	setPreserveRatio({ commit, state }, command: ISetRatioAction) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id];
+		const ratio = command.preserveRatio ? obj.width / obj.height : 0;
+		commit('setRatio', {
+			panelId: command.panelId,
+			id: command.id,
+			preserveRatio: command.preserveRatio,
+			ratio,
+		} as ISetSpriteRatioMutation);
+	},
+	setWidth({ commit, state }, command: ISetWidthAction) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id];
+		const height = !obj.preserveRatio ? obj.height : command.width / obj.ratio;
+		commit('setSize', {
+			panelId: command.panelId,
+			id: command.id,
+			height,
+			width: command.width,
+		} as ISetSpriteSizeMutation);
+	},
+	setHeight({ commit, state }, command: ISetHeightAction) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id];
+		const width = !obj.preserveRatio ? obj.width : command.height * obj.ratio;
+		commit('setSize', {
+			panelId: command.panelId,
+			id: command.id,
+			height: command.height,
+			width,
+		} as ISetSpriteSizeMutation);
+	},
+	copyObjects(
+		{ commit, state },
+		{ sourcePanelId, targetPanelId }: ICopyObjectsAction
+	) {
+		const sourceOrders = state.panels[sourcePanelId];
+		if (!sourceOrders) return;
+		const sourcePanel = state.panels[sourcePanelId];
+		const targetPanel = state.panels[targetPanelId];
+		const allSourceIds = [...sourceOrders.onTopOrder, ...sourceOrders.order];
+		const transationTable = new Map<IObject['id'], IObject['id']>();
+		let lastObjId = targetPanel.lastObjId;
+		for (const sourceId of allSourceIds) {
+			const targetId = ++lastObjId;
+			transationTable.set(sourceId, targetId);
+		}
+		for (const sourceId of allSourceIds) {
+			const oldObject = state.panels[sourcePanelId].objects[sourceId];
+			const newObject: IObject = JSON.parse(JSON.stringify(oldObject));
+			if ('talkingObjId' in newObject) {
+				const newTextbox = newObject as ITextBox;
+				if (
+					newTextbox.talkingObjId !== null &&
+					newTextbox.talkingObjId !== '$other$' &&
+					transationTable.has(newTextbox.talkingObjId)
+				) {
+					newTextbox.talkingObjId = transationTable.get(
+						newTextbox.talkingObjId
+					)!;
 				}
-			});
-		},
-		copyObjects(
-			{ commit, state },
-			{ sourcePanelId, targetPanelId }: ICopyObjectsAction
-		) {
-			const sourceOrders = state.panels[sourcePanelId];
-			if (!sourceOrders) return;
-			const allSourceIds = [...sourceOrders.onTopOrder, ...sourceOrders.order];
-			const transationTable = new Map<string, string>();
-			for (const sourceId of allSourceIds) {
-				const targetId = `copy_${++lastCopyId}`;
-				transationTable.set(sourceId, targetId);
 			}
-			for (const sourceId of allSourceIds) {
-				const oldObject = state.objects[sourceId];
-				const newObject: IObject = JSON.parse(JSON.stringify(oldObject));
-				if ('talkingObjId' in newObject) {
-					const newTextbox = newObject as ITextBox;
-					if (
-						newTextbox.talkingObjId !== null &&
-						transationTable.has(newTextbox.talkingObjId)
-					) {
-						newTextbox.talkingObjId = transationTable.get(
-							newTextbox.talkingObjId
-						)!;
-					}
-				}
-				commit('create', {
-					object: {
-						...newObject,
-						id: transationTable.get(sourceId)!,
-						panelId: targetPanelId,
-					},
-				} as ICreateObjectMutation);
-			}
-		},
-		copyObjectToClipboard(
-			{ commit, state },
-			{ id }: ICopyObjectToClipboardAction
-		) {
-			const oldObject = state.objects[id];
-			commit('ui/setClipboard', JSON.stringify(oldObject), { root: true });
-		},
-		pasteObjectFromClipboard({ commit, rootState }) {
-			if (!rootState.ui.clipboard) return;
-			const oldObject = JSON.parse(rootState.ui.clipboard);
 			commit('create', {
 				object: {
-					...oldObject,
-					id: `copy_${++lastCopyId}`,
-					panelId: rootState.panels.currentPanel,
+					...newObject,
+					id: transationTable.get(sourceId)!,
+					panelId: targetPanelId,
 				},
 			} as ICreateObjectMutation);
-		},
-		deleteAllOfPanel({ state, dispatch }, { panelId }: IDeleteAllOfPanel) {
-			const panel = state.panels[panelId];
-			for (const id of [...panel.onTopOrder, ...panel.order]) {
-				dispatch('removeObject', { id } as IRemoveObjectAction);
-			}
-		},
-		addFilter({ state, commit }, action: IAddFilterAction) {
-			addFilter(
-				action,
-				(id: string) => state.objects[id],
-				(mutation) => commit('setFilters', mutation)
-			);
-		},
-		removeFilter({ state, commit }, action: IRemoveFilterAction) {
-			removeFilter(
-				action,
-				(id: string) => state.objects[id],
-				(mutation) => commit('setFilters', mutation)
-			);
-		},
-		moveFilter({ state, commit }, action: IMoveFilterAction) {
-			moveFilter(
-				action,
-				(id: string) => state.objects[id],
-				(mutation) => commit('setFilters', mutation)
-			);
-		},
-		setFilter({ state, commit }, action: ISetFilterAction) {
-			setFilter(
-				action,
-				(id: string) => state.objects[id],
-				(mutation) => commit('setFilters', mutation)
-			);
-		},
-		...spriteActions,
-		...characterActions,
-		...textBoxActions,
-		...choiceActions,
-		...notificationActions,
-		...poemActions,
+		}
 	},
-} as Module<IObjectsState, IRootState>;
+	copyObjectToClipboard(
+		{ commit, state },
+		{ id, panelId }: ICopyObjectToClipboardAction
+	) {
+		const oldObject = state.panels[panelId].objects[id];
+		commit('ui/setClipboard', JSON.stringify(oldObject), { root: true });
+	},
+	pasteObjectFromClipboard({ commit, rootState }) {
+		if (!rootState.ui.clipboard) return;
+		const oldObject = JSON.parse(rootState.ui.clipboard);
+		commit('create', {
+			object: {
+				...oldObject,
+				id: `copy_${++lastCopyId}`,
+				panelId: rootState.panels.currentPanel,
+			},
+		} as ICreateObjectMutation);
+	},
+	deleteAllOfPanel({ state, dispatch }, { panelId }: IDeleteAllOfPanel) {
+		const panel = state.panels[panelId];
+		for (const id of [...panel.onTopOrder, ...panel.order]) {
+			dispatch('removeObject', { id } as IRemoveObjectAction);
+		}
+	},
+	object_addFilter({ state, commit }, action: IAddFilterAction) {
+		addFilter(
+			action,
+			() => state.panels[action.panelId].objects[action.id!],
+			(mutation) => commit('object_setFilters', mutation)
+		);
+	},
+	object_removeFilter({ state, commit }, action: IRemoveFilterAction) {
+		removeFilter(
+			action,
+			() => state.panels[action.panelId].objects[action.id!],
+			(mutation) => commit('object_setFilters', mutation)
+		);
+	},
+	object_moveFilter({ state, commit }, action: IMoveFilterAction) {
+		moveFilter(
+			action,
+			() => state.panels[action.panelId].objects[action.id!],
+			(mutation) => commit('object_setFilters', mutation)
+		);
+	},
+	object_setFilter({ state, commit }, action: ISetFilterAction) {
+		setFilter(
+			action,
+			() => state.panels[action.panelId].objects[action.id!],
+			(mutation) => commit('object_setFilters', mutation)
+		);
+	},
+	...spriteActions,
+	...characterActions,
+	...textBoxActions,
+	...choiceActions,
+	...notificationActions,
+	...poemActions,
+};
+
+export function fixContentPackRemoval(
+	context: ActionContext<IPanels, IRootState>,
+	oldContent: ContentPack<IAssetSwitch>
+) {
+	const panels = context.state.panels;
+	for (const panelId in panels) {
+		const panel = panels[panelId];
+		for (const objectId in panel.objects) {
+			const obj = panel.objects[objectId];
+			if (obj.type === 'character') {
+				fixContentPackRemovalFromCharacter(
+					context,
+					obj.panelId,
+					obj.id,
+					oldContent
+				);
+				return;
+			}
+		}
+	}
+}
 
 export interface ICreateObjectMutation {
 	readonly object: IObject;
 }
 
 export interface IDeleteAllOfPanel {
-	readonly panelId: string;
+	readonly panelId: IPanel['id'];
 }
 
 export interface IObjectMutation {
-	readonly id: string;
+	readonly panelId: IPanel['id'];
+	readonly id: IObject['id'];
 }
 
-export interface ISetSpriteSizeMutation extends ICommand {
+export interface ISetSpriteSizeMutation extends IObjectMutation {
 	readonly width: number;
 	readonly height: number;
 }
 
-export interface ISetSpriteRatioMutation extends ICommand {
+export interface ISetSpriteRatioMutation extends IObjectMutation {
 	readonly preserveRatio: boolean;
 	readonly ratio: number;
 }
 
-export interface ISetSpriteRotationMutation extends ICommand {
+export interface ISetSpriteRotationMutation extends IObjectMutation {
 	readonly rotation: number;
 }
 
@@ -447,67 +463,76 @@ export interface IAddToListMutation extends IObjectMutation {
 	readonly position: number;
 }
 
-export interface ISetLabelMutation extends ICommand {
+export interface ISetLabelMutation extends IObjectMutation {
 	readonly label: string;
 }
 
-export interface ISetTextBoxColor extends ICommand {
+export interface ISetTextBoxColor extends IObjectMutation {
 	readonly textboxColor: string | null;
 }
 
-export interface ISetEnlargeWhenTalkingMutation extends ICommand {
+export interface ISetEnlargeWhenTalkingMutation extends IObjectMutation {
 	readonly enlargeWhenTalking: boolean;
 }
 
-export interface ISetNameboxWidthMutation extends ICommand {
+export interface ISetNameboxWidthMutation extends IObjectMutation {
 	readonly nameboxWidth: null | number;
 }
 
-export interface ISetObjectZoomMutation extends ICommand {
+export interface ISetObjectZoomMutation extends IObjectMutation {
 	readonly zoom: number;
 }
 
-export interface IObjectShiftLayerAction extends ICommand {
+export interface ISetCompositionMutation extends IObjectMutation {
+	readonly composite: CompositeModes;
+}
+
+export interface ISetFiltersMutation extends IObjectMutation {
+	readonly filters: SpriteFilter[];
+}
+
+export interface IObjectShiftLayerAction extends IObjectMutation {
 	readonly delta: number;
 }
 
-export interface IObjectSetOnTopAction extends ICommand {
+export interface IObjectSetOnTopAction extends IObjectMutation {
 	readonly onTop: boolean;
 }
 
-export interface ISetWidthAction extends ICommand {
+export interface ISetWidthAction extends IObjectMutation {
 	readonly width: number;
 }
 
-export interface ISetHeightAction extends ICommand {
+export interface ISetHeightAction extends IObjectMutation {
 	readonly height: number;
 }
 
-export interface ISetRatioAction extends ICommand {
+export interface ISetRatioAction extends IObjectMutation {
 	readonly preserveRatio: boolean;
 }
 
-export interface IRemoveObjectMutation extends ICommand {}
-export interface IRemoveObjectAction extends ICommand {}
+export interface IRemoveObjectMutation extends IObjectMutation {}
+export interface IRemoveObjectAction extends IObjectMutation {}
 
-export interface ISetPositionAction extends ICommand {
+export interface ISetPositionAction extends IObjectMutation {
 	readonly x: number;
 	readonly y: number;
 }
 
-export interface IObjectContentPackRemovalAction extends ICommand {
+export interface IObjectContentPackRemovalAction extends IObjectMutation {
 	readonly oldPack: ContentPack<IAssetSwitch>;
 }
 
 export interface ICopyObjectsAction {
-	readonly sourcePanelId: string;
-	readonly targetPanelId: string;
+	readonly sourcePanelId: IPanel['id'];
+	readonly targetPanelId: IPanel['id'];
 }
 
 export interface ICopyObjectToClipboardAction {
-	readonly id: string;
+	readonly id: IObject['id'];
+	readonly panelId: IPanel['id'];
 }
 
 export interface IPasteFromClipboardAction {
-	readonly panelId: string;
+	readonly panelId: IPanel['id'];
 }

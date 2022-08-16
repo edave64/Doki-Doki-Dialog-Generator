@@ -1,8 +1,11 @@
-import { ICommand } from '@/eventbus/command';
-import { IObjectsState, ICreateObjectMutation, IObject } from '@/store/objects';
+import {
+	ICreateObjectMutation,
+	IObject,
+	IObjectMutation,
+} from '@/store/objects';
+import { IPanel, IPanels } from '@/store/panels';
 import { MutationTree, ActionTree } from 'vuex';
 import { IRootState } from '..';
-import { ISetAutoWrappingMutation } from './textbox';
 import { baseProps } from './baseObjectProps';
 import getConstants from '@/constants';
 
@@ -15,35 +18,24 @@ export interface IPoem extends IObject {
 	autoWrap: boolean;
 }
 
-export const poemMutations: MutationTree<IObjectsState> = {
-	setPoemBackground(state, { id, background }: ISetBackgroundMutation) {
-		const obj = state.objects[id] as IPoem;
-		obj.background = background;
-		++obj.version;
-	},
-	setPoemFont(state, { id, font }: ISetFontMutation) {
-		const obj = state.objects[id] as IPoem;
-		obj.font = font;
-		++obj.version;
-	},
-	setPoemText(state, { id, text }: ISetTextMutation) {
-		const obj = state.objects[id] as IPoem;
-		obj.text = text;
-		++obj.version;
-	},
-	setAutoWrapping(state, command: ISetAutoWrappingMutation) {
-		const obj = state.objects[command.id] as IPoem;
-		obj.autoWrap = command.autoWrap;
+export const poemMutations: MutationTree<IPanels> = {
+	setPoemProperty<T extends PoemSimpleProperties>(
+		state: IPanels,
+		command: ISetTextBoxProperty<T>
+	) {
+		const obj = state.panels[command.panelId].objects[command.id] as IPoem;
+		obj[command.key] = command.value;
 		++obj.version;
 	},
 };
 
-let lastPoemId = 0;
-
-export const poemActions: ActionTree<IObjectsState, IRootState> = {
-	createPoem({ commit, rootState }, _command: ICreatePoemAction): string {
+export const poemActions: ActionTree<IPanels, IRootState> = {
+	createPoem(
+		{ commit, rootState, state },
+		command: ICreatePoemAction
+	): IObject['id'] {
 		const constants = getConstants();
-		const id = 'poem_' + ++lastPoemId;
+		const id = state.panels[command.panelId].lastObjId + 1;
 		commit('create', {
 			object: {
 				subType: 'poem',
@@ -77,9 +69,12 @@ export const poemActions: ActionTree<IObjectsState, IRootState> = {
 		} as ICreateObjectMutation);
 		return id;
 	},
-	createConsole({ commit, rootState }, _command: ICreatePoemAction): string {
+	createConsole(
+		{ commit, rootState, state },
+		_command: ICreatePoemAction
+	): IObject['id'] {
 		const constants = getConstants();
-		const id = 'poem_' + ++lastPoemId;
+		const id = state.panels[_command.panelId].lastObjId + 1;
 		commit('create', {
 			object: {
 				...baseProps(),
@@ -104,16 +99,29 @@ export const poemActions: ActionTree<IObjectsState, IRootState> = {
 	},
 };
 
-export interface ISetBackgroundMutation extends ICommand {
+export interface ISetBackgroundMutation extends IObjectMutation {
 	readonly background: IPoem['background'];
 }
 
-export interface ISetFontMutation extends ICommand {
+export interface ISetFontMutation extends IObjectMutation {
 	readonly font: IPoem['font'];
 }
 
-export interface ISetTextMutation extends ICommand {
+export interface ISetTextMutation extends IObjectMutation {
 	readonly text: IPoem['text'];
 }
 
-export interface ICreatePoemAction extends ICommand {}
+export type PoemSimpleProperties = Exclude<
+	keyof IPoem,
+	keyof IObject | 'subType'
+>;
+
+export interface ISetTextBoxProperty<T extends PoemSimpleProperties>
+	extends IObjectMutation {
+	readonly key: T;
+	readonly value: IPoem[T];
+}
+
+export interface ICreatePoemAction {
+	readonly panelId: IPanel['id'];
+}

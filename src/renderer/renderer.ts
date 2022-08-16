@@ -79,7 +79,7 @@ export class Renderer {
 		const downloadCanvas = await this.drawToCanvas(renderCallback);
 
 		return await new Promise<Blob>((resolve, reject) => {
-			downloadCanvas.toBlob(blob => {
+			downloadCanvas.toBlob((blob) => {
 				if (blob) resolve(blob);
 				else reject();
 			});

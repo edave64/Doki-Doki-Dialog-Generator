@@ -10,6 +10,7 @@ import { IRootState } from '@/store';
 import { ITextBox } from '@/store/objectTypes/textbox';
 import { IHitbox } from './renderable';
 import { IAsset } from '@/render-utils/assets/asset';
+import { IPanel } from '@/store/panels';
 
 export abstract class AssetListRenderable<
 	Obj extends IObject
@@ -50,13 +51,15 @@ export abstract class AssetListRenderable<
 
 	public updatedContent(
 		_current: Store<DeepReadonly<IRootState>>,
-		panelId: string
+		panelId: IPanel['id']
 	): void {
-		const panel = _current.state.objects.panels[panelId];
+		const panel = _current.state.panels.panels[panelId];
 		const inPanel = [...panel.order, ...panel.onTopOrder]; // Error here? (Donic_Volpe)
 		this.refTextbox = null;
 		for (const key of inPanel) {
-			const obj = _current.state.objects.objects[key] as ITextBox;
+			const obj = _current.state.panels.panels[panelId].objects[
+				key
+			] as ITextBox;
 			if (obj.type === 'textBox' && obj.talkingObjId === this.obj.id) {
 				this.refTextbox = obj;
 				return;

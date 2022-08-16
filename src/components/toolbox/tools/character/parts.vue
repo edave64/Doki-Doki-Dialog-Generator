@@ -291,8 +291,9 @@ export default defineComponent({
 				if (subSelect.length > 0) selection = subSelect;
 			}
 			this.vuexHistory.transaction(async () => {
-				await this.$store.dispatch('objects/setCharStyle', {
+				await this.$store.dispatch('panels/setCharStyle', {
 					id: this.character.id,
+					panelId: this.character.panelId,
 					styleGroupId,
 					styleId: styleGroups.styles.indexOf(selection[0]),
 				} as ISetStyleAction);
@@ -307,8 +308,9 @@ export default defineComponent({
 				const [headTypeIdx, headIdx] = index
 					.split('_', 2)
 					.map((part) => parseInt(part, 10));
-				this.$store.commit('objects/setPosePosition', {
+				this.$store.commit('panels/setPosePosition', {
 					id: this.character.id,
+					panelId: this.character.panelId,
 					posePositions: {
 						headType: headTypeIdx,
 						head: headIdx,
@@ -329,8 +331,9 @@ export default defineComponent({
 		},
 		setPart(part: ISetPartAction['part'], index: number): void {
 			this.vuexHistory.transaction(() => {
-				this.$store.dispatch('objects/setPart', {
+				this.$store.dispatch('panels/setPart', {
 					id: this.character.id,
+					panelId: this.character.panelId,
 					part,
 					val: index,
 				} as ISetPartAction);

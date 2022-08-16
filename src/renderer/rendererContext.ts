@@ -224,11 +224,7 @@ export class RenderContext {
 
 		this.fsCtx.translate(x + w / 2, y + h / 2);
 		this.fsCtx.scale(flip ? -1 : 1, 1);
-		if (image instanceof Renderer) {
-			image.paintOnto(this.fsCtx, { x: -w / 2, y: -h / 2, w, h });
-		} else {
-			image.paintOnto(this.fsCtx);
-		}
+		image.paintOnto(this.fsCtx, { x: -w / 2, y: -h / 2, w, h });
 		this.fsCtx.restore();
 		this.fsCtx.globalCompositeOperation = 'source-over';
 	}
@@ -367,59 +363,59 @@ export class RenderContext {
 }
 
 export interface IShadow {
-	blur?: number;
-	color?: string;
-	offsetX?: number;
-	offsetY?: number;
+	readonly blur?: number;
+	readonly color?: string;
+	readonly offsetX?: number;
+	readonly offsetY?: number;
 }
 
 export interface IOutline {
-	style: string;
-	width: number;
+	readonly style: string;
+	readonly width: number;
 }
 
 export interface IFill {
-	style: string | CanvasGradient | CanvasPattern;
+	readonly style: string | CanvasGradient | CanvasPattern;
 }
 
 interface IOShadow {
-	shadow?: IShadow;
+	readonly shadow?: IShadow;
 }
 
 interface IOComposition {
-	composition?: CompositeModes;
+	readonly composition?: CompositeModes;
 }
 
 interface IRPos {
-	x: number;
-	y: number;
+	readonly x: number;
+	readonly y: number;
 }
 
 interface IRSize {
-	w: number;
-	h: number;
+	readonly w: number;
+	readonly h: number;
 }
 
 interface IOSize {
-	w?: number;
-	h?: number;
+	readonly w?: number;
+	readonly h?: number;
 }
 
 interface IOOutline {
-	outline?: IOutline;
+	readonly outline?: IOutline;
 }
 interface IOFilters {
-	filters?: DeepReadonly<SpriteFilter[]>;
+	readonly filters?: DeepReadonly<SpriteFilter[]>;
 }
 
 interface IORotation {
-	rotation?: number;
-	rotationAnchor?: {
-		x: number;
-		y: number;
+	readonly rotation?: number;
+	readonly rotationAnchor?: {
+		readonly x: number;
+		readonly y: number;
 	};
 }
 
 interface IOFill {
-	fill?: IFill;
+	readonly fill?: IFill;
 }

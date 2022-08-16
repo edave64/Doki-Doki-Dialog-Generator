@@ -206,8 +206,6 @@ export default defineComponent({
 			}
 
 			this.vuexHistory.transaction(() => {
-				const selection =
-					this.$store.state.objects.objects[this.$store.state.ui.selection!];
 				if (e.ctrlKey) {
 					if (e.key === 'z') {
 						// this.$store.commit('history/undo');
@@ -219,28 +217,38 @@ export default defineComponent({
 						return;
 					} else if (e.key === 'v') {
 						this.$store.dispatch(
-							'objects/pasteObjectFromClipboard',
+							'panels/pasteObjectFromClipboard',
 							{} as IPasteFromClipboardAction
 						);
 						e.preventDefault();
 						return;
 					}
 				}
+				const selectionPanel =
+					this.$store.state.panels.panels[
+						this.$store.state.panels.currentPanel
+					];
+				if (!selectionPanel) return;
+				const selection =
+					selectionPanel.objects[this.$store.state.ui.selection!];
 				if (!selection) return;
 				if (e.key === 'Delete') {
-					this.$store.dispatch('objects/removeObject', {
+					this.$store.dispatch('panels/removeObject', {
 						id: selection.id,
+						panelId: selection.panelId,
 					} as IRemoveObjectAction);
 					return;
 				}
 
 				if (e.key === 'c' || e.key === 'x') {
-					this.$store.dispatch('objects/copyObjectToClipboard', {
+					this.$store.dispatch('panels/copyObjectToClipboard', {
 						id: selection.id,
+						panelId: selection.panelId,
 					} as ICopyObjectToClipboardAction);
 					if (e.key === 'x') {
-						this.$store.dispatch('objects/removeObject', {
+						this.$store.dispatch('panels/removeObject', {
 							id: selection.id,
+							panelId: selection.panelId,
 						} as IRemoveObjectAction);
 					}
 					e.preventDefault();
@@ -251,15 +259,17 @@ export default defineComponent({
 					const character = selection as ICharacter;
 					if (!character.freeMove) {
 						if (e.key === 'ArrowLeft') {
-							this.$store.dispatch('objects/shiftCharacterSlot', {
+							this.$store.dispatch('panels/shiftCharacterSlot', {
 								id: character.id,
+								panelId: character.panelId,
 								delta: -1,
 							} as IShiftCharacterSlotAction);
 							return;
 						}
 						if (e.key === 'ArrowRight') {
-							this.$store.dispatch('objects/shiftCharacterSlot', {
+							this.$store.dispatch('panels/shiftCharacterSlot', {
 								id: character.id,
+								panelId: character.panelId,
 								delta: 1,
 							} as IShiftCharacterSlotAction);
 							return;
@@ -278,8 +288,9 @@ export default defineComponent({
 				} else {
 					return;
 				}
-				this.$store.dispatch('objects/setPosition', {
+				this.$store.dispatch('panels/setPosition', {
 					id: selection.id,
+					panelId: selection.panelId,
 					x,
 					y,
 				} as ISetObjectPositionMutation);
@@ -386,12 +397,20 @@ export default defineComponent({
 
 			await enviroment.loadContentPacks();
 
-			await this.$store.dispatch('panels/createPanel');
-			if (Object.keys(this.$store.state.objects.objects).length === 0) {
-				await this.$store.dispatch(
-					'objects/createTextBox',
-					{} as ICreateTextBoxAction
-				);
+			const panelId = await this.$store.dispatch('panels/createPanel');
+			if (
+				Object.keys(this.$store.state.panels.panels[panelId].objects).length ===
+				0
+			) {
+				await this.$store.dispatch('panels/createTextBox', {
+					panelId,
+					text:
+						'Hi! Click here to edit this textbox! ' +
+						`${
+							this.$store.state.ui.vertical ? 'To the right' : 'At the bottom'
+						}` +
+						' you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more!',
+				} as ICreateTextBoxAction);
 			}
 			await this.$store.commit('panels/setCurrentBackground', {
 				current: 'dddg.buildin.backgrounds:ddlc.clubroom',

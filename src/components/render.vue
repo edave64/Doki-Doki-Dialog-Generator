@@ -34,6 +34,7 @@ import { SceneRenderer } from '@/renderables/scene-renderer';
 import { DeepReadonly } from 'ts-essentials';
 import { defineComponent } from 'vue';
 import getConstants from '@/constants';
+import { IPanel } from '@/store/panels';
 
 export default defineComponent({
 	props: {
@@ -56,8 +57,13 @@ export default defineComponent({
 		dragYOriginal: 0,
 	}),
 	computed: {
-		selection(): string | null {
+		selection(): IObject['id'] | null {
 			return this.$store.state.ui.selection;
+		},
+		currentPanel(): DeepReadonly<IPanel> {
+			return this.$store.state.panels.panels[
+				this.$store.state.panels.currentPanel
+			];
 		},
 		lqRendering(): boolean {
 			return this.$store.state.ui.lqRendering;
@@ -176,7 +182,7 @@ export default defineComponent({
 			const objects = this.sceneRender.objectsAt(sx, sy);
 
 			const currentObjectIdx = objects.findIndex((id) => id === this.selection);
-			let selectedObject: string | null;
+			let selectedObject: IObject['id'] | null;
 
 			if (currentObjectIdx === 0) {
 				selectedObject = null;
@@ -184,7 +190,7 @@ export default defineComponent({
 				// Select the next lower character
 				selectedObject = objects[currentObjectIdx - 1];
 			} else {
-				selectedObject = objects[objects.length - 1] || null;
+				selectedObject = objects[objects.length - 1] ?? null;
 			}
 
 			if (this.$store.state.ui.selection === selectedObject) return;
@@ -195,7 +201,7 @@ export default defineComponent({
 		onDragStart(e: DragEvent) {
 			e.preventDefault();
 			if (!this.selection) return;
-			this.draggedObject = this.$store.state.objects.objects[this.selection];
+			this.draggedObject = this.currentPanel.objects[this.selection];
 			const [x, y] = this.toRendererCoordinate(e.clientX, e.clientY);
 			this.dragXOffset = x - this.draggedObject.x;
 			this.dragYOffset = y - this.draggedObject.y;
@@ -204,7 +210,7 @@ export default defineComponent({
 		},
 		onTouchStart(e: TouchEvent) {
 			if (!this.selection) return;
-			this.draggedObject = this.$store.state.objects.objects[this.selection];
+			this.draggedObject = this.currentPanel.objects[this.selection];
 			const [x, y] = this.toRendererCoordinate(
 				e.touches[0].clientX,
 				e.touches[0].clientY
@@ -250,7 +256,8 @@ export default defineComponent({
 				}
 
 				this.vuexHistory.transaction(() => {
-					this.$store.dispatch('objects/setPosition', {
+					this.$store.dispatch('panels/setPosition', {
+						panelId: this.draggedObject!.panelId,
 						id: this.draggedObject!.id,
 						x,
 						y,
@@ -270,7 +277,7 @@ export default defineComponent({
 					const url = registerAsset(name, item.getAsFile()!);
 
 					await this.vuexHistory.transaction(async () => {
-						await this.$store.dispatch('objects/createSprite', {
+						await this.$store.dispatch('panels/createSprite', {
 							assets: [
 								{
 									hq: url,

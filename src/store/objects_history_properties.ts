@@ -3,14 +3,17 @@ import SpriteHistoryOptions from './objectTypes/sprite_history_properties';
 
 export default {
 	mutations: {
-		'objects/*': {
+		'panels/*': {
 			combinable: (oldMut, newMut) =>
-				oldMut.type === newMut.type && oldMut.payload.id === newMut.payload.id,
+				oldMut.type === newMut.type &&
+				oldMut.payload.id === newMut.payload.id &&
+				oldMut.payload.panelId === newMut.payload.panelId &&
+				oldMut.payload.key === newMut.payload.key,
 		},
-		'objects/create': {
+		'panels/create': {
 			combinable: () => false,
 		},
-		'objects/removeObject': {
+		'panels/removeObject': {
 			combinable: () => false,
 		},
 		...SpriteHistoryOptions.mutations,

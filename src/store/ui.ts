@@ -1,10 +1,11 @@
 import { Module } from 'vuex';
 import { IRootState } from '.';
+import { IObject } from './objects';
 
 export interface IUiState {
 	vertical: boolean;
 	nsfw: boolean;
-	selection: string | null;
+	selection: IObject['id'] | null;
 	lqRendering: boolean;
 	lastDownload: string | null;
 	clipboard: string | null;
@@ -36,7 +37,7 @@ export default {
 		setLqRendering(state, lqRendering: boolean) {
 			state.lqRendering = lqRendering;
 		},
-		setSelection(state, selection: string | null) {
+		setSelection(state, selection: IObject['id'] | null) {
 			state.selection = selection;
 		},
 		setLastDownload(state, download: string) {

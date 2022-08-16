@@ -5,7 +5,7 @@
 			v-if="imageOptions"
 			type="panel"
 			title=""
-			:id="currentPanel"
+			:panel-id="currentPanel.id"
 			no-composition
 			@leave="
 				imageOptions = false;
@@ -18,7 +18,10 @@
 					<div
 						v-for="(panel, idx) of panelButtons"
 						:key="panel.id"
-						:class="{ panel_button: true, active: panel.id === currentPanel }"
+						:class="{
+							panel_button: true,
+							active: panel.id === currentPanel.id,
+						}"
 						:style="`background-image: url('${panel.image}')`"
 						@click="updateCurrentPanel(panel.id)"
 					>
@@ -147,6 +150,7 @@ import {
 	IDeletePanelAction,
 	IDuplicatePanelAction,
 	IMovePanelAction,
+	IPanel,
 	ISetCurrentPanelMutation,
 	ISetPanelPreviewMutation,
 } from '@/store/panels';
@@ -169,7 +173,7 @@ import getConstants from '@/constants';
 import { safeAsync } from '@/util/errors';
 
 interface IPanelButton {
-	id: string;
+	id: IPanel['id'];
 	image: string;
 	text: string;
 }
@@ -198,8 +202,10 @@ export default defineComponent({
 		imageOptions: false,
 	}),
 	computed: {
-		currentPanel(): string {
-			return this.$store.state.panels.currentPanel;
+		currentPanel(): DeepReadonly<IPanel> {
+			return this.$store.state.panels.panels[
+				this.$store.state.panels.currentPanel
+			];
 		},
 
 		isLossy(): boolean {
@@ -214,11 +220,13 @@ export default defineComponent({
 			const panelOrder = this.$store.state.panels.panelOrder;
 			return panelOrder.map((id) => {
 				const panel = this.$store.state.panels.panels[id];
-				const objectOrders = this.$store.state.objects.panels[id];
+				const objectOrders = this.$store.state.panels.panels[id];
 				const txtBox = objectOrders
 					? ([] as string[])
 							.concat(objectOrders.order, objectOrders.onTopOrder)
-							.map((objId) => this.$store.state.objects.objects[objId])
+							.map(
+								(objId) => this.$store.state.panels.panels[id].objects[objId]
+							)
 							.map(this.extractObjectText)
 					: [];
 				return {
@@ -234,13 +242,13 @@ export default defineComponent({
 
 		canMoveAhead(): boolean {
 			const panelOrder = this.$store.state.panels.panelOrder;
-			const idx = panelOrder.indexOf(this.currentPanel);
+			const idx = panelOrder.indexOf(this.currentPanel.id);
 			return idx > 0;
 		},
 
 		canMoveBehind(): boolean {
 			const panelOrder = this.$store.state.panels.panelOrder;
-			const idx = panelOrder.indexOf(this.currentPanel);
+			const idx = panelOrder.indexOf(this.currentPanel.id);
 			return idx < panelOrder.length - 1;
 		},
 	},
@@ -322,7 +330,7 @@ export default defineComponent({
 			);
 		},
 		async renderObjects<T>(
-			distribution: DeepReadonly<string[][]>,
+			distribution: DeepReadonly<IPanel['id'][][]>,
 			hq: boolean,
 			mapper: (imageIdx: number, canvas: HTMLCanvasElement) => Promise<T>
 		): Promise<T[]> {
@@ -358,7 +366,7 @@ export default defineComponent({
 				})
 			);
 		},
-		getLimitedPanelList(): DeepReadonly<string[]> {
+		getLimitedPanelList(): DeepReadonly<IPanel['id'][]> {
 			const max = this.$store.state.panels.panelOrder.length - 1;
 			const min = 0;
 			const parts = this.pages.split(',');
@@ -397,13 +405,13 @@ export default defineComponent({
 				.filter((value, idx, ary) => ary[idx - 1] !== value)
 				.map((pageIdx) => this.$store.state.panels.panelOrder[pageIdx]);
 		},
-		getPanelDistibution(): DeepReadonly<string[][]> {
+		getPanelDistibution(): DeepReadonly<IPanel['id'][][]> {
 			const panelOrder = this.getLimitedPanelList();
 			if (isNaN(parseInt(this.ppi))) {
 				this.ppi = 0;
 			}
 			if (this.ppi === 0) return [panelOrder];
-			const images: string[][] = [];
+			const images: IPanel['id'][][] = [];
 			for (let imageI = 0; imageI < panelOrder.length / this.ppi; ++imageI) {
 				const sliceStart = imageI * this.ppi;
 				const sliceEnd = sliceStart + this.ppi;
@@ -454,7 +462,7 @@ export default defineComponent({
 				this.moveFocusToActivePanel();
 			});
 		},
-		updateCurrentPanel(panelId: string) {
+		updateCurrentPanel(panelId: IPanel['id']) {
 			this.vuexHistory.transaction(async () => {
 				this.$store.commit('panels/setCurrentPanel', {
 					panelId,
@@ -477,7 +485,7 @@ export default defineComponent({
 		moveAhead() {
 			this.vuexHistory.transaction(async () => {
 				await this.$store.dispatch('panels/move', {
-					panelId: this.currentPanel,
+					panelId: this.currentPanel.id,
 					delta: -1,
 				} as IMovePanelAction);
 			});
@@ -485,7 +493,7 @@ export default defineComponent({
 		moveBehind() {
 			this.vuexHistory.transaction(async () => {
 				await this.$store.dispatch('panels/move', {
-					panelId: this.currentPanel,
+					panelId: this.currentPanel.id,
 					delta: 1,
 				} as IMovePanelAction);
 			});
@@ -495,7 +503,7 @@ export default defineComponent({
 				const baseConst = getConstants().Base;
 				const sceneRenderer = new SceneRenderer(
 					this.$store,
-					this.currentPanel,
+					this.currentPanel.id,
 					baseConst.screenWidth,
 					baseConst.screenHeight
 				);

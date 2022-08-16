@@ -16,6 +16,7 @@ import {
 	AssetListRenderable,
 	IDrawAssetsUnloaded,
 } from './assetListRenderable';
+import { IPanel } from '@/store/panels';
 
 export class Character extends AssetListRenderable<ICharacter> {
 	public constructor(
@@ -27,7 +28,7 @@ export class Character extends AssetListRenderable<ICharacter> {
 
 	public updatedContent(
 		store: Store<DeepReadonly<IRootState>>,
-		panelId: string
+		panelId: IPanel['id']
 	): void {
 		super.updatedContent(store, panelId);
 		this.data = getData(store, this.obj);

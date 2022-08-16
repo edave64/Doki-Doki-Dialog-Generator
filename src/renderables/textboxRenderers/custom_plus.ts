@@ -92,10 +92,7 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 	private get nameboxOutlineColor(): string {
 		if (this.obj.deriveCustomColors) {
 			const base = RGBAColor.fromCss(this.customColor).toHSL();
-			return base
-				.shift(nameboxTextOutlineDelta)
-				.toRgb()
-				.toCss();
+			return base.shift(nameboxTextOutlineDelta).toRgb().toCss();
 		}
 		return this.obj.customNameboxStroke;
 	}
@@ -103,10 +100,7 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 	private get nameboxBackgroundColor(): string {
 		if (this.obj.deriveCustomColors) {
 			const base = RGBAColor.fromCss(this.customColor).toHSL();
-			return base
-				.shift(nameboxBackgroundDelta)
-				.toRgb()
-				.toCss();
+			return base.shift(nameboxBackgroundDelta).toRgb().toCss();
 		}
 		return this.obj.customNameboxColor;
 	}
@@ -122,12 +116,12 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 		const w = this.nameboxWidth;
 		const h = this.nameboxHeight;
 		await rx.customTransform(
-			async ctx => {
+			async (ctx) => {
 				ctx.beginPath();
 				roundedTopRectangle(ctx, x, y, w, h, nameboxRounding);
 				ctx.clip();
 			},
-			async subRx => {
+			async (subRx) => {
 				const gradient = subRx.linearGradient(x, y, x, y + h);
 				const baseBG = RGBAColor.fromCss(this.nameboxBackgroundColor);
 				// tslint:disable-next-line: no-magic-numbers
@@ -161,15 +155,12 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 		const dotPattern = new Renderer(dotPatternSize, dotPatternSize);
 		await dotPattern.render(async (dotRx: RenderContext) => {
 			const fill = {
-				style: hslColor
-					.shift(dotColorDelta)
-					.toRgb()
-					.toCss(),
+				style: hslColor.shift(dotColorDelta).toRgb().toCss(),
 			};
 
 			function drawDot(dotX: number, dotY: number) {
 				dotRx.drawPath({
-					path: ctx => {
+					path: (ctx) => {
 						ctx.ellipse(dotX, dotY, dotRadius, dotRadius, 0, 0, 2 * Math.PI);
 					},
 					fill,
@@ -183,7 +174,7 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 			drawDot(dotPatternSize / 2, dotPatternSize / 2);
 		}, true);
 		await rx.customTransform(
-			async ctx => {
+			async (ctx) => {
 				ctx.beginPath();
 				roundedRectangle(
 					ctx,
@@ -195,7 +186,7 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 				);
 				ctx.clip();
 			},
-			async subRx => {
+			async (subRx) => {
 				const h = this.obj.height;
 				const w = this.obj.width;
 				const gradient = subRx.linearGradient(x, y, x, y + h);
@@ -219,10 +210,10 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 					},
 				});
 				await subRx.customTransform(
-					async ctx => {
+					async (ctx) => {
 						ctx.translate(x, y);
 					},
-					async _subSubRx => {
+					async (_subSubRx) => {
 						const pattern = subRx.patternFrom(dotPattern);
 						subRx.drawRect({
 							x: 0,
@@ -247,7 +238,7 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 				glowGradient.addColorStop(0.5, 'rgba(255,255,255,0.0627)');
 				glowGradient.addColorStop(1, 'rgba(255,255,255,0)');
 				subRx.drawPath({
-					path: ctx => {
+					path: (ctx) => {
 						ctx.ellipse(
 							x + w / 2,
 							y + h,
@@ -269,7 +260,7 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 			.toRgb()
 			.toCss();
 		rx.drawPath({
-			path: path => {
+			path: (path) => {
 				roundedRectangle(
 					path,
 					x + textboxRoundingBuffer,

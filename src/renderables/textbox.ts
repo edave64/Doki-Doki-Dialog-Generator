@@ -13,6 +13,7 @@ import { Custom } from './textboxRenderers/custom';
 import { None } from './textboxRenderers/none';
 import { CustomPlus } from './textboxRenderers/custom_plus';
 import { DeepReadonly } from 'ts-essentials';
+import { IPanel } from '@/store/panels';
 
 export const styleRenderers: ReadonlyArray<ITextboxRendererClass> = [
 	Default,
@@ -89,13 +90,15 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 
 	public updatedContent(
 		_current: Store<DeepReadonly<IRootState>>,
-		panelId: string
+		panelId: IPanel['id']
 	): void {
 		super.updatedContent(_current, panelId);
 
 		const talkingObj = this.obj.talkingObjId;
 		if (talkingObj !== null && talkingObj !== '$other$') {
-			const obj = _current.state.objects.objects[talkingObj] as IObject;
+			const obj = _current.state.panels.panels[panelId].objects[
+				talkingObj
+			] as IObject;
 			if (obj) {
 				this.refObject = obj;
 				return;

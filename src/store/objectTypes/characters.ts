@@ -1,8 +1,7 @@
-import { ICommand } from '@/eventbus/command';
 import {
 	ICreateObjectMutation,
 	IObject,
-	IObjectsState,
+	IObjectMutation,
 	IRemoveObjectAction,
 	ISetObjectPositionMutation,
 	ISetPositionAction,
@@ -21,6 +20,7 @@ import { IRootState } from '..';
 import { DeepReadonly } from 'ts-essentials';
 import { baseProps } from './baseObjectProps';
 import getConstants from '@/constants';
+import { IPanel, IPanels } from '../panels';
 
 export interface ICharacter extends IObject {
 	type: 'character';
@@ -35,37 +35,40 @@ export interface ICharacter extends IObject {
 	};
 }
 
-export const characterMutations: MutationTree<IObjectsState> = {
+export const characterMutations: MutationTree<IPanels> = {
 	setPose(state, command: ISetPoseMutation) {
-		const obj = state.objects[command.id] as ICharacter;
+		const obj = state.panels[command.panelId].objects[command.id] as ICharacter;
 		obj.poseId = command.poseId;
 		++obj.version;
 	},
-	setCharStyleGroup(state, { id, styleGroupId }: ISetCharStyleGroupMutation) {
-		const obj = state.objects[id] as ICharacter;
+	setCharStyleGroup(
+		state,
+		{ id, panelId, styleGroupId }: ISetCharStyleGroupMutation
+	) {
+		const obj = state.panels[panelId].objects[id] as ICharacter;
 		obj.styleGroupId = styleGroupId;
 		++obj.version;
 	},
-	setCharStyle(state, { id, styleId }: ISetCharStyleMutation) {
-		const obj = state.objects[id] as ICharacter;
+	setCharStyle(state, { id, panelId, styleId }: ISetCharStyleMutation) {
+		const obj = state.panels[panelId].objects[id] as ICharacter;
 		obj.styleId = styleId;
 		++obj.version;
 	},
+	setClose(state, command: ISetCloseMutation) {
+		const obj = state.panels[command.panelId].objects[command.id] as ICharacter;
+		obj.close = command.close;
+		++obj.version;
+	},
 	setPosePosition(state, command: ISetPosePositionMutation) {
-		const obj = state.objects[command.id] as ICharacter;
+		const obj = state.panels[command.panelId].objects[command.id] as ICharacter;
 		obj.posePositions = {
 			...obj.posePositions,
 			...command.posePositions,
 		};
 		++obj.version;
 	},
-	setClose(state, command: ISetCloseMutation) {
-		const obj = state.objects[command.id] as ICharacter;
-		obj.close = command.close;
-		++obj.version;
-	},
 	setFreeMove(state, command: ISetFreeMoveMutation) {
-		const obj = state.objects[command.id] as ICharacter;
+		const obj = state.panels[command.panelId].objects[command.id] as ICharacter;
 		obj.freeMove = command.freeMove;
 		if (!obj.freeMove) {
 			const constants = getConstants();
@@ -140,13 +143,12 @@ export function closestCharacterSlot(pos: number): number {
 	return sorted[0].idx;
 }
 
-let lastSpriteId = 0;
-
-export const characterActions: ActionTree<IObjectsState, IRootState> = {
+export const characterActions: ActionTree<IPanels, IRootState> = {
 	createCharacters(
-		{ rootState, rootGetters, commit },
+		{ rootState, rootGetters, commit, state },
 		command: ICreateCharacterAction
-	) {
+	): IObject['id'] {
+		const id = state.panels[command.panelId].lastObjId + 1;
 		const constants = getConstants();
 		const char = getDataG(rootGetters, command.characterType);
 		const charScale = char.hd
@@ -155,7 +157,7 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 		commit('create', {
 			object: {
 				...baseProps(),
-				id: 'characters_' + ++lastSpriteId,
+				id,
 				panelId: rootState.panels.currentPanel,
 				onTop: false,
 				type: 'character',
@@ -175,21 +177,23 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 				enlargeWhenTalking: rootState.ui.defaultCharacterTalkingZoom,
 			} as ICharacter,
 		} as ICreateObjectMutation);
+		return id;
 	},
 
 	seekPart(
 		{ state, commit, dispatch, rootGetters },
-		{ delta, id, part }: ISeekPosePartAction
+		{ delta, id, panelId, part }: ISeekPosePartAction
 	) {
 		if (part === 'head') {
-			dispatch('seekHead', { id, delta } as ISeekHeadAction);
+			dispatch('seekHead', { id, panelId, delta } as ISeekHeadAction);
 			return;
 		}
-		const obj = state.objects[id] as Readonly<ICharacter>;
+		const obj = state.panels[panelId].objects[id] as Readonly<ICharacter>;
 		const pose = getPose(getDataG(rootGetters, obj.characterType), obj);
 		if (!pose.positions[part]) return;
 		commit('setPosePosition', {
 			id,
+			panelId,
 			posePositions: {
 				[part]: arraySeeker(
 					pose.positions[part],
@@ -200,8 +204,11 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 		} as ISetPosePositionMutation);
 	},
 
-	seekPose({ state, commit, rootGetters }, { id, delta }: ISeekPoseAction) {
-		const obj = state.objects[id] as Readonly<ICharacter>;
+	seekPose(
+		{ state, commit, rootGetters },
+		{ id, panelId, delta }: ISeekPoseAction
+	) {
+		const obj = state.panels[panelId].objects[id] as Readonly<ICharacter>;
 		const data = getDataG(rootGetters, obj.characterType);
 		const poses = data.styleGroups[obj.styleGroupId].styles[obj.styleId].poses;
 		mutatePoseAndPositions(commit, obj, data, (change) => {
@@ -209,8 +216,11 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 		});
 	},
 
-	seekStyle({ state, commit, rootGetters }, { id, delta }: ISeekStyleAction) {
-		const obj = state.objects[id] as Readonly<ICharacter>;
+	seekStyle(
+		{ state, commit, rootGetters },
+		{ id, panelId, delta }: ISeekStyleAction
+	) {
+		const obj = state.panels[panelId].objects[id] as Readonly<ICharacter>;
 		const data = getDataG(rootGetters, obj.characterType);
 		const linearStyles = data.styleGroups
 			.flatMap((styleGroup, styleGroupIdx) => {
@@ -238,8 +248,11 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 		});
 	},
 
-	seekHead({ state, commit, rootGetters }, { id, delta }: ISeekHeadAction) {
-		const obj = state.objects[id] as Readonly<ICharacter>;
+	seekHead(
+		{ state, commit, rootGetters },
+		{ id, panelId, delta }: ISeekHeadAction
+	) {
+		const obj = state.panels[panelId].objects[id] as Readonly<ICharacter>;
 		const data = getDataG(rootGetters, obj.characterType);
 		const pose = getPose(data, obj);
 		let currentHeads = getHeads(data, obj);
@@ -257,6 +270,7 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 		}
 		commit('setPosePosition', {
 			id,
+			panelId,
 			posePositions: {
 				head,
 				headType,
@@ -266,9 +280,9 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 
 	setPart(
 		{ state, commit, rootGetters },
-		{ id, part, val }: ISetPartAction
+		{ panelId, id, part, val }: ISetPartAction
 	): void {
-		const obj = state.objects[id] as Readonly<ICharacter>;
+		const obj = state.panels[panelId].objects[id] as Readonly<ICharacter>;
 		const data = getDataG(rootGetters, obj.characterType);
 		if (part === 'pose') {
 			mutatePoseAndPositions(commit, obj, data, (change) => {
@@ -287,9 +301,9 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 
 	setCharStyle(
 		{ state, commit, rootGetters },
-		{ id, styleGroupId, styleId }: ISetStyleAction
+		{ panelId, id, styleGroupId, styleId }: ISetStyleAction
 	) {
-		const obj = state.objects[id] as Readonly<ICharacter>;
+		const obj = state.panels[panelId].objects[id] as Readonly<ICharacter>;
 		const data = getDataG(rootGetters, obj.characterType);
 		mutatePoseAndPositions(commit, obj, data, (change) => {
 			change.styleGroupId = styleGroupId;
@@ -299,11 +313,12 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 
 	setCharacterPosition(
 		{ state, commit },
-		{ id, x, y }: ISetPositionAction
+		{ panelId, id, x, y }: ISetPositionAction
 	): void {
-		const obj = state.objects[id] as ICharacter;
+		const obj = state.panels[panelId].objects[id] as ICharacter;
 		if (obj.freeMove) {
 			commit('setPosition', {
+				panelId,
 				id,
 				x,
 				y,
@@ -311,6 +326,7 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 		} else {
 			const constants = getConstants();
 			commit('setPosition', {
+				panelId,
 				id,
 				x: constants.Base.characterPositions[closestCharacterSlot(x)],
 				y:
@@ -322,9 +338,9 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 
 	shiftCharacterSlot(
 		{ state, commit },
-		{ id, delta }: IShiftCharacterSlotAction
+		{ panelId, id, delta }: IShiftCharacterSlotAction
 	): void {
-		const obj = state.objects[id] as ICharacter;
+		const obj = state.panels[panelId].objects[id] as ICharacter;
 		const constants = getConstants();
 		const currentSlotNr = closestCharacterSlot(obj.x);
 		let newSlotNr = currentSlotNr + delta;
@@ -335,6 +351,7 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 			newSlotNr = constants.Base.characterPositions.length - 1;
 		}
 		commit('setPosition', {
+			panelId,
 			id,
 			x: constants.Base.characterPositions[newSlotNr],
 			y: obj.y,
@@ -343,11 +360,12 @@ export const characterActions: ActionTree<IObjectsState, IRootState> = {
 };
 
 export async function fixContentPackRemovalFromCharacter(
-	context: ActionContext<IObjectsState, IRootState>,
-	id: string,
+	context: ActionContext<IPanels, IRootState>,
+	panelId: IPanel['id'],
+	id: IObject['id'],
 	oldPack: ContentPack<IAssetSwitch>
 ) {
-	const obj = context.state.objects[id] as ICharacter;
+	const obj = context.state.panels[panelId].objects[id] as ICharacter;
 	const oldCharData = oldPack.characters.find(
 		(char) => char.id === obj.characterType
 	);
@@ -355,6 +373,7 @@ export async function fixContentPackRemovalFromCharacter(
 		console.error('Character data is missing. Dropping the character.');
 		await context.dispatch('removeObject', {
 			id,
+			panelId,
 		} as IRemoveObjectAction);
 		return;
 	}
@@ -370,6 +389,7 @@ export async function fixContentPackRemovalFromCharacter(
 		console.error('Character data is missing. Dropping the character.');
 		await context.dispatch('removeObject', {
 			id,
+			panelId,
 		} as IRemoveObjectAction);
 		return;
 	}
@@ -475,6 +495,7 @@ function commitPoseAndPositionChanges(
 	if (poseAndPosition.styleGroupId !== character.styleGroupId) {
 		commit('setCharStyleGroup', {
 			id: character.id,
+			panelId: character.panelId,
 			styleGroupId: poseAndPosition.styleGroupId,
 		} as ISetCharStyleGroupMutation);
 	}
@@ -484,12 +505,14 @@ function commitPoseAndPositionChanges(
 		);
 		commit('setCharStyle', {
 			id: character.id,
+			panelId: character.panelId,
 			styleId: poseAndPosition.styleId,
 		} as ISetCharStyleMutation);
 	}
 	if (poseAndPosition.poseId !== character.poseId) {
 		commit('setPose', {
 			id: character.id,
+			panelId: character.panelId,
 			poseId: poseAndPosition.poseId,
 		} as ISetPoseMutation);
 	}
@@ -499,6 +522,7 @@ function commitPoseAndPositionChanges(
 	) {
 		commit('setPosePosition', {
 			id: character.id,
+			panelId: character.panelId,
 			posePositions: poseAndPosition.posePositions,
 		} as ISetPosePositionMutation);
 	}
@@ -563,91 +587,69 @@ interface PoseAndPositionChange {
 	posePositions: ICharacter['posePositions'];
 }
 
-export interface ISetPoseMutation extends ICommand {
+export interface ISetPoseMutation extends IObjectMutation {
 	readonly poseId: number;
 }
 
-export interface ISetCharStyleGroupMutation extends ICommand {
+export interface ISetCharStyleGroupMutation extends IObjectMutation {
 	readonly styleGroupId: number;
 }
 
-export interface ISetCharStyleMutation extends ICommand {
+export interface ISetCharStyleMutation extends IObjectMutation {
 	readonly styleId: number;
 }
 
-export interface ISetPosePositionMutation extends ICommand {
+export interface ISetPosePositionMutation extends IObjectMutation {
 	readonly posePositions: {
 		[id: string]: number;
 	};
 }
 
-export interface ISetFreeMoveMutation extends ICommand {
+export interface ISetFreeMoveMutation extends IObjectMutation {
 	readonly freeMove: boolean;
 }
 
-export interface ISetCloseMutation extends ICommand {
+export interface ISetCloseMutation extends IObjectMutation {
 	readonly close: boolean;
 }
 
 export interface ICreateCharacterAction {
+	readonly panelId: IPanel['id'];
 	readonly characterType: string;
 }
 
-export interface ISeekPoseAction extends ICommand {
+export interface ISeekPoseAction extends IObjectMutation {
 	readonly delta: -1 | 1;
 }
 
-export interface ISeekStyleAction extends ICommand {
+export interface ISeekStyleAction extends IObjectMutation {
 	readonly delta: -1 | 1;
 }
 
-export interface ISeekHeadAction extends ICommand {
+export interface ISeekHeadAction extends IObjectMutation {
 	readonly delta: -1 | 1;
 }
 
-export interface ISetPartAction extends ICommand {
+export interface ISetPartAction extends IObjectMutation {
 	readonly part: string;
 	readonly val: number;
 }
 
-export interface ISetStyleAction extends ICommand {
+export interface ISetStyleAction extends IObjectMutation {
 	readonly styleGroupId: number;
 	readonly styleId: number;
 }
 
-export interface INsfwCheckAction extends ICommand {}
-
-export interface ISeekPosePartAction extends ICommand {
+export interface ISeekPosePartAction extends IObjectMutation {
 	readonly part: string;
 	readonly delta: -1 | 1;
 }
 
-export interface ISetSpriteSizeMutation extends ICommand {
+export interface ISetSpriteSizeMutation extends IObjectMutation {
 	readonly width: number;
 	readonly height: number;
 }
 
-export interface ISetSpriteRatioMutation extends ICommand {
-	readonly preserveRatio: boolean;
-	readonly ratio: number;
-}
-
-export interface ISetSpriteWidthAction extends ICommand {
-	readonly width: number;
-}
-
-export interface ISetSpriteHeightAction extends ICommand {
-	readonly height: number;
-}
-
-export interface ISetSpriteRatioAction extends ICommand {
-	readonly preserveRatio: boolean;
-}
-
-export interface ICreateSpriteAction extends ICommand {
-	readonly assetName: string;
-}
-
-export interface IShiftCharacterSlotAction extends ICommand {
+export interface IShiftCharacterSlotAction extends IObjectMutation {
 	readonly delta: -1 | 1;
 }

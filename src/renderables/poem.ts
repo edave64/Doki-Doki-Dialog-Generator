@@ -55,15 +55,13 @@ export class Poem extends ScalingRenderable<IPoem> {
 			this._width = this.obj.width;
 		} else {
 			const asset = await getAssetByUrl(`assets/poemBackgrounds/${paper.file}`);
-			if (asset instanceof HTMLImageElement) {
-				rx.drawImage({
-					image: asset,
-					x: flippedX - asset.width / 2,
-					y: this.obj.y - asset.height / 2,
-				});
-				this._height = asset.height;
-				this._width = asset.width;
-			}
+			rx.drawImage({
+				image: asset,
+				x: flippedX - asset.width / 2,
+				y: this.obj.y - asset.height / 2,
+			});
+			this._height = asset.height;
+			this._width = asset.width;
 		}
 		y -= this.height / 2;
 		x -= this.width / 2;

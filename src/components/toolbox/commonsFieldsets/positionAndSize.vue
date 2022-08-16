@@ -23,8 +23,9 @@
 										v-for="(val, key) of positionNames"
 										:key="key"
 										:value="key"
-										>{{ val }}</option
 									>
+										{{ val }}
+									</option>
 								</select>
 							</td>
 							<td class="arrow-col">
@@ -136,8 +137,9 @@ export default defineComponent({
 			},
 			set(freeMove: boolean) {
 				this.vuexHistory.transaction(() => {
-					this.$store.commit('objects/setFreeMove', {
+					this.$store.commit('panels/setFreeMove', {
 						id: this.obj!.id,
+						panelId: this.obj!.panelId,
 						freeMove,
 					} as ISetFreeMoveMutation);
 				});
@@ -149,8 +151,9 @@ export default defineComponent({
 			},
 			set(preserveRatio: boolean) {
 				this.vuexHistory.transaction(() => {
-					this.$store.dispatch('objects/setPreserveRatio', {
+					this.$store.dispatch('panels/setPreserveRatio', {
 						id: this.obj!.id,
+						panelId: this.obj!.panelId,
 						preserveRatio,
 					} as ISetRatioAction);
 				});
@@ -162,8 +165,9 @@ export default defineComponent({
 			},
 			set(value: number) {
 				this.vuexHistory.transaction(() => {
-					this.$store.dispatch('objects/setPosition', {
+					this.$store.dispatch('panels/setPosition', {
 						id: this.obj!.id,
+						panelId: this.obj!.panelId,
 						x: getConstants().Base.characterPositions[value],
 						y: this.obj!.y,
 					} as ISetPositionAction);
@@ -176,8 +180,9 @@ export default defineComponent({
 			},
 			set(x: number) {
 				this.vuexHistory.transaction(() => {
-					this.$store.commit('objects/setPosition', {
+					this.$store.commit('panels/setPosition', {
 						id: this.obj!.id,
+						panelId: this.obj!.panelId,
 						x,
 						y: this.y,
 					} as ISetObjectPositionMutation);
@@ -190,8 +195,9 @@ export default defineComponent({
 			},
 			set(y: number) {
 				this.vuexHistory.transaction(() => {
-					this.$store.commit('objects/setPosition', {
+					this.$store.commit('panels/setPosition', {
 						id: this.obj!.id,
+						panelId: this.obj!.panelId,
 						x: this.x,
 						y,
 					} as ISetObjectPositionMutation);
@@ -204,8 +210,9 @@ export default defineComponent({
 			},
 			set(height: number) {
 				this.vuexHistory.transaction(() => {
-					this.$store.dispatch('objects/setHeight', {
+					this.$store.dispatch('panels/setHeight', {
 						id: this.obj!.id,
+						panelId: this.obj!.panelId,
 						height,
 					} as ISetHeightAction);
 				});
@@ -217,8 +224,9 @@ export default defineComponent({
 			},
 			set(width: number) {
 				this.vuexHistory.transaction(() => {
-					this.$store.dispatch('objects/setWidth', {
+					this.$store.dispatch('panels/setWidth', {
 						id: this.obj!.id,
+						panelId: this.obj!.panelId,
 						width,
 					} as ISetWidthAction);
 				});

@@ -89,6 +89,8 @@
 </template>
 
 <script lang="ts">
+import { IPanel } from '@/store/panels';
+import { DeepReadonly } from 'ts-essentials';
 import SettingsPanel from './tools/settings.vue';
 import AddPanel from './tools/add.vue';
 import CharacterPanel from './tools/character.vue';
@@ -133,10 +135,15 @@ export default defineComponent({
 		panelSelection: 'add' as PanelNames,
 	}),
 	computed: {
+		currentPanel(): DeepReadonly<IPanel> {
+			return this.$store.state.panels.panels[
+				this.$store.state.panels.currentPanel
+			];
+		},
 		vertical(): boolean {
 			return this.$store.state.ui.vertical;
 		},
-		selection(): string | null {
+		selection(): IObject['id'] | null {
 			return this.$store.state.ui.selection;
 		},
 		panel(): PanelNames | ObjectTypes {
@@ -145,7 +152,7 @@ export default defineComponent({
 					// eslint-disable-next-line vue/no-side-effects-in-computed-properties
 					this.panelSelection = 'add';
 				} else {
-					const obj = this.$store.state.objects.objects[this.selection];
+					const obj = this.currentPanel.objects[this.selection];
 					return obj.type;
 				}
 			}
@@ -179,7 +186,7 @@ export default defineComponent({
 	},
 	watch: {
 		selection(newSelection: IObject | null) {
-			if (newSelection) {
+			if (newSelection != null) {
 				this.panelSelection = 'selection';
 				return;
 			}

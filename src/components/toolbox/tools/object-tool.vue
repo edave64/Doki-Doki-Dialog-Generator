@@ -16,9 +16,7 @@
 				@option="renameOption"
 				@leave="renameOption('Cancel')"
 			>
-				<p class="modal-text">
-					Enter the new name
-				</p>
+				<p class="modal-text">Enter the new name</p>
 				<p class="modal-text">
 					<input v-model="modalNameInput" style="width: 100%" />
 				</p>
@@ -41,6 +39,7 @@
 		<image-options
 			v-else-if="imageOptionsOpen"
 			type="object"
+			:panel-id="object.panelId"
 			:id="object.id"
 			@leave="imageOptionsOpen = false"
 		/>
@@ -133,6 +132,8 @@ import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
 import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
 import ImageOptions from '@/components/toolbox/subtools/image-options/image-options.vue';
 import Color from '@/components/toolbox/subtools/color/color.vue';
+import { IPanel } from '@/store/panels';
+import { DeepReadonly } from 'ts-essentials';
 import { PanelMixin } from './panelMixin';
 import TextEditor from '../subtools/text/text.vue';
 import { IPoem } from '@/store/objectTypes/poem';
@@ -187,12 +188,17 @@ export default defineComponent({
 		localColorHandler: null as Handler | null,
 	}),
 	computed: {
-		flip: setable('flip', 'objects/setFlip'),
-		rotation: setable('rotation', 'objects/setRotation'),
+		flip: setable('flip', 'panels/setFlip'),
+		rotation: setable('rotation', 'panels/setRotation'),
 		enlargeWhenTalking: setable(
 			'enlargeWhenTalking',
-			'objects/setEnlargeWhenTalking'
+			'panels/setEnlargeWhenTalking'
 		),
+		currentPanel(): DeepReadonly<IPanel> {
+			return this.$store.state.panels.panels[
+				this.$store.state.panels.currentPanel
+			];
+		},
 		nameboxWidth: {
 			get(): string {
 				const val = this.object.nameboxWidth;
@@ -202,8 +208,9 @@ export default defineComponent({
 			set(value: string) {
 				const val = value.trim() === '' ? null : parseInt(value);
 				this.vuexHistory.transaction(async () => {
-					this.$store.commit('objects/setObjectNameboxWidth', {
+					this.$store.commit('panels/setObjectNameboxWidth', {
 						id: this.object.id,
+						panelId: this.object.panelId,
 						nameboxWidth: val,
 					} as ISetNameboxWidthMutation);
 				});
@@ -215,8 +222,9 @@ export default defineComponent({
 			},
 			set(zoom: number): void {
 				this.vuexHistory.transaction(async () => {
-					this.$store.commit('objects/setObjectZoom', {
+					this.$store.commit('panels/setObjectZoom', {
 						id: this.object.id,
+						panelId: this.object.panelId,
 						zoom: zoom / 100,
 					} as ISetObjectZoomMutation);
 				});
@@ -232,7 +240,6 @@ export default defineComponent({
 			return this.object.label !== null;
 		},
 		heading(): string {
-			console.log('heading', this.object.label, this.title, 'Object');
 			return this.object.label || this.title || 'Object';
 		},
 		useCustomTextboxColor: {
@@ -241,7 +248,8 @@ export default defineComponent({
 			},
 			set(val: boolean) {
 				this.vuexHistory.transaction(async () => {
-					this.$store.commit('objects/setTextboxColor', {
+					this.$store.commit('panels/setTextboxColor', {
+						panelId: this.object.panelId,
 						id: this.object.id,
 						textboxColor: val
 							? getConstants().TextBoxCustom.textboxDefaultColor
@@ -254,7 +262,8 @@ export default defineComponent({
 	methods: {
 		copy() {
 			this.vuexHistory.transaction(async () => {
-				await this.$store.dispatch('objects/copyObjectToClipboard', {
+				await this.$store.dispatch('panels/copyObjectToClipboard', {
+					panelId: this.object.panelId,
 					id: this.object.id,
 				} as ICopyObjectToClipboardAction);
 			});
@@ -267,7 +276,8 @@ export default defineComponent({
 			this.showRename = false;
 			if (option === 'Apply') {
 				this.vuexHistory.transaction(async () => {
-					this.$store.commit('objects/setLabel', {
+					this.$store.commit('panels/setLabel', {
+						panelId: this.object.panelId,
 						id: this.object.id,
 						label: this.modalNameInput,
 					} as ISetLabelMutation);
@@ -280,7 +290,8 @@ export default defineComponent({
 				get: () => this.object.textboxColor,
 				set: (color: string) => {
 					this.vuexHistory.transaction(async () => {
-						this.$store.commit('objects/setTextboxColor', {
+						this.$store.commit('panels/setTextboxColor', {
+							panelId: this.object.panelId,
 							id: this.object.id,
 							textboxColor: color,
 						} as ISetTextBoxColor);

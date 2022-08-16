@@ -25,7 +25,7 @@ export class RGBAColor {
 		const rgbHead = str.slice(0, -1);
 		const parentesisPos = rgbHead.indexOf('(');
 		const rbgTail = rgbHead.slice(parentesisPos + 1);
-		const elements = rbgTail.split(',').map(x => parseFloat(x.trim()));
+		const elements = rbgTail.split(',').map((x) => parseFloat(x.trim()));
 		return new RGBAColor(
 			elements[0],
 			elements[1],
@@ -96,9 +96,9 @@ export class RGBAColor {
 	}
 
 	public toHex(): string {
-		return `#${Math.round(this.r)
-			.toString(16)
-			.padStart(2, '0')}${Math.round(this.g)
+		return `#${Math.round(this.r).toString(16).padStart(2, '0')}${Math.round(
+			this.g
+		)
 			.toString(16)
 			.padStart(2, '0')}${Math.round(this.b)
 			.toString(16)

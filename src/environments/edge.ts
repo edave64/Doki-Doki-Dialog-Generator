@@ -10,12 +10,12 @@ export class OldEdge extends Browser {
 		let url = downloadCanvas.toDataURL(format, quality);
 		const blob = this.dataURItoBlob(url, format);
 
-		if (window.URL && window.URL.createObjectURL) {
+		if (window.URL && (window.URL as any).createObjectURL) {
 			url = URL.createObjectURL(blob);
 		}
 
 		// IE-specific code
-		window.navigator.msSaveBlob(blob, filename);
+		(window.navigator as any).msSaveBlob(blob, filename);
 		return url;
 	}
 }

@@ -7,6 +7,7 @@ import { IObject } from '@/store/objects';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { rotateAround } from '@/util/rotation';
+import { IPanel } from '@/store/panels';
 
 export abstract class OffscreenRenderable<Obj extends IObject> {
 	private localRenderer: Renderer | null = null;
@@ -30,7 +31,7 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 
 	protected readonly ready = Promise.resolve();
 
-	public get id(): string {
+	public get id(): IObject['id'] {
 		return this.obj.id;
 	}
 
@@ -198,6 +199,6 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 
 	public updatedContent(
 		_current: Store<DeepReadonly<IRootState>>,
-		_panelId: string
+		_panelId: IPanel['id']
 	): void {}
 }

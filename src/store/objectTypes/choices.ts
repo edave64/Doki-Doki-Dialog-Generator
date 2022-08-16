@@ -1,8 +1,11 @@
-import { ICommand } from '@/eventbus/command';
-import { ICreateObjectMutation, IObject, IObjectsState } from '@/store/objects';
+import {
+	ICreateObjectMutation,
+	IObject,
+	IObjectMutation,
+} from '@/store/objects';
+import { IPanel, IPanels } from '@/store/panels';
 import { ActionTree, MutationTree } from 'vuex';
 import { IRootState } from '..';
-import { ISetAutoWrappingMutation } from './textbox';
 import { baseProps } from './baseObjectProps';
 import getConstants from '@/constants';
 
@@ -19,35 +22,39 @@ export interface IChoices extends IObject {
 	autoWrap: boolean;
 }
 
-export const choiceMutations: MutationTree<IObjectsState> = {
+export const choiceMutations: MutationTree<IPanels> = {
+	setChoicesProperty<T extends ChoicesSimpleProperties>(
+		state: IPanels,
+		command: ISetChoicesProperty<T>
+	) {
+		const obj = state.panels[command.panelId].objects[command.id] as IChoices;
+		obj[command.key] = command.value;
+		++obj.version;
+	},
+	setChoiceProperty<T extends keyof IChoice>(
+		state: IPanels,
+		command: ISetChoiceProperty<T>
+	) {
+		const obj = state.panels[command.panelId].objects[command.id] as IChoices;
+		obj.choices[command.choiceIdx][command.key] = command.value;
+		++obj.version;
+	},
 	setChoices(state, command: ISetChoicesMutation) {
-		const obj = state.objects[command.id] as IChoices;
+		const obj = state.panels[command.panelId].objects[command.id] as IChoices;
 		obj.choices = command.choices;
-		++obj.version;
-	},
-	setChoiceColor(state, command: ISetChoiceColorMutation) {
-		const obj = state.objects[command.id] as IChoices;
-		obj.customColor = command.customColor;
-		++obj.version;
-	},
-	setChoiceDistance(state, command: ISetChoiceDistanceMutation) {
-		const obj = state.objects[command.id] as IChoices;
-		obj.choiceDistance = command.choiceDistance;
-		++obj.version;
-	},
-	setAutoWrapping(state, command: ISetAutoWrappingMutation) {
-		const obj = state.objects[command.id] as IChoices;
-		obj.autoWrap = command.autoWrap;
 		++obj.version;
 	},
 };
 
 let lastChoiceId = 0;
 
-export const choiceActions: ActionTree<IObjectsState, IRootState> = {
-	createChoice({ commit, rootState }, _command: ICreateChoicesAction): string {
+export const choiceActions: ActionTree<IPanels, IRootState> = {
+	createChoice(
+		{ commit, rootState, state },
+		command: ICreateChoicesAction
+	): IObject['id'] {
 		const constants = getConstants();
-		const id = 'choice_' + ++lastChoiceId;
+		const id = state.panels[command.panelId].lastObjId + 1;
 		commit('create', {
 			object: {
 				...baseProps(),
@@ -75,9 +82,10 @@ export const choiceActions: ActionTree<IObjectsState, IRootState> = {
 	},
 
 	addChoice({ state, commit }, command: IAddChoiceAction) {
-		const obj = state.objects[command.id] as IChoices;
+		const obj = state.panels[command.panelId].objects[command.id] as IChoices;
 		commit('setChoices', {
 			id: command.id,
+			panelId: command.panelId,
 			choices: [
 				...obj.choices,
 				{
@@ -89,7 +97,7 @@ export const choiceActions: ActionTree<IObjectsState, IRootState> = {
 	},
 
 	removeChoice({ state, commit }, command: IRemoveChoiceAction) {
-		const obj = state.objects[command.id] as IChoices;
+		const obj = state.panels[command.panelId].objects[command.id] as IChoices;
 		const choices = [...obj.choices];
 		if (!choices[command.choiceIdx]) return;
 		choices.splice(command.choiceIdx, 1);
@@ -102,45 +110,41 @@ export const choiceActions: ActionTree<IObjectsState, IRootState> = {
 		}
 		commit('setChoices', {
 			id: command.id,
-			choices,
-		} as ISetChoicesMutation);
-	},
-
-	setChoiceText({ state, commit }, command: ISetChoiceTextAction) {
-		const obj = state.objects[command.id] as IChoices;
-		const choices = [...obj.choices];
-		if (!choices[command.choiceIdx]) return;
-		choices[command.choiceIdx].text = command.text;
-		commit('setChoices', {
-			id: command.id,
+			panelId: command.panelId,
 			choices,
 		} as ISetChoicesMutation);
 	},
 };
 
-export interface ISetChoicesMutation extends ICommand {
+type ChoicesSimpleProperties = Exclude<
+	keyof IChoices,
+	keyof IObject | 'choices'
+>;
+
+interface ISetChoicesProperty<T extends ChoicesSimpleProperties>
+	extends IObjectMutation {
+	readonly key: T;
+	readonly value: IChoices[T];
+}
+
+interface ISetChoiceProperty<T extends keyof IChoice> extends IObjectMutation {
+	readonly choiceIdx: number;
+	readonly key: T;
+	readonly value: IChoice[T];
+}
+
+export interface ISetChoicesMutation extends IObjectMutation {
 	readonly choices: IChoices['choices'];
 }
 
-export interface ISetChoiceColorMutation extends ICommand {
-	readonly customColor: IChoices['customColor'];
+export interface ICreateChoicesAction {
+	readonly panelId: IPanel['id'];
 }
 
-export interface ISetChoiceDistanceMutation extends ICommand {
-	readonly choiceDistance: IChoices['choiceDistance'];
-}
-
-export interface ICreateChoicesAction extends ICommand {}
-
-export interface IAddChoiceAction extends ICommand {
+export interface IAddChoiceAction extends IObjectMutation {
 	readonly text: string;
 }
 
-export interface ISetChoiceTextAction extends ICommand {
-	readonly choiceIdx: number;
-	readonly text: string;
-}
-
-export interface IRemoveChoiceAction extends ICommand {
+export interface IRemoveChoiceAction extends IObjectMutation {
 	readonly choiceIdx: number;
 }

@@ -10,9 +10,20 @@ export class ImageAsset implements IAsset {
 		this.height = html.height;
 	}
 
-	paintOnto(fsCtx: CanvasRenderingContext2D): void {
-		const w = this.width;
-		const h = this.height;
-		fsCtx.drawImage(this.html as HTMLImageElement, -w / 2, -h / 2, w, h);
+	paintOnto(
+		fsCtx: CanvasRenderingContext2D,
+		opts: { x?: number; y?: number; w?: number; h?: number } = {}
+	): void {
+		const { w, h } = {
+			w: this.width,
+			h: this.height,
+			...opts,
+		};
+		const { x, y } = {
+			x: -w / 2,
+			y: -h / 2,
+			...opts,
+		};
+		fsCtx.drawImage(this.html as HTMLImageElement, x, y, w, h);
 	}
 }

@@ -1,12 +1,12 @@
-import { ICommand } from '@/eventbus/command';
 import {
-	IObjectsState,
 	ICreateObjectMutation,
 	IObject,
 	ISetObjectPositionMutation,
 	ISetObjectFlipMutation,
 	ISetSpriteRotationMutation,
+	IObjectMutation,
 } from '@/store/objects';
+import { IPanel, IPanels } from '@/store/panels';
 import { MutationTree, ActionTree } from 'vuex';
 import { ISetSpriteSizeMutation } from './characters';
 import { IRootState } from '..';
@@ -19,7 +19,7 @@ import { between } from '@/util/math';
 export interface ITextBox extends IObject {
 	type: 'textBox';
 	text: string;
-	talkingObjId: null | '$other$' | string;
+	talkingObjId: null | '$other$' | IObject['id'];
 	talkingOther: string;
 	style:
 		| 'normal'
@@ -52,85 +52,20 @@ export interface ITextBox extends IObject {
 
 const splitTextboxSpacing = 4;
 
-export const textBoxMutations: MutationTree<IObjectsState> = {
-	setText(state, command: ISetTextBoxTextMutation) {
-		const obj = state.objects[command.id] as ITextBox;
-		obj.text = command.text;
-		++obj.version;
-	},
+export const textBoxMutations: MutationTree<IPanels> = {
 	setTalkingObject(state, command: ISetTextBoxTalkingObjMutation) {
-		const obj = state.objects[command.id] as ITextBox;
+		const obj = state.panels[command.panelId].objects[command.id] as ITextBox;
 		obj.talkingObjId = command.talkingObjId;
 		++obj.version;
 	},
 	setTalkingOther(state, command: ISetTextBoxTalkingOtherMutation) {
-		const obj = state.objects[command.id] as ITextBox;
+		const obj = state.panels[command.panelId].objects[command.id] as ITextBox;
 		obj.talkingOther = command.talkingOther;
 		obj.talkingObjId = '$other$';
 		++obj.version;
 	},
-	setStyle(state, command: ISetTextBoxStyleMutation) {
-		const obj = state.objects[command.id] as ITextBox;
-		obj.style = command.style;
-		++obj.version;
-	},
-	setControlsVisible(state, command: ISetTextBoxControlsVisibleMutation) {
-		const obj = state.objects[command.id] as ITextBox;
-		obj.controls = command.controls;
-		++obj.version;
-	},
-	setControlsColor(state, command: ISetTextBoxCustomControlsColorMutation) {
-		const obj = state.objects[command.id] as ITextBox;
-		obj.customControlsColor = command.customControlsColor;
-		++obj.version;
-	},
-	setDeriveCustomColors(state, command: ISetTextBoxDeriveCustomColorMutation) {
-		const obj = state.objects[command.id] as ITextBox;
-		obj.deriveCustomColors = command.deriveCustomColors;
-		++obj.version;
-	},
-	setNameboxColor(state, command: ISetTextBoxNameboxColorMutation) {
-		const obj = state.objects[command.id] as ITextBox;
-		obj.customNameboxColor = command.customNameboxColor;
-		++obj.version;
-	},
-	setNameboxStroke(state, command: ISetTextBoxNameboxStrokeMutation) {
-		const obj = state.objects[command.id] as ITextBox;
-		obj.customNameboxStroke = command.customNameboxStroke;
-		++obj.version;
-	},
-	setNameboxWidth(state, command: ISetTextBoxNameboxWidthMutation) {
-		const obj = state.objects[command.id] as ITextBox;
-		obj.customNameboxWidth = command.customNameboxWidth;
-		++obj.version;
-	},
-	setSkipable(state, command: ISetTextBoxControlsSkipMutation) {
-		const obj = state.objects[command.id] as ITextBox;
-		obj.skip = command.skip;
-		++obj.version;
-	},
-	setContinueArrow(state, command: ISetTextBoxControlsContinueMutation) {
-		const obj = state.objects[command.id] as ITextBox;
-		obj.continue = command.continue;
-		++obj.version;
-	},
-	setCustomColor(state, command: ISetTextBoxCustomColorMutation) {
-		const obj = state.objects[command.id] as ITextBox;
-		obj.customColor = command.color;
-		++obj.version;
-	},
-	setAutoQuoting(state, command: ISetTextBoxAutoQuotingMutation) {
-		const obj = state.objects[command.id] as ITextBox;
-		obj.autoQuoting = command.autoQuoting;
-		++obj.version;
-	},
-	setAutoWrapping(state, command: ISetAutoWrappingMutation) {
-		const obj = state.objects[command.id] as ITextBox;
-		obj.autoWrap = command.autoWrap;
-		++obj.version;
-	},
 	setResetBounds(state, command: ISetResetBoundsMutation) {
-		const obj = state.objects[command.id] as ITextBox;
+		const obj = state.panels[command.panelId].objects[command.id] as ITextBox;
 		obj.resetBounds = command.resetBounds;
 		obj.x = command.resetBounds.x;
 		obj.y = command.resetBounds.y;
@@ -139,19 +74,23 @@ export const textBoxMutations: MutationTree<IObjectsState> = {
 		obj.rotation = command.resetBounds.rotation;
 		++obj.version;
 	},
-	setColorOverride(state, command: ISetColorOverrideMutation) {
-		const obj = state.objects[command.id] as ITextBox;
-		obj.overrideColor = command.overrideColor;
+	setTextBoxProperty<T extends TextBoxSimpleProperties>(
+		state: IPanels,
+		command: ISetTextBoxProperty<T>
+	) {
+		const obj = state.panels[command.panelId].objects[command.id] as ITextBox;
+		obj[command.key] = command.value;
 		++obj.version;
 	},
 };
 
-let lastTextBoxId = 0;
-
-export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
-	createTextBox({ commit, rootState }, command: ICreateTextBoxAction): string {
+export const textBoxActions: ActionTree<IPanels, IRootState> = {
+	createTextBox(
+		{ commit, state, rootState },
+		command: ICreateTextBoxAction
+	): IObject['id'] {
 		const constants = getConstants();
-		const id = 'textBox_' + ++lastTextBoxId;
+		const id = state.panels[command.panelId].lastObjId + 1;
 		const style = constants.TextBox.DefaultTextboxStyle;
 		const renderer = rendererLookup[style];
 
@@ -187,7 +126,7 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 				customNameboxStroke: constants.TextBoxCustom.nameboxStrokeDefaultColor,
 				talkingObjId: null,
 				talkingOther: '',
-				text: '',
+				text: command.text ?? 'Click here to edit the textbox',
 				resetBounds,
 			} as ITextBox,
 		} as ICreateObjectMutation);
@@ -196,7 +135,7 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 
 	setStyle({ state, commit }, command: ISetTextBoxStyleAction) {
 		const constants = getConstants();
-		const obj = state.objects[command.id] as ITextBox;
+		const obj = state.panels[command.panelId].objects[command.id] as ITextBox;
 		const oldRenderer = rendererLookup[obj.style];
 		const newRenderer = rendererLookup[command.style];
 
@@ -204,12 +143,14 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 
 		let updatePos = false;
 		const posUpdate = {
+			panelId: command.panelId,
 			id: command.id,
 			x: obj.x,
 			y: obj.y,
 		};
 		let updateSize = false;
 		const sizeUpdate = {
+			panelId: command.panelId,
 			id: command.id,
 			width: obj.width,
 			height: obj.height,
@@ -263,32 +204,35 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 			commit('setSize', sizeUpdate as ISetSpriteSizeMutation);
 		}
 
-		commit('setStyle', {
-			id: command.id,
-			style: command.style,
-		} as ISetTextBoxStyleMutation);
+		commit(
+			'setTextBoxProperty',
+			textboxProperty(command.panelId, command.id, 'style', command.style)
+		);
 	},
 
 	resetTextboxBounds({ commit, state }, command: IResetTextboxBounds) {
-		const obj = state.objects[command.id] as ITextBox;
+		const obj = state.panels[command.panelId].objects[command.id] as ITextBox;
 		commit('setPosition', {
+			panelId: command.panelId,
 			id: command.id,
 			x: obj.resetBounds.x,
 			y: obj.resetBounds.y,
 		} as ISetObjectPositionMutation);
 		commit('setSize', {
+			panelId: command.panelId,
 			id: command.id,
 			height: obj.resetBounds.height,
 			width: obj.resetBounds.width,
 		} as ISetSpriteSizeMutation);
 		commit('setRotation', {
+			panelId: command.panelId,
 			id: command.id,
 			rotation: obj.resetBounds.rotation,
 		} as ISetSpriteRotationMutation);
 	},
 
 	async splitTextbox({ commit, state, dispatch }, command: ISplitTextbox) {
-		const obj = state.objects[command.id] as ITextBox;
+		const obj = state.panels[command.panelId].objects[command.id] as ITextBox;
 		if (obj.type !== 'textBox') return;
 
 		const newWidth = (obj.width - splitTextboxSpacing) / 2;
@@ -327,10 +271,10 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 		} as ISetResetBoundsMutation);
 		const newStyle = obj.style === 'custom_plus' ? 'custom_plus' : 'custom';
 		if (obj.style !== newStyle) {
-			commit('setStyle', {
-				id: command.id,
-				style: newStyle,
-			} as ISetTextBoxStyleMutation);
+			commit(
+				'setStyle',
+				textboxProperty(command.panelId, command.id, 'style', newStyle)
+			);
 		}
 		const id = (await dispatch('createTextBox', {
 			resetBounds: {
@@ -340,11 +284,8 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 				height: obj.height,
 				rotation: obj.rotation,
 			},
-		} as ICreateTextBoxAction)) as string;
-		commit('setStyle', {
-			id,
-			style: newStyle,
-		} as ISetTextBoxStyleMutation);
+		} as ICreateTextBoxAction)) as number;
+		commit('setStyle', textboxProperty(command.panelId, id, 'style', newStyle));
 		if (obj.flip) {
 			commit('setFlip', {
 				id,
@@ -354,86 +295,48 @@ export const textBoxActions: ActionTree<IObjectsState, IRootState> = {
 	},
 };
 
-export interface ISetTextBoxTextMutation extends ICommand {
-	readonly text: string;
-}
-
-export interface ISetTextBoxTalkingObjMutation extends ICommand {
+export interface ISetTextBoxTalkingObjMutation extends IObjectMutation {
 	readonly talkingObjId: ITextBox['talkingObjId'];
 }
 
-export interface ISetTextBoxTalkingOtherMutation extends ICommand {
+export interface ISetTextBoxTalkingOtherMutation extends IObjectMutation {
 	readonly talkingOther: string;
 }
 
-export interface ISetTextBoxStyleMutation extends ICommand {
-	readonly style: ITextBox['style'];
-}
-
-export interface ISetTextBoxControlsVisibleMutation extends ICommand {
-	readonly controls: boolean;
-}
-
-export interface ISetTextBoxDeriveCustomColorMutation extends ICommand {
-	readonly deriveCustomColors: boolean;
-}
-
-export interface ISetTextBoxCustomControlsColorMutation extends ICommand {
-	readonly customControlsColor: string;
-}
-
-export interface ISetTextBoxNameboxColorMutation extends ICommand {
-	readonly customNameboxColor: string;
-}
-
-export interface ISetTextBoxNameboxStrokeMutation extends ICommand {
-	readonly customNameboxStroke: string;
-}
-
-export interface ISetTextBoxNameboxWidthMutation extends ICommand {
-	readonly customNameboxWidth: number;
-}
-
-export interface ISetTextBoxAutoQuotingMutation extends ICommand {
-	readonly autoQuoting: boolean;
-}
-
-export interface ISetAutoWrappingMutation extends ICommand {
-	readonly autoWrap: boolean;
-}
-
-export interface ISetResetBoundsMutation extends ICommand {
+export interface ISetResetBoundsMutation extends IObjectMutation {
 	readonly resetBounds: ITextBox['resetBounds'];
 }
 
-export interface ISetColorOverrideMutation extends ICommand {
-	readonly overrideColor: boolean;
+export type TextBoxSimpleProperties = Exclude<
+	keyof ITextBox,
+	keyof IObject | 'talkingObjId' | 'talkingOther' | 'resetBounds'
+>;
+
+export function textboxProperty<T extends TextBoxSimpleProperties>(
+	panelId: IPanel['id'],
+	id: IObject['id'],
+	key: T,
+	value: ITextBox[T]
+): ISetTextBoxProperty<T> {
+	return { id, panelId, key, value };
 }
 
-export interface ISetColorOverrideMutation extends ICommand {
-	readonly overrideColor: boolean;
+interface ISetTextBoxProperty<T extends TextBoxSimpleProperties>
+	extends IObjectMutation {
+	readonly key: T;
+	readonly value: ITextBox[T];
 }
 
-export interface ISetTextBoxControlsSkipMutation extends ICommand {
-	readonly skip: boolean;
-}
-
-export interface ISetTextBoxControlsContinueMutation extends ICommand {
-	readonly continue: boolean;
-}
-
-export interface ISetTextBoxCustomColorMutation extends ICommand {
-	readonly color: string;
-}
-
-export interface ICreateTextBoxAction extends ICommand {
+export interface ICreateTextBoxAction {
+	readonly panelId: IPanel['id'];
+	readonly text?: ITextBox['text'];
 	readonly resetBounds?: ITextBox['resetBounds'];
 }
 
-export interface ISetTextBoxStyleAction extends ICommand {
+export interface ISetTextBoxStyleAction extends IObjectMutation {
 	readonly style: ITextBox['style'];
 }
 
-export interface ISplitTextbox extends ICommand {}
+export interface ISplitTextbox extends IObjectMutation {}
 
-export interface IResetTextboxBounds extends ICommand {}
+export interface IResetTextboxBounds extends IObjectMutation {}

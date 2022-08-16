@@ -74,9 +74,9 @@ export default defineComponent({
 			} else {
 				const s = this.relative ? this.v2 / 100 : 1;
 				const l = this.relative ? this.v3 / 100 : 0.5;
-				stops = this.eightsStops(i => new HSLAColor(i, s, l, 1));
+				stops = this.eightsStops((i) => new HSLAColor(i, s, l, 1));
 			}
-			return stops.map(stop => stop.toRgb().toCss());
+			return stops.map((stop) => stop.toRgb().toCss());
 		},
 		maxValue2(): number {
 			if (this.mode === 'rgba') return 255;
@@ -95,9 +95,9 @@ export default defineComponent({
 			} else {
 				const h = this.relative ? this.v1 / 360 : 0;
 				const l = this.relative ? this.v3 / 100 : 0.5;
-				stops = this.eightsStops(i => new HSLAColor(h, i, l, 1));
+				stops = this.eightsStops((i) => new HSLAColor(h, i, l, 1));
 			}
-			return stops.map(stop => stop.toRgb().toCss());
+			return stops.map((stop) => stop.toRgb().toCss());
 		},
 		maxValue3(): number {
 			if (this.mode === 'rgba') return 255;
@@ -116,9 +116,9 @@ export default defineComponent({
 			} else {
 				const h = this.relative ? this.v1 / 360 : 0;
 				const s = this.relative ? this.v2 / 100 : 0.5;
-				stops = this.eightsStops(i => new HSLAColor(h, s, i, 1));
+				stops = this.eightsStops((i) => new HSLAColor(h, s, i, 1));
 			}
-			return stops.map(stop => stop.toRgb().toCss());
+			return stops.map((stop) => stop.toRgb().toCss());
 		},
 		stopsAlpha(): string[] {
 			const color = RGBAColor.fromHex(this.modelValue!);

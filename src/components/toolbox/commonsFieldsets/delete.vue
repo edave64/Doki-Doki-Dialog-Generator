@@ -16,7 +16,8 @@ export default defineComponent({
 	methods: {
 		onClick() {
 			this.vuexHistory.transaction(() => {
-				this.$store.dispatch('objects/removeObject', {
+				this.$store.dispatch('panels/removeObject', {
+					panelId: this.obj!.panelId,
 					id: this.obj!.id,
 				} as IRemoveObjectAction);
 			});
