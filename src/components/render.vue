@@ -59,7 +59,7 @@ export default defineComponent({
 	}),
 	computed: {
 		selection(): IObject['id'] | null {
-			return this.$store.state.ui.selection;
+			return this.$store.state.ui.selection ?? null;
 		},
 		currentPanel(): DeepReadonly<IPanel> {
 			return this.$store.state.panels.panels[
@@ -201,7 +201,7 @@ export default defineComponent({
 		},
 		onDragStart(e: DragEvent) {
 			e.preventDefault();
-			if (!this.selection) return;
+			if (this.selection === null) return;
 			this.draggedObject = this.currentPanel.objects[this.selection];
 			const [x, y] = this.toRendererCoordinate(e.clientX, e.clientY);
 			this.dragXOffset = x - this.draggedObject.x;
@@ -210,7 +210,7 @@ export default defineComponent({
 			this.dragYOriginal = this.draggedObject.y;
 		},
 		onTouchStart(e: TouchEvent) {
-			if (!this.selection) return;
+			if (this.selection === null) return;
 			this.draggedObject = this.currentPanel.objects[this.selection];
 			const [x, y] = this.toRendererCoordinate(
 				e.touches[0].clientX,
@@ -227,44 +227,35 @@ export default defineComponent({
 			e.dataTransfer!.dropEffect = 'copy';
 		},
 		onSpriteDragMove(e: MouseEvent | TouchEvent) {
-			if (this.draggedObject) {
-				e.preventDefault();
-
-				// Formatter quirk
-				// tslint:disable:indent
-				let [x, y] =
-					e instanceof MouseEvent
-						? this.toRendererCoordinate(e.clientX, e.clientY)
-						: this.toRendererCoordinate(
-								e.touches[0].clientX,
-								e.touches[0].clientY
-						  );
-				// tslint:enable:indent
-				x -= this.dragXOffset;
-				y -= this.dragYOffset;
-
-				const deltaX = Math.abs(x - this.dragXOriginal);
-				const deltaY = Math.abs(y - this.dragYOriginal);
-
-				if (deltaX + deltaY > 1) this.dropPreventClick = true;
-
-				if (e.shiftKey) {
-					if (deltaX > deltaY) {
-						y = this.dragYOriginal;
-					} else {
-						x = this.dragXOriginal;
-					}
+			if (!this.draggedObject) return;
+			e.preventDefault();
+			let [x, y] =
+				e instanceof MouseEvent
+					? this.toRendererCoordinate(e.clientX, e.clientY)
+					: this.toRendererCoordinate(
+							e.touches[0].clientX,
+							e.touches[0].clientY
+					  );
+			x -= this.dragXOffset;
+			y -= this.dragYOffset;
+			const deltaX = Math.abs(x - this.dragXOriginal);
+			const deltaY = Math.abs(y - this.dragYOriginal);
+			if (deltaX + deltaY > 1) this.dropPreventClick = true;
+			if (e.shiftKey) {
+				if (deltaX > deltaY) {
+					y = this.dragYOriginal;
+				} else {
+					x = this.dragXOriginal;
 				}
-
-				this.vuexHistory.transaction(() => {
-					this.$store.dispatch('panels/setPosition', {
-						panelId: this.draggedObject!.panelId,
-						id: this.draggedObject!.id,
-						x,
-						y,
-					} as ISetObjectPositionMutation);
-				});
 			}
+			this.vuexHistory.transaction(() => {
+				this.$store.dispatch('panels/setPosition', {
+					panelId: this.draggedObject!.panelId,
+					id: this.draggedObject!.id,
+					x,
+					y,
+				} as ISetObjectPositionMutation);
+			});
 		},
 		async onDrop(e: DragEvent) {
 			e.stopPropagation();

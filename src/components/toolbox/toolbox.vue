@@ -171,8 +171,7 @@ export default defineComponent({
 		setPanel(name: PanelNames) {
 			if (name === this.panelSelection) name = 'add';
 			this.panelSelection = name;
-			if (this.selection) {
-				if (this.$store.state.ui.selection === null) return;
+			if (this.selection !== null) {
 				this.$store.commit('ui/setSelection', null);
 			}
 		},
