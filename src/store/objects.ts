@@ -193,6 +193,7 @@ export const actions: ActionTree<IPanels, IRootState> = {
 			commit('setTalkingOther', {
 				id: otherObject.id,
 				talkingOther: obj.label || '',
+				panelId: command.panelId,
 			} as ISetTextBoxTalkingOtherMutation);
 		}
 		commit('removeFromList', {
