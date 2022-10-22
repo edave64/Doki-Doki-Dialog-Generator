@@ -303,8 +303,4 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 			});
 		}
 	}
-
-	public appliesTo(type: string): boolean {
-		return type === Custom.id;
-	}
 }

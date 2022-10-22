@@ -94,7 +94,4 @@ export class Default extends DdlcBase implements ITextboxRenderer {
 			});
 		}
 	}
-	public appliesTo(type: string): boolean {
-		return type === Default.id;
-	}
 }

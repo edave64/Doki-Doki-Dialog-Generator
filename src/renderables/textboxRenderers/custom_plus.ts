@@ -307,8 +307,4 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 			});
 		}
 	}
-
-	public appliesTo(type: string): boolean {
-		return type === CustomPlus.id;
-	}
 }

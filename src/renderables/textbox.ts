@@ -66,14 +66,18 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 
 	private _lastRenderer: ITextboxRenderer | null = null;
 	public get textboxRenderer() {
-		if (this._lastRenderer && this._lastRenderer.appliesTo(this.obj.style)) {
+		const forcedStyle = this.forcedStyle;
+		const rendererConstructor = rendererLookup[forcedStyle];
+		if (!rendererConstructor) throw new Error('Unknown textbox style renderer');
+		if (
+			this._lastRenderer &&
+			this._lastRenderer.constructor === rendererConstructor
+		) {
+			// We need the same type of renderer we used last. So we just skip
+			// initialization and use the old one.
 			return this._lastRenderer;
 		}
-		const forcedStyle = this.forcedStyle;
-		if (!rendererLookup[forcedStyle])
-			throw new Error('Unknown textbox style renderer');
-		const newRenderer = new rendererLookup[forcedStyle](this);
-
+		const newRenderer = new rendererConstructor(this);
 		this._lastRenderer = newRenderer;
 		return newRenderer!;
 	}
@@ -199,7 +203,6 @@ export interface ITextboxRenderer {
 	readonly textboxStyle: ITextStyle;
 
 	render(rx: RenderContext): Promise<void>;
-	appliesTo(type: string): boolean;
 }
 
 export interface ITextboxRendererClass {

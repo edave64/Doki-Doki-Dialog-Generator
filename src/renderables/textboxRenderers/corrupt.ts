@@ -12,8 +12,4 @@ export class Corrupted extends Default {
 
 	protected backgroundImage = 'textbox_monika';
 	protected xOffset = (TextBoxWidth - TextBoxCorruptedWidth) / 2;
-
-	public appliesTo(type: string): boolean {
-		return type === Corrupted.id;
-	}
 }

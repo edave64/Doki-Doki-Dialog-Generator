@@ -41,7 +41,4 @@ export class None extends DdlcBase implements ITextboxRenderer {
 	}
 
 	public async render(_rx: RenderContext): Promise<void> {}
-	public appliesTo(type: string): boolean {
-		return type === None.id;
-	}
 }
