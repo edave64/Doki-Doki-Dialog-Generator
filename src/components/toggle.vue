@@ -60,6 +60,13 @@ export default defineComponent({
 		background-size: cover;
 	}
 
+	input:focus-visible + .switch {
+		background: url('./toggle/active.svg');
+		background-size: cover;
+		outline: 1px solid white;
+		outline-offset: 1px;
+	}
+
 	.toggle_label {
 		user-select: none;
 	}

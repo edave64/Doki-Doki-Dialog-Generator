@@ -23,7 +23,10 @@
 							active: panel.id === currentPanel.id,
 						}"
 						:style="`background-image: url('${panel.image}')`"
+						tabindex="0"
 						@click="updateCurrentPanel(panel.id)"
+						@keydown.enter="updateCurrentPanel(panel.id)"
+						@keydown.space.prevent="updateCurrentPanel(panel.id)"
 					>
 						<div class="panel_text">
 							<p>{{ panel.text }}</p>
@@ -33,7 +36,7 @@
 				</d-flow>
 			</d-fieldset>
 			<div class="column">
-				<d-button icon="add_to_queue" @click="addNewPanel"> Add new </d-button>
+				<d-button icon="add_to_queue" @click="addNewPanel"> Add new</d-button>
 				<d-button
 					icon="remove_from_queue"
 					@click="deletePanel"
@@ -385,8 +388,9 @@ export default defineComponent({
 					continue;
 				}
 				foundMatch = true;
-				if (match[2]) listedPages.push(parseInt(match[2], 10) - 1);
-				else {
+				if (match[2]) {
+					listedPages.push(parseInt(match[2], 10) - 1);
+				} else {
 					const from = Math.max(parseInt(match[3], 10) - 1, min);
 					const to = Math.min(parseInt(match[4], 10) - 1, max);
 					if (from == undefined || to == undefined || from > to) continue;
@@ -591,6 +595,11 @@ export default defineComponent({
 		//noinspection CssOverwrittenProperties
 		background-color: var(--border);
 	}
+
+	&:focus-visible {
+		background-color: blue;
+		outline: none;
+	}
 }
 
 .panel_text {
@@ -600,7 +609,7 @@ export default defineComponent({
 	p {
 		color: #fff;
 		height: 60px;
-		overflow: hidden;
+		overflow: clip;
 		text-overflow: ellipsis;
 		position: absolute;
 		top: 0;

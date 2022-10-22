@@ -3,7 +3,10 @@
 		:class="{ background: true, active: isActive }"
 		:title="title"
 		:style="style"
+		tabindex="0"
 		@click="$emit('input', backgroundId)"
+		@keydown.enter="$emit('input', backgroundId)"
+		@keydown.space.prevent="$emit('input', backgroundId)"
 	>
 		{{ title }}
 	</div>

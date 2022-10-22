@@ -117,6 +117,13 @@ type PanelNames =
 	| 'notification'
 	| 'poem';
 
+const ToolKeybindings: { [key: string]: PanelNames | undefined } = {
+	a: 'add',
+	s: 'backgrounds',
+	d: 'panels',
+	f: 'settings',
+};
+
 export default defineComponent({
 	components: {
 		SettingsPanel,
@@ -163,11 +170,6 @@ export default defineComponent({
 		},
 	},
 	methods: {
-		create() {
-			environment.onPanelChange((panel: string) => {
-				this.panelSelection = panel as PanelNames;
-			});
-		},
 		setPanel(name: PanelNames) {
 			if (name === this.panelSelection) name = 'add';
 			this.panelSelection = name;
@@ -182,6 +184,16 @@ export default defineComponent({
 				this.$refs.panels.scrollLeft = 0;
 			}
 		},
+		onKeydown(e: KeyboardEvent) {
+			if (e.ctrlKey) {
+				const newPanel = ToolKeybindings[e.key];
+				if (newPanel) {
+					this.setPanel(newPanel);
+					e.preventDefault();
+					e.stopPropagation();
+				}
+			}
+		},
 	},
 	watch: {
 		selection(newSelection: IObject | null) {
@@ -193,6 +205,13 @@ export default defineComponent({
 				this.panelSelection = 'add';
 			}
 		},
+	},
+	created() {
+		environment.onPanelChange((panel: string) => {
+			this.panelSelection = panel as PanelNames;
+		});
+		window.removeEventListener('keydown', this.onKeydown);
+		window.addEventListener('keydown', this.onKeydown);
 	},
 });
 </script>
@@ -356,6 +375,9 @@ export default defineComponent({
 				background: $default-native-background;
 				background: var(--native-background);
 			}
+
+		&:focus-visible {
+			background: #0000ee;
 		}
 	}
 }

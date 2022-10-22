@@ -2,8 +2,11 @@
 	<div
 		:class="{ part: true, active: part?.active }"
 		:style="style"
+		tabindex="0"
 		@click="$emit('click')"
 		@contextmenu="quickClick"
+		@keydown.enter.prevent="$emit('click')"
+		@keydown.space.prevent="quickClick"
 	></div>
 </template>
 

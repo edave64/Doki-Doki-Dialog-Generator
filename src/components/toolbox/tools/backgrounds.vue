@@ -19,10 +19,10 @@
 				@open-image-options="imageOptions = true"
 			/>
 
-			<div class="btn upload-background" @click="$refs.upload.click()">
+			<button class="btn upload-background" @click="$refs.upload.click()">
 				Upload
 				<input type="file" ref="upload" @change="onFileUpload" />
-			</div>
+			</button>
 			<button class="upload-background" @click="addByUrl">Add by URL</button>
 			<button
 				class="upload-background"
@@ -206,11 +206,9 @@ textarea {
 }
 
 .panel:not(.vertical) {
-	> div,
+	> .btn,
 	button {
-		&:not(.drop-target) {
-			width: 12rem;
-		}
+		width: 12rem;
 	}
 }
 

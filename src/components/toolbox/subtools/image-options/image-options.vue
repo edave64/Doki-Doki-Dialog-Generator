@@ -95,7 +95,10 @@
 						v-for="(filter, filterIdx) in filters"
 						:key="filterIdx"
 						:class="{ choiceBtn: true, active: filterIdx === currentFilterIdx }"
+						tabindex="0"
 						@click="selectFilter(filterIdx)"
+						@keydown.enter="selectFilter(filterIdx)"
+						@keydown.space.prevent="selectFilter(filterIdx)"
 					>
 						{{ getFilterText(filter) }}
 					</div>
@@ -600,6 +603,10 @@ h2 {
 		background-color: $default-border;
 		//noinspection CssOverwrittenProperties
 		background-color: var(--border);
+	}
+
+	&:focus-visible {
+		background: blue;
 	}
 }
 

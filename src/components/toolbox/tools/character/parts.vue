@@ -1,5 +1,5 @@
 <template>
-	<d-flow no-wraping>
+	<d-flow no-wraping @keydown="onKeydown">
 		<button @click="$emit('leave')">Back</button>
 		<button
 			@click="
@@ -328,6 +328,13 @@ export default defineComponent({
 			this.stylePriorities.splice(prioIdx, 1);
 			this.stylePriorities.unshift([component, id]);
 			this.updatePose();
+		},
+		onKeydown(e: KeyboardEvent): void {
+			if (e.key === 'Backspace' || e.key === 'Escape') {
+				this.$emit('leave');
+				e.preventDefault();
+				e.stopPropagation();
+			}
 		},
 		setPart(part: ISetPartAction['part'], index: number): void {
 			this.vuexHistory.transaction(() => {

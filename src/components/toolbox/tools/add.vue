@@ -39,10 +39,13 @@
 			<template v-if="group === 'characters'">
 				<div
 					class="character"
+					tabindex="0"
 					v-for="character of characters"
 					:key="character.id"
 					:title="character.label"
-					@click="onChosen(character.id.toLowerCase())"
+					@click.left="onChosen(character.id.toLowerCase())"
+					@keypress.enter="onChosen(character.id.toLowerCase())"
+					@keypress.space="onChosen(character.id.toLowerCase())"
 				>
 					<img :src="assetPath(character)" :alt="character.label" />
 				</div>
