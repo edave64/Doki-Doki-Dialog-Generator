@@ -350,12 +350,6 @@ export const actions: ActionTree<IPanels, IRootState> = {
 			},
 		} as ICreateObjectMutation);
 	},
-	deleteAllOfPanel({ state, dispatch }, { panelId }: IDeleteAllOfPanel) {
-		const panel = state.panels[panelId];
-		for (const id of [...panel.onTopOrder, ...panel.order]) {
-			dispatch('removeObject', { id } as IRemoveObjectAction);
-		}
-	},
 	object_addFilter({ state, commit }, action: IAddFilterAction) {
 		addFilter(
 			action,
@@ -416,10 +410,6 @@ export function fixContentPackRemoval(
 
 export interface ICreateObjectMutation {
 	readonly object: IObject;
-}
-
-export interface IDeleteAllOfPanel {
-	readonly panelId: IPanel['id'];
 }
 
 export interface IObjectMutation {

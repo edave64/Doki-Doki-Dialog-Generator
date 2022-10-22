@@ -5,7 +5,6 @@ import { IRootState } from '.';
 import { BackgroundLookup, IAssetSwitch } from './content';
 import {
 	actions as objectActions,
-	IDeleteAllOfPanel,
 	IObject,
 	ISetCompositionMutation,
 	ISetFiltersMutation,
@@ -282,13 +281,6 @@ export default {
 					...state.panelOrder.slice(orderIdx + 1),
 				],
 			} as ISetPanelOrder);
-			dispatch(
-				'panels/deleteAllOfPanel',
-				{
-					panelId,
-				} as IDeleteAllOfPanel,
-				{ root: true }
-			);
 			commit('deletePanel', {
 				panelId,
 			} as IDeletePanelMutation);
