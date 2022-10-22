@@ -496,12 +496,17 @@ export default defineComponent({
 			this.currentFilterIdx = idx;
 		},
 		removeFilter() {
-			this.vuexHistory.transaction(() => {
-				this.$store.dispatch(this.objectTypeScope('removeFilter'), {
+			this.vuexHistory.transaction(async () => {
+				await this.$store.dispatch(this.objectTypeScope('removeFilter'), {
 					id: this.id,
 					panelId: this.panelId,
 					idx: this.currentFilterIdx,
 				} as IRemoveFilterAction);
+
+				if (this.currentFilterIdx >= this.object.filters.length) {
+					this.currentFilterIdx = this.object.filters.length - 1;
+				}
+
 				return;
 			});
 		},
