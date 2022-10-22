@@ -16,6 +16,7 @@
 		@dragover="onDragOver"
 		@drop="onDrop"
 		@mouseenter="onMouseEnter"
+		@contextmenu.prevent
 		>HTML5 is required to use the Doki Doki Dialog Generator.
 	</canvas>
 </template>
