@@ -2,7 +2,7 @@
 	<div v-if="canvasTooSmall && isSafari">
 		Protrait mode is not supported by safari. Please turn the device sideways.
 	</div>
-	<div v-else id="app">
+	<div v-else id="app" :class="Array.from(classes)">
 		<div class="hidden-selectors">
 			<div
 				v-for="obj in objects"
@@ -76,6 +76,7 @@ import { defineAsyncComponent, defineComponent, watch } from 'vue';
 import { Repo } from './models/repo';
 import enviroment from '@/environments/environment';
 import { IRemovePacksAction } from './store';
+import 'vite/client.d.ts';
 
 // tslint:disable-next-line: no-magic-numbers
 const aspectRatio = 16 / 9;
@@ -125,6 +126,8 @@ export default defineComponent({
 		expressionBuilderHeadGroup: undefined as string | undefined,
 		systemPrefersDarkMode: false,
 		preLoading: true,
+		classes: new Set() as Set<string>,
+		classTimeout: null as number | null,
 		_queuedRerender: null as number | null,
 	}),
 	computed: {
@@ -226,6 +229,16 @@ export default defineComponent({
 			});
 		},
 		onKeydown(e: KeyboardEvent) {
+			if (e.key === 'Control') {
+				if (this.classTimeout === null) {
+					this.classTimeout = setTimeout(() => {
+						this.classTimeout = null;
+						this.classes.add('ctrl-key');
+					}, 500);
+				}
+				return;
+			}
+
 			if (
 				e.target instanceof HTMLInputElement ||
 				e.target instanceof HTMLTextAreaElement
@@ -326,6 +339,14 @@ export default defineComponent({
 				return;
 			});
 		},
+		onKeyup(e: KeyboardEvent) {
+			if (e.key === 'Control') {
+				if (this.classTimeout) clearTimeout(this.classTimeout);
+				this.classTimeout = null;
+				this.classes.delete('ctrl-key');
+				return;
+			}
+		},
 		applyTheme(): void {
 			document.body.classList.toggle('dark-theme', this.useDarkTheme);
 		},
@@ -380,6 +401,7 @@ export default defineComponent({
 		window.addEventListener('resize', this.updateArea);
 		window.removeEventListener('keydown', this.onKeydown);
 		window.addEventListener('keydown', this.onKeydown);
+		window.addEventListener('keyup', this.onKeyup);
 
 		(window as any).app = this;
 		(window as any).store = this.$store;

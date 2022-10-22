@@ -16,6 +16,26 @@ body {
 	font-size: 16px;
 }
 
+.shortcut-popup {
+	background: white;
+	padding: 2px;
+	border: 1px solid black;
+	color: black;
+	font-size: 0.7em;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	display: none;
+}
+
+.ctrl-key .shortcut-popup {
+	display: block !important;
+}
+
+.ctrl-key .shortcut-span {
+	text-decoration: underline !important;
+}
+
 h1 {
 	font-size: 24px;
 	//noinspection CssOverwrittenProperties

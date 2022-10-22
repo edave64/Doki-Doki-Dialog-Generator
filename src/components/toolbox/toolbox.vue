@@ -8,6 +8,7 @@
 				aria-label="Add new objects to the scene"
 			>
 				<i class="material-icons" aria-hidden="true">add_box</i>
+				<div class="shortcut-popup">A</div>
 			</button>
 			<button
 				:class="{ active: panel === 'backgrounds' }"
@@ -16,6 +17,7 @@
 				title="Change the current background"
 			>
 				<i class="material-icons" aria-hidden="true">panorama</i>
+				<div class="shortcut-popup">S</div>
 			</button>
 			<button
 				:class="{ active: panel === 'panels' }"
@@ -24,6 +26,7 @@
 				@click="setPanel('panels')"
 			>
 				<i class="material-icons" aria-hidden="true">view_module</i>
+				<div class="shortcut-popup">D</div>
 			</button>
 			<button
 				:class="{ active: panel === 'settings' }"
@@ -32,6 +35,7 @@
 				@click="setPanel('settings')"
 			>
 				<i class="material-icons" aria-hidden="true">settings_applications</i>
+				<div class="shortcut-popup">F</div>
 			</button>
 		</div>
 		<settings-panel v-if="panel === 'settings'" />
@@ -270,7 +274,7 @@ export default defineComponent({
 					border-top: none;
 				}
 			}
-				}
+		}
 
 		#toolbar {
 			button {
@@ -340,15 +344,15 @@ export default defineComponent({
 				&.active {
 					border-bottom-color: $default-native-background;
 					border-bottom-color: var(--native-background);
+				}
 			}
 		}
-	}
 
 		#toolbar-end {
-		button {
+			button {
 				border-bottom: none;
 
-			&.active {
+				&.active {
 					border-top-color: $default-native-background;
 					border-top-color: var(--native-background);
 				}
@@ -358,23 +362,24 @@ export default defineComponent({
 
 	#toolbar button,
 	#toolbar-end button {
-			outline: 0;
-			//noinspection CssOverwrittenProperties
-			background-color: $default-accent-background;
-			//noinspection CssOverwrittenProperties
-			background-color: var(--accent-background);
-			border: 3px solid $default-border;
-			//noinspection CssOverwrittenProperties
-			border: 3px solid var(--border);
+		outline: 0;
+		//noinspection CssOverwrittenProperties
+		background-color: $default-accent-background;
+		//noinspection CssOverwrittenProperties
+		background-color: var(--accent-background);
+		border: 3px solid $default-border;
+		//noinspection CssOverwrittenProperties
+		border: 3px solid var(--border);
+		position: relative;
 
-			i {
-				vertical-align: sub;
-			}
+		i {
+			vertical-align: sub;
+		}
 
-			&.active {
-				background: $default-native-background;
-				background: var(--native-background);
-			}
+		&.active {
+			background: $default-native-background;
+			background: var(--native-background);
+		}
 
 		&:focus-visible {
 			background: #0000ee;

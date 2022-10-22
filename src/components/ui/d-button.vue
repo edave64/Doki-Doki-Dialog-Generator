@@ -4,6 +4,7 @@
 		<div class="content">
 			<slot />
 		</div>
+		<div class="shortcut-popup" v-if="showPopup">{{ popupText }}</div>
 	</button>
 </template>
 
@@ -24,6 +25,21 @@ export default defineComponent({
 			type: Boolean,
 			default: false,
 		},
+		shortcut: {
+			type: String as PropType<string | null>,
+			default: null,
+		},
+	},
+	computed: {
+		showPopup(): boolean {
+			return !!this.shortcut && !this.shortcut.startsWith('!');
+		},
+		popupText(): string {
+			const shortcut = this.shortcut;
+			if (!shortcut) return '';
+			if (shortcut.startsWith('!')) return shortcut.substring(1);
+			return shortcut;
+		},
 	},
 });
 </script>
@@ -40,6 +56,7 @@ button {
 	text-align: center;
 	justify-content: center;
 	align-items: center;
+	position: relative;
 
 	&.left {
 		flex-direction: row;
