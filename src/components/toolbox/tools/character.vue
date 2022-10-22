@@ -1,5 +1,5 @@
 <template>
-	<object-tool :object="object" :title="label" :showAltPanel="panelForParts">
+	<object-tool :object="object" :title="label" :showAltPanel="!!panelForParts">
 		<template v-slot:alt-panel>
 			<parts
 				v-if="panelForParts"
