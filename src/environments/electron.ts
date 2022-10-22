@@ -34,6 +34,7 @@ const installedBackgroundsPack: ContentPack<string> = {
 
 export class Electron implements IEnvironment {
 	public readonly state: EnvState = reactive({
+		looseTextParsing: true,
 		autoAdd: [],
 		downloadLocation: '',
 	});

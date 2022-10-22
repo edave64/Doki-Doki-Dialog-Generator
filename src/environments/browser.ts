@@ -17,6 +17,7 @@ const mobileSafari = iOS && webkit && !ua.match(/CriOS/i);
 
 export class Browser implements IEnvironment {
 	public readonly state: EnvState = reactive({
+		looseTextParsing: true,
 		autoAdd: [],
 		downloadLocation: 'Default download folder',
 	});
@@ -247,6 +248,7 @@ export class Browser implements IEnvironment {
 			lq: true,
 			nsfw: false,
 			defaultCharacterTalkingZoom: true,
+			looseTextParsing: true,
 		};
 		if (!this.isSavingEnabled.value) return base;
 		return {

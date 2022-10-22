@@ -34,6 +34,7 @@ export interface Settings {
 	nsfw?: boolean;
 	darkMode?: boolean;
 	defaultCharacterTalkingZoom?: boolean;
+	looseTextParsing?: boolean;
 }
 
 export interface IEnvironment {

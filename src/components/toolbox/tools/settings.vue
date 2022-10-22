@@ -90,6 +90,11 @@
 			label="Enlarge talking objects? (Default value)"
 			v-model="defaultCharacterTalkingZoom"
 		/>
+		<toggle
+			label="Fault tolerant text parsing"
+			title="Silently ignore parse errors in texts. (Like unexpected '{' characters) Prevents beginners from getting stuck working with textboxes, but also makes it harder to understand what you are doing wrong."
+			v-model="looseTextParsing"
+		/>
 		<table>
 			<tr>
 				<td><label>Theme:</label></td>
@@ -153,6 +158,15 @@ export default defineComponent({
 		},
 		lqAllowed(): boolean {
 			return environment.supports.lq;
+		},
+		looseTextParsing: {
+			get(): boolean {
+				return environment.state.looseTextParsing;
+			},
+			set(looseTextParsing: boolean) {
+				environment.state.looseTextParsing = looseTextParsing;
+				this.saveSettings();
+			},
 		},
 		lqRendering: {
 			get(): boolean {
@@ -239,6 +253,7 @@ export default defineComponent({
 				lq: this.$store.state.ui.lqRendering,
 				nsfw: this.$store.state.ui.nsfw,
 				darkMode: this.$store.state.ui.useDarkTheme ?? undefined,
+				looseTextParsing: environment.state.looseTextParsing,
 				defaultCharacterTalkingZoom:
 					this.$store.state.ui.defaultCharacterTalkingZoom,
 			});

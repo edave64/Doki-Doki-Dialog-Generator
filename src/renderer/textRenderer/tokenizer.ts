@@ -27,12 +27,26 @@ export type Token =
 	| ICommandCloseToken
 	| INewlineToken;
 
-export function tokenize(str: string): Token[] {
+export function tokenize(str: string, loose = true): Token[] {
 	const tokens: Token[] = [];
 	const stringWalker = new StringWalker(str);
 	let currentTokenState: TokenizerState = tokenStateNormal;
 	while (currentTokenState !== tokenStateEnd) {
-		currentTokenState = currentTokenState(tokens, stringWalker);
+		const startPos = stringWalker.pos;
+		try {
+			currentTokenState = currentTokenState(tokens, stringWalker);
+		} catch (e) {
+			if (loose && currentTokenState !== tokenText) {
+				// In loose mode, we restart the current token and force it to
+				// be a text token, escaping the first character
+				stringWalker.pos = startPos;
+				currentTokenState = (contents: Token[], walker: StringWalker) =>
+					tokenText(contents, walker, true);
+			} else {
+				// rethrow
+				throw e;
+			}
+		}
 	}
 	return tokens;
 }
@@ -56,10 +70,14 @@ function tokenStateEnd(): TokenizerState {
 	return tokenStateEnd;
 }
 
-function tokenText(contents: Token[], walker: StringWalker): TokenizerState {
+function tokenText(
+	contents: Token[],
+	walker: StringWalker,
+	initEscape = false
+): TokenizerState {
 	const { pos } = walker;
 	let textContent = '';
-	let escape = false;
+	let escape = initEscape;
 	let nextState: TokenizerState;
 	while (true) {
 		if (walker.current() === undefined) {

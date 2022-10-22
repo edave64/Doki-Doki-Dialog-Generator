@@ -55,6 +55,7 @@
 </template>
 
 <script lang="ts">
+import environment from '@/environments/environment';
 import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
 import {
 	ICopyObjectToClipboardAction,
@@ -439,6 +440,7 @@ export default defineComponent({
 		const settings = await enviroment.loadSettings();
 
 		await this.vuexHistory.transaction(async () => {
+			environment.state.looseTextParsing = settings.looseTextParsing;
 			this.$store.commit('ui/setLqRendering', settings.lq ?? false);
 			this.$store.commit('ui/setDarkTheme', settings.darkMode ?? null);
 			this.$store.commit(

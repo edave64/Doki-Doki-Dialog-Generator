@@ -1,3 +1,4 @@
+import environment from '@/environments/environment';
 import { ICommandToken, Token, tokenize } from './tokenizer';
 
 import textCommands from './textCommands';
@@ -44,13 +45,15 @@ export class TextRenderer {
 	public static textCommands = textCommands;
 	private renderParts!: RenderItem[];
 	private readonly tokens: Token[];
+	private readonly loose: boolean;
 
 	public constructor(
 		private str: string,
 		private readonly baseStyle: ITextStyle
 	) {
+		this.loose = environment.state.looseTextParsing;
 		try {
-			this.tokens = tokenize(str);
+			this.tokens = tokenize(str, this.loose);
 		} catch (e) {
 			if (e instanceof Error) {
 				this.tokens = [
@@ -68,7 +71,11 @@ export class TextRenderer {
 	}
 
 	public rebuildParts() {
-		this.renderParts = TextRenderer.getRenderParts(this.tokens, this.baseStyle);
+		this.renderParts = TextRenderer.getRenderParts(
+			this.tokens,
+			this.baseStyle,
+			this.loose
+		);
 	}
 
 	public async loadFonts() {
@@ -97,7 +104,11 @@ export class TextRenderer {
 
 		if (neededToLoad) {
 			const tokens = tokenize(this.str);
-			this.renderParts = TextRenderer.getRenderParts(tokens, this.baseStyle);
+			this.renderParts = TextRenderer.getRenderParts(
+				tokens,
+				this.baseStyle,
+				this.loose
+			);
 		}
 	}
 
@@ -344,7 +355,8 @@ export class TextRenderer {
 
 	private static getRenderParts(
 		tokens: Token[],
-		baseStyle: ITextStyle
+		baseStyle: ITextStyle,
+		loose: boolean
 	): RenderItem[] {
 		const renderParts: RenderItem[] = [];
 		const styleStack: ITextStyle[] = [];
@@ -352,6 +364,21 @@ export class TextRenderer {
 		let currentStyleHeight: number = measureHeight(baseStyle);
 		let currentStyle = baseStyle;
 		let currentTag: ICommandToken | null = null;
+
+		function pushCharacters(str: string) {
+			for (const character of str) {
+				renderParts.push({
+					type: 'character',
+					character,
+					height: currentStyleHeight,
+					width: measureWidth(currentStyle, character),
+					style: currentStyle,
+					x: 0,
+					y: 0,
+				});
+			}
+		}
+
 		for (const token of tokens) {
 			const type = token.type;
 			switch (type) {
@@ -366,21 +393,35 @@ export class TextRenderer {
 						currentStyleHeight = measureHeight(currentStyle);
 						currentTag = token;
 					} else {
-						throw new Error(
-							`There is no text command called '${token.commandName}' at position ${token.pos}.`
-						);
+						if (loose) {
+							pushCharacters('{' + token.commandName + '}');
+						} else {
+							throw new Error(
+								`There is no text command called '${token.commandName}' at position ${token.pos}.`
+							);
+						}
 					}
 					break;
 				case 'commandClose':
 					if (!currentTag) {
-						throw new Error(
-							`Unmatched closing command at position ${token.pos}. Closed '${token.commandName}', but no commands are currently open.`
-						);
+						if (loose) {
+							pushCharacters('{/' + token.commandName + '}');
+							break;
+						} else {
+							throw new Error(
+								`Unmatched closing command at position ${token.pos}. Closed '${token.commandName}', but no commands are currently open.`
+							);
+						}
 					}
 					if (token.commandName !== currentTag.commandName) {
-						throw new Error(
-							`Unmatched closing command at position ${token.pos}. Closed '${token.commandName}', expected to close '${currentTag}' first. (Opened at position ${currentTag.pos})`
-						);
+						if (loose) {
+							pushCharacters('{/' + token.commandName + '}');
+							break;
+						} else {
+							throw new Error(
+								`Unmatched closing command at position ${token.pos}. Closed '${token.commandName}', expected to close '${currentTag}' first. (Opened at position ${currentTag.pos})`
+							);
+						}
 					}
 					currentTag = tagStack.pop()!;
 					currentStyle = styleStack.pop()!;
@@ -395,17 +436,7 @@ export class TextRenderer {
 					});
 					break;
 				case 'text':
-					for (const character of token.content) {
-						renderParts.push({
-							type: 'character',
-							character,
-							height: currentStyleHeight,
-							width: measureWidth(currentStyle, character),
-							style: currentStyle,
-							x: 0,
-							y: 0,
-						});
-					}
+					pushCharacters(token.content);
 					break;
 				default:
 					throw new UnreachableCaseError(type);

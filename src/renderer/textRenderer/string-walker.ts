@@ -1,34 +1,30 @@
 const aroundContextSize = 5;
 
 export class StringWalker {
-	private i: number = 0;
+	public pos: number = 0;
 	public constructor(private readonly str: string) {}
 
-	public get pos(): number {
-		return this.i;
-	}
-
 	public current(): string {
-		return this.str[this.i];
+		return this.str[this.pos];
 	}
 
 	public get around(): string {
 		return this.str.slice(
-			Math.max(0, this.i - aroundContextSize),
-			this.i + aroundContextSize
+			Math.max(0, this.pos - aroundContextSize),
+			this.pos + aroundContextSize
 		);
 	}
 
 	public get ahead(): string {
-		return this.str[this.i + 1];
+		return this.str[this.pos + 1];
 	}
 
 	public get behind(): string {
-		return this.str[this.i + 1];
+		return this.str[this.pos + 1];
 	}
 
 	public next(): string {
-		++this.i;
+		++this.pos;
 		return this.current();
 	}
 }
