@@ -3,13 +3,36 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<link rel="icon" href="./favicon.png" />
+		<meta name="color-scheme" content="light dark" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link
-			href="https://fonts.googleapis.com/icon?family=Material+Icons"
-			rel="stylesheet"
-		/>
+		<link rel="icon" href="./favicon.png" />
 		<title>Doki Doki Dialog Generator</title>
+		<style>
+			/* fallback */
+			@font-face {
+				font-family: 'Material Icons';
+				font-style: normal;
+				font-weight: 400;
+				src: url(./assets/fonts/material-icons.woff2) format('woff2'),
+					url(./assets/fonts/material-icons.ttf) format('truetype');
+			}
+
+			.material-icons {
+				font-family: 'Material Icons';
+				font-weight: normal;
+				font-style: normal;
+				font-size: 24px;
+				line-height: 1;
+				letter-spacing: normal;
+				text-transform: none;
+				display: inline-block;
+				white-space: nowrap;
+				word-wrap: normal;
+				direction: ltr;
+				-moz-font-feature-settings: 'liga';
+				-moz-osx-font-smoothing: grayscale;
+			}
+		</style>
 		<style>
 			@font-face {
 				font-family: aller;
@@ -144,12 +167,13 @@
 					url(./assets/fonts/hashtag/hashtag.otf) format('opentype');
 			}
 		</style>
-		<script type="module" crossorigin src="./assets/index.f7413ba7.js"></script>
-		<link rel="modulepreload" href="./assets/vendor.cc880211.js">
-		<link rel="stylesheet" href="./assets/index.c55e1192.css">
+		<script type="module" crossorigin src="./assets/index.1970fa6d.js"></script>
+		<link rel="modulepreload" href="./assets/vendor.25918e1f.js">
+		<link rel="stylesheet" href="./assets/index.0b795aa0.css">
 	</head>
+
 	<body>
-		<div id="app"></div>
+		<div id="main_wrapper"></div>
 		
 	</body>
 </html>
