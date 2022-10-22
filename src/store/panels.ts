@@ -200,17 +200,18 @@ export default {
 			const id = state.lastPanelId + 1;
 			previewManager.register(id, panel.lastRender);
 			const newPanel = JSON.parse(JSON.stringify(panel)) as IPanel;
-			let nextObjectId = 0;
+			let lastObjId = -1;
 			const transationTable = new Map<IObject['id'], IObject['id']>();
 			const newObjects: IPanel['objects'] = {};
 
 			for (const key in newPanel.objects) {
-				transationTable.set(+key, ++nextObjectId);
+				transationTable.set(+key, ++lastObjId);
 			}
 
 			for (const key in newPanel.objects) {
 				const obj = newPanel.objects[key];
 				newObjects[transationTable.get(+key)!] = obj;
+				obj.panelId = id;
 				if ('talkingObjId' in obj) {
 					const newTextbox = obj as ITextBox;
 					if (
@@ -228,7 +229,8 @@ export default {
 			commit('createPanel', {
 				panel: {
 					...newPanel,
-					nextObjectId,
+					id,
+					lastObjId,
 					objects: newObjects,
 				},
 			} as ICreatePanel);
