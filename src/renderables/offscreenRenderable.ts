@@ -1,4 +1,8 @@
-import { CompositeModes, RenderContext } from '@/renderer/rendererContext';
+import {
+	CompositeModes,
+	IShadow,
+	RenderContext,
+} from '@/renderer/rendererContext';
 import { Renderer } from '@/renderer/renderer';
 import { IHitbox } from './renderable';
 import { DeepReadonly } from 'ts-essentials';
@@ -8,6 +12,13 @@ import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { rotateAround } from '@/util/rotation';
 import { IPanel } from '@/store/panels';
+
+export enum SelectedState {
+	None = 0b00,
+	Selected = 0b01,
+	Focused = 0b10,
+	Both = 0b11,
+}
 
 export abstract class OffscreenRenderable<Obj extends IObject> {
 	private localRenderer: Renderer | null = null;
@@ -91,7 +102,7 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 		];
 	}
 
-	public async render(selected: boolean, rx: RenderContext) {
+	public async render(selected: SelectedState, rx: RenderContext) {
 		const needRedraw = this.lastHq !== rx.hq || this.needsRedraw();
 
 		if (needRedraw) await this.updateLocalCanvas(!rx.hq);
@@ -102,6 +113,23 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 
 		const [rotation, rotationAnchor] = this.getRenderRotation();
 
+		let shadow: IShadow | undefined = undefined;
+
+		switch (selected) {
+			case SelectedState.None:
+				shadow = undefined;
+				break;
+			case SelectedState.Selected:
+				shadow = { blur: 20, color: 'red' };
+				break;
+			case SelectedState.Focused:
+				shadow = { blur: 20, color: 'blue' };
+				break;
+			case SelectedState.Both:
+				shadow = { blur: 20, color: 'purple' };
+				break;
+		}
+
 		rx.drawImage({
 			image: this.localRenderer!,
 			x: this.canvasDrawPosX,
@@ -111,7 +139,7 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 			rotation,
 			rotationAnchor,
 			flip: this.flip,
-			shadow: selected && rx.preview ? { blur: 20, color: 'red' } : undefined,
+			shadow: selected && rx.preview ? shadow : undefined,
 			composite: this.composite,
 			filters: this.filters,
 		});

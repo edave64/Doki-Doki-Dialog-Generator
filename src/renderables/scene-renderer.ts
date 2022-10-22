@@ -20,9 +20,15 @@ import { Notification } from '@/renderables/notification';
 import { Poem } from './poem';
 import { IPoem } from '@/store/objectTypes/poem';
 import { IObject } from '@/store/objects';
-import { OffscreenRenderable } from './offscreenRenderable';
+import { OffscreenRenderable, SelectedState } from './offscreenRenderable';
 
 export class SceneRenderer {
+	// Support for browsers without :focus-visible
+	public static FocusProp: string =
+		typeof CSS !== 'undefined' && CSS.supports('selector(:focus-visible)')
+			? ':focus-visible'
+			: ':focus';
+
 	private renderObjectCache = new Map<
 		IObject['id'],
 		OffscreenRenderable<IObject>
@@ -84,10 +90,16 @@ export class SceneRenderer {
 
 			const selection = this.store.state.ui.selection;
 			for (const object of this.getRenderObjects()) {
-				let selected = false;
 				object.updatedContent(this.store, this.panelId);
-				selected = selection === object.id;
-				await object.render(selected, rx);
+				const selected = selection === object.id;
+				const focusedObj = document.querySelector(SceneRenderer.FocusProp);
+				const focused =
+					focusedObj?.getAttribute('data-obj-id') === '' + object.id;
+				await object.render(
+					(selected ? SelectedState.Selected : SelectedState.None) +
+						(focused ? SelectedState.Focused : SelectedState.None),
+					rx
+				);
 			}
 			rx.applyFilters([...this.panel.filters]);
 			if (rx.preview) {

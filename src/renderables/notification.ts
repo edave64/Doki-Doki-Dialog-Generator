@@ -1,4 +1,5 @@
-import { RenderContext } from '@/renderer/rendererContext';
+import { SelectedState } from '@/renderables/offscreenRenderable';
+import { IShadow, RenderContext } from '@/renderer/rendererContext';
 import { TextRenderer } from '@/renderer/textRenderer/textRenderer';
 import { INotification } from '@/store/objectTypes/notification';
 import { ScalingRenderable } from './scalingRenderable';
@@ -21,8 +22,9 @@ export class Notification extends ScalingRenderable<INotification> {
 		return this.obj.id;
 	}
 
-	public async render(selected: boolean, rx: RenderContext) {
+	public async render(selected: SelectedState, rx: RenderContext) {
 		const constants = getConstants();
+
 		if (this.obj.backdrop) {
 			rx.drawRect({
 				x: 0,

@@ -3,6 +3,18 @@
 		Protrait mode is not supported by safari. Please turn the device sideways.
 	</div>
 	<div v-else id="app">
+		<div class="hidden-selectors">
+			<div
+				v-for="obj in objects"
+				:key="obj"
+				tabindex="0"
+				:data-obj-id="obj"
+				@focus="rerender()"
+				@blur="rerender()"
+				@keydown.enter="select(obj)"
+				@keydown.space="select(obj)"
+			></div>
+		</div>
 		<div id="container">
 			<render
 				ref="render"
@@ -46,6 +58,7 @@
 import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
 import {
 	ICopyObjectToClipboardAction,
+	IObject,
 	IPasteFromClipboardAction,
 	IRemoveObjectAction,
 	ISetObjectPositionMutation,
@@ -59,7 +72,7 @@ import MessageConsole from '@/components/message-console.vue';
 import Render from '@/components/render.vue';
 import ModalDialog from '@/components/ModalDialog.vue';
 import { ISetCurrentMutation } from '@/store/panels';
-import { defineAsyncComponent, defineComponent } from 'vue';
+import { defineAsyncComponent, defineComponent, watch } from 'vue';
 import { Repo } from './models/repo';
 import enviroment from '@/environments/environment';
 import { IRemovePacksAction } from './store';
@@ -81,6 +94,8 @@ const nsfwPacks = {
 
 const names = new Set(Object.keys(nsfwPacks));
 const paths = Object.values(nsfwPacks);
+
+import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 
 export default defineComponent({
 	components: {
@@ -110,6 +125,7 @@ export default defineComponent({
 		expressionBuilderHeadGroup: undefined as string | undefined,
 		systemPrefersDarkMode: false,
 		preLoading: true,
+		_queuedRerender: null as number | null,
 	}),
 	computed: {
 		isSafari(): boolean {
@@ -130,6 +146,12 @@ export default defineComponent({
 		},
 		nsfw(): boolean {
 			return this.$store.state.ui.nsfw;
+		},
+		objects(): Array<IObject['id']> {
+			const panels = this.$store.state.panels;
+			const currentPanel = panels.panels[panels.currentPanel];
+			if (!currentPanel) return [];
+			return [...currentPanel.order, ...currentPanel.onTopOrder];
 		},
 	},
 	methods: {
@@ -195,6 +217,13 @@ export default defineComponent({
 			this.expressionBuilderVisible = true;
 			this.expressionBuilderCharacter = e.character;
 			this.expressionBuilderHeadGroup = e.headGroup;
+		},
+		rerender() {
+			if (this._queuedRerender) return;
+			this._queuedRerender = requestAnimationFrame(() => {
+				this._queuedRerender = null;
+				eventBus.fire(new InvalidateRenderEvent());
+			});
 		},
 		onKeydown(e: KeyboardEvent) {
 			if (
@@ -297,11 +326,14 @@ export default defineComponent({
 				return;
 			});
 		},
-		destroyed(): void {
-			window.removeEventListener('keydown', this.onKeydown);
-		},
 		applyTheme(): void {
 			document.body.classList.toggle('dark-theme', this.useDarkTheme);
+		},
+		select(id: IObject['id']): void {
+			if (this.$store.state.ui.selection === id) return;
+			this.vuexHistory.transaction(() => {
+				this.$store.commit('ui/setSelection', id);
+			});
 		},
 	},
 	watch: {
@@ -352,6 +384,17 @@ export default defineComponent({
 		(window as any).app = this;
 		(window as any).store = this.$store;
 		(window as any).env = enviroment;
+
+		watch(
+			() => this.$store.state.ui.selection,
+			(id) => {
+				if (document.activeElement?.getAttribute('data-obj-id') !== '' + id) {
+					(
+						document.querySelector(`*[data-obj-id='${id}']`) as HTMLElement
+					)?.focus({ focusVisible: false, preventScroll: true });
+				}
+			}
+		);
 
 		document.body.addEventListener(
 			'drop',
@@ -420,6 +463,10 @@ export default defineComponent({
 			await this.$store.commit('ui/setNsfw', settings.nsfw ?? false);
 		});
 	},
+	destroyed(): void {
+		window.removeEventListener('keydown', this.onKeydown);
+		window.removeEventListener('keyup', this.onKeyup);
+	},
 });
 
 export interface IShowExpressionDialogEvent {
@@ -430,4 +477,9 @@ export interface IShowExpressionDialogEvent {
 
 <style lang="scss">
 @import '@/styles/globals.scss';
+
+.hidden-selectors {
+	opacity: 0;
+	pointer-events: none;
+}
 </style>
