@@ -83,10 +83,11 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 	}
 
 	public get forcedStyle(): ITextBox['style'] {
+		const refObject = this.refObject;
 		if (
 			(this.obj.style === 'normal' || this.obj.style === 'normal_plus') &&
-			this.refObject &&
-			(this.refObject.textboxColor || this.refObject.nameboxWidth !== null)
+			refObject &&
+			(refObject.textboxColor || refObject.nameboxWidth !== null)
 		)
 			return 'custom';
 		return this.obj.style;
@@ -165,9 +166,10 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		baseY: number,
 		maxLineWidth: number
 	): Promise<void> {
+		const textboxRenderer = this.textboxRenderer;
 		const render = new TextRenderer(
 			this.obj.text,
-			this.textboxRenderer.textboxStyle
+			textboxRenderer.textboxStyle
 		);
 		if (this.obj.autoQuoting && this.obj.talkingObjId !== null) {
 			render.quote();
@@ -176,12 +178,10 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 
 		render.fixAlignment(
 			'left',
-			baseX + this.textboxRenderer.textOffsetX,
+			baseX + textboxRenderer.textOffsetX,
 			0,
-			baseY +
-				this.textboxRenderer.nameboxHeight +
-				this.textboxRenderer.textOffsetY,
-			maxLineWidth - this.textboxRenderer.textOffsetX * 2
+			baseY + textboxRenderer.nameboxHeight + textboxRenderer.textOffsetY,
+			maxLineWidth - textboxRenderer.textOffsetX * 2
 		);
 
 		render.render(rx.fsCtx);
