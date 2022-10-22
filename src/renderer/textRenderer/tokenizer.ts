@@ -88,7 +88,7 @@ function tokenText(contents: Token[], walker: StringWalker): TokenizerState {
 
 function error(walker: StringWalker, msg: string): never {
 	throw new Error(
-		`Error at position ${walker.pos}: (around: ${walker.around}) ${msg}`
+		`Error when parsing text at position ${walker.pos}: (around: "${walker.around}") ${msg}`
 	);
 }
 
@@ -123,7 +123,10 @@ function tokenStateCommand(
 				}
 				argumentsState = true;
 			} else {
-				error(walker, 'Unexpected character in command name.');
+				error(
+					walker,
+					`Unexpected character '${walker.current()}' in command name.`
+				);
 			}
 		} else {
 			argument += walker.current();

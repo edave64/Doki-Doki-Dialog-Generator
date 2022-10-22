@@ -49,7 +49,21 @@ export class TextRenderer {
 		private str: string,
 		private readonly baseStyle: ITextStyle
 	) {
-		this.tokens = tokenize(str);
+		try {
+			this.tokens = tokenize(str);
+		} catch (e) {
+			if (e instanceof Error) {
+				this.tokens = [
+					{
+						type: 'text',
+						pos: 0,
+						content: e.message,
+					},
+				];
+			} else {
+				throw e;
+			}
+		}
 		this.rebuildParts();
 	}
 
