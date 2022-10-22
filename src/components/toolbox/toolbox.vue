@@ -199,6 +199,7 @@ export default defineComponent({
 
 <style lang="scss">
 #panels {
+	position: fixed;
 	//noinspection CssOverwrittenProperties
 	background-color: $default-native-background;
 	//noinspection CssOverwrittenProperties
@@ -206,9 +207,8 @@ export default defineComponent({
 	border: 3px solid $default-border;
 	//noinspection CssOverwrittenProperties
 	border: 3px solid var(--border);
-	position: absolute;
 	display: flex;
-	overflow: hidden;
+	//overflow: hidden;
 
 	.panel {
 		display: flex;
@@ -225,7 +225,6 @@ export default defineComponent({
 		width: 100vw;
 
 		.panel {
-			flex-grow: 1;
 			flex-wrap: wrap;
 			align-content: flex-start;
 			overflow-x: auto;
@@ -240,40 +239,38 @@ export default defineComponent({
 		#toolbar-end {
 			width: 48px;
 			height: 100%;
-			float: left;
-			margin-top: -3px;
-		}
+			display: flex;
+			flex-direction: column;
+
+			button {
+				flex-grow: 1;
+				aspect-ratio: 1 / 1;
+				border-bottom: none;
+
+				&:first-child {
+					border-top: none;
+				}
+			}
+				}
 
 		#toolbar {
 			button {
-				border-bottom: none;
-
-				&:nth-child(4) {
-					border: 3px solid $default-border;
-					//noinspection CssOverwrittenProperties
-					border: 3px solid var(--border);
-				}
+				border-left: none;
 
 				&.active {
-					border-right: 3px solid $default-native-background;
-					border-right: 3px solid var(--native-background);
+					border-right-color: $default-native-background;
+					border-right-color: var(--native-background);
 				}
 			}
 		}
 
 		#toolbar-end {
 			button {
-				border-bottom: none;
-
-				&:nth-child(4) {
-					border: 3px solid $default-border;
-					//noinspection CssOverwrittenProperties
-					border: 3px solid var(--border);
-				}
+				border-right: none;
 
 				&.active {
-					border-left: 3px solid $default-native-background;
-					border-left: 3px solid var(--native-background);
+					border-left-color: $default-native-background;
+					border-left-color: var(--native-background);
 				}
 			}
 		}
@@ -289,7 +286,7 @@ export default defineComponent({
 		flex-direction: column;
 		top: 0;
 		right: 0;
-		height: 100%;
+		height: 100vh;
 		width: 192px;
 
 		.panel {
@@ -303,80 +300,46 @@ export default defineComponent({
 
 		#toolbar,
 		#toolbar-end {
-			width: calc(100% + 6px);
+			width: 100%;
+			display: flex;
+
+			button {
+				flex-grow: 1;
+				aspect-ratio: 1 / 1;
+				border-right: none;
+
+				&:first-child {
+					border-left: none;
+				}
+			}
 		}
 
 		#toolbar {
 			button {
-				border-right: none;
-
-				&:nth-child(4) {
-					border-right: 3px solid $default-border;
-					border-right: 3px solid var(--border);
-				}
+				border-top: none;
 
 				&.active {
-					border-bottom: 3px solid $default-native-background;
-					border-bottom: 3px solid var(--native-background);
-				}
+					border-bottom-color: $default-native-background;
+					border-bottom-color: var(--native-background);
 			}
 		}
+	}
 
 		#toolbar-end {
-			margin-bottom: -3px;
-
-			button {
-				border-left: none;
-
-				&:nth-child(4) {
-					border-right: 3px solid $default-border;
-					border-right: 3px solid var(--border);
-				}
-
-				&.active {
-					border-top: 3px solid $default-native-background;
-					border-top: 3px solid var(--native-background);
-				}
-			}
-		}
-	}
-
-	#toolbar {
-		margin-top: -3px;
-		margin-left: -3px;
-
 		button {
-			outline: 0;
-			width: 48px;
-			height: 48px;
-			line-height: 48px;
-			//noinspection CssOverwrittenProperties
-			background-color: $default-accent-background;
-			//noinspection CssOverwrittenProperties
-			background-color: var(--accent-background);
-			border: 3px solid $default-border;
-			//noinspection CssOverwrittenProperties
-			border: 3px solid var(--border);
-
-			i {
-				vertical-align: sub;
-			}
+				border-bottom: none;
 
 			&.active {
-				background: $default-native-background;
-				background: var(--native-background);
+					border-top-color: $default-native-background;
+					border-top-color: var(--native-background);
+				}
 			}
 		}
 	}
 
-	#toolbar-end {
-		margin-right: -3px;
-
-		button {
+	#toolbar button,
+	#toolbar-end button {
 			outline: 0;
-			width: 48px;
-			height: 48px;
-			line-height: 48px;
 			//noinspection CssOverwrittenProperties
 			background-color: $default-accent-background;
 			//noinspection CssOverwrittenProperties

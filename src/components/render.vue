@@ -322,4 +322,8 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+canvas {
+	display: block;
+}
+</style>
