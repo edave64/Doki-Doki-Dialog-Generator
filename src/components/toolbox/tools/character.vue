@@ -68,6 +68,7 @@
 </template>
 
 <script lang="ts">
+import { IObject } from '@/store/objects';
 import {
 	getData,
 	getParts,
@@ -104,7 +105,7 @@ export default defineComponent({
 	computed: {
 		flip: setable('flip', 'panels/setFlip'),
 		closeUp: setable('close', 'panels/setClose'),
-		selection(): string {
+		selection(): IObject['id'] {
 			return this.$store.state.ui.selection!;
 		},
 		currentPanel(): DeepReadonly<IPanel> {

@@ -106,7 +106,7 @@ export class Electron implements IEnvironment {
 						if (url != null && !repo.hasPack(id)) {
 							await repo.loadTempPack(url);
 						}
-						const pack = repo.getPack(id);
+						const pack = repo.getPack(id)!;
 						return pack.dddg2Path || pack.dddg1Path;
 					})
 				);
