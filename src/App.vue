@@ -77,7 +77,6 @@ import { defineAsyncComponent, defineComponent, watch } from 'vue';
 import { Repo } from './models/repo';
 import enviroment from '@/environments/environment';
 import { IRemovePacksAction } from './store';
-import 'vite/client.d.ts';
 
 // tslint:disable-next-line: no-magic-numbers
 const aspectRatio = 16 / 9;
