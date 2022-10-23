@@ -285,10 +285,7 @@ export default {
 				panelId,
 			} as IDeletePanelMutation);
 		},
-		async fixContentPackRemoval(
-			context,
-			oldContent: ContentPack<IAssetSwitch>
-		) {
+		fixContentPackRemoval(context, oldContent: ContentPack<IAssetSwitch>) {
 			const { state, rootGetters, commit, rootState } = context;
 			for (const panel of Object.values(state.panels)) {
 				const oldBackground = oldContent.backgrounds.find(
@@ -330,7 +327,7 @@ export default {
 				}
 			}
 
-			await objectsFixContentPackRemoval(context, oldContent);
+			objectsFixContentPackRemoval(context, oldContent);
 		},
 		move({ state, commit }, { panelId, delta }: IMovePanelAction) {
 			const collection = [...state.panelOrder];

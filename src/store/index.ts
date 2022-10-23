@@ -21,17 +21,9 @@ export default createStore({
 		},
 	},
 	actions: {
-		async removePacks(
-			{ dispatch, commit, state },
-			{ packs }: IRemovePacksAction
-		) {
-			const oldState: ContentPack<IAssetSwitch> = JSON.parse(
-				JSON.stringify(state.content.current)
-			);
-
+		async removePacks({ dispatch, commit }, { packs }: IRemovePacksAction) {
 			commit('setUnsafe', true);
-			await dispatch('content/removeContentPacks', packs);
-			await dispatch('panels/fixContentPackRemoval', oldState);
+			dispatch('content/removeContentPacks', packs);
 			commit('setUnsafe', false);
 		},
 		getSave({ state }, compact: boolean) {

@@ -69,7 +69,10 @@ export default {
 		},
 	},
 	actions: {
-		async removeContentPacks({ commit, state }, packIds: Set<string>) {
+		removeContentPacks({ commit, state, dispatch }, packIds: Set<string>) {
+			const oldState: ContentPack<IAssetSwitch> = JSON.parse(
+				JSON.stringify(state.current)
+			);
 			const newContentPacks = sortByDependencies(
 				state.contentPacks.filter((pack) => !packIds.has(pack.packId!))
 			);
@@ -80,6 +83,7 @@ export default {
 					(acc, value) => mergeContentPacks(acc, value)
 				)
 			);
+			dispatch('panels/fixContentPackRemoval', oldState, { root: true });
 		},
 
 		async replaceContentPack(
