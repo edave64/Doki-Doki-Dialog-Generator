@@ -125,6 +125,16 @@ export default defineComponent({
 		this.packs = repo.getPacks();
 		this.authors = repo.getAuthors();
 	},
+	activated() {
+		this.$nextTick(() => {
+			(this.$refs.searchBar as any).focus();
+		});
+	},
+	mounted() {
+		this.$nextTick(() => {
+			(this.$refs.searchBar as any).focus();
+		});
+	},
 });
 </script>
 
