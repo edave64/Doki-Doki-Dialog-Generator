@@ -1,4 +1,4 @@
-import enviroment from '@/environments/environment';
+import environment from '@/environments/environment';
 import { ITextStyle } from '@/renderer/textRenderer/textRenderer';
 import { ITextBox } from '@/store/objectTypes/textbox';
 import { HSLAColor } from '@/util/colors/hsl';
@@ -7,7 +7,7 @@ import { IPoemTextStyle } from './game_modes/ddlc/poem';
 import DdlcPlus from './game_modes/ddlc_plus';
 
 export default function getConstants() {
-	if (enviroment.gameMode === 'ddlc_plus') return DdlcPlus;
+	if (environment.gameMode === 'ddlc_plus') return DdlcPlus;
 	return Ddlc;
 }
 

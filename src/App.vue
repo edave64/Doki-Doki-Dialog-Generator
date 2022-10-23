@@ -75,7 +75,6 @@ import ModalDialog from '@/components/ModalDialog.vue';
 import { ISetCurrentMutation } from '@/store/panels';
 import { defineAsyncComponent, defineComponent, watch } from 'vue';
 import { Repo } from './models/repo';
-import enviroment from '@/environments/environment';
 import { IRemovePacksAction } from './store';
 
 const aspectRatio = 16 / 9;
@@ -403,7 +402,7 @@ export default defineComponent({
 
 		(window as any).app = this;
 		(window as any).store = this.$store;
-		(window as any).env = enviroment;
+		(window as any).env = environment;
 
 		watch(
 			() => this.$store.state.ui.selection,
@@ -431,10 +430,10 @@ export default defineComponent({
 			true
 		);
 
-		await enviroment.loadGameMode();
+		await environment.loadGameMode();
 		this.preLoading = false;
-		enviroment.connectToStore(this.vuexHistory, this.$store);
-		const settings = await enviroment.loadSettings();
+		environment.connectToStore(this.vuexHistory, this.$store);
+		const settings = await environment.loadSettings();
 
 		await this.vuexHistory.transaction(async () => {
 			environment.state.looseTextParsing = settings.looseTextParsing || true;
@@ -459,7 +458,7 @@ export default defineComponent({
 				`${baseUrl}packs/buildin.extra.amy.json`,
 			]);
 
-			await enviroment.loadContentPacks();
+			await environment.loadContentPacks();
 
 			const panelId = await this.$store.dispatch('panels/createPanel');
 			if (
