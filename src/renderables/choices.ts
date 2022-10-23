@@ -50,7 +50,6 @@ export class Choice extends ScalingRenderable<IChoices> {
 				'center',
 				x,
 				x + w,
-				// tslint:disable-next-line: no-magic-numbers
 				y + constants.Choices.ChoiceSpacing * 1.25,
 				this.obj.autoWrap ? w : 0
 			);

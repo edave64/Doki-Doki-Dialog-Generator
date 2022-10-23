@@ -125,7 +125,6 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 			async (subRx) => {
 				const gradient = subRx.linearGradient(x, y, x, y + h);
 				const baseBG = RGBAColor.fromCss(this.nameboxBackgroundColor);
-				// tslint:disable-next-line: no-magic-numbers
 				const color = new RGBAColor(baseBG.r, baseBG.g, baseBG.b, 0.95);
 				const targetColor = color
 					.toHSL()
@@ -235,7 +234,6 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 					y + h
 				);
 				glowGradient.addColorStop(0, 'rgba(255,255,255,0.3137)');
-				// tslint:disable-next-line: no-magic-numbers
 				glowGradient.addColorStop(0.5, 'rgba(255,255,255,0.0627)');
 				glowGradient.addColorStop(1, 'rgba(255,255,255,0)');
 				subRx.drawPath({

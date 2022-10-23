@@ -78,7 +78,6 @@ import { Repo } from './models/repo';
 import enviroment from '@/environments/environment';
 import { IRemovePacksAction } from './store';
 
-// tslint:disable-next-line: no-magic-numbers
 const aspectRatio = 16 / 9;
 const arrowMoveStepSize = 20;
 const packDialogWaitMs = 50;

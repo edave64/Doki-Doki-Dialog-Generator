@@ -96,7 +96,6 @@ export class Notification extends ScalingRenderable<INotification> {
 			'center',
 			x,
 			x + w,
-			// tslint:disable-next-line: no-magic-numbers
 			y + constants.Notification.NotificationPadding * 1.5,
 			lineWrap
 		);
@@ -105,7 +104,6 @@ export class Notification extends ScalingRenderable<INotification> {
 			'center',
 			x,
 			x + w,
-			// tslint:disable-next-line: no-magic-numbers
 			y + h - constants.Notification.NotificationPadding,
 			lineWrap
 		);

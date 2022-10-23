@@ -96,7 +96,6 @@ export default defineComponent({
 		},
 		pointerPath(): string {
 			const val = (this.modelValue / this.maxValue) * sliderLength;
-			// tslint:disable-next-line: no-magic-numbers
 			return `M${val} 0L${val + 14} 0L${val + 7} 12Z`;
 		},
 		gradientOffset(): number {
