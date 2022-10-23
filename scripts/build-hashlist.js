@@ -47,13 +47,15 @@ function scanFolder(folderName) {
 			});
 
 			Promise.all(subPromises)
-				.then(() =>
+				.then(() => {
+					subFiles.sort();
+					subFolders.sort();
 					resolve({
 						name: folderName,
 						files: subFiles,
 						subfolders: subFolders,
-					})
-				)
+					});
+				})
 				.catch((reason) => reject(reason));
 		});
 	});

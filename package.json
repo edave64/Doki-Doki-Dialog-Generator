@@ -8,7 +8,7 @@
 		"typeCheck": "tsc --noEmit",
 		"lint": "eslint .",
 		"assetConversions": "node ./scripts/asset-conversions.js",
-		"build:web": "vite build && node ./scripts/build-hashlist.js > ./dist/hash-list.json",
+		"build:web": "vite build",
 		"build:electron": "vite build",
 		"sync:release": "rsync -av --delete --exclude=assets/**.lq.webp --exclude=assets/**.png ./dist/ ../dist/release/",
 		"sync:pre": "rsync -av --delete --exclude=assets/**.lq.webp --exclude=assets/**.png ./dist/ ../dist/pre/",
