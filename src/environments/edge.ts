@@ -10,7 +10,7 @@ export class OldEdge extends Browser {
 		let url = downloadCanvas.toDataURL(format, quality);
 		const blob = this.dataURItoBlob(url, format);
 
-		if (window.URL && (window.URL as any).createObjectURL) {
+		if (window.URL != null && window.URL.createObjectURL != null) {
 			url = URL.createObjectURL(blob);
 		}
 

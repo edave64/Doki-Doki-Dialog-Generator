@@ -143,7 +143,7 @@ export default defineComponent({
 		},
 		addByUrl() {
 			const url = prompt('Enter the URL of the image');
-			if (!url) return;
+			if (url == null) return;
 			const lastSegment = url.split('/').slice(-1)[0];
 			this.addNewCustomBackground(lastSegment, lastSegment, url);
 		},

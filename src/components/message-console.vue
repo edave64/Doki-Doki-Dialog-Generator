@@ -13,6 +13,7 @@
 			<a
 				href="#"
 				v-for="action in error.actions"
+				:key="'resolvableError_' + i + action.name"
 				@click="resolvableAction(i, action.name)"
 				>[{{ action.name }}]</a
 			>

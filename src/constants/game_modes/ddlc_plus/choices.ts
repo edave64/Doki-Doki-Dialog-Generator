@@ -6,7 +6,7 @@ import { screenHeight } from './base';
 export const nameboxTextOutlineDelta = new HSLAColor(
 	-0.03065134099616873,
 	-0.5714285714285714,
-	-0.29607843137254896,
+	-0.29607843137254897,
 	0
 );
 

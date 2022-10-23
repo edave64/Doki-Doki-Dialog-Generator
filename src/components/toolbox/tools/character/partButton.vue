@@ -70,13 +70,13 @@ export default defineComponent({
 		background() {
 			let ret = '';
 			const size = this.backgroundSize;
-			const globalOffset = this.part!.offset || [0, 0];
+			const globalOffset = this.part!.offset ?? [0, 0];
 			for (let i = 0; i < this.part!.images.length; ++i) {
 				const image = this.part!.images[i];
 				const lookup = this.lookups[i];
 				if (!(lookup instanceof ImageAsset)) continue;
 				if (i > 0) ret += ', ';
-				const localOffset = image.offset || [0, 0];
+				const localOffset = image.offset ?? [0, 0];
 				const pos =
 					`${Math.floor(
 						(globalOffset[0] - localOffset[0]) * -this.scaleX

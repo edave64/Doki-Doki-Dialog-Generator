@@ -1,4 +1,3 @@
-import { DeepReadonly } from 'vue';
 import { IAsset } from './asset';
 
 export class ImageAsset implements IAsset {

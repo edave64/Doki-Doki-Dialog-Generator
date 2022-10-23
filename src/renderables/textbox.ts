@@ -68,7 +68,6 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 	public get textboxRenderer() {
 		const forcedStyle = this.forcedStyle;
 		const rendererConstructor = rendererLookup[forcedStyle];
-		if (!rendererConstructor) throw new Error('Unknown textbox style renderer');
 		if (
 			this._lastRenderer &&
 			this._lastRenderer.constructor === rendererConstructor
@@ -87,7 +86,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		if (
 			(this.obj.style === 'normal' || this.obj.style === 'normal_plus') &&
 			refObject &&
-			(refObject.textboxColor || refObject.nameboxWidth !== null)
+			(refObject.textboxColor != null || refObject.nameboxWidth != null)
 		)
 			return 'custom';
 		return this.obj.style;
@@ -101,13 +100,11 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 
 		const talkingObj = this.obj.talkingObjId;
 		if (talkingObj !== null && talkingObj !== '$other$') {
-			const obj = _current.state.panels.panels[panelId].objects[
-				talkingObj
-			] as IObject;
-			if (obj) {
-				this.refObject = obj;
-				return;
-			}
+			const obj = _current.state.panels.panels[panelId].objects[talkingObj] as
+				| IObject
+				| undefined;
+			this.refObject = obj ?? null;
+			return;
 		}
 		this.refObject = null;
 	}
@@ -129,7 +126,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 			const name =
 				this.obj.talkingObjId === '$other$'
 					? this.obj.talkingOther
-					: this.refObject?.label || 'Missing name';
+					: this.refObject?.label ?? 'Missing name';
 			await this.renderName(rx, x + styleRenderer.nameboxOffsetX, y, name);
 		}
 

@@ -32,11 +32,11 @@ export default defineComponent({
 	},
 	computed: {
 		showPopup(): boolean {
-			return !!this.shortcut && !this.shortcut.startsWith('!');
+			return this.shortcut != null && !this.shortcut.startsWith('!');
 		},
 		popupText(): string {
 			const shortcut = this.shortcut;
-			if (!shortcut) return '';
+			if (shortcut == null) return '';
 			if (shortcut.startsWith('!')) return shortcut.substring(1);
 			return shortcut;
 		},

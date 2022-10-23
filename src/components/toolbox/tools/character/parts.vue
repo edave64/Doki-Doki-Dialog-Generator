@@ -239,8 +239,6 @@ export default defineComponent({
 			pose: DeepReadonly<Pose<IAssetSwitch>>
 		): DeepReadonly<IPartButtonImage> {
 			const data = this.charData;
-			const heads = data.heads[pose.compatibleHeads[0]];
-			const head = heads ? heads.variants[0] : null;
 			let images: Array<IPartImage> = [];
 
 			for (const command of pose.renderCommands) {
@@ -248,20 +246,21 @@ export default defineComponent({
 					case 'pose-part':
 						// eslint-disable-next-line no-case-declarations
 						const part = pose.positions[command.part];
-						if (!part || part.length === 0) break;
+						if (part == null || part.length === 0) break;
 						images = images.concat(
 							part[0].map((x) => ({ asset: x, offset: command.offset }))
 						);
 						break;
 					case 'head':
-						if (head) {
-							images = images.concat(
-								head.map((x) => ({
-									asset: x,
-									offset: command.offset,
-								}))
-							);
-						}
+						const heads = data.heads[pose.compatibleHeads[0]];
+						if (pose.compatibleHeads.length === 0) break;
+						const head = heads.variants[0];
+						images = images.concat(
+							head.map((x) => ({
+								asset: x,
+								offset: command.offset,
+							}))
+						);
 						break;
 					case 'image':
 						images = images.concat(
@@ -320,7 +319,6 @@ export default defineComponent({
 				this.setPart(this.part, parseInt(index, 10));
 			}
 		},
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		choose_component(component: string, id: string) {
 			const prioIdx = this.stylePriorities.findIndex(
 				(stylePriority) => stylePriority[0] === component

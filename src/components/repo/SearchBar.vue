@@ -110,7 +110,10 @@ export default defineComponent({
 	}),
 	methods: {
 		focus() {
-			(this.$refs.input as HTMLElement).focus();
+			const ele = this.$refs.input as HTMLElement | undefined;
+			if (ele) {
+				ele.focus();
+			}
 		},
 		documentClickHandler(event: MouseEvent & { dontCloseHelp?: boolean }) {
 			if (event.dontCloseHelp) return;
@@ -131,11 +134,11 @@ export default defineComponent({
 			this.message = this.modelValue;
 		},
 		onUpdate() {
-			if (this.debounceTimeout) clearTimeout(this.debounceTimeout);
+			if (this.debounceTimeout != null) clearTimeout(this.debounceTimeout);
 			this.debounceTimeout = setTimeout(this.doUpdate, debounce);
 		},
 		doUpdate() {
-			if (this.debounceTimeout) clearTimeout(this.debounceTimeout);
+			if (this.debounceTimeout != null) clearTimeout(this.debounceTimeout);
 			this.debounceTimeout = null;
 			const div = document.createElement('div');
 			div.innerHTML = this.message;

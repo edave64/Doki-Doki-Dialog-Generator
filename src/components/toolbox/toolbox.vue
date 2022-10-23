@@ -163,8 +163,7 @@ export default defineComponent({
 					// eslint-disable-next-line vue/no-side-effects-in-computed-properties
 					this.panelSelection = 'add';
 				} else {
-					const obj = this.currentPanel.objects[this.selection];
-					return obj.type;
+					return this.currentPanel.objects[this.selection].type;
 				}
 			}
 			return this.panelSelection;

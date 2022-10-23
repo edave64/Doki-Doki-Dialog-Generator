@@ -132,28 +132,30 @@
 </template>
 
 <script lang="ts">
-// App.vue has currently so many responsiblities that it's best to break it into chunks
-import Selection from './selection.vue';
-import Selector from './selector.vue';
-import DropTarget from '../../toolbox/drop-target.vue';
+import { getAssetByUrl } from '@/asset-manager';
 import ToggleBox from '@/components/toggle.vue';
-import environment from '@/environments/environment';
-import { VerticalScrollRedirect } from '@/components/vertical-scroll-redirect';
 import DFieldset from '@/components/ui/d-fieldset.vue';
+import L from '@/components/ui/link.vue';
+import { VerticalScrollRedirect } from '@/components/vertical-scroll-redirect';
+import environment from '@/environments/environment';
 import { Character } from '@/renderables/character';
+import { SelectedState } from '@/renderables/offscreenRenderable';
+import { Renderer } from '@/renderer/renderer';
+import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
+import { WorkBatch } from '@/util/workBatch';
 import {
 	Character as CharacterModel,
 	ContentPack,
 	IHeadCommand,
 	Pose,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAsset, ReplaceContentPackAction } from '@/store/content';
-import { getAssetByUrl } from '@/asset-manager';
-import { Renderer } from '@/renderer/renderer';
-import { WorkBatch } from '@/util/workBatch';
-import { defineComponent } from 'vue';
 import { DeepReadonly } from 'ts-essentials';
-import L from '@/components/ui/link.vue';
+import { defineComponent } from 'vue';
+import DropTarget from '../../toolbox/drop-target.vue';
+
+// App.vue has currently so many responsiblities that it's best to break it into chunks
+import Selection from './selection.vue';
+import Selector from './selector.vue';
 
 const uploadedExpressionsPack: ContentPack<string> = {
 	packId: 'dddg.buildin.uploadedExpressions',
@@ -216,8 +218,8 @@ const charDefDefaults = {
 	styleId: 0,
 	poseId: 0,
 	posePositions: {},
-	panelId: '',
-	id: '',
+	panelId: 0,
+	id: 0,
 	y: 0,
 	rotation: 0,
 	preserveRatio: true,
@@ -260,7 +262,7 @@ export default defineComponent({
 			this.processExpression.bind(this),
 			async () => {}
 		);
-		if (this.initHeadGroup) {
+		if (this.initHeadGroup != null) {
 			this.headGroup = this.availableHeadGroups.find(
 				(group) => group.name === this.initHeadGroup
 			)!;
@@ -315,7 +317,7 @@ export default defineComponent({
 
 		async addByUrl(): Promise<void> {
 			const url = await environment.prompt('Enter the url of the image.', '');
-			if (!url) return;
+			if (url == null) return;
 			this.addUrl(url);
 		},
 
@@ -328,7 +330,7 @@ export default defineComponent({
 			expression: string,
 			isRunning: () => boolean
 		): Promise<string | undefined> {
-			const asset = (await getAssetByUrl(expression)) as HTMLImageElement;
+			const asset = await getAssetByUrl(expression);
 			if (!isRunning()) return undefined;
 			const renderer = new Renderer(
 				asset.width + this.offsetX,
@@ -347,11 +349,9 @@ export default defineComponent({
 					this.addMask &&
 					this.headGroup &&
 					this.headGroup.imagePatching &&
-					this.headGroup.imagePatching.mask
+					this.headGroup.imagePatching.mask != null
 				) {
-					const mask = (await getAssetByUrl(
-						this.headGroup.imagePatching.mask
-					)) as HTMLImageElement;
+					const mask = await getAssetByUrl(this.headGroup.imagePatching.mask);
 					if (!isRunning()) return undefined;
 					rx.drawImage({
 						image: mask,
@@ -367,11 +367,11 @@ export default defineComponent({
 					this.addExtras &&
 					this.headGroup &&
 					this.headGroup.imagePatching &&
-					this.headGroup.imagePatching.addition
+					this.headGroup.imagePatching.addition != null
 				) {
-					const addition = (await getAssetByUrl(
+					const addition = await getAssetByUrl(
 						this.headGroup.imagePatching.addition
-					)) as HTMLImageElement;
+					);
 					if (!isRunning()) return undefined;
 					rx.drawImage({
 						image: addition,
@@ -394,7 +394,6 @@ export default defineComponent({
 		async redraw() {
 			if (this.uploadsFinished) return;
 			const pose = this.previewPoses[this.previewPoseIdx];
-			if (!pose) return;
 			let charRenderer: Character;
 			try {
 				charRenderer = new Character(
@@ -427,7 +426,7 @@ export default defineComponent({
 				if (this.uploadsFinished) return;
 				const renderer = new Renderer(pose.width, pose.height);
 				await renderer.render(async (rx) => {
-					await charRenderer.render(false, rx);
+					await charRenderer.render(SelectedState.None, rx);
 				});
 
 				const target = this.$refs.target as HTMLCanvasElement;
@@ -470,6 +469,7 @@ export default defineComponent({
 
 			let headGroup = character.heads[this.headGroup!.name];
 			const storeHeadGroup = storeCharacter.heads[this.headGroup!.name];
+			// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 			if (!headGroup) {
 				headGroup = {
 					previewSize: storeHeadGroup.previewSize as any,
@@ -500,7 +500,7 @@ export default defineComponent({
 		},
 
 		removeUploadedExpression() {
-			if (!this.currentUploadedExpression) return;
+			if (this.currentUploadedExpression == null) return;
 			const expression = this.currentUploadedExpression;
 			this.currentUploadedExpression = null;
 			if (expression.startsWith('blob:')) {
@@ -550,7 +550,7 @@ export default defineComponent({
 		},
 	},
 	computed: {
-		characterData(): DeepReadonly<CharacterModel<IAsset>> {
+		characterData(): DeepReadonly<CharacterModel<IAssetSwitch>> {
 			return this.$store.state.content.current.characters.find(
 				(char) => char.id === this.character
 			)!;
@@ -582,25 +582,23 @@ export default defineComponent({
 
 		downloadLink(): string | null {
 			const character = this.characterData;
-			if (!character || !this.headGroup) return null;
+			if (!this.headGroup) return null;
 			const headType = character.heads[this.headGroup!.name];
-			if (!headType) return null;
 			return headType.variants[0][0].hq;
 		},
 
 		listLink(): string | null {
-			if (!this.characterData || !this.headGroup) return null;
+			if (!this.headGroup) return null;
 			const charName = this.characterData.id;
 			const headGroupName = this.headGroup.name;
-			if (listPaths[charName + ':' + headGroupName]) {
-				return listPaths[charName + ':' + headGroupName] || null;
-			}
-			return listPaths[charName] || null;
+			return (
+				listPaths[charName + ':' + headGroupName] ?? listPaths[charName] ?? null
+			);
 		},
 
 		previewPoses(): IPose[] {
 			const character = this.characterData;
-			if (!character || !this.headGroup) return [];
+			if (!this.headGroup) return [];
 			const poses: IPose[] = [];
 
 			for (
@@ -634,17 +632,17 @@ export default defineComponent({
 			return poses;
 		},
 
-		expressionModels(): IAsset[][] {
+		expressionModels(): IAssetSwitch[][] {
 			return this.uploadedExpressions.map((expression) => [
 				{
 					hq: expression,
 					lq: expression,
 					sourcePack: 'dddg.temp1:default',
-				} as IAsset,
+				} as IAssetSwitch,
 			]);
 		},
 
-		temporaryCharacterModel(): CharacterModel<IAsset> {
+		temporaryCharacterModel(): CharacterModel<IAssetSwitch> {
 			const poses = this.previewPoses;
 			const character = this.$store.state.content.current.characters.find(
 				(char) => char.id === this.character
@@ -692,7 +690,7 @@ export default defineComponent({
 										this.addMask &&
 										this.headGroup &&
 										this.headGroup.imagePatching &&
-										this.headGroup.imagePatching.mask
+										this.headGroup.imagePatching.mask != null
 									) {
 										const mask = this.headGroup.imagePatching.mask;
 										renderCommands.splice(headIdx, 1);
@@ -717,7 +715,7 @@ export default defineComponent({
 										this.addExtras &&
 										this.headGroup &&
 										this.headGroup.imagePatching &&
-										this.headGroup.imagePatching.addition
+										this.headGroup.imagePatching.addition != null
 									) {
 										const add = this.headGroup.imagePatching.addition;
 										renderCommands.splice(headIdx + 1, 0, {
@@ -738,7 +736,7 @@ export default defineComponent({
 										renderCommands,
 										id: 'dddg.temp1:pose' + idx,
 										compatibleHeads: ['dddg.temp1:default'],
-									} as Pose<IAsset>;
+									} as Pose<IAssetSwitch>;
 								}),
 							},
 						],
@@ -768,14 +766,6 @@ interface IHeadGroup {
 		mask?: string;
 		addition?: string;
 	};
-}
-
-interface ICachedProcessedExpression {
-	url: string;
-	addMask: boolean;
-	addExtras: boolean;
-	offsetX: number;
-	offsetY: number;
 }
 </script>
 

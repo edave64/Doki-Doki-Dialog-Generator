@@ -1,7 +1,5 @@
 import { ComponentOptionsMixin } from 'vue';
 
-const firefoxDeltaFactor = 25;
-
 export const VerticalScrollRedirect: ComponentOptionsMixin = {
 	methods: {
 		verticalScrollRedirect(e: WheelEvent) {

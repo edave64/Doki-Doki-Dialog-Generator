@@ -32,12 +32,8 @@ export default defineComponent({
 
 <style lang="scss">
 .toggle_box {
-	div {
-		overflow: visible;
-	}
-
 	/* The switch - the box around the slider */
-	.switch {
+	> .switch {
 		height: 20px;
 		width: 20px;
 		display: inline-block;
@@ -47,7 +43,7 @@ export default defineComponent({
 	}
 
 	/* Hide default HTML checkbox */
-	input {
+	> input {
 		opacity: 0;
 		width: 0;
 		height: 0;
@@ -55,19 +51,16 @@ export default defineComponent({
 		pointer-events: none;
 	}
 
-	input:checked + .switch {
+	> input:checked + .switch {
 		background: url('./toggle/active.svg');
 		background-size: cover;
 	}
 
-	input:focus-visible + .switch {
-		background: url('./toggle/active.svg');
-		background-size: cover;
-		outline: 1px solid white;
-		outline-offset: 1px;
+	> input:focus-visible + .switch {
+		background-color: blue;
 	}
 
-	.toggle_label {
+	> .toggle_label {
 		user-select: none;
 	}
 }

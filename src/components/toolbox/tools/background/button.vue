@@ -56,7 +56,7 @@ export default defineComponent({
 				case 'buildin.transparent':
 					return 'Transparent';
 			}
-			return this.bgData!.label || '';
+			return this.bgData!.label ?? '';
 		},
 
 		style(): { [id: string]: string } {

@@ -228,7 +228,7 @@ async function convertContentPack(
 			return {
 				hq,
 				lq,
-				sourcePack: pack.packId || 'buildIn',
+				sourcePack: pack.packId ?? 'buildIn',
 			};
 		}
 	) as ContentPack<IAssetSwitch>;
@@ -239,7 +239,6 @@ function error(msg: string, payload?: any): never {
 	throw new Error(msg);
 }
 
-// tslint:disable: indent
 export type ReplaceContentPackAction =
 	| {
 			contentPack: ContentPack<string>;
@@ -249,4 +248,3 @@ export type ReplaceContentPackAction =
 			contentPack: ContentPack<IAssetSwitch>;
 			processed: true;
 	  };
-// tslint:enable: indent

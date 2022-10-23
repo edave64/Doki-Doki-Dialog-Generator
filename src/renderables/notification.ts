@@ -1,5 +1,5 @@
 import { SelectedState } from '@/renderables/offscreenRenderable';
-import { IShadow, RenderContext } from '@/renderer/rendererContext';
+import { RenderContext } from '@/renderer/rendererContext';
 import { TextRenderer } from '@/renderer/textRenderer/textRenderer';
 import { INotification } from '@/store/objectTypes/notification';
 import { ScalingRenderable } from './scalingRenderable';

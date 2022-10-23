@@ -129,7 +129,7 @@ export function getHeads(
 	headTypeId: number = state.posePositions.headType || 0
 ): DeepReadonly<HeadCollection<IAssetSwitch>> | null {
 	const compatibleHeads = getPose(data, state).compatibleHeads;
-	if (!compatibleHeads || compatibleHeads.length === 0) {
+	if (compatibleHeads.length === 0) {
 		return null;
 	}
 	return data.heads[compatibleHeads[headTypeId]];
@@ -173,7 +173,7 @@ export const characterActions: ActionTree<IPanels, IRootState> = {
 				styleId: 0,
 				styleGroupId: 0,
 				posePositions: {},
-				label: char.label || char.id,
+				label: char.label ?? char.id,
 				enlargeWhenTalking: rootState.ui.defaultCharacterTalkingZoom,
 			} as ICharacter,
 		} as ICreateObjectMutation);
@@ -190,6 +190,7 @@ export const characterActions: ActionTree<IPanels, IRootState> = {
 		}
 		const obj = state.panels[panelId].objects[id] as Readonly<ICharacter>;
 		const pose = getPose(getDataG(rootGetters, obj.characterType), obj);
+		// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 		if (!pose.positions[part]) return;
 		commit('setPosePosition', {
 			id,
@@ -420,6 +421,7 @@ export async function fixContentPackRemovalFromCharacter(
 		if (!newPose.positions.hasOwnProperty(key)) continue;
 		const newPosition = newPose.positions[key];
 
+		// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 		if (oldPose.positions[key]) {
 			const oldPositionIdx = poseAndPositionChange.posePositions[key];
 			if (oldPositionIdx >= 0 && oldPositionIdx < newPosition.length) {
@@ -537,25 +539,30 @@ function mutatePoseAndPositions(
 	const poseAndPosition = buildPoseAndPositionData(character);
 	callback(poseAndPosition);
 
+	// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 	if (!data.styleGroups[poseAndPosition.styleGroupId]) {
 		poseAndPosition.styleGroupId = 0;
 	}
 	const styleGroup = data.styleGroups[poseAndPosition.styleGroupId];
 
+	// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 	if (!styleGroup.styles[poseAndPosition.styleId]) {
 		poseAndPosition.styleId = 0;
 	}
 	const style = styleGroup.styles[poseAndPosition.styleId];
 
 	// ensure pose integrity
+	// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 	if (!style.poses[poseAndPosition.poseId]) {
 		poseAndPosition.poseId = 0;
 	}
 	const pose = style.poses[poseAndPosition.poseId];
 
 	for (const positionKey in pose.positions) {
+		// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 		if (!pose.positions[positionKey]) continue;
 		if (
+			// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 			!pose.positions[positionKey][poseAndPosition.posePositions[positionKey]]
 		) {
 			poseAndPosition.posePositions[positionKey] = 0;

@@ -17,8 +17,6 @@ import { DeepReadonly } from 'ts-essentials';
 import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 
-const packs: IPack[] = [];
-
 const installedBackgroundsPack: ContentPack<string> = {
 	packId: 'dddg.buildin.installedBackgrounds',
 	dependencies: [],
@@ -57,7 +55,7 @@ export class Electron implements IEnvironment {
 	public loadContentPacks!: () => void;
 
 	constructor() {
-		this.loadingContentPacksAllowed = new Promise((resolve, reject) => {
+		this.loadingContentPacksAllowed = new Promise((resolve, _reject) => {
 			this.loadContentPacks = () => resolve();
 		});
 
@@ -105,7 +103,7 @@ export class Electron implements IEnvironment {
 				const packUrls = await Promise.all(
 					packIds.map(async (compoundId) => {
 						const [id, url] = compoundId.split(';', 2) as [string, string?];
-						if (url && !repo.hasPack(id)) {
+						if (url != null && !repo.hasPack(id)) {
 							await repo.loadTempPack(url);
 						}
 						const pack = repo.getPack(id);
@@ -149,7 +147,7 @@ export class Electron implements IEnvironment {
 		this.electron.ipcRenderer.onConversation(
 			'resolvable-error',
 			(message: string, actions: string[]) => {
-				return new Promise((resolve, reject) => {
+				return new Promise((resolve, _reject) => {
 					eventBus.fire(
 						new ResolvableErrorEvent(
 							message,
@@ -383,7 +381,7 @@ export class Electron implements IEnvironment {
 	}
 
 	private updateInstalledBGs() {
-		if (this.bgInvalidation) {
+		if (this.bgInvalidation != null) {
 			cancelAnimationFrame(this.bgInvalidation);
 			this.bgInvalidation = null;
 		}

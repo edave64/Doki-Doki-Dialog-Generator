@@ -109,7 +109,7 @@ export class Repo {
 			const autoloads = new Set(environment.state.autoAdd);
 			const loadedPackOrder = this.$store.state.content.contentPacks
 				.map((pack) => pack.packId)
-				.filter((packId) => !!packId) as string[];
+				.filter((packId) => packId != null) as string[];
 			const loadedPacksSet = new Set(loadedPackOrder) as Set<string>;
 
 			const addedPacks = new Set();
@@ -181,8 +181,8 @@ export class Repo {
 		return !!this.getPacks().find((pack) => pack.id === id);
 	}
 
-	public getPack(id: string): DeepReadonly<Pack> {
-		return this.getPacks().find((pack) => pack.id === id)!;
+	public getPack(id: string): DeepReadonly<Pack | null> {
+		return this.getPacks().find((pack) => pack.id === id) ?? null;
 	}
 
 	public getAuthor(id: string): DeepReadonly<IAuthor | null> {
@@ -221,15 +221,13 @@ export class Repo {
 		}
 
 		const pack = body.pack;
-		let ret = pack.id;
-
 		pack.repoUrl = url;
 
 		if (!this.tempRepo.packs.find((x) => x.id === pack.id)) {
 			this.tempRepo.packs.push(pack);
 		}
 
-		return ret;
+		return pack.id;
 	}
 }
 
@@ -238,4 +236,5 @@ export interface Pack extends IPrimitivePack {
 	online: boolean;
 	installed: boolean;
 	loaded: boolean;
+	repoUrl?: string;
 }

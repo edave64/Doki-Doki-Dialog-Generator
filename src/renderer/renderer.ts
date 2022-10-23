@@ -58,7 +58,7 @@ export class Renderer {
 		c: CanvasRenderingContext2D,
 		opts: { x: number; y: number; w?: number; h?: number }
 	) {
-		if (opts.w && opts.h) {
+		if (opts.w != null && opts.h != null) {
 			c.drawImage(this.previewCanvas, opts.x, opts.y, opts.w, opts.h);
 		} else {
 			c.drawImage(this.previewCanvas, opts.x, opts.y);

@@ -30,8 +30,6 @@ export const notificationMutations: MutationTree<IPanels> = {
 	},
 };
 
-let lastNotificationId = 0;
-
 export const notificationActions: ActionTree<IPanels, IRootState> = {
 	createNotification(
 		{ commit, rootState, state },

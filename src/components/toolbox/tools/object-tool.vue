@@ -240,7 +240,7 @@ export default defineComponent({
 			return this.object.label !== null;
 		},
 		heading(): string {
-			return this.object.label || this.title || 'Object';
+			return this.object.label ?? this.title ?? 'Object';
 		},
 		useCustomTextboxColor: {
 			get(): boolean {
@@ -269,7 +269,7 @@ export default defineComponent({
 			});
 		},
 		enableNameEdit() {
-			this.modalNameInput = this.object.label || '';
+			this.modalNameInput = this.object.label ?? '';
 			this.showRename = true;
 		},
 		renameOption(option: 'Apply' | 'Cancel') {

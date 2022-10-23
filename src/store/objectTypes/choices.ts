@@ -46,8 +46,6 @@ export const choiceMutations: MutationTree<IPanels> = {
 	},
 };
 
-let lastChoiceId = 0;
-
 export const choiceActions: ActionTree<IPanels, IRootState> = {
 	createChoice(
 		{ commit, rootState, state },
@@ -99,7 +97,6 @@ export const choiceActions: ActionTree<IPanels, IRootState> = {
 	removeChoice({ state, commit }, command: IRemoveChoiceAction) {
 		const obj = state.panels[command.panelId].objects[command.id] as IChoices;
 		const choices = [...obj.choices];
-		if (!choices[command.choiceIdx]) return;
 		choices.splice(command.choiceIdx, 1);
 		// Do not allow empty choices
 		if (choices.length === 0) {

@@ -195,21 +195,21 @@ export class RenderContext {
 
 		if (params.shadow) {
 			const shadow = params.shadow;
-			if (shadow.color) {
+			if (shadow.color != null) {
 				this.fsCtx.shadowColor = shadow.color;
 			}
-			if (shadow.blur) {
+			if (shadow.blur != null) {
 				this.fsCtx.shadowBlur = shadow.blur;
 			}
-			if (shadow.offsetX) {
+			if (shadow.offsetX != null) {
 				this.fsCtx.shadowOffsetX = shadow.offsetX;
 			}
-			if (shadow.offsetY) {
+			if (shadow.offsetY != null) {
 				this.fsCtx.shadowOffsetY = shadow.offsetY;
 			}
 		}
 
-		if (params.rotation) {
+		if (params.rotation != null && params.rotation !== 0) {
 			const rotX = params.rotationAnchor ? params.rotationAnchor.x : 0;
 			const rotY = params.rotationAnchor ? params.rotationAnchor.y : 0;
 			if (params.rotationAnchor) {

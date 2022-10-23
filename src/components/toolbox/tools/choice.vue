@@ -82,7 +82,6 @@ export default defineComponent({
 			return obj as IChoices;
 		},
 		autoWrap: setable('autoWrap', 'panels/setAutoWrapping'),
-		// eslint-disable-next-line @typescript-eslint/camelcase
 		buttonText: simpleButtonSettable('text'),
 		buttons(): DeepReadonly<IChoice[]> {
 			return this.object.choices;

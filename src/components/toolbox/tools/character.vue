@@ -121,7 +121,7 @@ export default defineComponent({
 			return getData(this.$store, this.object);
 		},
 		label(): string {
-			return this.charData.label || '';
+			return this.charData.label ?? '';
 		},
 		parts(): DeepReadonly<string[]> {
 			return getParts(this.charData, this.object);

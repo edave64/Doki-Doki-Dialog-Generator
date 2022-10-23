@@ -114,7 +114,7 @@ export default defineComponent({
 		},
 	},
 	computed: {
-		pack(): DeepReadonly<Pack> {
+		pack(): DeepReadonly<Pack | null> {
 			return this.repo!.getPack(this.selected);
 		},
 		backgroundImage(): string {
@@ -144,7 +144,7 @@ export default defineComponent({
 			set(val: boolean): void {
 				let loadId = this.selected;
 				const pack = this.pack;
-				if (pack && pack.repoUrl) loadId += `;${pack.repoUrl}`;
+				if (pack && pack.repoUrl != null) loadId += `;${pack.repoUrl}`;
 				if (val) {
 					environment.autoLoadAdd(loadId);
 				} else {
@@ -159,7 +159,7 @@ export default defineComponent({
 		},
 		authorName(authorId: string) {
 			const author = this.repo!.getAuthor(authorId);
-			if (author && author.currentName) return author.currentName;
+			if (author && author.currentName != null) return author.currentName;
 			return authorId;
 		},
 		authorsLinks(authorId: string): AuthorLink[] {

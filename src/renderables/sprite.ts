@@ -48,6 +48,6 @@ export class Sprite extends AssetListRenderable<ISprite> {
 		readyResolve();
 	}
 	protected getAssetList(): (IDrawAssets | IDrawAssetsUnloaded)[] {
-		return this.assets || [];
+		return this.assets ?? [];
 	}
 }

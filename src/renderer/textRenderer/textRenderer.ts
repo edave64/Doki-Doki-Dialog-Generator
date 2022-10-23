@@ -208,7 +208,9 @@ export class TextRenderer {
 			}
 		}
 
-		const lastPart = this.renderParts[lastChar] as IDrawCharacterItem;
+		const lastPart = this.renderParts[lastChar] as
+			| IDrawCharacterItem
+			| undefined;
 		if (lastPart && state === State.Star) {
 			this.renderParts.splice(lastChar + 1, 0, {
 				type: 'character',

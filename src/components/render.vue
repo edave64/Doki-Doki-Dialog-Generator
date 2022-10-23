@@ -100,17 +100,17 @@ export default defineComponent({
 				const oldUrl = this.$store.state.ui.lastDownload;
 
 				this.$store.commit('ui/setLastDownload', url);
-				if (oldUrl) {
+				if (oldUrl != null) {
 					URL.revokeObjectURL(oldUrl);
 				}
 			});
 		},
 		invalidateRender() {
-			if (this.queuedRender) return;
+			if (this.queuedRender != null) return;
 			this.queuedRender = requestAnimationFrame(() => this.render_());
 		},
 		async render_(): Promise<void> {
-			if (this.queuedRender) {
+			if (this.queuedRender != null) {
 				cancelAnimationFrame(this.queuedRender);
 				this.queuedRender = null;
 			}
@@ -121,7 +121,6 @@ export default defineComponent({
 			this.display();
 		},
 		renderLoadingScreen() {
-			if (!this.sdCtx) return;
 			const loadingScreen = document.createElement('canvas');
 			loadingScreen.height = this.bitmapHeight;
 			loadingScreen.width = this.bitmapWidth;
@@ -143,7 +142,6 @@ export default defineComponent({
 			this.sdCtx!.drawImage(loadingScreen, this.canvasWidth, this.canvasHeight);
 		},
 		display(): void {
-			if (!this.sdCtx) return;
 			this.showingLast = false;
 			this.sceneRender.paintOnto(this.sdCtx, {
 				x: 0,

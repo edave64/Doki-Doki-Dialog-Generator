@@ -69,8 +69,6 @@ export type ObjectTypes =
 	| 'notification'
 	| 'poem';
 
-let lastCopyId = 0;
-
 export const mutations: MutationTree<IPanels> = {
 	create(state, { object }: ICreateObjectMutation) {
 		const panel = state.panels[object.panelId];
@@ -87,7 +85,6 @@ export const mutations: MutationTree<IPanels> = {
 	},
 	addToList(state, command: IAddToListMutation) {
 		const panel = state.panels[command.panelId];
-		const obj = panel.objects[command.id];
 		const collection = command.onTop ? panel.onTopOrder : panel.order;
 		collection.splice(command.position, 0, command.id);
 	},
@@ -192,7 +189,7 @@ export const actions: ActionTree<IPanels, IRootState> = {
 
 			commit('setTalkingOther', {
 				id: otherObject.id,
-				talkingOther: obj.label || '',
+				talkingOther: obj.label ?? '',
 				panelId: command.panelId,
 			} as ISetTextBoxTalkingOtherMutation);
 		}
@@ -298,11 +295,9 @@ export const actions: ActionTree<IPanels, IRootState> = {
 		{ commit, state },
 		{ sourcePanelId, targetPanelId }: ICopyObjectsAction
 	) {
-		const sourceOrders = state.panels[sourcePanelId];
-		if (!sourceOrders) return;
 		const sourcePanel = state.panels[sourcePanelId];
 		const targetPanel = state.panels[targetPanelId];
-		const allSourceIds = [...sourceOrders.onTopOrder, ...sourceOrders.order];
+		const allSourceIds = [...sourcePanel.onTopOrder, ...sourcePanel.order];
 		const transationTable = new Map<IObject['id'], IObject['id']>();
 		let lastObjId = targetPanel.lastObjId;
 		for (const sourceId of allSourceIds) {
@@ -310,7 +305,7 @@ export const actions: ActionTree<IPanels, IRootState> = {
 			transationTable.set(sourceId, targetId);
 		}
 		for (const sourceId of allSourceIds) {
-			const oldObject = state.panels[sourcePanelId].objects[sourceId];
+			const oldObject = sourcePanel.objects[sourceId];
 			const newObject: IObject = JSON.parse(JSON.stringify(oldObject));
 			if ('talkingObjId' in newObject) {
 				const newTextbox = newObject as ITextBox;
@@ -340,14 +335,14 @@ export const actions: ActionTree<IPanels, IRootState> = {
 		const oldObject = state.panels[panelId].objects[id];
 		commit('ui/setClipboard', JSON.stringify(oldObject), { root: true });
 	},
-	pasteObjectFromClipboard({ commit, rootState }) {
-		if (!rootState.ui.clipboard) return;
+	pasteObjectFromClipboard({ commit, state, rootState }) {
+		if (rootState.ui.clipboard == null) return;
 		const oldObject = JSON.parse(rootState.ui.clipboard);
 		commit('create', {
 			object: {
 				...oldObject,
-				id: `copy_${++lastCopyId}`,
-				panelId: rootState.panels.currentPanel,
+				id: state.panels[state.currentPanel].lastObjId + 1,
+				panelId: state.currentPanel,
 			},
 		} as ICreateObjectMutation);
 	},

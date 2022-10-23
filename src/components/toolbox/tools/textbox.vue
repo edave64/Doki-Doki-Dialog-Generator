@@ -173,6 +173,7 @@
 </template>
 
 <script lang="ts">
+import { IObject } from '@/store/objects';
 import {
 	ITextBox,
 	textboxProperty,
@@ -288,8 +289,8 @@ export default defineComponent({
 			};
 		},
 		talkingObjId: {
-			get(): string {
-				return this.object.talkingObjId || '$null$';
+			get(): '$null$' | '$other$' | IObject['id'] {
+				return this.object.talkingObjId ?? '$null$';
 			},
 			set(val: string): void {
 				this.vuexHistory.transaction(() => {
@@ -312,10 +313,10 @@ export default defineComponent({
 		overrideColor: tbSetable('overrideColor'),
 		deriveCustomColors: tbSetable('deriveCustomColors'),
 		customNameboxWidth: tbSetable('customNameboxWidth'),
-		nameList(): [string, string][] {
+		nameList(): [IObject['id'], string][] {
 			const panel = this.currentPanel;
 
-			const ret: [string, string][] = [];
+			const ret: [IObject['id'], string][] = [];
 
 			for (const id of [...panel.order, ...panel.onTopOrder]) {
 				const obj = panel.objects[id];

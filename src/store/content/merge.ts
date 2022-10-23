@@ -44,7 +44,7 @@ export function mergeContentPacks(
 				variants: [...xObj.variants, ...yObj.variants],
 				defaultScale: xObj.defaultScale,
 				hd: xObj.hd,
-				sdVersion: xObj.sdVersion || yObj.sdVersion,
+				sdVersion: xObj.sdVersion ?? yObj.sdVersion,
 			})
 		),
 		colors: mergeIdArrays(
@@ -69,7 +69,7 @@ function mergeBackground<A>(x: Background<A>, y: Background<A>): Background<A> {
 		label: x.label,
 		variants: [...x.variants, ...y.variants],
 		scaling: x.scaling,
-		sdVersion: x.sdVersion || y.sdVersion,
+		sdVersion: x.sdVersion ?? y.sdVersion,
 	};
 }
 
@@ -151,6 +151,7 @@ function mergePose<A>(x: Pose<A>, y: Pose<A>): Pose<A> {
 	const positions: Pose<A>['positions'] = { ...x.positions };
 
 	for (const key in y.positions) {
+		// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 		if (positions[key]) {
 			positions[key] = [...positions[key], ...y.positions[key]] as A[][];
 		} else {
@@ -179,6 +180,7 @@ function mergeHeadCollections<A>(
 	for (const headGroupKey in y) {
 		if (!y.hasOwnProperty(headGroupKey)) continue;
 		const headGroup = y[headGroupKey];
+		// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 		if (ret[headGroupKey]) {
 			const oldHeadGroup = ret[headGroupKey];
 			ret[headGroupKey] = {

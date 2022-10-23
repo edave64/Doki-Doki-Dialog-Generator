@@ -10,8 +10,8 @@ import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 
 const ua = navigator.userAgent;
-var iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
-var webkit = !!ua.match(/WebKit/i);
+const iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
+const webkit = !!ua.match(/WebKit/i);
 
 const mobileSafari = iOS && webkit && !ua.match(/CriOS/i);
 
@@ -80,7 +80,7 @@ export class Browser implements IEnvironment {
 				'Are you sure you want to leave? All your progress will be lost!';
 		});
 
-		this.loadingContentPacksAllowed = new Promise((resolve, reject) => {
+		this.loadingContentPacksAllowed = new Promise((resolve, _reject) => {
 			this.loadContentPacks = () => resolve();
 		});
 
@@ -109,17 +109,17 @@ export class Browser implements IEnvironment {
 			await this.loadingContentPacksAllowed;
 			if (this.creatingDB) await this.creatingDB;
 			if (this.savingEnabled) {
-				const autoload = (await IndexedDBHandler.loadAutoload()) || [];
+				const autoload = (await IndexedDBHandler.loadAutoload()) ?? [];
 				this.state.autoAdd = autoload;
 				const repo = await Repo.getInstance();
 				const packUrls = await Promise.all(
 					autoload.map(async (compoundId) => {
 						const [id, url] = compoundId.split(';', 2) as [string, string?];
-						if (url && !repo.hasPack(id)) {
+						if (url != null && !repo.hasPack(id)) {
 							await repo.loadTempPack(url);
 						}
-						const pack = repo.getPack(id);
-						return pack.dddg2Path || pack.dddg1Path;
+						const pack = repo.getPack(id)!;
+						return pack.dddg2Path ?? pack.dddg1Path;
 					})
 				);
 				await this.vuexHistory!.transaction(async () => {
@@ -288,11 +288,12 @@ export class Browser implements IEnvironment {
 		quality: number
 	): Promise<string> {
 		return new Promise((resolve, reject) => {
-			const canCreateObjectUrl = !!(window.URL && window.URL.createObjectURL);
+			const canCreateObjectUrl =
+				window.URL != null && window.URL.createObjectURL != null;
 			if (!canCreateObjectUrl)
 				return resolve(canvas.toDataURL(format, quality));
 
-			if (canvas.toBlob) {
+			if (canvas.toBlob != null) {
 				canvas.toBlob(
 					(blob) => {
 						if (!blob) {
@@ -328,9 +329,9 @@ export class Browser implements IEnvironment {
 const IndexedDBHandler = {
 	indexedDB: (() => {
 		try {
-			return (window.indexedDB ||
-				(window as any).mozIndexedDB ||
-				(window as any).webkitIndexedDB ||
+			return (window.indexedDB ??
+				(window as any).mozIndexedDB ??
+				(window as any).webkitIndexedDB ??
 				(window as any).msIndexedDB) as IDBFactory;
 		} catch (e) {
 			return null;
@@ -348,7 +349,7 @@ const IndexedDBHandler = {
 	db: null as null | Promise<IDBDatabase>,
 
 	canSave(): boolean {
-		return !!(IndexedDBHandler.indexedDB && window.localStorage);
+		return !!(IndexedDBHandler.indexedDB && window.localStorage != null);
 	},
 
 	// Optimally, this could just check if the database exists. But sadly, that's not standard. So we need to bring

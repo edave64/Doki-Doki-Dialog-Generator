@@ -67,27 +67,10 @@ function paramlessOp(
 	return [
 		name,
 		(style: ITextStyle, parameter?: string) => {
-			if (parameter) {
+			if (parameter != null) {
 				throw new Error(`Operator '${name}' does not take any arguments.`);
 			}
 			return op(style);
-		},
-	];
-}
-
-function numberOp(
-	name: string,
-	op: (style: ITextStyle, param: number) => ITextStyle
-): [string, Command] {
-	return [
-		name,
-		(style: ITextStyle, parameter?: string) => {
-			if (!parameter) throw new Error(`Operator '${name}' needs an argument.`);
-			const num = Number(parameter);
-			if (isNaN(num)) {
-				throw new Error(`Operator '${name}' needs a numeric argument.`);
-			}
-			return op(style, num);
 		},
 	];
 }
@@ -99,7 +82,8 @@ function relativeNumberOp(
 	return [
 		name,
 		(style: ITextStyle, parameter?: string) => {
-			if (!parameter) throw new Error(`Operator '${name}' needs an argument.`);
+			if (parameter == null || parameter == '')
+				throw new Error(`Operator '${name}' needs an argument.`);
 			const relative = parameter[0] === '+' || parameter[0] === '-';
 			const num = Number(parameter);
 			if (isNaN(num)) {

@@ -224,14 +224,9 @@ export default defineComponent({
 			return panelOrder.map((id) => {
 				const panel = this.$store.state.panels.panels[id];
 				const objectOrders = this.$store.state.panels.panels[id];
-				const txtBox = objectOrders
-					? ([] as string[])
-							.concat(objectOrders.order, objectOrders.onTopOrder)
-							.map(
-								(objId) => this.$store.state.panels.panels[id].objects[objId]
-							)
-							.map(this.extractObjectText)
-					: [];
+				const txtBox = [...objectOrders.order, ...objectOrders.onTopOrder]
+					.map((objId) => this.$store.state.panels.panels[id].objects[objId])
+					.map(this.extractObjectText);
 				return {
 					id,
 					image: panel.lastRender,
@@ -411,7 +406,7 @@ export default defineComponent({
 		},
 		getPanelDistibution(): DeepReadonly<IPanel['id'][][]> {
 			const panelOrder = this.getLimitedPanelList();
-			if (isNaN(parseInt(this.ppi))) {
+			if (isNaN(this.ppi)) {
 				this.ppi = 0;
 			}
 			if (this.ppi === 0) return [panelOrder];
@@ -431,7 +426,6 @@ export default defineComponent({
 		},
 		scrollIntoView(ele: HTMLElement) {
 			const parent = ele.parentElement!.parentElement!;
-			const idx = Array.from(ele.parentElement!.children).indexOf(ele);
 			if (this.$store.state.ui.vertical) {
 				parent.scrollTop = ele.offsetTop - parent.clientHeight / 2;
 				parent.scrollLeft = 0;
@@ -455,16 +449,14 @@ export default defineComponent({
 			}
 			return '';
 		},
-		async addNewPanel() {
+		async addNewPanel(): Promise<void> {
 			await this.vuexHistory.transaction(async () => {
 				await this.$store.dispatch('panels/duplicatePanel', {
 					panelId: this.$store.state.panels.currentPanel,
 				} as IDuplicatePanelAction);
 			});
-			// noinspection ES6MissingAwait
-			this.$nextTick(() => {
-				this.moveFocusToActivePanel();
-			});
+			await this.$nextTick();
+			this.moveFocusToActivePanel();
 		},
 		updateCurrentPanel(panelId: IPanel['id']) {
 			this.vuexHistory.transaction(async () => {

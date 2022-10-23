@@ -11,8 +11,8 @@
 				:data-obj-id="obj"
 				@focus="rerender()"
 				@blur="rerender()"
-				@keydown.enter="select(obj)"
-				@keydown.space="select(obj)"
+				@keydown.enter.prevent="select(obj)"
+				@keydown.space.prevent="select(obj)"
 			></div>
 		</div>
 		<div id="container">
@@ -129,7 +129,7 @@ export default defineComponent({
 		preLoading: true,
 		classes: new Set() as Set<string>,
 		classTimeout: null as number | null,
-		_queuedRerender: null as number | null,
+		queuedRerender: null as number | null,
 	}),
 	computed: {
 		isSafari(): boolean {
@@ -154,14 +154,14 @@ export default defineComponent({
 		objects(): Array<IObject['id']> {
 			const panels = this.$store.state.panels;
 			const currentPanel = panels.panels[panels.currentPanel];
-			if (!currentPanel) return [];
+			if (currentPanel == null) return [];
 			return [...currentPanel.order, ...currentPanel.onTopOrder];
 		},
 	},
 	methods: {
 		drawLastDownload(): void {
 			const last = this.$store.state.ui.lastDownload;
-			if (!last) return;
+			if (last == null) return;
 			(this.$refs.render as typeof Render).blendOver(last);
 		},
 		setBlendOver(): void {
@@ -205,17 +205,16 @@ export default defineComponent({
 		},
 		showDialog(search: string | undefined) {
 			this.dialogVisable = true;
-			if (search) {
-				const wait = () => {
-					if (this.$refs.packDialog) {
-						// This strange doubling is to get around the async component wrapper
-						(this.$refs.packDialog as any).setSearch(search);
-					} else {
-						setTimeout(wait, packDialogWaitMs);
-					}
-				};
-				this.$nextTick(wait);
-			}
+			if (search == null) return;
+			const wait = () => {
+				if (this.$refs.packDialog) {
+					// This strange doubling is to get around the async component wrapper
+					(this.$refs.packDialog as any).setSearch(search);
+				} else {
+					setTimeout(wait, packDialogWaitMs);
+				}
+			};
+			this.$nextTick(wait);
 		},
 		showExpressionDialog(e: IShowExpressionDialogEvent) {
 			this.expressionBuilderVisible = true;
@@ -223,9 +222,9 @@ export default defineComponent({
 			this.expressionBuilderHeadGroup = e.headGroup;
 		},
 		rerender() {
-			if (this._queuedRerender) return;
-			this._queuedRerender = requestAnimationFrame(() => {
-				this._queuedRerender = null;
+			if (this.queuedRerender != null) return;
+			this.queuedRerender = requestAnimationFrame(() => {
+				this.queuedRerender = null;
 				eventBus.fire(new InvalidateRenderEvent());
 			});
 		},
@@ -271,10 +270,9 @@ export default defineComponent({
 					this.$store.state.panels.panels[
 						this.$store.state.panels.currentPanel
 					];
-				if (!selectionPanel) return;
 				const selection =
 					selectionPanel.objects[this.$store.state.ui.selection!];
-				if (!selection) return;
+				if (selection == null) return;
 				if (e.key === 'Delete') {
 					this.$store.dispatch('panels/removeObject', {
 						id: selection.id,
@@ -322,11 +320,11 @@ export default defineComponent({
 				let { x, y } = selection;
 				if (e.key === 'ArrowLeft') {
 					x -= e.shiftKey ? 1 : arrowMoveStepSize;
-				} else if (selection && e.key === 'ArrowRight') {
+				} else if (e.key === 'ArrowRight') {
 					x += e.shiftKey ? 1 : arrowMoveStepSize;
-				} else if (selection && e.key === 'ArrowUp') {
+				} else if (e.key === 'ArrowUp') {
 					y -= e.shiftKey ? 1 : arrowMoveStepSize;
-				} else if (selection && e.key === 'ArrowDown') {
+				} else if (e.key === 'ArrowDown') {
 					y += e.shiftKey ? 1 : arrowMoveStepSize;
 				} else {
 					return;
@@ -342,7 +340,7 @@ export default defineComponent({
 		},
 		onKeyup(e: KeyboardEvent) {
 			if (e.key === 'Control') {
-				if (this.classTimeout) clearTimeout(this.classTimeout);
+				if (this.classTimeout != null) clearTimeout(this.classTimeout);
 				this.classTimeout = null;
 				this.classes.delete('ctrl-key');
 				return;
@@ -385,7 +383,12 @@ export default defineComponent({
 			}
 		});
 
-		if (window.matchMedia) {
+		window.addEventListener('resize', this.updateArea);
+		window.removeEventListener('keydown', this.onKeydown);
+		window.addEventListener('keydown', this.onKeydown);
+		window.addEventListener('keyup', this.onKeyup);
+
+		if (window.matchMedia != null) {
 			/* The viewport is less than, or equal to, 700 pixels wide */
 			const matcher = window.matchMedia('(prefers-color-scheme: dark)');
 			this.systemPrefersDarkMode = matcher.matches;
@@ -399,10 +402,6 @@ export default defineComponent({
 		// My best guess is because it runs in a microtask, which have been added in that Version.
 		this.updateArea();
 		Repo.setStore(this.$store);
-		window.addEventListener('resize', this.updateArea);
-		window.removeEventListener('keydown', this.onKeydown);
-		window.addEventListener('keydown', this.onKeydown);
-		window.addEventListener('keyup', this.onKeyup);
 
 		(window as any).app = this;
 		(window as any).store = this.$store;
@@ -440,7 +439,7 @@ export default defineComponent({
 		const settings = await enviroment.loadSettings();
 
 		await this.vuexHistory.transaction(async () => {
-			environment.state.looseTextParsing = settings.looseTextParsing;
+			environment.state.looseTextParsing = settings.looseTextParsing || true;
 			this.$store.commit('ui/setLqRendering', settings.lq ?? false);
 			this.$store.commit('ui/setDarkTheme', settings.darkMode ?? null);
 			this.$store.commit(
@@ -487,7 +486,7 @@ export default defineComponent({
 			await this.$store.commit('ui/setNsfw', settings.nsfw ?? false);
 		});
 	},
-	destroyed(): void {
+	unmounted(): void {
 		window.removeEventListener('keydown', this.onKeydown);
 		window.removeEventListener('keyup', this.onKeyup);
 	},

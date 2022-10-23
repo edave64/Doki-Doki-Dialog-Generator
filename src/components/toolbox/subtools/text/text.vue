@@ -172,7 +172,7 @@ export default defineComponent({
 			const color = this.selectedColor;
 			const colorSelector = this.colorSelector;
 			const apply = () => {
-				const el = this.$refs.textArea as HTMLTextAreaElement;
+				const el = this.$refs.textArea as HTMLTextAreaElement | undefined;
 				if (!el) {
 					this.$nextTick(apply);
 					return;

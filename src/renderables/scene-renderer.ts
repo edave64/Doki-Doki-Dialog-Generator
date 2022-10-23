@@ -33,7 +33,6 @@ export class SceneRenderer {
 		IObject['id'],
 		OffscreenRenderable<IObject>
 	>();
-	private lCurrentlyRendering = false;
 	private renderer: Renderer;
 
 	public constructor(
@@ -63,10 +62,6 @@ export class SceneRenderer {
 		return this.renderer.download(this.renderCallback.bind(this), filename);
 	}
 
-	public get currentlyRendering() {
-		return this.lCurrentlyRendering;
-	}
-
 	public paintOnto(
 		c: CanvasRenderingContext2D,
 		opts: { x: number; y: number; w?: number; h?: number }
@@ -81,47 +76,40 @@ export class SceneRenderer {
 	}
 
 	private async renderCallback(rx: RenderContext): Promise<void> {
-		this.lCurrentlyRendering = true;
-		try {
-			rx.fsCtx.imageSmoothingEnabled = true;
-			rx.fsCtx.imageSmoothingQuality = rx.hq ? 'high' : 'low';
+		rx.fsCtx.imageSmoothingEnabled = true;
+		rx.fsCtx.imageSmoothingQuality = rx.hq ? 'high' : 'low';
 
-			await this.getBackgroundRenderer()?.render(rx);
+		await this.getBackgroundRenderer()?.render(rx);
 
-			const selection = this.store.state.ui.selection;
-			for (const object of this.getRenderObjects()) {
-				object.updatedContent(this.store, this.panelId);
-				const selected = selection === object.id;
-				const focusedObj = document.querySelector(SceneRenderer.FocusProp);
-				const focused =
-					focusedObj?.getAttribute('data-obj-id') === '' + object.id;
-				await object.render(
-					(selected ? SelectedState.Selected : SelectedState.None) +
-						(focused ? SelectedState.Focused : SelectedState.None),
-					rx
-				);
-			}
-			rx.applyFilters([...this.panel.filters]);
-			if (rx.preview) {
-				rx.drawImage({
-					x: 0,
-					y: 0,
-					h: this.canvasHeight,
-					w: this.canvasWidth,
-					composite: 'destination-over',
-					image: await getAsset('backgrounds/transparent'),
-				});
-			}
-		} finally {
-			this.lCurrentlyRendering = false;
+		const selection = this.store.state.ui.selection;
+		for (const object of this.getRenderObjects()) {
+			object.updatedContent(this.store, this.panelId);
+			const selected = selection === object.id;
+			const focusedObj = document.querySelector(SceneRenderer.FocusProp);
+			const focused =
+				focusedObj?.getAttribute('data-obj-id') === '' + object.id;
+			await object.render(
+				(selected ? SelectedState.Selected : SelectedState.None) +
+					(focused ? SelectedState.Focused : SelectedState.None),
+				rx
+			);
+		}
+		rx.applyFilters([...this.panel!.filters]);
+		if (rx.preview) {
+			rx.drawImage({
+				x: 0,
+				y: 0,
+				h: this.canvasHeight,
+				w: this.canvasWidth,
+				composite: 'destination-over',
+				image: await getAsset('backgrounds/transparent'),
+			});
 		}
 	}
 
 	private getRenderObjects(): OffscreenRenderable<IObject>[] {
 		const objectsState = this.store.state.panels.panels[this.panelId];
-		const order = objectsState
-			? [...objectsState.order, ...objectsState.onTopOrder]
-			: [];
+		const order = [...objectsState.order, ...objectsState.onTopOrder];
 		const objects = objectsState.objects;
 		const toUncache = Array.from(this.renderObjectCache.keys()).filter(
 			(id) => !order.includes(id)
@@ -165,12 +153,12 @@ export class SceneRenderer {
 		});
 	}
 
-	private get panel(): DeepReadonly<IPanel> {
+	private get panel(): DeepReadonly<IPanel> | undefined {
 		return this.store.state.panels.panels[this.panelId];
 	}
 
 	private getBackgroundRenderer(): IBackgroundRenderer | null {
-		const panel = this.panel;
+		const panel = this.panel!;
 		switch (panel.background.current) {
 			case 'buildin.static-color':
 				color.color = panel.background.color;
@@ -182,7 +170,6 @@ export class SceneRenderer {
 				const current = lookup.get(panel.background.current);
 				if (!current) return null;
 				const variant = current.variants[panel.background.variant];
-				if (!variant) return null;
 				return new Background(
 					panel.background.current,
 					variant,

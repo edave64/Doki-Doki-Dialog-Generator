@@ -163,7 +163,7 @@ export default defineComponent({
 			return this.$store.state.content.current.sprites;
 		},
 		hasClipboardContent(): boolean {
-			return !!this.$store.state.ui.clipboard;
+			return this.$store.state.ui.clipboard != null;
 		},
 		showSpritesFolder(): boolean {
 			return (environment.supports.openableFolders as ReadonlySet<Folder>).has(
@@ -213,7 +213,7 @@ export default defineComponent({
 		},
 		async uploadFromURL() {
 			const url = prompt('Enter the URL of the image');
-			if (!url) return;
+			if (url == null) return;
 			const lastSegment = url.split('/').slice(-1)[0];
 			this.addNewCustomSprite(lastSegment, url);
 		},

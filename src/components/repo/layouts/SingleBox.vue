@@ -19,12 +19,12 @@
 				@selected="onSelect"
 				@select-search-bar="$refs.searchBar.focus()"
 			/>
-			<div class="ask-download">
+			<div class="ask-download" v-else>
 				Do you want to download the pack from '{{ search }}'?
 				<button @click="add_repo_pack">Add package</button>
 			</div>
 		</div>
-		<div class="page fly-right" v-if="selected">
+		<div class="page fly-right" v-else>
 			<pack-display
 				ref="dialog"
 				class="pack-display"
@@ -46,7 +46,6 @@ import PackDisplay from '../PackDisplay.vue';
 import { defineComponent } from 'vue';
 import { Pack, Repo } from '@/models/repo';
 import { DeepReadonly } from 'ts-essentials';
-import Button from '@/components/toolbox/tools/background/button.vue';
 import eventBus, { VueErrorEvent } from '@/eventbus/event-bus';
 
 export default defineComponent({
@@ -54,7 +53,6 @@ export default defineComponent({
 		SearchBar,
 		List,
 		PackDisplay,
-		Button,
 	},
 	data: () => ({
 		search: '',

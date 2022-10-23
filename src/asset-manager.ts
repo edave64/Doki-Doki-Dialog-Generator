@@ -8,7 +8,7 @@ import environment from './environments/environment';
 import { IAsset } from './render-utils/assets/asset';
 import { ImageAsset } from './render-utils/assets/image-asset';
 
-let webpSupportPromise: Promise<boolean>;
+let webpSupportPromise: Promise<boolean> | undefined;
 
 /**
  * True if the browser supports WebP
@@ -29,7 +29,7 @@ export function isWebPSupported(): Promise<boolean> {
 	}));
 }
 
-let heifSupportPromise: Promise<boolean>;
+let heifSupportPromise: Promise<boolean> | undefined;
 
 /**
  * True if the browser supports HEIF.

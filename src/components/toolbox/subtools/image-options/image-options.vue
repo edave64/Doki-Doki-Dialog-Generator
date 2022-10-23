@@ -363,7 +363,7 @@ export default defineComponent({
 			return ['opacity'];
 		},
 		currentFilter(): DeepReadonly<SpriteFilter> | null {
-			return this.filters[this.currentFilterIdx] || null;
+			return this.filters[this.currentFilterIdx] ?? null;
 		},
 		isPercentFilter(): boolean {
 			const filter = this.currentFilter;

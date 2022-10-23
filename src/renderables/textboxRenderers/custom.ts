@@ -80,8 +80,9 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 
 	public get customColor(): string {
 		if (this.obj.overrideColor) return this.obj.customColor;
-		if (this.refObject && this.refObject.textboxColor)
-			return this.refObject.textboxColor;
+		const refObject = this.refObject;
+		if (refObject != null && refObject.textboxColor != null)
+			return refObject.textboxColor;
 		return textboxDefaultColor;
 	}
 

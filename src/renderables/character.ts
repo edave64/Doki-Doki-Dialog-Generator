@@ -59,11 +59,13 @@ export class Character extends AssetListRenderable<ICharacter> {
 					break;
 				case 'pose-part':
 					const posePosition = pose.positions[renderCommand.part];
+					// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 					if (!posePosition || posePosition.length === 0) {
 						break;
 					}
 					const partAssets =
 						posePosition[this.obj.posePositions[renderCommand.part] || 0];
+					// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 					if (!partAssets) break;
 					drawAssetsUnloaded.push({
 						offset: renderCommand.offset,

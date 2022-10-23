@@ -206,9 +206,9 @@ export default defineComponent({
 
 			this.$nextTick(() => {
 				const header = this.$refs.header as HTMLElement;
-				const element = document.querySelector(
-					'.list tbody .focused'
-				) as HTMLDivElement;
+				const element = document.querySelector('.list tbody .focused') as
+					| HTMLDivElement
+					| undefined;
 
 				const containerHeight =
 					(this.$el as HTMLElement).offsetHeight - header.offsetHeight;

@@ -50,7 +50,7 @@ export default defineComponent({
 			},
 			this.$slots.default!()
 		);
-		if (this.maxSize) {
+		if (this.maxSize !== undefined) {
 			const maxSize =
 				this.maxSize instanceof Array
 					? this.maxSize[this.finalDirection === 'horizontal' ? 0 : 1]

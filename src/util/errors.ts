@@ -18,7 +18,7 @@ export async function safeAsync(name: string, callback: () => Promise<void>) {
 
 function normalizeError(e: any): string {
 	if (e instanceof Error) {
-		if (e.stack) {
+		if (e.stack != null) {
 			const stackLines = e.stack.split('\n');
 			if (stackLines[0].includes(e.name) && stackLines[0].includes(e.message)) {
 				return stackLines[0] + '\n<br />' + stackLines[1];

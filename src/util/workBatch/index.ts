@@ -71,7 +71,7 @@ export class WorkBatch<P, R> {
 		const data = this.pendingData.shift();
 		const idx = this.returnData.length;
 		this.returnData[idx] = undefined;
-		if (!data) return;
+		if (data == null) return;
 		this.currentlyRunning.add(data);
 		const isRunning = () => this.currentlyRunning.has(data);
 		let ret: R | undefined;
@@ -116,7 +116,7 @@ export class WorkBatch<P, R> {
 
 	private reject(e?: Error) {
 		this.state.busy = false;
-		this.state.error = e?.message || null;
+		this.state.error = e?.message ?? null;
 		const returnData = this.returnData;
 		const rejectCurrentRun = this.rejectCurrentRun!;
 		this.reset();

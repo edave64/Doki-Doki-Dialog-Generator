@@ -24,7 +24,7 @@ export default defineComponent({
 		noBaseSize: Boolean,
 		options: {
 			type: Array as PropType<string[]>,
-			default: [],
+			default: [] as string[],
 		},
 	},
 });

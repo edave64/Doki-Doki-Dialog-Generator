@@ -58,8 +58,6 @@ export interface IPanels {
 export const transparentId = 'buildin.transparent';
 export const staticColorId = 'buildin.static-color';
 
-let lastPanelNum = 0;
-
 const previewManager = {
 	panelToUrl: new Map<IPanel['id'], string>(),
 	urlToPanel: new Map<string, IPanel['id'][]>(),
@@ -181,15 +179,9 @@ export default {
 					lastObjId: -1,
 				},
 			} as ICreatePanel);
-			if (!state.panelOrder) {
-				commit('setPanelOrder', {
-					panelOrder: [id],
-				} as ISetPanelOrder);
-			} else {
-				commit('setPanelOrder', {
-					panelOrder: [...state.panelOrder, id],
-				} as ISetPanelOrder);
-			}
+			commit('setPanelOrder', {
+				panelOrder: [...state.panelOrder, id],
+			} as ISetPanelOrder);
 			commit('setCurrentPanel', {
 				panelId: id,
 			} as ISetCurrentPanelMutation);
@@ -210,8 +202,10 @@ export default {
 
 			for (const key in newPanel.objects) {
 				const obj = newPanel.objects[key];
-				newObjects[transationTable.get(+key)!] = obj;
+				const newId = transationTable.get(+key)!;
+				newObjects[newId] = obj;
 				obj.panelId = id;
+				obj.id = newId;
 				if ('talkingObjId' in obj) {
 					const newTextbox = obj as ITextBox;
 					if (
@@ -232,6 +226,10 @@ export default {
 					id,
 					lastObjId,
 					objects: newObjects,
+					order: newPanel.order.map((oldId) => transationTable.get(oldId)),
+					onTopOrder: newPanel.onTopOrder.map((oldId) =>
+						transationTable.get(oldId)
+					),
 				},
 			} as ICreatePanel);
 			const oldIdx = state.panelOrder.indexOf(panelId);
@@ -265,7 +263,7 @@ export default {
 				),
 			} as ISetVariantMutation);
 		},
-		delete({ state, dispatch, commit }, { panelId }: IDeletePanelAction) {
+		delete({ state, commit }, { panelId }: IDeletePanelAction) {
 			if (state.panelOrder.length <= 1) return;
 			const orderIdx = state.panelOrder.indexOf(panelId);
 			let newOrderIdx;
@@ -304,7 +302,7 @@ export default {
 				).get(panel.background.current);
 
 				if (!newBackground) {
-					if (rootState.content.current.backgrounds[0]) {
+					if (rootState.content.current.backgrounds.length > 0) {
 						commit('setCurrentBackground', {
 							current: rootState.content.current.backgrounds[0].id,
 							panelId: panel.id,

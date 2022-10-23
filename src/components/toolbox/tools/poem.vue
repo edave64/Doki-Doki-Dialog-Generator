@@ -41,7 +41,7 @@ import {
 	IPoemTextStyle,
 } from '@/constants/game_modes/ddlc/poem';
 import { defineComponent } from 'vue';
-import { genericSetable, genericSimpleSetter } from '@/util/simpleSettable';
+import { genericSimpleSetter } from '@/util/simpleSettable';
 import ObjectTool, { Handler } from './object-tool.vue';
 
 const setableP = genericSimpleSetter<IPoem, PoemSimpleProperties>(
