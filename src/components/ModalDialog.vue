@@ -1,6 +1,25 @@
 <template>
-	<div class="dialog-wrapper" @click="$emit('leave')">
-		<dialog open :class="{ 'base-size': !noBaseSize }" @click.stop>
+	<dialog
+		ref="dialog"
+		v-if="nativeDialogs"
+		class="native"
+		:class="{ 'base-size': !noBaseSize }"
+		@cancel="close"
+	>
+		<slot />
+		<div v-if="options.length > 0" id="submit-options">
+			<button
+				v-for="option of options"
+				:key="option"
+				class="option"
+				@click="$emit('option', option)"
+			>
+				{{ option }}
+			</button>
+		</div>
+	</dialog>
+	<div class="dialog-wrapper" @click="$emit('leave')" v-else>
+		<dialog ref="dialog" open :class="{ 'base-size': !noBaseSize }" @click.stop>
 			<slot />
 			<div v-if="options.length > 0" id="submit-options">
 				<button
@@ -19,6 +38,8 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 
+const isDialogSupported = (window as any).HTMLDialogElement != null;
+
 export default defineComponent({
 	props: {
 		noBaseSize: Boolean,
@@ -26,6 +47,56 @@ export default defineComponent({
 			type: Array as PropType<string[]>,
 			default: [] as string[],
 		},
+	},
+	computed: {
+		nativeDialogs() {
+			return isDialogSupported;
+		},
+	},
+	methods: {
+		open() {
+			if (this.nativeDialogs) {
+				const ele = this.$refs.dialog as HTMLDialogElement | undefined;
+				if (ele && !ele.open) {
+					ele.showModal();
+				}
+			}
+			window.addEventListener('click', this.clickSomewhere);
+		},
+		close() {
+			if (this.nativeDialogs) {
+				const ele = this.$refs.dialog as HTMLDialogElement | undefined;
+				if (ele && ele.open) {
+					ele.close();
+				}
+				this.$emit('leave');
+			}
+			window.removeEventListener('click', this.clickSomewhere);
+		},
+		clickSomewhere(e: MouseEvent) {
+			const ele = this.$refs.dialog as HTMLDialogElement | undefined;
+			if (ele && ele.open) {
+				if (e.target === ele) {
+					this.close();
+					e.preventDefault();
+					e.stopPropagation();
+				}
+			} else {
+				window.removeEventListener('click', this.clickSomewhere);
+			}
+		},
+	},
+	mounted() {
+		this.open();
+	},
+	activated() {
+		this.open();
+	},
+	deactivated() {
+		this.close();
+	},
+	unmounted() {
+		this.close();
 	},
 });
 </script>
@@ -41,6 +112,10 @@ export default defineComponent({
 	background: rgba($color: #000000, $alpha: 0.5);
 	display: flex;
 	transition: all 0.15s;
+}
+
+dialog.native::backdrop {
+	background: rgba($color: #000000, $alpha: 0.5);
 }
 
 dialog {

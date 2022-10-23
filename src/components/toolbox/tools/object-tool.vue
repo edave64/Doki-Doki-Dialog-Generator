@@ -18,7 +18,11 @@
 			>
 				<p class="modal-text">Enter the new name</p>
 				<p class="modal-text">
-					<input v-model="modalNameInput" style="width: 100%" />
+					<input
+						v-model="modalNameInput"
+						style="width: 100%"
+						@keydown.enter.prevent.stop="renameOption('Apply')"
+					/>
 				</p>
 			</modal-dialog>
 		</teleport>

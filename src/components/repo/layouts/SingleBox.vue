@@ -79,9 +79,7 @@ export default defineComponent({
 		leavePackDisplay(moveFocus: boolean) {
 			this.selected = null;
 			if (moveFocus) {
-				this.$nextTick(() => {
-					(this.$refs.searchBar as any).focus();
-				});
+				this.focusSearchBar();
 			}
 		},
 		keydownHandler(event: KeyboardEvent) {
@@ -102,7 +100,20 @@ export default defineComponent({
 			}
 		},
 		focusListHandler() {
-			(this.$refs.list as any).focus();
+			this.$nextTick(() => {
+				const list = this.$refs.list as any;
+				if (list) {
+					list.focus();
+				}
+			});
+		},
+		focusSearchBar() {
+			this.$nextTick(() => {
+				const searchBar = this.$refs.searchBar as any;
+				if (searchBar) {
+					searchBar.focus();
+				}
+			});
 		},
 		async add_repo_pack() {
 			try {
@@ -126,14 +137,10 @@ export default defineComponent({
 		this.authors = repo.getAuthors();
 	},
 	activated() {
-		this.$nextTick(() => {
-			(this.$refs.searchBar as any).focus();
-		});
+		this.focusSearchBar();
 	},
 	mounted() {
-		this.$nextTick(() => {
-			(this.$refs.searchBar as any).focus();
-		});
+		this.focusSearchBar();
 	},
 });
 </script>
