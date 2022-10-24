@@ -105,7 +105,7 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 	public async render(selected: SelectedState, rx: RenderContext) {
 		const needRedraw = this.lastHq !== rx.hq || this.needsRedraw();
 
-		if (needRedraw) await this.updateLocalCanvas(!rx.hq);
+		if (needRedraw) await this.updateLocalCanvas(rx.hq);
 
 		this.lastVersion = this.version;
 
