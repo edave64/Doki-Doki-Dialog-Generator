@@ -63,6 +63,7 @@ import {
 	IPasteFromClipboardAction,
 	IRemoveObjectAction,
 	ISetObjectPositionMutation,
+	ISetSpriteRotationMutation,
 } from '@/store/objects';
 import {
 	ICharacter,
@@ -289,6 +290,21 @@ export default defineComponent({
 							panelId: selection.panelId,
 						} as IRemoveObjectAction);
 					}
+					e.preventDefault();
+					return;
+				}
+
+				if (e.key === '/' || e.key === '*') {
+					let delta = e.key === '/' ? -10 : 10;
+					if (e.shiftKey) {
+						delta /= Math.abs(delta);
+					}
+					this.$store.commit('panels/setRotation', {
+						id: selection.id,
+						panelId: selection.panelId,
+						rotation: selection.rotation + delta,
+					} as ISetSpriteRotationMutation);
+					e.stopPropagation();
 					e.preventDefault();
 					return;
 				}
