@@ -317,24 +317,20 @@ export const characterActions: ActionTree<IPanels, IRootState> = {
 		{ panelId, id, x, y }: ISetPositionAction
 	): void {
 		const obj = state.panels[panelId].objects[id] as ICharacter;
-		if (obj.freeMove) {
-			commit('setPosition', {
-				panelId,
-				id,
-				x,
-				y,
-			} as ISetObjectPositionMutation);
-		} else {
+		if (!obj.freeMove) {
 			const constants = getConstants();
-			commit('setPosition', {
-				panelId,
-				id,
-				x: constants.Base.characterPositions[closestCharacterSlot(x)],
-				y:
-					constants.Base.BaseCharacterYPos +
-					(obj.close ? constants.Base.CloseUpYOffset : 0),
-			} as ISetObjectPositionMutation);
+			x = constants.Base.characterPositions[closestCharacterSlot(x)];
+			y =
+				constants.Base.BaseCharacterYPos +
+				(obj.close ? constants.Base.CloseUpYOffset : 0);
 		}
+		if (obj.x === x && obj.y === y) return;
+		commit('setPosition', {
+			panelId,
+			id,
+			x,
+			y,
+		} as ISetObjectPositionMutation);
 	},
 
 	shiftCharacterSlot(
