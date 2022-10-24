@@ -207,7 +207,8 @@ textarea {
 
 .panel:not(.vertical) {
 	> .btn,
-	button {
+	button,
+	.background {
 		width: 12rem;
 	}
 }
