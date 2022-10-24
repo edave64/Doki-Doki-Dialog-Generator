@@ -37,11 +37,21 @@ export class SceneRenderer {
 
 	public constructor(
 		private store: Store<DeepReadonly<IRootState>>,
-		private panelId: IPanel['id'],
+		private _panelId: IPanel['id'],
 		readonly canvasWidth: number,
 		readonly canvasHeight: number
 	) {
 		this.renderer = new Renderer(canvasWidth, canvasHeight);
+	}
+
+	public get panelId(): IPanel['id'] {
+		return this._panelId;
+	}
+
+	public setPanelId(panelId: IPanel['id']): void {
+		if (this._panelId === panelId) return;
+		this._panelId = panelId;
+		this.renderObjectCache.clear();
 	}
 
 	public render(hq: boolean, preview: boolean): Promise<boolean> {
