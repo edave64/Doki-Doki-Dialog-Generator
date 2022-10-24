@@ -77,12 +77,12 @@ export default defineComponent({
 				console.log('New scene renderer!');
 				this.sceneRendererCache = markRaw(
 					new SceneRenderer(
-				this.$store,
+						this.$store,
 						panelId,
-				this.bitmapWidth,
-				this.bitmapHeight
+						this.bitmapWidth,
+						this.bitmapHeight
 					)
-			);
+				);
 			} else {
 				this.sceneRendererCache.setPanelId(panelId);
 			}
@@ -314,6 +314,10 @@ export default defineComponent({
 		},
 	},
 	async created(): Promise<void> {
+		const self = new WeakRef(this);
+		(window as any).getMainSceneRenderer = function () {
+			return self.deref()?.sceneRender;
+		};
 		eventBus.subscribe(InvalidateRenderEvent, () => this.invalidateRender());
 		this.$store.subscribe((mut: MutationPayload) => {
 			if (mut.type === 'panels/setPanelPreview') return;

@@ -167,7 +167,7 @@ import { IObject } from '@/store/objects';
 import { INotification } from '@/store/objectTypes/notification';
 import { IPoem } from '@/store/objectTypes/poem';
 import { IChoices } from '@/store/objectTypes/choices';
-import { defineComponent } from 'vue';
+import { defineComponent, markRaw } from 'vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import DButton from '@/components/ui/d-button.vue';
@@ -203,6 +203,7 @@ export default defineComponent({
 		format: 'image/png',
 		quality: defaultQuality,
 		imageOptions: false,
+		thumbnailCtx: null! as CanvasRenderingContext2D,
 	}),
 	computed: {
 		currentPanel(): DeepReadonly<IPanel> {
@@ -251,6 +252,11 @@ export default defineComponent({
 		},
 	},
 	async created() {
+		const baseConst = getConstants().Base;
+		const targetCanvas = document.createElement('canvas');
+		targetCanvas.width = baseConst.screenWidth * thumbnailFactor;
+		targetCanvas.height = baseConst.screenHeight * thumbnailFactor;
+		this.thumbnailCtx = markRaw(targetCanvas.getContext('2d')!);
 		[this.webpSupport, this.heifSupport] = await Promise.all([
 			isWebPSupported(),
 			isHeifSupported(),
@@ -496,27 +502,27 @@ export default defineComponent({
 		},
 		async renderThumbnail() {
 			await safeAsync('render thumbnail', async () => {
-				const baseConst = getConstants().Base;
-				const sceneRenderer = new SceneRenderer(
-					this.$store,
-					this.currentPanel.id,
-					baseConst.screenWidth,
-					baseConst.screenHeight
-				);
+				// Warning, ugly hack incoming:
+				// getMainSceneRenderer is a bridge set up by renderer.vue, that allows us to
+				// borrow its renderer. It already contains the fully rendered scene, so
+				// we just need to stick it in a thumbnail.
+				// FIXME: This sadly makes it so the selection halo is visible in the thumbnails.
+				//        The renderer will lose that once the panels tab is selected, so maybe delay this?
+				const getMainSceneRenderer: undefined | (() => SceneRenderer | null) = (
+					window as any
+				).getMainSceneRenderer;
+				const sceneRenderer = getMainSceneRenderer && getMainSceneRenderer();
 
-				await sceneRenderer.render(false, true);
+				// Suboptimal. But whatever, it's just a thumbnail...
+				if (!sceneRenderer) return;
 
-				const targetCanvas = document.createElement('canvas');
-				targetCanvas.width = baseConst.screenWidth * thumbnailFactor;
-				targetCanvas.height = baseConst.screenHeight * thumbnailFactor;
-
-				sceneRenderer.paintOnto(targetCanvas.getContext('2d')!, {
+				sceneRenderer.paintOnto(this.thumbnailCtx, {
 					x: 0,
 					y: 0,
-					w: targetCanvas.width,
-					h: targetCanvas.height,
+					w: this.thumbnailCtx.canvas.width,
+					h: this.thumbnailCtx.canvas.height,
 				});
-				targetCanvas.toBlob(
+				this.thumbnailCtx.canvas.toBlob(
 					(blob) => {
 						if (!blob) return;
 						const url = URL.createObjectURL(blob);
