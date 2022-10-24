@@ -33,7 +33,7 @@ import { IObject, ISetObjectPositionMutation } from '@/store/objects';
 import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
 import { SceneRenderer } from '@/renderables/scene-renderer';
 import { DeepReadonly } from 'ts-essentials';
-import { defineComponent } from 'vue';
+import { defineComponent, markRaw } from 'vue';
 import getConstants from '@/constants';
 import { IPanel } from '@/store/panels';
 
@@ -56,6 +56,8 @@ export default defineComponent({
 		dragYOffset: 0,
 		dragXOriginal: 0,
 		dragYOriginal: 0,
+
+		sceneRendererCache: null as SceneRenderer | null,
 	}),
 	computed: {
 		selection(): IObject['id'] | null {
@@ -70,12 +72,21 @@ export default defineComponent({
 			return this.$store.state.ui.lqRendering;
 		},
 		sceneRender(): SceneRenderer {
-			return new SceneRenderer(
+			const panelId = this.$store.state.panels.currentPanel;
+			if (!this.sceneRendererCache) {
+				console.log('New scene renderer!');
+				this.sceneRendererCache = markRaw(
+					new SceneRenderer(
 				this.$store,
-				this.$store.state.panels.currentPanel,
+						panelId,
 				this.bitmapWidth,
 				this.bitmapHeight
+					)
 			);
+			} else {
+				this.sceneRendererCache.setPanelId(panelId);
+			}
+			return this.sceneRendererCache as SceneRenderer;
 		},
 		bitmapHeight(): number {
 			this.preLoading;
