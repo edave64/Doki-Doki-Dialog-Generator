@@ -44,8 +44,8 @@
 					:key="character.id"
 					:title="character.label"
 					@click.left="onChosen(character.id.toLowerCase())"
-					@keypress.enter="onChosen(character.id.toLowerCase())"
-					@keypress.space="onChosen(character.id.toLowerCase())"
+					@keypress.enter.prevent.stop="onChosen(character.id.toLowerCase())"
+					@keypress.space.prevent.stop="onChosen(character.id.toLowerCase())"
 				>
 					<img :src="assetPath(character)" :alt="character.label" />
 				</div>
@@ -60,11 +60,14 @@
 			<template v-if="group === 'sprites'">
 				<div
 					class="sprite"
+					tabindex="0"
 					v-for="sprite of sprites"
 					:key="sprite.label"
 					:title="sprite.label"
 					:style="{ background: assetSpriteBackground(sprite) }"
 					@click="addSpriteToScene(sprite)"
+					@keypress.enter.prevent.stop="addSpriteToScene(sprite)"
+					@keypress.space.prevent.stop="addSpriteToScene(sprite)"
 				>
 					{{ sprite.label }}
 				</div>
