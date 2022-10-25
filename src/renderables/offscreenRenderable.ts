@@ -85,7 +85,7 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 		this.renderable = true;
 		this.localRenderer = new Renderer(width, height);
 		this.lastHq = hq;
-		await this.localRenderer.render(this.renderLocal.bind(this));
+		await this.localRenderer.render(this.renderLocal.bind(this), hq);
 	}
 
 	public needsRedraw(): boolean {
