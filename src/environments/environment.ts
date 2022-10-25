@@ -50,8 +50,6 @@ export interface IEnvironment {
 		format?: string,
 		quality?: number
 	): Promise<string>;
-	installBackground(background: Background): void;
-	uninstallBackground(background: Background): void;
 	updateDownloadFolder(): void;
 	openFolder(folder: Folder): void;
 	prompt(message: string, defaultValue?: string): Promise<string | null>;

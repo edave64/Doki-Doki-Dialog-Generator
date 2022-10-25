@@ -1,6 +1,5 @@
 import { EnvCapabilities, Folder, IEnvironment, Settings } from './environment';
-import { getAsset, registerAssetWithURL } from '@/asset-manager';
-import { Background } from '@/renderables/background';
+import { registerAssetWithURL } from '@/asset-manager';
 import eventBus, {
 	ResolvableErrorEvent,
 	ShowMessageEvent,
@@ -302,40 +301,6 @@ export class Electron implements IEnvironment {
 				quality
 			);
 		});
-	}
-
-	public async installBackground(background: Background): Promise<void> {
-		if (background.assets.length !== 1) return;
-		if (
-			background.assets[0].sourcePack !== 'dddg.buildin.uploadedBackgrounds'
-		) {
-			return;
-		}
-
-		const asset = await getAsset(background.assets[0].hq, true);
-		if (!(asset instanceof HTMLImageElement)) return;
-		const img = await fetch(asset.src);
-		const array = new Uint8Array(await img.arrayBuffer());
-		this.electron.ipcRenderer.send('install-background', array);
-	}
-
-	public async uninstallBackground(background: Background): Promise<void> {
-		if (background.assets.length !== 1) return;
-		if (
-			background.assets[0].sourcePack !== 'dddg.buildin.installedBackgrounds'
-		) {
-			return;
-		}
-
-		const asset = await getAsset(background.assets[0].hq, true);
-		if (!(asset instanceof HTMLImageElement)) return;
-		if (!asset.src.startsWith('blob:')) {
-			const img = await fetch(asset.src);
-			const blob = await img.blob();
-			const newUrl = URL.createObjectURL(blob);
-			await registerAssetWithURL(background.assets[0].hq, newUrl);
-		}
-		this.electron.ipcRenderer.send('uninstall-background', background.id);
 	}
 
 	public async prompt(

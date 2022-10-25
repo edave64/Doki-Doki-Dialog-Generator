@@ -1,5 +1,4 @@
 import { EnvCapabilities, Folder, IEnvironment, Settings } from './environment';
-import { Background } from '@/renderables/background';
 import { EnvState } from './envState';
 import { DeepReadonly, reactive, ref } from 'vue';
 import { Repo } from '@/models/repo';
@@ -188,16 +187,6 @@ export class Browser implements IEnvironment {
 		a.click();
 		document.body.removeChild(a);
 		return url;
-	}
-
-	public installBackground(_background: Background): boolean {
-		throw new Error('This environment does not support installing backgrounds');
-	}
-
-	public uninstallBackground(_background: Background): boolean {
-		throw new Error(
-			'This environment does not support uninstalling backgrounds'
-		);
 	}
 
 	public localRepoInstall(
