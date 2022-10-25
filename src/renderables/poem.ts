@@ -1,7 +1,7 @@
 import { RenderContext } from '@/renderer/rendererContext';
 import { TextRenderer } from '@/renderer/textRenderer/textRenderer';
 import { IPoem } from '@/store/objectTypes/poem';
-import { getAssetByUrl } from '@/asset-manager';
+import { getBuildInAsset } from '@/asset-manager';
 import { ScalingRenderable } from './scalingRenderable';
 import getConstants from '@/constants';
 
@@ -54,7 +54,9 @@ export class Poem extends ScalingRenderable<IPoem> {
 			this._height = this.obj.height;
 			this._width = this.obj.width;
 		} else {
-			const asset = await getAssetByUrl(`assets/poemBackgrounds/${paper.file}`);
+			const asset = await getBuildInAsset(
+				`assets/poemBackgrounds/${paper.file}`
+			);
 			rx.drawImage({
 				image: asset,
 				x: flippedX - asset.width / 2,

@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { getAAsset, getAsset } from '@/asset-manager';
+import { getAAsset, getBuildInAsset } from '@/asset-manager';
 import { IAsset } from '@/render-utils/assets/asset';
 import { ImageAsset } from '@/render-utils/assets/image-asset';
 import { IAssetSwitch } from '@/store/content';
@@ -98,7 +98,7 @@ export default defineComponent({
 		this.lookups = await Promise.all(
 			this.part!.images.map((image) => {
 				if (typeof image.asset === 'string') {
-					return getAsset(image.asset, false);
+					return getBuildInAsset(image.asset, false);
 				} else {
 					return getAAsset(image.asset, false);
 				}

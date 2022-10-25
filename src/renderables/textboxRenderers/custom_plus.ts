@@ -2,7 +2,7 @@ import { ITextboxRenderer } from '../textbox';
 import * as TBConstants from '@/constants/game_modes/ddlc_plus/textBox';
 import { RenderContext } from '@/renderer/rendererContext';
 import getConstants from '@/constants';
-import { getAsset } from '@/asset-manager';
+import { getBuildInAsset } from '@/asset-manager';
 import { roundedRectangle, roundedTopRectangle } from '@/renderer/pathTools';
 import {
 	dotColorDelta,
@@ -300,7 +300,7 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 
 		if (this.obj.continue) {
 			rx.drawImage({
-				image: await getAsset('next_plus'),
+				image: await getBuildInAsset('next_plus'),
 				x: x + w - TBConstants.ArrowXRightOffset,
 				y: bottom - TBConstants.ArrowYBottomOffset,
 			});

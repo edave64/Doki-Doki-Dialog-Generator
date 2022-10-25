@@ -52,9 +52,46 @@ export function isHeifSupported(): Promise<boolean> {
 	}));
 }
 
-const assetCache: {
-	[url: string]: Promise<IAsset> | undefined;
-} = {};
+class AssetCache {
+	private cache = new Map<string, Promise<IAsset>>();
+	get(url: string) {
+		const lookup = this.cache.get(url);
+		if (lookup) return lookup;
+		const promise = imagePromise(url);
+		this.cache.set(url, promise);
+		return promise;
+	}
+
+	remove(url: string) {
+		this.cache.delete(url);
+	}
+}
+
+class TmpAssetCache {
+	private cache = new Map<string, WeakRef<Promise<IAsset>>>();
+	get(url: string) {
+		const lookup = this.cache.get(url)?.deref();
+		if (lookup) return lookup;
+		const promise = requestAssetByUrl(url);
+		this.cache.set(url, new WeakRef(promise));
+		return promise;
+	}
+
+	remove(url: string) {
+		this.cache.delete(url);
+	}
+}
+
+let assetCache: AssetCache | TmpAssetCache | null = null;
+
+function getAssetCache(): AssetCache | TmpAssetCache {
+	if (assetCache) return assetCache;
+	return ((window as any).assetCache = assetCache =
+		environment.supports.assetCaching && typeof WeakRef !== 'undefined'
+			? new AssetCache()
+			: new TmpAssetCache());
+}
+
 const customAssets: { [id: string]: Promise<IAsset> | undefined } = {};
 
 export function getAAsset(
@@ -64,42 +101,20 @@ export function getAAsset(
 	return getAssetByUrl(environment.supports.lq && !hq ? asset.lq : asset.hq);
 }
 
-export async function getAssetByUrl(url: string): Promise<IAsset> {
-	if (assetCache[url]) return assetCache[url]!;
-	return (assetCache[url] = (async (): Promise<IAsset> => {
-		try {
-			return await imagePromise(url);
-		} catch (e) {
-			// Webp files sometimes fail to load on safari. Fallback to png
-			if (url.endsWith('.webp')) {
-				try {
-					return await imagePromise(url.replace(/\.webp$/, '.png'));
-				} catch (e) {
-					EventBus.fire(new AssetFailureEvent(url));
-					assetCache[url] = undefined;
-					return new ErrorAsset();
-				}
-			} else {
-				EventBus.fire(new AssetFailureEvent(url));
-				assetCache[url] = undefined;
-				return new ErrorAsset();
-			}
-		}
-	})());
+export function getAssetByUrl(url: string): Promise<IAsset> {
+	return customAssets[url] || getAssetCache().get(url);
 }
 
 export const baseUrl = (import.meta as any).env.BASE_URL || '.';
 
-export async function getAsset(
+export async function getBuildInAsset(
 	asset: string,
 	hq: boolean = true
 ): Promise<IAsset> {
-	if (customAssets[asset]) return customAssets[asset]!;
-
 	const url = `${baseUrl}/assets/${asset}${hq ? '' : '.lq'}${
 		(await isWebPSupported()) ? '.webp' : '.png'
 	}`.replace(/\/+/, '/');
-	return await getAssetByUrl(url);
+	return await getAssetCache().get(url);
 }
 
 export function registerAsset(asset: string, file: File): string {
@@ -133,14 +148,43 @@ export function registerAssetWithURL(
 	}));
 }
 
+async function requestAssetByUrl(url: string): Promise<IAsset> {
+	return (async (): Promise<IAsset> => {
+		try {
+			return await imagePromise(url);
+		} catch (e) {
+			// Webp files sometimes fail to load on safari. Fallback to png
+			if (url.endsWith('.webp')) {
+				try {
+					return await imagePromise(url.replace(/\.webp$/, '.png'));
+				} catch (e) {
+					EventBus.fire(new AssetFailureEvent(url));
+					getAssetCache().remove(url);
+					return new ErrorAsset();
+				}
+			} else {
+				EventBus.fire(new AssetFailureEvent(url));
+				getAssetCache().remove(url);
+				return new ErrorAsset();
+			}
+		}
+	})();
+}
+
 function imagePromise(url: string): Promise<ImageAsset> {
 	return new Promise((resolve, reject) => {
 		const img = new Image();
 		img.addEventListener('load', () => {
 			resolve(new ImageAsset(img));
+			if (!environment.supports.assetCaching) {
+				document.body.removeChild(img);
+			}
 		});
 		img.addEventListener('error', (e) => {
 			reject(e);
+			if (!environment.supports.assetCaching) {
+				document.body.removeChild(img);
+			}
 		});
 		img.crossOrigin = 'Anonymous';
 		img.src = url;

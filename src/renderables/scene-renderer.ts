@@ -11,7 +11,7 @@ import { ITextBox } from '@/store/objectTypes/textbox';
 import { TextBox } from './textbox';
 import { Choice } from './choices';
 import { RenderContext } from '@/renderer/rendererContext';
-import { getAsset } from '@/asset-manager';
+import { getBuildInAsset } from '@/asset-manager';
 import { Renderer } from '@/renderer/renderer';
 import { BackgroundLookup } from '@/store/content';
 import { IChoices } from '@/store/objectTypes/choices';
@@ -112,7 +112,7 @@ export class SceneRenderer {
 				h: this.canvasHeight,
 				w: this.canvasWidth,
 				composite: 'destination-over',
-				image: await getAsset('backgrounds/transparent'),
+				image: await getBuildInAsset('backgrounds/transparent'),
 			});
 		}
 	}

@@ -3,7 +3,7 @@ import * as TBConstants from '@/constants/game_modes/ddlc/textBox';
 import { DdlcBase } from './ddlc_base';
 import { RenderContext } from '@/renderer/rendererContext';
 import getConstants from '@/constants';
-import { getAsset } from '@/asset-manager';
+import { getBuildInAsset } from '@/asset-manager';
 import { ITextBox } from '@/store/objectTypes/textbox';
 
 export class Default extends DdlcBase implements ITextboxRenderer {
@@ -49,7 +49,7 @@ export class Default extends DdlcBase implements ITextboxRenderer {
 		y: number
 	): Promise<void> {
 		rx.drawImage({
-			image: await getAsset('namebox'),
+			image: await getBuildInAsset('namebox'),
 			x,
 			y,
 		});
@@ -60,7 +60,7 @@ export class Default extends DdlcBase implements ITextboxRenderer {
 		y: number
 	): Promise<void> {
 		x += this.xOffset;
-		const image = await getAsset(this.backgroundImage);
+		const image = await getBuildInAsset(this.backgroundImage);
 		rx.drawImage({ image, x, y });
 	}
 
@@ -88,7 +88,7 @@ export class Default extends DdlcBase implements ITextboxRenderer {
 
 		if (this.obj.continue) {
 			rx.drawImage({
-				image: await getAsset('next'),
+				image: await getBuildInAsset('next'),
 				x: x + w - TBConstants.ArrowXRightOffset,
 				y: bottom - TBConstants.ArrowYBottomOffset,
 			});
