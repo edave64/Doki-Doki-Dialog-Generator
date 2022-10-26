@@ -607,6 +607,7 @@ export default defineComponent({
 	p {
 		color: #fff;
 		height: 60px;
+		overflow: hidden;
 		overflow: clip;
 		text-overflow: ellipsis;
 		position: absolute;
