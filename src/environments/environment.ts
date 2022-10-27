@@ -1,20 +1,13 @@
 import { OldEdge } from './edge';
 import { Browser } from './browser';
 import { Electron } from './electron';
-import { Background } from '@/renderables/background';
 import { EnvState } from './envState';
 import { IHistorySupport } from '@/plugins/vuex-history';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { DeepReadonly } from 'ts-essentials';
 import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
-import { IPack as ICPack } from '@edave64/dddg-repo-filters/dist/pack';
-
-export interface IPack {
-	url: string;
-	id: string;
-	credits: string;
-}
+import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 
 export type Folder = 'downloads' | 'sprites' | 'backgrounds';
 
@@ -55,7 +48,7 @@ export interface IEnvironment {
 	prompt(message: string, defaultValue?: string): Promise<string | null>;
 	onPanelChange(handler: (panel: string) => void): void;
 
-	localRepoInstall(url: string, repo: ICPack, authors: IAuthors): void;
+	localRepoInstall(url: string, repo: IPack, authors: IAuthors): void;
 	localRepoUninstall(id: string): void;
 	autoLoadAdd(id: string): Promise<void>;
 	autoLoadRemove(id: string): Promise<void>;

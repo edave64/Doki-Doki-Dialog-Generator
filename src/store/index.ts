@@ -1,8 +1,7 @@
 import { createStore } from 'vuex';
 import ui, { IUiState } from './ui';
 import panels, { IPanels } from './panels';
-import content, { IContentState, IAssetSwitch } from './content';
-import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import content, { IContentState } from './content';
 
 export interface IRootState {
 	ui: IUiState;

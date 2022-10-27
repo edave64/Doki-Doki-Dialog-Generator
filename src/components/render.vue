@@ -75,6 +75,7 @@ export default defineComponent({
 			const panelId = this.$store.state.panels.currentPanel;
 			if (!this.sceneRendererCache) {
 				console.log('New scene renderer!');
+				// eslint-disable-next-line vue/no-side-effects-in-computed-properties
 				this.sceneRendererCache = markRaw(
 					new SceneRenderer(
 						this.$store,
