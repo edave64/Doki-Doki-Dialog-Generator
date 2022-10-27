@@ -119,7 +119,7 @@ export default defineComponent({
 		},
 		invalidateRender() {
 			if (this.queuedRender != null) return;
-			this.queuedRender = requestAnimationFrame(() => this.render_());
+			this.queuedRender = requestAnimationFrame(this.render_);
 		},
 		async render_(): Promise<void> {
 			if (this.queuedRender != null) {
@@ -129,7 +129,11 @@ export default defineComponent({
 
 			if (this.$store.state.unsafe) return;
 
-			await this.sceneRender.render(!this.lqRendering, true);
+			try {
+				await this.sceneRender.render(!this.lqRendering, true);
+			} catch (e) {
+				console.log(e);
+			}
 			this.display();
 		},
 		renderLoadingScreen() {
@@ -315,10 +319,16 @@ export default defineComponent({
 		},
 	},
 	async created(): Promise<void> {
-		const self = new WeakRef(this);
-		(window as any).getMainSceneRenderer = function () {
-			return self.deref()?.sceneRender;
-		};
+		if (typeof WeakRef !== 'undefined') {
+			const self = new WeakRef(this);
+			(window as any).getMainSceneRenderer = function () {
+				return self.deref()?.sceneRender;
+			};
+		} else {
+			(window as any).getMainSceneRenderer = () => {
+				return this.sceneRender;
+			};
+		}
 		eventBus.subscribe(InvalidateRenderEvent, () => this.invalidateRender());
 		this.$store.subscribe((mut: MutationPayload) => {
 			if (mut.type === 'panels/setPanelPreview') return;
@@ -338,6 +348,7 @@ export default defineComponent({
 
 <style lang="scss">
 canvas {
+	position: fixed;
 	display: block;
 }
 </style>
