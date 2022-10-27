@@ -6060,7 +6060,7 @@ class Browser {
       setDownloadFolder: false,
       openableFolders: /* @__PURE__ */ new Set([]),
       assetCaching: !mobileSafari,
-      allowWebP: !mobileSafari
+      allowWebP: true
     });
     if (canSave) {
       this.loading = (async () => {
@@ -6431,12 +6431,21 @@ let webpSupportPromise;
 function isWebPSupported() {
   if (webpSupportPromise)
     return webpSupportPromise;
-  return webpSupportPromise = new Promise((resolve2, _reject) => {
-    if (!environment.supports.allowWebP) {
-      resolve2(false);
-      return;
-    }
-    const losslessCode = "data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA=";
+  if (!environment.supports.allowWebP) {
+    return Promise.resolve(false);
+  }
+  const losslessCode = "data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA=";
+  const transparentCode = "data:image/webp;base64,UklGRogAAABXRUJQVlA4THwAAAAv/8SzAA/wGbPPmH3GbP7jAQSSNu9f+rzDwYj+G23bpt3Gx3xD8353j73f5b87+e9OALmT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9OAriT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9O/rsTwe7kvzsL";
+  return webpSupportPromise = (async () => {
+    const ret = await Promise.all([
+      canLoadImg(losslessCode),
+      canLoadImg(transparentCode)
+    ]);
+    return ret[0] && ret[1];
+  })();
+}
+function canLoadImg(url, height, width) {
+  return new Promise((resolve2, _reject) => {
     const img = document.createElement("img");
     img.addEventListener("load", () => {
       resolve2(img.width === 2 && img.height === 1);
@@ -6444,7 +6453,7 @@ function isWebPSupported() {
     img.addEventListener("error", () => {
       resolve2(false);
     });
-    img.src = losslessCode;
+    img.src = url;
   });
 }
 let heifSupportPromise;
@@ -6487,11 +6496,12 @@ class TmpAssetCache {
   }
   get(url) {
     var _a;
+    debugger;
     const lookup = (_a = this.cache.get(url)) == null ? void 0 : _a.deref();
     if (lookup)
       return lookup;
     const promise = requestAssetByUrl(url);
-    this.cache.set(url, new WeakRef(promise));
+    this.cache.set(url, new window.WeakRef(promise));
     return promise;
   }
   remove(url) {
@@ -6502,7 +6512,7 @@ let assetCache = null;
 function getAssetCache() {
   if (assetCache)
     return assetCache;
-  return window.assetCache = assetCache = environment.supports.assetCaching && typeof WeakRef !== "undefined" ? new AssetCache() : new TmpAssetCache();
+  return window.assetCache = assetCache = environment.supports.assetCaching || typeof window.WeakRef === "undefined" ? new AssetCache() : new TmpAssetCache();
 }
 const customAssets = {};
 function getAAsset(asset, hq = true) {
@@ -6511,7 +6521,12 @@ function getAAsset(asset, hq = true) {
 function getAssetByUrl(url) {
   return customAssets[url] || getAssetCache().get(url);
 }
-const baseUrl$1 = "./";
+let _baseUrl = ".";
+try {
+  _baseUrl = "./";
+} catch (e) {
+}
+const baseUrl$1 = _baseUrl;
 async function getBuildInAsset(asset, hq = true) {
   const url = `${baseUrl$1}/assets/${asset}${hq ? "" : ".lq"}${await isWebPSupported() ? ".webp" : ".png"}`.replace(/\/+/, "/");
   return await getAssetCache().get(url);
@@ -6572,7 +6587,7 @@ function imagePromise(url) {
       }
     });
     img.addEventListener("error", (e) => {
-      reject(e);
+      reject(new Error(`Failed to load image ${url}`));
       if (!environment.supports.assetCaching) {
         document.body.removeChild(img);
       }
@@ -17925,31 +17940,33 @@ const _sfc_main$6 = defineComponent({
   },
   methods: {
     async download() {
-      const distribution = this.getPanelDistibution();
-      const date = new Date();
-      const prefix = `cd-${[
-        date.getFullYear(),
-        `${date.getMonth() + 1}`.padStart(2, "0"),
-        `${date.getDate()}`.padStart(2, "0"),
-        `${date.getHours()}`.padStart(2, "0"),
-        `${date.getMinutes()}`.padStart(2, "0"),
-        `${date.getSeconds()}`.padStart(2, "0")
-      ].join("-")}`;
-      const extension = this.format.split("/")[1];
-      const format = this.format;
-      const quality = this.quality;
-      await this.renderObjects(
-        distribution,
-        true,
-        async (imageIdx, canvas) => {
-          await environment.saveToFile(
-            canvas,
-            `${prefix}_${imageIdx}.${extension}`,
-            format,
-            quality / qualityFactor
-          );
-        }
-      );
+      await safeAsync("export image", async () => {
+        const distribution = this.getPanelDistibution();
+        const date = new Date();
+        const prefix = `cd-${[
+          date.getFullYear(),
+          `${date.getMonth() + 1}`.padStart(2, "0"),
+          `${date.getDate()}`.padStart(2, "0"),
+          `${date.getHours()}`.padStart(2, "0"),
+          `${date.getMinutes()}`.padStart(2, "0"),
+          `${date.getSeconds()}`.padStart(2, "0")
+        ].join("-")}`;
+        const extension = this.format.split("/")[1];
+        const format = this.format;
+        const quality = this.quality;
+        await this.renderObjects(
+          distribution,
+          true,
+          async (imageIdx, canvas) => {
+            await environment.saveToFile(
+              canvas,
+              `${prefix}_${imageIdx}.${extension}`,
+              format,
+              quality / qualityFactor
+            );
+          }
+        );
+      });
     },
     async estimateExportSize() {
       const distribution = this.getPanelDistibution();
@@ -18192,8 +18209,8 @@ const _sfc_main$6 = defineComponent({
     }
   }
 });
-const panels_vue_vue_type_style_index_0_scoped_5fb888d9_lang = "";
-const _withScopeId$2 = (n) => (pushScopeId("data-v-5fb888d9"), n = n(), popScopeId(), n);
+const panels_vue_vue_type_style_index_0_scoped_120ae40f_lang = "";
+const _withScopeId$2 = (n) => (pushScopeId("data-v-120ae40f"), n = n(), popScopeId(), n);
 const _hoisted_1$6 = { class: "panel" };
 const _hoisted_2$5 = /* @__PURE__ */ _withScopeId$2(() => /* @__PURE__ */ createBaseVNode("h1", null, "Panels", -1));
 const _hoisted_3$4 = ["onClick", "onKeydown"];
@@ -18443,7 +18460,7 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64))
   ]);
 }
-const PanelsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__scopeId", "data-v-5fb888d9"]]);
+const PanelsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__scopeId", "data-v-120ae40f"]]);
 const setableN = genericSimpleSetter("panels/setNotificationProperty");
 const _sfc_main$5 = defineComponent({
   mixins: [PanelMixin],
@@ -18990,7 +19007,7 @@ const _sfc_main$2 = defineComponent({
     }
   }
 });
-const messageConsole_vue_vue_type_style_index_0_scoped_935b4cd3_lang = "";
+const messageConsole_vue_vue_type_style_index_0_scoped_20f42fc5_lang = "";
 const _hoisted_1$2 = { key: 0 };
 const _hoisted_2$1 = ["onClick"];
 const _hoisted_3$1 = ["onClick"];
@@ -19034,7 +19051,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     }), 128))
   ], 2);
 }
-const MessageConsole = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-935b4cd3"]]);
+const MessageConsole = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-20f42fc5"]]);
 const _sfc_main$1 = defineComponent({
   props: {
     canvasWidth: { default: 0 },
@@ -19112,7 +19129,7 @@ const _sfc_main$1 = defineComponent({
     invalidateRender() {
       if (this.queuedRender != null)
         return;
-      this.queuedRender = requestAnimationFrame(() => this.render_());
+      this.queuedRender = requestAnimationFrame(this.render_);
     },
     async render_() {
       if (this.queuedRender != null) {
@@ -19121,7 +19138,11 @@ const _sfc_main$1 = defineComponent({
       }
       if (this.$store.state.unsafe)
         return;
-      await this.sceneRender.render(!this.lqRendering, true);
+      try {
+        await this.sceneRender.render(!this.lqRendering, true);
+      } catch (e) {
+        console.log(e);
+      }
       this.display();
     },
     renderLoadingScreen() {
@@ -19299,11 +19320,17 @@ const _sfc_main$1 = defineComponent({
     }
   },
   async created() {
-    const self2 = new WeakRef(this);
-    window.getMainSceneRenderer = function() {
-      var _a;
-      return (_a = self2.deref()) == null ? void 0 : _a.sceneRender;
-    };
+    if (typeof WeakRef !== "undefined") {
+      const self2 = new WeakRef(this);
+      window.getMainSceneRenderer = function() {
+        var _a;
+        return (_a = self2.deref()) == null ? void 0 : _a.sceneRender;
+      };
+    } else {
+      window.getMainSceneRenderer = () => {
+        return this.sceneRender;
+      };
+    }
     eventBus$1.subscribe(InvalidateRenderEvent, () => this.invalidateRender());
     this.$store.subscribe((mut) => {
       if (mut.type === "panels/setPanelPreview")
@@ -19349,7 +19376,11 @@ const aspectRatio = 16 / 9;
 const arrowMoveStepSize = 20;
 const packDialogWaitMs = 50;
 const canvasTooSmallThreshold = 200;
-const baseUrl = "./";
+let baseUrl = "";
+try {
+  baseUrl = "./";
+} catch (e) {
+}
 const nsfwPacks = {
   "dddg.buildin.backgrounds.nsfw": `${baseUrl}packs/buildin.base.backgrounds.nsfw.json`,
   "dddg.buildin.sayori.nsfw": `${baseUrl}packs/buildin.base.sayori.nsfw.json`,
@@ -19365,10 +19396,10 @@ const _sfc_main = defineComponent({
     Render,
     ModalDialog,
     SingleBox: defineAsyncComponent(
-      () => __vitePreload(() => import("./SingleBox.a60bc7a6.js"), true ? ["SingleBox.a60bc7a6.js","SingleBox.378faf79.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./SingleBox.36d1470b.js"), true ? ["SingleBox.36d1470b.js","SingleBox.378faf79.css"] : void 0, import.meta.url)
     ),
     ExpressionBuilder: defineAsyncComponent(
-      () => __vitePreload(() => import("./index.69197565.js"), true ? ["index.69197565.js","index.cd39748f.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.b263945a.js"), true ? ["index.b263945a.js","index.cd39748f.css"] : void 0, import.meta.url)
     )
   },
   data: () => ({
