@@ -18,8 +18,8 @@ export function isWebPSupported(): Promise<boolean> {
 	if (!environment.supports.allowWebP) {
 		return Promise.resolve(false);
 	}
-		const losslessCode =
-			'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA=';
+	const losslessCode =
+		'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA=';
 	// Safari claims to support webp, but fails to load some of them. This is one such example.
 	const transparentCode =
 		'data:image/webp;base64,UklGRogAAABXRUJQVlA4THwAAAAv/8SzAA/wGbPPmH3GbP7jAQSSNu9f+rzDwYj+G23bpt3Gx3xD8353j73f5b87+e9OALmT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9OAriT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9O/rsTwe7kvzsL';
@@ -205,7 +205,7 @@ function imagePromise(url: string): Promise<ImageAsset> {
 			}
 		});
 		img.addEventListener('error', (e) => {
-			reject(e);
+			reject(new Error(`Failed to load image ${url}`));
 			if (!environment.supports.assetCaching) {
 				document.body.removeChild(img);
 			}

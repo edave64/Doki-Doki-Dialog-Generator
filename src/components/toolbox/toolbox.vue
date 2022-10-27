@@ -230,8 +230,8 @@ export default defineComponent({
 	//noinspection CssOverwrittenProperties
 	border: 3px solid var(--border);
 	display: flex;
+	height: 100%;
 	//overflow: hidden;
-
 	.panel {
 		display: flex;
 		flex-grow: 1;
@@ -260,6 +260,7 @@ export default defineComponent({
 		#toolbar,
 		#toolbar-end {
 			width: 48px;
+			min-width: 48px;
 			height: 100%;
 			display: flex;
 			flex-direction: column;
@@ -308,7 +309,7 @@ export default defineComponent({
 		flex-direction: column;
 		top: 0;
 		right: 0;
-		height: 100vh;
+		height: 100%;
 		width: 192px;
 
 		.panel {
@@ -323,6 +324,7 @@ export default defineComponent({
 		#toolbar,
 		#toolbar-end {
 			width: 100%;
+			min-height: 48px;
 			display: flex;
 
 			button {

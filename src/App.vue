@@ -15,14 +15,12 @@
 				@keydown.space.prevent="select(obj)"
 			></div>
 		</div>
-		<div id="container">
-			<render
-				ref="render"
-				:canvasWidth="canvasWidth"
-				:canvasHeight="canvasHeight"
-				:preLoading="preLoading"
-			/>
-		</div>
+		<render
+			ref="render"
+			:canvasWidth="canvasWidth"
+			:canvasHeight="canvasHeight"
+			:preLoading="preLoading"
+		/>
 		<message-console />
 		<tool-box
 			@show-prev-render="drawLastDownload"

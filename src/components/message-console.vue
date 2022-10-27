@@ -168,6 +168,7 @@ export default defineComponent({
 
 	p {
 		color: #000;
+		word-break: normal;
 	}
 
 	.error {

@@ -20,6 +20,7 @@ export interface EnvCapabilities {
 	lq: boolean;
 	openableFolders: ReadonlySet<Folder>;
 	assetCaching: boolean;
+	allowWebP: boolean;
 }
 
 export interface Settings {

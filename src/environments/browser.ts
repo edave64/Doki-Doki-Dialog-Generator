@@ -94,6 +94,7 @@ export class Browser implements IEnvironment {
 			setDownloadFolder: false,
 			openableFolders: new Set([]),
 			assetCaching: !mobileSafari,
+			allowWebP: true,
 		});
 
 		if (canSave) {
