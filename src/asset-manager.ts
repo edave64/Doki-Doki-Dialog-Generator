@@ -15,9 +15,29 @@ let webpSupportPromise: Promise<boolean> | undefined;
  */
 export function isWebPSupported(): Promise<boolean> {
 	if (webpSupportPromise) return webpSupportPromise;
-	return (webpSupportPromise = new Promise((resolve, _reject) => {
+	if (!environment.supports.allowWebP) {
+		return Promise.resolve(false);
+	}
 		const losslessCode =
 			'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA=';
+	// Safari claims to support webp, but fails to load some of them. This is one such example.
+	const transparentCode =
+		'data:image/webp;base64,UklGRogAAABXRUJQVlA4THwAAAAv/8SzAA/wGbPPmH3GbP7jAQSSNu9f+rzDwYj+G23bpt3Gx3xD8353j73f5b87+e9OALmT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9OAriT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9O/rsTwe7kvzsL';
+	return (webpSupportPromise = (async () => {
+		const ret = await Promise.all([
+			canLoadImg(losslessCode, 1, 2),
+			canLoadImg(transparentCode, 720, 1280),
+		]);
+		return ret[0] && ret[1];
+	})());
+}
+
+function canLoadImg(
+	url: string,
+	height: number,
+	width: number
+): Promise<boolean> {
+	return new Promise((resolve, _reject) => {
 		const img = document.createElement('img');
 		img.addEventListener('load', () => {
 			resolve(img.width === 2 && img.height === 1);
@@ -25,8 +45,8 @@ export function isWebPSupported(): Promise<boolean> {
 		img.addEventListener('error', () => {
 			resolve(false);
 		});
-		img.src = losslessCode;
-	}));
+		img.src = url;
+	});
 }
 
 let heifSupportPromise: Promise<boolean> | undefined;
