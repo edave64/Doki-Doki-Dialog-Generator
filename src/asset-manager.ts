@@ -107,7 +107,7 @@ let assetCache: AssetCache | TmpAssetCache | null = null;
 function getAssetCache(): AssetCache | TmpAssetCache {
 	if (assetCache) return assetCache;
 	return ((window as any).assetCache = assetCache =
-		environment.supports.assetCaching && typeof WeakRef !== 'undefined'
+		environment.supports.assetCaching || typeof WeakRef === 'undefined'
 			? new AssetCache()
 			: new TmpAssetCache());
 }
@@ -125,7 +125,11 @@ export function getAssetByUrl(url: string): Promise<IAsset> {
 	return customAssets[url] || getAssetCache().get(url);
 }
 
-export const baseUrl = (import.meta as any).env.BASE_URL || '.';
+let _baseUrl = '.';
+try {
+	_baseUrl = import.meta.env.BASE_URL || '.';
+} catch (e) {}
+export const baseUrl = _baseUrl;
 
 export async function getBuildInAsset(
 	asset: string,
