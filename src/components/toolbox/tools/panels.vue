@@ -268,31 +268,33 @@ export default defineComponent({
 	},
 	methods: {
 		async download() {
-			const distribution = this.getPanelDistibution();
-			const date = new Date();
-			const prefix = `cd-${[
-				date.getFullYear(),
-				`${date.getMonth() + 1}`.padStart(2, '0'),
-				`${date.getDate()}`.padStart(2, '0'),
-				`${date.getHours()}`.padStart(2, '0'),
-				`${date.getMinutes()}`.padStart(2, '0'),
-				`${date.getSeconds()}`.padStart(2, '0'),
-			].join('-')}`;
-			const extension = this.format.split('/')[1];
-			const format = this.format;
-			const quality = this.quality;
-			await this.renderObjects(
-				distribution,
-				true,
-				async (imageIdx: number, canvas: HTMLCanvasElement) => {
-					await environment.saveToFile(
-						canvas,
-						`${prefix}_${imageIdx}.${extension}`,
-						format,
-						quality / qualityFactor
-					);
-				}
-			);
+			await safeAsync('export image', async () => {
+				const distribution = this.getPanelDistibution();
+				const date = new Date();
+				const prefix = `cd-${[
+					date.getFullYear(),
+					`${date.getMonth() + 1}`.padStart(2, '0'),
+					`${date.getDate()}`.padStart(2, '0'),
+					`${date.getHours()}`.padStart(2, '0'),
+					`${date.getMinutes()}`.padStart(2, '0'),
+					`${date.getSeconds()}`.padStart(2, '0'),
+				].join('-')}`;
+				const extension = this.format.split('/')[1];
+				const format = this.format;
+				const quality = this.quality;
+				await this.renderObjects(
+					distribution,
+					true,
+					async (imageIdx: number, canvas: HTMLCanvasElement) => {
+						await environment.saveToFile(
+							canvas,
+							`${prefix}_${imageIdx}.${extension}`,
+							format,
+							quality / qualityFactor
+						);
+					}
+				);
+			});
 		},
 		async estimateExportSize() {
 			const distribution = this.getPanelDistibution();
