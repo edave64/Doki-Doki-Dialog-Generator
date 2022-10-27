@@ -1,12 +1,35 @@
-var __defProp = Object.defineProperty;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+import { x as reactive, d as defineComponent, _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, s as normalizeStyle, b as withModifiers, y as renderSlot, z as VerticalScrollRedirect, j as ToggleBox, D as DropTarget, A as DFieldset, L, k as envX, B as getAssetByUrl, C as Renderer, E as Character, S as SelectedState, l as resolveComponent, q as createBlock, i as withCtx, F as Fragment, m as createTextVNode, e as createCommentVNode, h as createVNode, r as renderList, n as normalizeClass, w as withDirectives, G as vModelSelect, v as vModelText, p as pushScopeId, g as popScopeId } from "./index.c5460d69.js";
+var __defProp$1 = Object.defineProperty;
+var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => {
-  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$1(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-import { x as reactive, d as defineComponent, _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, s as normalizeStyle, b as withModifiers, y as renderSlot, z as VerticalScrollRedirect, j as ToggleBox, D as DropTarget, A as DFieldset, L, k as environment, B as getAssetByUrl, C as Renderer, E as Character, S as SelectedState, l as resolveComponent, q as createBlock, i as withCtx, F as Fragment, m as createTextVNode, e as createCommentVNode, h as createVNode, r as renderList, n as normalizeClass, w as withDirectives, G as vModelSelect, v as vModelText, p as pushScopeId, g as popScopeId } from "./index.2b609027.js";
+var __async$1 = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 class WorkBatch {
   constructor(runner, disposer, parallel = 4) {
+    this.runner = runner;
+    this.disposer = disposer;
+    this.parallel = parallel;
     __publicField(this, "state", reactive({
       busy: false,
       error: null,
@@ -20,9 +43,6 @@ class WorkBatch {
     __publicField(this, "returnData", []);
     __publicField(this, "remainingDisposers", /* @__PURE__ */ new Set());
     __publicField(this, "runningDisposers", /* @__PURE__ */ new Set());
-    this.runner = runner;
-    this.disposer = disposer;
-    this.parallel = parallel;
   }
   run(newData) {
     if (this.rejectCurrentRun) {
@@ -56,42 +76,46 @@ class WorkBatch {
       this.startDisposer();
     }
   }
-  async startOne() {
-    const data = this.pendingData.shift();
-    const idx = this.returnData.length;
-    this.returnData[idx] = void 0;
-    if (data == null)
-      return;
-    this.currentlyRunning.add(data);
-    const isRunning = () => this.currentlyRunning.has(data);
-    let ret;
-    try {
-      ret = await this.runner(data, isRunning);
-    } catch (e) {
-      this.reject(e);
-    }
-    if (isRunning()) {
-      ++this.state.completed;
-      this.returnData[idx] = ret;
-      this.currentlyRunning.delete(data);
-      if (this.currentlyRunning.size === 0 && this.pendingData.length === 0) {
-        this.resolve();
+  startOne() {
+    return __async$1(this, null, function* () {
+      const data = this.pendingData.shift();
+      const idx = this.returnData.length;
+      this.returnData[idx] = void 0;
+      if (data == null)
+        return;
+      this.currentlyRunning.add(data);
+      const isRunning = () => this.currentlyRunning.has(data);
+      let ret;
+      try {
+        ret = yield this.runner(data, isRunning);
+      } catch (e) {
+        this.reject(e);
       }
-    } else if (ret !== void 0) {
-      this.remainingDisposers.add(ret);
-    }
-    this.restock();
+      if (isRunning()) {
+        ++this.state.completed;
+        this.returnData[idx] = ret;
+        this.currentlyRunning.delete(data);
+        if (this.currentlyRunning.size === 0 && this.pendingData.length === 0) {
+          this.resolve();
+        }
+      } else if (ret !== void 0) {
+        this.remainingDisposers.add(ret);
+      }
+      this.restock();
+    });
   }
-  async startDisposer() {
-    const data = this.remainingDisposers.values().next().value;
-    this.remainingDisposers.delete(data);
-    this.runningDisposers.add(data);
-    try {
-      await this.disposer(data);
-    } catch (e) {
-    }
-    this.runningDisposers.delete(data);
-    this.restock();
+  startDisposer() {
+    return __async$1(this, null, function* () {
+      const data = this.remainingDisposers.values().next().value;
+      this.remainingDisposers.delete(data);
+      this.runningDisposers.add(data);
+      try {
+        yield this.disposer(data);
+      } catch (e) {
+      }
+      this.runningDisposers.delete(data);
+      this.restock();
+    });
   }
   resolve() {
     this.state.busy = false;
@@ -175,6 +199,45 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const Selector = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-5cd45a10"]]);
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+var __async = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const uploadedExpressionsPack = {
   packId: "dddg.buildin.uploadedExpressions",
   dependencies: [],
@@ -270,8 +333,8 @@ const _sfc_main = defineComponent({
     window.exp = this;
     this.batchRunner = new WorkBatch(
       this.processExpression.bind(this),
-      async () => {
-      }
+      () => __async(this, null, function* () {
+      })
     );
     if (this.initHeadGroup != null) {
       this.headGroup = this.availableHeadGroups.find(
@@ -312,167 +375,176 @@ const _sfc_main = defineComponent({
         this.headGroup = this.availableHeadGroups[0];
       }
     },
-    async addByUpload() {
-      const uploadInput = this.$refs.upload;
-      if (!uploadInput.files)
-        return;
-      for (const file of uploadInput.files) {
-        this.addByImageFile(file);
-      }
+    addByUpload() {
+      return __async(this, null, function* () {
+        const uploadInput = this.$refs.upload;
+        if (!uploadInput.files)
+          return;
+        for (const file of uploadInput.files) {
+          this.addByImageFile(file);
+        }
+      });
     },
     addByImageFile(file) {
       const url = URL.createObjectURL(file);
       this.addUrl(url);
     },
-    async addByUrl() {
-      const url = await environment.prompt("Enter the url of the image.", "");
-      if (url == null)
-        return;
-      this.addUrl(url);
+    addByUrl() {
+      return __async(this, null, function* () {
+        const url = yield envX.prompt("Enter the url of the image.", "");
+        if (url == null)
+          return;
+        this.addUrl(url);
+      });
     },
     addUrl(url) {
       this.currentUploadedExpression = url;
       this.uploadedExpressions.push(url);
     },
-    async processExpression(expression, isRunning) {
-      const asset = await getAssetByUrl(expression);
-      if (!isRunning())
-        return void 0;
-      const renderer = new Renderer(
-        asset.width + this.offsetX,
-        asset.height + this.offsetY
-      );
-      const blob = await renderer.renderToBlob(async (rx) => {
-        rx.drawImage({
-          image: asset,
-          x: this.offsetX,
-          y: this.offsetY,
-          w: asset.width,
-          h: asset.height
-        });
-        if (this.addMask && this.headGroup && this.headGroup.imagePatching && this.headGroup.imagePatching.mask != null) {
-          const mask = await getAssetByUrl(this.headGroup.imagePatching.mask);
-          if (!isRunning())
-            return void 0;
-          rx.drawImage({
-            image: mask,
-            x: 0,
-            y: 0,
-            w: mask.width,
-            h: mask.height,
-            composite: "destination-in"
-          });
-        }
-        if (this.addExtras && this.headGroup && this.headGroup.imagePatching && this.headGroup.imagePatching.addition != null) {
-          const addition = await getAssetByUrl(
-            this.headGroup.imagePatching.addition
-          );
-          if (!isRunning())
-            return void 0;
-          rx.drawImage({
-            image: addition,
-            x: 0,
-            y: 0,
-            w: addition.width,
-            h: addition.height
-          });
-        }
-      });
-      const finalExpression = URL.createObjectURL(blob);
-      if (expression !== finalExpression && expression.startsWith("blob:")) {
-        URL.revokeObjectURL(expression);
-      }
-      return finalExpression;
-    },
-    async redraw() {
-      if (this.uploadsFinished)
-        return;
-      const pose = this.previewPoses[this.previewPoseIdx];
-      let charRenderer;
-      try {
-        charRenderer = new Character(
-          {
-            ...charDefDefaults,
-            width: pose.width,
-            height: pose.height,
-            poseId: this.previewPoseIdx,
-            x: pose.width / 2,
-            posePositions: {
-              headGroup: 0,
-              head: this.uploadedExpressions.indexOf(
-                this.currentUploadedExpression
-              )
-            },
-            label: null,
-            textboxColor: null,
-            enlargeWhenTalking: false,
-            nameboxWidth: null,
-            zoom: 1
-          },
-          await this.temporaryCharacterModel
+    processExpression(expression, isRunning) {
+      return __async(this, null, function* () {
+        const asset = yield getAssetByUrl(expression);
+        if (!isRunning())
+          return void 0;
+        const renderer = new Renderer(
+          asset.width + this.offsetX,
+          asset.height + this.offsetY
         );
-      } catch (e) {
-        return;
-      }
-      this.$nextTick(async () => {
+        const blob = yield renderer.renderToBlob((rx) => __async(this, null, function* () {
+          rx.drawImage({
+            image: asset,
+            x: this.offsetX,
+            y: this.offsetY,
+            w: asset.width,
+            h: asset.height
+          });
+          if (this.addMask && this.headGroup && this.headGroup.imagePatching && this.headGroup.imagePatching.mask != null) {
+            const mask = yield getAssetByUrl(this.headGroup.imagePatching.mask);
+            if (!isRunning())
+              return void 0;
+            rx.drawImage({
+              image: mask,
+              x: 0,
+              y: 0,
+              w: mask.width,
+              h: mask.height,
+              composite: "destination-in"
+            });
+          }
+          if (this.addExtras && this.headGroup && this.headGroup.imagePatching && this.headGroup.imagePatching.addition != null) {
+            const addition = yield getAssetByUrl(
+              this.headGroup.imagePatching.addition
+            );
+            if (!isRunning())
+              return void 0;
+            rx.drawImage({
+              image: addition,
+              x: 0,
+              y: 0,
+              w: addition.width,
+              h: addition.height
+            });
+          }
+        }));
+        const finalExpression = URL.createObjectURL(blob);
+        if (expression !== finalExpression && expression.startsWith("blob:")) {
+          URL.revokeObjectURL(expression);
+        }
+        return finalExpression;
+      });
+    },
+    redraw() {
+      return __async(this, null, function* () {
         if (this.uploadsFinished)
           return;
-        const renderer = new Renderer(pose.width, pose.height);
-        await renderer.render(async (rx) => {
-          await charRenderer.render(SelectedState.None, rx);
-        });
-        const target = this.$refs.target;
-        const ctx = target.getContext("2d");
-        ctx.clearRect(0, 0, target.width, target.height);
-        renderer.paintOnto(ctx, {
-          x: 0,
-          y: 0,
-          w: target.width,
-          h: target.height
-        });
+        const pose = this.previewPoses[this.previewPoseIdx];
+        let charRenderer;
+        try {
+          charRenderer = new Character(
+            __spreadProps(__spreadValues({}, charDefDefaults), {
+              width: pose.width,
+              height: pose.height,
+              poseId: this.previewPoseIdx,
+              x: pose.width / 2,
+              posePositions: {
+                headGroup: 0,
+                head: this.uploadedExpressions.indexOf(
+                  this.currentUploadedExpression
+                )
+              },
+              label: null,
+              textboxColor: null,
+              enlargeWhenTalking: false,
+              nameboxWidth: null,
+              zoom: 1
+            }),
+            yield this.temporaryCharacterModel
+          );
+        } catch (e) {
+          return;
+        }
+        this.$nextTick(() => __async(this, null, function* () {
+          if (this.uploadsFinished)
+            return;
+          const renderer = new Renderer(pose.width, pose.height);
+          yield renderer.render((rx) => __async(this, null, function* () {
+            yield charRenderer.render(SelectedState.None, rx);
+          }));
+          const target = this.$refs.target;
+          const ctx = target.getContext("2d");
+          ctx.clearRect(0, 0, target.width, target.height);
+          renderer.paintOnto(ctx, {
+            x: 0,
+            y: 0,
+            w: target.width,
+            h: target.height
+          });
+        }));
       });
     },
-    async finishUpload() {
-      this.uploadsFinished = true;
-      const processedExpressions = (await this.batchRunner.run(this.uploadedExpressions)).filter((exp) => exp);
-      const storeCharacter = this.$store.state.content.current.characters.find(
-        (char) => char.id === this.character
-      );
-      let character = uploadedExpressionsPack.characters.find(
-        (char) => char.id === this.character
-      );
-      if (!character) {
-        character = {
-          id: this.character,
-          heads: {},
-          styleGroups: [],
-          label: "",
-          chibi: "",
-          size: [960, 960],
-          defaultScale: [0.8, 0.8],
-          hd: false
-        };
-        uploadedExpressionsPack.characters.push(character);
-      }
-      let headGroup = character.heads[this.headGroup.name];
-      const storeHeadGroup = storeCharacter.heads[this.headGroup.name];
-      if (!headGroup) {
-        headGroup = {
-          previewSize: storeHeadGroup.previewSize,
-          previewOffset: storeHeadGroup.previewOffset,
-          variants: []
-        };
-        character.heads[this.headGroup.name] = headGroup;
-      }
-      for (const processedExpression of processedExpressions) {
-        headGroup.variants.push([processedExpression]);
-      }
-      await this.vuexHistory.transaction(() => {
-        this.$store.dispatch("content/replaceContentPack", {
-          contentPack: uploadedExpressionsPack
+    finishUpload() {
+      return __async(this, null, function* () {
+        this.uploadsFinished = true;
+        const processedExpressions = (yield this.batchRunner.run(this.uploadedExpressions)).filter((exp) => exp);
+        const storeCharacter = this.$store.state.content.current.characters.find(
+          (char) => char.id === this.character
+        );
+        let character = uploadedExpressionsPack.characters.find(
+          (char) => char.id === this.character
+        );
+        if (!character) {
+          character = {
+            id: this.character,
+            heads: {},
+            styleGroups: [],
+            label: "",
+            chibi: "",
+            size: [960, 960],
+            defaultScale: [0.8, 0.8],
+            hd: false
+          };
+          uploadedExpressionsPack.characters.push(character);
+        }
+        let headGroup = character.heads[this.headGroup.name];
+        const storeHeadGroup = storeCharacter.heads[this.headGroup.name];
+        if (!headGroup) {
+          headGroup = {
+            previewSize: storeHeadGroup.previewSize,
+            previewOffset: storeHeadGroup.previewOffset,
+            variants: []
+          };
+          character.heads[this.headGroup.name] = headGroup;
+        }
+        for (const processedExpression of processedExpressions) {
+          headGroup.variants.push([processedExpression]);
+        }
+        yield this.vuexHistory.transaction(() => {
+          this.$store.dispatch("content/replaceContentPack", {
+            contentPack: uploadedExpressionsPack
+          });
         });
+        this.leave();
       });
-      this.leave();
     },
     leave() {
       this.$emit("leave");
@@ -675,12 +747,11 @@ const _sfc_main = defineComponent({
                       offset: headRenderCommand.offset
                     });
                   }
-                  return {
-                    ...style.poses[pose.poseId],
+                  return __spreadProps(__spreadValues({}, style.poses[pose.poseId]), {
                     renderCommands,
                     id: "dddg.temp1:pose" + idx,
                     compatibleHeads: ["dddg.temp1:default"]
-                  };
+                  });
                 })
               }
             ]

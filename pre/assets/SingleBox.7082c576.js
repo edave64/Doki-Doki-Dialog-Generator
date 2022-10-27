@@ -1,4 +1,4 @@
-import { d as defineComponent, _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, w as withDirectives, v as vModelText, n as normalizeClass, b as withModifiers, e as createCommentVNode, f as createStaticVNode, p as pushScopeId, g as popScopeId, F as Fragment, r as renderList, t as toDisplayString, h as createVNode, i as withCtx, T as TransitionGroup, L, j as ToggleBox, k as environment, l as resolveComponent, m as createTextVNode, q as createBlock, s as normalizeStyle, R as Repo, u as eventBus, V as VueErrorEvent } from "./index.2b609027.js";
+import { d as defineComponent, _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, w as withDirectives, v as vModelText, n as normalizeClass, b as withModifiers, e as createCommentVNode, f as createStaticVNode, p as pushScopeId, g as popScopeId, F as Fragment, r as renderList, t as toDisplayString, h as createVNode, i as withCtx, T as TransitionGroup, L, j as ToggleBox, k as envX, l as resolveComponent, m as createTextVNode, q as createBlock, s as normalizeStyle, R as Repo, u as eventBus, V as VueErrorEvent } from "./index.c5460d69.js";
 const debounce = 250;
 const _sfc_main$3 = defineComponent({
   props: {
@@ -764,6 +764,42 @@ function sanitizeElement(node) {
     return ret;
   }
 }
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __async$1 = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const linkablePlatforms = [
   ["reddit", "https://reddit.com/u/%1", "reddit.png"],
   ["deviantart", "https://www.deviantart.com/%1", "deviantart.png"],
@@ -798,12 +834,12 @@ const _sfc_main$1 = defineComponent({
       return this.pack.preview.map((preview) => `url('${preview}')`).join(",");
     },
     installable() {
-      if (!environment.supports.localRepo)
+      if (!envX.supports.localRepo)
         return false;
       return !this.pack.installed;
     },
     uninstallable() {
-      if (!environment.supports.localRepo)
+      if (!envX.supports.localRepo)
         return false;
       return this.pack.installed;
     },
@@ -814,11 +850,11 @@ const _sfc_main$1 = defineComponent({
       return !this.pack.loaded;
     },
     autoloadEnabled() {
-      return environment.supports.autoLoading;
+      return envX.supports.autoLoading;
     },
     autoload: {
       get() {
-        return environment.state.autoAdd.includes(this.selected);
+        return envX.state.autoAdd.includes(this.selected);
       },
       set(val) {
         let loadId = this.selected;
@@ -826,9 +862,9 @@ const _sfc_main$1 = defineComponent({
         if (pack.repoUrl != null)
           loadId += `;${pack.repoUrl}`;
         if (val) {
-          environment.autoLoadAdd(loadId);
+          envX.autoLoadAdd(loadId);
         } else {
-          environment.autoLoadRemove(loadId);
+          envX.autoLoadRemove(loadId);
         }
       }
     }
@@ -865,39 +901,45 @@ const _sfc_main$1 = defineComponent({
         return;
       const authors = {};
       for (const key of this.pack.authors) {
-        authors[key] = { ...this.repo.getAuthor(key) };
+        authors[key] = __spreadValues({}, this.repo.getAuthor(key));
       }
       const pack = JSON.parse(JSON.stringify(this.pack));
       delete pack.autoloading;
       delete pack.online;
       delete pack.loaded;
       delete pack.installed;
-      environment.localRepoInstall(
+      envX.localRepoInstall(
         this.pack.dddg2Path || this.pack.dddg1Path,
         pack,
         authors
       );
     },
-    async uninstall() {
-      var _a;
-      const pack = this.pack;
-      if (!pack.installed)
-        return;
-      if (pack.repoUrl && !((_a = this.repo) == null ? void 0 : _a.hasPack(pack.id, true))) {
-        await this.repo.loadTempPack(pack.repoUrl);
-      }
-      environment.localRepoUninstall(this.pack.id);
-    },
-    async remove() {
-      await this.$store.dispatch("removePacks", {
-        packs: /* @__PURE__ */ new Set([this.pack.id])
+    uninstall() {
+      return __async$1(this, null, function* () {
+        var _a;
+        const pack = this.pack;
+        if (!pack.installed)
+          return;
+        if (pack.repoUrl && !((_a = this.repo) == null ? void 0 : _a.hasPack(pack.id, true))) {
+          yield this.repo.loadTempPack(pack.repoUrl);
+        }
+        envX.localRepoUninstall(this.pack.id);
       });
     },
-    async add() {
-      await this.$store.dispatch(
-        "content/loadContentPacks",
-        this.pack.dddg2Path || this.pack.dddg1Path
-      );
+    remove() {
+      return __async$1(this, null, function* () {
+        yield this.$store.dispatch("removePacks", {
+          packs: /* @__PURE__ */ new Set([this.pack.id])
+        });
+      });
+    },
+    add() {
+      return __async$1(this, null, function* () {
+        yield this.$store.dispatch(
+          "content/loadContentPacks",
+          this.pack.dddg2Path || this.pack.dddg1Path
+        );
+      });
     }
   }
 });
@@ -1040,6 +1082,26 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   ], 4);
 }
 const PackDisplay = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-e0f6c8f4"]]);
+var __async = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const _sfc_main = defineComponent({
   components: {
     SearchBar,
@@ -1104,26 +1166,30 @@ const _sfc_main = defineComponent({
         }
       });
     },
-    async add_repo_pack() {
-      try {
-        const repo = await Repo.getInstance();
-        const packId = await repo.loadTempPack(this.search);
-        this.search = "";
-        if (packId) {
-          this.selected = packId;
+    add_repo_pack() {
+      return __async(this, null, function* () {
+        try {
+          const repo = yield Repo.getInstance();
+          const packId = yield repo.loadTempPack(this.search);
+          this.search = "";
+          if (packId) {
+            this.selected = packId;
+          }
+        } catch (e) {
+          eventBus.fire(
+            new VueErrorEvent(e, "Error while loading external pack")
+          );
         }
-      } catch (e) {
-        eventBus.fire(
-          new VueErrorEvent(e, "Error while loading external pack")
-        );
-      }
+      });
     }
   },
-  async created() {
-    const repo = await Repo.getInstance();
-    this.repo = repo;
-    this.packs = repo.getPacks();
-    this.authors = repo.getAuthors();
+  created() {
+    return __async(this, null, function* () {
+      const repo = yield Repo.getInstance();
+      this.repo = repo;
+      this.packs = repo.getPacks();
+      this.authors = repo.getAuthors();
+    });
   },
   activated() {
     this.focusSearchBar();

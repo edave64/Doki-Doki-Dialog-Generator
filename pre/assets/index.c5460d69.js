@@ -1,8 +1,22 @@
-var __defProp = Object.defineProperty;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField = (obj, key, value) => {
-  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
+var __async = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
 };
 (function polyfill() {
   const relList = document.createElement("link").relList;
@@ -5767,6 +5781,12 @@ function mitt(n) {
     });
   } };
 }
+var __defProp$M = Object.defineProperty;
+var __defNormalProp$M = (obj, key, value) => key in obj ? __defProp$M(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$r = (obj, key, value) => {
+  __defNormalProp$M(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 const eventBus = mitt();
 const eventBus$1 = {
   fire(event) {
@@ -5781,73 +5801,116 @@ const eventBus$1 = {
 };
 class AssetFailureEvent {
   constructor(path) {
-    __publicField(this, "kind", "AssetFailureEvent");
     this.path = path;
+    __publicField$r(this, "kind", "AssetFailureEvent");
   }
 }
-__publicField(AssetFailureEvent, "kind", "AssetFailureEvent");
+__publicField$r(AssetFailureEvent, "kind", "AssetFailureEvent");
 class FailureEvent {
   constructor(message) {
-    __publicField(this, "kind", "FailureEvent");
     this.message = message;
+    __publicField$r(this, "kind", "FailureEvent");
   }
 }
-__publicField(FailureEvent, "kind", "FailureEvent");
+__publicField$r(FailureEvent, "kind", "FailureEvent");
 class CustomAssetFailureEvent {
   constructor(error2) {
-    __publicField(this, "kind", "CustomAssetFailureEvent");
     this.error = error2;
+    __publicField$r(this, "kind", "CustomAssetFailureEvent");
   }
 }
-__publicField(CustomAssetFailureEvent, "kind", "CustomAssetFailureEvent");
+__publicField$r(CustomAssetFailureEvent, "kind", "CustomAssetFailureEvent");
 class InvalidateRenderEvent {
   constructor() {
-    __publicField(this, "kind", "InvalidateRenderEvent");
+    __publicField$r(this, "kind", "InvalidateRenderEvent");
   }
 }
-__publicField(InvalidateRenderEvent, "kind", "InvalidateRenderEvent");
+__publicField$r(InvalidateRenderEvent, "kind", "InvalidateRenderEvent");
 class ShowMessageEvent {
   constructor(message) {
-    __publicField(this, "kind", "ShowMessageEvent");
     this.message = message;
+    __publicField$r(this, "kind", "ShowMessageEvent");
   }
 }
-__publicField(ShowMessageEvent, "kind", "ShowMessageEvent");
+__publicField$r(ShowMessageEvent, "kind", "ShowMessageEvent");
 class ResolvableErrorEvent {
   constructor(message, actions2) {
-    __publicField(this, "kind", "ResolvableErrorEvent");
     this.message = message;
     this.actions = actions2;
+    __publicField$r(this, "kind", "ResolvableErrorEvent");
   }
 }
-__publicField(ResolvableErrorEvent, "kind", "ResolvableErrorEvent");
+__publicField$r(ResolvableErrorEvent, "kind", "ResolvableErrorEvent");
 class ColorPickedEvent {
   constructor(color2) {
-    __publicField(this, "kind", "ColorPickedEvent");
     this.color = color2;
+    __publicField$r(this, "kind", "ColorPickedEvent");
   }
 }
-__publicField(ColorPickedEvent, "kind", "ColorPickedEvent");
+__publicField$r(ColorPickedEvent, "kind", "ColorPickedEvent");
 class VueErrorEvent {
   constructor(error2, info) {
-    __publicField(this, "kind", "VueErrorEvent");
     this.error = error2;
     this.info = info;
+    __publicField$r(this, "kind", "VueErrorEvent");
   }
 }
-__publicField(VueErrorEvent, "kind", "VueErrorEvent");
+__publicField$r(VueErrorEvent, "kind", "VueErrorEvent");
+var __defProp$L = Object.defineProperty;
+var __defProps$k = Object.defineProperties;
+var __getOwnPropDescs$k = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$r = Object.getOwnPropertySymbols;
+var __hasOwnProp$r = Object.prototype.hasOwnProperty;
+var __propIsEnum$r = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$L = (obj, key, value) => key in obj ? __defProp$L(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$r = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$r.call(b, prop))
+      __defNormalProp$L(a, prop, b[prop]);
+  if (__getOwnPropSymbols$r)
+    for (var prop of __getOwnPropSymbols$r(b)) {
+      if (__propIsEnum$r.call(b, prop))
+        __defNormalProp$L(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$k = (a, b) => __defProps$k(a, __getOwnPropDescs$k(b));
+var __publicField$q = (obj, key, value) => {
+  __defNormalProp$L(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$C = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const repoUrl = "https://edave64.github.io/Doki-Doki-Dialog-Generator-Packs/";
 const _Repo = class {
   constructor(onlineRepo, localRepo, $store) {
-    __publicField(this, "onlineRepo");
-    __publicField(this, "localRepo");
-    __publicField(this, "tempRepo", reactive({
+    this.$store = $store;
+    __publicField$q(this, "onlineRepo");
+    __publicField$q(this, "localRepo");
+    __publicField$q(this, "tempRepo", reactive({
       authors: {},
       packs: []
     }));
-    __publicField(this, "combinedList");
-    __publicField(this, "authors");
-    this.$store = $store;
+    __publicField$q(this, "combinedList");
+    __publicField$q(this, "authors");
     window.repo = this;
     if (!onlineRepo) {
       onlineRepo = { authors: {}, packs: [] };
@@ -5855,7 +5918,7 @@ const _Repo = class {
     }
     if (!localRepo) {
       localRepo = { authors: {}, packs: [] };
-      if (environment.supports.localRepo) {
+      if (envX.supports.localRepo) {
         eventBus$1.fire(new ShowMessageEvent("Couldn't load local repository."));
       }
     }
@@ -5876,7 +5939,7 @@ const _Repo = class {
       const tempRepo = this.tempRepo;
       const tempPacks = tempRepo.packs;
       const tempRepoLookup = new Map(tempPacks.map((pack) => [pack.id, pack]));
-      const autoloads = new Set(environment.state.autoAdd);
+      const autoloads = new Set(envX.state.autoAdd);
       const loadedPackOrder = this.$store.state.content.contentPacks.map((pack) => pack.packId).filter((packId) => packId != null);
       const loadedPacksSet = new Set(loadedPackOrder);
       const addedPacks = /* @__PURE__ */ new Set();
@@ -5894,19 +5957,16 @@ const _Repo = class {
         return true;
       }).map((packId) => {
         var _a2, _b2, _c;
-        return {
-          ...(_a2 = onlineRepoLookup.get(packId)) != null ? _a2 : {
-            characters: [],
-            kind: [],
-            authors: []
-          },
-          ...(_b2 = localRepoLookup.get(packId)) != null ? _b2 : {},
-          ...(_c = tempRepoLookup.get(packId)) != null ? _c : {},
+        return __spreadProps$k(__spreadValues$r(__spreadValues$r(__spreadValues$r({}, (_a2 = onlineRepoLookup.get(packId)) != null ? _a2 : {
+          characters: [],
+          kind: [],
+          authors: []
+        }), (_b2 = localRepoLookup.get(packId)) != null ? _b2 : {}), (_c = tempRepoLookup.get(packId)) != null ? _c : {}), {
           autoloading: autoloads.has(packId),
           installed: localRepoLookup.has(packId),
           online: onlineRepoLookup.has(packId) || tempRepoLookup.has(packId),
           loaded: loadedPacksSet.has(packId)
-        };
+        });
       });
     });
     this.authors = computed(() => {
@@ -5915,10 +5975,7 @@ const _Repo = class {
       const onlineAuthors = (_a = onlineRepo2 == null ? void 0 : onlineRepo2.authors) != null ? _a : {};
       const localRepo2 = this.localRepo.value;
       const localAuthors = (_b = localRepo2 == null ? void 0 : localRepo2.authors) != null ? _b : {};
-      return {
-        ...onlineAuthors,
-        ...localAuthors
-      };
+      return __spreadValues$r(__spreadValues$r({}, onlineAuthors), localAuthors);
     });
     Object.freeze(this);
   }
@@ -5927,35 +5984,43 @@ const _Repo = class {
       _Repo.instance = this.createInstance();
     return _Repo.instance;
   }
-  static async createInstance() {
-    const onlineRepoLoading = _Repo.loadRepo(repoUrl);
-    const localRepoLoading = environment.supports.localRepo ? await _Repo.loadRepo(environment.localRepositoryUrl) : null;
-    const [onlineRepoLoaded, localRepoLoaded, $store] = await Promise.all([
-      onlineRepoLoading,
-      localRepoLoading,
-      _Repo.$store
-    ]);
-    return new _Repo(onlineRepoLoaded, localRepoLoaded, $store);
-  }
-  static async loadRepo(repo) {
-    try {
-      const [packs, authors] = await Promise.all([
-        _Repo.fetchJSON(repo + "repo.json"),
-        _Repo.fetchJSON(repo + "people.json")
+  static createInstance() {
+    return __async$C(this, null, function* () {
+      const onlineRepoLoading = _Repo.loadRepo(repoUrl);
+      const localRepoLoading = envX.supports.localRepo ? yield _Repo.loadRepo(envX.localRepositoryUrl) : null;
+      const [onlineRepoLoaded, localRepoLoaded, $store] = yield Promise.all([
+        onlineRepoLoading,
+        localRepoLoading,
+        _Repo.$store
       ]);
-      return { packs, authors };
-    } catch (e) {
-      return null;
-    }
+      return new _Repo(onlineRepoLoaded, localRepoLoaded, $store);
+    });
   }
-  static async fetchJSON(path) {
-    const req = await fetch(path);
-    if (!req.ok)
-      throw new Error("Could not load json");
-    return await req.json();
+  static loadRepo(repo) {
+    return __async$C(this, null, function* () {
+      try {
+        const [packs, authors] = yield Promise.all([
+          _Repo.fetchJSON(repo + "repo.json"),
+          _Repo.fetchJSON(repo + "people.json")
+        ]);
+        return { packs, authors };
+      } catch (e) {
+        return null;
+      }
+    });
   }
-  async reloadLocalRepo() {
-    this.localRepo.value = environment.supports.localRepo ? await _Repo.loadRepo(environment.localRepositoryUrl) : null;
+  static fetchJSON(path) {
+    return __async$C(this, null, function* () {
+      const req = yield fetch(path);
+      if (!req.ok)
+        throw new Error("Could not load json");
+      return yield req.json();
+    });
+  }
+  reloadLocalRepo() {
+    return __async$C(this, null, function* () {
+      this.localRepo.value = envX.supports.localRepo ? yield _Repo.loadRepo(envX.localRepositoryUrl) : null;
+    });
   }
   getPacks() {
     return this.combinedList.value;
@@ -5977,69 +6042,111 @@ const _Repo = class {
   getAuthors() {
     return this.authors.value;
   }
-  async loadTempPack(url) {
-    const req = fetch(url);
-    let res;
-    try {
-      res = await req;
-    } catch (e) {
-      throw new Error(`Failed to load '${url}'`);
-    }
-    let body;
-    try {
-      body = await res.json();
-    } catch (e) {
-      throw new Error(
-        `The contents of '${url}' is not a valid JSON: ${e.message}`
-      );
-    }
-    if (!body.pack) {
-      throw new Error(`The json file '${url}' does not contain any packages`);
-    }
-    if (body.authors) {
-      for (const key in body.authors) {
-        if (this.tempRepo.authors[key]) {
-          this.tempRepo.authors[key] = body.authors[key];
+  loadTempPack(url) {
+    return __async$C(this, null, function* () {
+      const req = fetch(url);
+      let res;
+      try {
+        res = yield req;
+      } catch (e) {
+        throw new Error(`Failed to load '${url}'`);
+      }
+      let body;
+      try {
+        body = yield res.json();
+      } catch (e) {
+        throw new Error(
+          `The contents of '${url}' is not a valid JSON: ${e.message}`
+        );
+      }
+      if (!body.pack) {
+        throw new Error(`The json file '${url}' does not contain any packages`);
+      }
+      if (body.authors) {
+        for (const key in body.authors) {
+          if (this.tempRepo.authors[key]) {
+            this.tempRepo.authors[key] = body.authors[key];
+          }
         }
       }
-    }
-    const pack = body.pack;
-    pack.repoUrl = url;
-    if (!this.tempRepo.packs.find((x) => x.id === pack.id)) {
-      this.tempRepo.packs.push(pack);
-    }
-    return pack.id;
+      const pack = body.pack;
+      pack.repoUrl = url;
+      if (!this.tempRepo.packs.find((x) => x.id === pack.id)) {
+        this.tempRepo.packs.push(pack);
+      }
+      return pack.id;
+    });
   }
 };
 let Repo = _Repo;
-__publicField(Repo, "instance");
-__publicField(Repo, "setStore");
-__publicField(Repo, "$store", new Promise(
+__publicField$q(Repo, "instance");
+__publicField$q(Repo, "setStore");
+__publicField$q(Repo, "$store", new Promise(
   (resolve2, _reject) => {
     _Repo.setStore = resolve2;
   }
 ));
+var __defProp$K = Object.defineProperty;
+var __getOwnPropSymbols$q = Object.getOwnPropertySymbols;
+var __hasOwnProp$q = Object.prototype.hasOwnProperty;
+var __propIsEnum$q = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$K = (obj, key, value) => key in obj ? __defProp$K(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$q = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$q.call(b, prop))
+      __defNormalProp$K(a, prop, b[prop]);
+  if (__getOwnPropSymbols$q)
+    for (var prop of __getOwnPropSymbols$q(b)) {
+      if (__propIsEnum$q.call(b, prop))
+        __defNormalProp$K(a, prop, b[prop]);
+    }
+  return a;
+};
+var __publicField$p = (obj, key, value) => {
+  __defNormalProp$K(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$B = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const ua = navigator.userAgent;
 const iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
 const webkit = !!ua.match(/WebKit/i);
 const mobileSafari = iOS && webkit && !ua.match(/CriOS/i);
 class Browser {
   constructor() {
-    __publicField(this, "state", reactive({
+    __publicField$p(this, "state", reactive({
       looseTextParsing: true,
       autoAdd: [],
       downloadLocation: "Default download folder"
     }));
-    __publicField(this, "supports");
-    __publicField(this, "_gameMode", null);
-    __publicField(this, "vuexHistory", null);
-    __publicField(this, "$store", null);
-    __publicField(this, "isSavingEnabled", ref(false));
-    __publicField(this, "localRepositoryUrl", "");
-    __publicField(this, "loading");
-    __publicField(this, "creatingDB");
-    __publicField(this, "loadingContentPacksAllowed");
-    __publicField(this, "loadContentPacks");
+    __publicField$p(this, "supports");
+    __publicField$p(this, "_gameMode", null);
+    __publicField$p(this, "vuexHistory", null);
+    __publicField$p(this, "$store", null);
+    __publicField$p(this, "isSavingEnabled", ref(false));
+    __publicField$p(this, "localRepositoryUrl", "");
+    __publicField$p(this, "loading");
+    __publicField$p(this, "creatingDB");
+    __publicField$p(this, "loadingContentPacksAllowed");
+    __publicField$p(this, "loadContentPacks");
     const self2 = this;
     const canSave = IndexedDBHandler.canSave();
     window.addEventListener("beforeunload", function(e) {
@@ -6063,37 +6170,37 @@ class Browser {
       allowWebP: true
     });
     if (canSave) {
-      this.loading = (async () => {
-        this.savingEnabled = await IndexedDBHandler.doesDbExists();
-      })();
+      this.loading = (() => __async$B(this, null, function* () {
+        this.savingEnabled = yield IndexedDBHandler.doesDbExists();
+      }))();
     } else {
       this.loading = Promise.resolve();
     }
-    this.loading.then(async () => {
+    this.loading.then(() => __async$B(this, null, function* () {
       var _a;
-      await this.loadingContentPacksAllowed;
+      yield this.loadingContentPacksAllowed;
       if (this.creatingDB)
-        await this.creatingDB;
+        yield this.creatingDB;
       if (this.savingEnabled) {
-        const autoload = (_a = await IndexedDBHandler.loadAutoload()) != null ? _a : [];
+        const autoload = (_a = yield IndexedDBHandler.loadAutoload()) != null ? _a : [];
         this.state.autoAdd = autoload;
-        const repo = await Repo.getInstance();
-        const packUrls = await Promise.all(
-          autoload.map(async (compoundId) => {
+        const repo = yield Repo.getInstance();
+        const packUrls = yield Promise.all(
+          autoload.map((compoundId) => __async$B(this, null, function* () {
             var _a2;
             const [id, url] = compoundId.split(";", 2);
             if (url != null && !repo.hasPack(id)) {
-              await repo.loadTempPack(url);
+              yield repo.loadTempPack(url);
             }
             const pack = repo.getPack(id);
             return (_a2 = pack.dddg2Path) != null ? _a2 : pack.dddg1Path;
-          })
+          }))
         );
-        await this.vuexHistory.transaction(async () => {
-          await this.$store.dispatch("content/loadContentPacks", packUrls);
-        });
+        yield this.vuexHistory.transaction(() => __async$B(this, null, function* () {
+          yield this.$store.dispatch("content/loadContentPacks", packUrls);
+        }));
       }
-    });
+    }));
   }
   get gameMode() {
     return this._gameMode;
@@ -6119,31 +6226,35 @@ class Browser {
       });
     }
   }
-  async loadGameMode() {
-    const searchParams = new URLSearchParams(location.search);
-    const getMode = searchParams.get("mode");
-    if (getMode === "ddlc" || getMode === "ddlc_plus") {
-      this._gameMode = getMode;
-      return;
-    }
-    await this.loading;
-    await this.creatingDB;
-    let stored = "";
-    if (this.isSavingEnabled.value) {
-      stored = await IndexedDBHandler.loadGameMode();
-    }
-    let value = "ddlc";
-    if (stored === "ddlc" || stored === "ddlc_plus") {
-      value = stored;
-    }
-    this._gameMode = value;
+  loadGameMode() {
+    return __async$B(this, null, function* () {
+      const searchParams = new URLSearchParams(location.search);
+      const getMode = searchParams.get("mode");
+      if (getMode === "ddlc" || getMode === "ddlc_plus") {
+        this._gameMode = getMode;
+        return;
+      }
+      yield this.loading;
+      yield this.creatingDB;
+      let stored = "";
+      if (this.isSavingEnabled.value) {
+        stored = yield IndexedDBHandler.loadGameMode();
+      }
+      let value = "ddlc";
+      if (stored === "ddlc" || stored === "ddlc_plus") {
+        value = stored;
+      }
+      this._gameMode = value;
+    });
   }
-  async setGameMode(mode) {
-    if (this.isSavingEnabled.value) {
-      await IndexedDBHandler.saveGameMode(mode);
-    }
-    const baseLoc = `${location.protocol}//${location.host}${location.pathname}`;
-    location.href = `${baseLoc}?mode=${mode}`;
+  setGameMode(mode) {
+    return __async$B(this, null, function* () {
+      if (this.isSavingEnabled.value) {
+        yield IndexedDBHandler.saveGameMode(mode);
+      }
+      const baseLoc = `${location.protocol}//${location.host}${location.pathname}`;
+      location.href = `${baseLoc}?mode=${mode}`;
+    });
   }
   updateDownloadFolder() {
     throw new Error("Method not implemented.");
@@ -6155,15 +6266,17 @@ class Browser {
     this.vuexHistory = vuexHistory;
     this.$store = store2;
   }
-  async saveToFile(downloadCanvas, filename, format = "image/png", quality = 1) {
-    const a = document.createElement("a");
-    a.setAttribute("download", filename);
-    const url = await this.createObjectURL(downloadCanvas, format, quality);
-    a.setAttribute("href", url);
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    return url;
+  saveToFile(downloadCanvas, filename, format = "image/png", quality = 1) {
+    return __async$B(this, null, function* () {
+      const a = document.createElement("a");
+      a.setAttribute("download", filename);
+      const url = yield this.createObjectURL(downloadCanvas, format, quality);
+      a.setAttribute("href", url);
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      return url;
+    });
   }
   localRepoInstall(_url, _repo, _authors) {
     throw new Error("This environment does not support a local repository");
@@ -6171,21 +6284,25 @@ class Browser {
   localRepoUninstall(_id) {
     throw new Error("This environment does not support a local repository");
   }
-  async autoLoadAdd(id) {
-    await this.loading;
-    await this.creatingDB;
-    await IndexedDBHandler.saveAutoload([...this.state.autoAdd, id]);
-    this.state.autoAdd.push(id);
+  autoLoadAdd(id) {
+    return __async$B(this, null, function* () {
+      yield this.loading;
+      yield this.creatingDB;
+      yield IndexedDBHandler.saveAutoload([...this.state.autoAdd, id]);
+      this.state.autoAdd.push(id);
+    });
   }
-  async autoLoadRemove(id) {
-    await this.loading;
-    await this.creatingDB;
-    const packId = this.normalizePackId(id);
-    await IndexedDBHandler.saveAutoload(
-      this.state.autoAdd.filter((x) => this.normalizePackId(x) != packId)
-    );
-    const idx = this.state.autoAdd.indexOf(id);
-    this.state.autoAdd.splice(idx, 1);
+  autoLoadRemove(id) {
+    return __async$B(this, null, function* () {
+      yield this.loading;
+      yield this.creatingDB;
+      const packId = this.normalizePackId(id);
+      yield IndexedDBHandler.saveAutoload(
+        this.state.autoAdd.filter((x) => this.normalizePackId(x) != packId)
+      );
+      const idx = this.state.autoAdd.indexOf(id);
+      this.state.autoAdd.splice(idx, 1);
+    });
   }
   normalizePackId(id) {
     const parts = id.split(";");
@@ -6194,33 +6311,36 @@ class Browser {
     }
     return parts[parts.length - 1];
   }
-  async loadSettings() {
-    await this.loading;
-    await this.creatingDB;
-    const base = {
-      darkMode: void 0,
-      lq: true,
-      nsfw: false,
-      defaultCharacterTalkingZoom: true,
-      looseTextParsing: true
-    };
-    if (!this.isSavingEnabled.value)
-      return base;
-    return {
-      ...base,
-      ...await IndexedDBHandler.loadSettings()
-    };
+  loadSettings() {
+    return __async$B(this, null, function* () {
+      yield this.loading;
+      yield this.creatingDB;
+      const base = {
+        darkMode: void 0,
+        lq: true,
+        nsfw: false,
+        defaultCharacterTalkingZoom: true,
+        looseTextParsing: true
+      };
+      if (!this.isSavingEnabled.value)
+        return base;
+      return __spreadValues$q(__spreadValues$q({}, base), yield IndexedDBHandler.loadSettings());
+    });
   }
-  async saveSettings(settings) {
-    await this.loading;
-    await this.creatingDB;
-    if (!this.isSavingEnabled.value)
-      return;
-    await IndexedDBHandler.saveSettings(settings);
+  saveSettings(settings) {
+    return __async$B(this, null, function* () {
+      yield this.loading;
+      yield this.creatingDB;
+      if (!this.isSavingEnabled.value)
+        return;
+      yield IndexedDBHandler.saveSettings(settings);
+    });
   }
-  async isInitialized() {
-    await this.loading;
-    await this.creatingDB;
+  isInitialized() {
+    return __async$B(this, null, function* () {
+      yield this.loading;
+      yield this.creatingDB;
+    });
   }
   prompt(message, defaultValue) {
     return new Promise((resolve2, _reject) => {
@@ -6333,47 +6453,47 @@ const IndexedDBHandler = {
     });
   },
   loadAutoload() {
-    return this.objectStorePromise("readonly", async (store2) => {
-      return await this.reqPromise(store2.get("autoload"));
-    });
+    return this.objectStorePromise("readonly", (store2) => __async$B(this, null, function* () {
+      return yield this.reqPromise(store2.get("autoload"));
+    }));
   },
   saveAutoload(autoloads) {
-    return this.objectStorePromise("readwrite", async (store2) => {
-      await this.reqPromise(store2.put([...autoloads], "autoload"));
-    });
+    return this.objectStorePromise("readwrite", (store2) => __async$B(this, null, function* () {
+      yield this.reqPromise(store2.put([...autoloads], "autoload"));
+    }));
   },
   loadGameMode() {
-    return this.objectStorePromise("readonly", async (store2) => {
-      return await this.reqPromise(store2.get("gameMode"));
-    });
+    return this.objectStorePromise("readonly", (store2) => __async$B(this, null, function* () {
+      return yield this.reqPromise(store2.get("gameMode"));
+    }));
   },
   saveGameMode(mode) {
-    return this.objectStorePromise("readwrite", async (store2) => {
-      await this.reqPromise(store2.put(mode, "gameMode"));
-    });
+    return this.objectStorePromise("readwrite", (store2) => __async$B(this, null, function* () {
+      yield this.reqPromise(store2.put(mode, "gameMode"));
+    }));
   },
   saveSettings(settings) {
-    return this.objectStorePromise("readwrite", async (store2) => {
-      await this.reqPromise(store2.put({ ...settings }, "settings"));
-    });
+    return this.objectStorePromise("readwrite", (store2) => __async$B(this, null, function* () {
+      yield this.reqPromise(store2.put(__spreadValues$q({}, settings), "settings"));
+    }));
   },
   loadSettings() {
-    return this.objectStorePromise("readonly", async (store2) => {
-      return await this.reqPromise(store2.get("settings"));
-    });
+    return this.objectStorePromise("readonly", (store2) => __async$B(this, null, function* () {
+      return yield this.reqPromise(store2.get("settings"));
+    }));
   },
   objectStorePromise(mode, callback) {
     if (!this.db)
       return Promise.reject(new Error("No database"));
-    return new Promise(async (resolve2, reject) => {
-      const transact = (await this.db).transaction(["settings"], mode);
+    return new Promise((resolve2, reject) => __async$B(this, null, function* () {
+      const transact = (yield this.db).transaction(["settings"], mode);
       const store2 = transact.objectStore("settings");
       try {
-        resolve2(await callback(store2));
+        resolve2(yield callback(store2));
       } catch (e) {
         reject(e);
       }
-    });
+    }));
   },
   reqPromise(req) {
     return new Promise((resolve2, reject) => {
@@ -6386,63 +6506,136 @@ const IndexedDBHandler = {
     });
   }
 };
+var __async$A = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 class OldEdge extends Browser {
-  async saveToFile(downloadCanvas, filename, format = "image/png", quality = 1) {
-    let url = downloadCanvas.toDataURL(format, quality);
-    const blob = this.dataURItoBlob(url, format);
-    if (window.URL != null && window.URL.createObjectURL != null) {
-      url = URL.createObjectURL(blob);
-    }
-    window.navigator.msSaveBlob(blob, filename);
-    return url;
+  saveToFile(downloadCanvas, filename, format = "image/png", quality = 1) {
+    return __async$A(this, null, function* () {
+      let url = downloadCanvas.toDataURL(format, quality);
+      const blob = this.dataURItoBlob(url, format);
+      if (window.URL != null && window.URL.createObjectURL != null) {
+        url = URL.createObjectURL(blob);
+      }
+      window.navigator.msSaveBlob(blob, filename);
+      return url;
+    });
   }
 }
+var __defProp$J = Object.defineProperty;
+var __defNormalProp$J = (obj, key, value) => key in obj ? __defProp$J(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$o = (obj, key, value) => {
+  __defNormalProp$J(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 class ErrorAsset {
   constructor() {
-    __publicField(this, "width", 0);
-    __publicField(this, "height", 0);
+    __publicField$o(this, "width", 0);
+    __publicField$o(this, "height", 0);
   }
   paintOnto(_fsCtx) {
   }
 }
+var __defProp$I = Object.defineProperty;
+var __getOwnPropSymbols$p = Object.getOwnPropertySymbols;
+var __hasOwnProp$p = Object.prototype.hasOwnProperty;
+var __propIsEnum$p = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$I = (obj, key, value) => key in obj ? __defProp$I(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$p = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$p.call(b, prop))
+      __defNormalProp$I(a, prop, b[prop]);
+  if (__getOwnPropSymbols$p)
+    for (var prop of __getOwnPropSymbols$p(b)) {
+      if (__propIsEnum$p.call(b, prop))
+        __defNormalProp$I(a, prop, b[prop]);
+    }
+  return a;
+};
+var __publicField$n = (obj, key, value) => {
+  __defNormalProp$I(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 class ImageAsset {
   constructor(html) {
-    __publicField(this, "width");
-    __publicField(this, "height");
     this.html = html;
+    __publicField$n(this, "width");
+    __publicField$n(this, "height");
     this.width = html.width;
     this.height = html.height;
   }
   paintOnto(fsCtx, opts = {}) {
-    const { w, h: h2 } = {
+    const { w, h: h2 } = __spreadValues$p({
       w: this.width,
-      h: this.height,
-      ...opts
-    };
-    const { x, y } = {
+      h: this.height
+    }, opts);
+    const { x, y } = __spreadValues$p({
       x: -w / 2,
-      y: -h2 / 2,
-      ...opts
-    };
+      y: -h2 / 2
+    }, opts);
     fsCtx.drawImage(this.html, x, y, w, h2);
   }
 }
+var __defProp$H = Object.defineProperty;
+var __defNormalProp$H = (obj, key, value) => key in obj ? __defProp$H(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$m = (obj, key, value) => {
+  __defNormalProp$H(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$z = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
+const import_meta$1 = {};
 let webpSupportPromise;
 function isWebPSupported() {
   if (webpSupportPromise)
     return webpSupportPromise;
-  if (!environment.supports.allowWebP) {
+  if (!envX.supports.allowWebP) {
     return Promise.resolve(false);
   }
   const losslessCode = "data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA=";
   const transparentCode = "data:image/webp;base64,UklGRogAAABXRUJQVlA4THwAAAAv/8SzAA/wGbPPmH3GbP7jAQSSNu9f+rzDwYj+G23bpt3Gx3xD8353j73f5b87+e9OALmT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9OAriT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9O/rsTwe7kvzsL";
-  return webpSupportPromise = (async () => {
-    const ret = await Promise.all([
+  return webpSupportPromise = (() => __async$z(this, null, function* () {
+    const ret = yield Promise.all([
       canLoadImg(losslessCode),
       canLoadImg(transparentCode)
     ]);
     return ret[0] && ret[1];
-  })();
+  }))();
 }
 function canLoadImg(url, height, width) {
   return new Promise((resolve2, _reject) => {
@@ -6476,7 +6669,7 @@ function isHeifSupported() {
 }
 class AssetCache {
   constructor() {
-    __publicField(this, "cache", /* @__PURE__ */ new Map());
+    __publicField$m(this, "cache", /* @__PURE__ */ new Map());
   }
   get(url) {
     const lookup = this.cache.get(url);
@@ -6492,11 +6685,10 @@ class AssetCache {
 }
 class TmpAssetCache {
   constructor() {
-    __publicField(this, "cache", /* @__PURE__ */ new Map());
+    __publicField$m(this, "cache", /* @__PURE__ */ new Map());
   }
   get(url) {
     var _a;
-    debugger;
     const lookup = (_a = this.cache.get(url)) == null ? void 0 : _a.deref();
     if (lookup)
       return lookup;
@@ -6512,24 +6704,26 @@ let assetCache = null;
 function getAssetCache() {
   if (assetCache)
     return assetCache;
-  return window.assetCache = assetCache = environment.supports.assetCaching || typeof window.WeakRef === "undefined" ? new AssetCache() : new TmpAssetCache();
+  return window.assetCache = assetCache = envX.supports.assetCaching || typeof window.WeakRef === "undefined" ? new AssetCache() : new TmpAssetCache();
 }
 const customAssets = {};
 function getAAsset(asset, hq = true) {
-  return getAssetByUrl(environment.supports.lq && !hq ? asset.lq : asset.hq);
+  return getAssetByUrl(envX.supports.lq && !hq ? asset.lq : asset.hq);
 }
 function getAssetByUrl(url) {
   return customAssets[url] || getAssetCache().get(url);
 }
 let _baseUrl = ".";
 try {
-  _baseUrl = "./";
+  _baseUrl = import_meta$1.env.BASE_URL || ".";
 } catch (e) {
 }
 const baseUrl$1 = _baseUrl;
-async function getBuildInAsset(asset, hq = true) {
-  const url = `${baseUrl$1}/assets/${asset}${hq ? "" : ".lq"}${await isWebPSupported() ? ".webp" : ".png"}`.replace(/\/+/, "/");
-  return await getAssetCache().get(url);
+function getBuildInAsset(asset, hq = true) {
+  return __async$z(this, null, function* () {
+    const url = `${baseUrl$1}/assets/${asset}${hq ? "" : ".lq"}${(yield isWebPSupported()) ? ".webp" : ".png"}`.replace(/\/+/, "/");
+    return yield getAssetCache().get(url);
+  });
 }
 function registerAsset(asset, file) {
   const url = URL.createObjectURL(file);
@@ -6549,46 +6743,48 @@ function registerAssetWithURL(asset, url) {
     img.crossOrigin = "Anonymous";
     img.src = url;
     img.style.display = "none";
-    if (environment.supports.assetCaching) {
+    if (envX.supports.assetCaching) {
       document.body.appendChild(img);
     } else {
       customAssets[asset] = void 0;
     }
   });
 }
-async function requestAssetByUrl(url) {
-  return (async () => {
-    try {
-      return await imagePromise(url);
-    } catch (e) {
-      if (url.endsWith(".webp")) {
-        try {
-          return await imagePromise(url.replace(/\.webp$/, ".png"));
-        } catch (e2) {
+function requestAssetByUrl(url) {
+  return __async$z(this, null, function* () {
+    return (() => __async$z(this, null, function* () {
+      try {
+        return yield imagePromise(url);
+      } catch (e) {
+        if (url.endsWith(".webp")) {
+          try {
+            return yield imagePromise(url.replace(/\.webp$/, ".png"));
+          } catch (e2) {
+            eventBus$1.fire(new AssetFailureEvent(url));
+            getAssetCache().remove(url);
+            return new ErrorAsset();
+          }
+        } else {
           eventBus$1.fire(new AssetFailureEvent(url));
           getAssetCache().remove(url);
           return new ErrorAsset();
         }
-      } else {
-        eventBus$1.fire(new AssetFailureEvent(url));
-        getAssetCache().remove(url);
-        return new ErrorAsset();
       }
-    }
-  })();
+    }))();
+  });
 }
 function imagePromise(url) {
   return new Promise((resolve2, reject) => {
     const img = new Image();
     img.addEventListener("load", () => {
       resolve2(new ImageAsset(img));
-      if (!environment.supports.assetCaching) {
+      if (!envX.supports.assetCaching) {
         document.body.removeChild(img);
       }
     });
     img.addEventListener("error", (e) => {
       reject(new Error(`Failed to load image ${url}`));
-      if (!environment.supports.assetCaching) {
+      if (!envX.supports.assetCaching) {
         document.body.removeChild(img);
       }
     });
@@ -6598,6 +6794,32 @@ function imagePromise(url) {
     document.body.appendChild(img);
   });
 }
+var __defProp$G = Object.defineProperty;
+var __defNormalProp$G = (obj, key, value) => key in obj ? __defProp$G(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$l = (obj, key, value) => {
+  __defNormalProp$G(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$y = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const installedBackgroundsPack = {
   packId: "dddg.buildin.installedBackgrounds",
   dependencies: [],
@@ -6612,22 +6834,22 @@ const installedBackgroundsPack = {
 };
 class Electron {
   constructor() {
-    __publicField(this, "state", reactive({
+    __publicField$l(this, "state", reactive({
       looseTextParsing: true,
       autoAdd: [],
       downloadLocation: ""
     }));
-    __publicField(this, "localRepositoryUrl", "/repo/");
-    __publicField(this, "_gameMode", null);
-    __publicField(this, "electron", window);
-    __publicField(this, "vuexHistory", null);
-    __publicField(this, "$store", null);
-    __publicField(this, "bgInvalidation", null);
-    __publicField(this, "pendingContentPacks", []);
-    __publicField(this, "pendingContentPacksReplace", []);
-    __publicField(this, "loadingContentPacksAllowed");
-    __publicField(this, "loadContentPacks");
-    __publicField(this, "supports", {
+    __publicField$l(this, "localRepositoryUrl", "/repo/");
+    __publicField$l(this, "_gameMode", null);
+    __publicField$l(this, "electron", window);
+    __publicField$l(this, "vuexHistory", null);
+    __publicField$l(this, "$store", null);
+    __publicField$l(this, "bgInvalidation", null);
+    __publicField$l(this, "pendingContentPacks", []);
+    __publicField$l(this, "pendingContentPacksReplace", []);
+    __publicField$l(this, "loadingContentPacksAllowed");
+    __publicField$l(this, "loadContentPacks");
+    __publicField$l(this, "supports", {
       autoLoading: true,
       backgroundInstall: true,
       localRepo: true,
@@ -6638,29 +6860,29 @@ class Electron {
       assetCaching: true,
       allowWebP: true
     });
-    __publicField(this, "savingEnabled", true);
+    __publicField$l(this, "savingEnabled", true);
     this.loadingContentPacksAllowed = new Promise((resolve2, _reject) => {
       this.loadContentPacks = () => resolve2();
     });
     this.electron.ipcRenderer.on(
       "add-persistent-content-pack",
-      async (filePath) => {
-        await this.loadingContentPacksAllowed;
+      (filePath) => __async$y(this, null, function* () {
+        yield this.loadingContentPacksAllowed;
         if (!this.$store || !this.vuexHistory) {
           this.pendingContentPacks.push(filePath);
           return;
         }
-        await this.vuexHistory.transaction(async () => {
-          await this.$store.dispatch("content/loadContentPacks", filePath);
-        });
-      }
+        yield this.vuexHistory.transaction(() => __async$y(this, null, function* () {
+          yield this.$store.dispatch("content/loadContentPacks", filePath);
+        }));
+      })
     );
     this.electron.ipcRenderer.on(
       "add-persistent-background",
-      async (filepath) => {
+      (filepath) => __async$y(this, null, function* () {
         const name = "persistentBg-" + filepath;
         const parts = filepath.split("/");
-        await registerAssetWithURL(name, filepath);
+        yield registerAssetWithURL(name, filepath);
         installedBackgroundsPack.backgrounds.push({
           id: name,
           variants: [[name]],
@@ -6668,52 +6890,52 @@ class Electron {
           scaling: "none"
         });
         this.invalidateInstalledBGs();
-      }
+      })
     );
-    this.electron.ipcRenderer.on("push-message", async (message) => {
+    this.electron.ipcRenderer.on("push-message", (message) => __async$y(this, null, function* () {
       eventBus$1.fire(new ShowMessageEvent(message));
-    });
+    }));
     this.electron.ipcRenderer.on(
       "config.downloadFolderUpdate",
-      async (location2) => {
+      (location2) => __async$y(this, null, function* () {
         this.state.downloadLocation = location2;
-      }
+      })
     );
     this.electron.ipcRenderer.onConversation(
       "load-packs",
-      async (packIds) => {
-        const repo = await Repo.getInstance();
-        const packUrls = await Promise.all(
-          packIds.map(async (compoundId) => {
+      (packIds) => __async$y(this, null, function* () {
+        const repo = yield Repo.getInstance();
+        const packUrls = yield Promise.all(
+          packIds.map((compoundId) => __async$y(this, null, function* () {
             const [id, url] = compoundId.split(";", 2);
             if (url != null && !repo.hasPack(id)) {
-              await repo.loadTempPack(url);
+              yield repo.loadTempPack(url);
             }
             const pack = repo.getPack(id);
             return pack.dddg2Path || pack.dddg1Path;
-          })
+          }))
         );
         if (!this.$store || !this.vuexHistory) {
           packUrls.forEach((url) => this.pendingContentPacks.push(url));
           return;
         }
-        await this.vuexHistory.transaction(async () => {
-          await this.$store.dispatch("content/loadContentPacks", packUrls);
-        });
-      }
+        yield this.vuexHistory.transaction(() => __async$y(this, null, function* () {
+          yield this.$store.dispatch("content/loadContentPacks", packUrls);
+        }));
+      })
     );
     this.electron.ipcRenderer.onConversation(
       "auto-load.changed",
-      async (packIds) => {
+      (packIds) => __async$y(this, null, function* () {
         this.state.autoAdd = packIds;
-      }
+      })
     );
-    this.electron.ipcRenderer.onConversation("reload-repo", async () => {
-      await (await Repo.getInstance()).reloadLocalRepo();
-    });
+    this.electron.ipcRenderer.onConversation("reload-repo", () => __async$y(this, null, function* () {
+      yield (yield Repo.getInstance()).reloadLocalRepo();
+    }));
     this.electron.ipcRenderer.onConversation(
       "replace-pack",
-      async (contentPack) => {
+      (contentPack) => __async$y(this, null, function* () {
         const action = {
           processed: false,
           contentPack
@@ -6721,11 +6943,11 @@ class Electron {
         if (!this.$store || !this.vuexHistory) {
           this.pendingContentPacksReplace.push(action);
         } else {
-          await this.vuexHistory.transaction(async () => {
-            await this.$store.dispatch("content/replaceContentPack", action);
-          });
+          yield this.vuexHistory.transaction(() => __async$y(this, null, function* () {
+            yield this.$store.dispatch("content/replaceContentPack", action);
+          }));
         }
-      }
+      })
     );
     this.electron.ipcRenderer.onConversation(
       "resolvable-error",
@@ -6777,105 +6999,123 @@ class Electron {
   }
   onPanelChange(_handler) {
   }
-  async saveSettings(settings) {
-    var _a;
-    await this.electron.ipcRenderer.sendConvo(
-      "config.set",
-      "nsfw",
-      settings.nsfw
-    );
-    await this.electron.ipcRenderer.sendConvo(
-      "config.set",
-      "darkMode",
-      (_a = settings.darkMode) != null ? _a : void 0
-    );
-    await this.electron.ipcRenderer.sendConvo(
-      "config.set",
-      "defaultCharacterTalkingZoom",
-      settings.defaultCharacterTalkingZoom
-    );
+  saveSettings(settings) {
+    return __async$y(this, null, function* () {
+      var _a;
+      yield this.electron.ipcRenderer.sendConvo(
+        "config.set",
+        "nsfw",
+        settings.nsfw
+      );
+      yield this.electron.ipcRenderer.sendConvo(
+        "config.set",
+        "darkMode",
+        (_a = settings.darkMode) != null ? _a : void 0
+      );
+      yield this.electron.ipcRenderer.sendConvo(
+        "config.set",
+        "defaultCharacterTalkingZoom",
+        settings.defaultCharacterTalkingZoom
+      );
+    });
   }
-  async loadGameMode() {
-    this._gameMode = await this.electron.ipcRenderer.sendConvo("config.get", "gameMode") || "ddlc";
+  loadGameMode() {
+    return __async$y(this, null, function* () {
+      this._gameMode = (yield this.electron.ipcRenderer.sendConvo("config.get", "gameMode")) || "ddlc";
+    });
   }
-  async setGameMode(mode) {
-    await this.electron.ipcRenderer.sendConvo("config.set", "gameMode", mode);
-    this.electron.ipcRenderer.send("reload");
+  setGameMode(mode) {
+    return __async$y(this, null, function* () {
+      yield this.electron.ipcRenderer.sendConvo("config.set", "gameMode", mode);
+      this.electron.ipcRenderer.send("reload");
+    });
   }
-  async loadSettings() {
-    var _a, _b, _c;
-    return {
-      lq: false,
-      nsfw: (_a = await this.electron.ipcRenderer.sendConvo("config.get", "nsfw")) != null ? _a : false,
-      darkMode: (_b = await this.electron.ipcRenderer.sendConvo("config.get", "darkMode")) != null ? _b : void 0,
-      defaultCharacterTalkingZoom: (_c = await this.electron.ipcRenderer.sendConvo(
-        "config.get",
-        "defaultCharacterTalkingZoom"
-      )) != null ? _c : void 0
-    };
+  loadSettings() {
+    return __async$y(this, null, function* () {
+      var _a, _b, _c;
+      return {
+        lq: false,
+        nsfw: (_a = yield this.electron.ipcRenderer.sendConvo("config.get", "nsfw")) != null ? _a : false,
+        darkMode: (_b = yield this.electron.ipcRenderer.sendConvo("config.get", "darkMode")) != null ? _b : void 0,
+        defaultCharacterTalkingZoom: (_c = yield this.electron.ipcRenderer.sendConvo(
+          "config.get",
+          "defaultCharacterTalkingZoom"
+        )) != null ? _c : void 0
+      };
+    });
   }
-  async localRepoInstall(url, repo, authors) {
-    await this.electron.ipcRenderer.sendConvo(
-      "repo.install",
-      url,
-      repo,
-      authors
-    );
+  localRepoInstall(url, repo, authors) {
+    return __async$y(this, null, function* () {
+      yield this.electron.ipcRenderer.sendConvo(
+        "repo.install",
+        url,
+        repo,
+        authors
+      );
+    });
   }
-  async localRepoUninstall(id) {
-    await this.electron.ipcRenderer.sendConvo("repo.uninstall", id);
+  localRepoUninstall(id) {
+    return __async$y(this, null, function* () {
+      yield this.electron.ipcRenderer.sendConvo("repo.uninstall", id);
+    });
   }
-  async autoLoadAdd(id) {
-    await this.electron.ipcRenderer.sendConvo("auto-load.add", id);
+  autoLoadAdd(id) {
+    return __async$y(this, null, function* () {
+      yield this.electron.ipcRenderer.sendConvo("auto-load.add", id);
+    });
   }
-  async autoLoadRemove(id) {
-    await this.electron.ipcRenderer.sendConvo("auto-load.remove", id);
+  autoLoadRemove(id) {
+    return __async$y(this, null, function* () {
+      yield this.electron.ipcRenderer.sendConvo("auto-load.remove", id);
+    });
   }
   saveToFile(downloadCanvas, filename, format = "image/png", quality = 1) {
     return new Promise((resolve2, reject) => {
       downloadCanvas.toBlob(
-        async (blob) => {
+        (blob) => __async$y(this, null, function* () {
           if (!blob) {
             reject();
             return;
           }
-          const buffer = await blob.arrayBuffer();
-          await this.electron.ipcRenderer.sendConvo(
+          const buffer = yield blob.arrayBuffer();
+          yield this.electron.ipcRenderer.sendConvo(
             "save-file",
             filename,
             new Uint8Array(buffer)
           );
           resolve2(URL.createObjectURL(blob));
-        },
+        }),
         format,
         quality
       );
     });
   }
-  async prompt(message, defaultValue) {
-    return await this.electron.ipcRenderer.sendConvo(
-      "show-prompt",
-      message,
-      defaultValue
-    );
+  prompt(message, defaultValue) {
+    return __async$y(this, null, function* () {
+      return yield this.electron.ipcRenderer.sendConvo(
+        "show-prompt",
+        message,
+        defaultValue
+      );
+    });
   }
   connectToStore(vuexHistory, store2) {
     this.vuexHistory = vuexHistory;
     this.$store = store2;
     this.invalidateInstalledBGs();
-    this.vuexHistory.transaction(async () => {
+    this.vuexHistory.transaction(() => __async$y(this, null, function* () {
       if (this.pendingContentPacks.length > 0) {
-        await this.$store.dispatch(
+        yield this.$store.dispatch(
           "content/loadContentPacks",
           this.pendingContentPacks
         );
       }
       if (this.pendingContentPacksReplace.length > 0) {
         for (const action of this.pendingContentPacksReplace) {
-          await this.$store.dispatch("content/replaceContentPack", action);
+          yield this.$store.dispatch("content/replaceContentPack", action);
         }
       }
-    });
+    }));
   }
   invalidateInstalledBGs() {
     if (!this.vuexHistory || !this.$store)
@@ -6893,11 +7133,11 @@ class Electron {
     }
     if (!this.vuexHistory || !this.$store)
       return;
-    this.vuexHistory.transaction(async () => {
-      await this.$store.dispatch("content/replaceContentPack", {
+    this.vuexHistory.transaction(() => __async$y(this, null, function* () {
+      yield this.$store.dispatch("content/replaceContentPack", {
         contentPack: installedBackgroundsPack
       });
-    });
+    }));
   }
 }
 function chooseEnv() {
@@ -6911,7 +7151,6 @@ function chooseEnv() {
 }
 const envX = chooseEnv();
 window.toast = envX;
-const environment = envX;
 const _sfc_main$y = defineComponent({
   props: {
     label: String,
@@ -7182,17 +7421,39 @@ function _sfc_render$v(_ctx, _cache, $props, $setup, $data, $options) {
   ], 8, _hoisted_1$q);
 }
 const L = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["render", _sfc_render$v]]);
-async function safeAsync(name, callback) {
-  try {
-    await callback();
-  } catch (e) {
-    console.error("Error in promise", name, e);
-    eventBus$1.fire(
-      new FailureEvent(
-        "Unexpected error! Please copy the following message and send it to /u/edave64: Error in '" + name + '", ' + normalizeError(e)
-      )
-    );
-  }
+var __async$x = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
+function safeAsync(name, callback) {
+  return __async$x(this, null, function* () {
+    try {
+      yield callback();
+    } catch (e) {
+      console.error("Error in promise", name, e);
+      eventBus$1.fire(
+        new FailureEvent(
+          "Unexpected error! Please copy the following message and send it to /u/edave64: Error in '" + name + '", ' + normalizeError(e)
+        )
+      );
+    }
+  });
 }
 function normalizeError(e) {
   if (e instanceof Error) {
@@ -7211,6 +7472,26 @@ function normalizeError(e) {
   }
   return "" + e;
 }
+var __async$w = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const _sfc_main$v = defineComponent({
   mixins: [PanelMixin],
   components: { Toggle: ToggleBox, ModalDialog, L },
@@ -7223,29 +7504,29 @@ const _sfc_main$v = defineComponent({
   computed: {
     savesAllowed: {
       get() {
-        return environment.savingEnabled;
+        return envX.savingEnabled;
       },
       set(allowed) {
         this.waitOnSaveChange = true;
-        environment.savingEnabled = allowed;
+        envX.savingEnabled = allowed;
         this.saveSettings();
       }
     },
     inPlusMode() {
-      return environment.gameMode === "ddlc_plus";
+      return envX.gameMode === "ddlc_plus";
     },
     savesEnabledInEnv() {
-      return environment.supports.optionalSaving;
+      return envX.supports.optionalSaving;
     },
     lqAllowed() {
-      return environment.supports.lq;
+      return envX.supports.lq;
     },
     looseTextParsing: {
       get() {
-        return environment.state.looseTextParsing;
+        return envX.state.looseTextParsing;
       },
       set(looseTextParsing) {
-        environment.state.looseTextParsing = looseTextParsing;
+        envX.state.looseTextParsing = looseTextParsing;
         this.saveSettings();
       }
     },
@@ -7254,9 +7535,9 @@ const _sfc_main$v = defineComponent({
         return this.$store.state.ui.lqRendering;
       },
       set(lqRendering) {
-        this.vuexHistory.transaction(async () => {
-          await this.$store.commit("ui/setLqRendering", lqRendering);
-        });
+        this.vuexHistory.transaction(() => __async$w(this, null, function* () {
+          yield this.$store.commit("ui/setLqRendering", lqRendering);
+        }));
         this.saveSettings();
       }
     },
@@ -7265,10 +7546,10 @@ const _sfc_main$v = defineComponent({
         return !!this.$store.state.ui.nsfw;
       },
       set(value) {
-        this.vuexHistory.transaction(async () => {
-          await this.$store.commit("ui/setNsfw", value);
+        this.vuexHistory.transaction(() => __async$w(this, null, function* () {
+          yield this.$store.commit("ui/setNsfw", value);
           this.saveSettings();
-        });
+        }));
       }
     },
     defaultCharacterTalkingZoom: {
@@ -7276,10 +7557,10 @@ const _sfc_main$v = defineComponent({
         return !!this.$store.state.ui.defaultCharacterTalkingZoom;
       },
       set(value) {
-        this.vuexHistory.transaction(async () => {
-          await this.$store.commit("ui/setDefaultCharacterTalkingZoom", value);
+        this.vuexHistory.transaction(() => __async$w(this, null, function* () {
+          yield this.$store.commit("ui/setDefaultCharacterTalkingZoom", value);
           this.saveSettings();
-        });
+        }));
       }
     },
     theme: {
@@ -7287,17 +7568,17 @@ const _sfc_main$v = defineComponent({
         return this.$store.state.ui.useDarkTheme;
       },
       set(value) {
-        this.vuexHistory.transaction(async () => {
-          await this.$store.commit("ui/setDarkTheme", value);
+        this.vuexHistory.transaction(() => __async$w(this, null, function* () {
+          yield this.$store.commit("ui/setDarkTheme", value);
           this.saveSettings();
-        });
+        }));
       }
     },
     showDownloadFolder() {
-      return environment.supports.setDownloadFolder;
+      return envX.supports.setDownloadFolder;
     },
     downloadFolder() {
-      return environment.state.downloadLocation;
+      return envX.state.downloadLocation;
     }
   },
   watch: {
@@ -7319,31 +7600,31 @@ const _sfc_main$v = defineComponent({
       }
     },
     modeChange(choice) {
-      safeAsync("changing modes", async () => {
+      safeAsync("changing modes", () => __async$w(this, null, function* () {
         if (choice === "Enter Classic Mode") {
-          await environment.setGameMode("ddlc");
+          yield envX.setGameMode("ddlc");
         } else if (choice === "Enter Plus mode") {
-          await environment.setGameMode("ddlc_plus");
+          yield envX.setGameMode("ddlc_plus");
         } else {
           this.showModeDialog = false;
         }
-      });
+      }));
     },
     saveSettings() {
       var _a;
-      environment.saveSettings({
+      envX.saveSettings({
         lq: this.$store.state.ui.lqRendering,
         nsfw: this.$store.state.ui.nsfw,
         darkMode: (_a = this.$store.state.ui.useDarkTheme) != null ? _a : void 0,
-        looseTextParsing: environment.state.looseTextParsing,
+        looseTextParsing: envX.state.looseTextParsing,
         defaultCharacterTalkingZoom: this.$store.state.ui.defaultCharacterTalkingZoom
       });
     },
     setDownloadFolder() {
-      environment.updateDownloadFolder();
+      envX.updateDownloadFolder();
     },
     openDownloadFolder() {
-      environment.openFolder("downloads");
+      envX.openFolder("downloads");
     }
   }
 });
@@ -7632,6 +7913,26 @@ function _sfc_render$s(_ctx, _cache, $props, $setup, $data, $options) {
   ], 10, _hoisted_1$o);
 }
 const DButton = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["render", _sfc_render$s], ["__scopeId", "data-v-b2a4f97d"]]);
+var __async$v = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const uploadedSpritesPack = {
   packId: "dddg.buildin.uploadedSprites",
   packCredits: [""],
@@ -7666,7 +7967,7 @@ const _sfc_main$s = defineComponent({
       return this.$store.state.ui.clipboard != null;
     },
     showSpritesFolder() {
-      return environment.supports.openableFolders.has(
+      return envX.supports.openableFolders.has(
         "sprites"
       );
     }
@@ -7676,7 +7977,7 @@ const _sfc_main$s = defineComponent({
       return sprite.variants[0].map((variant) => `url('${variant.lq}')`).join(",");
     },
     assetPath(character) {
-      return character.chibi ? environment.supports.lq ? character.chibi.lq : character.chibi.hq : "";
+      return character.chibi ? envX.supports.lq ? character.chibi.lq : character.chibi.hq : "";
     },
     showDropTarget(e) {
       if (!e.dataTransfer)
@@ -7705,70 +8006,74 @@ const _sfc_main$s = defineComponent({
         this.addCustomSpriteFile(file);
       }
     },
-    async uploadFromURL() {
-      const url = prompt("Enter the URL of the image");
-      if (url == null)
-        return;
-      const lastSegment = url.split("/").slice(-1)[0];
-      this.addNewCustomSprite(lastSegment, url);
+    uploadFromURL() {
+      return __async$v(this, null, function* () {
+        const url = prompt("Enter the URL of the image");
+        if (url == null)
+          return;
+        const lastSegment = url.split("/").slice(-1)[0];
+        this.addNewCustomSprite(lastSegment, url);
+      });
     },
-    async addSpriteToScene(sprite) {
-      await this.vuexHistory.transaction(async () => {
-        await this.$store.dispatch("panels/createSprite", {
-          panelId: this.currentPanel.id,
-          assets: sprite.variants[0]
-        });
+    addSpriteToScene(sprite) {
+      return __async$v(this, null, function* () {
+        yield this.vuexHistory.transaction(() => __async$v(this, null, function* () {
+          yield this.$store.dispatch("panels/createSprite", {
+            panelId: this.currentPanel.id,
+            assets: sprite.variants[0]
+          });
+        }));
       });
     },
     addTextBox() {
-      this.vuexHistory.transaction(async () => {
-        await this.$store.dispatch("panels/createTextBox", {
+      this.vuexHistory.transaction(() => __async$v(this, null, function* () {
+        yield this.$store.dispatch("panels/createTextBox", {
           panelId: this.currentPanel.id
         });
-      });
+      }));
     },
     addChoice() {
-      this.vuexHistory.transaction(async () => {
-        await this.$store.dispatch("panels/createChoice", {
+      this.vuexHistory.transaction(() => __async$v(this, null, function* () {
+        yield this.$store.dispatch("panels/createChoice", {
           panelId: this.currentPanel.id
         });
-      });
+      }));
     },
     addDialog() {
-      this.vuexHistory.transaction(async () => {
-        await this.$store.dispatch("panels/createNotification", {
+      this.vuexHistory.transaction(() => __async$v(this, null, function* () {
+        yield this.$store.dispatch("panels/createNotification", {
           panelId: this.currentPanel.id
         });
-      });
+      }));
     },
     addPoem() {
-      this.vuexHistory.transaction(async () => {
-        await this.$store.dispatch("panels/createPoem", {
+      this.vuexHistory.transaction(() => __async$v(this, null, function* () {
+        yield this.$store.dispatch("panels/createPoem", {
           panelId: this.currentPanel.id
         });
-      });
+      }));
     },
     addConsole() {
-      this.vuexHistory.transaction(async () => {
-        await this.$store.dispatch("panels/createConsole", {
+      this.vuexHistory.transaction(() => __async$v(this, null, function* () {
+        yield this.$store.dispatch("panels/createConsole", {
           panelId: this.currentPanel.id
         });
-      });
+      }));
     },
     paste() {
-      this.vuexHistory.transaction(async () => {
-        await this.$store.dispatch("panels/pasteObjectFromClipboard", {
+      this.vuexHistory.transaction(() => __async$v(this, null, function* () {
+        yield this.$store.dispatch("panels/pasteObjectFromClipboard", {
           panelId: this.currentPanel.id
         });
-      });
+      }));
     },
     onChosen(id) {
-      this.vuexHistory.transaction(async () => {
-        await this.$store.dispatch("panels/createCharacters", {
+      this.vuexHistory.transaction(() => __async$v(this, null, function* () {
+        yield this.$store.dispatch("panels/createCharacters", {
           characterType: id,
           panelId: this.currentPanel.id
         });
-      });
+      }));
     },
     addCustomSpriteFile(file) {
       const url = URL.createObjectURL(file);
@@ -7790,11 +8095,13 @@ const _sfc_main$s = defineComponent({
       });
     },
     openSpritesFolder() {
-      environment.openFolder("sprites");
+      envX.openFolder("sprites");
     }
   },
-  async created() {
-    this.isWebPSupported = await isWebPSupported();
+  created() {
+    return __async$v(this, null, function* () {
+      this.isWebPSupported = yield isWebPSupported();
+    });
   }
 });
 const add_vue_vue_type_style_index_0_scoped_dc1660b3_lang = "";
@@ -8037,6 +8344,12 @@ const Base$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   BaseCharacterYPos: BaseCharacterYPos$1,
   characterPositions: characterPositions$1
 }, Symbol.toStringTag, { value: "Module" }));
+var __defProp$F = Object.defineProperty;
+var __defNormalProp$F = (obj, key, value) => key in obj ? __defProp$F(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$k = (obj, key, value) => {
+  __defNormalProp$F(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 const _RGBAColor = class {
   constructor(r, g, b, a) {
     this.r = r;
@@ -8166,10 +8479,10 @@ const _RGBAColor = class {
   }
 };
 let RGBAColor = _RGBAColor;
-__publicField(RGBAColor, "rgbEx", /^rgb\((\d*?),(\d*?),(\d*?)\)$/i);
-__publicField(RGBAColor, "rgbaEx", /^rgba\((\d{1,3}),(\d{1,3}),(\d{1,3}),([\d.]+)\)$/i);
-__publicField(RGBAColor, "hexShortEx", /^#[0-9A-Z]{3,4}$/i);
-__publicField(RGBAColor, "hexLongEx", /^#[0-9A-Z]{6,8}$/i);
+__publicField$k(RGBAColor, "rgbEx", /^rgb\((\d*?),(\d*?),(\d*?)\)$/i);
+__publicField$k(RGBAColor, "rgbaEx", /^rgba\((\d{1,3}),(\d{1,3}),(\d{1,3}),([\d.]+)\)$/i);
+__publicField$k(RGBAColor, "hexShortEx", /^#[0-9A-Z]{3,4}$/i);
+__publicField$k(RGBAColor, "hexLongEx", /^#[0-9A-Z]{6,8}$/i);
 class HSLAColor {
   constructor(h2, s, l, a) {
     this.h = h2;
@@ -8371,6 +8684,25 @@ const TextBoxCustom$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
   textboxOutlineColorDelta: textboxOutlineColorDelta$1,
   textboxOutlineWidth: textboxOutlineWidth$1
 }, Symbol.toStringTag, { value: "Module" }));
+var __defProp$E = Object.defineProperty;
+var __defProps$j = Object.defineProperties;
+var __getOwnPropDescs$j = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$o = Object.getOwnPropertySymbols;
+var __hasOwnProp$o = Object.prototype.hasOwnProperty;
+var __propIsEnum$o = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$E = (obj, key, value) => key in obj ? __defProp$E(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$o = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$o.call(b, prop))
+      __defNormalProp$E(a, prop, b[prop]);
+  if (__getOwnPropSymbols$o)
+    for (var prop of __getOwnPropSymbols$o(b)) {
+      if (__propIsEnum$o.call(b, prop))
+        __defNormalProp$E(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$j = (a, b) => __defProps$j(a, __getOwnPropDescs$j(b));
 const TextBoxWidth$1 = 816;
 const TextBoxCorruptedWidth$1 = 900;
 const TextBoxHeight$1 = 146;
@@ -8410,15 +8742,14 @@ const BaseTextStyle$1 = {
   strokeColor: "",
   strokeWidth: 0
 };
-const NameboxTextStyle$1 = {
-  ...BaseTextStyle$1,
+const NameboxTextStyle$1 = __spreadProps$j(__spreadValues$o({}, BaseTextStyle$1), {
   fontName: "riffic",
   fontSize: 24,
   strokeColor: nameboxStrokeDefaultColor$1,
   strokeWidth: 6,
   color: "white",
   letterSpacing: 1
-};
+});
 const ControlsTextStyle$1 = {
   align: "left",
   font: "13px aller",
@@ -8426,12 +8757,11 @@ const ControlsTextStyle$1 = {
     style: "#522"
   }
 };
-const ControlsTextDisabledStyle$1 = {
-  ...ControlsTextStyle$1,
+const ControlsTextDisabledStyle$1 = __spreadProps$j(__spreadValues$o({}, ControlsTextStyle$1), {
   fill: {
     style: "#a66"
   }
-};
+});
 const TextBoxCorruptedStyle$1 = {
   align: "left",
   font: "24px verily",
@@ -8509,20 +8839,38 @@ const TextBox$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePro
   ControlsXStuff: ControlsXStuff$1,
   DefaultTextboxStyle: DefaultTextboxStyle$1
 }, Symbol.toStringTag, { value: "Module" }));
+var __defProp$D = Object.defineProperty;
+var __defProps$i = Object.defineProperties;
+var __getOwnPropDescs$i = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$n = Object.getOwnPropertySymbols;
+var __hasOwnProp$n = Object.prototype.hasOwnProperty;
+var __propIsEnum$n = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$D = (obj, key, value) => key in obj ? __defProp$D(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$n = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$n.call(b, prop))
+      __defNormalProp$D(a, prop, b[prop]);
+  if (__getOwnPropSymbols$n)
+    for (var prop of __getOwnPropSymbols$n(b)) {
+      if (__propIsEnum$n.call(b, prop))
+        __defNormalProp$D(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$i = (a, b) => __defProps$i(a, __getOwnPropDescs$i(b));
 const NotificationBackgroundColor$1 = "#ffe6f4";
 const NotificationBorderColor$1 = "#ffbde1";
 const NotificationBackdropColor$1 = "rgba(255,255,255,0.6)";
 const NotificationPadding$1 = 40;
 const NotificationSpacing$1 = 30;
-const NotificationOkTextStyle$1 = {
-  ...BaseTextStyle$1,
+const NotificationOkTextStyle$1 = __spreadProps$i(__spreadValues$n({}, BaseTextStyle$1), {
   fontName: "riffic",
   fontSize: 24,
   strokeColor: nameboxStrokeDefaultColor$1,
   strokeWidth: 8,
   letterSpacing: 1,
   color: "white"
-};
+});
 const NotificationTextStyle$1 = {
   alpha: 1,
   color: "black",
@@ -8547,6 +8895,25 @@ const Notification$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defi
   NotificationOkTextStyle: NotificationOkTextStyle$1,
   NotificationTextStyle: NotificationTextStyle$1
 }, Symbol.toStringTag, { value: "Module" }));
+var __defProp$C = Object.defineProperty;
+var __defProps$h = Object.defineProperties;
+var __getOwnPropDescs$h = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$m = Object.getOwnPropertySymbols;
+var __hasOwnProp$m = Object.prototype.hasOwnProperty;
+var __propIsEnum$m = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$C = (obj, key, value) => key in obj ? __defProp$C(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$m = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$m.call(b, prop))
+      __defNormalProp$C(a, prop, b[prop]);
+  if (__getOwnPropSymbols$m)
+    for (var prop of __getOwnPropSymbols$m(b)) {
+      if (__propIsEnum$m.call(b, prop))
+        __defNormalProp$C(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$h = (a, b) => __defProps$h(a, __getOwnPropDescs$h(b));
 const poemBackgrounds$1 = [
   { name: "Normal paper", file: "poem.jpg" },
   { name: "Lightly soiled paper", file: "poem_y1.jpg" },
@@ -8583,61 +8950,53 @@ const BasePoemStyle$1 = {
   fontSize: 12
 };
 const poemTextStyles$1 = [
-  {
-    ...BasePoemStyle$1,
+  __spreadProps$h(__spreadValues$m({}, BasePoemStyle$1), {
     name: "Sayori",
     fontName: "hashtag",
     fontSize: 34,
     lineSpacing: 1.05,
     letterSpacing: 0
-  },
-  {
-    ...BasePoemStyle$1,
+  }),
+  __spreadProps$h(__spreadValues$m({}, BasePoemStyle$1), {
     name: "Natsuki",
     fontName: "ammy_handwriting",
     fontSize: 28
-  },
-  {
-    ...BasePoemStyle$1,
+  }),
+  __spreadProps$h(__spreadValues$m({}, BasePoemStyle$1), {
     name: "Monika",
     fontName: "journal",
     fontSize: 34
-  },
-  {
-    ...BasePoemStyle$1,
+  }),
+  __spreadProps$h(__spreadValues$m({}, BasePoemStyle$1), {
     name: "Yuri",
     fontName: "jp_hand_slanted",
     lineSpacing: 1.5,
     fontSize: 32
-  },
-  {
-    ...BasePoemStyle$1,
+  }),
+  __spreadProps$h(__spreadValues$m({}, BasePoemStyle$1), {
     name: "Yuri Act 2",
     fontName: "damagrafik_script",
     fontSize: 18,
     letterSpacing: -8
-  },
-  {
-    ...BasePoemStyle$1,
+  }),
+  __spreadProps$h(__spreadValues$m({}, BasePoemStyle$1), {
     name: "Yuri Unused",
     fontName: "as_i_lay_dying",
     fontSize: 40
-  },
-  {
-    ...BasePoemStyle$1,
+  }),
+  __spreadProps$h(__spreadValues$m({}, BasePoemStyle$1), {
     name: "MC",
     fontName: "halogen",
     fontSize: 30,
     lineSpacing: 1.53
-  },
-  {
-    ...BasePoemStyle$1,
+  }),
+  __spreadProps$h(__spreadValues$m({}, BasePoemStyle$1), {
     name: "Console",
     fontName: "f25_bank_printer",
     fontSize: 18,
     color: "white",
     lineSpacing: 1.1
-  }
+  })
 ];
 const Poem$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
@@ -8826,6 +9185,25 @@ const TextBoxCustom = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defin
   textboxOutlineColorDelta,
   textboxOutlineWidth
 }, Symbol.toStringTag, { value: "Module" }));
+var __defProp$B = Object.defineProperty;
+var __defProps$g = Object.defineProperties;
+var __getOwnPropDescs$g = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$l = Object.getOwnPropertySymbols;
+var __hasOwnProp$l = Object.prototype.hasOwnProperty;
+var __propIsEnum$l = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$B = (obj, key, value) => key in obj ? __defProp$B(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$l = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$l.call(b, prop))
+      __defNormalProp$B(a, prop, b[prop]);
+  if (__getOwnPropSymbols$l)
+    for (var prop of __getOwnPropSymbols$l(b)) {
+      if (__propIsEnum$l.call(b, prop))
+        __defNormalProp$B(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$g = (a, b) => __defProps$g(a, __getOwnPropDescs$g(b));
 const TextBoxWidth = 1220;
 const TextBoxCorruptedWidth = 900;
 const TextBoxHeight = 219;
@@ -8863,15 +9241,14 @@ const BaseTextStyle = {
   strokeColor: "",
   strokeWidth: 0
 };
-const NameboxTextStyle = {
-  ...BaseTextStyle,
+const NameboxTextStyle = __spreadProps$g(__spreadValues$l({}, BaseTextStyle), {
   fontName: "riffic",
   fontSize: 36,
   strokeColor: nameboxStrokeDefaultColor,
   strokeWidth: 9,
   color: "white",
   letterSpacing: 2
-};
+});
 const ControlsTextStyle = {
   align: "left",
   font: "24px aller",
@@ -8879,12 +9256,11 @@ const ControlsTextStyle = {
     style: "#522"
   }
 };
-const ControlsTextDisabledStyle = {
-  ...ControlsTextStyle,
+const ControlsTextDisabledStyle = __spreadProps$g(__spreadValues$l({}, ControlsTextStyle), {
   fill: {
     style: "#a66"
   }
-};
+});
 const TextBoxStyle = {
   alpha: 1,
   color: "#ffffff",
@@ -8960,20 +9336,38 @@ const TextBox$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePro
   ControlsXStuff,
   DefaultTextboxStyle
 }, Symbol.toStringTag, { value: "Module" }));
+var __defProp$A = Object.defineProperty;
+var __defProps$f = Object.defineProperties;
+var __getOwnPropDescs$f = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$k = Object.getOwnPropertySymbols;
+var __hasOwnProp$k = Object.prototype.hasOwnProperty;
+var __propIsEnum$k = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$A = (obj, key, value) => key in obj ? __defProp$A(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$k = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$k.call(b, prop))
+      __defNormalProp$A(a, prop, b[prop]);
+  if (__getOwnPropSymbols$k)
+    for (var prop of __getOwnPropSymbols$k(b)) {
+      if (__propIsEnum$k.call(b, prop))
+        __defNormalProp$A(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$f = (a, b) => __defProps$f(a, __getOwnPropDescs$f(b));
 const NotificationBackgroundColor = "#ffe6f4";
 const NotificationBorderColor = "#ffbde1";
 const NotificationBackdropColor = "rgba(255,255,255,0.6)";
 const NotificationPadding = 60;
 const NotificationSpacing = 45;
-const NotificationOkTextStyle = {
-  ...BaseTextStyle,
+const NotificationOkTextStyle = __spreadProps$f(__spreadValues$k({}, BaseTextStyle), {
   fontName: "riffic",
   fontSize: 36,
   strokeColor: nameboxStrokeDefaultColor,
   strokeWidth: 12,
   letterSpacing: 1,
   color: "white"
-};
+});
 const NotificationTextStyle = {
   alpha: 1,
   color: "black",
@@ -8998,6 +9392,25 @@ const Notification$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defi
   NotificationOkTextStyle,
   NotificationTextStyle
 }, Symbol.toStringTag, { value: "Module" }));
+var __defProp$z = Object.defineProperty;
+var __defProps$e = Object.defineProperties;
+var __getOwnPropDescs$e = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$j = Object.getOwnPropertySymbols;
+var __hasOwnProp$j = Object.prototype.hasOwnProperty;
+var __propIsEnum$j = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$z = (obj, key, value) => key in obj ? __defProp$z(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$j = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$j.call(b, prop))
+      __defNormalProp$z(a, prop, b[prop]);
+  if (__getOwnPropSymbols$j)
+    for (var prop of __getOwnPropSymbols$j(b)) {
+      if (__propIsEnum$j.call(b, prop))
+        __defNormalProp$z(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$e = (a, b) => __defProps$e(a, __getOwnPropDescs$e(b));
 const poemBackgrounds = [
   { name: "Normal paper", file: "poem.jpg" },
   { name: "Lightly soiled paper", file: "poem_y1.jpg" },
@@ -9034,61 +9447,53 @@ const BasePoemStyle = {
   fontSize: 12
 };
 const poemTextStyles = [
-  {
-    ...BasePoemStyle,
+  __spreadProps$e(__spreadValues$j({}, BasePoemStyle), {
     name: "Sayori",
     fontName: "hashtag",
     fontSize: 34,
     lineSpacing: 1.05,
     letterSpacing: 0
-  },
-  {
-    ...BasePoemStyle,
+  }),
+  __spreadProps$e(__spreadValues$j({}, BasePoemStyle), {
     name: "Natsuki",
     fontName: "ammy_handwriting",
     fontSize: 28
-  },
-  {
-    ...BasePoemStyle,
+  }),
+  __spreadProps$e(__spreadValues$j({}, BasePoemStyle), {
     name: "Monika",
     fontName: "journal",
     fontSize: 34
-  },
-  {
-    ...BasePoemStyle,
+  }),
+  __spreadProps$e(__spreadValues$j({}, BasePoemStyle), {
     name: "Yuri",
     fontName: "jp_hand_slanted",
     lineSpacing: 1.5,
     fontSize: 32
-  },
-  {
-    ...BasePoemStyle,
+  }),
+  __spreadProps$e(__spreadValues$j({}, BasePoemStyle), {
     name: "Yuri Act 2",
     fontName: "damagrafik_script",
     fontSize: 18,
     letterSpacing: -8
-  },
-  {
-    ...BasePoemStyle,
+  }),
+  __spreadProps$e(__spreadValues$j({}, BasePoemStyle), {
     name: "Yuri Unused",
     fontName: "as_i_lay_dying",
     fontSize: 40
-  },
-  {
-    ...BasePoemStyle,
+  }),
+  __spreadProps$e(__spreadValues$j({}, BasePoemStyle), {
     name: "MC",
     fontName: "halogen",
     fontSize: 30,
     lineSpacing: 1.53
-  },
-  {
-    ...BasePoemStyle,
+  }),
+  __spreadProps$e(__spreadValues$j({}, BasePoemStyle), {
     name: "Console",
     fontName: "f25_bank_printer",
     fontSize: 18,
     color: "white",
     lineSpacing: 1.1
-  }
+  })
 ];
 const Poem$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
@@ -9118,7 +9523,7 @@ const DdlcPlus = {
   TextBoxCustom
 };
 function getConstants() {
-  if (environment.gameMode === "ddlc_plus")
+  if (envX.gameMode === "ddlc_plus")
     return DdlcPlus;
   return Ddlc;
 }
@@ -9138,6 +9543,45 @@ function baseProps() {
     zoom: 1
   };
 }
+var __defProp$y = Object.defineProperty;
+var __defProps$d = Object.defineProperties;
+var __getOwnPropDescs$d = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$i = Object.getOwnPropertySymbols;
+var __hasOwnProp$i = Object.prototype.hasOwnProperty;
+var __propIsEnum$i = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$y = (obj, key, value) => key in obj ? __defProp$y(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$i = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$i.call(b, prop))
+      __defNormalProp$y(a, prop, b[prop]);
+  if (__getOwnPropSymbols$i)
+    for (var prop of __getOwnPropSymbols$i(b)) {
+      if (__propIsEnum$i.call(b, prop))
+        __defNormalProp$y(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$d = (a, b) => __defProps$d(a, __getOwnPropDescs$d(b));
+var __async$u = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const characterMutations = {
   setPose(state, command) {
     const obj = state.panels[command.panelId].objects[command.id];
@@ -9161,10 +9605,7 @@ const characterMutations = {
   },
   setPosePosition(state, command) {
     const obj = state.panels[command.panelId].objects[command.id];
-    obj.posePositions = {
-      ...obj.posePositions,
-      ...command.posePositions
-    };
+    obj.posePositions = __spreadValues$i(__spreadValues$i({}, obj.posePositions), command.posePositions);
     ++obj.version;
   },
   setFreeMove(state, command) {
@@ -9219,8 +9660,7 @@ const characterActions = {
     const char = getDataG(rootGetters, command.characterType);
     const charScale = char.hd ? constants.Base.hdCharacterScaleFactor : constants.Base.sdCharacterScaleFactor;
     commit2("create", {
-      object: {
-        ...baseProps(),
+      object: __spreadProps$d(__spreadValues$i({}, baseProps()), {
         id,
         panelId: rootState.panels.currentPanel,
         onTop: false,
@@ -9239,7 +9679,7 @@ const characterActions = {
         posePositions: {},
         label: (_a = char.label) != null ? _a : char.id,
         enlargeWhenTalking: rootState.ui.defaultCharacterTalkingZoom
-      }
+      })
     });
     return id;
   },
@@ -9383,87 +9823,89 @@ const characterActions = {
     });
   }
 };
-async function fixContentPackRemovalFromCharacter(context, panelId, id, oldPack) {
-  const obj = context.state.panels[panelId].objects[id];
-  const oldCharData = oldPack.characters.find(
-    (char) => char.id === obj.characterType
-  );
-  if (!oldCharData) {
-    console.error("Character data is missing. Dropping the character.");
-    await context.dispatch("removeObject", {
-      id,
-      panelId
-    });
-    return;
-  }
-  const poseAndPositionChange = buildPoseAndPositionData(obj);
-  const oldStyleGroup = oldCharData.styleGroups[obj.styleGroupId];
-  const oldStyle = oldStyleGroup.styles[poseAndPositionChange.styleId];
-  const oldPose = oldStyle.poses[poseAndPositionChange.poseId];
-  const newCharData = context.rootState.content.current.characters.find(
-    (chr) => chr.id === oldCharData.id
-  );
-  if (!newCharData) {
-    console.error("Character data is missing. Dropping the character.");
-    await context.dispatch("removeObject", {
-      id,
-      panelId
-    });
-    return;
-  }
-  const newStyleGroupIdx = newCharData.styleGroups.findIndex(
-    (styleGroup) => styleGroup.id === oldStyleGroup.id
-  );
-  poseAndPositionChange.styleGroupId = newStyleGroupIdx === -1 ? 0 : newStyleGroupIdx;
-  const newStyleGroup = newCharData.styleGroups[poseAndPositionChange.styleGroupId];
-  const styleProperies = JSON.stringify(oldStyle.components);
-  const newStyleIdx = newStyleGroup.styles.findIndex(
-    (style) => JSON.stringify(style.components) === styleProperies
-  );
-  poseAndPositionChange.styleId = newStyleIdx === -1 ? 0 : newStyleIdx;
-  const newStyle = newStyleGroup.styles[poseAndPositionChange.styleId];
-  const newPoseIdx = newStyle.poses.findIndex((pose) => pose.id === oldPose.id);
-  poseAndPositionChange.poseId = newPoseIdx === -1 ? 0 : newPoseIdx;
-  const newPose = newStyle.poses[poseAndPositionChange.poseId];
-  for (const key in newPose.positions) {
-    if (!newPose.positions.hasOwnProperty(key))
-      continue;
-    const newPosition = newPose.positions[key];
-    if (oldPose.positions[key]) {
-      const oldPositionIdx = poseAndPositionChange.posePositions[key];
-      if (oldPositionIdx >= 0 && oldPositionIdx < newPosition.length)
-        ;
-    }
-  }
-  const oldHeadGroup = oldPose.compatibleHeads[obj.posePositions.headType];
-  const newHeadGroupIdx = newPose.compatibleHeads.indexOf(oldHeadGroup);
-  if (newHeadGroupIdx === -1) {
-    poseAndPositionChange.posePositions.headType = 0;
-    poseAndPositionChange.posePositions.head = 0;
-  } else {
-    if (newHeadGroupIdx !== obj.posePositions.headType) {
-      poseAndPositionChange.posePositions.headType = newHeadGroupIdx;
-    }
-    const oldHead = JSON.stringify(
-      oldCharData.heads[oldHeadGroup].variants[obj.posePositions.head]
+function fixContentPackRemovalFromCharacter(context, panelId, id, oldPack) {
+  return __async$u(this, null, function* () {
+    const obj = context.state.panels[panelId].objects[id];
+    const oldCharData = oldPack.characters.find(
+      (char) => char.id === obj.characterType
     );
-    const newHeadIdx = newCharData.heads[oldHeadGroup].variants.findIndex(
-      (variant) => JSON.stringify(variant) === oldHead
+    if (!oldCharData) {
+      console.error("Character data is missing. Dropping the character.");
+      yield context.dispatch("removeObject", {
+        id,
+        panelId
+      });
+      return;
+    }
+    const poseAndPositionChange = buildPoseAndPositionData(obj);
+    const oldStyleGroup = oldCharData.styleGroups[obj.styleGroupId];
+    const oldStyle = oldStyleGroup.styles[poseAndPositionChange.styleId];
+    const oldPose = oldStyle.poses[poseAndPositionChange.poseId];
+    const newCharData = context.rootState.content.current.characters.find(
+      (chr) => chr.id === oldCharData.id
     );
-    if (newHeadIdx === -1) {
+    if (!newCharData) {
+      console.error("Character data is missing. Dropping the character.");
+      yield context.dispatch("removeObject", {
+        id,
+        panelId
+      });
+      return;
+    }
+    const newStyleGroupIdx = newCharData.styleGroups.findIndex(
+      (styleGroup) => styleGroup.id === oldStyleGroup.id
+    );
+    poseAndPositionChange.styleGroupId = newStyleGroupIdx === -1 ? 0 : newStyleGroupIdx;
+    const newStyleGroup = newCharData.styleGroups[poseAndPositionChange.styleGroupId];
+    const styleProperies = JSON.stringify(oldStyle.components);
+    const newStyleIdx = newStyleGroup.styles.findIndex(
+      (style) => JSON.stringify(style.components) === styleProperies
+    );
+    poseAndPositionChange.styleId = newStyleIdx === -1 ? 0 : newStyleIdx;
+    const newStyle = newStyleGroup.styles[poseAndPositionChange.styleId];
+    const newPoseIdx = newStyle.poses.findIndex((pose) => pose.id === oldPose.id);
+    poseAndPositionChange.poseId = newPoseIdx === -1 ? 0 : newPoseIdx;
+    const newPose = newStyle.poses[poseAndPositionChange.poseId];
+    for (const key in newPose.positions) {
+      if (!newPose.positions.hasOwnProperty(key))
+        continue;
+      const newPosition = newPose.positions[key];
+      if (oldPose.positions[key]) {
+        const oldPositionIdx = poseAndPositionChange.posePositions[key];
+        if (oldPositionIdx >= 0 && oldPositionIdx < newPosition.length)
+          ;
+      }
+    }
+    const oldHeadGroup = oldPose.compatibleHeads[obj.posePositions.headType];
+    const newHeadGroupIdx = newPose.compatibleHeads.indexOf(oldHeadGroup);
+    if (newHeadGroupIdx === -1) {
+      poseAndPositionChange.posePositions.headType = 0;
       poseAndPositionChange.posePositions.head = 0;
     } else {
-      poseAndPositionChange.posePositions.head = newHeadIdx;
+      if (newHeadGroupIdx !== obj.posePositions.headType) {
+        poseAndPositionChange.posePositions.headType = newHeadGroupIdx;
+      }
+      const oldHead = JSON.stringify(
+        oldCharData.heads[oldHeadGroup].variants[obj.posePositions.head]
+      );
+      const newHeadIdx = newCharData.heads[oldHeadGroup].variants.findIndex(
+        (variant) => JSON.stringify(variant) === oldHead
+      );
+      if (newHeadIdx === -1) {
+        poseAndPositionChange.posePositions.head = 0;
+      } else {
+        poseAndPositionChange.posePositions.head = newHeadIdx;
+      }
     }
-  }
-  commitPoseAndPositionChanges(context.commit, obj, poseAndPositionChange);
+    commitPoseAndPositionChanges(context.commit, obj, poseAndPositionChange);
+  });
 }
 function buildPoseAndPositionData(character) {
   return {
     styleGroupId: character.styleGroupId,
     styleId: character.styleId,
     poseId: character.poseId,
-    posePositions: { ...character.posePositions }
+    posePositions: __spreadValues$i({}, character.posePositions)
   };
 }
 function commitPoseAndPositionChanges(commit2, character, poseAndPosition) {
@@ -9555,6 +9997,26 @@ function _sfc_render$q(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const DFieldset = /* @__PURE__ */ _export_sfc(_sfc_main$r, [["render", _sfc_render$q], ["__scopeId", "data-v-d714a009"]]);
+var __async$t = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const spriteSize = 960;
 const _sfc_main$q = defineComponent({
   props: {
@@ -9616,16 +10078,18 @@ const _sfc_main$q = defineComponent({
       };
     }
   },
-  async created() {
-    this.lookups = await Promise.all(
-      this.part.images.map((image) => {
-        if (typeof image.asset === "string") {
-          return getBuildInAsset(image.asset, false);
-        } else {
-          return getAAsset(image.asset, false);
-        }
-      })
-    );
+  created() {
+    return __async$t(this, null, function* () {
+      this.lookups = yield Promise.all(
+        this.part.images.map((image) => {
+          if (typeof image.asset === "string") {
+            return getBuildInAsset(image.asset, false);
+          } else {
+            return getAAsset(image.asset, false);
+          }
+        })
+      );
+    });
   },
   methods: {
     quickClick(e) {
@@ -9650,6 +10114,25 @@ function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
   }, null, 38);
 }
 const PartButton = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$p], ["__scopeId", "data-v-b09b9938"]]);
+var __defProp$x = Object.defineProperty;
+var __defProps$c = Object.defineProperties;
+var __getOwnPropDescs$c = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$h = Object.getOwnPropertySymbols;
+var __hasOwnProp$h = Object.prototype.hasOwnProperty;
+var __propIsEnum$h = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$x = (obj, key, value) => key in obj ? __defProp$x(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$h = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$h.call(b, prop))
+      __defNormalProp$x(a, prop, b[prop]);
+  if (__getOwnPropSymbols$h)
+    for (var prop of __getOwnPropSymbols$h(b)) {
+      if (__propIsEnum$h.call(b, prop))
+        __defNormalProp$x(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$c = (a, b) => __defProps$c(a, __getOwnPropDescs$c(b));
 const _sfc_main$p = defineComponent({
   mixins: [VerticalScrollRedirect],
   props: {
@@ -9683,13 +10166,12 @@ const _sfc_main$p = defineComponent({
     const attrs = {};
     const flowContainer = h(
       "div",
-      {
-        ...attrs,
+      __spreadProps$c(__spreadValues$h({}, attrs), {
         class: ["d-flow", this.finalDirection, wrapingClass],
         style: {
           gap: this.gap
         }
-      },
+      }),
       this.$slots.default()
     );
     if (this.maxSize !== void 0) {
@@ -9719,6 +10201,26 @@ const _sfc_main$p = defineComponent({
 });
 const dFlow_vue_vue_type_style_index_0_scoped_f45f382d_lang = "";
 const DFlow = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["__scopeId", "data-v-f45f382d"]]);
+var __async$s = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const _sfc_main$o = defineComponent({
   components: { PartButton, DFieldset, DFlow },
   props: {
@@ -9887,14 +10389,14 @@ const _sfc_main$o = defineComponent({
         if (subSelect.length > 0)
           selection = subSelect;
       }
-      this.vuexHistory.transaction(async () => {
-        await this.$store.dispatch("panels/setCharStyle", {
+      this.vuexHistory.transaction(() => __async$s(this, null, function* () {
+        yield this.$store.dispatch("panels/setCharStyle", {
           id: this.character.id,
           panelId: this.character.panelId,
           styleGroupId,
           styleId: styleGroups.styles.indexOf(selection[0])
         });
-      });
+      }));
     },
     choose(index) {
       if (this.part === "style") {
@@ -9941,9 +10443,11 @@ const _sfc_main$o = defineComponent({
       });
     }
   },
-  async created() {
-    this.updateStyleData();
-    this.isWebPSupported = await isWebPSupported();
+  created() {
+    return __async$s(this, null, function* () {
+      this.updateStyleData();
+      this.isWebPSupported = yield isWebPSupported();
+    });
   },
   watch: {
     character() {
@@ -10085,11 +10589,17 @@ function genericSimpleSetter(message) {
     };
   };
 }
+var __defProp$w = Object.defineProperty;
+var __defNormalProp$w = (obj, key, value) => key in obj ? __defProp$w(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$j = (obj, key, value) => {
+  __defNormalProp$w(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 const aroundContextSize = 5;
 class StringWalker {
   constructor(str) {
-    __publicField(this, "pos", 0);
     this.str = str;
+    __publicField$j(this, "pos", 0);
   }
   current() {
     return this.str[this.pos];
@@ -10235,60 +10745,72 @@ function tokenStateNewLine(contents, walker) {
   walker.next();
   return tokenStateNormal;
 }
+var __defProp$v = Object.defineProperty;
+var __defProps$b = Object.defineProperties;
+var __getOwnPropDescs$b = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$g = Object.getOwnPropertySymbols;
+var __hasOwnProp$g = Object.prototype.hasOwnProperty;
+var __propIsEnum$g = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$v = (obj, key, value) => key in obj ? __defProp$v(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$g = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$g.call(b, prop))
+      __defNormalProp$v(a, prop, b[prop]);
+  if (__getOwnPropSymbols$g)
+    for (var prop of __getOwnPropSymbols$g(b)) {
+      if (__propIsEnum$g.call(b, prop))
+        __defNormalProp$v(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$b = (a, b) => __defProps$b(a, __getOwnPropDescs$b(b));
 const textCommands = new Map([
-  paramlessOp("i", (style) => ({ ...style, isItalic: true })),
-  paramlessOp("b", (style) => ({ ...style, isBold: true })),
-  paramlessOp("u", (style) => ({ ...style, isUnderlined: true })),
-  paramlessOp("s", (style) => ({
-    ...style,
+  paramlessOp("i", (style) => __spreadProps$b(__spreadValues$g({}, style), { isItalic: true })),
+  paramlessOp("b", (style) => __spreadProps$b(__spreadValues$g({}, style), { isBold: true })),
+  paramlessOp("u", (style) => __spreadProps$b(__spreadValues$g({}, style), { isUnderlined: true })),
+  paramlessOp("s", (style) => __spreadProps$b(__spreadValues$g({}, style), {
     isStrikethrough: true
   })),
-  paramlessOp("plain", (style) => ({
-    ...style,
+  paramlessOp("plain", (style) => __spreadProps$b(__spreadValues$g({}, style), {
     isStrikethrough: false,
     isUnderlined: false,
     isBold: false,
     isItalic: false
   })),
-  paramlessOp("edited", (style) => ({
-    ...style,
+  paramlessOp("edited", (style) => __spreadProps$b(__spreadValues$g({}, style), {
     fontName: "verily",
     strokeColor: "#000000",
     strokeWidth: 20,
     letterSpacing: 8
   })),
-  relativeNumberOp("k", (style, relative, parameter) => ({
-    ...style,
+  relativeNumberOp("k", (style, relative, parameter) => __spreadProps$b(__spreadValues$g({}, style), {
     letterSpacing: relative ? style.letterSpacing + parameter : parameter
   })),
-  relativeNumberOp("size", (style, relative, parameter) => ({
-    ...style,
+  relativeNumberOp("size", (style, relative, parameter) => __spreadProps$b(__spreadValues$g({}, style), {
     fontSize: relative ? style.fontSize + parameter : parameter
   })),
-  relativeNumberOp("alpha", (style, relative, parameter) => ({
-    ...style,
+  relativeNumberOp("alpha", (style, relative, parameter) => __spreadProps$b(__spreadValues$g({}, style), {
     alpha: relative ? style.alpha + parameter : parameter
   })),
-  relativeNumberOp("stroke", (style, relative, parameter) => ({
-    ...style,
+  relativeNumberOp("stroke", (style, relative, parameter) => __spreadProps$b(__spreadValues$g({}, style), {
     strokeWidth: relative ? style.strokeWidth + parameter : parameter
   })),
   [
     "font",
     (style, parameter) => {
-      return { ...style, fontName: parameter };
+      return __spreadProps$b(__spreadValues$g({}, style), { fontName: parameter });
     }
   ],
   [
     "color",
     (style, parameter) => {
-      return { ...style, color: parameter };
+      return __spreadProps$b(__spreadValues$g({}, style), { color: parameter });
     }
   ],
   [
     "outlinecolor",
     (style, parameter) => {
-      return { ...style, strokeColor: parameter };
+      return __spreadProps$b(__spreadValues$g({}, style), { strokeColor: parameter });
     }
   ]
 ]);
@@ -10374,14 +10896,40 @@ Object.defineProperty(literalTypes, "__esModule", { value: true });
   __exportStar(functions, exports);
   __exportStar(literalTypes, exports);
 })(dist);
+var __defProp$u = Object.defineProperty;
+var __defNormalProp$u = (obj, key, value) => key in obj ? __defProp$u(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$i = (obj, key, value) => {
+  __defNormalProp$u(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$r = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const _TextRenderer = class {
   constructor(str, baseStyle) {
-    __publicField(this, "renderParts");
-    __publicField(this, "tokens");
-    __publicField(this, "loose");
     this.str = str;
     this.baseStyle = baseStyle;
-    this.loose = environment.state.looseTextParsing;
+    __publicField$i(this, "renderParts");
+    __publicField$i(this, "tokens");
+    __publicField$i(this, "loose");
+    this.loose = envX.state.looseTextParsing;
     try {
       this.tokens = tokenize(str, this.loose);
     } catch (e) {
@@ -10406,38 +10954,40 @@ const _TextRenderer = class {
       this.loose
     );
   }
-  async loadFonts() {
-    if (!("fonts" in document))
-      return;
-    const fonts = /* @__PURE__ */ new Set();
-    let currentStyle = null;
-    for (const part of this.renderParts) {
-      if (!("style" in part))
-        continue;
-      if (part.style !== currentStyle) {
-        currentStyle = part.style;
-        if (currentStyle.fontName) {
-          fonts.add(currentStyle.fontName);
+  loadFonts() {
+    return __async$r(this, null, function* () {
+      if (!("fonts" in document))
+        return;
+      const fonts = /* @__PURE__ */ new Set();
+      let currentStyle = null;
+      for (const part of this.renderParts) {
+        if (!("style" in part))
+          continue;
+        if (part.style !== currentStyle) {
+          currentStyle = part.style;
+          if (currentStyle.fontName) {
+            fonts.add(currentStyle.fontName);
+          }
         }
       }
-    }
-    let neededToLoad = false;
-    for (const font of fonts) {
-      const doc2 = document;
-      const fontString = `8px ${font}`;
-      if (!doc2.fonts.check(fontString)) {
-        neededToLoad = true;
-        await doc2.fonts.load(fontString);
+      let neededToLoad = false;
+      for (const font of fonts) {
+        const doc2 = document;
+        const fontString = `8px ${font}`;
+        if (!doc2.fonts.check(fontString)) {
+          neededToLoad = true;
+          yield doc2.fonts.load(fontString);
+        }
       }
-    }
-    if (neededToLoad) {
-      const tokens = tokenize(this.str);
-      this.renderParts = _TextRenderer.getRenderParts(
-        tokens,
-        this.baseStyle,
-        this.loose
-      );
-    }
+      if (neededToLoad) {
+        const tokens = tokenize(this.str);
+        this.renderParts = _TextRenderer.getRenderParts(
+          tokens,
+          this.baseStyle,
+          this.loose
+        );
+      }
+    });
   }
   render(ctx) {
     ctx.save();
@@ -10794,7 +11344,7 @@ const _TextRenderer = class {
   }
 };
 let TextRenderer = _TextRenderer;
-__publicField(TextRenderer, "textCommands", textCommands);
+__publicField$i(TextRenderer, "textCommands", textCommands);
 const tmpContext = document.createElement("canvas").getContext("2d");
 let lastStyle = null;
 function measureWidth(textStyle, character) {
@@ -10849,13 +11399,53 @@ function applyTextStyleToCanvas(style, ctx) {
 }
 class RenderAbortedException {
 }
+var __defProp$t = Object.defineProperty;
+var __getOwnPropSymbols$f = Object.getOwnPropertySymbols;
+var __hasOwnProp$f = Object.prototype.hasOwnProperty;
+var __propIsEnum$f = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$t = (obj, key, value) => key in obj ? __defProp$t(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$f = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$f.call(b, prop))
+      __defNormalProp$t(a, prop, b[prop]);
+  if (__getOwnPropSymbols$f)
+    for (var prop of __getOwnPropSymbols$f(b)) {
+      if (__propIsEnum$f.call(b, prop))
+        __defNormalProp$t(a, prop, b[prop]);
+    }
+  return a;
+};
+var __publicField$h = (obj, key, value) => {
+  __defNormalProp$t(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$q = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 class RenderContext {
   constructor(canvas, fsCtx, hq, preview) {
-    __publicField(this, "aborted", false);
     this.canvas = canvas;
     this.fsCtx = fsCtx;
     this.hq = hq;
     this.preview = preview;
+    __publicField$h(this, "aborted", false);
   }
   static make(canvas, hq, preview) {
     return new RenderContext(canvas, canvas.getContext("2d"), hq, preview);
@@ -10873,13 +11463,10 @@ class RenderContext {
       x = 0,
       y = 0,
       text = ""
-    } = {
-      ...{
-        font: "20px aller",
-        align: "left"
-      },
-      ...params
-    };
+    } = __spreadValues$f(__spreadValues$f({}, {
+      font: "20px aller",
+      align: "left"
+    }), params);
     this.fsCtx.lineJoin = "round";
     this.fsCtx.textAlign = align;
     this.fsCtx.font = font;
@@ -10902,13 +11489,10 @@ class RenderContext {
       font,
       align,
       text = ""
-    } = {
-      ...{
-        font: "20px aller",
-        align: "left"
-      },
-      ...params
-    };
+    } = __spreadValues$f(__spreadValues$f({}, {
+      font: "20px aller",
+      align: "left"
+    }), params);
     this.fsCtx.lineJoin = "round";
     this.fsCtx.textAlign = align;
     this.fsCtx.font = font;
@@ -10928,13 +11512,12 @@ class RenderContext {
       throw new RenderAbortedException();
     if (params.image instanceof ErrorAsset)
       return;
-    const { image, flip, x, y, w, h: h2, filters: filters2, composite } = {
+    const { image, flip, x, y, w, h: h2, filters: filters2, composite } = __spreadValues$f({
       flip: false,
       w: params.image.width,
       h: params.image.height,
-      composite: "source-over",
-      ...params
-    };
+      composite: "source-over"
+    }, params);
     this.fsCtx.save();
     this.fsCtx.globalCompositeOperation = composite;
     if (filters2) {
@@ -11054,11 +11637,13 @@ class RenderContext {
       repetition
     );
   }
-  async customTransform(transform, render) {
-    this.fsCtx.save();
-    await transform(this.fsCtx);
-    await render(this);
-    this.fsCtx.restore();
+  customTransform(transform, render) {
+    return __async$q(this, null, function* () {
+      this.fsCtx.save();
+      yield transform(this.fsCtx);
+      yield render(this);
+      this.fsCtx.restore();
+    });
   }
   linearGradient(x0, y0, x1, y1) {
     return this.fsCtx.createLinearGradient(x0, y0, x1, y1);
@@ -11108,40 +11693,68 @@ class RenderContext {
     this.aborted = true;
   }
 }
+var __defProp$s = Object.defineProperty;
+var __defNormalProp$s = (obj, key, value) => key in obj ? __defProp$s(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$g = (obj, key, value) => {
+  __defNormalProp$s(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$p = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 class Renderer {
   constructor(w, h2) {
-    __publicField(this, "previewCanvas");
-    __publicField(this, "runningContext", null);
+    __publicField$g(this, "previewCanvas");
+    __publicField$g(this, "runningContext", null);
     const constants = getConstants();
     this.previewCanvas = document.createElement("canvas");
     this.previewCanvas.width = w != null ? w : constants.Base.screenWidth;
     this.previewCanvas.height = h2 != null ? h2 : constants.Base.screenHeight;
   }
-  async render(renderCallback, hq = true, preview = true) {
-    if (this.runningContext) {
-      this.runningContext.abort();
-    }
-    const ctx = this.previewCanvas.getContext("2d");
-    ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
-    const context = this.runningContext = RenderContext.makeWithContext(
-      this.previewCanvas,
-      ctx,
-      hq,
-      preview
-    );
-    try {
-      await renderCallback(this.runningContext);
-    } catch (e) {
-      if (e instanceof RenderAbortedException) {
-        return false;
+  render(renderCallback, hq = true, preview = true) {
+    return __async$p(this, null, function* () {
+      if (this.runningContext) {
+        this.runningContext.abort();
       }
-      throw e;
-    } finally {
-      if (context === this.runningContext) {
-        this.runningContext = null;
+      const ctx = this.previewCanvas.getContext("2d");
+      ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
+      const context = this.runningContext = RenderContext.makeWithContext(
+        this.previewCanvas,
+        ctx,
+        hq,
+        preview
+      );
+      try {
+        yield renderCallback(this.runningContext);
+      } catch (e) {
+        if (e instanceof RenderAbortedException) {
+          return false;
+        }
+        throw e;
+      } finally {
+        if (context === this.runningContext) {
+          this.runningContext = null;
+        }
       }
-    }
-    return true;
+      return true;
+    });
   }
   get width() {
     return this.previewCanvas.width;
@@ -11156,31 +11769,37 @@ class Renderer {
       c.drawImage(this.previewCanvas, opts.x, opts.y);
     }
   }
-  async download(renderCallback, filename) {
-    const downloadCanvas = await this.drawToCanvas(renderCallback);
-    return await environment.saveToFile(downloadCanvas, filename);
+  download(renderCallback, filename) {
+    return __async$p(this, null, function* () {
+      const downloadCanvas = yield this.drawToCanvas(renderCallback);
+      return yield envX.saveToFile(downloadCanvas, filename);
+    });
   }
-  async renderToBlob(renderCallback) {
-    const downloadCanvas = await this.drawToCanvas(renderCallback);
-    return await new Promise((resolve2, reject) => {
-      downloadCanvas.toBlob((blob) => {
-        if (blob)
-          resolve2(blob);
-        else
-          reject();
+  renderToBlob(renderCallback) {
+    return __async$p(this, null, function* () {
+      const downloadCanvas = yield this.drawToCanvas(renderCallback);
+      return yield new Promise((resolve2, reject) => {
+        downloadCanvas.toBlob((blob) => {
+          if (blob)
+            resolve2(blob);
+          else
+            reject();
+        });
       });
     });
   }
-  async drawToCanvas(renderCallback) {
-    const downloadCanvas = document.createElement("canvas");
-    downloadCanvas.width = this.previewCanvas.width;
-    downloadCanvas.height = this.previewCanvas.height;
-    const ctx = downloadCanvas.getContext("2d");
-    ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
-    await renderCallback(
-      RenderContext.makeWithContext(downloadCanvas, ctx, true, false)
-    );
-    return downloadCanvas;
+  drawToCanvas(renderCallback) {
+    return __async$p(this, null, function* () {
+      const downloadCanvas = document.createElement("canvas");
+      downloadCanvas.width = this.previewCanvas.width;
+      downloadCanvas.height = this.previewCanvas.height;
+      const ctx = downloadCanvas.getContext("2d");
+      ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
+      yield renderCallback(
+        RenderContext.makeWithContext(downloadCanvas, ctx, true, false)
+      );
+      return downloadCanvas;
+    });
   }
   getDataAt(x, y) {
     const ctx = this.previewCanvas.getContext("2d");
@@ -11196,6 +11815,32 @@ function rotateAround(x, y, relX, relY, angle) {
   const rotatedY = angleSin * translatedX + angleCos * translatedY + relY;
   return [rotatedX, rotatedY];
 }
+var __defProp$r = Object.defineProperty;
+var __defNormalProp$r = (obj, key, value) => key in obj ? __defProp$r(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$f = (obj, key, value) => {
+  __defNormalProp$r(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$o = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 var SelectedState = /* @__PURE__ */ ((SelectedState2) => {
   SelectedState2[SelectedState2["None"] = 0] = "None";
   SelectedState2[SelectedState2["Selected"] = 1] = "Selected";
@@ -11205,13 +11850,13 @@ var SelectedState = /* @__PURE__ */ ((SelectedState2) => {
 })(SelectedState || {});
 class OffscreenRenderable {
   constructor(obj) {
-    __publicField(this, "localRenderer", null);
-    __publicField(this, "lastVersion", null);
-    __publicField(this, "hitDetectionFallback", false);
-    __publicField(this, "renderable", false);
-    __publicField(this, "lastHq", false);
-    __publicField(this, "ready", Promise.resolve());
     this.obj = obj;
+    __publicField$f(this, "localRenderer", null);
+    __publicField$f(this, "lastVersion", null);
+    __publicField$f(this, "hitDetectionFallback", false);
+    __publicField$f(this, "renderable", false);
+    __publicField$f(this, "lastHq", false);
+    __publicField$f(this, "ready", Promise.resolve());
   }
   get id() {
     return this.obj.id;
@@ -11243,18 +11888,20 @@ class OffscreenRenderable {
   get height() {
     return this.obj.height;
   }
-  async updateLocalCanvas(hq) {
-    await this.ready;
-    const width = this.canvasWidth;
-    const height = this.canvasHeight;
-    if (height === 0 && width === 0) {
-      this.renderable = false;
-      return;
-    }
-    this.renderable = true;
-    this.localRenderer = new Renderer(width, height);
-    this.lastHq = hq;
-    await this.localRenderer.render(this.renderLocal.bind(this), hq);
+  updateLocalCanvas(hq) {
+    return __async$o(this, null, function* () {
+      yield this.ready;
+      const width = this.canvasWidth;
+      const height = this.canvasHeight;
+      if (height === 0 && width === 0) {
+        this.renderable = false;
+        return;
+      }
+      this.renderable = true;
+      this.localRenderer = new Renderer(width, height);
+      this.lastHq = hq;
+      yield this.localRenderer.render(this.renderLocal.bind(this), hq);
+    });
   }
   needsRedraw() {
     return this.localRenderer === null || this.lastVersion !== this.version;
@@ -11268,41 +11915,43 @@ class OffscreenRenderable {
       }
     ];
   }
-  async render(selected, rx) {
-    const needRedraw = this.lastHq !== rx.hq || this.needsRedraw();
-    if (needRedraw)
-      await this.updateLocalCanvas(rx.hq);
-    this.lastVersion = this.version;
-    if (!this.renderable)
-      return;
-    const [rotation, rotationAnchor] = this.getRenderRotation();
-    let shadow = void 0;
-    switch (selected) {
-      case 0:
-        shadow = void 0;
-        break;
-      case 1:
-        shadow = { blur: 20, color: "red" };
-        break;
-      case 2:
-        shadow = { blur: 20, color: "blue" };
-        break;
-      case 3:
-        shadow = { blur: 20, color: "purple" };
-        break;
-    }
-    rx.drawImage({
-      image: this.localRenderer,
-      x: this.canvasDrawPosX,
-      y: this.canvasDrawPosY,
-      w: this.canvasDrawWidth,
-      h: this.canvasDrawHeight,
-      rotation,
-      rotationAnchor,
-      flip: this.flip,
-      shadow: selected && rx.preview ? shadow : void 0,
-      composite: this.composite,
-      filters: this.filters
+  render(selected, rx) {
+    return __async$o(this, null, function* () {
+      const needRedraw = this.lastHq !== rx.hq || this.needsRedraw();
+      if (needRedraw)
+        yield this.updateLocalCanvas(rx.hq);
+      this.lastVersion = this.version;
+      if (!this.renderable)
+        return;
+      const [rotation, rotationAnchor] = this.getRenderRotation();
+      let shadow = void 0;
+      switch (selected) {
+        case 0:
+          shadow = void 0;
+          break;
+        case 1:
+          shadow = { blur: 20, color: "red" };
+          break;
+        case 2:
+          shadow = { blur: 20, color: "blue" };
+          break;
+        case 3:
+          shadow = { blur: 20, color: "purple" };
+          break;
+      }
+      rx.drawImage({
+        image: this.localRenderer,
+        x: this.canvasDrawPosX,
+        y: this.canvasDrawPosY,
+        w: this.canvasDrawWidth,
+        h: this.canvasDrawHeight,
+        rotation,
+        rotationAnchor,
+        flip: this.flip,
+        shadow: selected && rx.preview ? shadow : void 0,
+        composite: this.composite,
+        filters: this.filters
+      });
     });
   }
   hitTest(hx, hy) {
@@ -11362,20 +12011,49 @@ class OffscreenRenderable {
   updatedContent(_current, _panelId) {
   }
 }
+var __defProp$q = Object.defineProperty;
+var __getProtoOf$1 = Object.getPrototypeOf;
+var __reflectGet$1 = Reflect.get;
+var __defNormalProp$q = (obj, key, value) => key in obj ? __defProp$q(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$e = (obj, key, value) => {
+  __defNormalProp$q(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __superGet$1 = (cls, obj, key) => __reflectGet$1(__getProtoOf$1(cls), key, obj);
+var __async$n = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 class ScalingRenderable extends OffscreenRenderable {
   constructor(obj) {
     super(obj);
-    __publicField(this, "lastWidth", -1);
-    __publicField(this, "lastHeight", -1);
-    __publicField(this, "lastX", -1);
-    __publicField(this, "lastY", -1);
-    __publicField(this, "lastFlip", null);
-    __publicField(this, "canvasHeight");
-    __publicField(this, "canvasWidth");
-    __publicField(this, "canvasDrawHeight");
-    __publicField(this, "canvasDrawWidth");
-    __publicField(this, "canvasDrawPosX", 0);
-    __publicField(this, "canvasDrawPosY", 0);
+    __publicField$e(this, "lastWidth", -1);
+    __publicField$e(this, "lastHeight", -1);
+    __publicField$e(this, "lastX", -1);
+    __publicField$e(this, "lastY", -1);
+    __publicField$e(this, "lastFlip", null);
+    __publicField$e(this, "canvasHeight");
+    __publicField$e(this, "canvasWidth");
+    __publicField$e(this, "canvasDrawHeight");
+    __publicField$e(this, "canvasDrawWidth");
+    __publicField$e(this, "canvasDrawPosX", 0);
+    __publicField$e(this, "canvasDrawPosY", 0);
     const constants = getConstants().Base;
     this.canvasHeight = constants.screenHeight;
     this.canvasWidth = constants.screenWidth;
@@ -11390,27 +12068,31 @@ class ScalingRenderable extends OffscreenRenderable {
       return true;
     return this.width !== this.lastWidth || this.height !== this.lastHeight || this.x !== this.lastX || this.y !== this.lastY || this.flip !== this.lastFlip;
   }
-  async updateLocalCanvas(hq) {
-    this.lastWidth = this.width;
-    this.lastHeight = this.height;
-    this.lastX = this.x;
-    this.lastY = this.y;
-    this.lastFlip = this.flip;
-    await super.updateLocalCanvas(hq);
+  updateLocalCanvas(hq) {
+    return __async$n(this, null, function* () {
+      this.lastWidth = this.width;
+      this.lastHeight = this.height;
+      this.lastX = this.x;
+      this.lastY = this.y;
+      this.lastFlip = this.flip;
+      yield __superGet$1(ScalingRenderable.prototype, this, "updateLocalCanvas").call(this, hq);
+    });
   }
-  async renderLocal(rx) {
-    const constants = getConstants().Base;
-    if (this.rotation === 0)
-      return await this.draw(rx);
-    await rx.customTransform(async (trx) => {
-      const hitbox = this.getHitbox();
-      const centerX = hitbox.x0 + (hitbox.x1 - hitbox.x0) / 2;
-      const centerY = hitbox.y0 + (hitbox.y1 - hitbox.y0) / 2;
-      const flipNormalizedCenterX = this.flip ? constants.screenWidth - centerX : centerX;
-      trx.translate(flipNormalizedCenterX, centerY);
-      trx.rotate(this.rotation);
-      trx.translate(-flipNormalizedCenterX, -centerY);
-    }, this.draw.bind(this));
+  renderLocal(rx) {
+    return __async$n(this, null, function* () {
+      const constants = getConstants().Base;
+      if (this.rotation === 0)
+        return yield this.draw(rx);
+      yield rx.customTransform((trx) => __async$n(this, null, function* () {
+        const hitbox = this.getHitbox();
+        const centerX = hitbox.x0 + (hitbox.x1 - hitbox.x0) / 2;
+        const centerY = hitbox.y0 + (hitbox.y1 - hitbox.y0) / 2;
+        const flipNormalizedCenterX = this.flip ? constants.screenWidth - centerX : centerX;
+        trx.translate(flipNormalizedCenterX, centerY);
+        trx.rotate(this.rotation);
+        trx.translate(-flipNormalizedCenterX, -centerY);
+      }), this.draw.bind(this));
+    });
   }
   getHitbox() {
     const vCentered = this.centeredVertically;
@@ -11427,6 +12109,22 @@ class ScalingRenderable extends OffscreenRenderable {
     return false;
   }
 }
+var __defProp$p = Object.defineProperty;
+var __getOwnPropSymbols$e = Object.getOwnPropertySymbols;
+var __hasOwnProp$e = Object.prototype.hasOwnProperty;
+var __propIsEnum$e = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$p = (obj, key, value) => key in obj ? __defProp$p(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$e = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$e.call(b, prop))
+      __defNormalProp$p(a, prop, b[prop]);
+  if (__getOwnPropSymbols$e)
+    for (var prop of __getOwnPropSymbols$e(b)) {
+      if (__propIsEnum$e.call(b, prop))
+        __defNormalProp$p(a, prop, b[prop]);
+    }
+  return a;
+};
 class DdlcBase {
   constructor(base) {
     this.base = base;
@@ -11469,31 +12167,54 @@ class DdlcBase {
     const x = baseX - w2;
     const controlsCenter = x + w / 2;
     const controlsStyle = this.getControlsStyle();
-    rx.drawText({
+    rx.drawText(__spreadValues$e({
       text: "History",
       x: controlsCenter + ControlsXHistoryOffset$1,
-      y,
-      ...controlsStyle
-    });
-    rx.drawText({
+      y
+    }, controlsStyle));
+    rx.drawText(__spreadValues$e({
       text: "Skip",
       x: controlsCenter + ControlsXSkipOffset$1,
-      y,
-      ...this.base.obj.skip ? controlsStyle : this.getControlsDisabledStyle()
-    });
-    rx.drawText({
+      y
+    }, this.base.obj.skip ? controlsStyle : this.getControlsDisabledStyle()));
+    rx.drawText(__spreadValues$e({
       text: "Auto   Save   Load   Settings",
       x: controlsCenter + ControlsXStuffOffset$1,
-      y,
-      ...controlsStyle
-    });
+      y
+    }, controlsStyle));
   }
 }
+var __defProp$o = Object.defineProperty;
+var __defNormalProp$o = (obj, key, value) => key in obj ? __defProp$o(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$d = (obj, key, value) => {
+  __defNormalProp$o(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$m = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 class Default extends DdlcBase {
   constructor() {
     super(...arguments);
-    __publicField(this, "backgroundImage", "textbox");
-    __publicField(this, "xOffset", 0);
+    __publicField$d(this, "backgroundImage", "textbox");
+    __publicField$d(this, "xOffset", 0);
   }
   get height() {
     return TextBoxHeight$1 + NameboxHeight$1;
@@ -11522,58 +12243,70 @@ class Default extends DdlcBase {
   get textOffsetY() {
     return TextBoxTextYOffset$1;
   }
-  async renderNamebox(rx, x, y) {
-    rx.drawImage({
-      image: await getBuildInAsset("namebox"),
-      x,
-      y
+  renderNamebox(rx, x, y) {
+    return __async$m(this, null, function* () {
+      rx.drawImage({
+        image: yield getBuildInAsset("namebox"),
+        x,
+        y
+      });
     });
   }
-  async renderBackdrop(rx, x, y) {
-    x += this.xOffset;
-    const image = await getBuildInAsset(this.backgroundImage);
-    rx.drawImage({ image, x, y });
+  renderBackdrop(rx, x, y) {
+    return __async$m(this, null, function* () {
+      x += this.xOffset;
+      const image = yield getBuildInAsset(this.backgroundImage);
+      rx.drawImage({ image, x, y });
+    });
   }
-  async render(rx) {
-    const constants = getConstants();
-    const w = this.width;
-    const h2 = this.height;
-    const w2 = w / 2;
-    const baseX = this.obj.flip ? constants.Base.screenWidth - this.obj.x : this.obj.x;
-    const x = baseX - w2;
-    const y = this.obj.y;
-    await this.renderBackdrop(rx, x, y + this.nameboxHeight);
-    if (this.obj.talkingObjId !== null) {
-      await this.renderNamebox(rx, x + this.nameboxOffsetX, y);
-    }
-    const bottom = y + h2;
-    const controlsY = bottom - ControlsYBottomOffset$1;
-    if (this.obj.controls)
-      this.renderControls(rx, controlsY);
-    if (this.obj.continue) {
-      rx.drawImage({
-        image: await getBuildInAsset("next"),
-        x: x + w - ArrowXRightOffset$1,
-        y: bottom - ArrowYBottomOffset$1
-      });
-    }
+  render(rx) {
+    return __async$m(this, null, function* () {
+      const constants = getConstants();
+      const w = this.width;
+      const h2 = this.height;
+      const w2 = w / 2;
+      const baseX = this.obj.flip ? constants.Base.screenWidth - this.obj.x : this.obj.x;
+      const x = baseX - w2;
+      const y = this.obj.y;
+      yield this.renderBackdrop(rx, x, y + this.nameboxHeight);
+      if (this.obj.talkingObjId !== null) {
+        yield this.renderNamebox(rx, x + this.nameboxOffsetX, y);
+      }
+      const bottom = y + h2;
+      const controlsY = bottom - ControlsYBottomOffset$1;
+      if (this.obj.controls)
+        this.renderControls(rx, controlsY);
+      if (this.obj.continue) {
+        rx.drawImage({
+          image: yield getBuildInAsset("next"),
+          x: x + w - ArrowXRightOffset$1,
+          y: bottom - ArrowYBottomOffset$1
+        });
+      }
+    });
   }
 }
-__publicField(Default, "id", "normal");
-__publicField(Default, "label", "Normal");
-__publicField(Default, "priority", 0);
-__publicField(Default, "gameMode", "ddlc");
+__publicField$d(Default, "id", "normal");
+__publicField$d(Default, "label", "Normal");
+__publicField$d(Default, "priority", 0);
+__publicField$d(Default, "gameMode", "ddlc");
+var __defProp$n = Object.defineProperty;
+var __defNormalProp$n = (obj, key, value) => key in obj ? __defProp$n(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$c = (obj, key, value) => {
+  __defNormalProp$n(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 class Corrupted extends Default {
   constructor() {
     super(...arguments);
-    __publicField(this, "backgroundImage", "textbox_monika");
-    __publicField(this, "xOffset", (TextBoxWidth$1 - TextBoxCorruptedWidth$1) / 2);
+    __publicField$c(this, "backgroundImage", "textbox_monika");
+    __publicField$c(this, "xOffset", (TextBoxWidth$1 - TextBoxCorruptedWidth$1) / 2);
   }
 }
-__publicField(Corrupted, "id", "corrupt");
-__publicField(Corrupted, "label", "Corrupted");
-__publicField(Corrupted, "priority", 1);
-__publicField(Corrupted, "gameMode", "ddlc");
+__publicField$c(Corrupted, "id", "corrupt");
+__publicField$c(Corrupted, "label", "Corrupted");
+__publicField$c(Corrupted, "priority", 1);
+__publicField$c(Corrupted, "gameMode", "ddlc");
 function roundedRectangle(ctx, x, y, w, h2, r) {
   if (w < 0)
     w = 0;
@@ -11606,11 +12339,54 @@ function roundedTopRectangle(ctx, x, y, w, h2, r) {
   ctx.arcTo(x, y, x + w, y, r);
   ctx.closePath();
 }
+var __defProp$m = Object.defineProperty;
+var __defProps$a = Object.defineProperties;
+var __getOwnPropDescs$a = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$d = Object.getOwnPropertySymbols;
+var __hasOwnProp$d = Object.prototype.hasOwnProperty;
+var __propIsEnum$d = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$m = (obj, key, value) => key in obj ? __defProp$m(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$d = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$d.call(b, prop))
+      __defNormalProp$m(a, prop, b[prop]);
+  if (__getOwnPropSymbols$d)
+    for (var prop of __getOwnPropSymbols$d(b)) {
+      if (__propIsEnum$d.call(b, prop))
+        __defNormalProp$m(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$a = (a, b) => __defProps$a(a, __getOwnPropDescs$a(b));
+var __publicField$b = (obj, key, value) => {
+  __defNormalProp$m(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$l = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 class Custom extends DdlcBase {
   constructor() {
     super(...arguments);
-    __publicField(this, "backgroundImage", "textbox");
-    __publicField(this, "xOffset", 0);
+    __publicField$b(this, "backgroundImage", "textbox");
+    __publicField$b(this, "xOffset", 0);
   }
   static get resizable() {
     return true;
@@ -11639,11 +12415,10 @@ class Custom extends DdlcBase {
     return NameboxTextYOffset$1;
   }
   get nameboxStyle() {
-    return {
-      ...NameboxTextStyle$1,
+    return __spreadProps$a(__spreadValues$d({}, NameboxTextStyle$1), {
       strokeColor: this.nameboxOutlineColor,
       color: "#FFFFFF"
-    };
+    });
   }
   get textOffsetX() {
     return TextBoxTextXOffset$1;
@@ -11673,184 +12448,216 @@ class Custom extends DdlcBase {
     }
     return this.obj.customNameboxColor;
   }
-  async renderNamebox(rx, x, y) {
-    const w = this.nameboxWidth;
-    const h2 = this.nameboxHeight;
-    await rx.customTransform(
-      async (ctx) => {
-        ctx.beginPath();
-        roundedTopRectangle(ctx, x, y, w, h2, nameboxRounding$1);
-        ctx.clip();
-      },
-      async (subRx) => {
-        const gradient = subRx.linearGradient(x, y, x, y + h2);
-        const baseBG = RGBAColor.fromCss(this.nameboxBackgroundColor);
-        const color2 = new RGBAColor(baseBG.r, baseBG.g, baseBG.b, 0.95);
-        const targetColor = color2.toHSL().shift(nameboxGradientEndDelta$1).toRgb();
-        gradient.addColorStop(0, color2.toCss());
-        gradient.addColorStop(nameboxGradientMiddleStopPosition$1, color2.toCss());
-        gradient.addColorStop(1, targetColor.toCss());
-        subRx.drawRect({
-          x,
-          y,
-          w: this.obj.width,
-          h: h2,
-          fill: {
-            style: gradient
-          }
-        });
-      }
-    );
+  renderNamebox(rx, x, y) {
+    return __async$l(this, null, function* () {
+      const w = this.nameboxWidth;
+      const h2 = this.nameboxHeight;
+      yield rx.customTransform(
+        (ctx) => __async$l(this, null, function* () {
+          ctx.beginPath();
+          roundedTopRectangle(ctx, x, y, w, h2, nameboxRounding$1);
+          ctx.clip();
+        }),
+        (subRx) => __async$l(this, null, function* () {
+          const gradient = subRx.linearGradient(x, y, x, y + h2);
+          const baseBG = RGBAColor.fromCss(this.nameboxBackgroundColor);
+          const color2 = new RGBAColor(baseBG.r, baseBG.g, baseBG.b, 0.95);
+          const targetColor = color2.toHSL().shift(nameboxGradientEndDelta$1).toRgb();
+          gradient.addColorStop(0, color2.toCss());
+          gradient.addColorStop(nameboxGradientMiddleStopPosition$1, color2.toCss());
+          gradient.addColorStop(1, targetColor.toCss());
+          subRx.drawRect({
+            x,
+            y,
+            w: this.obj.width,
+            h: h2,
+            fill: {
+              style: gradient
+            }
+          });
+        })
+      );
+    });
   }
-  async renderBackdrop(rx, x, y) {
-    const hslColor = RGBAColor.fromCss(this.customColor).toHSL();
-    const dotPattern = new Renderer(dotPatternSize$1, dotPatternSize$1);
-    await dotPattern.render(async (dotRx) => {
-      const fill = {
-        style: hslColor.shift(dotColorDelta$1).toRgb().toCss()
-      };
-      function drawDot(dotX, dotY) {
-        dotRx.drawPath({
-          path: (ctx) => {
-            ctx.ellipse(dotX, dotY, dotRadius$1, dotRadius$1, 0, 0, 2 * Math.PI);
-          },
-          fill
-        });
+  renderBackdrop(rx, x, y) {
+    return __async$l(this, null, function* () {
+      const hslColor = RGBAColor.fromCss(this.customColor).toHSL();
+      const dotPattern = new Renderer(dotPatternSize$1, dotPatternSize$1);
+      yield dotPattern.render((dotRx) => __async$l(this, null, function* () {
+        const fill = {
+          style: hslColor.shift(dotColorDelta$1).toRgb().toCss()
+        };
+        function drawDot(dotX, dotY) {
+          dotRx.drawPath({
+            path: (ctx) => {
+              ctx.ellipse(dotX, dotY, dotRadius$1, dotRadius$1, 0, 0, 2 * Math.PI);
+            },
+            fill
+          });
+        }
+        drawDot(0, 0);
+        drawDot(dotPatternSize$1, 0);
+        drawDot(0, dotPatternSize$1);
+        drawDot(dotPatternSize$1, dotPatternSize$1);
+        drawDot(dotPatternSize$1 / 2, dotPatternSize$1 / 2);
+      }), true);
+      yield rx.customTransform(
+        (ctx) => __async$l(this, null, function* () {
+          ctx.beginPath();
+          roundedRectangle(
+            ctx,
+            x + textboxRoundingBuffer$1,
+            y + textboxRoundingBuffer$1,
+            this.width - textboxRoundingBuffer$1 * 2,
+            this.height - NameboxHeight$1 - textboxRoundingBuffer$1 * 2,
+            textboxRounding$1
+          );
+          ctx.clip();
+        }),
+        (subRx) => __async$l(this, null, function* () {
+          const h2 = this.obj.height;
+          const w = this.obj.width;
+          const gradient = subRx.linearGradient(x, y, x, y + h2);
+          const color2 = RGBAColor.fromHex(this.customColor);
+          gradient.addColorStop(0, color2.toCss());
+          gradient.addColorStop(
+            1,
+            `rgba(${color2.r},${color2.g},${color2.b},0.6667)`
+          );
+          subRx.drawRect({
+            x,
+            y,
+            w,
+            h: h2,
+            fill: {
+              style: gradient
+            },
+            outline: {
+              style: "#ffdfee",
+              width: 6
+            }
+          });
+          yield subRx.customTransform(
+            (ctx) => __async$l(this, null, function* () {
+              ctx.translate(x, y);
+            }),
+            (_subSubRx) => __async$l(this, null, function* () {
+              const pattern = subRx.patternFrom(dotPattern);
+              subRx.drawRect({
+                x: 0,
+                y: 0,
+                w,
+                h: h2,
+                fill: {
+                  style: pattern
+                },
+                composition: "source-atop"
+              });
+            })
+          );
+          const glowGradient = subRx.linearGradient(
+            x,
+            y + h2 - GlowRY$1,
+            x,
+            y + h2
+          );
+          glowGradient.addColorStop(0, "rgba(255,255,255,0.3137)");
+          glowGradient.addColorStop(0.5, "rgba(255,255,255,0.0627)");
+          glowGradient.addColorStop(1, "rgba(255,255,255,0)");
+          subRx.drawPath({
+            path: (ctx) => {
+              ctx.ellipse(
+                x + w / 2,
+                y + h2,
+                GlowRX$1,
+                GlowRY$1,
+                0,
+                0,
+                2 * Math.PI
+              );
+            },
+            fill: {
+              style: glowGradient
+            }
+          });
+        })
+      );
+      const outlineColor = hslColor.shift(textboxOutlineColorDelta$1).toRgb().toCss();
+      rx.drawPath({
+        path: (path) => {
+          roundedRectangle(
+            path,
+            x + textboxRoundingBuffer$1,
+            y + textboxRoundingBuffer$1,
+            this.width - textboxRoundingBuffer$1 * 2,
+            this.height - NameboxHeight$1 - textboxRoundingBuffer$1 * 2,
+            textboxRounding$1
+          );
+        },
+        outline: {
+          style: outlineColor,
+          width: textboxOutlineWidth$1
+        }
+      });
+    });
+  }
+  render(rx) {
+    return __async$l(this, null, function* () {
+      const constants = getConstants();
+      const w = this.width;
+      const h2 = this.height;
+      const w2 = w / 2;
+      const baseX = this.obj.flip ? constants.Base.screenWidth - this.obj.x : this.obj.x;
+      const x = baseX - w2;
+      const y = this.obj.y;
+      if (this.obj.talkingObjId !== null) {
+        yield this.renderNamebox(rx, x + this.nameboxOffsetX, y);
       }
-      drawDot(0, 0);
-      drawDot(dotPatternSize$1, 0);
-      drawDot(0, dotPatternSize$1);
-      drawDot(dotPatternSize$1, dotPatternSize$1);
-      drawDot(dotPatternSize$1 / 2, dotPatternSize$1 / 2);
-    }, true);
-    await rx.customTransform(
-      async (ctx) => {
-        ctx.beginPath();
-        roundedRectangle(
-          ctx,
-          x + textboxRoundingBuffer$1,
-          y + textboxRoundingBuffer$1,
-          this.width - textboxRoundingBuffer$1 * 2,
-          this.height - NameboxHeight$1 - textboxRoundingBuffer$1 * 2,
-          textboxRounding$1
-        );
-        ctx.clip();
-      },
-      async (subRx) => {
-        const h2 = this.obj.height;
-        const w = this.obj.width;
-        const gradient = subRx.linearGradient(x, y, x, y + h2);
-        const color2 = RGBAColor.fromHex(this.customColor);
-        gradient.addColorStop(0, color2.toCss());
-        gradient.addColorStop(
-          1,
-          `rgba(${color2.r},${color2.g},${color2.b},0.6667)`
-        );
-        subRx.drawRect({
-          x,
-          y,
-          w,
-          h: h2,
-          fill: {
-            style: gradient
-          },
-          outline: {
-            style: "#ffdfee",
-            width: 6
-          }
+      yield this.renderBackdrop(rx, x, y + this.nameboxHeight);
+      const bottom = y + h2;
+      const controlsY = bottom - ControlsYBottomOffset$1;
+      if (this.obj.controls)
+        this.renderControls(rx, controlsY);
+      if (this.obj.continue) {
+        rx.drawImage({
+          image: yield getBuildInAsset("next"),
+          x: x + w - ArrowXRightOffset$1,
+          y: bottom - ArrowYBottomOffset$1
         });
-        await subRx.customTransform(
-          async (ctx) => {
-            ctx.translate(x, y);
-          },
-          async (_subSubRx) => {
-            const pattern = subRx.patternFrom(dotPattern);
-            subRx.drawRect({
-              x: 0,
-              y: 0,
-              w,
-              h: h2,
-              fill: {
-                style: pattern
-              },
-              composition: "source-atop"
-            });
-          }
-        );
-        const glowGradient = subRx.linearGradient(
-          x,
-          y + h2 - GlowRY$1,
-          x,
-          y + h2
-        );
-        glowGradient.addColorStop(0, "rgba(255,255,255,0.3137)");
-        glowGradient.addColorStop(0.5, "rgba(255,255,255,0.0627)");
-        glowGradient.addColorStop(1, "rgba(255,255,255,0)");
-        subRx.drawPath({
-          path: (ctx) => {
-            ctx.ellipse(
-              x + w / 2,
-              y + h2,
-              GlowRX$1,
-              GlowRY$1,
-              0,
-              0,
-              2 * Math.PI
-            );
-          },
-          fill: {
-            style: glowGradient
-          }
-        });
-      }
-    );
-    const outlineColor = hslColor.shift(textboxOutlineColorDelta$1).toRgb().toCss();
-    rx.drawPath({
-      path: (path) => {
-        roundedRectangle(
-          path,
-          x + textboxRoundingBuffer$1,
-          y + textboxRoundingBuffer$1,
-          this.width - textboxRoundingBuffer$1 * 2,
-          this.height - NameboxHeight$1 - textboxRoundingBuffer$1 * 2,
-          textboxRounding$1
-        );
-      },
-      outline: {
-        style: outlineColor,
-        width: textboxOutlineWidth$1
       }
     });
   }
-  async render(rx) {
-    const constants = getConstants();
-    const w = this.width;
-    const h2 = this.height;
-    const w2 = w / 2;
-    const baseX = this.obj.flip ? constants.Base.screenWidth - this.obj.x : this.obj.x;
-    const x = baseX - w2;
-    const y = this.obj.y;
-    if (this.obj.talkingObjId !== null) {
-      await this.renderNamebox(rx, x + this.nameboxOffsetX, y);
-    }
-    await this.renderBackdrop(rx, x, y + this.nameboxHeight);
-    const bottom = y + h2;
-    const controlsY = bottom - ControlsYBottomOffset$1;
-    if (this.obj.controls)
-      this.renderControls(rx, controlsY);
-    if (this.obj.continue) {
-      rx.drawImage({
-        image: await getBuildInAsset("next"),
-        x: x + w - ArrowXRightOffset$1,
-        y: bottom - ArrowYBottomOffset$1
-      });
-    }
-  }
 }
-__publicField(Custom, "id", "custom");
-__publicField(Custom, "label", "Custom");
-__publicField(Custom, "priority", 0);
-__publicField(Custom, "gameMode", "ddlc");
+__publicField$b(Custom, "id", "custom");
+__publicField$b(Custom, "label", "Custom");
+__publicField$b(Custom, "priority", 0);
+__publicField$b(Custom, "gameMode", "ddlc");
+var __defProp$l = Object.defineProperty;
+var __defNormalProp$l = (obj, key, value) => key in obj ? __defProp$l(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$a = (obj, key, value) => {
+  __defNormalProp$l(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$k = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 class None extends DdlcBase {
   get height() {
     return TextBoxHeight$1 + NameboxHeight$1;
@@ -11882,13 +12689,35 @@ class None extends DdlcBase {
   get textboxStyle() {
     return TextBoxStyle$1;
   }
-  async render(_rx) {
+  render(_rx) {
+    return __async$k(this, null, function* () {
+    });
   }
 }
-__publicField(None, "id", "none");
-__publicField(None, "label", "None");
-__publicField(None, "priority", 0);
-__publicField(None, "gameMode", "ddlc");
+__publicField$a(None, "id", "none");
+__publicField$a(None, "label", "None");
+__publicField$a(None, "priority", 0);
+__publicField$a(None, "gameMode", "ddlc");
+var __defProp$k = Object.defineProperty;
+var __getOwnPropSymbols$c = Object.getOwnPropertySymbols;
+var __hasOwnProp$c = Object.prototype.hasOwnProperty;
+var __propIsEnum$c = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$k = (obj, key, value) => key in obj ? __defProp$k(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$c = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$c.call(b, prop))
+      __defNormalProp$k(a, prop, b[prop]);
+  if (__getOwnPropSymbols$c)
+    for (var prop of __getOwnPropSymbols$c(b)) {
+      if (__propIsEnum$c.call(b, prop))
+        __defNormalProp$k(a, prop, b[prop]);
+    }
+  return a;
+};
+var __publicField$9 = (obj, key, value) => {
+  __defNormalProp$k(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 const _DdlcPlusBase = class {
   constructor(base) {
     this.base = base;
@@ -11941,30 +12770,72 @@ const _DdlcPlusBase = class {
       const text = texts[i];
       const textWidth = textWidths[i];
       const style = text === "Skip" && !this.base.obj.skip ? this.getControlsDisabledStyle() : controlsStyle;
-      rx.drawText({
+      rx.drawText(__spreadValues$c({
         text,
         x: controlX,
-        y,
-        ...style
-      });
+        y
+      }, style));
       controlX += textWidth + spacing;
     }
   }
   static controlWidth(rx, text) {
     if (this.widthCache[text])
       return this.widthCache[text];
-    const width = rx.measureText({ text, ...ControlsTextStyle }).width;
+    const width = rx.measureText(__spreadValues$c({ text }, ControlsTextStyle)).width;
     this.widthCache[text] = width;
     return width;
   }
 };
 let DdlcPlusBase = _DdlcPlusBase;
-__publicField(DdlcPlusBase, "widthCache", {});
+__publicField$9(DdlcPlusBase, "widthCache", {});
+var __defProp$j = Object.defineProperty;
+var __defProps$9 = Object.defineProperties;
+var __getOwnPropDescs$9 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$b = Object.getOwnPropertySymbols;
+var __hasOwnProp$b = Object.prototype.hasOwnProperty;
+var __propIsEnum$b = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$j = (obj, key, value) => key in obj ? __defProp$j(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$b = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$b.call(b, prop))
+      __defNormalProp$j(a, prop, b[prop]);
+  if (__getOwnPropSymbols$b)
+    for (var prop of __getOwnPropSymbols$b(b)) {
+      if (__propIsEnum$b.call(b, prop))
+        __defNormalProp$j(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$9 = (a, b) => __defProps$9(a, __getOwnPropDescs$9(b));
+var __publicField$8 = (obj, key, value) => {
+  __defNormalProp$j(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$j = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 class CustomPlus extends DdlcPlusBase {
   constructor() {
     super(...arguments);
-    __publicField(this, "backgroundImage", "textbox");
-    __publicField(this, "xOffset", 0);
+    __publicField$8(this, "backgroundImage", "textbox");
+    __publicField$8(this, "xOffset", 0);
   }
   static get resizable() {
     return true;
@@ -11993,11 +12864,10 @@ class CustomPlus extends DdlcPlusBase {
     return NameboxTextYOffset;
   }
   get nameboxStyle() {
-    return {
-      ...NameboxTextStyle,
+    return __spreadProps$9(__spreadValues$b({}, NameboxTextStyle), {
       strokeColor: this.nameboxOutlineColor,
       color: "#FFFFFF"
-    };
+    });
   }
   get textOffsetX() {
     return TextBoxTextXOffset;
@@ -12030,184 +12900,216 @@ class CustomPlus extends DdlcPlusBase {
     }
     return this.obj.customNameboxColor;
   }
-  async renderNamebox(rx, x, y) {
-    const w = this.nameboxWidth;
-    const h2 = this.nameboxHeight;
-    await rx.customTransform(
-      async (ctx) => {
-        ctx.beginPath();
-        roundedTopRectangle(ctx, x, y, w, h2, nameboxRounding);
-        ctx.clip();
-      },
-      async (subRx) => {
-        const gradient = subRx.linearGradient(x, y, x, y + h2);
-        const baseBG = RGBAColor.fromCss(this.nameboxBackgroundColor);
-        const color2 = new RGBAColor(baseBG.r, baseBG.g, baseBG.b, 0.95);
-        const targetColor = color2.toHSL().shift(nameboxGradientEndDelta).toRgb();
-        gradient.addColorStop(0, color2.toCss());
-        gradient.addColorStop(nameboxGradientMiddleStopPosition, color2.toCss());
-        gradient.addColorStop(1, targetColor.toCss());
-        subRx.drawRect({
-          x,
-          y,
-          w: this.obj.width,
-          h: h2,
-          fill: {
-            style: gradient
-          }
-        });
-      }
-    );
+  renderNamebox(rx, x, y) {
+    return __async$j(this, null, function* () {
+      const w = this.nameboxWidth;
+      const h2 = this.nameboxHeight;
+      yield rx.customTransform(
+        (ctx) => __async$j(this, null, function* () {
+          ctx.beginPath();
+          roundedTopRectangle(ctx, x, y, w, h2, nameboxRounding);
+          ctx.clip();
+        }),
+        (subRx) => __async$j(this, null, function* () {
+          const gradient = subRx.linearGradient(x, y, x, y + h2);
+          const baseBG = RGBAColor.fromCss(this.nameboxBackgroundColor);
+          const color2 = new RGBAColor(baseBG.r, baseBG.g, baseBG.b, 0.95);
+          const targetColor = color2.toHSL().shift(nameboxGradientEndDelta).toRgb();
+          gradient.addColorStop(0, color2.toCss());
+          gradient.addColorStop(nameboxGradientMiddleStopPosition, color2.toCss());
+          gradient.addColorStop(1, targetColor.toCss());
+          subRx.drawRect({
+            x,
+            y,
+            w: this.obj.width,
+            h: h2,
+            fill: {
+              style: gradient
+            }
+          });
+        })
+      );
+    });
   }
-  async renderBackdrop(rx, x, y) {
-    const hslColor = RGBAColor.fromCss(this.customColor).toHSL();
-    const dotPattern = new Renderer(dotPatternSize, dotPatternSize);
-    await dotPattern.render(async (dotRx) => {
-      const fill = {
-        style: hslColor.shift(dotColorDelta).toRgb().toCss()
-      };
-      function drawDot(dotX, dotY) {
-        dotRx.drawPath({
-          path: (ctx) => {
-            ctx.ellipse(dotX, dotY, dotRadius, dotRadius, 0, 0, 2 * Math.PI);
-          },
-          fill
-        });
+  renderBackdrop(rx, x, y) {
+    return __async$j(this, null, function* () {
+      const hslColor = RGBAColor.fromCss(this.customColor).toHSL();
+      const dotPattern = new Renderer(dotPatternSize, dotPatternSize);
+      yield dotPattern.render((dotRx) => __async$j(this, null, function* () {
+        const fill = {
+          style: hslColor.shift(dotColorDelta).toRgb().toCss()
+        };
+        function drawDot(dotX, dotY) {
+          dotRx.drawPath({
+            path: (ctx) => {
+              ctx.ellipse(dotX, dotY, dotRadius, dotRadius, 0, 0, 2 * Math.PI);
+            },
+            fill
+          });
+        }
+        drawDot(0, 0);
+        drawDot(dotPatternSize, 0);
+        drawDot(0, dotPatternSize);
+        drawDot(dotPatternSize, dotPatternSize);
+        drawDot(dotPatternSize / 2, dotPatternSize / 2);
+      }), true);
+      yield rx.customTransform(
+        (ctx) => __async$j(this, null, function* () {
+          ctx.beginPath();
+          roundedRectangle(
+            ctx,
+            x + textboxRoundingBuffer,
+            y + textboxRoundingBuffer,
+            this.width - textboxRoundingBuffer * 2,
+            this.height - NameboxHeight - textboxRoundingBuffer * 2,
+            textboxRounding
+          );
+          ctx.clip();
+        }),
+        (subRx) => __async$j(this, null, function* () {
+          const h2 = this.obj.height;
+          const w = this.obj.width;
+          const gradient = subRx.linearGradient(x, y, x, y + h2);
+          const color2 = RGBAColor.fromHex(this.customColor);
+          gradient.addColorStop(0, color2.toCss());
+          gradient.addColorStop(
+            1,
+            `rgba(${color2.r},${color2.g},${color2.b},0.6667)`
+          );
+          subRx.drawRect({
+            x,
+            y,
+            w,
+            h: h2,
+            fill: {
+              style: gradient
+            },
+            outline: {
+              style: "#ffdfee",
+              width: 6
+            }
+          });
+          yield subRx.customTransform(
+            (ctx) => __async$j(this, null, function* () {
+              ctx.translate(x, y);
+            }),
+            (_subSubRx) => __async$j(this, null, function* () {
+              const pattern = subRx.patternFrom(dotPattern);
+              subRx.drawRect({
+                x: 0,
+                y: 0,
+                w,
+                h: h2,
+                fill: {
+                  style: pattern
+                },
+                composition: "source-atop"
+              });
+            })
+          );
+          const glowGradient = subRx.linearGradient(
+            x,
+            y + h2 - GlowRY,
+            x,
+            y + h2
+          );
+          glowGradient.addColorStop(0, "rgba(255,255,255,0.3137)");
+          glowGradient.addColorStop(0.5, "rgba(255,255,255,0.0627)");
+          glowGradient.addColorStop(1, "rgba(255,255,255,0)");
+          subRx.drawPath({
+            path: (ctx) => {
+              ctx.ellipse(
+                x + w / 2,
+                y + h2,
+                GlowRX,
+                GlowRY,
+                0,
+                0,
+                2 * Math.PI
+              );
+            },
+            fill: {
+              style: glowGradient
+            }
+          });
+        })
+      );
+      const outlineColor = hslColor.shift(textboxOutlineColorDelta).toRgb().toCss();
+      rx.drawPath({
+        path: (path) => {
+          roundedRectangle(
+            path,
+            x + textboxRoundingBuffer,
+            y + textboxRoundingBuffer,
+            this.width - textboxRoundingBuffer * 2,
+            this.height - NameboxHeight - textboxRoundingBuffer * 2,
+            textboxRounding
+          );
+        },
+        outline: {
+          style: outlineColor,
+          width: textboxOutlineWidth
+        }
+      });
+    });
+  }
+  render(rx) {
+    return __async$j(this, null, function* () {
+      const constants = getConstants();
+      const w = this.width;
+      const h2 = this.height;
+      const w2 = w / 2;
+      const baseX = this.obj.flip ? constants.Base.screenWidth - this.obj.x : this.obj.x;
+      const x = baseX - w2;
+      const y = this.obj.y;
+      if (this.obj.talkingObjId !== null) {
+        yield this.renderNamebox(rx, x + this.nameboxOffsetX, y);
       }
-      drawDot(0, 0);
-      drawDot(dotPatternSize, 0);
-      drawDot(0, dotPatternSize);
-      drawDot(dotPatternSize, dotPatternSize);
-      drawDot(dotPatternSize / 2, dotPatternSize / 2);
-    }, true);
-    await rx.customTransform(
-      async (ctx) => {
-        ctx.beginPath();
-        roundedRectangle(
-          ctx,
-          x + textboxRoundingBuffer,
-          y + textboxRoundingBuffer,
-          this.width - textboxRoundingBuffer * 2,
-          this.height - NameboxHeight - textboxRoundingBuffer * 2,
-          textboxRounding
-        );
-        ctx.clip();
-      },
-      async (subRx) => {
-        const h2 = this.obj.height;
-        const w = this.obj.width;
-        const gradient = subRx.linearGradient(x, y, x, y + h2);
-        const color2 = RGBAColor.fromHex(this.customColor);
-        gradient.addColorStop(0, color2.toCss());
-        gradient.addColorStop(
-          1,
-          `rgba(${color2.r},${color2.g},${color2.b},0.6667)`
-        );
-        subRx.drawRect({
-          x,
-          y,
-          w,
-          h: h2,
-          fill: {
-            style: gradient
-          },
-          outline: {
-            style: "#ffdfee",
-            width: 6
-          }
+      yield this.renderBackdrop(rx, x, y + this.nameboxHeight);
+      const bottom = y + h2;
+      const controlsY = bottom - ControlsYBottomOffset;
+      if (this.obj.controls)
+        this.renderControls(rx, controlsY);
+      if (this.obj.continue) {
+        rx.drawImage({
+          image: yield getBuildInAsset("next_plus"),
+          x: x + w - ArrowXRightOffset,
+          y: bottom - ArrowYBottomOffset
         });
-        await subRx.customTransform(
-          async (ctx) => {
-            ctx.translate(x, y);
-          },
-          async (_subSubRx) => {
-            const pattern = subRx.patternFrom(dotPattern);
-            subRx.drawRect({
-              x: 0,
-              y: 0,
-              w,
-              h: h2,
-              fill: {
-                style: pattern
-              },
-              composition: "source-atop"
-            });
-          }
-        );
-        const glowGradient = subRx.linearGradient(
-          x,
-          y + h2 - GlowRY,
-          x,
-          y + h2
-        );
-        glowGradient.addColorStop(0, "rgba(255,255,255,0.3137)");
-        glowGradient.addColorStop(0.5, "rgba(255,255,255,0.0627)");
-        glowGradient.addColorStop(1, "rgba(255,255,255,0)");
-        subRx.drawPath({
-          path: (ctx) => {
-            ctx.ellipse(
-              x + w / 2,
-              y + h2,
-              GlowRX,
-              GlowRY,
-              0,
-              0,
-              2 * Math.PI
-            );
-          },
-          fill: {
-            style: glowGradient
-          }
-        });
-      }
-    );
-    const outlineColor = hslColor.shift(textboxOutlineColorDelta).toRgb().toCss();
-    rx.drawPath({
-      path: (path) => {
-        roundedRectangle(
-          path,
-          x + textboxRoundingBuffer,
-          y + textboxRoundingBuffer,
-          this.width - textboxRoundingBuffer * 2,
-          this.height - NameboxHeight - textboxRoundingBuffer * 2,
-          textboxRounding
-        );
-      },
-      outline: {
-        style: outlineColor,
-        width: textboxOutlineWidth
       }
     });
   }
-  async render(rx) {
-    const constants = getConstants();
-    const w = this.width;
-    const h2 = this.height;
-    const w2 = w / 2;
-    const baseX = this.obj.flip ? constants.Base.screenWidth - this.obj.x : this.obj.x;
-    const x = baseX - w2;
-    const y = this.obj.y;
-    if (this.obj.talkingObjId !== null) {
-      await this.renderNamebox(rx, x + this.nameboxOffsetX, y);
-    }
-    await this.renderBackdrop(rx, x, y + this.nameboxHeight);
-    const bottom = y + h2;
-    const controlsY = bottom - ControlsYBottomOffset;
-    if (this.obj.controls)
-      this.renderControls(rx, controlsY);
-    if (this.obj.continue) {
-      rx.drawImage({
-        image: await getBuildInAsset("next_plus"),
-        x: x + w - ArrowXRightOffset,
-        y: bottom - ArrowYBottomOffset
-      });
-    }
-  }
 }
-__publicField(CustomPlus, "id", "custom_plus");
-__publicField(CustomPlus, "label", "Custom (Plus)");
-__publicField(CustomPlus, "priority", 0);
-__publicField(CustomPlus, "gameMode", "ddlc_plus");
+__publicField$8(CustomPlus, "id", "custom_plus");
+__publicField$8(CustomPlus, "label", "Custom (Plus)");
+__publicField$8(CustomPlus, "priority", 0);
+__publicField$8(CustomPlus, "gameMode", "ddlc_plus");
+var __defProp$i = Object.defineProperty;
+var __defNormalProp$i = (obj, key, value) => key in obj ? __defProp$i(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$7 = (obj, key, value) => {
+  __defNormalProp$i(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$i = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const styleRenderers = [
   Default,
   Corrupted,
@@ -12225,8 +13127,8 @@ const rendererLookup = (() => {
 class TextBox extends ScalingRenderable {
   constructor() {
     super(...arguments);
-    __publicField(this, "refObject", null);
-    __publicField(this, "_lastRenderer", null);
+    __publicField$7(this, "refObject", null);
+    __publicField$7(this, "_lastRenderer", null);
   }
   get y() {
     return this.obj.y;
@@ -12263,55 +13165,61 @@ class TextBox extends ScalingRenderable {
     }
     this.refObject = null;
   }
-  async draw(rx) {
-    var _a, _b;
-    const constants = getConstants();
-    const styleRenderer = this.textboxRenderer;
-    const w = styleRenderer.width;
-    const w2 = w / 2;
-    const baseX = this.flip ? constants.Base.screenWidth - this.obj.x : this.obj.x;
-    const x = baseX - w2;
-    const y = this.obj.y;
-    await styleRenderer.render(rx);
-    if (this.obj.talkingObjId !== null) {
-      const name = this.obj.talkingObjId === "$other$" ? this.obj.talkingOther : (_b = (_a = this.refObject) == null ? void 0 : _a.label) != null ? _b : "Missing name";
-      await this.renderName(rx, x + styleRenderer.nameboxOffsetX, y, name);
-    }
-    await this.renderText(rx, x, y, this.obj.autoWrap ? w : 0);
+  draw(rx) {
+    return __async$i(this, null, function* () {
+      var _a, _b;
+      const constants = getConstants();
+      const styleRenderer = this.textboxRenderer;
+      const w = styleRenderer.width;
+      const w2 = w / 2;
+      const baseX = this.flip ? constants.Base.screenWidth - this.obj.x : this.obj.x;
+      const x = baseX - w2;
+      const y = this.obj.y;
+      yield styleRenderer.render(rx);
+      if (this.obj.talkingObjId !== null) {
+        const name = this.obj.talkingObjId === "$other$" ? this.obj.talkingOther : (_b = (_a = this.refObject) == null ? void 0 : _a.label) != null ? _b : "Missing name";
+        yield this.renderName(rx, x + styleRenderer.nameboxOffsetX, y, name);
+      }
+      yield this.renderText(rx, x, y, this.obj.autoWrap ? w : 0);
+    });
   }
-  async renderName(rx, x, y, name) {
-    const styleRenderer = this.textboxRenderer;
-    const w = styleRenderer.nameboxWidth;
-    const style = styleRenderer.nameboxStyle;
-    const render = new TextRenderer(name, style);
-    await render.loadFonts();
-    render.fixAlignment(
-      "center",
-      x,
-      x + w,
-      y + styleRenderer.nameboxOffsetY,
-      0
-    );
-    render.render(rx.fsCtx);
+  renderName(rx, x, y, name) {
+    return __async$i(this, null, function* () {
+      const styleRenderer = this.textboxRenderer;
+      const w = styleRenderer.nameboxWidth;
+      const style = styleRenderer.nameboxStyle;
+      const render = new TextRenderer(name, style);
+      yield render.loadFonts();
+      render.fixAlignment(
+        "center",
+        x,
+        x + w,
+        y + styleRenderer.nameboxOffsetY,
+        0
+      );
+      render.render(rx.fsCtx);
+    });
   }
-  async renderText(rx, baseX, baseY, maxLineWidth) {
-    const textboxRenderer = this.textboxRenderer;
-    const render = new TextRenderer(
-      this.obj.text,
-      textboxRenderer.textboxStyle
-    );
-    if (this.obj.autoQuoting && this.obj.talkingObjId !== null) {
-      render.quote();
-    }
-    await render.loadFonts();
-    render.fixAlignment(
-      "left",
-      baseX + textboxRenderer.textOffsetX,
-      0,
-      baseY + textboxRenderer.nameboxHeight + textboxRenderer.textOffsetY,
-      maxLineWidth - textboxRenderer.textOffsetX * 2
-    );
-    render.render(rx.fsCtx);
+  renderText(rx, baseX, baseY, maxLineWidth) {
+    return __async$i(this, null, function* () {
+      const textboxRenderer = this.textboxRenderer;
+      const render = new TextRenderer(
+        this.obj.text,
+        textboxRenderer.textboxStyle
+      );
+      if (this.obj.autoQuoting && this.obj.talkingObjId !== null) {
+        render.quote();
+      }
+      yield render.loadFonts();
+      render.fixAlignment(
+        "left",
+        baseX + textboxRenderer.textOffsetX,
+        0,
+        baseY + textboxRenderer.nameboxHeight + textboxRenderer.textOffsetY,
+        maxLineWidth - textboxRenderer.textOffsetX * 2
+      );
+      render.render(rx.fsCtx);
+    });
   }
 }
 const _sfc_main$n = defineComponent({
@@ -13097,6 +14005,25 @@ function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const SliderGroup = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["render", _sfc_render$j], ["__scopeId", "data-v-f8c6e84c"]]);
+var __defProp$h = Object.defineProperty;
+var __defProps$8 = Object.defineProperties;
+var __getOwnPropDescs$8 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$a = Object.getOwnPropertySymbols;
+var __hasOwnProp$a = Object.prototype.hasOwnProperty;
+var __propIsEnum$a = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$h = (obj, key, value) => key in obj ? __defProp$h(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$a = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$a.call(b, prop))
+      __defNormalProp$h(a, prop, b[prop]);
+  if (__getOwnPropSymbols$a)
+    for (var prop of __getOwnPropSymbols$a(b)) {
+      if (__propIsEnum$a.call(b, prop))
+        __defNormalProp$h(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$8 = (a, b) => __defProps$8(a, __getOwnPropDescs$8(b));
 const generatedPackId = "dddg.generated.colors";
 const _sfc_main$i = defineComponent({
   components: {
@@ -13179,8 +14106,7 @@ const _sfc_main$i = defineComponent({
         poemBackgrounds: [],
         colors: []
       };
-      const newPack = {
-        ...existingPack,
+      const newPack = __spreadProps$8(__spreadValues$a({}, existingPack), {
         colors: [
           ...existingPack.colors,
           {
@@ -13188,7 +14114,7 @@ const _sfc_main$i = defineComponent({
             color: this.color
           }
         ]
-      };
+      });
       this.vuexHistory.transaction(() => {
         this.$store.dispatch("content/replaceContentPack", {
           contentPack: newPack,
@@ -13287,6 +14213,22 @@ function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
   ], 2);
 }
 const Color = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$i], ["__scopeId", "data-v-4896b45d"]]);
+var __defProp$g = Object.defineProperty;
+var __getOwnPropSymbols$9 = Object.getOwnPropertySymbols;
+var __hasOwnProp$9 = Object.prototype.hasOwnProperty;
+var __propIsEnum$9 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$g = (obj, key, value) => key in obj ? __defProp$g(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$9 = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$9.call(b, prop))
+      __defNormalProp$g(a, prop, b[prop]);
+  if (__getOwnPropSymbols$9)
+    for (var prop of __getOwnPropSymbols$9(b)) {
+      if (__propIsEnum$9.call(b, prop))
+        __defNormalProp$g(a, prop, b[prop]);
+    }
+  return a;
+};
 const percentageValue = /* @__PURE__ */ new Set([
   "brightness",
   "contrast",
@@ -13364,7 +14306,7 @@ function moveFilter(action, objLookup, setMutation) {
 function setFilter(action, objLookup, setMutation) {
   const obj = objLookup();
   const filters2 = [...obj.filters];
-  const filter = { ...filters2[action.idx] };
+  const filter = __spreadValues$9({}, filters2[action.idx]);
   filters2[action.idx] = filter;
   if (filter.type === "drop-shadow") {
     if (action.blurRadius !== void 0) {
@@ -13388,6 +14330,42 @@ function setFilter(action, objLookup, setMutation) {
     filters: filters2
   });
 }
+var __defProp$f = Object.defineProperty;
+var __getOwnPropSymbols$8 = Object.getOwnPropertySymbols;
+var __hasOwnProp$8 = Object.prototype.hasOwnProperty;
+var __propIsEnum$8 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$f = (obj, key, value) => key in obj ? __defProp$f(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$8 = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$8.call(b, prop))
+      __defNormalProp$f(a, prop, b[prop]);
+  if (__getOwnPropSymbols$8)
+    for (var prop of __getOwnPropSymbols$8(b)) {
+      if (__propIsEnum$8.call(b, prop))
+        __defNormalProp$f(a, prop, b[prop]);
+    }
+  return a;
+};
+var __async$h = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const filterText = /* @__PURE__ */ new Map([
   ["blur", "Blur"],
   ["brightness", "Brightness"],
@@ -13613,8 +14591,8 @@ const _sfc_main$h = defineComponent({
       this.currentFilterIdx = idx;
     },
     removeFilter() {
-      this.vuexHistory.transaction(async () => {
-        await this.$store.dispatch(this.objectTypeScope("removeFilter"), {
+      this.vuexHistory.transaction(() => __async$h(this, null, function* () {
+        yield this.$store.dispatch(this.objectTypeScope("removeFilter"), {
           id: this.id,
           panelId: this.panelId,
           idx: this.currentFilterIdx
@@ -13623,7 +14601,7 @@ const _sfc_main$h = defineComponent({
           this.currentFilterIdx = this.object.filters.length - 1;
         }
         return;
-      });
+      }));
     },
     moveFilter(moveBy) {
       this.vuexHistory.transaction(() => {
@@ -13639,12 +14617,11 @@ const _sfc_main$h = defineComponent({
     },
     setValue(value) {
       this.vuexHistory.transaction(() => {
-        this.$store.dispatch(this.objectTypeScope("setFilter"), {
+        this.$store.dispatch(this.objectTypeScope("setFilter"), __spreadValues$8({
           id: this.id,
           panelId: this.panelId,
-          idx: this.currentFilterIdx,
-          ...value
-        });
+          idx: this.currentFilterIdx
+        }, value));
       });
     },
     eightsStops(gen) {
@@ -14240,6 +15217,26 @@ function _sfc_render$g(_ctx, _cache, $props, $setup, $data, $options) {
   ], 2));
 }
 const TextEditor = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$g], ["__scopeId", "data-v-61424637"]]);
+var __async$g = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const setable$3 = genericSetable();
 const _sfc_main$f = defineComponent({
   mixins: [PanelMixin],
@@ -14294,13 +15291,13 @@ const _sfc_main$f = defineComponent({
       },
       set(value) {
         const val = value.trim() === "" ? null : parseInt(value);
-        this.vuexHistory.transaction(async () => {
+        this.vuexHistory.transaction(() => __async$g(this, null, function* () {
           this.$store.commit("panels/setObjectNameboxWidth", {
             id: this.object.id,
             panelId: this.object.panelId,
             nameboxWidth: val
           });
-        });
+        }));
       }
     },
     zoom: {
@@ -14308,13 +15305,13 @@ const _sfc_main$f = defineComponent({
         return this.object.zoom * 100;
       },
       set(zoom) {
-        this.vuexHistory.transaction(async () => {
+        this.vuexHistory.transaction(() => __async$g(this, null, function* () {
           this.$store.commit("panels/setObjectZoom", {
             id: this.object.id,
             panelId: this.object.panelId,
             zoom: zoom / 100
           });
-        });
+        }));
       }
     },
     defaultNameboxWidth() {
@@ -14335,24 +15332,24 @@ const _sfc_main$f = defineComponent({
         return this.object.textboxColor !== null;
       },
       set(val) {
-        this.vuexHistory.transaction(async () => {
+        this.vuexHistory.transaction(() => __async$g(this, null, function* () {
           this.$store.commit("panels/setTextboxColor", {
             panelId: this.object.panelId,
             id: this.object.id,
             textboxColor: val ? getConstants().TextBoxCustom.textboxDefaultColor : null
           });
-        });
+        }));
       }
     }
   },
   methods: {
     copy() {
-      this.vuexHistory.transaction(async () => {
-        await this.$store.dispatch("panels/copyObjectToClipboard", {
+      this.vuexHistory.transaction(() => __async$g(this, null, function* () {
+        yield this.$store.dispatch("panels/copyObjectToClipboard", {
           panelId: this.object.panelId,
           id: this.object.id
         });
-      });
+      }));
     },
     enableNameEdit() {
       var _a;
@@ -14362,13 +15359,13 @@ const _sfc_main$f = defineComponent({
     renameOption(option) {
       this.showRename = false;
       if (option === "Apply") {
-        this.vuexHistory.transaction(async () => {
+        this.vuexHistory.transaction(() => __async$g(this, null, function* () {
           this.$store.commit("panels/setLabel", {
             panelId: this.object.panelId,
             id: this.object.id,
             label: this.modalNameInput
           });
-        });
+        }));
       }
     },
     selectTextboxColor() {
@@ -14376,13 +15373,13 @@ const _sfc_main$f = defineComponent({
         title: "Textbox color",
         get: () => this.object.textboxColor,
         set: (color2) => {
-          this.vuexHistory.transaction(async () => {
+          this.vuexHistory.transaction(() => __async$g(this, null, function* () {
             this.$store.commit("panels/setTextboxColor", {
               panelId: this.object.panelId,
               id: this.object.id,
               textboxColor: color2
             });
-          });
+          }));
         },
         leave: () => {
           this.localColorHandler = null;
@@ -14808,6 +15805,45 @@ function between(min, val, max) {
     return max;
   return val;
 }
+var __defProp$e = Object.defineProperty;
+var __defProps$7 = Object.defineProperties;
+var __getOwnPropDescs$7 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$7 = Object.getOwnPropertySymbols;
+var __hasOwnProp$7 = Object.prototype.hasOwnProperty;
+var __propIsEnum$7 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$e = (obj, key, value) => key in obj ? __defProp$e(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$7 = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$7.call(b, prop))
+      __defNormalProp$e(a, prop, b[prop]);
+  if (__getOwnPropSymbols$7)
+    for (var prop of __getOwnPropSymbols$7(b)) {
+      if (__propIsEnum$7.call(b, prop))
+        __defNormalProp$e(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$7 = (a, b) => __defProps$7(a, __getOwnPropDescs$7(b));
+var __async$f = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const splitTextboxSpacing = 4;
 const textBoxMutations = {
   setTalkingObject(state, command) {
@@ -14852,9 +15888,7 @@ const textBoxActions = {
       rotation: 0
     };
     commit2("create", {
-      object: {
-        ...baseProps(),
-        ...resetBounds,
+      object: __spreadProps$7(__spreadValues$7(__spreadValues$7({}, baseProps()), resetBounds), {
         panelId: rootState.panels.currentPanel,
         id,
         onTop: true,
@@ -14878,7 +15912,7 @@ const textBoxActions = {
         talkingOther: "",
         text: (_a = command.text) != null ? _a : "Click here to edit the textbox",
         resetBounds
-      }
+      })
     });
     return id;
   },
@@ -14969,70 +16003,72 @@ const textBoxActions = {
       rotation: obj.resetBounds.rotation
     });
   },
-  async splitTextbox({ commit: commit2, state, dispatch: dispatch2 }, command) {
-    const obj = state.panels[command.panelId].objects[command.id];
-    if (obj.type !== "textBox")
-      return;
-    const newWidth = (obj.width - splitTextboxSpacing) / 2;
-    const centerDistance = newWidth / 2 + splitTextboxSpacing / 2;
-    const baseCenter = [obj.x, obj.y];
-    let boxOneCoords = [obj.x - centerDistance, obj.y];
-    let boxTwoCoords = [obj.x + centerDistance, obj.y];
-    if (obj.rotation !== 0) {
-      boxOneCoords = rotateAround(
-        boxOneCoords[0],
-        boxOneCoords[1],
-        baseCenter[0],
-        baseCenter[1],
-        obj.rotation / 180 * Math.PI
-      );
-      boxTwoCoords = rotateAround(
-        boxTwoCoords[0],
-        boxTwoCoords[1],
-        baseCenter[0],
-        baseCenter[1],
-        obj.rotation / 180 * Math.PI
-      );
-    }
-    commit2("setResetBounds", {
-      id: command.id,
-      panelId: command.panelId,
-      resetBounds: {
-        x: boxOneCoords[0],
-        y: boxOneCoords[1],
-        width: newWidth,
-        height: obj.height,
-        rotation: obj.rotation
+  splitTextbox(_0, _1) {
+    return __async$f(this, arguments, function* ({ commit: commit2, state, dispatch: dispatch2 }, command) {
+      const obj = state.panels[command.panelId].objects[command.id];
+      if (obj.type !== "textBox")
+        return;
+      const newWidth = (obj.width - splitTextboxSpacing) / 2;
+      const centerDistance = newWidth / 2 + splitTextboxSpacing / 2;
+      const baseCenter = [obj.x, obj.y];
+      let boxOneCoords = [obj.x - centerDistance, obj.y];
+      let boxTwoCoords = [obj.x + centerDistance, obj.y];
+      if (obj.rotation !== 0) {
+        boxOneCoords = rotateAround(
+          boxOneCoords[0],
+          boxOneCoords[1],
+          baseCenter[0],
+          baseCenter[1],
+          obj.rotation / 180 * Math.PI
+        );
+        boxTwoCoords = rotateAround(
+          boxTwoCoords[0],
+          boxTwoCoords[1],
+          baseCenter[0],
+          baseCenter[1],
+          obj.rotation / 180 * Math.PI
+        );
       }
-    });
-    const newStyle = obj.style === "custom_plus" ? "custom_plus" : "custom";
-    if (obj.style !== newStyle) {
-      await dispatch2(
-        "setStyle",
-        textboxProperty(command.panelId, command.id, "style", newStyle)
-      );
-    }
-    const id = await dispatch2("createTextBox", {
-      panelId: command.panelId,
-      resetBounds: {
-        x: boxTwoCoords[0],
-        y: boxTwoCoords[1],
-        width: newWidth,
-        height: obj.height,
-        rotation: obj.rotation
-      }
-    });
-    await dispatch2(
-      "setStyle",
-      textboxProperty(command.panelId, id, "style", newStyle)
-    );
-    if (obj.flip) {
-      commit2("setFlip", {
-        id,
+      commit2("setResetBounds", {
+        id: command.id,
         panelId: command.panelId,
-        flip: obj.flip
+        resetBounds: {
+          x: boxOneCoords[0],
+          y: boxOneCoords[1],
+          width: newWidth,
+          height: obj.height,
+          rotation: obj.rotation
+        }
       });
-    }
+      const newStyle = obj.style === "custom_plus" ? "custom_plus" : "custom";
+      if (obj.style !== newStyle) {
+        yield dispatch2(
+          "setStyle",
+          textboxProperty(command.panelId, command.id, "style", newStyle)
+        );
+      }
+      const id = yield dispatch2("createTextBox", {
+        panelId: command.panelId,
+        resetBounds: {
+          x: boxTwoCoords[0],
+          y: boxTwoCoords[1],
+          width: newWidth,
+          height: obj.height,
+          rotation: obj.rotation
+        }
+      });
+      yield dispatch2(
+        "setStyle",
+        textboxProperty(command.panelId, id, "style", newStyle)
+      );
+      if (obj.flip) {
+        commit2("setFlip", {
+          id,
+          panelId: command.panelId,
+          flip: obj.flip
+        });
+      }
+    });
   }
 };
 function textboxProperty(panelId, id, key, value) {
@@ -15958,6 +16994,26 @@ function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const CreditsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$a], ["__scopeId", "data-v-8073b468"]]);
+var __async$e = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const _sfc_main$9 = defineComponent({
   props: {
     backgroundId: {
@@ -16006,12 +17062,14 @@ const _sfc_main$9 = defineComponent({
       };
     }
   },
-  async created() {
-    if (this.bgData) {
-      this.assets = await Promise.all(
-        this.bgData.variants[0].map((asset) => getAAsset(asset, false))
-      );
-    }
+  created() {
+    return __async$e(this, null, function* () {
+      if (this.bgData) {
+        this.assets = yield Promise.all(
+          this.bgData.variants[0].map((asset) => getAAsset(asset, false))
+        );
+      }
+    });
   }
 });
 const button_vue_vue_type_style_index_0_scoped_ea8d7586_lang = "";
@@ -16244,7 +17302,7 @@ const _sfc_main$7 = defineComponent({
       ];
     },
     showBackgroundsFolder() {
-      return environment.supports.openableFolders.has(
+      return envX.supports.openableFolders.has(
         "backgrounds"
       );
     }
@@ -16302,7 +17360,7 @@ const _sfc_main$7 = defineComponent({
       this.$refs.dt.show();
     },
     openBackgroundFolder() {
-      environment.openFolder("backgrounds");
+      envX.openFolder("backgrounds");
     }
   }
 });
@@ -16399,32 +17457,91 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
   ], 32);
 }
 const BackgroundsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7], ["__scopeId", "data-v-c2230f18"]]);
+var __defProp$d = Object.defineProperty;
+var __defProps$6 = Object.defineProperties;
+var __getOwnPropDescs$6 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$6 = Object.getOwnPropertySymbols;
+var __hasOwnProp$6 = Object.prototype.hasOwnProperty;
+var __propIsEnum$6 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$d = (obj, key, value) => key in obj ? __defProp$d(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$6 = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$6.call(b, prop))
+      __defNormalProp$d(a, prop, b[prop]);
+  if (__getOwnPropSymbols$6)
+    for (var prop of __getOwnPropSymbols$6(b)) {
+      if (__propIsEnum$6.call(b, prop))
+        __defNormalProp$d(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$6 = (a, b) => __defProps$6(a, __getOwnPropDescs$6(b));
+var __async$d = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const spriteMutations = {};
 const spriteActions = {
-  async createSprite({ commit: commit2, rootState, state }, command) {
-    const asset = await getAAsset(command.assets[0], false);
-    if (!(asset instanceof ImageAsset))
-      return;
-    const id = state.panels[command.panelId].lastObjId + 1;
-    commit2("create", {
-      object: {
-        ...baseProps(),
-        assets: command.assets,
-        height: asset.height,
-        width: asset.width,
-        id,
-        panelId: rootState.panels.currentPanel,
-        onTop: false,
-        preserveRatio: true,
-        ratio: asset.width / asset.height,
-        type: "sprite",
-        y: 0,
-        enlargeWhenTalking: rootState.ui.defaultCharacterTalkingZoom
-      }
+  createSprite(_0, _1) {
+    return __async$d(this, arguments, function* ({ commit: commit2, rootState, state }, command) {
+      const asset = yield getAAsset(command.assets[0], false);
+      if (!(asset instanceof ImageAsset))
+        return;
+      const id = state.panels[command.panelId].lastObjId + 1;
+      commit2("create", {
+        object: __spreadProps$6(__spreadValues$6({}, baseProps()), {
+          assets: command.assets,
+          height: asset.height,
+          width: asset.width,
+          id,
+          panelId: rootState.panels.currentPanel,
+          onTop: false,
+          preserveRatio: true,
+          ratio: asset.width / asset.height,
+          type: "sprite",
+          y: 0,
+          enlargeWhenTalking: rootState.ui.defaultCharacterTalkingZoom
+        })
+      });
+      return id;
     });
-    return id;
   }
 };
+var __defProp$c = Object.defineProperty;
+var __defProps$5 = Object.defineProperties;
+var __getOwnPropDescs$5 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$5 = Object.getOwnPropertySymbols;
+var __hasOwnProp$5 = Object.prototype.hasOwnProperty;
+var __propIsEnum$5 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$c = (obj, key, value) => key in obj ? __defProp$c(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$5 = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$5.call(b, prop))
+      __defNormalProp$c(a, prop, b[prop]);
+  if (__getOwnPropSymbols$5)
+    for (var prop of __getOwnPropSymbols$5(b)) {
+      if (__propIsEnum$5.call(b, prop))
+        __defNormalProp$c(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$5 = (a, b) => __defProps$5(a, __getOwnPropDescs$5(b));
 const choiceMutations = {
   setChoicesProperty(state, command) {
     const obj = state.panels[command.panelId].objects[command.id];
@@ -16447,8 +17564,7 @@ const choiceActions = {
     const constants = getConstants();
     const id = state.panels[command.panelId].lastObjId + 1;
     commit2("create", {
-      object: {
-        ...baseProps(),
+      object: __spreadProps$5(__spreadValues$5({}, baseProps()), {
         y: constants.Choices.ChoiceY,
         width: constants.Choices.ChoiceButtonWidth,
         height: 0,
@@ -16467,7 +17583,7 @@ const choiceActions = {
           }
         ],
         customColor: constants.Choices.ChoiceButtonColor
-      }
+      })
     });
     return id;
   },
@@ -16502,6 +17618,25 @@ const choiceActions = {
     });
   }
 };
+var __defProp$b = Object.defineProperty;
+var __defProps$4 = Object.defineProperties;
+var __getOwnPropDescs$4 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$4 = Object.getOwnPropertySymbols;
+var __hasOwnProp$4 = Object.prototype.hasOwnProperty;
+var __propIsEnum$4 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$b = (obj, key, value) => key in obj ? __defProp$b(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$4 = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$4.call(b, prop))
+      __defNormalProp$b(a, prop, b[prop]);
+  if (__getOwnPropSymbols$4)
+    for (var prop of __getOwnPropSymbols$4(b)) {
+      if (__propIsEnum$4.call(b, prop))
+        __defNormalProp$b(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$4 = (a, b) => __defProps$4(a, __getOwnPropDescs$4(b));
 const notificationMutations = {
   setNotificationProperty(state, command) {
     const obj = state.panels[command.panelId].objects[command.id];
@@ -16514,8 +17649,7 @@ const notificationActions = {
     const constants = getConstants();
     const id = state.panels[command.panelId].lastObjId + 1;
     commit2("create", {
-      object: {
-        ...baseProps(),
+      object: __spreadProps$4(__spreadValues$4({}, baseProps()), {
         y: constants.Base.screenHeight / 2,
         width: constants.Choices.ChoiceButtonWidth,
         height: 0,
@@ -16529,11 +17663,30 @@ const notificationActions = {
         customColor: constants.Choices.ChoiceButtonColor,
         text: "Click here to edit notification",
         backdrop: true
-      }
+      })
     });
     return id;
   }
 };
+var __defProp$a = Object.defineProperty;
+var __defProps$3 = Object.defineProperties;
+var __getOwnPropDescs$3 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$3 = Object.getOwnPropertySymbols;
+var __hasOwnProp$3 = Object.prototype.hasOwnProperty;
+var __propIsEnum$3 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$a = (obj, key, value) => key in obj ? __defProp$a(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$3 = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$3.call(b, prop))
+      __defNormalProp$a(a, prop, b[prop]);
+  if (__getOwnPropSymbols$3)
+    for (var prop of __getOwnPropSymbols$3(b)) {
+      if (__propIsEnum$3.call(b, prop))
+        __defNormalProp$a(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$3 = (a, b) => __defProps$3(a, __getOwnPropDescs$3(b));
 const poemMutations = {
   setPoemProperty(state, command) {
     const obj = state.panels[command.panelId].objects[command.id];
@@ -16581,8 +17734,7 @@ const poemActions = {
     const constants = getConstants();
     const id = state.panels[_command.panelId].lastObjId + 1;
     commit2("create", {
-      object: {
-        ...baseProps(),
+      object: __spreadProps$3(__spreadValues$3({}, baseProps()), {
         subType: "console",
         x: constants.Poem.consoleWidth / 2,
         y: constants.Poem.consoleHeight / 2,
@@ -16598,12 +17750,31 @@ const poemActions = {
         font: constants.Poem.defaultConsoleStyle,
         text: "> _\n  \n  Console command\n  Click here to edit",
         autoWrap: true
-      }
+      })
     });
     return id;
   }
 };
-const mutations = {
+var __defProp$9 = Object.defineProperty;
+var __defProps$2 = Object.defineProperties;
+var __getOwnPropDescs$2 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$2 = Object.getOwnPropertySymbols;
+var __hasOwnProp$2 = Object.prototype.hasOwnProperty;
+var __propIsEnum$2 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$9 = (obj, key, value) => key in obj ? __defProp$9(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$2 = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$2.call(b, prop))
+      __defNormalProp$9(a, prop, b[prop]);
+  if (__getOwnPropSymbols$2)
+    for (var prop of __getOwnPropSymbols$2(b)) {
+      if (__propIsEnum$2.call(b, prop))
+        __defNormalProp$9(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$2 = (a, b) => __defProps$2(a, __getOwnPropDescs$2(b));
+const mutations = __spreadValues$2(__spreadValues$2(__spreadValues$2(__spreadValues$2(__spreadValues$2(__spreadValues$2({
   create(state, { object }) {
     const panel = state.panels[object.panelId];
     if (object.id > panel.lastObjId)
@@ -16697,15 +17868,9 @@ const mutations = {
     const obj = panel.objects[command.id];
     obj.zoom = command.zoom;
     ++obj.version;
-  },
-  ...spriteMutations,
-  ...characterMutations,
-  ...textBoxMutations,
-  ...choiceMutations,
-  ...notificationMutations,
-  ...poemMutations
-};
-const actions = {
+  }
+}, spriteMutations), characterMutations), textBoxMutations), choiceMutations), notificationMutations), poemMutations);
+const actions = __spreadValues$2(__spreadValues$2(__spreadValues$2(__spreadValues$2(__spreadValues$2(__spreadValues$2({
   removeObject({ state, commit: commit2, rootState }, command) {
     var _a;
     const panel = state.panels[command.panelId];
@@ -16845,11 +18010,10 @@ const actions = {
         }
       }
       commit2("create", {
-        object: {
-          ...newObject,
+        object: __spreadProps$2(__spreadValues$2({}, newObject), {
           id: transationTable.get(sourceId),
           panelId: targetPanelId
-        }
+        })
       });
     }
   },
@@ -16862,11 +18026,10 @@ const actions = {
       return;
     const oldObject = JSON.parse(rootState.ui.clipboard);
     commit2("create", {
-      object: {
-        ...oldObject,
+      object: __spreadProps$2(__spreadValues$2({}, oldObject), {
         id: state.panels[state.currentPanel].lastObjId + 1,
         panelId: state.currentPanel
-      }
+      })
     });
   },
   object_addFilter({ state, commit: commit2 }, action) {
@@ -16896,14 +18059,8 @@ const actions = {
       () => state.panels[action.panelId].objects[action.id],
       (mutation) => commit2("object_setFilters", mutation)
     );
-  },
-  ...spriteActions,
-  ...characterActions,
-  ...textBoxActions,
-  ...choiceActions,
-  ...notificationActions,
-  ...poemActions
-};
+  }
+}, spriteActions), characterActions), textBoxActions), choiceActions), notificationActions), poemActions);
 function fixContentPackRemoval(context, oldContent) {
   const panels2 = context.state.panels;
   for (const panelId in panels2) {
@@ -16922,6 +18079,25 @@ function fixContentPackRemoval(context, oldContent) {
     }
   }
 }
+var __defProp$8 = Object.defineProperty;
+var __defProps$1 = Object.defineProperties;
+var __getOwnPropDescs$1 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$1 = Object.getOwnPropertySymbols;
+var __hasOwnProp$1 = Object.prototype.hasOwnProperty;
+var __propIsEnum$1 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$8 = (obj, key, value) => key in obj ? __defProp$8(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$1 = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$1.call(b, prop))
+      __defNormalProp$8(a, prop, b[prop]);
+  if (__getOwnPropSymbols$1)
+    for (var prop of __getOwnPropSymbols$1(b)) {
+      if (__propIsEnum$1.call(b, prop))
+        __defNormalProp$8(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$1 = (a, b) => __defProps$1(a, __getOwnPropDescs$1(b));
 var ScalingModes = /* @__PURE__ */ ((ScalingModes2) => {
   ScalingModes2[ScalingModes2["None"] = 0] = "None";
   ScalingModes2[ScalingModes2["Stretch"] = 1] = "Stretch";
@@ -16965,7 +18141,7 @@ const panels = {
     panelOrder: [],
     currentPanel: null
   },
-  mutations: {
+  mutations: __spreadValues$1({
     setCurrentPanel(state, { panelId }) {
       state.currentPanel = panelId;
     },
@@ -17023,10 +18199,9 @@ const panels = {
     backgroundSetFilters(state, command) {
       const obj = state.panels[command.panelId];
       obj.background.filters = command.filters;
-    },
-    ...mutations
-  },
-  actions: {
+    }
+  }, mutations),
+  actions: __spreadValues$1({
     createPanel({ state, commit: commit2 }) {
       const id = state.lastPanelId + 1;
       commit2("createPanel", {
@@ -17085,8 +18260,7 @@ const panels = {
         }
       }
       commit2("createPanel", {
-        panel: {
-          ...newPanel,
+        panel: __spreadProps$1(__spreadValues$1({}, newPanel), {
           id,
           lastObjId,
           objects: newObjects,
@@ -17094,7 +18268,7 @@ const panels = {
           onTopOrder: newPanel.onTopOrder.map(
             (oldId) => transationTable.get(oldId)
           )
-        }
+        })
       });
       const oldIdx = state.panelOrder.indexOf(panelId);
       commit2("setPanelOrder", {
@@ -17247,9 +18421,28 @@ const panels = {
         () => state.panels[action.panelId].background,
         (mutation) => commit2("backgroundSetFilters", mutation)
       );
-    },
-    ...actions
-  }
+    }
+  }, actions)
+};
+var __async$c = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
 };
 class Background {
   constructor(id, assets, flip, scale, compositeMode, filters2) {
@@ -17260,70 +18453,100 @@ class Background {
     this.compositeMode = compositeMode;
     this.filters = filters2;
   }
-  async render(rx) {
-    const { screenWidth: screenWidth2, screenHeight: screenHeight2 } = getConstants().Base;
-    const images = await Promise.all(
-      this.assets.map((asset) => getAAsset(asset, rx.hq))
-    );
-    for (const image of images) {
-      let x = 0;
-      let y = 0;
-      let w = image.width;
-      let h2 = image.height;
-      switch (this.scale) {
-        case ScalingModes.None:
-          x = screenWidth2 / 2 - w / 2;
-          y = screenHeight2 / 2 - h2 / 2;
-          break;
-        case ScalingModes.Stretch:
-          w = screenWidth2;
-          h2 = screenHeight2;
-          break;
-        case ScalingModes.Cover:
-          const ratio = w / h2;
-          const screenRatio = screenWidth2 / screenHeight2;
-          if (ratio > screenRatio) {
-            h2 = screenHeight2;
-            w = h2 * ratio;
-          } else {
+  render(rx) {
+    return __async$c(this, null, function* () {
+      const { screenWidth: screenWidth2, screenHeight: screenHeight2 } = getConstants().Base;
+      const images = yield Promise.all(
+        this.assets.map((asset) => getAAsset(asset, rx.hq))
+      );
+      for (const image of images) {
+        let x = 0;
+        let y = 0;
+        let w = image.width;
+        let h2 = image.height;
+        switch (this.scale) {
+          case ScalingModes.None:
+            x = screenWidth2 / 2 - w / 2;
+            y = screenHeight2 / 2 - h2 / 2;
+            break;
+          case ScalingModes.Stretch:
             w = screenWidth2;
-            h2 = w / ratio;
-          }
-          x = screenWidth2 / 2 - w / 2;
-          y = screenHeight2 / 2 - h2 / 2;
+            h2 = screenHeight2;
+            break;
+          case ScalingModes.Cover:
+            const ratio = w / h2;
+            const screenRatio = screenWidth2 / screenHeight2;
+            if (ratio > screenRatio) {
+              h2 = screenHeight2;
+              w = h2 * ratio;
+            } else {
+              w = screenWidth2;
+              h2 = w / ratio;
+            }
+            x = screenWidth2 / 2 - w / 2;
+            y = screenHeight2 / 2 - h2 / 2;
+        }
+        rx.drawImage({
+          image,
+          x,
+          y,
+          w,
+          h: h2,
+          flip: this.flip,
+          composite: this.compositeMode,
+          filters: this.filters
+        });
       }
-      rx.drawImage({
-        image,
-        x,
-        y,
-        w,
-        h: h2,
-        flip: this.flip,
-        composite: this.compositeMode,
-        filters: this.filters
-      });
-    }
+    });
   }
 }
 const color = {
   id: "buildin.static-color",
   name: "Static color",
   color: "#000000",
-  async render(rx) {
-    const { screenWidth: screenWidth2, screenHeight: screenHeight2 } = getConstants().Base;
-    rx.drawRect({
-      x: 0,
-      y: 0,
-      w: screenWidth2,
-      h: screenHeight2,
-      fill: { style: this.color }
+  render(rx) {
+    return __async$c(this, null, function* () {
+      const { screenWidth: screenWidth2, screenHeight: screenHeight2 } = getConstants().Base;
+      rx.drawRect({
+        x: 0,
+        y: 0,
+        w: screenWidth2,
+        h: screenHeight2,
+        fill: { style: this.color }
+      });
     });
   }
+};
+var __defProp$7 = Object.defineProperty;
+var __defNormalProp$7 = (obj, key, value) => key in obj ? __defProp$7(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$6 = (obj, key, value) => {
+  __defNormalProp$7(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$b = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
 };
 class AssetListRenderable extends OffscreenRenderable {
   constructor() {
     super(...arguments);
-    __publicField(this, "refTextbox", null);
+    __publicField$6(this, "refTextbox", null);
   }
   get canvasDrawWidth() {
     return this.width * this.objZoom;
@@ -17364,84 +18587,122 @@ class AssetListRenderable extends OffscreenRenderable {
       }
     }
   }
-  async renderLocal(rx) {
-    const drawAssetsUnloaded = this.getAssetList();
-    const loadedDraws = await Promise.all(
-      drawAssetsUnloaded.filter((drawAsset) => drawAsset.assets).map((drawAsset) => loadAssets(drawAsset, rx.hq))
-    );
-    for (const loadedDraw of loadedDraws) {
-      for (const asset of loadedDraw.assets) {
-        rx.drawImage({
-          image: asset,
-          composite: loadedDraw.composite,
-          x: loadedDraw.offset[0],
-          y: loadedDraw.offset[1]
-        });
+  renderLocal(rx) {
+    return __async$b(this, null, function* () {
+      const drawAssetsUnloaded = this.getAssetList();
+      const loadedDraws = yield Promise.all(
+        drawAssetsUnloaded.filter((drawAsset) => drawAsset.assets).map((drawAsset) => loadAssets(drawAsset, rx.hq))
+      );
+      for (const loadedDraw of loadedDraws) {
+        for (const asset of loadedDraw.assets) {
+          rx.drawImage({
+            image: asset,
+            composite: loadedDraw.composite,
+            x: loadedDraw.offset[0],
+            y: loadedDraw.offset[1]
+          });
+        }
       }
-    }
+    });
   }
 }
-async function loadAssets(unloaded, hq) {
-  if ("loaded" in unloaded)
-    return unloaded;
-  return {
-    loaded: true,
-    offset: unloaded.offset,
-    assets: await Promise.all(
-      unloaded.assets.map((asset) => getAAsset(asset, hq))
-    ),
-    composite: unloaded.composite
-  };
+function loadAssets(unloaded, hq) {
+  return __async$b(this, null, function* () {
+    if ("loaded" in unloaded)
+      return unloaded;
+    return {
+      loaded: true,
+      offset: unloaded.offset,
+      assets: yield Promise.all(
+        unloaded.assets.map((asset) => getAAsset(asset, hq))
+      ),
+      composite: unloaded.composite
+    };
+  });
 }
+var __defProp$6 = Object.defineProperty;
+var __defNormalProp$6 = (obj, key, value) => key in obj ? __defProp$6(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$5 = (obj, key, value) => {
+  __defNormalProp$6(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$a = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 class Sprite extends AssetListRenderable {
   constructor(obj) {
     super(obj);
-    __publicField(this, "assets");
-    __publicField(this, "ready", null);
-    __publicField(this, "canvasHeight", 0);
-    __publicField(this, "canvasWidth", 0);
+    __publicField$5(this, "assets");
+    __publicField$5(this, "ready", null);
+    __publicField$5(this, "canvasHeight", 0);
+    __publicField$5(this, "canvasWidth", 0);
     this.init();
   }
   get version() {
     return this.assets === null ? -1 : this.obj.version;
   }
-  async init() {
-    let readyResolve;
-    this.ready = new Promise((resolve2, _reject) => {
-      readyResolve = resolve2;
-    });
-    const assets = await Promise.all(
-      this.obj.assets.map((asset) => getAAsset(asset))
-    );
-    let width = 0;
-    let height = 0;
-    for (const asset of assets) {
-      if (asset.height > height)
-        height = asset.height;
-      if (asset.width > width)
-        width = asset.width;
-    }
-    this.canvasWidth = width;
-    this.canvasHeight = height;
-    this.assets = [
-      {
-        loaded: true,
-        assets,
-        offset: [0, 0]
+  init() {
+    return __async$a(this, null, function* () {
+      let readyResolve;
+      this.ready = new Promise((resolve2, _reject) => {
+        readyResolve = resolve2;
+      });
+      const assets = yield Promise.all(
+        this.obj.assets.map((asset) => getAAsset(asset))
+      );
+      let width = 0;
+      let height = 0;
+      for (const asset of assets) {
+        if (asset.height > height)
+          height = asset.height;
+        if (asset.width > width)
+          width = asset.width;
       }
-    ];
-    readyResolve();
+      this.canvasWidth = width;
+      this.canvasHeight = height;
+      this.assets = [
+        {
+          loaded: true,
+          assets,
+          offset: [0, 0]
+        }
+      ];
+      readyResolve();
+    });
   }
   getAssetList() {
     var _a;
     return (_a = this.assets) != null ? _a : [];
   }
 }
+var __defProp$5 = Object.defineProperty;
+var __defNormalProp$5 = (obj, key, value) => key in obj ? __defProp$5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$4 = (obj, key, value) => {
+  __defNormalProp$5(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
 class Character extends AssetListRenderable {
   constructor(obj, data) {
     super(obj);
-    __publicField(this, "scaleable", true);
     this.data = data;
+    __publicField$4(this, "scaleable", true);
   }
   updatedContent(store2, panelId) {
     super.updatedContent(store2, panelId);
@@ -17506,11 +18767,37 @@ class Character extends AssetListRenderable {
     return this.obj.height * this.closeZoom;
   }
 }
+var __defProp$4 = Object.defineProperty;
+var __defNormalProp$4 = (obj, key, value) => key in obj ? __defProp$4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$3 = (obj, key, value) => {
+  __defNormalProp$4(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$9 = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 class Choice extends ScalingRenderable {
   constructor() {
     super(...arguments);
-    __publicField(this, "_height", 0);
-    __publicField(this, "choiceRenderers", []);
+    __publicField$3(this, "_height", 0);
+    __publicField$3(this, "choiceRenderers", []);
   }
   get height() {
     return this._height;
@@ -17518,60 +18805,93 @@ class Choice extends ScalingRenderable {
   get centeredVertically() {
     return true;
   }
-  async draw(rx) {
-    await this.updateChoiceBounds();
-    const constants = getConstants();
-    const w = this.obj.width;
-    const h2 = this.height;
-    const w2 = w / 2;
-    const baseX = this.flip ? constants.Base.screenWidth - this.obj.x : this.obj.x;
-    const x = baseX - w2;
-    let y = this.obj.y - h2 / 2;
-    for (const choiceRenderer of this.choiceRenderers) {
-      await choiceRenderer.loadFonts();
-      const height = choiceRenderer.getHeight(
-        this.obj.autoWrap ? this.obj.width : 0
-      );
-      rx.drawRect({
-        x,
-        y,
-        w,
-        h: height + constants.Choices.ChoicePadding * 2,
-        outline: {
-          style: constants.Choices.ChoiceButtonBorderColor,
-          width: constants.Choices.Outline
-        },
-        fill: {
-          style: constants.Choices.ChoiceButtonColor
-        }
-      });
-      choiceRenderer.fixAlignment(
-        "center",
-        x,
-        x + w,
-        y + constants.Choices.ChoiceSpacing * 1.25,
-        this.obj.autoWrap ? w : 0
-      );
-      choiceRenderer.render(rx.fsCtx);
-      y += height + constants.Choices.ChoicePadding * 2 + constants.Choices.ChoiceSpacing;
-    }
+  draw(rx) {
+    return __async$9(this, null, function* () {
+      yield this.updateChoiceBounds();
+      const constants = getConstants();
+      const w = this.obj.width;
+      const h2 = this.height;
+      const w2 = w / 2;
+      const baseX = this.flip ? constants.Base.screenWidth - this.obj.x : this.obj.x;
+      const x = baseX - w2;
+      let y = this.obj.y - h2 / 2;
+      for (const choiceRenderer of this.choiceRenderers) {
+        yield choiceRenderer.loadFonts();
+        const height = choiceRenderer.getHeight(
+          this.obj.autoWrap ? this.obj.width : 0
+        );
+        rx.drawRect({
+          x,
+          y,
+          w,
+          h: height + constants.Choices.ChoicePadding * 2,
+          outline: {
+            style: constants.Choices.ChoiceButtonBorderColor,
+            width: constants.Choices.Outline
+          },
+          fill: {
+            style: constants.Choices.ChoiceButtonColor
+          }
+        });
+        choiceRenderer.fixAlignment(
+          "center",
+          x,
+          x + w,
+          y + constants.Choices.ChoiceSpacing * 1.25,
+          this.obj.autoWrap ? w : 0
+        );
+        choiceRenderer.render(rx.fsCtx);
+        y += height + constants.Choices.ChoicePadding * 2 + constants.Choices.ChoiceSpacing;
+      }
+    });
   }
-  async updateChoiceBounds() {
-    const constants = getConstants();
-    this.choiceRenderers = this.obj.choices.map(
-      (choice) => new TextRenderer(choice.text || " ", constants.Choices.ChoiceTextStyle)
-    );
-    this._height = this.choiceRenderers.reduce(
-      (acc, renderer2) => acc + renderer2.getHeight(this.obj.autoWrap ? this.obj.width : 0) + constants.Choices.ChoicePadding * 2,
-      0
-    ) + this.obj.choiceDistance * (this.obj.choices.length - 1);
+  updateChoiceBounds() {
+    return __async$9(this, null, function* () {
+      const constants = getConstants();
+      this.choiceRenderers = this.obj.choices.map(
+        (choice) => new TextRenderer(choice.text || " ", constants.Choices.ChoiceTextStyle)
+      );
+      this._height = this.choiceRenderers.reduce(
+        (acc, renderer2) => acc + renderer2.getHeight(this.obj.autoWrap ? this.obj.width : 0) + constants.Choices.ChoicePadding * 2,
+        0
+      ) + this.obj.choiceDistance * (this.obj.choices.length - 1);
+    });
   }
 }
+var __defProp$3 = Object.defineProperty;
+var __getProtoOf = Object.getPrototypeOf;
+var __reflectGet = Reflect.get;
+var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$2 = (obj, key, value) => {
+  __defNormalProp$3(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __superGet = (cls, obj, key) => __reflectGet(__getProtoOf(cls), key, obj);
+var __async$8 = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 class Notification extends ScalingRenderable {
   constructor() {
     super(...arguments);
-    __publicField(this, "_height", 0);
-    __publicField(this, "_width", 0);
+    __publicField$2(this, "_height", 0);
+    __publicField$2(this, "_width", 0);
   }
   get height() {
     return this._height;
@@ -17585,75 +18905,105 @@ class Notification extends ScalingRenderable {
   get id() {
     return this.obj.id;
   }
-  async render(selected, rx) {
-    const constants = getConstants();
-    if (this.obj.backdrop) {
+  render(selected, rx) {
+    return __async$8(this, null, function* () {
+      const constants = getConstants();
+      if (this.obj.backdrop) {
+        rx.drawRect({
+          x: 0,
+          y: 0,
+          w: constants.Base.screenWidth,
+          h: constants.Base.screenHeight,
+          fill: {
+            style: getConstants().Notification.NotificationBackdropColor
+          }
+        });
+      }
+      yield __superGet(Notification.prototype, this, "render").call(this, selected, rx);
+    });
+  }
+  draw(rx) {
+    return __async$8(this, null, function* () {
+      const constants = getConstants();
+      const textRenderer = new TextRenderer(
+        this.obj.text,
+        constants.Notification.NotificationTextStyle
+      );
+      const buttonRenderer = new TextRenderer(
+        "OK",
+        constants.Notification.NotificationOkTextStyle
+      );
+      yield textRenderer.loadFonts();
+      yield buttonRenderer.loadFonts();
+      const lineWrap = this.obj.autoWrap ? this.obj.width - constants.Notification.NotificationPadding * 2 : 0;
+      const textWidth = this.obj.autoWrap ? lineWrap : textRenderer.getWidth();
+      const textHeight = textRenderer.getHeight(lineWrap);
+      const buttonWidth = this.obj.autoWrap ? lineWrap : buttonRenderer.getWidth();
+      const buttonHeight = buttonRenderer.getHeight(lineWrap);
+      const w = this._width = Math.max(textWidth, buttonWidth) + constants.Notification.NotificationPadding * 2;
+      const h2 = this._height = textHeight + constants.Notification.NotificationPadding * 2 + constants.Notification.NotificationSpacing + buttonHeight;
+      const w2 = w / 2;
+      const baseX = this.flip ? constants.Base.screenWidth - this.obj.x : this.obj.x;
+      const x = baseX - w2;
+      const y = this.obj.y - h2 / 2;
       rx.drawRect({
-        x: 0,
-        y: 0,
-        w: constants.Base.screenWidth,
-        h: constants.Base.screenHeight,
+        x,
+        y,
+        w,
+        h: h2,
+        outline: {
+          style: constants.Choices.ChoiceButtonBorderColor,
+          width: 3
+        },
         fill: {
-          style: getConstants().Notification.NotificationBackdropColor
+          style: constants.Choices.ChoiceButtonColor
         }
       });
-    }
-    await super.render(selected, rx);
-  }
-  async draw(rx) {
-    const constants = getConstants();
-    const textRenderer = new TextRenderer(
-      this.obj.text,
-      constants.Notification.NotificationTextStyle
-    );
-    const buttonRenderer = new TextRenderer(
-      "OK",
-      constants.Notification.NotificationOkTextStyle
-    );
-    await textRenderer.loadFonts();
-    await buttonRenderer.loadFonts();
-    const lineWrap = this.obj.autoWrap ? this.obj.width - constants.Notification.NotificationPadding * 2 : 0;
-    const textWidth = this.obj.autoWrap ? lineWrap : textRenderer.getWidth();
-    const textHeight = textRenderer.getHeight(lineWrap);
-    const buttonWidth = this.obj.autoWrap ? lineWrap : buttonRenderer.getWidth();
-    const buttonHeight = buttonRenderer.getHeight(lineWrap);
-    const w = this._width = Math.max(textWidth, buttonWidth) + constants.Notification.NotificationPadding * 2;
-    const h2 = this._height = textHeight + constants.Notification.NotificationPadding * 2 + constants.Notification.NotificationSpacing + buttonHeight;
-    const w2 = w / 2;
-    const baseX = this.flip ? constants.Base.screenWidth - this.obj.x : this.obj.x;
-    const x = baseX - w2;
-    const y = this.obj.y - h2 / 2;
-    rx.drawRect({
-      x,
-      y,
-      w,
-      h: h2,
-      outline: {
-        style: constants.Choices.ChoiceButtonBorderColor,
-        width: 3
-      },
-      fill: {
-        style: constants.Choices.ChoiceButtonColor
-      }
+      textRenderer.fixAlignment(
+        "center",
+        x,
+        x + w,
+        y + constants.Notification.NotificationPadding * 1.5,
+        lineWrap
+      );
+      textRenderer.render(rx.fsCtx);
+      buttonRenderer.fixAlignment(
+        "center",
+        x,
+        x + w,
+        y + h2 - constants.Notification.NotificationPadding,
+        lineWrap
+      );
+      buttonRenderer.render(rx.fsCtx);
     });
-    textRenderer.fixAlignment(
-      "center",
-      x,
-      x + w,
-      y + constants.Notification.NotificationPadding * 1.5,
-      lineWrap
-    );
-    textRenderer.render(rx.fsCtx);
-    buttonRenderer.fixAlignment(
-      "center",
-      x,
-      x + w,
-      y + h2 - constants.Notification.NotificationPadding,
-      lineWrap
-    );
-    buttonRenderer.render(rx.fsCtx);
   }
 }
+var __defProp$2 = Object.defineProperty;
+var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$1 = (obj, key, value) => {
+  __defNormalProp$2(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$7 = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const consolePadding = -2;
 const consoleTopPadding = 26;
 const consoleLineWrapPadding = 10;
@@ -17661,8 +19011,8 @@ const poemTopMargin = 10;
 class Poem extends ScalingRenderable {
   constructor() {
     super(...arguments);
-    __publicField(this, "_height", 0);
-    __publicField(this, "_width", 0);
+    __publicField$1(this, "_height", 0);
+    __publicField$1(this, "_width", 0);
   }
   get height() {
     return this._height;
@@ -17673,66 +19023,94 @@ class Poem extends ScalingRenderable {
   get centeredVertically() {
     return true;
   }
-  async draw(rx) {
-    const constants = getConstants();
-    const paper = constants.Poem.poemBackgrounds[this.obj.background];
-    const flippedX = this.flip ? constants.Base.screenWidth - this.obj.x : this.obj.x;
-    let y = this.obj.y;
-    let x = flippedX + poemTopMargin;
-    let padding = constants.Poem.poemPadding;
-    let topPadding = constants.Poem.poemTopPadding;
-    let lineWrapPadding = padding * 2;
-    if (paper.file === "internal:console") {
-      const h2 = this._height = this.obj.height;
-      const w = this._width = this.obj.width;
-      rx.drawRect({
-        x: flippedX - w / 2,
-        y: this.obj.y - h2 / 2,
-        h: h2,
-        w,
-        fill: { style: constants.Poem.consoleBackgroundColor }
-      });
-      padding = consolePadding;
-      topPadding = consoleTopPadding;
-      lineWrapPadding = consoleLineWrapPadding;
-    } else if (paper.file === "internal:transparent") {
-      this._height = this.obj.height;
-      this._width = this.obj.width;
-    } else {
-      const asset = await getBuildInAsset(
-        `assets/poemBackgrounds/${paper.file}`
+  draw(rx) {
+    return __async$7(this, null, function* () {
+      const constants = getConstants();
+      const paper = constants.Poem.poemBackgrounds[this.obj.background];
+      const flippedX = this.flip ? constants.Base.screenWidth - this.obj.x : this.obj.x;
+      let y = this.obj.y;
+      let x = flippedX + poemTopMargin;
+      let padding = constants.Poem.poemPadding;
+      let topPadding = constants.Poem.poemTopPadding;
+      let lineWrapPadding = padding * 2;
+      if (paper.file === "internal:console") {
+        const h2 = this._height = this.obj.height;
+        const w = this._width = this.obj.width;
+        rx.drawRect({
+          x: flippedX - w / 2,
+          y: this.obj.y - h2 / 2,
+          h: h2,
+          w,
+          fill: { style: constants.Poem.consoleBackgroundColor }
+        });
+        padding = consolePadding;
+        topPadding = consoleTopPadding;
+        lineWrapPadding = consoleLineWrapPadding;
+      } else if (paper.file === "internal:transparent") {
+        this._height = this.obj.height;
+        this._width = this.obj.width;
+      } else {
+        const asset = yield getBuildInAsset(
+          `assets/poemBackgrounds/${paper.file}`
+        );
+        rx.drawImage({
+          image: asset,
+          x: flippedX - asset.width / 2,
+          y: this.obj.y - asset.height / 2
+        });
+        this._height = asset.height;
+        this._width = asset.width;
+      }
+      y -= this.height / 2;
+      x -= this.width / 2;
+      const style = constants.Poem.poemTextStyles[this.obj.font];
+      const render = new TextRenderer(this.obj.text, style);
+      yield render.loadFonts();
+      render.fixAlignment(
+        "left",
+        x + padding,
+        x + padding,
+        y + topPadding + padding,
+        this.obj.autoWrap ? this.width - lineWrapPadding : 0
       );
-      rx.drawImage({
-        image: asset,
-        x: flippedX - asset.width / 2,
-        y: this.obj.y - asset.height / 2
-      });
-      this._height = asset.height;
-      this._width = asset.width;
-    }
-    y -= this.height / 2;
-    x -= this.width / 2;
-    const style = constants.Poem.poemTextStyles[this.obj.font];
-    const render = new TextRenderer(this.obj.text, style);
-    await render.loadFonts();
-    render.fixAlignment(
-      "left",
-      x + padding,
-      x + padding,
-      y + topPadding + padding,
-      this.obj.autoWrap ? this.width - lineWrapPadding : 0
-    );
-    render.render(rx.fsCtx);
+      render.render(rx.fsCtx);
+    });
   }
 }
+var __defProp$1 = Object.defineProperty;
+var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField = (obj, key, value) => {
+  __defNormalProp$1(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$6 = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const _SceneRenderer = class {
   constructor(store2, _panelId, canvasWidth, canvasHeight) {
-    __publicField(this, "renderObjectCache", /* @__PURE__ */ new Map());
-    __publicField(this, "renderer");
     this.store = store2;
     this._panelId = _panelId;
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
+    __publicField(this, "renderObjectCache", /* @__PURE__ */ new Map());
+    __publicField(this, "renderer");
     this.renderer = new Renderer(canvasWidth, canvasHeight);
   }
   get panelId() {
@@ -17767,33 +19145,35 @@ const _SceneRenderer = class {
   objectsAt(x, y) {
     return this.getRenderObjects().filter((renderObject) => renderObject.hitTest(x, y)).map((renderObject) => renderObject.id);
   }
-  async renderCallback(rx) {
-    var _a;
-    rx.fsCtx.imageSmoothingEnabled = true;
-    rx.fsCtx.imageSmoothingQuality = rx.hq ? "high" : "low";
-    await ((_a = this.getBackgroundRenderer()) == null ? void 0 : _a.render(rx));
-    const selection = this.store.state.ui.selection;
-    for (const object of this.getRenderObjects()) {
-      object.updatedContent(this.store, this.panelId);
-      const selected = selection === object.id;
-      const focusedObj = document.querySelector(_SceneRenderer.FocusProp);
-      const focused = (focusedObj == null ? void 0 : focusedObj.getAttribute("data-obj-id")) === "" + object.id;
-      await object.render(
-        (selected ? SelectedState.Selected : SelectedState.None) + (focused ? SelectedState.Focused : SelectedState.None),
-        rx
-      );
-    }
-    rx.applyFilters([...this.panel.filters]);
-    if (rx.preview) {
-      rx.drawImage({
-        x: 0,
-        y: 0,
-        h: this.canvasHeight,
-        w: this.canvasWidth,
-        composite: "destination-over",
-        image: await getBuildInAsset("backgrounds/transparent")
-      });
-    }
+  renderCallback(rx) {
+    return __async$6(this, null, function* () {
+      var _a;
+      rx.fsCtx.imageSmoothingEnabled = true;
+      rx.fsCtx.imageSmoothingQuality = rx.hq ? "high" : "low";
+      yield (_a = this.getBackgroundRenderer()) == null ? void 0 : _a.render(rx);
+      const selection = this.store.state.ui.selection;
+      for (const object of this.getRenderObjects()) {
+        object.updatedContent(this.store, this.panelId);
+        const selected = selection === object.id;
+        const focusedObj = document.querySelector(_SceneRenderer.FocusProp);
+        const focused = (focusedObj == null ? void 0 : focusedObj.getAttribute("data-obj-id")) === "" + object.id;
+        yield object.render(
+          (selected ? SelectedState.Selected : SelectedState.None) + (focused ? SelectedState.Focused : SelectedState.None),
+          rx
+        );
+      }
+      rx.applyFilters([...this.panel.filters]);
+      if (rx.preview) {
+        rx.drawImage({
+          x: 0,
+          y: 0,
+          h: this.canvasHeight,
+          w: this.canvasWidth,
+          composite: "destination-over",
+          image: yield getBuildInAsset("backgrounds/transparent")
+        });
+      }
+    });
   }
   getRenderObjects() {
     const objectsState = this.store.state.panels.panels[this.panelId];
@@ -17866,6 +19246,26 @@ const _SceneRenderer = class {
 };
 let SceneRenderer = _SceneRenderer;
 __publicField(SceneRenderer, "FocusProp", typeof CSS !== "undefined" && CSS.supports("selector(:focus-visible)") ? ":focus-visible" : ":focus");
+var __async$5 = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const estimateFactor = 1.5;
 const thumbnailFactor = 1 / 4;
 const thumbnailQuality = 0.5;
@@ -17922,117 +19322,127 @@ const _sfc_main$6 = defineComponent({
       return idx < panelOrder.length - 1;
     }
   },
-  async created() {
-    const baseConst = getConstants().Base;
-    const targetCanvas = document.createElement("canvas");
-    targetCanvas.width = baseConst.screenWidth * thumbnailFactor;
-    targetCanvas.height = baseConst.screenHeight * thumbnailFactor;
-    this.thumbnailCtx = markRaw(targetCanvas.getContext("2d"));
-    [this.webpSupport, this.heifSupport] = await Promise.all([
-      isWebPSupported(),
-      isHeifSupported()
-    ]);
+  created() {
+    return __async$5(this, null, function* () {
+      const baseConst = getConstants().Base;
+      const targetCanvas = document.createElement("canvas");
+      targetCanvas.width = baseConst.screenWidth * thumbnailFactor;
+      targetCanvas.height = baseConst.screenHeight * thumbnailFactor;
+      this.thumbnailCtx = markRaw(targetCanvas.getContext("2d"));
+      [this.webpSupport, this.heifSupport] = yield Promise.all([
+        isWebPSupported(),
+        isHeifSupported()
+      ]);
+    });
   },
-  async mounted() {
-    this.moveFocusToActivePanel();
-    this.renderThumbnail().catch(() => {
+  mounted() {
+    return __async$5(this, null, function* () {
+      this.moveFocusToActivePanel();
+      this.renderThumbnail().catch(() => {
+      });
     });
   },
   methods: {
-    async download() {
-      await safeAsync("export image", async () => {
+    download() {
+      return __async$5(this, null, function* () {
+        yield safeAsync("export image", () => __async$5(this, null, function* () {
+          const distribution = this.getPanelDistibution();
+          const date = new Date();
+          const prefix = `cd-${[
+            date.getFullYear(),
+            `${date.getMonth() + 1}`.padStart(2, "0"),
+            `${date.getDate()}`.padStart(2, "0"),
+            `${date.getHours()}`.padStart(2, "0"),
+            `${date.getMinutes()}`.padStart(2, "0"),
+            `${date.getSeconds()}`.padStart(2, "0")
+          ].join("-")}`;
+          const extension = this.format.split("/")[1];
+          const format = this.format;
+          const quality = this.quality;
+          yield this.renderObjects(
+            distribution,
+            true,
+            (imageIdx, canvas) => __async$5(this, null, function* () {
+              yield envX.saveToFile(
+                canvas,
+                `${prefix}_${imageIdx}.${extension}`,
+                format,
+                quality / qualityFactor
+              );
+            })
+          );
+        }));
+      });
+    },
+    estimateExportSize() {
+      return __async$5(this, null, function* () {
         const distribution = this.getPanelDistibution();
-        const date = new Date();
-        const prefix = `cd-${[
-          date.getFullYear(),
-          `${date.getMonth() + 1}`.padStart(2, "0"),
-          `${date.getDate()}`.padStart(2, "0"),
-          `${date.getHours()}`.padStart(2, "0"),
-          `${date.getMinutes()}`.padStart(2, "0"),
-          `${date.getSeconds()}`.padStart(2, "0")
-        ].join("-")}`;
-        const extension = this.format.split("/")[1];
-        const format = this.format;
-        const quality = this.quality;
-        await this.renderObjects(
+        const format = this.format || "image/png";
+        const quality = this.quality || defaultQuality;
+        const sizes = yield this.renderObjects(
           distribution,
-          true,
-          async (imageIdx, canvas) => {
-            await environment.saveToFile(
-              canvas,
-              `${prefix}_${imageIdx}.${extension}`,
-              format,
-              quality / qualityFactor
-            );
-          }
+          false,
+          (imageIdx, canvas) => __async$5(this, null, function* () {
+            return new Promise((resolve2, reject) => {
+              canvas.toBlob(
+                (blob) => {
+                  if (!blob) {
+                    reject(`Image ${imageIdx + 1} could not be rendered.`);
+                    return;
+                  }
+                  resolve2(blob.size);
+                },
+                format,
+                quality / qualityFactor
+              );
+            });
+          })
+        );
+        const readableSizes = sizes.map(
+          (size2) => (size2 * estimateFactor / 1024 / 1024).toFixed(2) + "MiB"
+        );
+        const filePluralize = readableSizes.length > 1 ? "files" : "file";
+        const itPluralize = readableSizes.length > 1 ? "These" : "It";
+        const sizePluralize = readableSizes.length > 1 ? "sizes" : "size";
+        eventBus$1.fire(
+          new ShowMessageEvent(
+            `This would export ${readableSizes.length} ${filePluralize}. ${itPluralize} would have the following (aproximate) ${sizePluralize}: ${readableSizes.join(
+              ","
+            )}`
+          )
         );
       });
     },
-    async estimateExportSize() {
-      const distribution = this.getPanelDistibution();
-      const format = this.format || "image/png";
-      const quality = this.quality || defaultQuality;
-      const sizes = await this.renderObjects(
-        distribution,
-        false,
-        async (imageIdx, canvas) => {
-          return new Promise((resolve2, reject) => {
-            canvas.toBlob(
-              (blob) => {
-                if (!blob) {
-                  reject(`Image ${imageIdx + 1} could not be rendered.`);
-                  return;
-                }
-                resolve2(blob.size);
-              },
-              format,
-              quality / qualityFactor
+    renderObjects(distribution, hq, mapper) {
+      return __async$5(this, null, function* () {
+        const baseConst = getConstants().Base;
+        return yield Promise.all(
+          distribution.map((image, imageIdx) => __async$5(this, null, function* () {
+            const targetCanvas = document.createElement("canvas");
+            targetCanvas.width = baseConst.screenWidth;
+            targetCanvas.height = baseConst.screenHeight * image.length;
+            const context = targetCanvas.getContext("2d");
+            yield Promise.all(
+              image.map((panelId, panelIdx) => __async$5(this, null, function* () {
+                const sceneRenderer = new SceneRenderer(
+                  this.$store,
+                  image[panelIdx],
+                  baseConst.screenWidth,
+                  baseConst.screenHeight
+                );
+                yield sceneRenderer.render(hq, false);
+                sceneRenderer.paintOnto(context, {
+                  x: 0,
+                  y: baseConst.screenHeight * panelIdx,
+                  w: baseConst.screenWidth,
+                  h: baseConst.screenHeight
+                });
+              }))
             );
-          });
-        }
-      );
-      const readableSizes = sizes.map(
-        (size2) => (size2 * estimateFactor / 1024 / 1024).toFixed(2) + "MiB"
-      );
-      const filePluralize = readableSizes.length > 1 ? "files" : "file";
-      const itPluralize = readableSizes.length > 1 ? "These" : "It";
-      const sizePluralize = readableSizes.length > 1 ? "sizes" : "size";
-      eventBus$1.fire(
-        new ShowMessageEvent(
-          `This would export ${readableSizes.length} ${filePluralize}. ${itPluralize} would have the following (aproximate) ${sizePluralize}: ${readableSizes.join(
-            ","
-          )}`
-        )
-      );
-    },
-    async renderObjects(distribution, hq, mapper) {
-      const baseConst = getConstants().Base;
-      return await Promise.all(
-        distribution.map(async (image, imageIdx) => {
-          const targetCanvas = document.createElement("canvas");
-          targetCanvas.width = baseConst.screenWidth;
-          targetCanvas.height = baseConst.screenHeight * image.length;
-          const context = targetCanvas.getContext("2d");
-          await Promise.all(
-            image.map(async (panelId, panelIdx) => {
-              const sceneRenderer = new SceneRenderer(
-                this.$store,
-                image[panelIdx],
-                baseConst.screenWidth,
-                baseConst.screenHeight
-              );
-              await sceneRenderer.render(hq, false);
-              sceneRenderer.paintOnto(context, {
-                x: 0,
-                y: baseConst.screenHeight * panelIdx,
-                w: baseConst.screenWidth,
-                h: baseConst.screenHeight
-              });
-            })
-          );
-          return await mapper(imageIdx, targetCanvas);
-        })
-      );
+            return yield mapper(imageIdx, targetCanvas);
+          }))
+        );
+      });
     },
     getLimitedPanelList() {
       const max = this.$store.state.panels.panelOrder.length - 1;
@@ -18113,78 +19523,82 @@ const _sfc_main$6 = defineComponent({
       }
       return "";
     },
-    async addNewPanel() {
-      await this.vuexHistory.transaction(async () => {
-        await this.$store.dispatch("panels/duplicatePanel", {
-          panelId: this.$store.state.panels.currentPanel
-        });
+    addNewPanel() {
+      return __async$5(this, null, function* () {
+        yield this.vuexHistory.transaction(() => __async$5(this, null, function* () {
+          yield this.$store.dispatch("panels/duplicatePanel", {
+            panelId: this.$store.state.panels.currentPanel
+          });
+        }));
+        yield this.$nextTick();
+        this.moveFocusToActivePanel();
       });
-      await this.$nextTick();
-      this.moveFocusToActivePanel();
     },
     updateCurrentPanel(panelId) {
-      this.vuexHistory.transaction(async () => {
+      this.vuexHistory.transaction(() => __async$5(this, null, function* () {
         this.$store.commit("panels/setCurrentPanel", {
           panelId
         });
-      });
+      }));
       this.$nextTick(() => {
         this.moveFocusToActivePanel();
       });
     },
     deletePanel() {
-      this.vuexHistory.transaction(async () => {
-        await this.$store.dispatch("panels/delete", {
+      this.vuexHistory.transaction(() => __async$5(this, null, function* () {
+        yield this.$store.dispatch("panels/delete", {
           panelId: this.$store.state.panels.currentPanel
         });
-      });
+      }));
       this.$nextTick(() => {
         this.moveFocusToActivePanel();
       });
     },
     moveAhead() {
-      this.vuexHistory.transaction(async () => {
-        await this.$store.dispatch("panels/move", {
+      this.vuexHistory.transaction(() => __async$5(this, null, function* () {
+        yield this.$store.dispatch("panels/move", {
           panelId: this.currentPanel.id,
           delta: -1
         });
-      });
+      }));
     },
     moveBehind() {
-      this.vuexHistory.transaction(async () => {
-        await this.$store.dispatch("panels/move", {
+      this.vuexHistory.transaction(() => __async$5(this, null, function* () {
+        yield this.$store.dispatch("panels/move", {
           panelId: this.currentPanel.id,
           delta: 1
         });
-      });
+      }));
     },
-    async renderThumbnail() {
-      await safeAsync("render thumbnail", async () => {
-        const getMainSceneRenderer = window.getMainSceneRenderer;
-        const sceneRenderer = getMainSceneRenderer && getMainSceneRenderer();
-        if (!sceneRenderer)
-          return;
-        sceneRenderer.paintOnto(this.thumbnailCtx, {
-          x: 0,
-          y: 0,
-          w: this.thumbnailCtx.canvas.width,
-          h: this.thumbnailCtx.canvas.height
-        });
-        this.thumbnailCtx.canvas.toBlob(
-          (blob) => {
-            if (!blob)
-              return;
-            const url = URL.createObjectURL(blob);
-            this.vuexHistory.transaction(() => {
-              this.$store.commit("panels/setPanelPreview", {
-                panelId: this.$store.state.panels.currentPanel,
-                url
+    renderThumbnail() {
+      return __async$5(this, null, function* () {
+        yield safeAsync("render thumbnail", () => __async$5(this, null, function* () {
+          const getMainSceneRenderer = window.getMainSceneRenderer;
+          const sceneRenderer = getMainSceneRenderer && getMainSceneRenderer();
+          if (!sceneRenderer)
+            return;
+          sceneRenderer.paintOnto(this.thumbnailCtx, {
+            x: 0,
+            y: 0,
+            w: this.thumbnailCtx.canvas.width,
+            h: this.thumbnailCtx.canvas.height
+          });
+          this.thumbnailCtx.canvas.toBlob(
+            (blob) => {
+              if (!blob)
+                return;
+              const url = URL.createObjectURL(blob);
+              this.vuexHistory.transaction(() => {
+                this.$store.commit("panels/setPanelPreview", {
+                  panelId: this.$store.state.panels.currentPanel,
+                  url
+                });
               });
-            });
-          },
-          await isWebPSupported() ? "image/webp" : "image/jpeg",
-          thumbnailQuality
-        );
+            },
+            (yield isWebPSupported()) ? "image/webp" : "image/jpeg",
+            thumbnailQuality
+          );
+        }));
       });
     }
   },
@@ -18745,7 +20159,7 @@ const _sfc_main$3 = defineComponent({
     }
   },
   created() {
-    environment.onPanelChange((panel) => {
+    envX.onPanelChange((panel) => {
       this.panelSelection = panel;
     });
     window.removeEventListener("keydown", this.onKeydown);
@@ -18903,6 +20317,26 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
   ], 34);
 }
 const ToolBox = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3]]);
+var __async$4 = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const shortHidingTime = 5e3;
 const longHidingTime = 2e4;
 const hideShowTimeouts = 100;
@@ -18994,11 +20428,13 @@ const _sfc_main$2 = defineComponent({
     dismissError(i) {
       this.errors.splice(i, 1);
     },
-    async resolvableAction(i, actionName) {
-      const error2 = this.resolvableErrors[i];
-      this.resolvableErrors.splice(i, 1);
-      const action = error2.actions.find((a) => a.name === actionName);
-      await action.exec();
+    resolvableAction(i, actionName) {
+      return __async$4(this, null, function* () {
+        const error2 = this.resolvableErrors[i];
+        this.resolvableErrors.splice(i, 1);
+        const action = error2.actions.find((a) => a.name === actionName);
+        yield action.exec();
+      });
     }
   },
   watch: {
@@ -19052,6 +20488,26 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
   ], 2);
 }
 const MessageConsole = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-20f42fc5"]]);
+var __async$3 = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const _sfc_main$1 = defineComponent({
   props: {
     canvasWidth: { default: 0 },
@@ -19116,14 +20572,16 @@ const _sfc_main$1 = defineComponent({
     }
   },
   methods: {
-    async download() {
-      const url = await this.sceneRender.download();
-      await this.vuexHistory.transaction(async () => {
-        const oldUrl = this.$store.state.ui.lastDownload;
-        this.$store.commit("ui/setLastDownload", url);
-        if (oldUrl != null) {
-          URL.revokeObjectURL(oldUrl);
-        }
+    download() {
+      return __async$3(this, null, function* () {
+        const url = yield this.sceneRender.download();
+        yield this.vuexHistory.transaction(() => __async$3(this, null, function* () {
+          const oldUrl = this.$store.state.ui.lastDownload;
+          this.$store.commit("ui/setLastDownload", url);
+          if (oldUrl != null) {
+            URL.revokeObjectURL(oldUrl);
+          }
+        }));
       });
     },
     invalidateRender() {
@@ -19131,19 +20589,21 @@ const _sfc_main$1 = defineComponent({
         return;
       this.queuedRender = requestAnimationFrame(this.render_);
     },
-    async render_() {
-      if (this.queuedRender != null) {
-        cancelAnimationFrame(this.queuedRender);
-        this.queuedRender = null;
-      }
-      if (this.$store.state.unsafe)
-        return;
-      try {
-        await this.sceneRender.render(!this.lqRendering, true);
-      } catch (e) {
-        console.log(e);
-      }
-      this.display();
+    render_() {
+      return __async$3(this, null, function* () {
+        if (this.queuedRender != null) {
+          cancelAnimationFrame(this.queuedRender);
+          this.queuedRender = null;
+        }
+        if (this.$store.state.unsafe)
+          return;
+        try {
+          yield this.sceneRender.render(!this.lqRendering, true);
+        } catch (e) {
+          console.log(e);
+        }
+        this.display();
+      });
     },
     renderLoadingScreen() {
       const loadingScreen = document.createElement("canvas");
@@ -19274,28 +20734,30 @@ const _sfc_main$1 = defineComponent({
         });
       });
     },
-    async onDrop(e) {
-      e.stopPropagation();
-      e.preventDefault();
-      if (!e.dataTransfer)
-        return;
-      for (const item of e.dataTransfer.items) {
-        if (item.kind === "file" && item.type.match(/image.*/)) {
-          const name = "dropCustomAsset" + ++this.dropSpriteCount;
-          const url = registerAsset(name, item.getAsFile());
-          await this.vuexHistory.transaction(async () => {
-            await this.$store.dispatch("panels/createSprite", {
-              assets: [
-                {
-                  hq: url,
-                  lq: url,
-                  sourcePack: "dddg.generated.uploaded-sprites"
-                }
-              ]
-            });
-          });
+    onDrop(e) {
+      return __async$3(this, null, function* () {
+        e.stopPropagation();
+        e.preventDefault();
+        if (!e.dataTransfer)
+          return;
+        for (const item of e.dataTransfer.items) {
+          if (item.kind === "file" && item.type.match(/image.*/)) {
+            const name = "dropCustomAsset" + ++this.dropSpriteCount;
+            const url = registerAsset(name, item.getAsFile());
+            yield this.vuexHistory.transaction(() => __async$3(this, null, function* () {
+              yield this.$store.dispatch("panels/createSprite", {
+                assets: [
+                  {
+                    hq: url,
+                    lq: url,
+                    sourcePack: "dddg.generated.uploaded-sprites"
+                  }
+                ]
+              });
+            }));
+          }
         }
-      }
+      });
     },
     onSpriteDrop(e) {
       if (this.draggedObject) {
@@ -19319,25 +20781,27 @@ const _sfc_main$1 = defineComponent({
       this.display();
     }
   },
-  async created() {
-    if (typeof WeakRef !== "undefined") {
-      const self2 = new WeakRef(this);
-      window.getMainSceneRenderer = function() {
-        var _a;
-        return (_a = self2.deref()) == null ? void 0 : _a.sceneRender;
-      };
-    } else {
-      window.getMainSceneRenderer = () => {
-        return this.sceneRender;
-      };
-    }
-    eventBus$1.subscribe(InvalidateRenderEvent, () => this.invalidateRender());
-    this.$store.subscribe((mut) => {
-      if (mut.type === "panels/setPanelPreview")
-        return;
-      if (mut.type === "panels/currentPanel")
-        return;
-      this.invalidateRender();
+  created() {
+    return __async$3(this, null, function* () {
+      if (typeof WeakRef !== "undefined") {
+        const self2 = new WeakRef(this);
+        window.getMainSceneRenderer = function() {
+          var _a;
+          return (_a = self2.deref()) == null ? void 0 : _a.sceneRender;
+        };
+      } else {
+        window.getMainSceneRenderer = () => {
+          return this.sceneRender;
+        };
+      }
+      eventBus$1.subscribe(InvalidateRenderEvent, () => this.invalidateRender());
+      this.$store.subscribe((mut) => {
+        if (mut.type === "panels/setPanelPreview")
+          return;
+        if (mut.type === "panels/currentPanel")
+          return;
+        this.invalidateRender();
+      });
     });
   },
   mounted() {
@@ -19372,13 +20836,34 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   }, "HTML5 is required to use the Doki Doki Dialog Generator. ", 44, _hoisted_1$1);
 }
 const Render = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
+var __async$2 = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
+const import_meta = {};
 const aspectRatio = 16 / 9;
 const arrowMoveStepSize = 20;
 const packDialogWaitMs = 50;
 const canvasTooSmallThreshold = 200;
 let baseUrl = "";
 try {
-  baseUrl = "./";
+  baseUrl = import_meta.env.BASE_URL || "";
 } catch (e) {
 }
 const nsfwPacks = {
@@ -19396,10 +20881,10 @@ const _sfc_main = defineComponent({
     Render,
     ModalDialog,
     SingleBox: defineAsyncComponent(
-      () => __vitePreload(() => import("./SingleBox.36d1470b.js"), true ? ["SingleBox.36d1470b.js","SingleBox.378faf79.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./SingleBox.7082c576.js"), true ? ["SingleBox.7082c576.js","SingleBox.378faf79.css"] : void 0, import.meta.url)
     ),
     ExpressionBuilder: defineAsyncComponent(
-      () => __vitePreload(() => import("./index.b263945a.js"), true ? ["index.b263945a.js","index.cd39748f.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.5214128f.js"), true ? ["index.5214128f.js","index.cd39748f.css"] : void 0, import.meta.url)
     )
   },
   data: () => ({
@@ -19648,14 +21133,16 @@ const _sfc_main = defineComponent({
     userPrefersDarkMode() {
       this.applyTheme();
     },
-    async nsfw(value) {
-      if (value) {
-        await this.$store.dispatch("content/loadContentPacks", paths);
-      } else {
-        await this.$store.dispatch("removePacks", {
-          packs: names
-        });
-      }
+    nsfw(value) {
+      return __async$2(this, null, function* () {
+        if (value) {
+          yield this.$store.dispatch("content/loadContentPacks", paths);
+        } else {
+          yield this.$store.dispatch("removePacks", {
+            packs: names
+          });
+        }
+      });
     }
   },
   mounted() {
@@ -19680,74 +21167,76 @@ const _sfc_main = defineComponent({
       });
     }
   },
-  async created() {
-    this.updateArea();
-    Repo.setStore(this.$store);
-    window.app = this;
-    window.store = this.$store;
-    window.env = environment;
-    watch(
-      () => this.$store.state.ui.selection,
-      (id) => {
-        var _a, _b;
-        if (((_a = document.activeElement) == null ? void 0 : _a.getAttribute("data-obj-id")) !== "" + id) {
-          (_b = document.querySelector(`*[data-obj-id='${id}']`)) == null ? void 0 : _b.focus({ focusVisible: false, preventScroll: true });
+  created() {
+    return __async$2(this, null, function* () {
+      this.updateArea();
+      Repo.setStore(this.$store);
+      window.app = this;
+      window.store = this.$store;
+      window.env = envX;
+      watch(
+        () => this.$store.state.ui.selection,
+        (id) => {
+          var _a, _b;
+          if (((_a = document.activeElement) == null ? void 0 : _a.getAttribute("data-obj-id")) !== "" + id) {
+            (_b = document.querySelector(`*[data-obj-id='${id}']`)) == null ? void 0 : _b.focus({ focusVisible: false, preventScroll: true });
+          }
         }
-      }
-    );
-    document.body.addEventListener(
-      "drop",
-      (event) => {
-        event.preventDefault();
-      },
-      true
-    );
-    document.body.addEventListener(
-      "dragover",
-      (event) => {
-        event.preventDefault();
-      },
-      true
-    );
-    await environment.loadGameMode();
-    this.preLoading = false;
-    environment.connectToStore(this.vuexHistory, this.$store);
-    const settings = await environment.loadSettings();
-    await this.vuexHistory.transaction(async () => {
-      var _a, _b, _c, _d;
-      environment.state.looseTextParsing = settings.looseTextParsing || true;
-      this.$store.commit("ui/setLqRendering", (_a = settings.lq) != null ? _a : false);
-      this.$store.commit("ui/setDarkTheme", (_b = settings.darkMode) != null ? _b : null);
-      this.$store.commit(
-        "ui/setDefaultCharacterTalkingZoom",
-        (_c = settings.defaultCharacterTalkingZoom) != null ? _c : true
       );
-      await this.$store.dispatch("content/loadContentPacks", [
-        `${baseUrl}packs/buildin.base.backgrounds.json`,
-        `${baseUrl}packs/buildin.base.monika.json`,
-        `${baseUrl}packs/buildin.base.sayori.json`,
-        `${baseUrl}packs/buildin.base.natsuki.json`,
-        `${baseUrl}packs/buildin.base.yuri.json`,
-        `${baseUrl}packs/buildin.extra.mc.json`,
-        `${baseUrl}packs/buildin.extra.concept_mc.json`,
-        `${baseUrl}packs/buildin.extra.mc_chad.json`,
-        `${baseUrl}packs/buildin.extra.femc.json`,
-        `${baseUrl}packs/buildin.extra.concept_femc.json`,
-        `${baseUrl}packs/buildin.extra.amy.json`
-      ]);
-      await environment.loadContentPacks();
-      const panelId = await this.$store.dispatch("panels/createPanel");
-      if (Object.keys(this.$store.state.panels.panels[panelId].objects).length === 0) {
-        await this.$store.dispatch("panels/createTextBox", {
-          panelId,
-          text: `Hi! Click here to edit this textbox! ${this.$store.state.ui.vertical ? "To the right" : "At the bottom"} you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more!`
+      document.body.addEventListener(
+        "drop",
+        (event) => {
+          event.preventDefault();
+        },
+        true
+      );
+      document.body.addEventListener(
+        "dragover",
+        (event) => {
+          event.preventDefault();
+        },
+        true
+      );
+      yield envX.loadGameMode();
+      this.preLoading = false;
+      envX.connectToStore(this.vuexHistory, this.$store);
+      const settings = yield envX.loadSettings();
+      yield this.vuexHistory.transaction(() => __async$2(this, null, function* () {
+        var _a, _b, _c, _d;
+        envX.state.looseTextParsing = settings.looseTextParsing || true;
+        this.$store.commit("ui/setLqRendering", (_a = settings.lq) != null ? _a : false);
+        this.$store.commit("ui/setDarkTheme", (_b = settings.darkMode) != null ? _b : null);
+        this.$store.commit(
+          "ui/setDefaultCharacterTalkingZoom",
+          (_c = settings.defaultCharacterTalkingZoom) != null ? _c : true
+        );
+        yield this.$store.dispatch("content/loadContentPacks", [
+          `${baseUrl}packs/buildin.base.backgrounds.json`,
+          `${baseUrl}packs/buildin.base.monika.json`,
+          `${baseUrl}packs/buildin.base.sayori.json`,
+          `${baseUrl}packs/buildin.base.natsuki.json`,
+          `${baseUrl}packs/buildin.base.yuri.json`,
+          `${baseUrl}packs/buildin.extra.mc.json`,
+          `${baseUrl}packs/buildin.extra.concept_mc.json`,
+          `${baseUrl}packs/buildin.extra.mc_chad.json`,
+          `${baseUrl}packs/buildin.extra.femc.json`,
+          `${baseUrl}packs/buildin.extra.concept_femc.json`,
+          `${baseUrl}packs/buildin.extra.amy.json`
+        ]);
+        yield envX.loadContentPacks();
+        const panelId = yield this.$store.dispatch("panels/createPanel");
+        if (Object.keys(this.$store.state.panels.panels[panelId].objects).length === 0) {
+          yield this.$store.dispatch("panels/createTextBox", {
+            panelId,
+            text: `Hi! Click here to edit this textbox! ${this.$store.state.ui.vertical ? "To the right" : "At the bottom"} you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more!`
+          });
+        }
+        yield this.$store.commit("panels/setCurrentBackground", {
+          current: "dddg.buildin.backgrounds:ddlc.clubroom",
+          panelId: this.$store.state.panels.currentPanel
         });
-      }
-      await this.$store.commit("panels/setCurrentBackground", {
-        current: "dddg.buildin.backgrounds:ddlc.clubroom",
-        panelId: this.$store.state.panels.currentPanel
-      });
-      await this.$store.commit("ui/setNsfw", (_d = settings.nsfw) != null ? _d : false);
+        yield this.$store.commit("ui/setNsfw", (_d = settings.nsfw) != null ? _d : false);
+      }));
     });
   },
   unmounted() {
@@ -19929,14 +21418,16 @@ class ApiProxy {
       }
     });
   }
-  async setRealTarget(target) {
-    this.target = target;
-    for (const item of this.onQueue) {
-      this.target.on[item.method](...item.args);
-    }
-    for (const item of this.targetQueue) {
-      item.resolve(await this.target[item.method](...item.args));
-    }
+  setRealTarget(target) {
+    return __async(this, null, function* () {
+      this.target = target;
+      for (const item of this.onQueue) {
+        this.target.on[item.method](...item.args);
+      }
+      for (const item of this.targetQueue) {
+        item.resolve(yield this.target[item.method](...item.args));
+      }
+    });
   }
 }
 function setupDevtoolsPlugin(pluginDescriptor, setupFn) {
@@ -21988,6 +23479,25 @@ function joinNormalize(base, sub, paths2) {
     return sub;
   return base + sub;
 }
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 function mergeContentPacks(x, y) {
   return {
     backgrounds: mergeBackgrounds(x.backgrounds, y.backgrounds),
@@ -21997,8 +23507,7 @@ function mergeContentPacks(x, y) {
       x.fonts,
       y.fonts,
       (obj) => obj.id,
-      (xObj, yObj) => ({
-        ...xObj,
+      (xObj, yObj) => __spreadProps(__spreadValues({}, xObj), {
         files: mergeArrayUnique(xObj.files, yObj.files)
       })
     ),
@@ -22103,7 +23612,7 @@ function mergeCharacter(x, y) {
   };
 }
 function mergeStyleClasses(x, y) {
-  const ret = { ...x };
+  const ret = __spreadValues({}, x);
   for (const classKey in y) {
     if (!y.hasOwnProperty(classKey))
       continue;
@@ -22114,7 +23623,7 @@ function mergeStyleClasses(x, y) {
   return ret;
 }
 function mergePose(x, y) {
-  const positions2 = { ...x.positions };
+  const positions2 = __spreadValues({}, x.positions);
   for (const key in y.positions) {
     if (positions2[key]) {
       positions2[key] = [...positions2[key], ...y.positions[key]];
@@ -22134,7 +23643,7 @@ function mergePose(x, y) {
   };
 }
 function mergeHeadCollections(x, y) {
-  const ret = { ...x };
+  const ret = __spreadValues({}, x);
   for (const headGroupKey in y) {
     if (!y.hasOwnProperty(headGroupKey))
       continue;
@@ -22179,6 +23688,26 @@ function mergeIdArrays(x, y, getId2, merge) {
   }
   return ret;
 }
+var __async$1 = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 function baseDir(url) {
   return url.split("/").slice(0, -1).join("/") + "/";
 }
@@ -22223,86 +23752,90 @@ const content = {
       );
       dispatch2("panels/fixContentPackRemoval", oldState, { root: true });
     },
-    async replaceContentPack({ commit: commit2, state }, action) {
-      const convertedPack = action.processed ? action.contentPack : await convertContentPack(action.contentPack);
-      let packs = state.contentPacks;
-      const packIdx = packs.findIndex(
-        (pack) => pack.packId === action.contentPack.packId
-      );
-      if (packIdx === -1) {
-        packs.push(convertedPack);
-      } else {
-        packs.splice(packIdx, 1, convertedPack);
-      }
-      packs = sortByDependencies(packs);
-      commit2("setContentPacks", packs);
-      commit2(
-        "setCurrentContent",
-        packs.reduce(
-          (acc, value) => mergeContentPacks(acc, value)
-        )
-      );
+    replaceContentPack(_0, _1) {
+      return __async$1(this, arguments, function* ({ commit: commit2, state }, action) {
+        const convertedPack = action.processed ? action.contentPack : yield convertContentPack(action.contentPack);
+        let packs = state.contentPacks;
+        const packIdx = packs.findIndex(
+          (pack) => pack.packId === action.contentPack.packId
+        );
+        if (packIdx === -1) {
+          packs.push(convertedPack);
+        } else {
+          packs.splice(packIdx, 1, convertedPack);
+        }
+        packs = sortByDependencies(packs);
+        commit2("setContentPacks", packs);
+        commit2(
+          "setCurrentContent",
+          packs.reduce(
+            (acc, value) => mergeContentPacks(acc, value)
+          )
+        );
+      });
     },
-    async loadContentPacks({ commit: commit2, state }, urls) {
-      if (typeof urls === "string") {
-        urls = [urls];
-      }
-      const contentPacks = await Promise.all(
-        urls.map(async (url) => {
-          const response = await fetch(url);
-          if (!response.ok) {
-            error(
-              `Could not load content pack. Server responded with: ${response.statusText}`
-            );
-          }
-          let json;
-          try {
-            json = await response.json();
-          } catch (e) {
-            error("Content pack is not valid json!");
-          }
-          let contentPack;
-          try {
-            const paths2 = {
-              "./": baseDir(url),
-              "/": baseDir(location.href) + "assets/"
-            };
-            if (json.version === "2.0") {
-              contentPack = normalizeContentPack_1(
-                json,
-                paths2
-              );
-            } else {
-              contentPack = convert_1(
-                normalizeCharacter_1(json, paths2),
-                paths2,
-                false
+    loadContentPacks(_0, _1) {
+      return __async$1(this, arguments, function* ({ commit: commit2, state }, urls) {
+        if (typeof urls === "string") {
+          urls = [urls];
+        }
+        const contentPacks = yield Promise.all(
+          urls.map((url) => __async$1(this, null, function* () {
+            const response = yield fetch(url);
+            if (!response.ok) {
+              error(
+                `Could not load content pack. Server responded with: ${response.statusText}`
               );
             }
-          } catch (e) {
-            error("Content pack is not in a valid format!", e);
+            let json;
+            try {
+              json = yield response.json();
+            } catch (e) {
+              error("Content pack is not valid json!");
+            }
+            let contentPack;
+            try {
+              const paths2 = {
+                "./": baseDir(url),
+                "/": baseDir(location.href) + "assets/"
+              };
+              if (json.version === "2.0") {
+                contentPack = normalizeContentPack_1(
+                  json,
+                  paths2
+                );
+              } else {
+                contentPack = convert_1(
+                  normalizeCharacter_1(json, paths2),
+                  paths2,
+                  false
+                );
+              }
+            } catch (e) {
+              error("Content pack is not in a valid format!", e);
+            }
+            return contentPack;
+          }))
+        );
+        const convertedPacks = yield Promise.all(
+          contentPacks.map((contentPack) => convertContentPack(contentPack))
+        );
+        const existingPacks = new Set(state.contentPacks.map((x) => x.packId));
+        let combinedPack = state.current;
+        for (const convertedPack of convertedPacks) {
+          for (const dependency of convertedPack.dependencies) {
+            if (!existingPacks.has(dependency)) {
+              throw new Error(
+                `Missing dependency '${dependency}'. Refusing to install ${convertedPack.packId}`
+              );
+            }
           }
-          return contentPack;
-        })
-      );
-      const convertedPacks = await Promise.all(
-        contentPacks.map((contentPack) => convertContentPack(contentPack))
-      );
-      const existingPacks = new Set(state.contentPacks.map((x) => x.packId));
-      let combinedPack = state.current;
-      for (const convertedPack of convertedPacks) {
-        for (const dependency of convertedPack.dependencies) {
-          if (!existingPacks.has(dependency)) {
-            throw new Error(
-              `Missing dependency '${dependency}'. Refusing to install ${convertedPack.packId}`
-            );
-          }
+          combinedPack = mergeContentPacks(combinedPack, convertedPack);
         }
-        combinedPack = mergeContentPacks(combinedPack, convertedPack);
-      }
-      commit2("setContentPacks", [...state.contentPacks, ...convertedPacks]);
-      commit2("setCurrentContent", combinedPack);
-      return contentPacks.map((x) => x.packId);
+        commit2("setContentPacks", [...state.contentPacks, ...convertedPacks]);
+        commit2("setCurrentContent", combinedPack);
+        return contentPacks.map((x) => x.packId);
+      });
     }
   },
   getters: {
@@ -22327,31 +23860,53 @@ const content = {
 function sortByDependencies(packs) {
   return packs;
 }
-async function convertContentPack(pack) {
-  const types2 = new Set(
-    await isWebPSupported() ? ["webp", ...baseTypes] : baseTypes
-  );
-  const replacementMap = /* @__PURE__ */ new Map([
-    ["ext", "{lq:.lq:}.{format:webp:webp:png:png}"]
-  ]);
-  return assetWalker_1(
-    pack,
-    (path, _type) => {
-      var _a;
-      const hq = normalizePath_1(path, replacementMap, types2, false);
-      const lq = normalizePath_1(path, replacementMap, types2, true);
-      return {
-        hq,
-        lq,
-        sourcePack: (_a = pack.packId) != null ? _a : "buildIn"
-      };
-    }
-  );
+function convertContentPack(pack) {
+  return __async$1(this, null, function* () {
+    const types2 = new Set(
+      (yield isWebPSupported()) ? ["webp", ...baseTypes] : baseTypes
+    );
+    const replacementMap = /* @__PURE__ */ new Map([
+      ["ext", "{lq:.lq:}.{format:webp:webp:png:png}"]
+    ]);
+    return assetWalker_1(
+      pack,
+      (path, _type) => {
+        var _a;
+        const hq = normalizePath_1(path, replacementMap, types2, false);
+        const lq = normalizePath_1(path, replacementMap, types2, true);
+        return {
+          hq,
+          lq,
+          sourcePack: (_a = pack.packId) != null ? _a : "buildIn"
+        };
+      }
+    );
+  });
 }
 function error(msg, payload) {
   console.error(msg, payload);
   throw new Error(msg);
 }
+var __async2 = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const store = createStore({
   state: {
     unsafe: false
@@ -22362,10 +23917,12 @@ const store = createStore({
     }
   },
   actions: {
-    async removePacks({ dispatch: dispatch2, commit: commit2 }, { packs }) {
-      commit2("setUnsafe", true);
-      dispatch2("content/removeContentPacks", packs);
-      commit2("setUnsafe", false);
+    removePacks(_0, _1) {
+      return __async2(this, arguments, function* ({ dispatch: dispatch2, commit: commit2 }, { packs }) {
+        commit2("setUnsafe", true);
+        dispatch2("content/removeContentPacks", packs);
+        commit2("setUnsafe", false);
+      });
     },
     getSave({ state }, compact) {
       return JSON.stringify(
@@ -22413,20 +23970,24 @@ const History = {
           $store.commit(`${mutation.type}`, mutation.payload);
       }
     }
-    async function replayTransaction(vm, transaction) {
-      return await vm.transaction(() => {
-        transaction.forEach((mutation) => {
-          replayMutation(vm, mutation);
+    function replayTransaction(vm, transaction) {
+      return __async(this, null, function* () {
+        return yield vm.transaction(() => {
+          transaction.forEach((mutation) => {
+            replayMutation(vm, mutation);
+          });
         });
       });
     }
-    async function replayAll(vm) {
-      const oldTransactions = vm.data.done.slice(0);
-      vm.data.done = [];
-      $store.commit(options.resetStateMutation);
-      for (let i = 0; i < oldTransactions.length; ++i) {
-        await replayTransaction(vm, oldTransactions[i]);
-      }
+    function replayAll(vm) {
+      return __async(this, null, function* () {
+        const oldTransactions = vm.data.done.slice(0);
+        vm.data.done = [];
+        $store.commit(options.resetStateMutation);
+        for (let i = 0; i < oldTransactions.length; ++i) {
+          yield replayTransaction(vm, oldTransactions[i]);
+        }
+      });
     }
     const mutationProperiesCache = {};
     function getMutationProperties(name) {
@@ -22489,25 +24050,29 @@ const History = {
           }
         });
       },
-      async redo() {
-        if (history.data.undone.length <= 0)
-          return;
-        const commit2 = history.data.undone.pop();
-        history.newMutation = false;
-        await replayTransaction(history, commit2);
-        history.newMutation = true;
+      redo() {
+        return __async(this, null, function* () {
+          if (history.data.undone.length <= 0)
+            return;
+          const commit2 = history.data.undone.pop();
+          history.newMutation = false;
+          yield replayTransaction(history, commit2);
+          history.newMutation = true;
+        });
       },
-      async undo() {
-        if (history.data.done.length <= 0)
-          return;
-        history.data.undone.push(history.data.done.pop());
-        history.newMutation = false;
-        await replayAll(history);
-        history.newMutation = true;
+      undo() {
+        return __async(this, null, function* () {
+          if (history.data.done.length <= 0)
+            return;
+          history.data.undone.push(history.data.done.pop());
+          history.newMutation = false;
+          yield replayAll(history);
+          history.newMutation = true;
+        });
       },
       clearHistory() {
         return new Promise((resolve2, _reject) => {
-          const exec = async () => {
+          const exec = () => __async(this, null, function* () {
             history.currentTransaction = [];
             history.transactionsSinceSnapshot = 0;
             history.data.undone = [];
@@ -22517,7 +24082,7 @@ const History = {
             if (history.data.transactionQueue.length > 0) {
               history.data.transactionQueue.shift()();
             }
-          };
+          });
           if (history.currentTransaction) {
             history.data.transactionQueue.push(exec);
           } else {
@@ -22527,11 +24092,11 @@ const History = {
       },
       transaction(callback) {
         return new Promise((resolve2, _reject) => {
-          const exec = async () => {
+          const exec = () => __async(this, null, function* () {
             history.currentTransaction = [];
             history.transactionsSinceSnapshot++;
             try {
-              await callback();
+              yield callback();
             } catch (e) {
               console.log("Error during transaction!: ", e);
             }
@@ -22540,7 +24105,7 @@ const History = {
               history.data.transactionQueue.shift()();
             }
             resolve2();
-          };
+          });
           if (history.currentTransaction) {
             history.data.transactionQueue.push(exec);
           } else {
@@ -22579,7 +24144,7 @@ export {
   createVNode as h,
   withCtx as i,
   ToggleBox as j,
-  environment as k,
+  envX as k,
   resolveComponent as l,
   createTextVNode as m,
   normalizeClass as n,
