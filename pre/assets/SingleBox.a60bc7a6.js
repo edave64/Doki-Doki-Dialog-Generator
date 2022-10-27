@@ -1,1 +1,1195 @@
-import{d as D,_ as P,o as l,c as u,a as n,w as F,v as R,n as M,b as O,e as p,f as K,p as U,g as q,F as $,r as _,t as f,h as T,i as I,T as G,L as W,j as J,k as m,l as y,m as g,q as A,s as Q,R as E,u as X,V as Y}from"./index.6a097402.js";const Z=250,x=D({props:{disabled:{type:Boolean,default:!1},modelValue:{type:String,default:""}},data:()=>({showHelp:!1,message:"",debounceTimeout:null,lastSend:""}),methods:{focus(){const e=this.$refs.input;e&&e.focus()},documentClickHandler(e){e.dontCloseHelp||(this.showHelp=!1)},keydownHandler(e){e.key==="ArrowDown"&&(this.$emit("focus-list"),e.preventDefault(),e.stopPropagation())},updateInternalValue(){if(this.lastSend===this.modelValue){this.lastSend="";return}this.message=this.modelValue},onUpdate(){this.debounceTimeout!=null&&clearTimeout(this.debounceTimeout),this.debounceTimeout=setTimeout(this.doUpdate,Z)},doUpdate(){this.debounceTimeout!=null&&clearTimeout(this.debounceTimeout),this.debounceTimeout=null;const e=document.createElement("div");e.innerHTML=this.message,this.lastSend=e.innerText,this.$emit("update:modelValue",e.innerText)}},mounted(){document.body.addEventListener("click",this.documentClickHandler),this.updateInternalValue()},unmounted(){document.body.removeEventListener("click",this.documentClickHandler)},watch:{modelValue(){this.updateInternalValue()}}});const z=e=>(U("data-v-2b7a0082"),e=e(),q(),e),ee={class:"search-area"},te={class:"search-bar"},se=["disabled"],oe=["disabled"],ae=z(()=>n("i",{class:"material-icons"},"info",-1)),ie=[ae],re=z(()=>n("i",{class:"material-icons"},"clear",-1)),ne=[re],de=K("<p data-v-2b7a0082>Enter the text you want to search for. E.g. <code data-v-2b7a0082>Monika</code></p><p data-v-2b7a0082> If multiple words are given, each word must be found. E.g. <code data-v-2b7a0082>Monika Pose</code></p><p data-v-2b7a0082> To search phrases with spaces, surround them with double quotes. E.g. <code data-v-2b7a0082>&quot;Monika R63&quot; Pose</code></p><p data-v-2b7a0082> To limit your search to specific attributes of a pack, you can use the following prefixes: </p><table data-v-2b7a0082><tr data-v-2b7a0082><th data-v-2b7a0082>Prefix</th><th data-v-2b7a0082>Description</th><th data-v-2b7a0082>Example</th></tr><tr data-v-2b7a0082><td data-v-2b7a0082>Character:</td><td data-v-2b7a0082></td><td data-v-2b7a0082><code data-v-2b7a0082>Character: Monika</code></td></tr><tr data-v-2b7a0082><td data-v-2b7a0082>Artist:</td><td data-v-2b7a0082></td><td data-v-2b7a0082><code data-v-2b7a0082>Artist: edave64</code></td></tr><tr data-v-2b7a0082><td data-v-2b7a0082>Type:</td><td data-v-2b7a0082><code data-v-2b7a0082>Backgrounds</code>, <code data-v-2b7a0082>Sprites</code>, <code data-v-2b7a0082>Expressions</code>, <code data-v-2b7a0082>Styles</code>, <code data-v-2b7a0082>Poses</code> or <code data-v-2b7a0082>Characters</code></td><td data-v-2b7a0082><code data-v-2b7a0082>Type: Poses</code></td></tr><tr data-v-2b7a0082><td data-v-2b7a0082>Engine:</td><td data-v-2b7a0082><code data-v-2b7a0082>Doki Doki Dialog Generator</code>, <code data-v-2b7a0082>DDDG</code> or <code data-v-2b7a0082>Doki Doki Comic Club</code>, <code data-v-2b7a0082>DDCC</code></td><td data-v-2b7a0082><code data-v-2b7a0082>Engine: DDCC</code></td></tr><tr data-v-2b7a0082><td data-v-2b7a0082>Pack:</td><td data-v-2b7a0082>The pack itself must contain the text</td><td data-v-2b7a0082><code data-v-2b7a0082>Pack: Angry</code></td></tr></table><p data-v-2b7a0082> Prefixes can be shorted, so <code data-v-2b7a0082>Character: Monika</code> can be shortend to <code data-v-2b7a0082>C: Monika</code></p>",6),le=[de];function ce(e,t,s,o,i,d){return l(),u("div",ee,[n("div",te,[F(n("input",{class:"input",ref:"input","onUpdate:modelValue":t[0]||(t[0]=a=>e.message=a),disabled:e.disabled,onInput:t[1]||(t[1]=(...a)=>e.onUpdate&&e.onUpdate(...a)),onClick:t[2]||(t[2]=a=>a.dontCloseHelp=!0),onKeydown:t[3]||(t[3]=(...a)=>e.keydownHandler&&e.keydownHandler(...a))},null,40,se),[[R,e.message]]),n("button",{class:M({help:!0,toggled:e.showHelp}),disabled:e.disabled,onClick:t[4]||(t[4]=O(a=>{e.showHelp=!e.showHelp,a.dontCloseHelp=!0},["stop"]))},ie,10,oe),n("button",{class:"exit-button",onClick:t[5]||(t[5]=a=>e.$emit("leave",!0))},ne)]),e.showHelp?(l(),u("div",{key:0,class:"info-area",onClick:t[6]||(t[6]=a=>a.dontCloseHelp=!0)},le)):p("",!0)])}const ue=P(x,[["render",ce],["__scopeId","data-v-2b7a0082"]]),he=["author","character","type","pack","engine"],B=new Map;for(const e of he)for(let t=1;t<=e.length;++t){const s=e.slice(0,t);B.set(s,e)}const pe=/\s/;function fe(e){const t=[];let s="",o="",i=!1,d=!1;function a(){t.push({type:o||"all",payload:s.toLowerCase()}),s="",o="",d=!1,i=!1}for(const c of e){if(d){s+=c,d=!1;continue}switch(c){case"\\":d=!0;continue;case":":const r=s.toLowerCase();if(!i&&o===""&&B.has(r)){o=B.get(r),s="";continue}break;case'"':i?a():i=!0;continue}!i&&pe.test(c)?s&&a():s+=c}return s&&a(),t}const N=new Map([["engine",0],["pack",1],["type",2],["character",2],["author",2],["all",3]]);function me(e){return be(ge(e))}function be(e){return e.sort((t,s)=>N.get(t.type)-N.get(s.type)||s.payload.length-t.payload.length)}function ge(e){const t=new Map;for(const o of e){let i=t.get(o.type);i||(i=[],t.set(o.type,i)),i.push(o)}for(const o of t.keys()){const d=t.get(o).sort((a,c)=>a.payload.localeCompare(c.payload)).filter((a,c,r)=>r[c+1]?!r[c+1].payload.startsWith(a.payload):!0);t.set(o,d.filter((a,c,r)=>!r.find((h,L)=>L!==c&&h.payload.indexOf(a.payload)!==-1)))}const s=Array.from(t.keys()).filter(o=>o!=="all");return t.set("all",(t.get("all")||[]).filter(o=>!s.find(i=>t.get(i).find(d=>d.payload.indexOf(o.payload)!==-1)))),[...t.values()].flatMap(o=>o)}class w{constructor(t){t=t.replace(/[\s-]/g,"").toLowerCase();const s=new Set;for(const[o,i]of w.engines)o.toLowerCase().indexOf(t)>=0&&s.add(i);this.matchingProps=Array.from(s)}get isImpossible(){return this.matchingProps.length===0}match(t){for(const s of this.matchingProps)if(t[s])return!0;return!1}}w.engines=[["Doki Doki Dialog Generator 1","dddg1Path"],["Doki Doki Dialouge Generator 1","dddg1Path"],["DDDG1","dddg1Path"],["Doki Doki Dialog Generator 2","dddg2Path"],["Doki Doki Dialouge Generator 2","dddg2Path"],["DDDG2","dddg2Path"],["Doki Doki Comic Club 2","ddcc2Path"],["DDCC2","ddcc2Path"]].map(([e,t])=>[e.replace(/\s/g,"").toLowerCase(),t]);class j{constructor(t,s){t=t.toLowerCase();const o=new Set;for(const i in s){if(!Object.prototype.hasOwnProperty.call(s,i))continue;const d=s[i],a=Object.keys(d);(i.toLowerCase().indexOf(t)>=0||a.find(c=>d[c].toLowerCase().indexOf(t)>=0))&&o.add(i)}this.matchingAuthors=o}get isImpossible(){return this.matchingAuthors.size===0}match(t){return!!t.authors.find(s=>this.matchingAuthors.has(s))}}class v{constructor(t,s,o){t=t.toLowerCase(),this.matchingCharacters=new Set(v.getUniqueCharacters(o).filter(i=>i.toLowerCase().indexOf(t)>=0))}get isImpossible(){return this.matchingCharacters.size===0}match(t){return!!t.characters.find(s=>this.matchingCharacters.has(s))}static getUniqueCharacters(t){let s=this.uniqueCharacters.get(t);return s||(s=Array.from(new Set(t.flatMap(o=>o.characters))),this.uniqueCharacters.set(t,s)),s}}v.uniqueCharacters=new Map;class C{constructor(t){t=t.toLowerCase(),this.matchingTypes=new Set(C.types.filter(s=>s.toLowerCase().indexOf(t)>=0))}get isImpossible(){return this.matchingTypes.size===0}match(t){return!!t.kind.find(s=>this.matchingTypes.has(s))}}C.types=["Styles","Characters","Expressions","Poses","Backgrounds","Sprites","Misc"];class b{constructor(t,s,o){t=t.toLowerCase(),this.payload=t;const i=b.getTriplets(o);for(let d=0,a=t.length-2;d<a;++d)if(!i.has(t.substr(d,3))){this.isImpossible=!0;return}this.isImpossible=!1}match(t){if(this.isImpossible)return!1;const s=this.payload;return!!(t.id.toLowerCase().indexOf(s)>=0||t.name.toLowerCase().indexOf(s)>=0||t.searchWords.find(o=>o.toLowerCase().indexOf(s)>=0))}static getTriplets(t){let s=this.tripletCache.get(t);if(!s){s=new Set;for(const o of t){b.splitTriplets(o.id,s),b.splitTriplets(o.name,s);for(const i of o.searchWords)b.splitTriplets(i,s)}this.tripletCache.set(t,s)}return s}static splitTriplets(t,s){t=t.toLowerCase();for(let o=0,i=t.length-2;o<i;++o)s.add(t.substr(o,3))}}b.tripletCache=new Map;class S{constructor(t,s,o){this.matchers=S.allMatchers.map(i=>new i(t,s,o)).filter(i=>!i.isImpossible)}get isImpossible(){return this.matchers.length===0}match(t){return!!this.matchers.find(s=>s.match(t))}}S.allMatchers=[w,j,v,C,b];const ke=new Map([["all",S],["author",j],["character",v],["engine",w],["pack",b],["type",C]]);function ye(e,t,s){return e.map(o=>new(ke.get(o.type))(o.payload,t,s))}function we(e,t,s){const o=fe(e),i=me(o),d=ye(i,t,s);return d.find(a=>a.isImpossible)?[]:s.filter(a=>d.every(c=>c.match(a)))}const V=10,ve=D({props:{search:{type:String,required:!0},repo:{type:Object},disabled:{type:Boolean,default:!1}},data:()=>({sort:"",desc:!1,focusedItem:"",wordCache:{}}),computed:{packs(){return this.repo?this.repo.getPacks():[]},list(){const e=this.filterList(this.packs,this.search);if(this.sort&&e.length>0){const t=this.sort;let s;if(typeof e[0][t]=="string"?s=(o,i)=>o.name.localeCompare(i.name):e[0][t]instanceof Array&&(s=(o,i)=>o[t].join(", ").localeCompare(i[t].join(", "))),s){if(this.desc){const o=s;s=(i,d)=>o(d,i)}e.sort(s)}}return e},listById(){return new Map(this.packs.map(e=>[e.id,e]))},uniqueCharacters(){return Array.from(new Set(this.packs.flatMap(e=>e.characters.map(t=>t.toLowerCase()))))}},methods:{focus(){this.$refs.tbody.$el.focus()},keydownHandler(e){const t=this.list.findIndex(s=>s.id===this.focusedItem);switch(console.log(t),e.key){case"Enter":this.$emit("selected",{id:this.focusedItem,source:"keyboard"}),e.stopPropagation(),e.preventDefault();break;case"ArrowUp":e.preventDefault(),e.stopPropagation(),t===0?this.$emit("select-search-bar"):this.focusedItem=this.list[t-1].id;break;case"ArrowDown":e.preventDefault(),e.stopPropagation(),t<this.list.length-1&&(this.focusedItem=this.list[t+1].id);break;case"PageUp":{e.preventDefault(),e.stopPropagation();let s=t-V;s<0&&(s=0),this.focusedItem=this.list[s].id;break}case"PageDown":{e.preventDefault(),e.stopPropagation();let s=t+V;const o=this.list.length-1;s>o&&(s=o),this.focusedItem=this.list[s].id;break}}},headerKeydownListener(e,t){switch(e.key){case"Enter":case" ":this.sortBy(t),e.preventDefault(),e.stopPropagation();break;case"ArrowDown":this.focus(),e.stopPropagation(),e.preventDefault();break;case"ArrowUp":this.$emit("select-search-bar"),e.stopPropagation(),e.preventDefault();break}},updateFocusedItem(){if(this.list.length===0){this.focusedItem="";return}this.focusedItem===""&&(this.focusedItem=this.list[0].id),this.$nextTick(()=>{const e=this.$refs.header,t=document.querySelector(".list tbody .focused"),s=this.$el.offsetHeight-e.offsetHeight,o=this.$el.scrollTop,i=o+s;if(t){const d=t.offsetTop-e.offsetHeight,a=d+t.offsetHeight;a>i?this.$el.scrollTop=a-s:d<o&&(this.$el.scrollTop=d)}})},sortBy(e){this.sort===e?this.desc?(this.sort="",this.desc=!1):this.desc=!0:(this.sort=e,this.desc=!1)},filterList(e,t){return t?we(t,this.repo?this.repo.getAuthors():{},e):[...e]},translatePackState(e){return e.loaded?"Active":e.installed?"Installed":""}},watch:{focusedItem(){this.updateFocusedItem()}}});const Ce={class:"list"},$e={ref:"header"},_e=["tabindex","onClick","onKeydown"],Te={key:0},De=["onMousedown","onClick"];function Pe(e,t,s,o,i,d){return l(),u("div",Ce,[n("table",null,[n("thead",null,[n("tr",$e,[(l(),u($,null,_([["name","Pack"],["characters","Character"],["kind","Type"],["authors","Authors"],["state","Status"]],(a,c)=>n("th",{key:c,tabindex:e.disabled?-1:0,onClick:r=>e.sortBy(a[0]),onKeydown:r=>e.headerKeydownListener(r,a[0])},[n("div",null,[n("div",null,f(a[1]),1),e.sort===a[0]?(l(),u("div",Te,f(e.desc?"\u25BC":"\u25B2"),1)):p("",!0)])],40,_e)),64))],512)]),T(G,{name:"tbody-group",tag:"tbody",ref:"tbody",tabindex:e.disabled?-1:0,onKeydown:e.keydownHandler,onFocus:e.updateFocusedItem},{default:I(()=>[(l(!0),u($,null,_(e.list,a=>(l(),u("tr",{key:a.id,class:M({"tbody-group-item":!0,focused:e.focusedItem===a.id}),onMousedown:c=>e.focusedItem=a.id,onClick:c=>e.$emit("selected",{id:a.id,source:"pointer"})},[n("td",null,f(a.name),1),n("td",null,f(a.characters.join(", ")),1),n("td",null,f(a.kind.join(", ")),1),n("td",null,f(a.authors.join(", ")),1),n("td",null,f(e.translatePackState(a)),1)],42,De))),128))]),_:1},8,["tabindex","onKeydown","onFocus"])])])}const Se=P(ve,[["render",Pe],["__scopeId","data-v-26744ef4"]]),Le=["h3","h4","h5","h6","blockquote","p","a","ul","ol","nl","li","b","i","strong","em","strike","code","hr","br","div","table","thead","caption","tbody","tr","th","td","pre"],Ie={a:["href"],img:["src"]},Ae=["href","src"],Be=["http","https"],He={a:{target:"_blank",rel:"noopener noreferrer"}};function Me(e){const t=document.createElement("div"),s=document.createElement("div");s.innerHTML=e;for(const o of Array.from(s.childNodes))for(const i of H(o))t.appendChild(i);return t.innerHTML}const Ee=/^(\w+):/;function H(e){if(e.nodeType!==Node.ELEMENT_NODE)return[e];const t=e,s=t.tagName.toLowerCase();if(Le.includes(s)){const o=document.createElement(s),i=Array.prototype.slice.call(t.attributes),d=Ie[s]||[];for(const r of i)if(!!d.includes(r.name)){if(Ae.includes(r.name)){const h=r.value.match(Ee);if(h&&!Be.includes(h[1]))continue}o.setAttribute(r.name,t.getAttribute(r.name))}const a=He[s];if(a)for(const r in a)!Object.prototype.hasOwnProperty.call(a,r)||o.setAttribute(r,a[r]);const c=Array.prototype.slice.call(t.childNodes);for(const r of c){const h=H(r);for(const L of h)o.appendChild(L)}return[o]}else{let o=[];o.push(document.createTextNode(`<${s}>`));for(const i of t.childNodes)o=o.concat(H(i));return o.push(document.createTextNode(`</${s}>`)),o}}const Ne=[["reddit","https://reddit.com/u/%1","reddit.png"],["deviantart","https://www.deviantart.com/%1","deviantart.png"],["twitter","https://twitter.com/%1","twitter.svg"],["pixiv","https://www.pixiv.net/users/%1","pixiv.ico"],["patreon","https://www.patreon.com/%1","patreon.png"],["facebook","https://www.facebook.com/%1","facebook.png"],["github","https://github.com/%1","github.png"],["website","%1","website.svg"]],Ve=D({components:{L:W,Toggle:J},props:{selected:{type:String,required:!0},repo:{type:Object,require:!0},showBack:{type:Boolean,require:!1}},computed:{pack(){return this.repo.getPack(this.selected)},backgroundImage(){return this.pack.preview.map(e=>`url('${e}')`).join(",")},installable(){return m.supports.localRepo?!this.pack.installed:!1},uninstallable(){return m.supports.localRepo?this.pack.installed:!1},removable(){return this.pack.loaded},addable(){return!this.pack.loaded},autoloadEnabled(){return m.supports.autoLoading},autoload:{get(){return m.state.autoAdd.includes(this.selected)},set(e){let t=this.selected;const s=this.pack;s.repoUrl!=null&&(t+=`;${s.repoUrl}`),e?m.autoLoadAdd(t):m.autoLoadRemove(t)}}},methods:{focus(){this.$refs.toFocus.focus()},authorName(e){const t=this.repo.getAuthor(e);return t&&t.currentName!=null?t.currentName:e},authorsLinks(e){const t=this.repo.getAuthor(e);return t?Ne.filter(s=>t[s[0]]).map(s=>{const o=t[s[0]];return{target:s[1].replace("%1",o),platform:s[0][0].toUpperCase()+s[0].slice(1),icon:"icons/"+s[2]}}):[]},sanitize(e){return Me(e)},install(){if(this.pack.installed)return;const e={};for(const s of this.pack.authors)e[s]={...this.repo.getAuthor(s)};const t=JSON.parse(JSON.stringify(this.pack));delete t.autoloading,delete t.online,delete t.loaded,delete t.installed,m.localRepoInstall(this.pack.dddg2Path||this.pack.dddg1Path,t,e)},async uninstall(){var t;const e=this.pack;!e.installed||(e.repoUrl&&!((t=this.repo)!=null&&t.hasPack(e.id,!0))&&await this.repo.loadTempPack(e.repoUrl),m.localRepoUninstall(this.pack.id))},async remove(){await this.$store.dispatch("removePacks",{packs:new Set([this.pack.id])})},async add(){await this.$store.dispatch("content/loadContentPacks",this.pack.dddg2Path||this.pack.dddg1Path)}}});const k=e=>(U("data-v-e0f6c8f4"),e=e(),q(),e),Oe=k(()=>n("i",{class:"material-icons"},"arrow_back",-1)),Ue=[Oe],qe=["innerHTML"],ze={key:1},je=g("Source"),Fe=k(()=>n("i",{class:"material-icons"},"add",-1)),Re=g(" Activate "),Ke=[Fe,Re],Ge=k(()=>n("i",{class:"material-icons"},"remove",-1)),We=g(" Deactivate "),Je=[Ge,We],Qe=k(()=>n("i",{class:"material-icons"},"add",-1)),Xe=g(" Store locally "),Ye=[Qe,Xe],Ze=k(()=>n("i",{class:"material-icons"},"remove",-1)),xe=g(" Remove locally "),et=[Ze,xe],tt=k(()=>n("h3",null,"Authors",-1)),st=["title","src"],ot={key:2},at=k(()=>n("h3",null,"Credits",-1)),it=["innerHTML"];function rt(e,t,s,o,i,d){const a=y("l"),c=y("toggle");return l(),u("div",{class:"pack-display",style:Q({backgroundImage:e.backgroundImage}),onClick:t[6]||(t[6]=O(()=>{},["stop"]))},[n("header",null,[n("h1",null,[e.showBack?(l(),u("button",{key:0,class:"exit-button",onClick:t[0]||(t[0]=r=>e.$emit("leave",!0))},Ue)):p("",!0),g(" "+f(e.pack.name),1)]),n("h2",null,f(e.pack.id),1)]),e.pack.disclaimer?(l(),u("section",{key:0,class:"disclaimer",innerHTML:e.sanitize(e.pack.disclaimer)},null,8,qe)):p("",!0),e.pack.source?(l(),u("section",ze,[T(a,{to:e.pack.source},{default:I(()=>[je]),_:1},8,["to"])])):p("",!0),n("section",null,[e.addable?(l(),u("button",{key:0,onClick:t[1]||(t[1]=(...r)=>e.add&&e.add(...r))},Ke)):p("",!0),e.removable?(l(),u("button",{key:1,onClick:t[2]||(t[2]=(...r)=>e.remove&&e.remove(...r))},Je)):p("",!0),e.installable?(l(),u("button",{key:2,onClick:t[3]||(t[3]=(...r)=>e.install&&e.install(...r))},Ye)):p("",!0),e.uninstallable?(l(),u("button",{key:3,onClick:t[4]||(t[4]=(...r)=>e.uninstall&&e.uninstall(...r))},et)):p("",!0),e.autoloadEnabled?(l(),A(c,{key:4,label:"Load on startup",modelValue:e.autoload,"onUpdate:modelValue":t[5]||(t[5]=r=>e.autoload=r)},null,8,["modelValue"])):p("",!0)]),n("section",null,[tt,n("table",null,[n("tbody",null,[(l(!0),u($,null,_(e.pack.authors,r=>(l(),u("tr",{key:r},[n("td",null,f(e.authorName(r)),1),n("td",null,[(l(!0),u($,null,_(e.authorsLinks(r),h=>(l(),A(a,{key:h.target,to:h.target,class:"platform_button"},{default:I(()=>[n("img",{title:h.platform,src:h.icon,height:"32",width:"32",alt:""},null,8,st)]),_:2},1032,["to"]))),128))])]))),128))])])]),e.pack.description?(l(),u("section",ot,[at,n("p",{innerHTML:e.sanitize(e.pack.description)},null,8,it)])):p("",!0)],4)}const nt=P(Ve,[["render",rt],["__scopeId","data-v-e0f6c8f4"]]),dt=D({components:{SearchBar:ue,List:Se,PackDisplay:nt},data:()=>({search:"",packs:[],authors:{},repo:null,selected:null}),computed:{isRepoUrl(){return this.search.endsWith(".json")&&(this.search.startsWith("http://")||this.search.startsWith("https://"))}},methods:{focus(){},setSearch(e){this.selected=null,this.search=e},leavePackDisplay(e){this.selected=null,e&&this.focusSearchBar()},keydownHandler(e){e.key==="Escape"&&(this.selected="",this.$nextTick(()=>{this.$refs.searchBar.focus()}))},onSelect({id:e,source:t}){this.selected=e,t==="keyboard"&&this.$nextTick(()=>{this.$refs.dialog.focus()})},focusListHandler(){this.$nextTick(()=>{const e=this.$refs.list;e&&e.focus()})},focusSearchBar(){this.$nextTick(()=>{const e=this.$refs.searchBar;e&&e.focus()})},async add_repo_pack(){try{const t=await(await E.getInstance()).loadTempPack(this.search);this.search="",t&&(this.selected=t)}catch(e){X.fire(new Y(e,"Error while loading external pack"))}}},async created(){const e=await E.getInstance();this.repo=e,this.packs=e.getPacks(),this.authors=e.getAuthors()},activated(){this.focusSearchBar()},mounted(){this.focusSearchBar()}});const lt={key:1,class:"ask-download"},ct={key:1,class:"page fly-right"};function ut(e,t,s,o,i,d){const a=y("search-bar"),c=y("list"),r=y("pack-display");return l(),u("div",{class:"pages",onKeydown:t[4]||(t[4]=(...h)=>e.keydownHandler&&e.keydownHandler(...h))},[e.selected?(l(),u("div",ct,[T(r,{ref:"dialog",class:"pack-display",repo:e.repo,selected:e.selected,"show-back":"",onLeave:e.leavePackDisplay},null,8,["repo","selected","onLeave"])])):(l(),u("div",{key:0,class:M(["page fly-left",{blured:e.selected}])},[T(a,{class:"search-bar",ref:"searchBar",modelValue:e.search,"onUpdate:modelValue":t[0]||(t[0]=h=>e.search=h),disabled:!!e.selected,onFocusList:e.focusListHandler,onLeave:t[1]||(t[1]=h=>e.$emit("leave"))},null,8,["modelValue","disabled","onFocusList"]),e.isRepoUrl?(l(),u("div",lt,[g(" Do you want to download the pack from '"+f(e.search)+"'? ",1),n("button",{onClick:t[3]||(t[3]=(...h)=>e.add_repo_pack&&e.add_repo_pack(...h))},"Add package")])):(l(),A(c,{key:0,class:"list",ref:"list",search:e.search,repo:e.repo,disabled:!!e.selected,onSelected:e.onSelect,onSelectSearchBar:t[2]||(t[2]=h=>e.$refs.searchBar.focus())},null,8,["search","repo","disabled","onSelected"]))],2))],32)}const pt=P(dt,[["render",ut],["__scopeId","data-v-c3d2e321"]]);export{pt as default};
+import { d as defineComponent, _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, w as withDirectives, v as vModelText, n as normalizeClass, b as withModifiers, e as createCommentVNode, f as createStaticVNode, p as pushScopeId, g as popScopeId, F as Fragment, r as renderList, t as toDisplayString, h as createVNode, i as withCtx, T as TransitionGroup, L, j as ToggleBox, k as environment, l as resolveComponent, m as createTextVNode, q as createBlock, s as normalizeStyle, R as Repo, u as eventBus, V as VueErrorEvent } from "./index.6a097402.js";
+const debounce = 250;
+const _sfc_main$3 = defineComponent({
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    modelValue: {
+      type: String,
+      default: ""
+    }
+  },
+  data: () => ({
+    showHelp: false,
+    message: "",
+    debounceTimeout: null,
+    lastSend: ""
+  }),
+  methods: {
+    focus() {
+      const ele = this.$refs.input;
+      if (ele) {
+        ele.focus();
+      }
+    },
+    documentClickHandler(event) {
+      if (event.dontCloseHelp)
+        return;
+      this.showHelp = false;
+    },
+    keydownHandler(event) {
+      if (event.key === "ArrowDown") {
+        this.$emit("focus-list");
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    },
+    updateInternalValue() {
+      if (this.lastSend === this.modelValue) {
+        this.lastSend = "";
+        return;
+      }
+      this.message = this.modelValue;
+    },
+    onUpdate() {
+      if (this.debounceTimeout != null)
+        clearTimeout(this.debounceTimeout);
+      this.debounceTimeout = setTimeout(this.doUpdate, debounce);
+    },
+    doUpdate() {
+      if (this.debounceTimeout != null)
+        clearTimeout(this.debounceTimeout);
+      this.debounceTimeout = null;
+      const div = document.createElement("div");
+      div.innerHTML = this.message;
+      this.lastSend = div.innerText;
+      this.$emit("update:modelValue", div.innerText);
+    }
+  },
+  mounted() {
+    document.body.addEventListener("click", this.documentClickHandler);
+    this.updateInternalValue();
+  },
+  unmounted() {
+    document.body.removeEventListener("click", this.documentClickHandler);
+  },
+  watch: {
+    modelValue() {
+      this.updateInternalValue();
+    }
+  }
+});
+const SearchBar_vue_vue_type_style_index_0_scoped_2b7a0082_lang = "";
+const SearchBar_vue_vue_type_style_index_1_lang = "";
+const _withScopeId$1 = (n) => (pushScopeId("data-v-2b7a0082"), n = n(), popScopeId(), n);
+const _hoisted_1$3 = { class: "search-area" };
+const _hoisted_2$3 = { class: "search-bar" };
+const _hoisted_3$2 = ["disabled"];
+const _hoisted_4$2 = ["disabled"];
+const _hoisted_5$2 = /* @__PURE__ */ _withScopeId$1(() => /* @__PURE__ */ createBaseVNode("i", { class: "material-icons" }, "info", -1));
+const _hoisted_6$1 = [
+  _hoisted_5$2
+];
+const _hoisted_7$1 = /* @__PURE__ */ _withScopeId$1(() => /* @__PURE__ */ createBaseVNode("i", { class: "material-icons" }, "clear", -1));
+const _hoisted_8$1 = [
+  _hoisted_7$1
+];
+const _hoisted_9$1 = /* @__PURE__ */ createStaticVNode("<p data-v-2b7a0082>Enter the text you want to search for. E.g. <code data-v-2b7a0082>Monika</code></p><p data-v-2b7a0082> If multiple words are given, each word must be found. E.g. <code data-v-2b7a0082>Monika Pose</code></p><p data-v-2b7a0082> To search phrases with spaces, surround them with double quotes. E.g. <code data-v-2b7a0082>&quot;Monika R63&quot; Pose</code></p><p data-v-2b7a0082> To limit your search to specific attributes of a pack, you can use the following prefixes: </p><table data-v-2b7a0082><tr data-v-2b7a0082><th data-v-2b7a0082>Prefix</th><th data-v-2b7a0082>Description</th><th data-v-2b7a0082>Example</th></tr><tr data-v-2b7a0082><td data-v-2b7a0082>Character:</td><td data-v-2b7a0082></td><td data-v-2b7a0082><code data-v-2b7a0082>Character: Monika</code></td></tr><tr data-v-2b7a0082><td data-v-2b7a0082>Artist:</td><td data-v-2b7a0082></td><td data-v-2b7a0082><code data-v-2b7a0082>Artist: edave64</code></td></tr><tr data-v-2b7a0082><td data-v-2b7a0082>Type:</td><td data-v-2b7a0082><code data-v-2b7a0082>Backgrounds</code>, <code data-v-2b7a0082>Sprites</code>, <code data-v-2b7a0082>Expressions</code>, <code data-v-2b7a0082>Styles</code>, <code data-v-2b7a0082>Poses</code> or <code data-v-2b7a0082>Characters</code></td><td data-v-2b7a0082><code data-v-2b7a0082>Type: Poses</code></td></tr><tr data-v-2b7a0082><td data-v-2b7a0082>Engine:</td><td data-v-2b7a0082><code data-v-2b7a0082>Doki Doki Dialog Generator</code>, <code data-v-2b7a0082>DDDG</code> or <code data-v-2b7a0082>Doki Doki Comic Club</code>, <code data-v-2b7a0082>DDCC</code></td><td data-v-2b7a0082><code data-v-2b7a0082>Engine: DDCC</code></td></tr><tr data-v-2b7a0082><td data-v-2b7a0082>Pack:</td><td data-v-2b7a0082>The pack itself must contain the text</td><td data-v-2b7a0082><code data-v-2b7a0082>Pack: Angry</code></td></tr></table><p data-v-2b7a0082> Prefixes can be shorted, so <code data-v-2b7a0082>Character: Monika</code> can be shortend to <code data-v-2b7a0082>C: Monika</code></p>", 6);
+const _hoisted_15$1 = [
+  _hoisted_9$1
+];
+function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$3, [
+    createBaseVNode("div", _hoisted_2$3, [
+      withDirectives(createBaseVNode("input", {
+        class: "input",
+        ref: "input",
+        "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => _ctx.message = $event),
+        disabled: _ctx.disabled,
+        onInput: _cache[1] || (_cache[1] = (...args) => _ctx.onUpdate && _ctx.onUpdate(...args)),
+        onClick: _cache[2] || (_cache[2] = ($event) => $event.dontCloseHelp = true),
+        onKeydown: _cache[3] || (_cache[3] = (...args) => _ctx.keydownHandler && _ctx.keydownHandler(...args))
+      }, null, 40, _hoisted_3$2), [
+        [vModelText, _ctx.message]
+      ]),
+      createBaseVNode("button", {
+        class: normalizeClass({ help: true, toggled: _ctx.showHelp }),
+        disabled: _ctx.disabled,
+        onClick: _cache[4] || (_cache[4] = withModifiers(($event) => {
+          _ctx.showHelp = !_ctx.showHelp;
+          $event.dontCloseHelp = true;
+        }, ["stop"]))
+      }, _hoisted_6$1, 10, _hoisted_4$2),
+      createBaseVNode("button", {
+        class: "exit-button",
+        onClick: _cache[5] || (_cache[5] = ($event) => _ctx.$emit("leave", true))
+      }, _hoisted_8$1)
+    ]),
+    _ctx.showHelp ? (openBlock(), createElementBlock("div", {
+      key: 0,
+      class: "info-area",
+      onClick: _cache[6] || (_cache[6] = ($event) => $event.dontCloseHelp = true)
+    }, _hoisted_15$1)) : createCommentVNode("", true)
+  ]);
+}
+const SearchBar = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-2b7a0082"]]);
+const availablePrefixes = ["author", "character", "type", "pack", "engine"];
+const prefixLookup = /* @__PURE__ */ new Map();
+for (const prefix of availablePrefixes) {
+  for (let i = 1; i <= prefix.length; ++i) {
+    const short = prefix.slice(0, i);
+    prefixLookup.set(short, prefix);
+  }
+}
+const spaceMatcher = /\s/;
+function parseSearchwords(str) {
+  const matchers = [];
+  let word = "";
+  let type = "";
+  let quote = false;
+  let escape = false;
+  function finishWord() {
+    matchers.push({
+      type: type || "all",
+      payload: word.toLowerCase()
+    });
+    word = "";
+    type = "";
+    escape = false;
+    quote = false;
+  }
+  for (const char of str) {
+    if (escape) {
+      word += char;
+      escape = false;
+      continue;
+    }
+    switch (char) {
+      case "\\":
+        escape = true;
+        continue;
+      case ":":
+        const lowerWord = word.toLowerCase();
+        if (!quote && type === "" && prefixLookup.has(lowerWord)) {
+          type = prefixLookup.get(lowerWord);
+          word = "";
+          continue;
+        }
+        break;
+      case '"':
+        if (quote) {
+          finishWord();
+        } else {
+          quote = true;
+        }
+        continue;
+    }
+    if (!quote && spaceMatcher.test(char)) {
+      if (word) {
+        finishWord();
+      }
+    } else {
+      word += char;
+    }
+  }
+  if (word)
+    finishWord();
+  return matchers;
+}
+const matchCost = /* @__PURE__ */ new Map([
+  ["engine", 0],
+  ["pack", 1],
+  ["type", 2],
+  ["character", 2],
+  ["author", 2],
+  ["all", 3]
+]);
+function optimize(matchers) {
+  return sortByCost(deduplicateMatchers(matchers));
+}
+function sortByCost(matchers) {
+  return matchers.sort((a, b) => matchCost.get(a.type) - matchCost.get(b.type) || b.payload.length - a.payload.length);
+}
+function deduplicateMatchers(matchers) {
+  const splitByType = /* @__PURE__ */ new Map();
+  for (const matcher of matchers) {
+    let list = splitByType.get(matcher.type);
+    if (!list) {
+      list = [];
+      splitByType.set(matcher.type, list);
+    }
+    list.push(matcher);
+  }
+  for (const key of splitByType.keys()) {
+    const value = splitByType.get(key);
+    const quickDeprefix = value.sort((a, b) => a.payload.localeCompare(b.payload)).filter((matcher, idx, ary) => {
+      if (!ary[idx + 1])
+        return true;
+      return !ary[idx + 1].payload.startsWith(matcher.payload);
+    });
+    splitByType.set(key, quickDeprefix.filter((matcher, idx, ary) => {
+      return !ary.find((collision, collIdx) => collIdx !== idx && collision.payload.indexOf(matcher.payload) !== -1);
+    }));
+  }
+  const specializedTypes = Array.from(splitByType.keys()).filter((type) => type !== "all");
+  splitByType.set("all", (splitByType.get("all") || []).filter((matcher) => {
+    return !specializedTypes.find((typeKey) => splitByType.get(typeKey).find((competingMatcher) => competingMatcher.payload.indexOf(matcher.payload) !== -1));
+  }));
+  return [...splitByType.values()].flatMap((x) => x);
+}
+class EngineMatcher {
+  constructor(payload) {
+    payload = payload.replace(/[\s-]/g, "").toLowerCase();
+    const matchingProps = /* @__PURE__ */ new Set();
+    for (const [searchText, key] of EngineMatcher.engines) {
+      if (searchText.toLowerCase().indexOf(payload) >= 0) {
+        matchingProps.add(key);
+      }
+    }
+    this.matchingProps = Array.from(matchingProps);
+  }
+  get isImpossible() {
+    return this.matchingProps.length === 0;
+  }
+  match(pack) {
+    for (const matchingProp of this.matchingProps) {
+      if (pack[matchingProp])
+        return true;
+    }
+    return false;
+  }
+}
+EngineMatcher.engines = [
+  ["Doki Doki Dialog Generator 1", "dddg1Path"],
+  ["Doki Doki Dialouge Generator 1", "dddg1Path"],
+  ["DDDG1", "dddg1Path"],
+  ["Doki Doki Dialog Generator 2", "dddg2Path"],
+  ["Doki Doki Dialouge Generator 2", "dddg2Path"],
+  ["DDDG2", "dddg2Path"],
+  ["Doki Doki Comic Club 2", "ddcc2Path"],
+  ["DDCC2", "ddcc2Path"]
+].map(([searchTerm, prop]) => [
+  searchTerm.replace(/\s/g, "").toLowerCase(),
+  prop
+]);
+class AuthorMatcher {
+  constructor(payload, peopleRepository) {
+    payload = payload.toLowerCase();
+    const matchingAuthors = /* @__PURE__ */ new Set();
+    for (const authorKey in peopleRepository) {
+      if (!Object.prototype.hasOwnProperty.call(peopleRepository, authorKey))
+        continue;
+      const author = peopleRepository[authorKey];
+      const props = Object.keys(author);
+      if (authorKey.toLowerCase().indexOf(payload) >= 0 || props.find((prop) => author[prop].toLowerCase().indexOf(payload) >= 0)) {
+        matchingAuthors.add(authorKey);
+      }
+    }
+    this.matchingAuthors = matchingAuthors;
+  }
+  get isImpossible() {
+    return this.matchingAuthors.size === 0;
+  }
+  match(pack) {
+    return !!pack.authors.find((author) => this.matchingAuthors.has(author));
+  }
+}
+class CharacterMatcher {
+  constructor(payload, _peopleRepository, packRepository) {
+    payload = payload.toLowerCase();
+    this.matchingCharacters = new Set(CharacterMatcher.getUniqueCharacters(packRepository).filter((char) => char.toLowerCase().indexOf(payload) >= 0));
+  }
+  get isImpossible() {
+    return this.matchingCharacters.size === 0;
+  }
+  match(pack) {
+    return !!pack.characters.find((character) => this.matchingCharacters.has(character));
+  }
+  static getUniqueCharacters(repo) {
+    let unique = this.uniqueCharacters.get(repo);
+    if (!unique) {
+      unique = Array.from(new Set(repo.flatMap((pack) => pack.characters)));
+      this.uniqueCharacters.set(repo, unique);
+    }
+    return unique;
+  }
+}
+CharacterMatcher.uniqueCharacters = /* @__PURE__ */ new Map();
+class TypeMatcher {
+  constructor(payload) {
+    payload = payload.toLowerCase();
+    this.matchingTypes = new Set(TypeMatcher.types.filter((type) => type.toLowerCase().indexOf(payload) >= 0));
+  }
+  get isImpossible() {
+    return this.matchingTypes.size === 0;
+  }
+  match(pack) {
+    return !!pack.kind.find((character) => this.matchingTypes.has(character));
+  }
+}
+TypeMatcher.types = [
+  "Styles",
+  "Characters",
+  "Expressions",
+  "Poses",
+  "Backgrounds",
+  "Sprites",
+  "Misc"
+];
+class PackMatcher {
+  constructor(payload, _peopleRepository, packRepository) {
+    payload = payload.toLowerCase();
+    this.payload = payload;
+    const triplets = PackMatcher.getTriplets(packRepository);
+    for (let i = 0, length = payload.length - 2; i < length; ++i) {
+      if (!triplets.has(payload.substr(i, 3))) {
+        this.isImpossible = true;
+        return;
+      }
+    }
+    this.isImpossible = false;
+  }
+  match(pack) {
+    if (this.isImpossible)
+      return false;
+    const payload = this.payload;
+    return !!(pack.id.toLowerCase().indexOf(payload) >= 0 || pack.name.toLowerCase().indexOf(payload) >= 0 || pack.searchWords.find((word) => word.toLowerCase().indexOf(payload) >= 0));
+  }
+  static getTriplets(repo) {
+    let triplets = this.tripletCache.get(repo);
+    if (!triplets) {
+      triplets = /* @__PURE__ */ new Set();
+      for (const pack of repo) {
+        PackMatcher.splitTriplets(pack.id, triplets);
+        PackMatcher.splitTriplets(pack.name, triplets);
+        for (const word of pack.searchWords) {
+          PackMatcher.splitTriplets(word, triplets);
+        }
+      }
+      this.tripletCache.set(repo, triplets);
+    }
+    return triplets;
+  }
+  static splitTriplets(str, cache) {
+    str = str.toLowerCase();
+    for (let i = 0, length = str.length - 2; i < length; ++i) {
+      cache.add(str.substr(i, 3));
+    }
+  }
+}
+PackMatcher.tripletCache = /* @__PURE__ */ new Map();
+class AllMatcher {
+  constructor(payload, peopleRepository, packRepository) {
+    this.matchers = AllMatcher.allMatchers.map((compiler) => new compiler(payload, peopleRepository, packRepository)).filter((matcher) => !matcher.isImpossible);
+  }
+  get isImpossible() {
+    return this.matchers.length === 0;
+  }
+  match(pack) {
+    return !!this.matchers.find((matcher) => matcher.match(pack));
+  }
+}
+AllMatcher.allMatchers = [
+  EngineMatcher,
+  AuthorMatcher,
+  CharacterMatcher,
+  TypeMatcher,
+  PackMatcher
+];
+const CompilerMatch = /* @__PURE__ */ new Map([
+  ["all", AllMatcher],
+  ["author", AuthorMatcher],
+  ["character", CharacterMatcher],
+  ["engine", EngineMatcher],
+  ["pack", PackMatcher],
+  ["type", TypeMatcher]
+]);
+function compile(matchers, authors, packs) {
+  return matchers.map((matcher) => new (CompilerMatch.get(matcher.type))(matcher.payload, authors, packs));
+}
+function filter(search, authors, list) {
+  const parsed = parseSearchwords(search);
+  const optimized = optimize(parsed);
+  const compiled = compile(optimized, authors, list);
+  if (compiled.find((matcher) => matcher.isImpossible))
+    return [];
+  return list.filter((pack) => compiled.every((matcher) => matcher.match(pack)));
+}
+const pageKeyMoveBy = 10;
+const _sfc_main$2 = defineComponent({
+  props: {
+    search: { type: String, required: true },
+    repo: {
+      type: Object
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data: () => ({
+    sort: "",
+    desc: false,
+    focusedItem: "",
+    wordCache: {}
+  }),
+  computed: {
+    packs() {
+      if (!this.repo)
+        return [];
+      return this.repo.getPacks();
+    },
+    list() {
+      const filtered = this.filterList(this.packs, this.search);
+      if (this.sort && filtered.length > 0) {
+        const sort = this.sort;
+        let sortFunc;
+        if (typeof filtered[0][sort] === "string") {
+          sortFunc = (a, b) => a.name.localeCompare(b.name);
+        } else if (filtered[0][sort] instanceof Array) {
+          sortFunc = (a, b) => a[sort].join(", ").localeCompare(b[sort].join(", "));
+        }
+        if (sortFunc) {
+          if (this.desc) {
+            const oldSort = sortFunc;
+            sortFunc = (b, a) => oldSort(a, b);
+          }
+          filtered.sort(sortFunc);
+        }
+      }
+      return filtered;
+    },
+    listById() {
+      return new Map(this.packs.map((pack) => [pack.id, pack]));
+    },
+    uniqueCharacters() {
+      return Array.from(
+        new Set(
+          this.packs.flatMap(
+            (pack) => pack.characters.map((char) => char.toLowerCase())
+          )
+        )
+      );
+    }
+  },
+  methods: {
+    focus() {
+      this.$refs.tbody.$el.focus();
+    },
+    keydownHandler(event) {
+      const indexOf = this.list.findIndex(
+        (pack) => pack.id === this.focusedItem
+      );
+      console.log(indexOf);
+      switch (event.key) {
+        case "Enter":
+          this.$emit("selected", { id: this.focusedItem, source: "keyboard" });
+          event.stopPropagation();
+          event.preventDefault();
+          break;
+        case "ArrowUp":
+          event.preventDefault();
+          event.stopPropagation();
+          if (indexOf === 0) {
+            this.$emit("select-search-bar");
+          } else {
+            this.focusedItem = this.list[indexOf - 1].id;
+          }
+          break;
+        case "ArrowDown":
+          event.preventDefault();
+          event.stopPropagation();
+          if (indexOf < this.list.length - 1) {
+            this.focusedItem = this.list[indexOf + 1].id;
+          }
+          break;
+        case "PageUp": {
+          event.preventDefault();
+          event.stopPropagation();
+          let newIdx = indexOf - pageKeyMoveBy;
+          if (newIdx < 0) {
+            newIdx = 0;
+          }
+          this.focusedItem = this.list[newIdx].id;
+          break;
+        }
+        case "PageDown": {
+          event.preventDefault();
+          event.stopPropagation();
+          let newIdx = indexOf + pageKeyMoveBy;
+          const max = this.list.length - 1;
+          if (newIdx > max) {
+            newIdx = max;
+          }
+          this.focusedItem = this.list[newIdx].id;
+          break;
+        }
+      }
+    },
+    headerKeydownListener(event, headerId) {
+      switch (event.key) {
+        case "Enter":
+        case " ":
+          this.sortBy(headerId);
+          event.preventDefault();
+          event.stopPropagation();
+          break;
+        case "ArrowDown":
+          this.focus();
+          event.stopPropagation();
+          event.preventDefault();
+          break;
+        case "ArrowUp":
+          this.$emit("select-search-bar");
+          event.stopPropagation();
+          event.preventDefault();
+          break;
+      }
+    },
+    updateFocusedItem() {
+      if (this.list.length === 0) {
+        this.focusedItem = "";
+        return;
+      }
+      if (this.focusedItem === "") {
+        this.focusedItem = this.list[0].id;
+      }
+      this.$nextTick(() => {
+        const header = this.$refs.header;
+        const element = document.querySelector(".list tbody .focused");
+        const containerHeight = this.$el.offsetHeight - header.offsetHeight;
+        const scrollTop = this.$el.scrollTop;
+        const scrollBottom = scrollTop + containerHeight;
+        if (element) {
+          const itemTop = element.offsetTop - header.offsetHeight;
+          const itemBottom = itemTop + element.offsetHeight;
+          if (itemBottom > scrollBottom) {
+            this.$el.scrollTop = itemBottom - containerHeight;
+          } else if (itemTop < scrollTop) {
+            this.$el.scrollTop = itemTop;
+          }
+        }
+      });
+    },
+    sortBy(by) {
+      if (this.sort === by) {
+        if (!this.desc) {
+          this.desc = true;
+        } else {
+          this.sort = "";
+          this.desc = false;
+        }
+      } else {
+        this.sort = by;
+        this.desc = false;
+      }
+    },
+    filterList(list, search) {
+      if (!search)
+        return [...list];
+      return filter(
+        search,
+        this.repo ? this.repo.getAuthors() : {},
+        list
+      );
+    },
+    translatePackState(state) {
+      if (state.loaded)
+        return "Active";
+      if (state.installed)
+        return "Installed";
+      return "";
+    }
+  },
+  watch: {
+    focusedItem() {
+      this.updateFocusedItem();
+    }
+  }
+});
+const List_vue_vue_type_style_index_0_scoped_26744ef4_lang = "";
+const _hoisted_1$2 = { class: "list" };
+const _hoisted_2$2 = { ref: "header" };
+const _hoisted_3$1 = ["tabindex", "onClick", "onKeydown"];
+const _hoisted_4$1 = { key: 0 };
+const _hoisted_5$1 = ["onMousedown", "onClick"];
+function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$2, [
+    createBaseVNode("table", null, [
+      createBaseVNode("thead", null, [
+        createBaseVNode("tr", _hoisted_2$2, [
+          (openBlock(), createElementBlock(Fragment, null, renderList([
+            ["name", "Pack"],
+            ["characters", "Character"],
+            ["kind", "Type"],
+            ["authors", "Authors"],
+            ["state", "Status"]
+          ], (header, idx) => {
+            return createBaseVNode("th", {
+              key: idx,
+              tabindex: _ctx.disabled ? -1 : 0,
+              onClick: ($event) => _ctx.sortBy(header[0]),
+              onKeydown: ($event) => _ctx.headerKeydownListener($event, header[0])
+            }, [
+              createBaseVNode("div", null, [
+                createBaseVNode("div", null, toDisplayString(header[1]), 1),
+                _ctx.sort === header[0] ? (openBlock(), createElementBlock("div", _hoisted_4$1, toDisplayString(_ctx.desc ? "\u25BC" : "\u25B2"), 1)) : createCommentVNode("", true)
+              ])
+            ], 40, _hoisted_3$1);
+          }), 64))
+        ], 512)
+      ]),
+      createVNode(TransitionGroup, {
+        name: "tbody-group",
+        tag: "tbody",
+        ref: "tbody",
+        tabindex: _ctx.disabled ? -1 : 0,
+        onKeydown: _ctx.keydownHandler,
+        onFocus: _ctx.updateFocusedItem
+      }, {
+        default: withCtx(() => [
+          (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.list, (pack) => {
+            return openBlock(), createElementBlock("tr", {
+              key: pack.id,
+              class: normalizeClass({
+                "tbody-group-item": true,
+                focused: _ctx.focusedItem === pack.id
+              }),
+              onMousedown: ($event) => _ctx.focusedItem = pack.id,
+              onClick: ($event) => _ctx.$emit("selected", { id: pack.id, source: "pointer" })
+            }, [
+              createBaseVNode("td", null, toDisplayString(pack.name), 1),
+              createBaseVNode("td", null, toDisplayString(pack.characters.join(", ")), 1),
+              createBaseVNode("td", null, toDisplayString(pack.kind.join(", ")), 1),
+              createBaseVNode("td", null, toDisplayString(pack.authors.join(", ")), 1),
+              createBaseVNode("td", null, toDisplayString(_ctx.translatePackState(pack)), 1)
+            ], 42, _hoisted_5$1);
+          }), 128))
+        ]),
+        _: 1
+      }, 8, ["tabindex", "onKeydown", "onFocus"])
+    ])
+  ]);
+}
+const List = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-26744ef4"]]);
+const allowedTags = [
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "blockquote",
+  "p",
+  "a",
+  "ul",
+  "ol",
+  "nl",
+  "li",
+  "b",
+  "i",
+  "strong",
+  "em",
+  "strike",
+  "code",
+  "hr",
+  "br",
+  "div",
+  "table",
+  "thead",
+  "caption",
+  "tbody",
+  "tr",
+  "th",
+  "td",
+  "pre"
+];
+const allowedAttributes = {
+  a: ["href"],
+  img: ["src"]
+};
+const schemaLimitedAttributes = ["href", "src"];
+const allowedSchemas = ["http", "https"];
+const enforceAttributes = {
+  a: {
+    target: "_blank",
+    rel: "noopener noreferrer"
+  }
+};
+function sanitize(html) {
+  const retDoc = document.createElement("div");
+  const doc = document.createElement("div");
+  doc.innerHTML = html;
+  for (const node of Array.from(doc.childNodes)) {
+    for (const sanitizedNode of sanitizeElement(node)) {
+      retDoc.appendChild(sanitizedNode);
+    }
+  }
+  return retDoc.innerHTML;
+}
+const protocolMatcher = /^(\w+):/;
+function sanitizeElement(node) {
+  if (node.nodeType !== Node.ELEMENT_NODE)
+    return [node];
+  const el = node;
+  const tagName = el.tagName.toLowerCase();
+  if (allowedTags.includes(tagName)) {
+    const newEl = document.createElement(tagName);
+    const attrs = Array.prototype.slice.call(el.attributes);
+    const allowedAttrs = allowedAttributes[tagName] || [];
+    for (const attr of attrs) {
+      if (!allowedAttrs.includes(attr.name))
+        continue;
+      if (schemaLimitedAttributes.includes(attr.name)) {
+        const protocolMatch = attr.value.match(protocolMatcher);
+        if (protocolMatch && !allowedSchemas.includes(protocolMatch[1])) {
+          continue;
+        }
+      }
+      newEl.setAttribute(attr.name, el.getAttribute(attr.name));
+    }
+    const enforce = enforceAttributes[tagName];
+    if (enforce) {
+      for (const attrName in enforce) {
+        if (!Object.prototype.hasOwnProperty.call(enforce, attrName))
+          continue;
+        newEl.setAttribute(attrName, enforce[attrName]);
+      }
+    }
+    const children = Array.prototype.slice.call(el.childNodes);
+    for (const childNode of children) {
+      const subNodes = sanitizeElement(childNode);
+      for (const subNode of subNodes) {
+        newEl.appendChild(subNode);
+      }
+    }
+    return [newEl];
+  } else {
+    let ret = [];
+    ret.push(document.createTextNode(`<${tagName}>`));
+    for (const subNode of el.childNodes) {
+      ret = ret.concat(sanitizeElement(subNode));
+    }
+    ret.push(document.createTextNode(`</${tagName}>`));
+    return ret;
+  }
+}
+const linkablePlatforms = [
+  ["reddit", "https://reddit.com/u/%1", "reddit.png"],
+  ["deviantart", "https://www.deviantart.com/%1", "deviantart.png"],
+  ["twitter", "https://twitter.com/%1", "twitter.svg"],
+  ["pixiv", "https://www.pixiv.net/users/%1", "pixiv.ico"],
+  ["patreon", "https://www.patreon.com/%1", "patreon.png"],
+  ["facebook", "https://www.facebook.com/%1", "facebook.png"],
+  ["github", "https://github.com/%1", "github.png"],
+  ["website", "%1", "website.svg"]
+];
+const _sfc_main$1 = defineComponent({
+  components: { L, Toggle: ToggleBox },
+  props: {
+    selected: {
+      type: String,
+      required: true
+    },
+    repo: {
+      type: Object,
+      require: true
+    },
+    showBack: {
+      type: Boolean,
+      require: false
+    }
+  },
+  computed: {
+    pack() {
+      return this.repo.getPack(this.selected);
+    },
+    backgroundImage() {
+      return this.pack.preview.map((preview) => `url('${preview}')`).join(",");
+    },
+    installable() {
+      if (!environment.supports.localRepo)
+        return false;
+      return !this.pack.installed;
+    },
+    uninstallable() {
+      if (!environment.supports.localRepo)
+        return false;
+      return this.pack.installed;
+    },
+    removable() {
+      return this.pack.loaded;
+    },
+    addable() {
+      return !this.pack.loaded;
+    },
+    autoloadEnabled() {
+      return environment.supports.autoLoading;
+    },
+    autoload: {
+      get() {
+        return environment.state.autoAdd.includes(this.selected);
+      },
+      set(val) {
+        let loadId = this.selected;
+        const pack = this.pack;
+        if (pack.repoUrl != null)
+          loadId += `;${pack.repoUrl}`;
+        if (val) {
+          environment.autoLoadAdd(loadId);
+        } else {
+          environment.autoLoadRemove(loadId);
+        }
+      }
+    }
+  },
+  methods: {
+    focus() {
+      this.$refs.toFocus.focus();
+    },
+    authorName(authorId) {
+      const author = this.repo.getAuthor(authorId);
+      if (author && author.currentName != null)
+        return author.currentName;
+      return authorId;
+    },
+    authorsLinks(authorId) {
+      const author = this.repo.getAuthor(authorId);
+      if (!author)
+        return [];
+      return linkablePlatforms.filter((platform) => author[platform[0]]).map((platform) => {
+        const value = author[platform[0]];
+        const target = platform[1].replace("%1", value);
+        return {
+          target,
+          platform: platform[0][0].toUpperCase() + platform[0].slice(1),
+          icon: "icons/" + platform[2]
+        };
+      });
+    },
+    sanitize(credits) {
+      return sanitize(credits);
+    },
+    install() {
+      if (this.pack.installed)
+        return;
+      const authors = {};
+      for (const key of this.pack.authors) {
+        authors[key] = { ...this.repo.getAuthor(key) };
+      }
+      const pack = JSON.parse(JSON.stringify(this.pack));
+      delete pack.autoloading;
+      delete pack.online;
+      delete pack.loaded;
+      delete pack.installed;
+      environment.localRepoInstall(
+        this.pack.dddg2Path || this.pack.dddg1Path,
+        pack,
+        authors
+      );
+    },
+    async uninstall() {
+      var _a;
+      const pack = this.pack;
+      if (!pack.installed)
+        return;
+      if (pack.repoUrl && !((_a = this.repo) == null ? void 0 : _a.hasPack(pack.id, true))) {
+        await this.repo.loadTempPack(pack.repoUrl);
+      }
+      environment.localRepoUninstall(this.pack.id);
+    },
+    async remove() {
+      await this.$store.dispatch("removePacks", {
+        packs: /* @__PURE__ */ new Set([this.pack.id])
+      });
+    },
+    async add() {
+      await this.$store.dispatch(
+        "content/loadContentPacks",
+        this.pack.dddg2Path || this.pack.dddg1Path
+      );
+    }
+  }
+});
+const PackDisplay_vue_vue_type_style_index_0_scoped_e0f6c8f4_lang = "";
+const PackDisplay_vue_vue_type_style_index_1_lang = "";
+const _withScopeId = (n) => (pushScopeId("data-v-e0f6c8f4"), n = n(), popScopeId(), n);
+const _hoisted_1$1 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createBaseVNode("i", { class: "material-icons" }, "arrow_back", -1));
+const _hoisted_2$1 = [
+  _hoisted_1$1
+];
+const _hoisted_3 = ["innerHTML"];
+const _hoisted_4 = { key: 1 };
+const _hoisted_5 = /* @__PURE__ */ createTextVNode("Source");
+const _hoisted_6 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createBaseVNode("i", { class: "material-icons" }, "add", -1));
+const _hoisted_7 = /* @__PURE__ */ createTextVNode(" Activate ");
+const _hoisted_8 = [
+  _hoisted_6,
+  _hoisted_7
+];
+const _hoisted_9 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createBaseVNode("i", { class: "material-icons" }, "remove", -1));
+const _hoisted_10 = /* @__PURE__ */ createTextVNode(" Deactivate ");
+const _hoisted_11 = [
+  _hoisted_9,
+  _hoisted_10
+];
+const _hoisted_12 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createBaseVNode("i", { class: "material-icons" }, "add", -1));
+const _hoisted_13 = /* @__PURE__ */ createTextVNode(" Store locally ");
+const _hoisted_14 = [
+  _hoisted_12,
+  _hoisted_13
+];
+const _hoisted_15 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createBaseVNode("i", { class: "material-icons" }, "remove", -1));
+const _hoisted_16 = /* @__PURE__ */ createTextVNode(" Remove locally ");
+const _hoisted_17 = [
+  _hoisted_15,
+  _hoisted_16
+];
+const _hoisted_18 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createBaseVNode("h3", null, "Authors", -1));
+const _hoisted_19 = ["title", "src"];
+const _hoisted_20 = { key: 2 };
+const _hoisted_21 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createBaseVNode("h3", null, "Credits", -1));
+const _hoisted_22 = ["innerHTML"];
+function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_l = resolveComponent("l");
+  const _component_toggle = resolveComponent("toggle");
+  return openBlock(), createElementBlock("div", {
+    class: "pack-display",
+    style: normalizeStyle({ backgroundImage: _ctx.backgroundImage }),
+    onClick: _cache[6] || (_cache[6] = withModifiers(() => {
+    }, ["stop"]))
+  }, [
+    createBaseVNode("header", null, [
+      createBaseVNode("h1", null, [
+        _ctx.showBack ? (openBlock(), createElementBlock("button", {
+          key: 0,
+          class: "exit-button",
+          onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("leave", true))
+        }, _hoisted_2$1)) : createCommentVNode("", true),
+        createTextVNode(" " + toDisplayString(_ctx.pack.name), 1)
+      ]),
+      createBaseVNode("h2", null, toDisplayString(_ctx.pack.id), 1)
+    ]),
+    _ctx.pack.disclaimer ? (openBlock(), createElementBlock("section", {
+      key: 0,
+      class: "disclaimer",
+      innerHTML: _ctx.sanitize(_ctx.pack.disclaimer)
+    }, null, 8, _hoisted_3)) : createCommentVNode("", true),
+    _ctx.pack.source ? (openBlock(), createElementBlock("section", _hoisted_4, [
+      createVNode(_component_l, {
+        to: _ctx.pack.source
+      }, {
+        default: withCtx(() => [
+          _hoisted_5
+        ]),
+        _: 1
+      }, 8, ["to"])
+    ])) : createCommentVNode("", true),
+    createBaseVNode("section", null, [
+      _ctx.addable ? (openBlock(), createElementBlock("button", {
+        key: 0,
+        onClick: _cache[1] || (_cache[1] = (...args) => _ctx.add && _ctx.add(...args))
+      }, _hoisted_8)) : createCommentVNode("", true),
+      _ctx.removable ? (openBlock(), createElementBlock("button", {
+        key: 1,
+        onClick: _cache[2] || (_cache[2] = (...args) => _ctx.remove && _ctx.remove(...args))
+      }, _hoisted_11)) : createCommentVNode("", true),
+      _ctx.installable ? (openBlock(), createElementBlock("button", {
+        key: 2,
+        onClick: _cache[3] || (_cache[3] = (...args) => _ctx.install && _ctx.install(...args))
+      }, _hoisted_14)) : createCommentVNode("", true),
+      _ctx.uninstallable ? (openBlock(), createElementBlock("button", {
+        key: 3,
+        onClick: _cache[4] || (_cache[4] = (...args) => _ctx.uninstall && _ctx.uninstall(...args))
+      }, _hoisted_17)) : createCommentVNode("", true),
+      _ctx.autoloadEnabled ? (openBlock(), createBlock(_component_toggle, {
+        key: 4,
+        label: "Load on startup",
+        modelValue: _ctx.autoload,
+        "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => _ctx.autoload = $event)
+      }, null, 8, ["modelValue"])) : createCommentVNode("", true)
+    ]),
+    createBaseVNode("section", null, [
+      _hoisted_18,
+      createBaseVNode("table", null, [
+        createBaseVNode("tbody", null, [
+          (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.pack.authors, (authorId) => {
+            return openBlock(), createElementBlock("tr", { key: authorId }, [
+              createBaseVNode("td", null, toDisplayString(_ctx.authorName(authorId)), 1),
+              createBaseVNode("td", null, [
+                (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.authorsLinks(authorId), (link) => {
+                  return openBlock(), createBlock(_component_l, {
+                    key: link.target,
+                    to: link.target,
+                    class: "platform_button"
+                  }, {
+                    default: withCtx(() => [
+                      createBaseVNode("img", {
+                        title: link.platform,
+                        src: link.icon,
+                        height: "32",
+                        width: "32",
+                        alt: ""
+                      }, null, 8, _hoisted_19)
+                    ]),
+                    _: 2
+                  }, 1032, ["to"]);
+                }), 128))
+              ])
+            ]);
+          }), 128))
+        ])
+      ])
+    ]),
+    _ctx.pack.description ? (openBlock(), createElementBlock("section", _hoisted_20, [
+      _hoisted_21,
+      createBaseVNode("p", {
+        innerHTML: _ctx.sanitize(_ctx.pack.description)
+      }, null, 8, _hoisted_22)
+    ])) : createCommentVNode("", true)
+  ], 4);
+}
+const PackDisplay = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-e0f6c8f4"]]);
+const _sfc_main = defineComponent({
+  components: {
+    SearchBar,
+    List,
+    PackDisplay
+  },
+  data: () => ({
+    search: "",
+    packs: [],
+    authors: {},
+    repo: null,
+    selected: null
+  }),
+  computed: {
+    isRepoUrl() {
+      return this.search.endsWith(".json") && (this.search.startsWith("http://") || this.search.startsWith("https://"));
+    }
+  },
+  methods: {
+    focus() {
+    },
+    setSearch(str) {
+      this.selected = null;
+      this.search = str;
+    },
+    leavePackDisplay(moveFocus) {
+      this.selected = null;
+      if (moveFocus) {
+        this.focusSearchBar();
+      }
+    },
+    keydownHandler(event) {
+      if (event.key === "Escape") {
+        this.selected = "";
+        this.$nextTick(() => {
+          this.$refs.searchBar.focus();
+        });
+      }
+    },
+    onSelect({ id, source }) {
+      this.selected = id;
+      if (source === "keyboard") {
+        this.$nextTick(() => {
+          const dialog = this.$refs.dialog;
+          dialog.focus();
+        });
+      }
+    },
+    focusListHandler() {
+      this.$nextTick(() => {
+        const list = this.$refs.list;
+        if (list) {
+          list.focus();
+        }
+      });
+    },
+    focusSearchBar() {
+      this.$nextTick(() => {
+        const searchBar = this.$refs.searchBar;
+        if (searchBar) {
+          searchBar.focus();
+        }
+      });
+    },
+    async add_repo_pack() {
+      try {
+        const repo = await Repo.getInstance();
+        const packId = await repo.loadTempPack(this.search);
+        this.search = "";
+        if (packId) {
+          this.selected = packId;
+        }
+      } catch (e) {
+        eventBus.fire(
+          new VueErrorEvent(e, "Error while loading external pack")
+        );
+      }
+    }
+  },
+  async created() {
+    const repo = await Repo.getInstance();
+    this.repo = repo;
+    this.packs = repo.getPacks();
+    this.authors = repo.getAuthors();
+  },
+  activated() {
+    this.focusSearchBar();
+  },
+  mounted() {
+    this.focusSearchBar();
+  }
+});
+const SingleBox_vue_vue_type_style_index_0_scoped_c3d2e321_lang = "";
+const _hoisted_1 = {
+  key: 1,
+  class: "ask-download"
+};
+const _hoisted_2 = {
+  key: 1,
+  class: "page fly-right"
+};
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_search_bar = resolveComponent("search-bar");
+  const _component_list = resolveComponent("list");
+  const _component_pack_display = resolveComponent("pack-display");
+  return openBlock(), createElementBlock("div", {
+    class: "pages",
+    onKeydown: _cache[4] || (_cache[4] = (...args) => _ctx.keydownHandler && _ctx.keydownHandler(...args))
+  }, [
+    !_ctx.selected ? (openBlock(), createElementBlock("div", {
+      key: 0,
+      class: normalizeClass(["page fly-left", { blured: _ctx.selected }])
+    }, [
+      createVNode(_component_search_bar, {
+        class: "search-bar",
+        ref: "searchBar",
+        modelValue: _ctx.search,
+        "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => _ctx.search = $event),
+        disabled: !!_ctx.selected,
+        onFocusList: _ctx.focusListHandler,
+        onLeave: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("leave"))
+      }, null, 8, ["modelValue", "disabled", "onFocusList"]),
+      !_ctx.isRepoUrl ? (openBlock(), createBlock(_component_list, {
+        key: 0,
+        class: "list",
+        ref: "list",
+        search: _ctx.search,
+        repo: _ctx.repo,
+        disabled: !!_ctx.selected,
+        onSelected: _ctx.onSelect,
+        onSelectSearchBar: _cache[2] || (_cache[2] = ($event) => _ctx.$refs.searchBar.focus())
+      }, null, 8, ["search", "repo", "disabled", "onSelected"])) : (openBlock(), createElementBlock("div", _hoisted_1, [
+        createTextVNode(" Do you want to download the pack from '" + toDisplayString(_ctx.search) + "'? ", 1),
+        createBaseVNode("button", {
+          onClick: _cache[3] || (_cache[3] = (...args) => _ctx.add_repo_pack && _ctx.add_repo_pack(...args))
+        }, "Add package")
+      ]))
+    ], 2)) : (openBlock(), createElementBlock("div", _hoisted_2, [
+      createVNode(_component_pack_display, {
+        ref: "dialog",
+        class: "pack-display",
+        repo: _ctx.repo,
+        selected: _ctx.selected,
+        "show-back": "",
+        onLeave: _ctx.leavePackDisplay
+      }, null, 8, ["repo", "selected", "onLeave"])
+    ]))
+  ], 32);
+}
+const SingleBox = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-c3d2e321"]]);
+export {
+  SingleBox as default
+};
