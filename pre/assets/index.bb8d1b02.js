@@ -6631,8 +6631,8 @@ function isWebPSupported() {
   const transparentCode = "data:image/webp;base64,UklGRogAAABXRUJQVlA4THwAAAAv/8SzAA/wGbPPmH3GbP7jAQSSNu9f+rzDwYj+G23bpt3Gx3xD8353j73f5b87+e9OALmT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9OAriT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9O/rsTwe7kvzsL";
   return webpSupportPromise = (() => __async$z(this, null, function* () {
     const ret = yield Promise.all([
-      canLoadImg(losslessCode),
-      canLoadImg(transparentCode)
+      canLoadImg(losslessCode, 1, 2),
+      canLoadImg(transparentCode, 720, 1280)
     ]);
     return ret[0] && ret[1];
   }))();
@@ -6641,7 +6641,7 @@ function canLoadImg(url, height, width) {
   return new Promise((resolve2, _reject) => {
     const img = document.createElement("img");
     img.addEventListener("load", () => {
-      resolve2(img.width === 2 && img.height === 1);
+      resolve2(img.width === width && img.height === height);
     });
     img.addEventListener("error", () => {
       resolve2(false);
@@ -6693,7 +6693,7 @@ class TmpAssetCache {
     if (lookup)
       return lookup;
     const promise = requestAssetByUrl(url);
-    this.cache.set(url, new window.WeakRef(promise));
+    this.cache.set(url, new WeakRef(promise));
     return promise;
   }
   remove(url) {
@@ -6704,7 +6704,7 @@ let assetCache = null;
 function getAssetCache() {
   if (assetCache)
     return assetCache;
-  return window.assetCache = assetCache = envX.supports.assetCaching || typeof window.WeakRef === "undefined" ? new AssetCache() : new TmpAssetCache();
+  return window.assetCache = assetCache = envX.supports.assetCaching || typeof WeakRef === "undefined" ? new AssetCache() : new TmpAssetCache();
 }
 const customAssets = {};
 function getAAsset(asset, hq = true) {
@@ -10896,6 +10896,29 @@ Object.defineProperty(literalTypes, "__esModule", { value: true });
   __exportStar(functions, exports);
   __exportStar(literalTypes, exports);
 })(dist);
+function disposeCanvas(canvas) {
+  canvas.width = 0;
+  canvas.height = 0;
+}
+function makeCanvas() {
+  const ret = document.createElement("canvas");
+  markForDisposal(ret);
+  return ret;
+}
+const disposables = [];
+function markForDisposal(canvas) {
+  if (typeof WeakRef === "undefined")
+    return;
+  disposables.push(new WeakRef(canvas));
+}
+window.addEventListener("beforeunload", () => {
+  disposables.forEach((x) => {
+    const disposable = x.deref();
+    if (!disposable)
+      return;
+    disposeCanvas(disposable);
+  });
+});
 var __defProp$u = Object.defineProperty;
 var __defNormalProp$u = (obj, key, value) => key in obj ? __defProp$u(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$i = (obj, key, value) => {
@@ -11345,7 +11368,10 @@ const _TextRenderer = class {
 };
 let TextRenderer = _TextRenderer;
 __publicField$i(TextRenderer, "textCommands", textCommands);
-const tmpContext = document.createElement("canvas").getContext("2d");
+const tmpCanvas = makeCanvas();
+tmpCanvas.width = 0;
+tmpCanvas.height = 0;
+const tmpContext = tmpCanvas.getContext("2d");
 let lastStyle = null;
 function measureWidth(textStyle, character) {
   if (textStyle !== lastStyle) {
@@ -11723,10 +11749,14 @@ class Renderer {
   constructor(w, h2) {
     __publicField$g(this, "previewCanvas");
     __publicField$g(this, "runningContext", null);
+    __publicField$g(this, "_disposed", false);
     const constants = getConstants();
-    this.previewCanvas = document.createElement("canvas");
+    this.previewCanvas = makeCanvas();
     this.previewCanvas.width = w != null ? w : constants.Base.screenWidth;
     this.previewCanvas.height = h2 != null ? h2 : constants.Base.screenHeight;
+  }
+  get disposed() {
+    return this._disposed;
   }
   render(renderCallback, hq = true, preview = true) {
     return __async$p(this, null, function* () {
@@ -11790,7 +11820,7 @@ class Renderer {
   }
   drawToCanvas(renderCallback) {
     return __async$p(this, null, function* () {
-      const downloadCanvas = document.createElement("canvas");
+      const downloadCanvas = makeCanvas();
       downloadCanvas.width = this.previewCanvas.width;
       downloadCanvas.height = this.previewCanvas.height;
       const ctx = downloadCanvas.getContext("2d");
@@ -11800,6 +11830,13 @@ class Renderer {
       );
       return downloadCanvas;
     });
+  }
+  dispose() {
+    if (this.runningContext) {
+      this.runningContext.abort();
+    }
+    disposeCanvas(this.previewCanvas);
+    this._disposed = true;
   }
   getDataAt(x, y) {
     const ctx = this.previewCanvas.getContext("2d");
@@ -11855,6 +11892,7 @@ class OffscreenRenderable {
     __publicField$f(this, "lastVersion", null);
     __publicField$f(this, "hitDetectionFallback", false);
     __publicField$f(this, "renderable", false);
+    __publicField$f(this, "_disposed", false);
     __publicField$f(this, "lastHq", false);
     __publicField$f(this, "ready", Promise.resolve());
   }
@@ -11890,6 +11928,8 @@ class OffscreenRenderable {
   }
   updateLocalCanvas(hq) {
     return __async$o(this, null, function* () {
+      if (this._disposed)
+        throw new Error("Disposed renderable called");
       yield this.ready;
       const width = this.canvasWidth;
       const height = this.canvasHeight;
@@ -11917,6 +11957,8 @@ class OffscreenRenderable {
   }
   render(selected, rx) {
     return __async$o(this, null, function* () {
+      if (this._disposed)
+        throw new Error("Disposed renderable called");
       const needRedraw = this.lastHq !== rx.hq || this.needsRedraw();
       if (needRedraw)
         yield this.updateLocalCanvas(rx.hq);
@@ -12009,6 +12051,15 @@ class OffscreenRenderable {
     };
   }
   updatedContent(_current, _panelId) {
+  }
+  get disposed() {
+    return this._disposed;
+  }
+  dispose() {
+    var _a;
+    this._disposed = true;
+    (_a = this.localRenderer) == null ? void 0 : _a.dispose();
+    this.localRenderer = null;
   }
 }
 var __defProp$q = Object.defineProperty;
@@ -12599,6 +12650,7 @@ class Custom extends DdlcBase {
           width: textboxOutlineWidth$1
         }
       });
+      dotPattern.dispose();
     });
   }
   render(rx) {
@@ -13051,6 +13103,7 @@ class CustomPlus extends DdlcPlusBase {
           width: textboxOutlineWidth
         }
       });
+      dotPattern.dispose();
     });
   }
   render(rx) {
@@ -14378,9 +14431,21 @@ const filterText = /* @__PURE__ */ new Map([
   ["sepia", "Sepia"],
   ["drop-shadow", "Drop shadow"]
 ]);
-const filters = Array.from(
-  filterText.keys()
-).sort();
+const filters = (() => {
+  try {
+    const canvas = makeCanvas();
+    canvas.width = 0;
+    canvas.height = 0;
+    const context = canvas.getContext("2d");
+    const hasFilter = "filter" in context;
+    disposeCanvas(canvas);
+    if (hasFilter) {
+      return Array.from(filterText.keys()).sort();
+    }
+  } catch (e) {
+  }
+  return ["opacity"];
+})();
 const _sfc_main$h = defineComponent({
   components: { DFlow, DFieldset, Color, Slider, L },
   props: {
@@ -14447,15 +14512,7 @@ const _sfc_main$h = defineComponent({
       return this.object.filters;
     },
     filterTypes() {
-      try {
-        const canvas = document.createElement("canvas");
-        const context = canvas.getContext("2d");
-        if ("filter" in context) {
-          return filters;
-        }
-      } catch (_e) {
-      }
-      return ["opacity"];
+      return filters;
     },
     currentFilter() {
       var _a;
@@ -14633,8 +14690,8 @@ const _sfc_main$h = defineComponent({
     }
   }
 });
-const imageOptions_vue_vue_type_style_index_0_scoped_4df302c6_lang = "";
-const _withScopeId$a = (n) => (pushScopeId("data-v-4df302c6"), n = n(), popScopeId(), n);
+const imageOptions_vue_vue_type_style_index_0_scoped_d8e66f9b_lang = "";
+const _withScopeId$a = (n) => (pushScopeId("data-v-d8e66f9b"), n = n(), popScopeId(), n);
 const _hoisted_1$g = /* @__PURE__ */ _withScopeId$a(() => /* @__PURE__ */ createBaseVNode("h2", null, "Image options", -1));
 const _hoisted_2$e = { class: "column ok-col" };
 const _hoisted_3$c = {
@@ -14997,7 +15054,7 @@ function _sfc_render$h(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }));
 }
-const ImageOptions = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["render", _sfc_render$h], ["__scopeId", "data-v-4df302c6"]]);
+const ImageOptions = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["render", _sfc_render$h], ["__scopeId", "data-v-d8e66f9b"]]);
 const _sfc_main$g = defineComponent({
   inheritAttrs: false,
   components: { Color },
@@ -19111,23 +19168,33 @@ const _SceneRenderer = class {
     this.canvasHeight = canvasHeight;
     __publicField(this, "renderObjectCache", /* @__PURE__ */ new Map());
     __publicField(this, "renderer");
+    __publicField(this, "_disposed", false);
     this.renderer = new Renderer(canvasWidth, canvasHeight);
   }
   get panelId() {
     return this._panelId;
   }
   setPanelId(panelId) {
+    if (this._disposed)
+      throw new Error("Disposed scene-renderer called");
     if (this._panelId === panelId)
       return;
     this._panelId = panelId;
+    this.renderObjectCache.forEach((a) => {
+      a.dispose();
+    });
     this.renderObjectCache.clear();
   }
   render(hq, preview) {
+    if (this._disposed)
+      throw new Error("Disposed scene-renderer called");
     if (!this.panel)
       return Promise.resolve(false);
     return this.renderer.render(this.renderCallback.bind(this), hq, preview);
   }
   download() {
+    if (this._disposed)
+      throw new Error("Disposed scene-renderer called");
     const date = new Date();
     const filename = `panel-${[
       date.getFullYear(),
@@ -19148,6 +19215,8 @@ const _SceneRenderer = class {
   renderCallback(rx) {
     return __async$6(this, null, function* () {
       var _a;
+      if (this._disposed)
+        throw new Error("Disposed scene-renderer called");
       rx.fsCtx.imageSmoothingEnabled = true;
       rx.fsCtx.imageSmoothingQuality = rx.hq ? "high" : "low";
       yield (_a = this.getBackgroundRenderer()) == null ? void 0 : _a.render(rx);
@@ -19183,6 +19252,7 @@ const _SceneRenderer = class {
       (id) => !order.includes(id)
     );
     for (const id of toUncache) {
+      this.renderObjectCache.get(id).dispose();
       this.renderObjectCache.delete(id);
     }
     return order.map((id) => {
@@ -19242,6 +19312,13 @@ const _SceneRenderer = class {
           panel.background.filters
         );
     }
+  }
+  get disposed() {
+    return this._disposed;
+  }
+  dispose() {
+    this._disposed = true;
+    this.renderer.dispose();
   }
 };
 let SceneRenderer = _SceneRenderer;
@@ -19325,7 +19402,7 @@ const _sfc_main$6 = defineComponent({
   created() {
     return __async$5(this, null, function* () {
       const baseConst = getConstants().Base;
-      const targetCanvas = document.createElement("canvas");
+      const targetCanvas = makeCanvas();
       targetCanvas.width = baseConst.screenWidth * thumbnailFactor;
       targetCanvas.height = baseConst.screenHeight * thumbnailFactor;
       this.thumbnailCtx = markRaw(targetCanvas.getContext("2d"));
@@ -19336,11 +19413,12 @@ const _sfc_main$6 = defineComponent({
     });
   },
   mounted() {
-    return __async$5(this, null, function* () {
-      this.moveFocusToActivePanel();
-      this.renderThumbnail().catch(() => {
-      });
+    this.moveFocusToActivePanel();
+    this.renderThumbnail().catch(() => {
     });
+  },
+  unmounted() {
+    disposeCanvas(this.thumbnailCtx.canvas);
   },
   methods: {
     download() {
@@ -19362,9 +19440,9 @@ const _sfc_main$6 = defineComponent({
           yield this.renderObjects(
             distribution,
             true,
-            (imageIdx, canvas) => __async$5(this, null, function* () {
+            (imageIdx, canvasEle) => __async$5(this, null, function* () {
               yield envX.saveToFile(
-                canvas,
+                canvasEle,
                 `${prefix}_${imageIdx}.${extension}`,
                 format,
                 quality / qualityFactor
@@ -19382,9 +19460,9 @@ const _sfc_main$6 = defineComponent({
         const sizes = yield this.renderObjects(
           distribution,
           false,
-          (imageIdx, canvas) => __async$5(this, null, function* () {
+          (imageIdx, canvasEle) => __async$5(this, null, function* () {
             return new Promise((resolve2, reject) => {
-              canvas.toBlob(
+              canvasEle.toBlob(
                 (blob) => {
                   if (!blob) {
                     reject(`Image ${imageIdx + 1} could not be rendered.`);
@@ -19416,20 +19494,23 @@ const _sfc_main$6 = defineComponent({
     renderObjects(distribution, hq, mapper) {
       return __async$5(this, null, function* () {
         const baseConst = getConstants().Base;
-        return yield Promise.all(
-          distribution.map((image, imageIdx) => __async$5(this, null, function* () {
-            const targetCanvas = document.createElement("canvas");
-            targetCanvas.width = baseConst.screenWidth;
-            targetCanvas.height = baseConst.screenHeight * image.length;
+        const ret = [];
+        for (let imageIdx = 0; imageIdx < distribution.length; ++imageIdx) {
+          const image = distribution[imageIdx];
+          const targetCanvas = document.createElement("canvas");
+          targetCanvas.width = baseConst.screenWidth;
+          targetCanvas.height = baseConst.screenHeight * image.length;
+          try {
             const context = targetCanvas.getContext("2d");
-            yield Promise.all(
-              image.map((panelId, panelIdx) => __async$5(this, null, function* () {
-                const sceneRenderer = new SceneRenderer(
-                  this.$store,
-                  image[panelIdx],
-                  baseConst.screenWidth,
-                  baseConst.screenHeight
-                );
+            for (let panelIdx = 0; panelIdx < image.length; ++panelIdx) {
+              const panelId = image[panelIdx];
+              const sceneRenderer = new SceneRenderer(
+                this.$store,
+                panelId,
+                baseConst.screenWidth,
+                baseConst.screenHeight
+              );
+              try {
                 yield sceneRenderer.render(hq, false);
                 sceneRenderer.paintOnto(context, {
                   x: 0,
@@ -19437,11 +19518,16 @@ const _sfc_main$6 = defineComponent({
                   w: baseConst.screenWidth,
                   h: baseConst.screenHeight
                 });
-              }))
-            );
-            return yield mapper(imageIdx, targetCanvas);
-          }))
-        );
+              } finally {
+                sceneRenderer.dispose();
+              }
+            }
+            ret.push(yield mapper(imageIdx, targetCanvas));
+          } finally {
+            disposeCanvas(targetCanvas);
+          }
+        }
+        return ret;
       });
     },
     getLimitedPanelList() {
@@ -19623,8 +19709,8 @@ const _sfc_main$6 = defineComponent({
     }
   }
 });
-const panels_vue_vue_type_style_index_0_scoped_120ae40f_lang = "";
-const _withScopeId$2 = (n) => (pushScopeId("data-v-120ae40f"), n = n(), popScopeId(), n);
+const panels_vue_vue_type_style_index_0_scoped_5d63de8a_lang = "";
+const _withScopeId$2 = (n) => (pushScopeId("data-v-5d63de8a"), n = n(), popScopeId(), n);
 const _hoisted_1$6 = { class: "panel" };
 const _hoisted_2$5 = /* @__PURE__ */ _withScopeId$2(() => /* @__PURE__ */ createBaseVNode("h1", null, "Panels", -1));
 const _hoisted_3$4 = ["onClick", "onKeydown"];
@@ -19874,7 +19960,7 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64))
   ]);
 }
-const PanelsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__scopeId", "data-v-120ae40f"]]);
+const PanelsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__scopeId", "data-v-5d63de8a"]]);
 const setableN = genericSimpleSetter("panels/setNotificationProperty");
 const _sfc_main$5 = defineComponent({
   mixins: [PanelMixin],
@@ -20609,22 +20695,30 @@ const _sfc_main$1 = defineComponent({
       const loadingScreen = document.createElement("canvas");
       loadingScreen.height = this.bitmapHeight;
       loadingScreen.width = this.bitmapWidth;
-      const rctx = RenderContext.make(loadingScreen, true, false);
-      rctx.drawText({
-        text: "Starting...",
-        x: loadingScreen.width / 2,
-        y: loadingScreen.height / 2,
-        align: "center",
-        outline: {
-          width: 5,
-          style: "#b59"
-        },
-        font: "32px riffic",
-        fill: {
-          style: "white"
-        }
-      });
-      this.sdCtx.drawImage(loadingScreen, this.canvasWidth, this.canvasHeight);
+      try {
+        const rctx = RenderContext.make(loadingScreen, true, false);
+        rctx.drawText({
+          text: "Starting...",
+          x: loadingScreen.width / 2,
+          y: loadingScreen.height / 2,
+          align: "center",
+          outline: {
+            width: 5,
+            style: "#b59"
+          },
+          font: "32px riffic",
+          fill: {
+            style: "white"
+          }
+        });
+        this.sdCtx.drawImage(
+          loadingScreen,
+          this.canvasWidth,
+          this.canvasHeight
+        );
+      } finally {
+        disposeCanvas(loadingScreen);
+      }
     },
     display() {
       this.showingLast = false;
@@ -20809,6 +20903,10 @@ const _sfc_main$1 = defineComponent({
     this.sdCtx = sd.getContext("2d");
     this.renderLoadingScreen();
     this.invalidateRender();
+  },
+  unmounted() {
+    var _a;
+    (_a = this.sceneRendererCache) == null ? void 0 : _a.dispose();
   }
 });
 const render_vue_vue_type_style_index_0_lang = "";
@@ -20881,10 +20979,10 @@ const _sfc_main = defineComponent({
     Render,
     ModalDialog,
     SingleBox: defineAsyncComponent(
-      () => __vitePreload(() => import("./SingleBox.7082c576.js"), true ? ["SingleBox.7082c576.js","SingleBox.378faf79.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./SingleBox.457b8a7c.js"), true ? ["SingleBox.457b8a7c.js","SingleBox.378faf79.css"] : void 0, import.meta.url)
     ),
     ExpressionBuilder: defineAsyncComponent(
-      () => __vitePreload(() => import("./index.5214128f.js"), true ? ["index.5214128f.js","index.cd39748f.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.3375a313.js"), true ? ["index.3375a313.js","index.21f119f2.css"] : void 0, import.meta.url)
     )
   },
   data: () => ({

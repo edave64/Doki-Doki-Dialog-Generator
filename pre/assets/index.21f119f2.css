@@ -21,31 +21,31 @@
 	flex-grow: 1;
 	justify-content: stretch;
 }
-.expression_list_wrapper[data-v-2bff7b68] {
+.expression_list_wrapper[data-v-1c267ecd] {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   flex-shrink: 1;
 }
-.options_wrapper[data-v-2bff7b68] {
+.options_wrapper[data-v-1c267ecd] {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   flex-shrink: 1;
 }
-.expression_list[data-v-2bff7b68] {
+.expression_list[data-v-1c267ecd] {
   display: flex;
   flex-direction: row;
   overflow: auto;
 }
-.expression_list button[data-v-2bff7b68] {
+.expression_list button[data-v-1c267ecd] {
   width: 100px;
   height: 128px;
 }
-.expression_list *[data-v-2bff7b68] {
+.expression_list *[data-v-1c267ecd] {
   flex-shrink: 0;
 }
-.expression_item[data-v-2bff7b68] {
+.expression_item[data-v-1c267ecd] {
   height: 128px;
   width: 128px;
   background-position: center center;
@@ -54,25 +54,25 @@
   box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.5);
   box-sizing: border-box;
 }
-.expression_item.active[data-v-2bff7b68] {
+.expression_item.active[data-v-1c267ecd] {
   box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.25);
 }
-input[type=file][data-v-2bff7b68] {
+input[type=file][data-v-1c267ecd] {
   display: none;
 }
-.wrapper[data-v-2bff7b68] {
+.wrapper[data-v-1c267ecd] {
   height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
 }
-.page[data-v-2bff7b68] {
+.page[data-v-1c267ecd] {
   flex-grow: 1;
   flex-shrink: 1;
   display: flex;
   flex-direction: column;
 }
-.page .image[data-v-2bff7b68] {
+.page .image[data-v-1c267ecd] {
   flex-grow: 1;
   flex-shrink: 1;
   position: relative;
@@ -80,26 +80,26 @@ input[type=file][data-v-2bff7b68] {
   background-position: center center;
   background-repeat: no-repeat;
 }
-.page .image canvas[data-v-2bff7b68] {
+.page .image canvas[data-v-1c267ecd] {
   position: absolute;
   max-height: 100%;
   max-width: 100%;
 }
 @media only screen and (max-height: 560px) {
-.expression_list_wrapper[data-v-2bff7b68] {
+.expression_list_wrapper[data-v-1c267ecd] {
     flex-direction: row;
     height: 1px;
 }
-.expression_list_wrapper .expression_list[data-v-2bff7b68] {
+.expression_list_wrapper .expression_list[data-v-1c267ecd] {
     flex-direction: column;
     width: 128px;
     overflow: auto;
 }
-.expression_list_wrapper .expression_list button[data-v-2bff7b68] {
+.expression_list_wrapper .expression_list button[data-v-1c267ecd] {
     height: 64px;
     width: 100%;
 }
-.expression_list_wrapper .expression_list .expression_item[data-v-2bff7b68] {
+.expression_list_wrapper .expression_list .expression_item[data-v-1c267ecd] {
     width: 100%;
 }
 }

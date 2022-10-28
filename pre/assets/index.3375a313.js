@@ -1,4 +1,4 @@
-import { x as reactive, d as defineComponent, _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, s as normalizeStyle, b as withModifiers, y as renderSlot, z as VerticalScrollRedirect, j as ToggleBox, D as DropTarget, A as DFieldset, L, k as envX, B as getAssetByUrl, C as Renderer, E as Character, S as SelectedState, l as resolveComponent, q as createBlock, i as withCtx, F as Fragment, m as createTextVNode, e as createCommentVNode, h as createVNode, r as renderList, n as normalizeClass, w as withDirectives, G as vModelSelect, v as vModelText, p as pushScopeId, g as popScopeId } from "./index.c5460d69.js";
+import { x as reactive, d as defineComponent, _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, s as normalizeStyle, b as withModifiers, y as renderSlot, z as VerticalScrollRedirect, j as ToggleBox, D as DropTarget, A as DFieldset, L, k as envX, B as getAssetByUrl, C as Renderer, E as Character, S as SelectedState, l as resolveComponent, q as createBlock, i as withCtx, F as Fragment, m as createTextVNode, e as createCommentVNode, h as createVNode, r as renderList, n as normalizeClass, w as withDirectives, G as vModelSelect, v as vModelText, p as pushScopeId, g as popScopeId } from "./index.bb8d1b02.js";
 var __defProp$1 = Object.defineProperty;
 var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => {
@@ -487,18 +487,22 @@ const _sfc_main = defineComponent({
           if (this.uploadsFinished)
             return;
           const renderer = new Renderer(pose.width, pose.height);
-          yield renderer.render((rx) => __async(this, null, function* () {
-            yield charRenderer.render(SelectedState.None, rx);
-          }));
-          const target = this.$refs.target;
-          const ctx = target.getContext("2d");
-          ctx.clearRect(0, 0, target.width, target.height);
-          renderer.paintOnto(ctx, {
-            x: 0,
-            y: 0,
-            w: target.width,
-            h: target.height
-          });
+          try {
+            yield renderer.render((rx) => __async(this, null, function* () {
+              yield charRenderer.render(SelectedState.None, rx);
+            }));
+            const target = this.$refs.target;
+            const ctx = target.getContext("2d");
+            ctx.clearRect(0, 0, target.width, target.height);
+            renderer.paintOnto(ctx, {
+              x: 0,
+              y: 0,
+              w: target.width,
+              h: target.height
+            });
+          } finally {
+            renderer.dispose();
+          }
         }));
       });
     },
@@ -763,8 +767,8 @@ const _sfc_main = defineComponent({
     }
   }
 });
-const index_vue_vue_type_style_index_0_scoped_2bff7b68_lang = "";
-const _withScopeId = (n) => (pushScopeId("data-v-2bff7b68"), n = n(), popScopeId(), n);
+const index_vue_vue_type_style_index_0_scoped_1c267ecd_lang = "";
+const _withScopeId = (n) => (pushScopeId("data-v-1c267ecd"), n = n(), popScopeId(), n);
 const _hoisted_1 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createBaseVNode("h1", null, "Add expressions", -1));
 const _hoisted_2 = {
   key: 0,
@@ -989,7 +993,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64)) : createCommentVNode("", true)
   ], 32);
 }
-const index = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-2bff7b68"]]);
+const index = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-1c267ecd"]]);
 export {
   index as default
 };
