@@ -40,7 +40,7 @@ function canLoadImg(
 	return new Promise((resolve, _reject) => {
 		const img = document.createElement('img');
 		img.addEventListener('load', () => {
-			resolve(img.width === 2 && img.height === 1);
+			resolve(img.width === width && img.height === height);
 		});
 		img.addEventListener('error', () => {
 			resolve(false);
