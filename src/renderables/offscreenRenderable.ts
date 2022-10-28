@@ -25,6 +25,7 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 	private lastVersion: any = null;
 	private hitDetectionFallback = false;
 	protected renderable: boolean = false;
+	private _disposed: boolean = false;
 
 	public constructor(public obj: DeepReadonly<Obj>) {}
 
@@ -75,6 +76,7 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 	}
 
 	public async updateLocalCanvas(hq: boolean) {
+		if (this._disposed) throw new Error('Disposed renderable called');
 		await this.ready;
 		const width = this.canvasWidth;
 		const height = this.canvasHeight;
@@ -103,6 +105,8 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 	}
 
 	public async render(selected: SelectedState, rx: RenderContext) {
+		if (this._disposed) throw new Error('Disposed renderable called');
+
 		const needRedraw = this.lastHq !== rx.hq || this.needsRedraw();
 
 		if (needRedraw) await this.updateLocalCanvas(rx.hq);
@@ -229,4 +233,14 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 		_current: Store<DeepReadonly<IRootState>>,
 		_panelId: IPanel['id']
 	): void {}
+
+	public get disposed(): boolean {
+		return this._disposed;
+	}
+
+	public dispose(): void {
+		this._disposed = true;
+		this.localRenderer?.dispose();
+		this.localRenderer = null;
+	}
 }

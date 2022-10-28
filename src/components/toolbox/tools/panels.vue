@@ -174,6 +174,7 @@ import DButton from '@/components/ui/d-button.vue';
 import ImageOptions from '../subtools/image-options/image-options.vue';
 import getConstants from '@/constants';
 import { safeAsync } from '@/util/errors';
+import { makeCanvas, disposeCanvas } from '@/util/canvas';
 
 interface IPanelButton {
 	id: IPanel['id'];
@@ -253,7 +254,7 @@ export default defineComponent({
 	},
 	async created() {
 		const baseConst = getConstants().Base;
-		const targetCanvas = document.createElement('canvas');
+		const targetCanvas = makeCanvas();
 		targetCanvas.width = baseConst.screenWidth * thumbnailFactor;
 		targetCanvas.height = baseConst.screenHeight * thumbnailFactor;
 		this.thumbnailCtx = markRaw(targetCanvas.getContext('2d')!);
@@ -262,9 +263,12 @@ export default defineComponent({
 			isHeifSupported(),
 		]);
 	},
-	async mounted() {
+	mounted() {
 		this.moveFocusToActivePanel();
 		this.renderThumbnail().catch(() => {});
+	},
+	unmounted() {
+		disposeCanvas(this.thumbnailCtx.canvas);
 	},
 	methods: {
 		async download() {
@@ -285,9 +289,9 @@ export default defineComponent({
 				await this.renderObjects(
 					distribution,
 					true,
-					async (imageIdx: number, canvas: HTMLCanvasElement) => {
+					async (imageIdx: number, canvasEle: HTMLCanvasElement) => {
 						await environment.saveToFile(
-							canvas,
+							canvasEle,
 							`${prefix}_${imageIdx}.${extension}`,
 							format,
 							quality / qualityFactor
@@ -303,9 +307,9 @@ export default defineComponent({
 			const sizes = await this.renderObjects(
 				distribution,
 				false,
-				async (imageIdx: number, canvas: HTMLCanvasElement) => {
+				async (imageIdx: number, canvasEle: HTMLCanvasElement) => {
 					return new Promise<number>((resolve, reject) => {
-						canvas.toBlob(
+						canvasEle.toBlob(
 							(blob) => {
 								if (!blob) {
 									reject(`Image ${imageIdx + 1} could not be rendered.`);
@@ -341,22 +345,24 @@ export default defineComponent({
 			mapper: (imageIdx: number, canvas: HTMLCanvasElement) => Promise<T>
 		): Promise<T[]> {
 			const baseConst = getConstants().Base;
-			return await Promise.all(
-				distribution.map(async (image, imageIdx) => {
-					const targetCanvas = document.createElement('canvas');
-					targetCanvas.width = baseConst.screenWidth;
-					targetCanvas.height = baseConst.screenHeight * image.length;
+			const ret = [];
+			for (let imageIdx = 0; imageIdx < distribution.length; ++imageIdx) {
+				const image = distribution[imageIdx];
+				const targetCanvas = document.createElement('canvas');
+				targetCanvas.width = baseConst.screenWidth;
+				targetCanvas.height = baseConst.screenHeight * image.length;
+				try {
 					const context = targetCanvas.getContext('2d')!;
 
-					await Promise.all(
-						image.map(async (panelId, panelIdx) => {
-							const sceneRenderer = new SceneRenderer(
-								this.$store,
-								image[panelIdx],
-								baseConst.screenWidth,
-								baseConst.screenHeight
-							);
-
+					for (let panelIdx = 0; panelIdx < image.length; ++panelIdx) {
+						const panelId = image[panelIdx];
+						const sceneRenderer = new SceneRenderer(
+							this.$store,
+							panelId,
+							baseConst.screenWidth,
+							baseConst.screenHeight
+						);
+						try {
 							await sceneRenderer.render(hq, false);
 
 							sceneRenderer.paintOnto(context, {
@@ -365,12 +371,17 @@ export default defineComponent({
 								w: baseConst.screenWidth,
 								h: baseConst.screenHeight,
 							});
-						})
-					);
+						} finally {
+							sceneRenderer.dispose();
+						}
+					}
 
-					return await mapper(imageIdx, targetCanvas);
-				})
-			);
+					ret.push(await mapper(imageIdx, targetCanvas));
+				} finally {
+					disposeCanvas(targetCanvas);
+				}
+			}
+			return ret;
 		},
 		getLimitedPanelList(): DeepReadonly<IPanel['id'][]> {
 			const max = this.$store.state.panels.panelOrder.length - 1;

@@ -270,6 +270,7 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 				width: textboxOutlineWidth,
 			},
 		});
+		dotPattern.dispose();
 	}
 
 	public async render(rx: RenderContext): Promise<void> {

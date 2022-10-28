@@ -264,6 +264,7 @@ import {
 import { IColor } from '@/util/colors/color';
 import { HSLAColor } from '@/util/colors/hsl';
 import L from '@/components/ui/link.vue';
+import { disposeCanvas, makeCanvas } from '@/util/canvas';
 
 const filterText: ReadonlyMap<SpriteFilter['type'], string> = new Map<
 	SpriteFilter['type'],
@@ -281,9 +282,20 @@ const filterText: ReadonlyMap<SpriteFilter['type'], string> = new Map<
 	['drop-shadow', 'Drop shadow'],
 ]);
 
-const filters: ReadonlyArray<SpriteFilter['type']> = Array.from(
-	filterText.keys()
-).sort();
+const filters: ReadonlyArray<SpriteFilter['type']> = (() => {
+	try {
+		const canvas = makeCanvas();
+		canvas.width = 0;
+		canvas.height = 0;
+		const context = canvas.getContext('2d')!;
+		const hasFilter = 'filter' in context;
+		disposeCanvas(canvas);
+		if (hasFilter) {
+			return Array.from(filterText.keys()).sort();
+		}
+	} catch (e) {}
+	return ['opacity'];
+})();
 
 export default defineComponent({
 	components: { DFlow, DFieldset, Color, Slider, L },
@@ -353,14 +365,7 @@ export default defineComponent({
 			return this.object.filters;
 		},
 		filterTypes(): ReadonlyArray<SpriteFilter['type']> {
-			try {
-				const canvas = document.createElement('canvas');
-				const context = canvas.getContext('2d')!;
-				if ('filter' in context) {
-					return filters;
-				}
-			} catch (_e) {}
-			return ['opacity'];
+			return filters;
 		},
 		currentFilter(): DeepReadonly<SpriteFilter> | null {
 			return this.filters[this.currentFilterIdx] ?? null;

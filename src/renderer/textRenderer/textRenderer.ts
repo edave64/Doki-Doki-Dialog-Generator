@@ -3,6 +3,7 @@ import { ICommandToken, Token, tokenize } from './tokenizer';
 
 import textCommands from './textCommands';
 import { UnreachableCaseError } from 'ts-essentials';
+import { makeCanvas } from '@/util/canvas';
 
 export interface ITextStyle {
 	fontName: string;
@@ -509,7 +510,10 @@ export class TextRenderer {
 	}
 }
 
-const tmpContext = document.createElement('canvas').getContext('2d')!;
+const tmpCanvas = makeCanvas();
+tmpCanvas.width = 0;
+tmpCanvas.height = 0;
+const tmpContext = tmpCanvas.getContext('2d')!;
 let lastStyle: ITextStyle | null = null;
 
 function measureWidth(textStyle: ITextStyle, character: string): number {

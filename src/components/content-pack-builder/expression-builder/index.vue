@@ -425,19 +425,23 @@ export default defineComponent({
 			this.$nextTick(async () => {
 				if (this.uploadsFinished) return;
 				const renderer = new Renderer(pose.width, pose.height);
-				await renderer.render(async (rx) => {
-					await charRenderer.render(SelectedState.None, rx);
-				});
+				try {
+					await renderer.render(async (rx) => {
+						await charRenderer.render(SelectedState.None, rx);
+					});
 
-				const target = this.$refs.target as HTMLCanvasElement;
-				const ctx = target.getContext('2d')!;
-				ctx.clearRect(0, 0, target.width, target.height);
-				renderer.paintOnto(ctx, {
-					x: 0,
-					y: 0,
-					w: target.width,
-					h: target.height,
-				});
+					const target = this.$refs.target as HTMLCanvasElement;
+					const ctx = target.getContext('2d')!;
+					ctx.clearRect(0, 0, target.width, target.height);
+					renderer.paintOnto(ctx, {
+						x: 0,
+						y: 0,
+						w: target.width,
+						h: target.height,
+					});
+				} finally {
+					renderer.dispose();
+				}
 			});
 		},
 

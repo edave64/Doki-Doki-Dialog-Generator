@@ -274,6 +274,7 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 				width: textboxOutlineWidth,
 			},
 		});
+		dotPattern.dispose();
 	}
 
 	public async render(rx: RenderContext): Promise<void> {

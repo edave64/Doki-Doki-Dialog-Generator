@@ -34,6 +34,7 @@ export class SceneRenderer {
 		OffscreenRenderable<IObject>
 	>();
 	private renderer: Renderer;
+	private _disposed: boolean = false;
 
 	public constructor(
 		private store: Store<DeepReadonly<IRootState>>,
@@ -49,17 +50,23 @@ export class SceneRenderer {
 	}
 
 	public setPanelId(panelId: IPanel['id']): void {
+		if (this._disposed) throw new Error('Disposed scene-renderer called');
 		if (this._panelId === panelId) return;
 		this._panelId = panelId;
+		this.renderObjectCache.forEach((a) => {
+			a.dispose();
+		});
 		this.renderObjectCache.clear();
 	}
 
 	public render(hq: boolean, preview: boolean): Promise<boolean> {
+		if (this._disposed) throw new Error('Disposed scene-renderer called');
 		if (!this.panel) return Promise.resolve(false);
 		return this.renderer.render(this.renderCallback.bind(this), hq, preview);
 	}
 
 	public download(): Promise<string> {
+		if (this._disposed) throw new Error('Disposed scene-renderer called');
 		const date = new Date();
 		const filename = `panel-${[
 			date.getFullYear(),
@@ -86,6 +93,7 @@ export class SceneRenderer {
 	}
 
 	private async renderCallback(rx: RenderContext): Promise<void> {
+		if (this._disposed) throw new Error('Disposed scene-renderer called');
 		rx.fsCtx.imageSmoothingEnabled = true;
 		rx.fsCtx.imageSmoothingQuality = rx.hq ? 'high' : 'low';
 
@@ -126,6 +134,7 @@ export class SceneRenderer {
 		);
 
 		for (const id of toUncache) {
+			this.renderObjectCache.get(id)!.dispose();
 			this.renderObjectCache.delete(id);
 		}
 
@@ -189,5 +198,14 @@ export class SceneRenderer {
 					panel.background.filters
 				);
 		}
+	}
+
+	public get disposed(): boolean {
+		return this._disposed;
+	}
+
+	public dispose(): void {
+		this._disposed = true;
+		this.renderer.dispose();
 	}
 }

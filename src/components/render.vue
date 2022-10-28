@@ -36,6 +36,7 @@ import { DeepReadonly } from 'ts-essentials';
 import { defineComponent, markRaw } from 'vue';
 import getConstants from '@/constants';
 import { IPanel } from '@/store/panels';
+import { disposeCanvas } from '@/util/canvas';
 
 export default defineComponent({
 	props: {
@@ -140,22 +141,30 @@ export default defineComponent({
 			const loadingScreen = document.createElement('canvas');
 			loadingScreen.height = this.bitmapHeight;
 			loadingScreen.width = this.bitmapWidth;
-			const rctx = RenderContext.make(loadingScreen, true, false);
-			rctx.drawText({
-				text: 'Starting...',
-				x: loadingScreen.width / 2,
-				y: loadingScreen.height / 2,
-				align: 'center',
-				outline: {
-					width: 5,
-					style: '#b59',
-				},
-				font: '32px riffic',
-				fill: {
-					style: 'white',
-				},
-			});
-			this.sdCtx!.drawImage(loadingScreen, this.canvasWidth, this.canvasHeight);
+			try {
+				const rctx = RenderContext.make(loadingScreen, true, false);
+				rctx.drawText({
+					text: 'Starting...',
+					x: loadingScreen.width / 2,
+					y: loadingScreen.height / 2,
+					align: 'center',
+					outline: {
+						width: 5,
+						style: '#b59',
+					},
+					font: '32px riffic',
+					fill: {
+						style: 'white',
+					},
+				});
+				this.sdCtx!.drawImage(
+					loadingScreen,
+					this.canvasWidth,
+					this.canvasHeight
+				);
+			} finally {
+				disposeCanvas(loadingScreen);
+			}
 		},
 		display(): void {
 			this.showingLast = false;
@@ -342,6 +351,9 @@ export default defineComponent({
 
 		this.renderLoadingScreen();
 		this.invalidateRender();
+	},
+	unmounted(): void {
+		this.sceneRendererCache?.dispose();
 	},
 });
 </script>

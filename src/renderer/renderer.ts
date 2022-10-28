@@ -2,16 +2,22 @@ import { RenderContext } from './rendererContext';
 import { RenderAbortedException } from './renderAbortedException';
 import environment from '@/environments/environment';
 import getConstants from '@/constants';
+import { disposeCanvas, makeCanvas } from '@/util/canvas';
 
 export class Renderer {
 	private readonly previewCanvas: HTMLCanvasElement;
 	private runningContext: RenderContext | null = null;
+	private _disposed: boolean = false;
 
 	public constructor(w?: number, h?: number) {
 		const constants = getConstants();
-		this.previewCanvas = document.createElement('canvas');
+		this.previewCanvas = makeCanvas();
 		this.previewCanvas.width = w ?? constants.Base.screenWidth;
 		this.previewCanvas.height = h ?? constants.Base.screenHeight;
+	}
+
+	public get disposed(): boolean {
+		return this._disposed;
 	}
 
 	public async render(
@@ -89,7 +95,7 @@ export class Renderer {
 	private async drawToCanvas(
 		renderCallback: (rc: RenderContext) => Promise<void>
 	): Promise<HTMLCanvasElement> {
-		const downloadCanvas = document.createElement('canvas');
+		const downloadCanvas = makeCanvas();
 		downloadCanvas.width = this.previewCanvas.width;
 		downloadCanvas.height = this.previewCanvas.height;
 
@@ -99,6 +105,14 @@ export class Renderer {
 			RenderContext.makeWithContext(downloadCanvas, ctx, true, false)
 		);
 		return downloadCanvas;
+	}
+
+	public dispose() {
+		if (this.runningContext) {
+			this.runningContext.abort();
+		}
+		disposeCanvas(this.previewCanvas);
+		this._disposed = true;
 	}
 
 	public getDataAt(x: number, y: number): Uint8ClampedArray {
