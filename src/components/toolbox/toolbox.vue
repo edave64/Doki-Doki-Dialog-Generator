@@ -267,7 +267,7 @@ export default defineComponent({
 
 			button {
 				flex-grow: 1;
-				aspect-ratio: 1 / 1;
+				width: 48px;
 				border-bottom: none;
 
 				&:first-child {
@@ -325,11 +325,12 @@ export default defineComponent({
 		#toolbar-end {
 			width: 100%;
 			min-height: 48px;
+			max-height: 48px;
 			display: flex;
 
 			button {
+				height: 48px;
 				flex-grow: 1;
-				aspect-ratio: 1 / 1;
 				border-right: none;
 
 				&:first-child {
