@@ -21,6 +21,7 @@ export interface EnvCapabilities {
 	openableFolders: ReadonlySet<Folder>;
 	assetCaching: boolean;
 	allowWebP: boolean;
+	limitedCanvasSpace: boolean;
 }
 
 export interface Settings {

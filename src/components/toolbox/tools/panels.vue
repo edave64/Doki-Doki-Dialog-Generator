@@ -199,7 +199,7 @@ export default defineComponent({
 	data: () => ({
 		webpSupport: false,
 		heifSupport: false,
-		ppi: 0,
+		ppi: environment.supports.limitedCanvasSpace ? 10 : 0,
 		pages: '',
 		format: 'image/png',
 		quality: defaultQuality,
@@ -569,6 +569,20 @@ export default defineComponent({
 				eventBus.fire(
 					new ShowMessageEvent(
 						'Note: A quality level below 70% might be very noticable and impair legibility of text.'
+					)
+				);
+				return;
+			}
+		},
+		ppi(ppi: number, oldppi: number) {
+			if (!environment.supports.limitedCanvasSpace) return;
+			if (
+				(oldppi <= 10 && ppi > 10) ||
+				(ppi === 0 && this.panelButtons.length > 10)
+			) {
+				eventBus.fire(
+					new ShowMessageEvent(
+						'Note: Safari has strict limitations on available memory. More images per panel can easily cause crashes.'
 					)
 				);
 				return;

@@ -203,6 +203,7 @@ export class Electron implements IEnvironment {
 		openableFolders: new Set(['downloads', 'backgrounds', 'sprites']),
 		assetCaching: true,
 		allowWebP: true,
+		limitedCanvasSpace: false,
 	};
 	public readonly savingEnabled: boolean = true;
 
