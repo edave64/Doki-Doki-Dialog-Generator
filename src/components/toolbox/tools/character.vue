@@ -188,8 +188,12 @@ fieldset {
 }
 
 .panel:not(.vertical) {
-	fieldset {
+	.pose-list {
+		height: 100%;
+	}
+	:deep(fieldset) {
 		max-height: 100%;
+		height: 100%;
 		overflow: auto;
 	}
 }
