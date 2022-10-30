@@ -125,17 +125,13 @@ export function getAssetByUrl(url: string): Promise<IAsset> {
 	return customAssets[url] || getAssetCache().get(url);
 }
 
-let _baseUrl = '.';
-try {
-	_baseUrl = import.meta.env.BASE_URL || '.';
-} catch (e) {}
-export const baseUrl = _baseUrl;
+export const baseUrl = './';
 
 export async function getBuildInAsset(
 	asset: string,
 	hq: boolean = true
 ): Promise<IAsset> {
-	const url = `${baseUrl}/assets/${asset}${hq ? '' : '.lq'}${
+	const url = `${baseUrl}assets/${asset}${hq ? '' : '.lq'}${
 		(await isWebPSupported()) ? '.webp' : '.png'
 	}`.replace(/\/+/, '/');
 	return await getAssetCache().get(url);
@@ -204,7 +200,7 @@ function imagePromise(url: string): Promise<ImageAsset> {
 				document.body.removeChild(img);
 			}
 		});
-		img.addEventListener('error', (e) => {
+		img.addEventListener('error', (_e) => {
 			reject(new Error(`Failed to load image ${url}`));
 			if (!environment.supports.assetCaching) {
 				document.body.removeChild(img);

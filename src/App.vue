@@ -53,6 +53,7 @@
 </template>
 
 <script lang="ts">
+import { baseUrl } from '@/asset-manager';
 import environment from '@/environments/environment';
 import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
 import {
@@ -80,11 +81,6 @@ const aspectRatio = 16 / 9;
 const arrowMoveStepSize = 20;
 const packDialogWaitMs = 50;
 const canvasTooSmallThreshold = 200;
-
-let baseUrl = '';
-try {
-	baseUrl = import.meta.env.BASE_URL || '';
-} catch (e) {}
 
 const nsfwPacks = {
 	'dddg.buildin.backgrounds.nsfw': `${baseUrl}packs/buildin.base.backgrounds.nsfw.json`,
