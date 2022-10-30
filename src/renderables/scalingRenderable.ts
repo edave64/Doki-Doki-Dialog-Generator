@@ -45,13 +45,13 @@ export abstract class ScalingRenderable<
 		);
 	}
 
-	public async updateLocalCanvas(hq: boolean) {
+	public async updateLocalCanvas(hq: boolean, skipLocal: boolean) {
 		this.lastWidth = this.width;
 		this.lastHeight = this.height;
 		this.lastX = this.x;
 		this.lastY = this.y;
 		this.lastFlip = this.flip;
-		await super.updateLocalCanvas(hq);
+		await super.updateLocalCanvas(hq, skipLocal);
 	}
 
 	protected async renderLocal(rx: RenderContext): Promise<void> {
