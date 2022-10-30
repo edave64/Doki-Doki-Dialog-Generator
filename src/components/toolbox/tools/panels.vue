@@ -554,7 +554,7 @@ export default defineComponent({
 	},
 	watch: {
 		quality(quality: number, oldQuality: number) {
-			if (quality === qualityFactor) {
+			if (quality === 100) {
 				eventBus.fire(
 					new ShowMessageEvent(
 						'Note: 100% quality on a lossy format is still not lossless! Select PNG if you want lossless compression.'
@@ -568,7 +568,7 @@ export default defineComponent({
 			) {
 				eventBus.fire(
 					new ShowMessageEvent(
-						'Note: A quality level below 70% might be very noticable and impair legibility of text.'
+						'Note: A quality level below 70% might be very noticeable and impair legibility of text.'
 					)
 				);
 				return;
@@ -643,6 +643,7 @@ export default defineComponent({
 		left: 0;
 		right: 0;
 		white-space: pre;
+		user-select: none;
 	}
 }
 
