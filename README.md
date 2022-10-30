@@ -1,5 +1,7 @@
 # Doki Doki Dialog Generator
 
+![Workflow status](https://github.com/edave64/Doki-Doki-Dialog-Generator/actions/workflows/main.yml/badge.svg?branch=master)
+
 This tools allows you to create scenes that look like they are from the game Doki Doki Literature Club.
 
 A desktop version for window and linux is available [here](https://github.com/edave64/dddg-desktop-version/releases).
