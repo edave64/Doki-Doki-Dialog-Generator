@@ -363,7 +363,7 @@ export default defineComponent({
 							baseConst.screenHeight
 						);
 						try {
-							await sceneRenderer.render(hq, false);
+							await sceneRenderer.render(hq, false, true);
 
 							sceneRenderer.paintOnto(context, {
 								x: 0,

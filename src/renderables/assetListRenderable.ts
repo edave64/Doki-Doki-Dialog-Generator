@@ -29,6 +29,9 @@ export abstract class AssetListRenderable<
 	protected get canvasDrawPosY(): number {
 		return this.y + (this.height - this.canvasDrawHeight);
 	}
+	protected get allowSkippingLocalCanvas(): boolean {
+		return false;
+	}
 
 	protected get objZoom(): number {
 		const textboxZoom =

@@ -427,7 +427,7 @@ export default defineComponent({
 				const renderer = new Renderer(pose.width, pose.height);
 				try {
 					await renderer.render(async (rx) => {
-						await charRenderer.render(SelectedState.None, rx);
+						await charRenderer.render(SelectedState.None, rx, false);
 					});
 
 					const target = this.$refs.target as HTMLCanvasElement;
@@ -440,6 +440,7 @@ export default defineComponent({
 						h: target.height,
 					});
 				} finally {
+					charRenderer.dispose();
 					renderer.dispose();
 				}
 			});

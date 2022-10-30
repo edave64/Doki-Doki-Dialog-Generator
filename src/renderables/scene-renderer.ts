@@ -59,10 +59,18 @@ export class SceneRenderer {
 		this.renderObjectCache.clear();
 	}
 
-	public render(hq: boolean, preview: boolean): Promise<boolean> {
+	public render(
+		hq: boolean,
+		preview: boolean,
+		skipLocalCanvases: boolean
+	): Promise<boolean> {
 		if (this._disposed) throw new Error('Disposed scene-renderer called');
 		if (!this.panel) return Promise.resolve(false);
-		return this.renderer.render(this.renderCallback.bind(this), hq, preview);
+		return this.renderer.render(
+			this.renderCallback.bind(this, skipLocalCanvases),
+			hq,
+			preview
+		);
 	}
 
 	public download(): Promise<string> {
@@ -76,7 +84,10 @@ export class SceneRenderer {
 			`${date.getMinutes()}`.padStart(2, '0'),
 			`${date.getSeconds()}`.padStart(2, '0'),
 		].join('-')}.png`;
-		return this.renderer.download(this.renderCallback.bind(this), filename);
+		return this.renderer.download(
+			this.renderCallback.bind(this, true),
+			filename
+		);
 	}
 
 	public paintOnto(
@@ -92,7 +103,10 @@ export class SceneRenderer {
 			.map((renderObject) => renderObject.id);
 	}
 
-	private async renderCallback(rx: RenderContext): Promise<void> {
+	private async renderCallback(
+		skipLocalCanvases: boolean,
+		rx: RenderContext
+	): Promise<void> {
 		if (this._disposed) throw new Error('Disposed scene-renderer called');
 		rx.fsCtx.imageSmoothingEnabled = true;
 		rx.fsCtx.imageSmoothingQuality = rx.hq ? 'high' : 'low';
@@ -109,7 +123,8 @@ export class SceneRenderer {
 			await object.render(
 				(selected ? SelectedState.Selected : SelectedState.None) +
 					(focused ? SelectedState.Focused : SelectedState.None),
-				rx
+				rx,
+				skipLocalCanvases
 			);
 		}
 		rx.applyFilters([...this.panel!.filters]);

@@ -74,8 +74,11 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 	protected get height(): number {
 		return this.obj.height;
 	}
+	protected get allowSkippingLocalCanvas(): boolean {
+		return true;
+	}
 
-	public async updateLocalCanvas(hq: boolean) {
+	public async updateLocalCanvas(hq: boolean, skipLocal: boolean) {
 		if (this._disposed) throw new Error('Disposed renderable called');
 		await this.ready;
 		const width = this.canvasWidth;
@@ -85,9 +88,18 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 			return;
 		}
 		this.renderable = true;
-		this.localRenderer = new Renderer(width, height);
 		this.lastHq = hq;
-		await this.localRenderer.render(this.renderLocal.bind(this), hq);
+
+		if (skipLocal) return;
+
+		this.localRenderer = new Renderer(width, height);
+		try {
+			await this.localRenderer.render(this.renderLocal.bind(this), hq);
+		} catch (e) {
+			this.localRenderer.dispose();
+			this.localRenderer = null;
+			throw e;
+		}
 	}
 
 	public needsRedraw(): boolean {
@@ -104,12 +116,20 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 		];
 	}
 
-	public async render(selected: SelectedState, rx: RenderContext) {
+	public async render(
+		selected: SelectedState,
+		rx: RenderContext,
+		skipLocal: boolean
+	) {
 		if (this._disposed) throw new Error('Disposed renderable called');
+		if (!this.canSkipLocal()) skipLocal = false;
+
+		if (selected !== SelectedState.None || this.localRenderer)
+			skipLocal = false;
 
 		const needRedraw = this.lastHq !== rx.hq || this.needsRedraw();
 
-		if (needRedraw) await this.updateLocalCanvas(rx.hq);
+		if (needRedraw) await this.updateLocalCanvas(rx.hq, skipLocal);
 
 		this.lastVersion = this.version;
 
@@ -134,19 +154,33 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 				break;
 		}
 
-		rx.drawImage({
-			image: this.localRenderer!,
-			x: this.canvasDrawPosX,
-			y: this.canvasDrawPosY,
-			w: this.canvasDrawWidth,
-			h: this.canvasDrawHeight,
-			rotation,
-			rotationAnchor,
-			flip: this.flip,
-			shadow: selected && rx.preview ? shadow : undefined,
-			composite: this.composite,
-			filters: this.filters,
-		});
+		if (skipLocal) {
+			await rx.customTransform(async (ctx) => {
+				ctx.translate(this.canvasDrawPosX, this.canvasDrawPosY);
+			}, this.renderLocal.bind(this));
+		} else {
+			rx.drawImage({
+				image: this.localRenderer!,
+				x: this.canvasDrawPosX,
+				y: this.canvasDrawPosY,
+				w: this.canvasDrawWidth,
+				h: this.canvasDrawHeight,
+				rotation,
+				rotationAnchor,
+				flip: this.flip,
+				shadow: selected && rx.preview ? shadow : undefined,
+				composite: this.composite,
+				filters: this.filters,
+			});
+		}
+	}
+
+	protected canSkipLocal(): boolean {
+		return (
+			this.allowSkippingLocalCanvas &&
+			this.obj.filters.length === 0 &&
+			!this.obj.flip
+		);
 	}
 
 	public hitTest(hx: number, hy: number): boolean {

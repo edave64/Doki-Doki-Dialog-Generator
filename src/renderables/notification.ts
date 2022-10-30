@@ -22,7 +22,11 @@ export class Notification extends ScalingRenderable<INotification> {
 		return this.obj.id;
 	}
 
-	public async render(selected: SelectedState, rx: RenderContext) {
+	public async render(
+		selected: SelectedState,
+		rx: RenderContext,
+		skipLocal: boolean
+	) {
 		const constants = getConstants();
 
 		if (this.obj.backdrop) {
@@ -36,7 +40,7 @@ export class Notification extends ScalingRenderable<INotification> {
 				},
 			});
 		}
-		await super.render(selected, rx);
+		await super.render(selected, rx, skipLocal);
 	}
 
 	protected async draw(rx: RenderContext): Promise<void> {
