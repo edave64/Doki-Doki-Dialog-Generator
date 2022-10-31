@@ -39,9 +39,8 @@ export type BackgroundLookup = Map<
 	Background<IAssetSwitch>
 >;
 
-export default {
-	namespaced: true,
-	state: {
+export function getDefaultContentState(): IContentState {
+	return {
 		contentPacks: [],
 		current: {
 			dependencies: [],
@@ -53,7 +52,12 @@ export default {
 			sprites: [],
 			colors: [],
 		},
-	},
+	};
+}
+
+export default {
+	namespaced: true,
+	state: getDefaultContentState(),
 	mutations: {
 		setContentPacks(
 			state: IContentState,
@@ -118,44 +122,7 @@ export default {
 				urls = [urls];
 			}
 			const contentPacks = await Promise.all(
-				urls.map(async (url) => {
-					const response = await fetch(url);
-					if (!response.ok) {
-						error(
-							`Could not load content pack. Server responded with: ${response.statusText}`
-						);
-					}
-
-					let json;
-					try {
-						json = await response.json();
-					} catch (e) {
-						error('Content pack is not valid json!');
-					}
-
-					let contentPack: ContentPack<string>;
-					try {
-						const paths = {
-							'./': baseDir(url),
-							'/': baseDir(location.href) + 'assets/',
-						};
-						if (json.version === '2.0') {
-							contentPack = normalizeContentPack(
-								json,
-								paths
-							) as ContentPack<string>;
-						} else {
-							contentPack = convertV1(
-								normalizeCharacterV1(json, paths),
-								paths,
-								false
-							) as ContentPack<string>;
-						}
-					} catch (e) {
-						error('Content pack is not in a valid format!', e);
-					}
-					return contentPack;
-				})
+				urls.map(async (url) => loadContentPack(url))
 			);
 
 			const convertedPacks = await Promise.all(
@@ -207,13 +174,49 @@ export default {
 	},
 } as Module<IContentState, IRootState>;
 
+export async function loadContentPack(
+	url: string
+): Promise<ContentPack<string>> {
+	const response = await fetch(url);
+	if (!response.ok) {
+		throw new Error(
+			`Could not load content pack. Server responded with: ${response.statusText}`
+		);
+	}
+
+	let json;
+	try {
+		json = await response.json();
+	} catch (e) {
+		throw new Error('Content pack is not valid json!');
+	}
+
+	try {
+		const paths = {
+			'./': baseDir(url),
+			'/': baseDir(location.href) + 'assets/',
+		};
+		if (json.version === '2.0') {
+			return normalizeContentPack(json, paths) as ContentPack<string>;
+		} else {
+			return convertV1(
+				normalizeCharacterV1(json, paths),
+				paths,
+				false
+			) as ContentPack<string>;
+		}
+	} catch (e) {
+		throw new Error('Content pack is not in a valid format!');
+	}
+}
+
 function sortByDependencies(
 	packs: Array<ContentPack<IAssetSwitch>>
 ): Array<ContentPack<IAssetSwitch>> {
 	return packs;
 }
 
-async function convertContentPack(
+export async function convertContentPack(
 	pack: ContentPack<string>
 ): Promise<ContentPack<IAssetSwitch>> {
 	const types: ReadonlySet<string> = new Set(

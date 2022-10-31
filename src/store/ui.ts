@@ -14,9 +14,8 @@ export interface IUiState {
 	pickColor: boolean;
 }
 
-export default {
-	namespaced: true,
-	state: {
+export function getDefaultUiState(): IUiState {
+	return {
 		vertical: false,
 		lqRendering: true,
 		nsfw: false,
@@ -26,7 +25,12 @@ export default {
 		useDarkTheme: null,
 		defaultCharacterTalkingZoom: true,
 		pickColor: false,
-	},
+	};
+}
+
+export default {
+	namespaced: true,
+	state: getDefaultUiState(),
 	mutations: {
 		setVertical(state, vertical: boolean) {
 			state.vertical = vertical;

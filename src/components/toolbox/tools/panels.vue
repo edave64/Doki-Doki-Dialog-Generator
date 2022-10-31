@@ -143,6 +143,13 @@
 					</tr>
 				</table>
 			</d-fieldset>
+			<div class="column">
+				<d-button icon="save" @click="save">Save</d-button>
+				<d-button icon="folder_open" @click="$refs.loadUpload.click()">
+					Load
+					<input type="file" ref="loadUpload" @change="load" />
+				</d-button>
+			</div>
 		</template>
 	</div>
 </template>
@@ -551,6 +558,40 @@ export default defineComponent({
 				);
 			});
 		},
+		async save() {
+			const str = await this.$store.dispatch('getSave', true);
+			const saveBlob = new Blob([str], {
+				type: 'text/plain',
+			});
+			const date = new Date();
+			const prefix = `save-${[
+				date.getFullYear(),
+				`${date.getMonth() + 1}`.padStart(2, '0'),
+				`${date.getDate()}`.padStart(2, '0'),
+				`${date.getHours()}`.padStart(2, '0'),
+				`${date.getMinutes()}`.padStart(2, '0'),
+				`${date.getSeconds()}`.padStart(2, '0'),
+			].join('-')}`;
+			const filename = `${prefix}.dddg`;
+			const a = document.createElement('a');
+			const url = URL.createObjectURL(saveBlob);
+			a.setAttribute('download', filename);
+			a.setAttribute('href', url);
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+		},
+		async load() {
+			await this.vuexHistory.transaction(async () => {
+				const uploadInput = this.$refs.loadUpload as HTMLInputElement;
+				if (!uploadInput.files) return;
+				const data = await blobToText(uploadInput.files[0]);
+				await this.$store.dispatch('loadSave', data);
+			});
+
+			await this.renderThumbnail();
+		},
 	},
 	watch: {
 		quality(quality: number, oldQuality: number) {
@@ -590,6 +631,19 @@ export default defineComponent({
 		},
 	},
 });
+
+function blobToText(file: File): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.onload = function () {
+			resolve(reader.result as string);
+		};
+		reader.onerror = function (e) {
+			reject(e);
+		};
+		reader.readAsText(file);
+	});
+}
 </script>
 
 <style lang="scss" scoped>
@@ -645,6 +699,10 @@ export default defineComponent({
 		white-space: pre;
 		user-select: none;
 	}
+}
+
+input[type='file'] {
+	display: none;
 }
 
 .panel_nr {

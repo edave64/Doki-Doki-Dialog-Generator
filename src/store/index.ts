@@ -1,8 +1,17 @@
+import { Repo } from '@/models/repo';
+import { mergeContentPacks } from '@/store/content/merge';
 import { createStore } from 'vuex';
-import ui, { IUiState } from './ui';
+import ui, { getDefaultUiState, IUiState } from './ui';
 import panels, { IPanels } from './panels';
-import content, { IContentState } from './content';
+import content, {
+	convertContentPack,
+	getDefaultContentState,
+	IAssetSwitch,
+	IContentState,
+	loadContentPack,
+} from './content';
 import uploadUrls, { IUploadUrlState } from './upload_urls';
+import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 
 export interface IRootState {
 	ui: IUiState;
@@ -44,6 +53,51 @@ export default createStore({
 				},
 				2
 			);
+		},
+		async loadSave({ state }, str: string) {
+			const data: IRootState = JSON.parse(str);
+			const contentData = data.content as unknown as Array<
+				ContentPack<IAssetSwitch> | string
+			>;
+			data.ui = getDefaultUiState();
+			data.uploadUrls = {};
+			data.content = getDefaultContentState();
+
+			const repo = await Repo.getInstance();
+
+			data.content.contentPacks = [
+				...state.content.contentPacks.filter((x) =>
+					x.packId?.startsWith('dddg.buildin.')
+				),
+				...(
+					await Promise.all(
+						contentData.map(async (x) => {
+							if (typeof x === 'string') {
+								const pack = repo.getPack(x);
+								if (!pack) {
+									console.warn(`Pack Id ${x} not found!`);
+									return null!;
+								}
+								const loaded = await loadContentPack(
+									pack.dddg2Path || pack.dddg1Path
+								);
+
+								return await convertContentPack(loaded);
+							} else {
+								return x;
+							}
+						})
+					)
+				).filter((x) => x !== null),
+			];
+
+			let combinedPack = data.content.current;
+			for (const contentPack of data.content.contentPacks) {
+				combinedPack = mergeContentPacks(combinedPack, contentPack);
+			}
+			data.content.current = combinedPack;
+
+			this.replaceState(data);
 		},
 	},
 	modules: { ui, panels, content, uploadUrls },
