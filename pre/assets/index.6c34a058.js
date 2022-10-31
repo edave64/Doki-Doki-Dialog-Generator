@@ -1,4 +1,4 @@
-import { x as reactive, d as defineComponent, _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, s as normalizeStyle, b as withModifiers, y as renderSlot, z as VerticalScrollRedirect, j as ToggleBox, D as DropTarget, A as DFieldset, L, k as envX, B as getAssetByUrl, C as Renderer, E as Character, S as SelectedState, l as resolveComponent, q as createBlock, i as withCtx, F as Fragment, m as createTextVNode, e as createCommentVNode, h as createVNode, r as renderList, n as normalizeClass, w as withDirectives, G as vModelSelect, v as vModelText, p as pushScopeId, g as popScopeId } from "./index.bb8d1b02.js";
+import { x as reactive, d as defineComponent, _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, s as normalizeStyle, b as withModifiers, y as renderSlot, z as VerticalScrollRedirect, j as ToggleBox, D as DropTarget, A as DFieldset, L, B as getAAssetUrl, k as envX, C as getAssetByUrl, E as Renderer, G as Character, S as SelectedState, l as resolveComponent, q as createBlock, i as withCtx, F as Fragment, m as createTextVNode, e as createCommentVNode, h as createVNode, r as renderList, n as normalizeClass, w as withDirectives, H as vModelSelect, v as vModelText, p as pushScopeId, g as popScopeId } from "./index.6dba544b.js";
 var __defProp$1 = Object.defineProperty;
 var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => {
@@ -238,8 +238,8 @@ var __async = (__this, __arguments, generator) => {
     step((generator = generator.apply(__this, __arguments)).next());
   });
 };
-const uploadedExpressionsPack = {
-  packId: "dddg.buildin.uploadedExpressions",
+const uploadedExpressionsPackDefaults = {
+  packId: "dddg.uploads.expressions",
   dependencies: [],
   packCredits: [],
   characters: [],
@@ -327,7 +327,8 @@ const _sfc_main = defineComponent({
     offsetY: 0,
     addMask: false,
     addExtras: false,
-    batchRunner: null
+    batchRunner: null,
+    names: {}
   }),
   created() {
     window.exp = this;
@@ -387,18 +388,20 @@ const _sfc_main = defineComponent({
     },
     addByImageFile(file) {
       const url = URL.createObjectURL(file);
-      this.addUrl(url);
+      this.addUrl(file.name, url);
     },
     addByUrl() {
       return __async(this, null, function* () {
         const url = yield envX.prompt("Enter the url of the image.", "");
         if (url == null)
           return;
-        this.addUrl(url);
+        const lastSegment = url.split("/").slice(-1)[0];
+        this.addUrl(lastSegment, url);
       });
     },
-    addUrl(url) {
+    addUrl(name, url) {
       this.currentUploadedExpression = url;
+      this.names[url] = name;
       this.uploadedExpressions.push(url);
     },
     processExpression(expression, isRunning) {
@@ -447,6 +450,7 @@ const _sfc_main = defineComponent({
           }
         }));
         const finalExpression = URL.createObjectURL(blob);
+        this.names[finalExpression] = this.names[expression];
         if (expression !== finalExpression && expression.startsWith("blob:")) {
           URL.revokeObjectURL(expression);
         }
@@ -489,7 +493,7 @@ const _sfc_main = defineComponent({
           const renderer = new Renderer(pose.width, pose.height);
           try {
             yield renderer.render((rx) => __async(this, null, function* () {
-              yield charRenderer.render(SelectedState.None, rx);
+              yield charRenderer.render(SelectedState.None, rx, false);
             }));
             const target = this.$refs.target;
             const ctx = target.getContext("2d");
@@ -501,6 +505,7 @@ const _sfc_main = defineComponent({
               h: target.height
             });
           } finally {
+            charRenderer.dispose();
             renderer.dispose();
           }
         }));
@@ -513,7 +518,13 @@ const _sfc_main = defineComponent({
         const storeCharacter = this.$store.state.content.current.characters.find(
           (char) => char.id === this.character
         );
-        let character = uploadedExpressionsPack.characters.find(
+        const old = this.$store.state.content.contentPacks.find(
+          (x) => x.packId === uploadedExpressionsPackDefaults.packId
+        ) || uploadedExpressionsPackDefaults;
+        const newPackVersion = JSON.parse(
+          JSON.stringify(old)
+        );
+        let character = newPackVersion.characters.find(
           (char) => char.id === this.character
         );
         if (!character) {
@@ -522,12 +533,12 @@ const _sfc_main = defineComponent({
             heads: {},
             styleGroups: [],
             label: "",
-            chibi: "",
+            chibi: null,
             size: [960, 960],
             defaultScale: [0.8, 0.8],
             hd: false
           };
-          uploadedExpressionsPack.characters.push(character);
+          newPackVersion.characters.push(character);
         }
         let headGroup = character.heads[this.headGroup.name];
         const storeHeadGroup = storeCharacter.heads[this.headGroup.name];
@@ -540,11 +551,22 @@ const _sfc_main = defineComponent({
           character.heads[this.headGroup.name] = headGroup;
         }
         for (const processedExpression of processedExpressions) {
-          headGroup.variants.push([processedExpression]);
+          const assetUrl = yield this.$store.dispatch("uploadUrls/add", {
+            name: "expression_" + (this.names[processedExpression] || ""),
+            url: processedExpression
+          });
+          headGroup.variants.push([
+            {
+              hq: assetUrl,
+              lq: assetUrl,
+              sourcePack: uploadedExpressionsPackDefaults.packId
+            }
+          ]);
         }
         yield this.vuexHistory.transaction(() => {
           this.$store.dispatch("content/replaceContentPack", {
-            contentPack: uploadedExpressionsPack
+            contentPack: newPackVersion,
+            processed: true
           });
         });
         this.leave();
@@ -613,7 +635,9 @@ const _sfc_main = defineComponent({
         const headType = characterData.heads[headTypeKey];
         return {
           name: headTypeKey,
-          preview: headType.variants[0].map((asset) => asset.lq),
+          preview: headType.variants[0].map(
+            (asset) => getAAssetUrl(asset, false)
+          ),
           partsFiles: partFiles[headTypeKey] || [],
           imagePatching: {
             mask: masks[headTypeKey],
@@ -767,8 +791,8 @@ const _sfc_main = defineComponent({
     }
   }
 });
-const index_vue_vue_type_style_index_0_scoped_1c267ecd_lang = "";
-const _withScopeId = (n) => (pushScopeId("data-v-1c267ecd"), n = n(), popScopeId(), n);
+const index_vue_vue_type_style_index_0_scoped_741fa029_lang = "";
+const _withScopeId = (n) => (pushScopeId("data-v-741fa029"), n = n(), popScopeId(), n);
 const _hoisted_1 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createBaseVNode("h1", null, "Add expressions", -1));
 const _hoisted_2 = {
   key: 0,
@@ -993,7 +1017,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64)) : createCommentVNode("", true)
   ], 32);
 }
-const index = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-1c267ecd"]]);
+const index = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-741fa029"]]);
 export {
   index as default
 };

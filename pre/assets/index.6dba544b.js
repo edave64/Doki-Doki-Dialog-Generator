@@ -5781,10 +5781,10 @@ function mitt(n) {
     });
   } };
 }
-var __defProp$M = Object.defineProperty;
-var __defNormalProp$M = (obj, key, value) => key in obj ? __defProp$M(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$O = Object.defineProperty;
+var __defNormalProp$O = (obj, key, value) => key in obj ? __defProp$O(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$r = (obj, key, value) => {
-  __defNormalProp$M(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$O(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 const eventBus = mitt();
@@ -5856,27 +5856,41 @@ class VueErrorEvent {
   }
 }
 __publicField$r(VueErrorEvent, "kind", "VueErrorEvent");
-var __defProp$L = Object.defineProperty;
-var __defProps$k = Object.defineProperties;
-var __getOwnPropDescs$k = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$r = Object.getOwnPropertySymbols;
-var __hasOwnProp$r = Object.prototype.hasOwnProperty;
-var __propIsEnum$r = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$L = (obj, key, value) => key in obj ? __defProp$L(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$r = (a, b) => {
+var __defProp$N = Object.defineProperty;
+var __defNormalProp$N = (obj, key, value) => key in obj ? __defProp$N(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$q = (obj, key, value) => {
+  __defNormalProp$N(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+class ErrorAsset {
+  constructor() {
+    __publicField$q(this, "width", 0);
+    __publicField$q(this, "height", 0);
+  }
+  paintOnto(_fsCtx) {
+  }
+}
+var __defProp$M = Object.defineProperty;
+var __defProps$m = Object.defineProperties;
+var __getOwnPropDescs$m = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$t = Object.getOwnPropertySymbols;
+var __hasOwnProp$t = Object.prototype.hasOwnProperty;
+var __propIsEnum$t = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$M = (obj, key, value) => key in obj ? __defProp$M(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$t = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$r.call(b, prop))
-      __defNormalProp$L(a, prop, b[prop]);
-  if (__getOwnPropSymbols$r)
-    for (var prop of __getOwnPropSymbols$r(b)) {
-      if (__propIsEnum$r.call(b, prop))
-        __defNormalProp$L(a, prop, b[prop]);
+    if (__hasOwnProp$t.call(b, prop))
+      __defNormalProp$M(a, prop, b[prop]);
+  if (__getOwnPropSymbols$t)
+    for (var prop of __getOwnPropSymbols$t(b)) {
+      if (__propIsEnum$t.call(b, prop))
+        __defNormalProp$M(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$k = (a, b) => __defProps$k(a, __getOwnPropDescs$k(b));
-var __publicField$q = (obj, key, value) => {
-  __defNormalProp$L(obj, typeof key !== "symbol" ? key + "" : key, value);
+var __spreadProps$m = (a, b) => __defProps$m(a, __getOwnPropDescs$m(b));
+var __publicField$p = (obj, key, value) => {
+  __defNormalProp$M(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$C = (__this, __arguments, generator) => {
@@ -5903,14 +5917,14 @@ const repoUrl = "https://edave64.github.io/Doki-Doki-Dialog-Generator-Packs/";
 const _Repo = class {
   constructor(onlineRepo, localRepo, $store) {
     this.$store = $store;
-    __publicField$q(this, "onlineRepo");
-    __publicField$q(this, "localRepo");
-    __publicField$q(this, "tempRepo", reactive({
+    __publicField$p(this, "onlineRepo");
+    __publicField$p(this, "localRepo");
+    __publicField$p(this, "tempRepo", reactive({
       authors: {},
       packs: []
     }));
-    __publicField$q(this, "combinedList");
-    __publicField$q(this, "authors");
+    __publicField$p(this, "combinedList");
+    __publicField$p(this, "authors");
     window.repo = this;
     if (!onlineRepo) {
       onlineRepo = { authors: {}, packs: [] };
@@ -5949,7 +5963,7 @@ const _Repo = class {
         ...onlinePacks.map((pack) => pack.id),
         ...tempPacks.map((pack) => pack.id)
       ].filter((packId) => {
-        if (packId.startsWith("dddg.buildin.") || packId.startsWith("dddg.desktop.") || packId === "concept_femc.shido_draws.edave64" || packId === "mc.storm_blaze.edave64")
+        if (packId.startsWith("dddg.buildin.") || packId.startsWith("dddg.uploads.") || packId.startsWith("dddg.desktop.") || packId === "concept_femc.shido_draws.edave64" || packId === "mc.storm_blaze.edave64")
           return false;
         if (addedPacks.has(packId))
           return false;
@@ -5957,7 +5971,7 @@ const _Repo = class {
         return true;
       }).map((packId) => {
         var _a2, _b2, _c;
-        return __spreadProps$k(__spreadValues$r(__spreadValues$r(__spreadValues$r({}, (_a2 = onlineRepoLookup.get(packId)) != null ? _a2 : {
+        return __spreadProps$m(__spreadValues$t(__spreadValues$t(__spreadValues$t({}, (_a2 = onlineRepoLookup.get(packId)) != null ? _a2 : {
           characters: [],
           kind: [],
           authors: []
@@ -5975,7 +5989,7 @@ const _Repo = class {
       const onlineAuthors = (_a = onlineRepo2 == null ? void 0 : onlineRepo2.authors) != null ? _a : {};
       const localRepo2 = this.localRepo.value;
       const localAuthors = (_b = localRepo2 == null ? void 0 : localRepo2.authors) != null ? _b : {};
-      return __spreadValues$r(__spreadValues$r({}, onlineAuthors), localAuthors);
+      return __spreadValues$t(__spreadValues$t({}, onlineAuthors), localAuthors);
     });
     Object.freeze(this);
   }
@@ -6079,31 +6093,31 @@ const _Repo = class {
   }
 };
 let Repo = _Repo;
-__publicField$q(Repo, "instance");
-__publicField$q(Repo, "setStore");
-__publicField$q(Repo, "$store", new Promise(
+__publicField$p(Repo, "instance");
+__publicField$p(Repo, "setStore");
+__publicField$p(Repo, "$store", new Promise(
   (resolve2, _reject) => {
     _Repo.setStore = resolve2;
   }
 ));
-var __defProp$K = Object.defineProperty;
-var __getOwnPropSymbols$q = Object.getOwnPropertySymbols;
-var __hasOwnProp$q = Object.prototype.hasOwnProperty;
-var __propIsEnum$q = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$K = (obj, key, value) => key in obj ? __defProp$K(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$q = (a, b) => {
+var __defProp$L = Object.defineProperty;
+var __getOwnPropSymbols$s = Object.getOwnPropertySymbols;
+var __hasOwnProp$s = Object.prototype.hasOwnProperty;
+var __propIsEnum$s = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$L = (obj, key, value) => key in obj ? __defProp$L(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$s = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$q.call(b, prop))
-      __defNormalProp$K(a, prop, b[prop]);
-  if (__getOwnPropSymbols$q)
-    for (var prop of __getOwnPropSymbols$q(b)) {
-      if (__propIsEnum$q.call(b, prop))
-        __defNormalProp$K(a, prop, b[prop]);
+    if (__hasOwnProp$s.call(b, prop))
+      __defNormalProp$L(a, prop, b[prop]);
+  if (__getOwnPropSymbols$s)
+    for (var prop of __getOwnPropSymbols$s(b)) {
+      if (__propIsEnum$s.call(b, prop))
+        __defNormalProp$L(a, prop, b[prop]);
     }
   return a;
 };
-var __publicField$p = (obj, key, value) => {
-  __defNormalProp$K(obj, typeof key !== "symbol" ? key + "" : key, value);
+var __publicField$o = (obj, key, value) => {
+  __defNormalProp$L(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$B = (__this, __arguments, generator) => {
@@ -6132,21 +6146,21 @@ const webkit = !!ua.match(/WebKit/i);
 const mobileSafari = iOS && webkit && !ua.match(/CriOS/i);
 class Browser {
   constructor() {
-    __publicField$p(this, "state", reactive({
+    __publicField$o(this, "state", reactive({
       looseTextParsing: true,
       autoAdd: [],
       downloadLocation: "Default download folder"
     }));
-    __publicField$p(this, "supports");
-    __publicField$p(this, "_gameMode", null);
-    __publicField$p(this, "vuexHistory", null);
-    __publicField$p(this, "$store", null);
-    __publicField$p(this, "isSavingEnabled", ref(false));
-    __publicField$p(this, "localRepositoryUrl", "");
-    __publicField$p(this, "loading");
-    __publicField$p(this, "creatingDB");
-    __publicField$p(this, "loadingContentPacksAllowed");
-    __publicField$p(this, "loadContentPacks");
+    __publicField$o(this, "supports");
+    __publicField$o(this, "_gameMode", null);
+    __publicField$o(this, "vuexHistory", null);
+    __publicField$o(this, "$store", null);
+    __publicField$o(this, "isSavingEnabled", ref(false));
+    __publicField$o(this, "localRepositoryUrl", "");
+    __publicField$o(this, "loading");
+    __publicField$o(this, "creatingDB");
+    __publicField$o(this, "loadingContentPacksAllowed");
+    __publicField$o(this, "loadContentPacks");
     const self2 = this;
     const canSave = IndexedDBHandler.canSave();
     window.addEventListener("beforeunload", function(e) {
@@ -6167,7 +6181,8 @@ class Browser {
       setDownloadFolder: false,
       openableFolders: /* @__PURE__ */ new Set([]),
       assetCaching: !mobileSafari,
-      allowWebP: true
+      allowWebP: true,
+      limitedCanvasSpace: mobileSafari
     });
     if (canSave) {
       this.loading = (() => __async$B(this, null, function* () {
@@ -6324,7 +6339,7 @@ class Browser {
       };
       if (!this.isSavingEnabled.value)
         return base;
-      return __spreadValues$q(__spreadValues$q({}, base), yield IndexedDBHandler.loadSettings());
+      return __spreadValues$s(__spreadValues$s({}, base), yield IndexedDBHandler.loadSettings());
     });
   }
   saveSettings(settings) {
@@ -6474,7 +6489,7 @@ const IndexedDBHandler = {
   },
   saveSettings(settings) {
     return this.objectStorePromise("readwrite", (store2) => __async$B(this, null, function* () {
-      yield this.reqPromise(store2.put(__spreadValues$q({}, settings), "settings"));
+      yield this.reqPromise(store2.put(__spreadValues$s({}, settings), "settings"));
     }));
   },
   loadSettings() {
@@ -6539,268 +6554,13 @@ class OldEdge extends Browser {
     });
   }
 }
-var __defProp$J = Object.defineProperty;
-var __defNormalProp$J = (obj, key, value) => key in obj ? __defProp$J(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$o = (obj, key, value) => {
-  __defNormalProp$J(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-class ErrorAsset {
-  constructor() {
-    __publicField$o(this, "width", 0);
-    __publicField$o(this, "height", 0);
-  }
-  paintOnto(_fsCtx) {
-  }
-}
-var __defProp$I = Object.defineProperty;
-var __getOwnPropSymbols$p = Object.getOwnPropertySymbols;
-var __hasOwnProp$p = Object.prototype.hasOwnProperty;
-var __propIsEnum$p = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$I = (obj, key, value) => key in obj ? __defProp$I(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$p = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$p.call(b, prop))
-      __defNormalProp$I(a, prop, b[prop]);
-  if (__getOwnPropSymbols$p)
-    for (var prop of __getOwnPropSymbols$p(b)) {
-      if (__propIsEnum$p.call(b, prop))
-        __defNormalProp$I(a, prop, b[prop]);
-    }
-  return a;
-};
+var __defProp$K = Object.defineProperty;
+var __defNormalProp$K = (obj, key, value) => key in obj ? __defProp$K(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$n = (obj, key, value) => {
-  __defNormalProp$I(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-class ImageAsset {
-  constructor(html) {
-    this.html = html;
-    __publicField$n(this, "width");
-    __publicField$n(this, "height");
-    this.width = html.width;
-    this.height = html.height;
-  }
-  paintOnto(fsCtx, opts = {}) {
-    const { w, h: h2 } = __spreadValues$p({
-      w: this.width,
-      h: this.height
-    }, opts);
-    const { x, y } = __spreadValues$p({
-      x: -w / 2,
-      y: -h2 / 2
-    }, opts);
-    fsCtx.drawImage(this.html, x, y, w, h2);
-  }
-}
-var __defProp$H = Object.defineProperty;
-var __defNormalProp$H = (obj, key, value) => key in obj ? __defProp$H(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$m = (obj, key, value) => {
-  __defNormalProp$H(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$K(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$z = (__this, __arguments, generator) => {
-  return new Promise((resolve2, reject) => {
-    var fulfilled = (value) => {
-      try {
-        step(generator.next(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var rejected = (value) => {
-      try {
-        step(generator.throw(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
-    step((generator = generator.apply(__this, __arguments)).next());
-  });
-};
-const import_meta$1 = {};
-let webpSupportPromise;
-function isWebPSupported() {
-  if (webpSupportPromise)
-    return webpSupportPromise;
-  if (!envX.supports.allowWebP) {
-    return Promise.resolve(false);
-  }
-  const losslessCode = "data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA=";
-  const transparentCode = "data:image/webp;base64,UklGRogAAABXRUJQVlA4THwAAAAv/8SzAA/wGbPPmH3GbP7jAQSSNu9f+rzDwYj+G23bpt3Gx3xD8353j73f5b87+e9OALmT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9OAriT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9O/rsTwe7kvzsL";
-  return webpSupportPromise = (() => __async$z(this, null, function* () {
-    const ret = yield Promise.all([
-      canLoadImg(losslessCode, 1, 2),
-      canLoadImg(transparentCode, 720, 1280)
-    ]);
-    return ret[0] && ret[1];
-  }))();
-}
-function canLoadImg(url, height, width) {
-  return new Promise((resolve2, _reject) => {
-    const img = document.createElement("img");
-    img.addEventListener("load", () => {
-      resolve2(img.width === width && img.height === height);
-    });
-    img.addEventListener("error", () => {
-      resolve2(false);
-    });
-    img.src = url;
-  });
-}
-let heifSupportPromise;
-function isHeifSupported() {
-  if (heifSupportPromise)
-    return heifSupportPromise;
-  return heifSupportPromise = new Promise((resolve2, _reject) => {
-    const losslessCode = "data:image/heic;base64,AAAAGGZ0eXBoZWljAAAAAG1pZjFoZWljAAAAsW1ldGEAAAAAAAAAIWhkbHIAAAAAAAAAAHBpY3QAXABjAGMAcwBsAGEAAAAADnBpdG0AAAAAAAEAAAAQaWxvYwAAAABEQAAAAAAAI2lpbmYAAAAAAAEAAAAVaW5mZQIAAAAAAQAAaHZjMQAAAABDaXBycAAAACdpcGNvAAAAH2h2Y0NmzGx1ci0AAAAAAABv9HP+//v9bjr3AAAAABRpcG1hAAAAAAAAAAEAAQGBAAAACG1kYXQ=";
-    const img = document.createElement("img");
-    img.addEventListener("load", () => {
-      console.log("Heif no error. " + (img.width === 2 && img.height === 1));
-      resolve2(img.width === 2 && img.height === 1);
-    });
-    img.addEventListener("error", () => {
-      console.log("Heif not supported");
-      resolve2(false);
-    });
-    img.src = losslessCode;
-  });
-}
-class AssetCache {
-  constructor() {
-    __publicField$m(this, "cache", /* @__PURE__ */ new Map());
-  }
-  get(url) {
-    const lookup = this.cache.get(url);
-    if (lookup)
-      return lookup;
-    const promise = imagePromise(url);
-    this.cache.set(url, promise);
-    return promise;
-  }
-  remove(url) {
-    this.cache.delete(url);
-  }
-}
-class TmpAssetCache {
-  constructor() {
-    __publicField$m(this, "cache", /* @__PURE__ */ new Map());
-  }
-  get(url) {
-    var _a;
-    const lookup = (_a = this.cache.get(url)) == null ? void 0 : _a.deref();
-    if (lookup)
-      return lookup;
-    const promise = requestAssetByUrl(url);
-    this.cache.set(url, new WeakRef(promise));
-    return promise;
-  }
-  remove(url) {
-    this.cache.delete(url);
-  }
-}
-let assetCache = null;
-function getAssetCache() {
-  if (assetCache)
-    return assetCache;
-  return window.assetCache = assetCache = envX.supports.assetCaching || typeof WeakRef === "undefined" ? new AssetCache() : new TmpAssetCache();
-}
-const customAssets = {};
-function getAAsset(asset, hq = true) {
-  return getAssetByUrl(envX.supports.lq && !hq ? asset.lq : asset.hq);
-}
-function getAssetByUrl(url) {
-  return customAssets[url] || getAssetCache().get(url);
-}
-let _baseUrl = ".";
-try {
-  _baseUrl = import_meta$1.env.BASE_URL || ".";
-} catch (e) {
-}
-const baseUrl$1 = _baseUrl;
-function getBuildInAsset(asset, hq = true) {
-  return __async$z(this, null, function* () {
-    const url = `${baseUrl$1}/assets/${asset}${hq ? "" : ".lq"}${(yield isWebPSupported()) ? ".webp" : ".png"}`.replace(/\/+/, "/");
-    return yield getAssetCache().get(url);
-  });
-}
-function registerAsset(asset, file) {
-  const url = URL.createObjectURL(file);
-  registerAssetWithURL(asset, url);
-  return url;
-}
-function registerAssetWithURL(asset, url) {
-  return customAssets[asset] = new Promise((resolve2, reject) => {
-    const img = new Image();
-    img.addEventListener("load", () => {
-      resolve2(new ImageAsset(img));
-    });
-    img.addEventListener("error", (error2) => {
-      eventBus$1.fire(new CustomAssetFailureEvent(error2));
-      reject(`Failed to load "${url}"`);
-    });
-    img.crossOrigin = "Anonymous";
-    img.src = url;
-    img.style.display = "none";
-    if (envX.supports.assetCaching) {
-      document.body.appendChild(img);
-    } else {
-      customAssets[asset] = void 0;
-    }
-  });
-}
-function requestAssetByUrl(url) {
-  return __async$z(this, null, function* () {
-    return (() => __async$z(this, null, function* () {
-      try {
-        return yield imagePromise(url);
-      } catch (e) {
-        if (url.endsWith(".webp")) {
-          try {
-            return yield imagePromise(url.replace(/\.webp$/, ".png"));
-          } catch (e2) {
-            eventBus$1.fire(new AssetFailureEvent(url));
-            getAssetCache().remove(url);
-            return new ErrorAsset();
-          }
-        } else {
-          eventBus$1.fire(new AssetFailureEvent(url));
-          getAssetCache().remove(url);
-          return new ErrorAsset();
-        }
-      }
-    }))();
-  });
-}
-function imagePromise(url) {
-  return new Promise((resolve2, reject) => {
-    const img = new Image();
-    img.addEventListener("load", () => {
-      resolve2(new ImageAsset(img));
-      if (!envX.supports.assetCaching) {
-        document.body.removeChild(img);
-      }
-    });
-    img.addEventListener("error", (e) => {
-      reject(new Error(`Failed to load image ${url}`));
-      if (!envX.supports.assetCaching) {
-        document.body.removeChild(img);
-      }
-    });
-    img.crossOrigin = "Anonymous";
-    img.src = url;
-    img.style.display = "none";
-    document.body.appendChild(img);
-  });
-}
-var __defProp$G = Object.defineProperty;
-var __defNormalProp$G = (obj, key, value) => key in obj ? __defProp$G(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$l = (obj, key, value) => {
-  __defNormalProp$G(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-var __async$y = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
       try {
@@ -6834,22 +6594,22 @@ const installedBackgroundsPack = {
 };
 class Electron {
   constructor() {
-    __publicField$l(this, "state", reactive({
+    __publicField$n(this, "state", reactive({
       looseTextParsing: true,
       autoAdd: [],
       downloadLocation: ""
     }));
-    __publicField$l(this, "localRepositoryUrl", "/repo/");
-    __publicField$l(this, "_gameMode", null);
-    __publicField$l(this, "electron", window);
-    __publicField$l(this, "vuexHistory", null);
-    __publicField$l(this, "$store", null);
-    __publicField$l(this, "bgInvalidation", null);
-    __publicField$l(this, "pendingContentPacks", []);
-    __publicField$l(this, "pendingContentPacksReplace", []);
-    __publicField$l(this, "loadingContentPacksAllowed");
-    __publicField$l(this, "loadContentPacks");
-    __publicField$l(this, "supports", {
+    __publicField$n(this, "localRepositoryUrl", "/repo/");
+    __publicField$n(this, "_gameMode", null);
+    __publicField$n(this, "electron", window);
+    __publicField$n(this, "vuexHistory", null);
+    __publicField$n(this, "$store", null);
+    __publicField$n(this, "bgInvalidation", null);
+    __publicField$n(this, "pendingContentPacks", []);
+    __publicField$n(this, "pendingContentPacksReplace", []);
+    __publicField$n(this, "loadingContentPacksAllowed");
+    __publicField$n(this, "loadContentPacks");
+    __publicField$n(this, "supports", {
       autoLoading: true,
       backgroundInstall: true,
       localRepo: true,
@@ -6858,28 +6618,29 @@ class Electron {
       setDownloadFolder: true,
       openableFolders: /* @__PURE__ */ new Set(["downloads", "backgrounds", "sprites"]),
       assetCaching: true,
-      allowWebP: true
+      allowWebP: true,
+      limitedCanvasSpace: false
     });
-    __publicField$l(this, "savingEnabled", true);
+    __publicField$n(this, "savingEnabled", true);
     this.loadingContentPacksAllowed = new Promise((resolve2, _reject) => {
       this.loadContentPacks = () => resolve2();
     });
     this.electron.ipcRenderer.on(
       "add-persistent-content-pack",
-      (filePath) => __async$y(this, null, function* () {
+      (filePath) => __async$z(this, null, function* () {
         yield this.loadingContentPacksAllowed;
         if (!this.$store || !this.vuexHistory) {
           this.pendingContentPacks.push(filePath);
           return;
         }
-        yield this.vuexHistory.transaction(() => __async$y(this, null, function* () {
+        yield this.vuexHistory.transaction(() => __async$z(this, null, function* () {
           yield this.$store.dispatch("content/loadContentPacks", filePath);
         }));
       })
     );
     this.electron.ipcRenderer.on(
       "add-persistent-background",
-      (filepath) => __async$y(this, null, function* () {
+      (filepath) => __async$z(this, null, function* () {
         const name = "persistentBg-" + filepath;
         const parts = filepath.split("/");
         yield registerAssetWithURL(name, filepath);
@@ -6892,21 +6653,21 @@ class Electron {
         this.invalidateInstalledBGs();
       })
     );
-    this.electron.ipcRenderer.on("push-message", (message) => __async$y(this, null, function* () {
+    this.electron.ipcRenderer.on("push-message", (message) => __async$z(this, null, function* () {
       eventBus$1.fire(new ShowMessageEvent(message));
     }));
     this.electron.ipcRenderer.on(
       "config.downloadFolderUpdate",
-      (location2) => __async$y(this, null, function* () {
+      (location2) => __async$z(this, null, function* () {
         this.state.downloadLocation = location2;
       })
     );
     this.electron.ipcRenderer.onConversation(
       "load-packs",
-      (packIds) => __async$y(this, null, function* () {
+      (packIds) => __async$z(this, null, function* () {
         const repo = yield Repo.getInstance();
         const packUrls = yield Promise.all(
-          packIds.map((compoundId) => __async$y(this, null, function* () {
+          packIds.map((compoundId) => __async$z(this, null, function* () {
             const [id, url] = compoundId.split(";", 2);
             if (url != null && !repo.hasPack(id)) {
               yield repo.loadTempPack(url);
@@ -6919,23 +6680,23 @@ class Electron {
           packUrls.forEach((url) => this.pendingContentPacks.push(url));
           return;
         }
-        yield this.vuexHistory.transaction(() => __async$y(this, null, function* () {
+        yield this.vuexHistory.transaction(() => __async$z(this, null, function* () {
           yield this.$store.dispatch("content/loadContentPacks", packUrls);
         }));
       })
     );
     this.electron.ipcRenderer.onConversation(
       "auto-load.changed",
-      (packIds) => __async$y(this, null, function* () {
+      (packIds) => __async$z(this, null, function* () {
         this.state.autoAdd = packIds;
       })
     );
-    this.electron.ipcRenderer.onConversation("reload-repo", () => __async$y(this, null, function* () {
+    this.electron.ipcRenderer.onConversation("reload-repo", () => __async$z(this, null, function* () {
       yield (yield Repo.getInstance()).reloadLocalRepo();
     }));
     this.electron.ipcRenderer.onConversation(
       "replace-pack",
-      (contentPack) => __async$y(this, null, function* () {
+      (contentPack) => __async$z(this, null, function* () {
         const action = {
           processed: false,
           contentPack
@@ -6943,7 +6704,7 @@ class Electron {
         if (!this.$store || !this.vuexHistory) {
           this.pendingContentPacksReplace.push(action);
         } else {
-          yield this.vuexHistory.transaction(() => __async$y(this, null, function* () {
+          yield this.vuexHistory.transaction(() => __async$z(this, null, function* () {
             yield this.$store.dispatch("content/replaceContentPack", action);
           }));
         }
@@ -7000,7 +6761,7 @@ class Electron {
   onPanelChange(_handler) {
   }
   saveSettings(settings) {
-    return __async$y(this, null, function* () {
+    return __async$z(this, null, function* () {
       var _a;
       yield this.electron.ipcRenderer.sendConvo(
         "config.set",
@@ -7020,18 +6781,18 @@ class Electron {
     });
   }
   loadGameMode() {
-    return __async$y(this, null, function* () {
+    return __async$z(this, null, function* () {
       this._gameMode = (yield this.electron.ipcRenderer.sendConvo("config.get", "gameMode")) || "ddlc";
     });
   }
   setGameMode(mode) {
-    return __async$y(this, null, function* () {
+    return __async$z(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo("config.set", "gameMode", mode);
       this.electron.ipcRenderer.send("reload");
     });
   }
   loadSettings() {
-    return __async$y(this, null, function* () {
+    return __async$z(this, null, function* () {
       var _a, _b, _c;
       return {
         lq: false,
@@ -7045,7 +6806,7 @@ class Electron {
     });
   }
   localRepoInstall(url, repo, authors) {
-    return __async$y(this, null, function* () {
+    return __async$z(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo(
         "repo.install",
         url,
@@ -7055,24 +6816,24 @@ class Electron {
     });
   }
   localRepoUninstall(id) {
-    return __async$y(this, null, function* () {
+    return __async$z(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo("repo.uninstall", id);
     });
   }
   autoLoadAdd(id) {
-    return __async$y(this, null, function* () {
+    return __async$z(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo("auto-load.add", id);
     });
   }
   autoLoadRemove(id) {
-    return __async$y(this, null, function* () {
+    return __async$z(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo("auto-load.remove", id);
     });
   }
   saveToFile(downloadCanvas, filename, format = "image/png", quality = 1) {
     return new Promise((resolve2, reject) => {
       downloadCanvas.toBlob(
-        (blob) => __async$y(this, null, function* () {
+        (blob) => __async$z(this, null, function* () {
           if (!blob) {
             reject();
             return;
@@ -7091,7 +6852,7 @@ class Electron {
     });
   }
   prompt(message, defaultValue) {
-    return __async$y(this, null, function* () {
+    return __async$z(this, null, function* () {
       return yield this.electron.ipcRenderer.sendConvo(
         "show-prompt",
         message,
@@ -7103,7 +6864,7 @@ class Electron {
     this.vuexHistory = vuexHistory;
     this.$store = store2;
     this.invalidateInstalledBGs();
-    this.vuexHistory.transaction(() => __async$y(this, null, function* () {
+    this.vuexHistory.transaction(() => __async$z(this, null, function* () {
       if (this.pendingContentPacks.length > 0) {
         yield this.$store.dispatch(
           "content/loadContentPacks",
@@ -7133,7 +6894,7 @@ class Electron {
     }
     if (!this.vuexHistory || !this.$store)
       return;
-    this.vuexHistory.transaction(() => __async$y(this, null, function* () {
+    this.vuexHistory.transaction(() => __async$z(this, null, function* () {
       yield this.$store.dispatch("content/replaceContentPack", {
         contentPack: installedBackgroundsPack
       });
@@ -7151,6 +6912,235 @@ function chooseEnv() {
 }
 const envX = chooseEnv();
 window.toast = envX;
+var __defProp$J = Object.defineProperty;
+var __getOwnPropSymbols$r = Object.getOwnPropertySymbols;
+var __hasOwnProp$r = Object.prototype.hasOwnProperty;
+var __propIsEnum$r = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$J = (obj, key, value) => key in obj ? __defProp$J(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$r = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$r.call(b, prop))
+      __defNormalProp$J(a, prop, b[prop]);
+  if (__getOwnPropSymbols$r)
+    for (var prop of __getOwnPropSymbols$r(b)) {
+      if (__propIsEnum$r.call(b, prop))
+        __defNormalProp$J(a, prop, b[prop]);
+    }
+  return a;
+};
+var __publicField$m = (obj, key, value) => {
+  __defNormalProp$J(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+class ImageAsset {
+  constructor(html) {
+    this.html = html;
+    __publicField$m(this, "width");
+    __publicField$m(this, "height");
+    this.width = html.width;
+    this.height = html.height;
+  }
+  paintOnto(fsCtx, opts = {}) {
+    const { w, h: h2 } = __spreadValues$r({
+      w: this.width,
+      h: this.height
+    }, opts);
+    const { x, y } = __spreadValues$r({
+      x: -w / 2,
+      y: -h2 / 2
+    }, opts);
+    fsCtx.drawImage(this.html, x, y, w, h2);
+  }
+}
+var __defProp$I = Object.defineProperty;
+var __defNormalProp$I = (obj, key, value) => key in obj ? __defProp$I(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$l = (obj, key, value) => {
+  __defNormalProp$I(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$y = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
+let webpSupportPromise;
+function isWebPSupported() {
+  if (webpSupportPromise)
+    return webpSupportPromise;
+  if (!envX.supports.allowWebP) {
+    return Promise.resolve(false);
+  }
+  const losslessCode = "data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA=";
+  const transparentCode = "data:image/webp;base64,UklGRogAAABXRUJQVlA4THwAAAAv/8SzAA/wGbPPmH3GbP7jAQSSNu9f+rzDwYj+G23bpt3Gx3xD8353j73f5b87+e9OALmT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9OAriT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9O/rsTwe7kvzsL";
+  return webpSupportPromise = (() => __async$y(this, null, function* () {
+    const ret = yield Promise.all([
+      canLoadImg(losslessCode, 1, 2),
+      canLoadImg(transparentCode, 720, 1280)
+    ]);
+    return ret[0] && ret[1];
+  }))();
+}
+function canLoadImg(url, height, width) {
+  return new Promise((resolve2, _reject) => {
+    const img = document.createElement("img");
+    img.addEventListener("load", () => {
+      resolve2(img.width === width && img.height === height);
+    });
+    img.addEventListener("error", () => {
+      resolve2(false);
+    });
+    img.src = url;
+  });
+}
+let heifSupportPromise;
+function isHeifSupported() {
+  if (heifSupportPromise)
+    return heifSupportPromise;
+  return heifSupportPromise = new Promise((resolve2, _reject) => {
+    const losslessCode = "data:image/heic;base64,AAAAGGZ0eXBoZWljAAAAAG1pZjFoZWljAAAAsW1ldGEAAAAAAAAAIWhkbHIAAAAAAAAAAHBpY3QAXABjAGMAcwBsAGEAAAAADnBpdG0AAAAAAAEAAAAQaWxvYwAAAABEQAAAAAAAI2lpbmYAAAAAAAEAAAAVaW5mZQIAAAAAAQAAaHZjMQAAAABDaXBycAAAACdpcGNvAAAAH2h2Y0NmzGx1ci0AAAAAAABv9HP+//v9bjr3AAAAABRpcG1hAAAAAAAAAAEAAQGBAAAACG1kYXQ=";
+    const img = document.createElement("img");
+    img.addEventListener("load", () => {
+      console.log("Heif no error. " + (img.width === 2 && img.height === 1));
+      resolve2(img.width === 2 && img.height === 1);
+    });
+    img.addEventListener("error", () => {
+      console.log("Heif not supported");
+      resolve2(false);
+    });
+    img.src = losslessCode;
+  });
+}
+class AssetCache {
+  constructor() {
+    __publicField$l(this, "cache", /* @__PURE__ */ new Map());
+  }
+  get(url) {
+    const lookup = this.cache.get(url);
+    if (lookup)
+      return lookup;
+    const promise = imagePromise(url);
+    this.cache.set(url, promise);
+    return promise;
+  }
+  remove(url) {
+    this.cache.delete(url);
+  }
+}
+class TmpAssetCache {
+  constructor() {
+    __publicField$l(this, "cache", /* @__PURE__ */ new Map());
+  }
+  get(url) {
+    var _a;
+    const lookup = (_a = this.cache.get(url)) == null ? void 0 : _a.deref();
+    if (lookup)
+      return lookup;
+    const promise = requestAssetByUrl(url);
+    this.cache.set(url, new WeakRef(promise));
+    return promise;
+  }
+  remove(url) {
+    this.cache.delete(url);
+  }
+}
+let assetCache = null;
+function getAssetCache() {
+  if (assetCache)
+    return assetCache;
+  return window.assetCache = assetCache = envX.supports.assetCaching || typeof WeakRef === "undefined" ? new AssetCache() : new TmpAssetCache();
+}
+const customUrl = {};
+function getAAsset(asset, hq = true) {
+  return getAssetByUrl(envX.supports.lq && !hq ? asset.lq : asset.hq);
+}
+function getAAssetUrl(asset, hq = true) {
+  const url = envX.supports.lq && !hq ? asset.lq : asset.hq;
+  if (customUrl[url])
+    return customUrl[url];
+  return url;
+}
+function getAssetByUrl(url) {
+  if (customUrl[url])
+    url = customUrl[url];
+  return getAssetCache().get(url);
+}
+const baseUrl = "./";
+function getBuildInAsset(asset, hq = true) {
+  return __async$y(this, null, function* () {
+    const url = `${baseUrl}assets/${asset}${hq ? "" : ".lq"}${(yield isWebPSupported()) ? ".webp" : ".png"}`.replace(/\/+/, "/");
+    return yield getAssetCache().get(url);
+  });
+}
+function getBuildInAssetUrl(asset, hq = true) {
+  return __async$y(this, null, function* () {
+    return `${baseUrl}assets/${asset}${envX.supports.lq && !hq ? ".lq" : ""}${(yield isWebPSupported()) ? ".webp" : ".png"}`.replace(/\/+/, "/");
+  });
+}
+function registerAssetWithURL(asset, url) {
+  customUrl[asset] = url;
+}
+function requestAssetByUrl(url) {
+  return __async$y(this, null, function* () {
+    const isCustom = !!customUrl[url];
+    if (isCustom)
+      url = customUrl[url];
+    return (() => __async$y(this, null, function* () {
+      try {
+        return yield imagePromise(url);
+      } catch (e) {
+        if (url.endsWith(".webp") && !isCustom) {
+          try {
+            return yield imagePromise(url.replace(/\.webp$/, ".png"));
+          } catch (e2) {
+            eventBus$1.fire(new AssetFailureEvent(url));
+            getAssetCache().remove(url);
+            return new ErrorAsset();
+          }
+        } else {
+          eventBus$1.fire(new AssetFailureEvent(url));
+          getAssetCache().remove(url);
+          return new ErrorAsset();
+        }
+      }
+    }))();
+  });
+}
+function imagePromise(url) {
+  return new Promise((resolve2, reject) => {
+    const img = new Image();
+    img.addEventListener("load", () => {
+      resolve2(new ImageAsset(img));
+      if (!envX.supports.assetCaching) {
+        document.body.removeChild(img);
+      }
+    });
+    img.addEventListener("error", (_e) => {
+      reject(new Error(`Failed to load image ${url}`));
+      if (!envX.supports.assetCaching) {
+        document.body.removeChild(img);
+      }
+    });
+    img.crossOrigin = "Anonymous";
+    img.src = url;
+    img.style.display = "none";
+    document.body.appendChild(img);
+  });
+}
 const _sfc_main$y = defineComponent({
   props: {
     label: String,
@@ -7658,12 +7648,12 @@ const _hoisted_20$6 = /* @__PURE__ */ _withScopeId$f(() => /* @__PURE__ */ creat
   /* @__PURE__ */ createBaseVNode("label", null, "Theme:")
 ], -1));
 const _hoisted_21$5 = /* @__PURE__ */ _withScopeId$f(() => /* @__PURE__ */ createBaseVNode("option", { value: null }, "System", -1));
-const _hoisted_22$4 = /* @__PURE__ */ _withScopeId$f(() => /* @__PURE__ */ createBaseVNode("option", { value: false }, "Light", -1));
-const _hoisted_23$4 = /* @__PURE__ */ _withScopeId$f(() => /* @__PURE__ */ createBaseVNode("option", { value: true }, "Dark", -1));
-const _hoisted_24$3 = [
+const _hoisted_22$5 = /* @__PURE__ */ _withScopeId$f(() => /* @__PURE__ */ createBaseVNode("option", { value: false }, "Light", -1));
+const _hoisted_23$5 = /* @__PURE__ */ _withScopeId$f(() => /* @__PURE__ */ createBaseVNode("option", { value: true }, "Dark", -1));
+const _hoisted_24$4 = [
   _hoisted_21$5,
-  _hoisted_22$4,
-  _hoisted_23$4
+  _hoisted_22$5,
+  _hoisted_23$5
 ];
 const _hoisted_25$3 = {
   key: 4,
@@ -7791,7 +7781,7 @@ function _sfc_render$u(_ctx, _cache, $props, $setup, $data, $options) {
         createBaseVNode("td", null, [
           withDirectives(createBaseVNode("select", {
             "onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => _ctx.theme = $event)
-          }, _hoisted_24$3, 512), [
+          }, _hoisted_24$4, 512), [
             [vModelSelect, _ctx.theme]
           ])
         ])
@@ -7913,6 +7903,25 @@ function _sfc_render$s(_ctx, _cache, $props, $setup, $data, $options) {
   ], 10, _hoisted_1$o);
 }
 const DButton = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["render", _sfc_render$s], ["__scopeId", "data-v-b2a4f97d"]]);
+var __defProp$H = Object.defineProperty;
+var __defProps$l = Object.defineProperties;
+var __getOwnPropDescs$l = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$q = Object.getOwnPropertySymbols;
+var __hasOwnProp$q = Object.prototype.hasOwnProperty;
+var __propIsEnum$q = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$H = (obj, key, value) => key in obj ? __defProp$H(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$q = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$q.call(b, prop))
+      __defNormalProp$H(a, prop, b[prop]);
+  if (__getOwnPropSymbols$q)
+    for (var prop of __getOwnPropSymbols$q(b)) {
+      if (__propIsEnum$q.call(b, prop))
+        __defNormalProp$H(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$l = (a, b) => __defProps$l(a, __getOwnPropDescs$l(b));
 var __async$v = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -7933,8 +7942,8 @@ var __async$v = (__this, __arguments, generator) => {
     step((generator = generator.apply(__this, __arguments)).next());
   });
 };
-const uploadedSpritesPack = {
-  packId: "dddg.buildin.uploadedSprites",
+const uploadedSpritesPackDefault = {
+  packId: "dddg.uploads.sprites",
   packCredits: [""],
   dependencies: [],
   characters: [],
@@ -7974,7 +7983,7 @@ const _sfc_main$s = defineComponent({
   },
   methods: {
     assetSpriteBackground(sprite) {
-      return sprite.variants[0].map((variant) => `url('${variant.lq}')`).join(",");
+      return sprite.variants[0].map((variant) => `url('${getAAssetUrl(variant, false)}')`).join(",");
     },
     assetPath(character) {
       return character.chibi ? envX.supports.lq ? character.chibi.lq : character.chibi.hq : "";
@@ -8012,7 +8021,9 @@ const _sfc_main$s = defineComponent({
         if (url == null)
           return;
         const lastSegment = url.split("/").slice(-1)[0];
-        this.addNewCustomSprite(lastSegment, url);
+        yield this.vuexHistory.transaction(() => __async$v(this, null, function* () {
+          yield this.addNewCustomSprite(lastSegment, url);
+        }));
       });
     },
     addSpriteToScene(sprite) {
@@ -8076,20 +8087,36 @@ const _sfc_main$s = defineComponent({
       }));
     },
     addCustomSpriteFile(file) {
-      const url = URL.createObjectURL(file);
-      this.addNewCustomSprite(file.name, url);
+      return __async$v(this, null, function* () {
+        yield this.vuexHistory.transaction(() => __async$v(this, null, function* () {
+          const url = URL.createObjectURL(file);
+          const assetUrl = yield this.$store.dispatch("uploadUrls/add", {
+            name: file.name,
+            url
+          });
+          yield this.addNewCustomSprite(file.name, assetUrl);
+        }));
+      });
     },
     addNewCustomSprite(label, url) {
-      uploadedSpritesPack.sprites.push({
-        id: url,
-        label,
-        variants: [[url]],
-        defaultScale: [1, 1],
-        hd: null
-      });
-      this.vuexHistory.transaction(() => {
-        this.$store.dispatch("content/replaceContentPack", {
-          contentPack: uploadedSpritesPack,
+      return __async$v(this, null, function* () {
+        const old = this.$store.state.content.contentPacks.find(
+          (x) => x.packId === uploadedSpritesPackDefault.packId
+        ) || uploadedSpritesPackDefault;
+        const newPackVersion = __spreadProps$l(__spreadValues$q({}, old), {
+          sprites: [
+            ...old.sprites,
+            {
+              id: url,
+              label,
+              variants: [[url]],
+              defaultScale: [1, 1],
+              hd: null
+            }
+          ]
+        });
+        yield this.$store.dispatch("content/replaceContentPack", {
+          contentPack: newPackVersion,
           processed: false
         });
       });
@@ -8104,8 +8131,8 @@ const _sfc_main$s = defineComponent({
     });
   }
 });
-const add_vue_vue_type_style_index_0_scoped_dc1660b3_lang = "";
-const _withScopeId$e = (n) => (pushScopeId("data-v-dc1660b3"), n = n(), popScopeId(), n);
+const add_vue_vue_type_style_index_0_scoped_14c097ea_lang = "";
+const _withScopeId$e = (n) => (pushScopeId("data-v-14c097ea"), n = n(), popScopeId(), n);
 const _hoisted_1$n = /* @__PURE__ */ createTextVNode("Drop here to add as a new sprite ");
 const _hoisted_2$l = /* @__PURE__ */ _withScopeId$e(() => /* @__PURE__ */ createBaseVNode("h1", null, "Add", -1));
 const _hoisted_3$j = /* @__PURE__ */ createTextVNode(" Char\xADacters ");
@@ -8293,7 +8320,7 @@ function _sfc_render$r(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)
   ], 32)) : createCommentVNode("", true);
 }
-const AddPanel = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$r], ["__scopeId", "data-v-dc1660b3"]]);
+const AddPanel = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$r], ["__scopeId", "data-v-14c097ea"]]);
 function arraySeeker(array, pos, delta) {
   let val = pos + delta;
   const length = array.length;
@@ -8344,10 +8371,10 @@ const Base$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   BaseCharacterYPos: BaseCharacterYPos$1,
   characterPositions: characterPositions$1
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$F = Object.defineProperty;
-var __defNormalProp$F = (obj, key, value) => key in obj ? __defProp$F(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$G = Object.defineProperty;
+var __defNormalProp$G = (obj, key, value) => key in obj ? __defProp$G(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$k = (obj, key, value) => {
-  __defNormalProp$F(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$G(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 const _RGBAColor = class {
@@ -8684,25 +8711,25 @@ const TextBoxCustom$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
   textboxOutlineColorDelta: textboxOutlineColorDelta$1,
   textboxOutlineWidth: textboxOutlineWidth$1
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$E = Object.defineProperty;
-var __defProps$j = Object.defineProperties;
-var __getOwnPropDescs$j = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$o = Object.getOwnPropertySymbols;
-var __hasOwnProp$o = Object.prototype.hasOwnProperty;
-var __propIsEnum$o = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$E = (obj, key, value) => key in obj ? __defProp$E(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$o = (a, b) => {
+var __defProp$F = Object.defineProperty;
+var __defProps$k = Object.defineProperties;
+var __getOwnPropDescs$k = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$p = Object.getOwnPropertySymbols;
+var __hasOwnProp$p = Object.prototype.hasOwnProperty;
+var __propIsEnum$p = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$F = (obj, key, value) => key in obj ? __defProp$F(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$p = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$o.call(b, prop))
-      __defNormalProp$E(a, prop, b[prop]);
-  if (__getOwnPropSymbols$o)
-    for (var prop of __getOwnPropSymbols$o(b)) {
-      if (__propIsEnum$o.call(b, prop))
-        __defNormalProp$E(a, prop, b[prop]);
+    if (__hasOwnProp$p.call(b, prop))
+      __defNormalProp$F(a, prop, b[prop]);
+  if (__getOwnPropSymbols$p)
+    for (var prop of __getOwnPropSymbols$p(b)) {
+      if (__propIsEnum$p.call(b, prop))
+        __defNormalProp$F(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$j = (a, b) => __defProps$j(a, __getOwnPropDescs$j(b));
+var __spreadProps$k = (a, b) => __defProps$k(a, __getOwnPropDescs$k(b));
 const TextBoxWidth$1 = 816;
 const TextBoxCorruptedWidth$1 = 900;
 const TextBoxHeight$1 = 146;
@@ -8742,7 +8769,7 @@ const BaseTextStyle$1 = {
   strokeColor: "",
   strokeWidth: 0
 };
-const NameboxTextStyle$1 = __spreadProps$j(__spreadValues$o({}, BaseTextStyle$1), {
+const NameboxTextStyle$1 = __spreadProps$k(__spreadValues$p({}, BaseTextStyle$1), {
   fontName: "riffic",
   fontSize: 24,
   strokeColor: nameboxStrokeDefaultColor$1,
@@ -8757,7 +8784,7 @@ const ControlsTextStyle$1 = {
     style: "#522"
   }
 };
-const ControlsTextDisabledStyle$1 = __spreadProps$j(__spreadValues$o({}, ControlsTextStyle$1), {
+const ControlsTextDisabledStyle$1 = __spreadProps$k(__spreadValues$p({}, ControlsTextStyle$1), {
   fill: {
     style: "#a66"
   }
@@ -8839,31 +8866,31 @@ const TextBox$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePro
   ControlsXStuff: ControlsXStuff$1,
   DefaultTextboxStyle: DefaultTextboxStyle$1
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$D = Object.defineProperty;
-var __defProps$i = Object.defineProperties;
-var __getOwnPropDescs$i = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$n = Object.getOwnPropertySymbols;
-var __hasOwnProp$n = Object.prototype.hasOwnProperty;
-var __propIsEnum$n = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$D = (obj, key, value) => key in obj ? __defProp$D(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$n = (a, b) => {
+var __defProp$E = Object.defineProperty;
+var __defProps$j = Object.defineProperties;
+var __getOwnPropDescs$j = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$o = Object.getOwnPropertySymbols;
+var __hasOwnProp$o = Object.prototype.hasOwnProperty;
+var __propIsEnum$o = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$E = (obj, key, value) => key in obj ? __defProp$E(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$o = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$n.call(b, prop))
-      __defNormalProp$D(a, prop, b[prop]);
-  if (__getOwnPropSymbols$n)
-    for (var prop of __getOwnPropSymbols$n(b)) {
-      if (__propIsEnum$n.call(b, prop))
-        __defNormalProp$D(a, prop, b[prop]);
+    if (__hasOwnProp$o.call(b, prop))
+      __defNormalProp$E(a, prop, b[prop]);
+  if (__getOwnPropSymbols$o)
+    for (var prop of __getOwnPropSymbols$o(b)) {
+      if (__propIsEnum$o.call(b, prop))
+        __defNormalProp$E(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$i = (a, b) => __defProps$i(a, __getOwnPropDescs$i(b));
+var __spreadProps$j = (a, b) => __defProps$j(a, __getOwnPropDescs$j(b));
 const NotificationBackgroundColor$1 = "#ffe6f4";
 const NotificationBorderColor$1 = "#ffbde1";
 const NotificationBackdropColor$1 = "rgba(255,255,255,0.6)";
 const NotificationPadding$1 = 40;
 const NotificationSpacing$1 = 30;
-const NotificationOkTextStyle$1 = __spreadProps$i(__spreadValues$n({}, BaseTextStyle$1), {
+const NotificationOkTextStyle$1 = __spreadProps$j(__spreadValues$o({}, BaseTextStyle$1), {
   fontName: "riffic",
   fontSize: 24,
   strokeColor: nameboxStrokeDefaultColor$1,
@@ -8895,25 +8922,25 @@ const Notification$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defi
   NotificationOkTextStyle: NotificationOkTextStyle$1,
   NotificationTextStyle: NotificationTextStyle$1
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$C = Object.defineProperty;
-var __defProps$h = Object.defineProperties;
-var __getOwnPropDescs$h = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$m = Object.getOwnPropertySymbols;
-var __hasOwnProp$m = Object.prototype.hasOwnProperty;
-var __propIsEnum$m = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$C = (obj, key, value) => key in obj ? __defProp$C(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$m = (a, b) => {
+var __defProp$D = Object.defineProperty;
+var __defProps$i = Object.defineProperties;
+var __getOwnPropDescs$i = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$n = Object.getOwnPropertySymbols;
+var __hasOwnProp$n = Object.prototype.hasOwnProperty;
+var __propIsEnum$n = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$D = (obj, key, value) => key in obj ? __defProp$D(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$n = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$m.call(b, prop))
-      __defNormalProp$C(a, prop, b[prop]);
-  if (__getOwnPropSymbols$m)
-    for (var prop of __getOwnPropSymbols$m(b)) {
-      if (__propIsEnum$m.call(b, prop))
-        __defNormalProp$C(a, prop, b[prop]);
+    if (__hasOwnProp$n.call(b, prop))
+      __defNormalProp$D(a, prop, b[prop]);
+  if (__getOwnPropSymbols$n)
+    for (var prop of __getOwnPropSymbols$n(b)) {
+      if (__propIsEnum$n.call(b, prop))
+        __defNormalProp$D(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$h = (a, b) => __defProps$h(a, __getOwnPropDescs$h(b));
+var __spreadProps$i = (a, b) => __defProps$i(a, __getOwnPropDescs$i(b));
 const poemBackgrounds$1 = [
   { name: "Normal paper", file: "poem.jpg" },
   { name: "Lightly soiled paper", file: "poem_y1.jpg" },
@@ -8950,47 +8977,47 @@ const BasePoemStyle$1 = {
   fontSize: 12
 };
 const poemTextStyles$1 = [
-  __spreadProps$h(__spreadValues$m({}, BasePoemStyle$1), {
+  __spreadProps$i(__spreadValues$n({}, BasePoemStyle$1), {
     name: "Sayori",
     fontName: "hashtag",
     fontSize: 34,
     lineSpacing: 1.05,
     letterSpacing: 0
   }),
-  __spreadProps$h(__spreadValues$m({}, BasePoemStyle$1), {
+  __spreadProps$i(__spreadValues$n({}, BasePoemStyle$1), {
     name: "Natsuki",
     fontName: "ammy_handwriting",
     fontSize: 28
   }),
-  __spreadProps$h(__spreadValues$m({}, BasePoemStyle$1), {
+  __spreadProps$i(__spreadValues$n({}, BasePoemStyle$1), {
     name: "Monika",
     fontName: "journal",
     fontSize: 34
   }),
-  __spreadProps$h(__spreadValues$m({}, BasePoemStyle$1), {
+  __spreadProps$i(__spreadValues$n({}, BasePoemStyle$1), {
     name: "Yuri",
     fontName: "jp_hand_slanted",
     lineSpacing: 1.5,
     fontSize: 32
   }),
-  __spreadProps$h(__spreadValues$m({}, BasePoemStyle$1), {
+  __spreadProps$i(__spreadValues$n({}, BasePoemStyle$1), {
     name: "Yuri Act 2",
     fontName: "damagrafik_script",
     fontSize: 18,
     letterSpacing: -8
   }),
-  __spreadProps$h(__spreadValues$m({}, BasePoemStyle$1), {
+  __spreadProps$i(__spreadValues$n({}, BasePoemStyle$1), {
     name: "Yuri Unused",
     fontName: "as_i_lay_dying",
     fontSize: 40
   }),
-  __spreadProps$h(__spreadValues$m({}, BasePoemStyle$1), {
+  __spreadProps$i(__spreadValues$n({}, BasePoemStyle$1), {
     name: "MC",
     fontName: "halogen",
     fontSize: 30,
     lineSpacing: 1.53
   }),
-  __spreadProps$h(__spreadValues$m({}, BasePoemStyle$1), {
+  __spreadProps$i(__spreadValues$n({}, BasePoemStyle$1), {
     name: "Console",
     fontName: "f25_bank_printer",
     fontSize: 18,
@@ -9185,25 +9212,25 @@ const TextBoxCustom = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defin
   textboxOutlineColorDelta,
   textboxOutlineWidth
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$B = Object.defineProperty;
-var __defProps$g = Object.defineProperties;
-var __getOwnPropDescs$g = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$l = Object.getOwnPropertySymbols;
-var __hasOwnProp$l = Object.prototype.hasOwnProperty;
-var __propIsEnum$l = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$B = (obj, key, value) => key in obj ? __defProp$B(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$l = (a, b) => {
+var __defProp$C = Object.defineProperty;
+var __defProps$h = Object.defineProperties;
+var __getOwnPropDescs$h = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$m = Object.getOwnPropertySymbols;
+var __hasOwnProp$m = Object.prototype.hasOwnProperty;
+var __propIsEnum$m = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$C = (obj, key, value) => key in obj ? __defProp$C(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$m = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$l.call(b, prop))
-      __defNormalProp$B(a, prop, b[prop]);
-  if (__getOwnPropSymbols$l)
-    for (var prop of __getOwnPropSymbols$l(b)) {
-      if (__propIsEnum$l.call(b, prop))
-        __defNormalProp$B(a, prop, b[prop]);
+    if (__hasOwnProp$m.call(b, prop))
+      __defNormalProp$C(a, prop, b[prop]);
+  if (__getOwnPropSymbols$m)
+    for (var prop of __getOwnPropSymbols$m(b)) {
+      if (__propIsEnum$m.call(b, prop))
+        __defNormalProp$C(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$g = (a, b) => __defProps$g(a, __getOwnPropDescs$g(b));
+var __spreadProps$h = (a, b) => __defProps$h(a, __getOwnPropDescs$h(b));
 const TextBoxWidth = 1220;
 const TextBoxCorruptedWidth = 900;
 const TextBoxHeight = 219;
@@ -9241,7 +9268,7 @@ const BaseTextStyle = {
   strokeColor: "",
   strokeWidth: 0
 };
-const NameboxTextStyle = __spreadProps$g(__spreadValues$l({}, BaseTextStyle), {
+const NameboxTextStyle = __spreadProps$h(__spreadValues$m({}, BaseTextStyle), {
   fontName: "riffic",
   fontSize: 36,
   strokeColor: nameboxStrokeDefaultColor,
@@ -9256,7 +9283,7 @@ const ControlsTextStyle = {
     style: "#522"
   }
 };
-const ControlsTextDisabledStyle = __spreadProps$g(__spreadValues$l({}, ControlsTextStyle), {
+const ControlsTextDisabledStyle = __spreadProps$h(__spreadValues$m({}, ControlsTextStyle), {
   fill: {
     style: "#a66"
   }
@@ -9336,31 +9363,31 @@ const TextBox$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePro
   ControlsXStuff,
   DefaultTextboxStyle
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$A = Object.defineProperty;
-var __defProps$f = Object.defineProperties;
-var __getOwnPropDescs$f = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$k = Object.getOwnPropertySymbols;
-var __hasOwnProp$k = Object.prototype.hasOwnProperty;
-var __propIsEnum$k = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$A = (obj, key, value) => key in obj ? __defProp$A(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$k = (a, b) => {
+var __defProp$B = Object.defineProperty;
+var __defProps$g = Object.defineProperties;
+var __getOwnPropDescs$g = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$l = Object.getOwnPropertySymbols;
+var __hasOwnProp$l = Object.prototype.hasOwnProperty;
+var __propIsEnum$l = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$B = (obj, key, value) => key in obj ? __defProp$B(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$l = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$k.call(b, prop))
-      __defNormalProp$A(a, prop, b[prop]);
-  if (__getOwnPropSymbols$k)
-    for (var prop of __getOwnPropSymbols$k(b)) {
-      if (__propIsEnum$k.call(b, prop))
-        __defNormalProp$A(a, prop, b[prop]);
+    if (__hasOwnProp$l.call(b, prop))
+      __defNormalProp$B(a, prop, b[prop]);
+  if (__getOwnPropSymbols$l)
+    for (var prop of __getOwnPropSymbols$l(b)) {
+      if (__propIsEnum$l.call(b, prop))
+        __defNormalProp$B(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$f = (a, b) => __defProps$f(a, __getOwnPropDescs$f(b));
+var __spreadProps$g = (a, b) => __defProps$g(a, __getOwnPropDescs$g(b));
 const NotificationBackgroundColor = "#ffe6f4";
 const NotificationBorderColor = "#ffbde1";
 const NotificationBackdropColor = "rgba(255,255,255,0.6)";
 const NotificationPadding = 60;
 const NotificationSpacing = 45;
-const NotificationOkTextStyle = __spreadProps$f(__spreadValues$k({}, BaseTextStyle), {
+const NotificationOkTextStyle = __spreadProps$g(__spreadValues$l({}, BaseTextStyle), {
   fontName: "riffic",
   fontSize: 36,
   strokeColor: nameboxStrokeDefaultColor,
@@ -9392,25 +9419,25 @@ const Notification$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defi
   NotificationOkTextStyle,
   NotificationTextStyle
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$z = Object.defineProperty;
-var __defProps$e = Object.defineProperties;
-var __getOwnPropDescs$e = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$j = Object.getOwnPropertySymbols;
-var __hasOwnProp$j = Object.prototype.hasOwnProperty;
-var __propIsEnum$j = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$z = (obj, key, value) => key in obj ? __defProp$z(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$j = (a, b) => {
+var __defProp$A = Object.defineProperty;
+var __defProps$f = Object.defineProperties;
+var __getOwnPropDescs$f = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$k = Object.getOwnPropertySymbols;
+var __hasOwnProp$k = Object.prototype.hasOwnProperty;
+var __propIsEnum$k = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$A = (obj, key, value) => key in obj ? __defProp$A(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$k = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$j.call(b, prop))
-      __defNormalProp$z(a, prop, b[prop]);
-  if (__getOwnPropSymbols$j)
-    for (var prop of __getOwnPropSymbols$j(b)) {
-      if (__propIsEnum$j.call(b, prop))
-        __defNormalProp$z(a, prop, b[prop]);
+    if (__hasOwnProp$k.call(b, prop))
+      __defNormalProp$A(a, prop, b[prop]);
+  if (__getOwnPropSymbols$k)
+    for (var prop of __getOwnPropSymbols$k(b)) {
+      if (__propIsEnum$k.call(b, prop))
+        __defNormalProp$A(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$e = (a, b) => __defProps$e(a, __getOwnPropDescs$e(b));
+var __spreadProps$f = (a, b) => __defProps$f(a, __getOwnPropDescs$f(b));
 const poemBackgrounds = [
   { name: "Normal paper", file: "poem.jpg" },
   { name: "Lightly soiled paper", file: "poem_y1.jpg" },
@@ -9447,47 +9474,47 @@ const BasePoemStyle = {
   fontSize: 12
 };
 const poemTextStyles = [
-  __spreadProps$e(__spreadValues$j({}, BasePoemStyle), {
+  __spreadProps$f(__spreadValues$k({}, BasePoemStyle), {
     name: "Sayori",
     fontName: "hashtag",
     fontSize: 34,
     lineSpacing: 1.05,
     letterSpacing: 0
   }),
-  __spreadProps$e(__spreadValues$j({}, BasePoemStyle), {
+  __spreadProps$f(__spreadValues$k({}, BasePoemStyle), {
     name: "Natsuki",
     fontName: "ammy_handwriting",
     fontSize: 28
   }),
-  __spreadProps$e(__spreadValues$j({}, BasePoemStyle), {
+  __spreadProps$f(__spreadValues$k({}, BasePoemStyle), {
     name: "Monika",
     fontName: "journal",
     fontSize: 34
   }),
-  __spreadProps$e(__spreadValues$j({}, BasePoemStyle), {
+  __spreadProps$f(__spreadValues$k({}, BasePoemStyle), {
     name: "Yuri",
     fontName: "jp_hand_slanted",
     lineSpacing: 1.5,
     fontSize: 32
   }),
-  __spreadProps$e(__spreadValues$j({}, BasePoemStyle), {
+  __spreadProps$f(__spreadValues$k({}, BasePoemStyle), {
     name: "Yuri Act 2",
     fontName: "damagrafik_script",
     fontSize: 18,
     letterSpacing: -8
   }),
-  __spreadProps$e(__spreadValues$j({}, BasePoemStyle), {
+  __spreadProps$f(__spreadValues$k({}, BasePoemStyle), {
     name: "Yuri Unused",
     fontName: "as_i_lay_dying",
     fontSize: 40
   }),
-  __spreadProps$e(__spreadValues$j({}, BasePoemStyle), {
+  __spreadProps$f(__spreadValues$k({}, BasePoemStyle), {
     name: "MC",
     fontName: "halogen",
     fontSize: 30,
     lineSpacing: 1.53
   }),
-  __spreadProps$e(__spreadValues$j({}, BasePoemStyle), {
+  __spreadProps$f(__spreadValues$k({}, BasePoemStyle), {
     name: "Console",
     fontName: "f25_bank_printer",
     fontSize: 18,
@@ -9543,25 +9570,25 @@ function baseProps() {
     zoom: 1
   };
 }
-var __defProp$y = Object.defineProperty;
-var __defProps$d = Object.defineProperties;
-var __getOwnPropDescs$d = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$i = Object.getOwnPropertySymbols;
-var __hasOwnProp$i = Object.prototype.hasOwnProperty;
-var __propIsEnum$i = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$y = (obj, key, value) => key in obj ? __defProp$y(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$i = (a, b) => {
+var __defProp$z = Object.defineProperty;
+var __defProps$e = Object.defineProperties;
+var __getOwnPropDescs$e = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$j = Object.getOwnPropertySymbols;
+var __hasOwnProp$j = Object.prototype.hasOwnProperty;
+var __propIsEnum$j = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$z = (obj, key, value) => key in obj ? __defProp$z(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$j = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$i.call(b, prop))
-      __defNormalProp$y(a, prop, b[prop]);
-  if (__getOwnPropSymbols$i)
-    for (var prop of __getOwnPropSymbols$i(b)) {
-      if (__propIsEnum$i.call(b, prop))
-        __defNormalProp$y(a, prop, b[prop]);
+    if (__hasOwnProp$j.call(b, prop))
+      __defNormalProp$z(a, prop, b[prop]);
+  if (__getOwnPropSymbols$j)
+    for (var prop of __getOwnPropSymbols$j(b)) {
+      if (__propIsEnum$j.call(b, prop))
+        __defNormalProp$z(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$d = (a, b) => __defProps$d(a, __getOwnPropDescs$d(b));
+var __spreadProps$e = (a, b) => __defProps$e(a, __getOwnPropDescs$e(b));
 var __async$u = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -9605,7 +9632,7 @@ const characterMutations = {
   },
   setPosePosition(state, command) {
     const obj = state.panels[command.panelId].objects[command.id];
-    obj.posePositions = __spreadValues$i(__spreadValues$i({}, obj.posePositions), command.posePositions);
+    obj.posePositions = __spreadValues$j(__spreadValues$j({}, obj.posePositions), command.posePositions);
     ++obj.version;
   },
   setFreeMove(state, command) {
@@ -9660,7 +9687,7 @@ const characterActions = {
     const char = getDataG(rootGetters, command.characterType);
     const charScale = char.hd ? constants.Base.hdCharacterScaleFactor : constants.Base.sdCharacterScaleFactor;
     commit2("create", {
-      object: __spreadProps$d(__spreadValues$i({}, baseProps()), {
+      object: __spreadProps$e(__spreadValues$j({}, baseProps()), {
         id,
         panelId: rootState.panels.currentPanel,
         onTop: false,
@@ -9905,7 +9932,7 @@ function buildPoseAndPositionData(character) {
     styleGroupId: character.styleGroupId,
     styleId: character.styleId,
     poseId: character.poseId,
-    posePositions: __spreadValues$i({}, character.posePositions)
+    posePositions: __spreadValues$j({}, character.posePositions)
   };
 }
 function commitPoseAndPositionChanges(commit2, character, poseAndPosition) {
@@ -10058,7 +10085,7 @@ const _sfc_main$q = defineComponent({
       for (let i = 0; i < this.part.images.length; ++i) {
         const image = this.part.images[i];
         const lookup = this.lookups[i];
-        if (!(lookup instanceof ImageAsset))
+        if (!lookup)
           continue;
         if (i > 0)
           ret += ", ";
@@ -10066,7 +10093,7 @@ const _sfc_main$q = defineComponent({
         const pos = `${Math.floor(
           (globalOffset[0] - localOffset[0]) * -this.scaleX
         )}px ${Math.floor((globalOffset[1] - localOffset[1]) * -this.scaleY)}px`;
-        ret += `url('${lookup.html.src.replace("'", "\\'")}') ${pos} / ${size2}`;
+        ret += `url('${lookup.replace("'", "\\'")}') ${pos} / ${size2}`;
       }
       return ret;
     },
@@ -10083,9 +10110,9 @@ const _sfc_main$q = defineComponent({
       this.lookups = yield Promise.all(
         this.part.images.map((image) => {
           if (typeof image.asset === "string") {
-            return getBuildInAsset(image.asset, false);
+            return getBuildInAssetUrl(image.asset, false);
           } else {
-            return getAAsset(image.asset, false);
+            return getAAssetUrl(image.asset, false);
           }
         })
       );
@@ -10098,7 +10125,7 @@ const _sfc_main$q = defineComponent({
     }
   }
 });
-const partButton_vue_vue_type_style_index_0_scoped_b09b9938_lang = "";
+const partButton_vue_vue_type_style_index_0_scoped_037b2b66_lang = "";
 function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
   var _a;
   return openBlock(), createElementBlock("div", {
@@ -10113,26 +10140,26 @@ function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
     ]
   }, null, 38);
 }
-const PartButton = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$p], ["__scopeId", "data-v-b09b9938"]]);
-var __defProp$x = Object.defineProperty;
-var __defProps$c = Object.defineProperties;
-var __getOwnPropDescs$c = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$h = Object.getOwnPropertySymbols;
-var __hasOwnProp$h = Object.prototype.hasOwnProperty;
-var __propIsEnum$h = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$x = (obj, key, value) => key in obj ? __defProp$x(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$h = (a, b) => {
+const PartButton = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$p], ["__scopeId", "data-v-037b2b66"]]);
+var __defProp$y = Object.defineProperty;
+var __defProps$d = Object.defineProperties;
+var __getOwnPropDescs$d = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$i = Object.getOwnPropertySymbols;
+var __hasOwnProp$i = Object.prototype.hasOwnProperty;
+var __propIsEnum$i = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$y = (obj, key, value) => key in obj ? __defProp$y(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$i = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$h.call(b, prop))
-      __defNormalProp$x(a, prop, b[prop]);
-  if (__getOwnPropSymbols$h)
-    for (var prop of __getOwnPropSymbols$h(b)) {
-      if (__propIsEnum$h.call(b, prop))
-        __defNormalProp$x(a, prop, b[prop]);
+    if (__hasOwnProp$i.call(b, prop))
+      __defNormalProp$y(a, prop, b[prop]);
+  if (__getOwnPropSymbols$i)
+    for (var prop of __getOwnPropSymbols$i(b)) {
+      if (__propIsEnum$i.call(b, prop))
+        __defNormalProp$y(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$c = (a, b) => __defProps$c(a, __getOwnPropDescs$c(b));
+var __spreadProps$d = (a, b) => __defProps$d(a, __getOwnPropDescs$d(b));
 const _sfc_main$p = defineComponent({
   mixins: [VerticalScrollRedirect],
   props: {
@@ -10166,7 +10193,7 @@ const _sfc_main$p = defineComponent({
     const attrs = {};
     const flowContainer = h(
       "div",
-      __spreadProps$c(__spreadValues$h({}, attrs), {
+      __spreadProps$d(__spreadValues$i({}, attrs), {
         class: ["d-flow", this.finalDirection, wrapingClass],
         style: {
           gap: this.gap
@@ -10589,10 +10616,10 @@ function genericSimpleSetter(message) {
     };
   };
 }
-var __defProp$w = Object.defineProperty;
-var __defNormalProp$w = (obj, key, value) => key in obj ? __defProp$w(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$x = Object.defineProperty;
+var __defNormalProp$x = (obj, key, value) => key in obj ? __defProp$x(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$j = (obj, key, value) => {
-  __defNormalProp$w(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$x(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 const aroundContextSize = 5;
@@ -10681,7 +10708,7 @@ function tokenText(contents, walker, initEscape = false) {
   });
   return nextState;
 }
-function error$1(walker, msg) {
+function error(walker, msg) {
   throw new Error(
     `Error when parsing text at position ${walker.pos}: (around: "${walker.around}") ${msg}`
   );
@@ -10700,7 +10727,7 @@ function tokenStateCommand(contents, walker) {
   let argumentsState = false;
   while (true) {
     if (walker.current() === void 0) {
-      error$1(walker, "Unexpected end of text inside a command");
+      error(walker, "Unexpected end of text inside a command");
     }
     if (walker.current() === "}") {
       break;
@@ -10709,11 +10736,11 @@ function tokenStateCommand(contents, walker) {
         commandName += walker.current();
       } else if (walker.current() === "=") {
         if (closing) {
-          error$1(walker, "Closing commands may not contain arguments");
+          error(walker, "Closing commands may not contain arguments");
         }
         argumentsState = true;
       } else {
-        error$1(
+        error(
           walker,
           `Unexpected character '${walker.current()}' in command name.`
         );
@@ -10745,72 +10772,72 @@ function tokenStateNewLine(contents, walker) {
   walker.next();
   return tokenStateNormal;
 }
-var __defProp$v = Object.defineProperty;
-var __defProps$b = Object.defineProperties;
-var __getOwnPropDescs$b = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$g = Object.getOwnPropertySymbols;
-var __hasOwnProp$g = Object.prototype.hasOwnProperty;
-var __propIsEnum$g = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$v = (obj, key, value) => key in obj ? __defProp$v(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$g = (a, b) => {
+var __defProp$w = Object.defineProperty;
+var __defProps$c = Object.defineProperties;
+var __getOwnPropDescs$c = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$h = Object.getOwnPropertySymbols;
+var __hasOwnProp$h = Object.prototype.hasOwnProperty;
+var __propIsEnum$h = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$w = (obj, key, value) => key in obj ? __defProp$w(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$h = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$g.call(b, prop))
-      __defNormalProp$v(a, prop, b[prop]);
-  if (__getOwnPropSymbols$g)
-    for (var prop of __getOwnPropSymbols$g(b)) {
-      if (__propIsEnum$g.call(b, prop))
-        __defNormalProp$v(a, prop, b[prop]);
+    if (__hasOwnProp$h.call(b, prop))
+      __defNormalProp$w(a, prop, b[prop]);
+  if (__getOwnPropSymbols$h)
+    for (var prop of __getOwnPropSymbols$h(b)) {
+      if (__propIsEnum$h.call(b, prop))
+        __defNormalProp$w(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$b = (a, b) => __defProps$b(a, __getOwnPropDescs$b(b));
+var __spreadProps$c = (a, b) => __defProps$c(a, __getOwnPropDescs$c(b));
 const textCommands = new Map([
-  paramlessOp("i", (style) => __spreadProps$b(__spreadValues$g({}, style), { isItalic: true })),
-  paramlessOp("b", (style) => __spreadProps$b(__spreadValues$g({}, style), { isBold: true })),
-  paramlessOp("u", (style) => __spreadProps$b(__spreadValues$g({}, style), { isUnderlined: true })),
-  paramlessOp("s", (style) => __spreadProps$b(__spreadValues$g({}, style), {
+  paramlessOp("i", (style) => __spreadProps$c(__spreadValues$h({}, style), { isItalic: true })),
+  paramlessOp("b", (style) => __spreadProps$c(__spreadValues$h({}, style), { isBold: true })),
+  paramlessOp("u", (style) => __spreadProps$c(__spreadValues$h({}, style), { isUnderlined: true })),
+  paramlessOp("s", (style) => __spreadProps$c(__spreadValues$h({}, style), {
     isStrikethrough: true
   })),
-  paramlessOp("plain", (style) => __spreadProps$b(__spreadValues$g({}, style), {
+  paramlessOp("plain", (style) => __spreadProps$c(__spreadValues$h({}, style), {
     isStrikethrough: false,
     isUnderlined: false,
     isBold: false,
     isItalic: false
   })),
-  paramlessOp("edited", (style) => __spreadProps$b(__spreadValues$g({}, style), {
+  paramlessOp("edited", (style) => __spreadProps$c(__spreadValues$h({}, style), {
     fontName: "verily",
     strokeColor: "#000000",
     strokeWidth: 20,
     letterSpacing: 8
   })),
-  relativeNumberOp("k", (style, relative, parameter) => __spreadProps$b(__spreadValues$g({}, style), {
+  relativeNumberOp("k", (style, relative, parameter) => __spreadProps$c(__spreadValues$h({}, style), {
     letterSpacing: relative ? style.letterSpacing + parameter : parameter
   })),
-  relativeNumberOp("size", (style, relative, parameter) => __spreadProps$b(__spreadValues$g({}, style), {
+  relativeNumberOp("size", (style, relative, parameter) => __spreadProps$c(__spreadValues$h({}, style), {
     fontSize: relative ? style.fontSize + parameter : parameter
   })),
-  relativeNumberOp("alpha", (style, relative, parameter) => __spreadProps$b(__spreadValues$g({}, style), {
+  relativeNumberOp("alpha", (style, relative, parameter) => __spreadProps$c(__spreadValues$h({}, style), {
     alpha: relative ? style.alpha + parameter : parameter
   })),
-  relativeNumberOp("stroke", (style, relative, parameter) => __spreadProps$b(__spreadValues$g({}, style), {
+  relativeNumberOp("stroke", (style, relative, parameter) => __spreadProps$c(__spreadValues$h({}, style), {
     strokeWidth: relative ? style.strokeWidth + parameter : parameter
   })),
   [
     "font",
     (style, parameter) => {
-      return __spreadProps$b(__spreadValues$g({}, style), { fontName: parameter });
+      return __spreadProps$c(__spreadValues$h({}, style), { fontName: parameter });
     }
   ],
   [
     "color",
     (style, parameter) => {
-      return __spreadProps$b(__spreadValues$g({}, style), { color: parameter });
+      return __spreadProps$c(__spreadValues$h({}, style), { color: parameter });
     }
   ],
   [
     "outlinecolor",
     (style, parameter) => {
-      return __spreadProps$b(__spreadValues$g({}, style), { strokeColor: parameter });
+      return __spreadProps$c(__spreadValues$h({}, style), { strokeColor: parameter });
     }
   ]
 ]);
@@ -10899,19 +10926,25 @@ Object.defineProperty(literalTypes, "__esModule", { value: true });
 function disposeCanvas(canvas) {
   canvas.width = 0;
   canvas.height = 0;
+  disposables.delete(canvas.disposalId || 0);
 }
 function makeCanvas() {
   const ret = document.createElement("canvas");
   markForDisposal(ret);
   return ret;
 }
-const disposables = [];
+const disposables = /* @__PURE__ */ new Map();
+let nextDisposalId = 0;
 function markForDisposal(canvas) {
+  canvas.disposalId = nextDisposalId++;
   if (typeof WeakRef === "undefined")
     return;
-  disposables.push(new WeakRef(canvas));
+  disposables.set(
+    canvas.disposalId,
+    new WeakRef(canvas)
+  );
 }
-window.addEventListener("beforeunload", () => {
+window.addEventListener("unload", () => {
   disposables.forEach((x) => {
     const disposable = x.deref();
     if (!disposable)
@@ -10919,10 +10952,10 @@ window.addEventListener("beforeunload", () => {
     disposeCanvas(disposable);
   });
 });
-var __defProp$u = Object.defineProperty;
-var __defNormalProp$u = (obj, key, value) => key in obj ? __defProp$u(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$v = Object.defineProperty;
+var __defNormalProp$v = (obj, key, value) => key in obj ? __defProp$v(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$i = (obj, key, value) => {
-  __defNormalProp$u(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$v(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$r = (__this, __arguments, generator) => {
@@ -11425,24 +11458,24 @@ function applyTextStyleToCanvas(style, ctx) {
 }
 class RenderAbortedException {
 }
-var __defProp$t = Object.defineProperty;
-var __getOwnPropSymbols$f = Object.getOwnPropertySymbols;
-var __hasOwnProp$f = Object.prototype.hasOwnProperty;
-var __propIsEnum$f = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$t = (obj, key, value) => key in obj ? __defProp$t(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$f = (a, b) => {
+var __defProp$u = Object.defineProperty;
+var __getOwnPropSymbols$g = Object.getOwnPropertySymbols;
+var __hasOwnProp$g = Object.prototype.hasOwnProperty;
+var __propIsEnum$g = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$u = (obj, key, value) => key in obj ? __defProp$u(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$g = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$f.call(b, prop))
-      __defNormalProp$t(a, prop, b[prop]);
-  if (__getOwnPropSymbols$f)
-    for (var prop of __getOwnPropSymbols$f(b)) {
-      if (__propIsEnum$f.call(b, prop))
-        __defNormalProp$t(a, prop, b[prop]);
+    if (__hasOwnProp$g.call(b, prop))
+      __defNormalProp$u(a, prop, b[prop]);
+  if (__getOwnPropSymbols$g)
+    for (var prop of __getOwnPropSymbols$g(b)) {
+      if (__propIsEnum$g.call(b, prop))
+        __defNormalProp$u(a, prop, b[prop]);
     }
   return a;
 };
 var __publicField$h = (obj, key, value) => {
-  __defNormalProp$t(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$u(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$q = (__this, __arguments, generator) => {
@@ -11489,7 +11522,7 @@ class RenderContext {
       x = 0,
       y = 0,
       text = ""
-    } = __spreadValues$f(__spreadValues$f({}, {
+    } = __spreadValues$g(__spreadValues$g({}, {
       font: "20px aller",
       align: "left"
     }), params);
@@ -11515,7 +11548,7 @@ class RenderContext {
       font,
       align,
       text = ""
-    } = __spreadValues$f(__spreadValues$f({}, {
+    } = __spreadValues$g(__spreadValues$g({}, {
       font: "20px aller",
       align: "left"
     }), params);
@@ -11538,7 +11571,7 @@ class RenderContext {
       throw new RenderAbortedException();
     if (params.image instanceof ErrorAsset)
       return;
-    const { image, flip, x, y, w, h: h2, filters: filters2, composite } = __spreadValues$f({
+    const { image, flip, x, y, w, h: h2, filters: filters2, composite } = __spreadValues$g({
       flip: false,
       w: params.image.width,
       h: params.image.height,
@@ -11719,10 +11752,10 @@ class RenderContext {
     this.aborted = true;
   }
 }
-var __defProp$s = Object.defineProperty;
-var __defNormalProp$s = (obj, key, value) => key in obj ? __defProp$s(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$t = Object.defineProperty;
+var __defNormalProp$t = (obj, key, value) => key in obj ? __defProp$t(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$g = (obj, key, value) => {
-  __defNormalProp$s(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$t(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$p = (__this, __arguments, generator) => {
@@ -11852,10 +11885,10 @@ function rotateAround(x, y, relX, relY, angle) {
   const rotatedY = angleSin * translatedX + angleCos * translatedY + relY;
   return [rotatedX, rotatedY];
 }
-var __defProp$r = Object.defineProperty;
-var __defNormalProp$r = (obj, key, value) => key in obj ? __defProp$r(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$s = Object.defineProperty;
+var __defNormalProp$s = (obj, key, value) => key in obj ? __defProp$s(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$f = (obj, key, value) => {
-  __defNormalProp$r(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$s(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$o = (__this, __arguments, generator) => {
@@ -11926,7 +11959,10 @@ class OffscreenRenderable {
   get height() {
     return this.obj.height;
   }
-  updateLocalCanvas(hq) {
+  get allowSkippingLocalCanvas() {
+    return true;
+  }
+  updateLocalCanvas(hq, skipLocal) {
     return __async$o(this, null, function* () {
       if (this._disposed)
         throw new Error("Disposed renderable called");
@@ -11938,9 +11974,17 @@ class OffscreenRenderable {
         return;
       }
       this.renderable = true;
-      this.localRenderer = new Renderer(width, height);
       this.lastHq = hq;
-      yield this.localRenderer.render(this.renderLocal.bind(this), hq);
+      if (skipLocal)
+        return;
+      this.localRenderer = new Renderer(width, height);
+      try {
+        yield this.localRenderer.render(this.renderLocal.bind(this), hq);
+      } catch (e) {
+        this.localRenderer.dispose();
+        this.localRenderer = null;
+        throw e;
+      }
     });
   }
   needsRedraw() {
@@ -11955,13 +11999,17 @@ class OffscreenRenderable {
       }
     ];
   }
-  render(selected, rx) {
+  render(selected, rx, skipLocal) {
     return __async$o(this, null, function* () {
       if (this._disposed)
         throw new Error("Disposed renderable called");
+      if (!this.canSkipLocal())
+        skipLocal = false;
+      if (selected !== 0 || this.localRenderer)
+        skipLocal = false;
       const needRedraw = this.lastHq !== rx.hq || this.needsRedraw();
       if (needRedraw)
-        yield this.updateLocalCanvas(rx.hq);
+        yield this.updateLocalCanvas(rx.hq, skipLocal);
       this.lastVersion = this.version;
       if (!this.renderable)
         return;
@@ -11981,20 +12029,29 @@ class OffscreenRenderable {
           shadow = { blur: 20, color: "purple" };
           break;
       }
-      rx.drawImage({
-        image: this.localRenderer,
-        x: this.canvasDrawPosX,
-        y: this.canvasDrawPosY,
-        w: this.canvasDrawWidth,
-        h: this.canvasDrawHeight,
-        rotation,
-        rotationAnchor,
-        flip: this.flip,
-        shadow: selected && rx.preview ? shadow : void 0,
-        composite: this.composite,
-        filters: this.filters
-      });
+      if (skipLocal) {
+        yield rx.customTransform((ctx) => __async$o(this, null, function* () {
+          ctx.translate(this.canvasDrawPosX, this.canvasDrawPosY);
+        }), this.renderLocal.bind(this));
+      } else {
+        rx.drawImage({
+          image: this.localRenderer,
+          x: this.canvasDrawPosX,
+          y: this.canvasDrawPosY,
+          w: this.canvasDrawWidth,
+          h: this.canvasDrawHeight,
+          rotation,
+          rotationAnchor,
+          flip: this.flip,
+          shadow: selected && rx.preview ? shadow : void 0,
+          composite: this.composite,
+          filters: this.filters
+        });
+      }
     });
+  }
+  canSkipLocal() {
+    return this.allowSkippingLocalCanvas && this.obj.filters.length === 0 && !this.obj.flip;
   }
   hitTest(hx, hy) {
     if (!this.localRenderer)
@@ -12062,12 +12119,12 @@ class OffscreenRenderable {
     this.localRenderer = null;
   }
 }
-var __defProp$q = Object.defineProperty;
+var __defProp$r = Object.defineProperty;
 var __getProtoOf$1 = Object.getPrototypeOf;
 var __reflectGet$1 = Reflect.get;
-var __defNormalProp$q = (obj, key, value) => key in obj ? __defProp$q(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defNormalProp$r = (obj, key, value) => key in obj ? __defProp$r(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$e = (obj, key, value) => {
-  __defNormalProp$q(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$r(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __superGet$1 = (cls, obj, key) => __reflectGet$1(__getProtoOf$1(cls), key, obj);
@@ -12119,14 +12176,14 @@ class ScalingRenderable extends OffscreenRenderable {
       return true;
     return this.width !== this.lastWidth || this.height !== this.lastHeight || this.x !== this.lastX || this.y !== this.lastY || this.flip !== this.lastFlip;
   }
-  updateLocalCanvas(hq) {
+  updateLocalCanvas(hq, skipLocal) {
     return __async$n(this, null, function* () {
       this.lastWidth = this.width;
       this.lastHeight = this.height;
       this.lastX = this.x;
       this.lastY = this.y;
       this.lastFlip = this.flip;
-      yield __superGet$1(ScalingRenderable.prototype, this, "updateLocalCanvas").call(this, hq);
+      yield __superGet$1(ScalingRenderable.prototype, this, "updateLocalCanvas").call(this, hq, skipLocal);
     });
   }
   renderLocal(rx) {
@@ -12160,19 +12217,19 @@ class ScalingRenderable extends OffscreenRenderable {
     return false;
   }
 }
-var __defProp$p = Object.defineProperty;
-var __getOwnPropSymbols$e = Object.getOwnPropertySymbols;
-var __hasOwnProp$e = Object.prototype.hasOwnProperty;
-var __propIsEnum$e = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$p = (obj, key, value) => key in obj ? __defProp$p(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$e = (a, b) => {
+var __defProp$q = Object.defineProperty;
+var __getOwnPropSymbols$f = Object.getOwnPropertySymbols;
+var __hasOwnProp$f = Object.prototype.hasOwnProperty;
+var __propIsEnum$f = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$q = (obj, key, value) => key in obj ? __defProp$q(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$f = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$e.call(b, prop))
-      __defNormalProp$p(a, prop, b[prop]);
-  if (__getOwnPropSymbols$e)
-    for (var prop of __getOwnPropSymbols$e(b)) {
-      if (__propIsEnum$e.call(b, prop))
-        __defNormalProp$p(a, prop, b[prop]);
+    if (__hasOwnProp$f.call(b, prop))
+      __defNormalProp$q(a, prop, b[prop]);
+  if (__getOwnPropSymbols$f)
+    for (var prop of __getOwnPropSymbols$f(b)) {
+      if (__propIsEnum$f.call(b, prop))
+        __defNormalProp$q(a, prop, b[prop]);
     }
   return a;
 };
@@ -12218,27 +12275,27 @@ class DdlcBase {
     const x = baseX - w2;
     const controlsCenter = x + w / 2;
     const controlsStyle = this.getControlsStyle();
-    rx.drawText(__spreadValues$e({
+    rx.drawText(__spreadValues$f({
       text: "History",
       x: controlsCenter + ControlsXHistoryOffset$1,
       y
     }, controlsStyle));
-    rx.drawText(__spreadValues$e({
+    rx.drawText(__spreadValues$f({
       text: "Skip",
       x: controlsCenter + ControlsXSkipOffset$1,
       y
     }, this.base.obj.skip ? controlsStyle : this.getControlsDisabledStyle()));
-    rx.drawText(__spreadValues$e({
+    rx.drawText(__spreadValues$f({
       text: "Auto   Save   Load   Settings",
       x: controlsCenter + ControlsXStuffOffset$1,
       y
     }, controlsStyle));
   }
 }
-var __defProp$o = Object.defineProperty;
-var __defNormalProp$o = (obj, key, value) => key in obj ? __defProp$o(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$p = Object.defineProperty;
+var __defNormalProp$p = (obj, key, value) => key in obj ? __defProp$p(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$d = (obj, key, value) => {
-  __defNormalProp$o(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$p(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$m = (__this, __arguments, generator) => {
@@ -12341,10 +12398,10 @@ __publicField$d(Default, "id", "normal");
 __publicField$d(Default, "label", "Normal");
 __publicField$d(Default, "priority", 0);
 __publicField$d(Default, "gameMode", "ddlc");
-var __defProp$n = Object.defineProperty;
-var __defNormalProp$n = (obj, key, value) => key in obj ? __defProp$n(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$o = Object.defineProperty;
+var __defNormalProp$o = (obj, key, value) => key in obj ? __defProp$o(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$c = (obj, key, value) => {
-  __defNormalProp$n(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$o(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 class Corrupted extends Default {
@@ -12390,27 +12447,27 @@ function roundedTopRectangle(ctx, x, y, w, h2, r) {
   ctx.arcTo(x, y, x + w, y, r);
   ctx.closePath();
 }
-var __defProp$m = Object.defineProperty;
-var __defProps$a = Object.defineProperties;
-var __getOwnPropDescs$a = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$d = Object.getOwnPropertySymbols;
-var __hasOwnProp$d = Object.prototype.hasOwnProperty;
-var __propIsEnum$d = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$m = (obj, key, value) => key in obj ? __defProp$m(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$d = (a, b) => {
+var __defProp$n = Object.defineProperty;
+var __defProps$b = Object.defineProperties;
+var __getOwnPropDescs$b = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$e = Object.getOwnPropertySymbols;
+var __hasOwnProp$e = Object.prototype.hasOwnProperty;
+var __propIsEnum$e = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$n = (obj, key, value) => key in obj ? __defProp$n(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$e = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$d.call(b, prop))
-      __defNormalProp$m(a, prop, b[prop]);
-  if (__getOwnPropSymbols$d)
-    for (var prop of __getOwnPropSymbols$d(b)) {
-      if (__propIsEnum$d.call(b, prop))
-        __defNormalProp$m(a, prop, b[prop]);
+    if (__hasOwnProp$e.call(b, prop))
+      __defNormalProp$n(a, prop, b[prop]);
+  if (__getOwnPropSymbols$e)
+    for (var prop of __getOwnPropSymbols$e(b)) {
+      if (__propIsEnum$e.call(b, prop))
+        __defNormalProp$n(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$a = (a, b) => __defProps$a(a, __getOwnPropDescs$a(b));
+var __spreadProps$b = (a, b) => __defProps$b(a, __getOwnPropDescs$b(b));
 var __publicField$b = (obj, key, value) => {
-  __defNormalProp$m(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$n(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$l = (__this, __arguments, generator) => {
@@ -12466,7 +12523,7 @@ class Custom extends DdlcBase {
     return NameboxTextYOffset$1;
   }
   get nameboxStyle() {
-    return __spreadProps$a(__spreadValues$d({}, NameboxTextStyle$1), {
+    return __spreadProps$b(__spreadValues$e({}, NameboxTextStyle$1), {
       strokeColor: this.nameboxOutlineColor,
       color: "#FFFFFF"
     });
@@ -12684,10 +12741,10 @@ __publicField$b(Custom, "id", "custom");
 __publicField$b(Custom, "label", "Custom");
 __publicField$b(Custom, "priority", 0);
 __publicField$b(Custom, "gameMode", "ddlc");
-var __defProp$l = Object.defineProperty;
-var __defNormalProp$l = (obj, key, value) => key in obj ? __defProp$l(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$m = Object.defineProperty;
+var __defNormalProp$m = (obj, key, value) => key in obj ? __defProp$m(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$a = (obj, key, value) => {
-  __defNormalProp$l(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$m(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$k = (__this, __arguments, generator) => {
@@ -12750,24 +12807,24 @@ __publicField$a(None, "id", "none");
 __publicField$a(None, "label", "None");
 __publicField$a(None, "priority", 0);
 __publicField$a(None, "gameMode", "ddlc");
-var __defProp$k = Object.defineProperty;
-var __getOwnPropSymbols$c = Object.getOwnPropertySymbols;
-var __hasOwnProp$c = Object.prototype.hasOwnProperty;
-var __propIsEnum$c = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$k = (obj, key, value) => key in obj ? __defProp$k(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$c = (a, b) => {
+var __defProp$l = Object.defineProperty;
+var __getOwnPropSymbols$d = Object.getOwnPropertySymbols;
+var __hasOwnProp$d = Object.prototype.hasOwnProperty;
+var __propIsEnum$d = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$l = (obj, key, value) => key in obj ? __defProp$l(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$d = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$c.call(b, prop))
-      __defNormalProp$k(a, prop, b[prop]);
-  if (__getOwnPropSymbols$c)
-    for (var prop of __getOwnPropSymbols$c(b)) {
-      if (__propIsEnum$c.call(b, prop))
-        __defNormalProp$k(a, prop, b[prop]);
+    if (__hasOwnProp$d.call(b, prop))
+      __defNormalProp$l(a, prop, b[prop]);
+  if (__getOwnPropSymbols$d)
+    for (var prop of __getOwnPropSymbols$d(b)) {
+      if (__propIsEnum$d.call(b, prop))
+        __defNormalProp$l(a, prop, b[prop]);
     }
   return a;
 };
 var __publicField$9 = (obj, key, value) => {
-  __defNormalProp$k(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$l(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 const _DdlcPlusBase = class {
@@ -12822,7 +12879,7 @@ const _DdlcPlusBase = class {
       const text = texts[i];
       const textWidth = textWidths[i];
       const style = text === "Skip" && !this.base.obj.skip ? this.getControlsDisabledStyle() : controlsStyle;
-      rx.drawText(__spreadValues$c({
+      rx.drawText(__spreadValues$d({
         text,
         x: controlX,
         y
@@ -12833,34 +12890,34 @@ const _DdlcPlusBase = class {
   static controlWidth(rx, text) {
     if (this.widthCache[text])
       return this.widthCache[text];
-    const width = rx.measureText(__spreadValues$c({ text }, ControlsTextStyle)).width;
+    const width = rx.measureText(__spreadValues$d({ text }, ControlsTextStyle)).width;
     this.widthCache[text] = width;
     return width;
   }
 };
 let DdlcPlusBase = _DdlcPlusBase;
 __publicField$9(DdlcPlusBase, "widthCache", {});
-var __defProp$j = Object.defineProperty;
-var __defProps$9 = Object.defineProperties;
-var __getOwnPropDescs$9 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$b = Object.getOwnPropertySymbols;
-var __hasOwnProp$b = Object.prototype.hasOwnProperty;
-var __propIsEnum$b = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$j = (obj, key, value) => key in obj ? __defProp$j(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$b = (a, b) => {
+var __defProp$k = Object.defineProperty;
+var __defProps$a = Object.defineProperties;
+var __getOwnPropDescs$a = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$c = Object.getOwnPropertySymbols;
+var __hasOwnProp$c = Object.prototype.hasOwnProperty;
+var __propIsEnum$c = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$k = (obj, key, value) => key in obj ? __defProp$k(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$c = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$b.call(b, prop))
-      __defNormalProp$j(a, prop, b[prop]);
-  if (__getOwnPropSymbols$b)
-    for (var prop of __getOwnPropSymbols$b(b)) {
-      if (__propIsEnum$b.call(b, prop))
-        __defNormalProp$j(a, prop, b[prop]);
+    if (__hasOwnProp$c.call(b, prop))
+      __defNormalProp$k(a, prop, b[prop]);
+  if (__getOwnPropSymbols$c)
+    for (var prop of __getOwnPropSymbols$c(b)) {
+      if (__propIsEnum$c.call(b, prop))
+        __defNormalProp$k(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$9 = (a, b) => __defProps$9(a, __getOwnPropDescs$9(b));
+var __spreadProps$a = (a, b) => __defProps$a(a, __getOwnPropDescs$a(b));
 var __publicField$8 = (obj, key, value) => {
-  __defNormalProp$j(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$k(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$j = (__this, __arguments, generator) => {
@@ -12916,7 +12973,7 @@ class CustomPlus extends DdlcPlusBase {
     return NameboxTextYOffset;
   }
   get nameboxStyle() {
-    return __spreadProps$9(__spreadValues$b({}, NameboxTextStyle), {
+    return __spreadProps$a(__spreadValues$c({}, NameboxTextStyle), {
       strokeColor: this.nameboxOutlineColor,
       color: "#FFFFFF"
     });
@@ -13137,10 +13194,10 @@ __publicField$8(CustomPlus, "id", "custom_plus");
 __publicField$8(CustomPlus, "label", "Custom (Plus)");
 __publicField$8(CustomPlus, "priority", 0);
 __publicField$8(CustomPlus, "gameMode", "ddlc_plus");
-var __defProp$i = Object.defineProperty;
-var __defNormalProp$i = (obj, key, value) => key in obj ? __defProp$i(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$j = Object.defineProperty;
+var __defNormalProp$j = (obj, key, value) => key in obj ? __defProp$j(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$7 = (obj, key, value) => {
-  __defNormalProp$i(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$j(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$i = (__this, __arguments, generator) => {
@@ -14058,26 +14115,26 @@ function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const SliderGroup = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["render", _sfc_render$j], ["__scopeId", "data-v-f8c6e84c"]]);
-var __defProp$h = Object.defineProperty;
-var __defProps$8 = Object.defineProperties;
-var __getOwnPropDescs$8 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$a = Object.getOwnPropertySymbols;
-var __hasOwnProp$a = Object.prototype.hasOwnProperty;
-var __propIsEnum$a = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$h = (obj, key, value) => key in obj ? __defProp$h(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$a = (a, b) => {
+var __defProp$i = Object.defineProperty;
+var __defProps$9 = Object.defineProperties;
+var __getOwnPropDescs$9 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$b = Object.getOwnPropertySymbols;
+var __hasOwnProp$b = Object.prototype.hasOwnProperty;
+var __propIsEnum$b = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$i = (obj, key, value) => key in obj ? __defProp$i(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$b = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$a.call(b, prop))
-      __defNormalProp$h(a, prop, b[prop]);
-  if (__getOwnPropSymbols$a)
-    for (var prop of __getOwnPropSymbols$a(b)) {
-      if (__propIsEnum$a.call(b, prop))
-        __defNormalProp$h(a, prop, b[prop]);
+    if (__hasOwnProp$b.call(b, prop))
+      __defNormalProp$i(a, prop, b[prop]);
+  if (__getOwnPropSymbols$b)
+    for (var prop of __getOwnPropSymbols$b(b)) {
+      if (__propIsEnum$b.call(b, prop))
+        __defNormalProp$i(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$8 = (a, b) => __defProps$8(a, __getOwnPropDescs$8(b));
-const generatedPackId = "dddg.generated.colors";
+var __spreadProps$9 = (a, b) => __defProps$9(a, __getOwnPropDescs$9(b));
+const generatedPackId = "dddg.uploads.colors";
 const _sfc_main$i = defineComponent({
   components: {
     SliderGroup,
@@ -14146,7 +14203,7 @@ const _sfc_main$i = defineComponent({
       if (this.swatches.find((swatch) => swatch.color === this.color))
         return;
       const existingPack = this.$store.state.content.contentPacks.find(
-        (pack) => pack.packId === "generatedPackId"
+        (pack) => pack.packId === generatedPackId
       ) || {
         packId: generatedPackId,
         packCredits: [""],
@@ -14159,7 +14216,7 @@ const _sfc_main$i = defineComponent({
         poemBackgrounds: [],
         colors: []
       };
-      const newPack = __spreadProps$8(__spreadValues$a({}, existingPack), {
+      const newPack = __spreadProps$9(__spreadValues$b({}, existingPack), {
         colors: [
           ...existingPack.colors,
           {
@@ -14182,7 +14239,7 @@ const _sfc_main$i = defineComponent({
     }
   }
 });
-const color_vue_vue_type_style_index_0_scoped_4896b45d_lang = "";
+const color_vue_vue_type_style_index_0_scoped_fff22846_lang = "";
 const _hoisted_1$h = { class: "column" };
 const _hoisted_2$f = { class: "hex-selector" };
 const _hoisted_3$d = ["for"];
@@ -14265,20 +14322,20 @@ function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)
   ], 2);
 }
-const Color = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$i], ["__scopeId", "data-v-4896b45d"]]);
-var __defProp$g = Object.defineProperty;
-var __getOwnPropSymbols$9 = Object.getOwnPropertySymbols;
-var __hasOwnProp$9 = Object.prototype.hasOwnProperty;
-var __propIsEnum$9 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$g = (obj, key, value) => key in obj ? __defProp$g(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$9 = (a, b) => {
+const Color = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$i], ["__scopeId", "data-v-fff22846"]]);
+var __defProp$h = Object.defineProperty;
+var __getOwnPropSymbols$a = Object.getOwnPropertySymbols;
+var __hasOwnProp$a = Object.prototype.hasOwnProperty;
+var __propIsEnum$a = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$h = (obj, key, value) => key in obj ? __defProp$h(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$a = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$9.call(b, prop))
-      __defNormalProp$g(a, prop, b[prop]);
-  if (__getOwnPropSymbols$9)
-    for (var prop of __getOwnPropSymbols$9(b)) {
-      if (__propIsEnum$9.call(b, prop))
-        __defNormalProp$g(a, prop, b[prop]);
+    if (__hasOwnProp$a.call(b, prop))
+      __defNormalProp$h(a, prop, b[prop]);
+  if (__getOwnPropSymbols$a)
+    for (var prop of __getOwnPropSymbols$a(b)) {
+      if (__propIsEnum$a.call(b, prop))
+        __defNormalProp$h(a, prop, b[prop]);
     }
   return a;
 };
@@ -14359,7 +14416,7 @@ function moveFilter(action, objLookup, setMutation) {
 function setFilter(action, objLookup, setMutation) {
   const obj = objLookup();
   const filters2 = [...obj.filters];
-  const filter = __spreadValues$9({}, filters2[action.idx]);
+  const filter = __spreadValues$a({}, filters2[action.idx]);
   filters2[action.idx] = filter;
   if (filter.type === "drop-shadow") {
     if (action.blurRadius !== void 0) {
@@ -14383,19 +14440,19 @@ function setFilter(action, objLookup, setMutation) {
     filters: filters2
   });
 }
-var __defProp$f = Object.defineProperty;
-var __getOwnPropSymbols$8 = Object.getOwnPropertySymbols;
-var __hasOwnProp$8 = Object.prototype.hasOwnProperty;
-var __propIsEnum$8 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$f = (obj, key, value) => key in obj ? __defProp$f(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$8 = (a, b) => {
+var __defProp$g = Object.defineProperty;
+var __getOwnPropSymbols$9 = Object.getOwnPropertySymbols;
+var __hasOwnProp$9 = Object.prototype.hasOwnProperty;
+var __propIsEnum$9 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$g = (obj, key, value) => key in obj ? __defProp$g(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$9 = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$8.call(b, prop))
-      __defNormalProp$f(a, prop, b[prop]);
-  if (__getOwnPropSymbols$8)
-    for (var prop of __getOwnPropSymbols$8(b)) {
-      if (__propIsEnum$8.call(b, prop))
-        __defNormalProp$f(a, prop, b[prop]);
+    if (__hasOwnProp$9.call(b, prop))
+      __defNormalProp$g(a, prop, b[prop]);
+  if (__getOwnPropSymbols$9)
+    for (var prop of __getOwnPropSymbols$9(b)) {
+      if (__propIsEnum$9.call(b, prop))
+        __defNormalProp$g(a, prop, b[prop]);
     }
   return a;
 };
@@ -14674,7 +14731,7 @@ const _sfc_main$h = defineComponent({
     },
     setValue(value) {
       this.vuexHistory.transaction(() => {
-        this.$store.dispatch(this.objectTypeScope("setFilter"), __spreadValues$8({
+        this.$store.dispatch(this.objectTypeScope("setFilter"), __spreadValues$9({
           id: this.id,
           panelId: this.panelId,
           idx: this.currentFilterIdx
@@ -14716,9 +14773,9 @@ const _hoisted_18$4 = /* @__PURE__ */ _withScopeId$a(() => /* @__PURE__ */ creat
 const _hoisted_19$4 = /* @__PURE__ */ _withScopeId$a(() => /* @__PURE__ */ createBaseVNode("option", { value: "color-dodge" }, "color-dodge", -1));
 const _hoisted_20$5 = /* @__PURE__ */ _withScopeId$a(() => /* @__PURE__ */ createBaseVNode("option", { value: "color-burn" }, "color-burn", -1));
 const _hoisted_21$4 = /* @__PURE__ */ _withScopeId$a(() => /* @__PURE__ */ createBaseVNode("option", { value: "hard-light" }, "hard-light", -1));
-const _hoisted_22$3 = /* @__PURE__ */ _withScopeId$a(() => /* @__PURE__ */ createBaseVNode("option", { value: "soft-light" }, "soft-light", -1));
-const _hoisted_23$3 = /* @__PURE__ */ _withScopeId$a(() => /* @__PURE__ */ createBaseVNode("option", { value: "difference" }, "difference", -1));
-const _hoisted_24$2 = /* @__PURE__ */ _withScopeId$a(() => /* @__PURE__ */ createBaseVNode("option", { value: "exclusion" }, "exclusion", -1));
+const _hoisted_22$4 = /* @__PURE__ */ _withScopeId$a(() => /* @__PURE__ */ createBaseVNode("option", { value: "soft-light" }, "soft-light", -1));
+const _hoisted_23$4 = /* @__PURE__ */ _withScopeId$a(() => /* @__PURE__ */ createBaseVNode("option", { value: "difference" }, "difference", -1));
+const _hoisted_24$3 = /* @__PURE__ */ _withScopeId$a(() => /* @__PURE__ */ createBaseVNode("option", { value: "exclusion" }, "exclusion", -1));
 const _hoisted_25$2 = /* @__PURE__ */ _withScopeId$a(() => /* @__PURE__ */ createBaseVNode("option", { value: "hue" }, "hue", -1));
 const _hoisted_26$2 = /* @__PURE__ */ _withScopeId$a(() => /* @__PURE__ */ createBaseVNode("option", { value: "saturation" }, "saturation", -1));
 const _hoisted_27$2 = /* @__PURE__ */ _withScopeId$a(() => /* @__PURE__ */ createBaseVNode("option", { value: "color" }, "color", -1));
@@ -14740,9 +14797,9 @@ const _hoisted_29$1 = [
   _hoisted_19$4,
   _hoisted_20$5,
   _hoisted_21$4,
-  _hoisted_22$3,
-  _hoisted_23$3,
-  _hoisted_24$2,
+  _hoisted_22$4,
+  _hoisted_23$4,
+  _hoisted_24$3,
   _hoisted_25$2,
   _hoisted_26$2,
   _hoisted_27$2,
@@ -15718,7 +15775,7 @@ const _sfc_main$e = defineComponent({
     }
   }
 });
-const character_vue_vue_type_style_index_0_scoped_599c8729_lang = "";
+const character_vue_vue_type_style_index_0_scoped_a458f9e9_lang = "";
 const _hoisted_1$d = { key: 0 };
 const _hoisted_2$b = { class: "arrow-col" };
 const _hoisted_3$9 = { class: "arrow-col" };
@@ -15831,7 +15888,7 @@ function _sfc_render$e(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["object", "title", "showAltPanel"]);
 }
-const CharacterPanel = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$e], ["__scopeId", "data-v-599c8729"]]);
+const CharacterPanel = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$e], ["__scopeId", "data-v-a458f9e9"]]);
 const _sfc_main$d = defineComponent({
   mixins: [PanelMixin],
   components: { ObjectTool },
@@ -15862,25 +15919,25 @@ function between(min, val, max) {
     return max;
   return val;
 }
-var __defProp$e = Object.defineProperty;
-var __defProps$7 = Object.defineProperties;
-var __getOwnPropDescs$7 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$7 = Object.getOwnPropertySymbols;
-var __hasOwnProp$7 = Object.prototype.hasOwnProperty;
-var __propIsEnum$7 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$e = (obj, key, value) => key in obj ? __defProp$e(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$7 = (a, b) => {
+var __defProp$f = Object.defineProperty;
+var __defProps$8 = Object.defineProperties;
+var __getOwnPropDescs$8 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$8 = Object.getOwnPropertySymbols;
+var __hasOwnProp$8 = Object.prototype.hasOwnProperty;
+var __propIsEnum$8 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$f = (obj, key, value) => key in obj ? __defProp$f(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$8 = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$7.call(b, prop))
-      __defNormalProp$e(a, prop, b[prop]);
-  if (__getOwnPropSymbols$7)
-    for (var prop of __getOwnPropSymbols$7(b)) {
-      if (__propIsEnum$7.call(b, prop))
-        __defNormalProp$e(a, prop, b[prop]);
+    if (__hasOwnProp$8.call(b, prop))
+      __defNormalProp$f(a, prop, b[prop]);
+  if (__getOwnPropSymbols$8)
+    for (var prop of __getOwnPropSymbols$8(b)) {
+      if (__propIsEnum$8.call(b, prop))
+        __defNormalProp$f(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$7 = (a, b) => __defProps$7(a, __getOwnPropDescs$7(b));
+var __spreadProps$8 = (a, b) => __defProps$8(a, __getOwnPropDescs$8(b));
 var __async$f = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -15945,7 +16002,7 @@ const textBoxActions = {
       rotation: 0
     };
     commit2("create", {
-      object: __spreadProps$7(__spreadValues$7(__spreadValues$7({}, baseProps()), resetBounds), {
+      object: __spreadProps$8(__spreadValues$8(__spreadValues$8({}, baseProps()), resetBounds), {
         panelId: rootState.panels.currentPanel,
         id,
         onTop: true,
@@ -16356,11 +16413,11 @@ const _hoisted_19$3 = /* @__PURE__ */ _withScopeId$7(() => /* @__PURE__ */ creat
 ], -1));
 const _hoisted_20$3 = ["placeholder", "disabled"];
 const _hoisted_21$3 = { colspan: "2" };
-const _hoisted_22$2 = { key: 0 };
-const _hoisted_23$2 = /* @__PURE__ */ _withScopeId$7(() => /* @__PURE__ */ createBaseVNode("td", null, [
+const _hoisted_22$3 = { key: 0 };
+const _hoisted_23$3 = /* @__PURE__ */ _withScopeId$7(() => /* @__PURE__ */ createBaseVNode("td", null, [
   /* @__PURE__ */ createBaseVNode("label", { for: "textbox_color" }, "Color:")
 ], -1));
-const _hoisted_24$1 = { key: 1 };
+const _hoisted_24$2 = { key: 1 };
 const _hoisted_25$1 = { colspan: "2" };
 const _hoisted_26$1 = /* @__PURE__ */ _withScopeId$7(() => /* @__PURE__ */ createBaseVNode("td", null, [
   /* @__PURE__ */ createBaseVNode("label", { for: "custom_controls_color" }, "Controls Color:")
@@ -16529,8 +16586,8 @@ function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
                     }, null, 8, ["modelValue"])
                   ])
                 ]),
-                _ctx.overrideColor ? (openBlock(), createElementBlock("tr", _hoisted_22$2, [
-                  _hoisted_23$2,
+                _ctx.overrideColor ? (openBlock(), createElementBlock("tr", _hoisted_22$3, [
+                  _hoisted_23$3,
                   createBaseVNode("td", null, [
                     createBaseVNode("button", {
                       id: "textbox_color",
@@ -16540,7 +16597,7 @@ function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
                     }, null, 4)
                   ])
                 ])) : createCommentVNode("", true),
-                _ctx.overrideColor ? (openBlock(), createElementBlock("tr", _hoisted_24$1, [
+                _ctx.overrideColor ? (openBlock(), createElementBlock("tr", _hoisted_24$2, [
                   createBaseVNode("td", _hoisted_25$1, [
                     createVNode(_component_toggle, {
                       id: "derive_custom_colors",
@@ -16811,9 +16868,9 @@ const _hoisted_18$2 = /* @__PURE__ */ createTextVNode(" Journal Font by ");
 const _hoisted_19$2 = /* @__PURE__ */ createTextVNode("Fontourist");
 const _hoisted_20$2 = /* @__PURE__ */ createTextVNode(" Hashtag Font by ");
 const _hoisted_21$2 = /* @__PURE__ */ createTextVNode(" TitanVex");
-const _hoisted_22$1 = /* @__PURE__ */ createTextVNode(" JP Hand Slanted Font by ");
-const _hoisted_23$1 = /* @__PURE__ */ createTextVNode("Jonathan Paterson");
-const _hoisted_24 = /* @__PURE__ */ createTextVNode(" As I Lay Dying Font by ");
+const _hoisted_22$2 = /* @__PURE__ */ createTextVNode(" JP Hand Slanted Font by ");
+const _hoisted_23$2 = /* @__PURE__ */ createTextVNode("Jonathan Paterson");
+const _hoisted_24$1 = /* @__PURE__ */ createTextVNode(" As I Lay Dying Font by ");
 const _hoisted_25 = /* @__PURE__ */ createTextVNode("Moises Esqueda");
 const _hoisted_26 = /* @__PURE__ */ createTextVNode(" Damagrafik Script Font by ");
 const _hoisted_27 = /* @__PURE__ */ createTextVNode("Davide Terenzi");
@@ -16952,16 +17009,16 @@ function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
       })
     ]),
     createBaseVNode("p", null, [
-      _hoisted_22$1,
+      _hoisted_22$2,
       createVNode(_component_l, { to: "https://www.dafont.com/jp-hand-slanted.font" }, {
         default: withCtx(() => [
-          _hoisted_23$1
+          _hoisted_23$2
         ]),
         _: 1
       })
     ]),
     createBaseVNode("p", null, [
-      _hoisted_24,
+      _hoisted_24$1,
       createVNode(_component_l, { to: "https://www.dafont.com/as-i-lay-dying.font" }, {
         default: withCtx(() => [
           _hoisted_25
@@ -17051,26 +17108,6 @@ function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const CreditsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$a], ["__scopeId", "data-v-8073b468"]]);
-var __async$e = (__this, __arguments, generator) => {
-  return new Promise((resolve2, reject) => {
-    var fulfilled = (value) => {
-      try {
-        step(generator.next(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var rejected = (value) => {
-      try {
-        step(generator.throw(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
-    step((generator = generator.apply(__this, __arguments)).next());
-  });
-};
 const _sfc_main$9 = defineComponent({
   props: {
     backgroundId: {
@@ -17105,6 +17142,7 @@ const _sfc_main$9 = defineComponent({
       return (_a = this.bgData.label) != null ? _a : "";
     },
     style() {
+      var _a;
       switch (this.backgroundId) {
         case "buildin.static-color":
           return {
@@ -17113,23 +17151,14 @@ const _sfc_main$9 = defineComponent({
         case "buildin.transparent":
           return {};
       }
-      const urls = this.assets.filter((img) => img instanceof ImageAsset).map((img) => `url('${img.html.src}')`).join(",");
+      const urls = (_a = this.bgData) == null ? void 0 : _a.variants[0].map((img) => `url('${getAAssetUrl(img, false)}')`).join(",");
       return {
-        backgroundImage: urls
+        backgroundImage: urls != null ? urls : ""
       };
     }
-  },
-  created() {
-    return __async$e(this, null, function* () {
-      if (this.bgData) {
-        this.assets = yield Promise.all(
-          this.bgData.variants[0].map((asset) => getAAsset(asset, false))
-        );
-      }
-    });
   }
 });
-const button_vue_vue_type_style_index_0_scoped_ea8d7586_lang = "";
+const button_vue_vue_type_style_index_0_scoped_f141eda2_lang = "";
 const _hoisted_1$9 = ["title"];
 function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
@@ -17144,7 +17173,7 @@ function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
     ]
   }, toDisplayString(_ctx.title), 47, _hoisted_1$9);
 }
-const BackgroundButton = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$9], ["__scopeId", "data-v-ea8d7586"]]);
+const BackgroundButton = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$9], ["__scopeId", "data-v-f141eda2"]]);
 const _sfc_main$8 = defineComponent({
   components: { Toggle: ToggleBox, DFieldset },
   computed: {
@@ -17309,8 +17338,47 @@ function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
   }, 8, ["class"]);
 }
 const BackgroundSettings = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$8], ["__scopeId", "data-v-c3bc3296"]]);
-const uploadedBackgroundsPack = {
-  packId: "dddg.buildin.uploadedBackgrounds",
+var __defProp$e = Object.defineProperty;
+var __defProps$7 = Object.defineProperties;
+var __getOwnPropDescs$7 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$7 = Object.getOwnPropertySymbols;
+var __hasOwnProp$7 = Object.prototype.hasOwnProperty;
+var __propIsEnum$7 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$e = (obj, key, value) => key in obj ? __defProp$e(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$7 = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$7.call(b, prop))
+      __defNormalProp$e(a, prop, b[prop]);
+  if (__getOwnPropSymbols$7)
+    for (var prop of __getOwnPropSymbols$7(b)) {
+      if (__propIsEnum$7.call(b, prop))
+        __defNormalProp$e(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$7 = (a, b) => __defProps$7(a, __getOwnPropDescs$7(b));
+var __async$e = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
+const uploadedBackgroundsPackDefaults = {
+  packId: "dddg.uploads.backgrounds",
   dependencies: [],
   packCredits: [],
   characters: [],
@@ -17380,8 +17448,16 @@ const _sfc_main$7 = defineComponent({
       }
     },
     addImageFile(file) {
-      const url = URL.createObjectURL(file);
-      this.addNewCustomBackground(file.name, file.name, url);
+      return __async$e(this, null, function* () {
+        yield this.vuexHistory.transaction(() => __async$e(this, null, function* () {
+          const url = URL.createObjectURL(file);
+          const assetUrl = yield this.$store.dispatch("uploadUrls/add", {
+            name: file.name,
+            url
+          });
+          this.addNewCustomBackground(file.name, file.name, assetUrl);
+        }));
+      });
     },
     addByUrl() {
       const url = prompt("Enter the URL of the image");
@@ -17391,15 +17467,23 @@ const _sfc_main$7 = defineComponent({
       this.addNewCustomBackground(lastSegment, lastSegment, url);
     },
     addNewCustomBackground(id, label, url) {
-      uploadedBackgroundsPack.backgrounds.push({
-        id,
-        label,
-        variants: [[url]],
-        scaling: "none"
+      const old = this.$store.state.content.contentPacks.find(
+        (x) => x.packId === uploadedBackgroundsPackDefaults.packId
+      ) || uploadedBackgroundsPackDefaults;
+      const newPackVersion = __spreadProps$7(__spreadValues$7({}, old), {
+        backgrounds: [
+          ...old.backgrounds,
+          {
+            id,
+            label,
+            variants: [[url]],
+            scaling: "none"
+          }
+        ]
       });
       this.vuexHistory.transaction(() => {
         this.$store.dispatch("content/replaceContentPack", {
-          contentPack: uploadedBackgroundsPack
+          contentPack: newPackVersion
         });
         this.setBackground(id);
       });
@@ -17421,8 +17505,8 @@ const _sfc_main$7 = defineComponent({
     }
   }
 });
-const backgrounds_vue_vue_type_style_index_0_scoped_c2230f18_lang = "";
-const _withScopeId$3 = (n) => (pushScopeId("data-v-c2230f18"), n = n(), popScopeId(), n);
+const backgrounds_vue_vue_type_style_index_0_scoped_2ee6c538_lang = "";
+const _withScopeId$3 = (n) => (pushScopeId("data-v-2ee6c538"), n = n(), popScopeId(), n);
 const _hoisted_1$7 = /* @__PURE__ */ createTextVNode("Drop here to add as a new background ");
 const _hoisted_2$6 = /* @__PURE__ */ _withScopeId$3(() => /* @__PURE__ */ createBaseVNode("h1", null, "Background", -1));
 const _hoisted_3$5 = /* @__PURE__ */ createTextVNode(" Upload ");
@@ -17513,7 +17597,7 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64))
   ], 32);
 }
-const BackgroundsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7], ["__scopeId", "data-v-c2230f18"]]);
+const BackgroundsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7], ["__scopeId", "data-v-2ee6c538"]]);
 var __defProp$d = Object.defineProperty;
 var __defProps$6 = Object.defineProperties;
 var __getOwnPropDescs$6 = Object.getOwnPropertyDescriptors;
@@ -18617,6 +18701,9 @@ class AssetListRenderable extends OffscreenRenderable {
   get canvasDrawPosY() {
     return this.y + (this.height - this.canvasDrawHeight);
   }
+  get allowSkippingLocalCanvas() {
+    return false;
+  }
   get objZoom() {
     const textboxZoom = this.obj.enlargeWhenTalking && this.refTextbox ? 1.05 : 1;
     return textboxZoom * this.obj.zoom;
@@ -18962,7 +19049,7 @@ class Notification extends ScalingRenderable {
   get id() {
     return this.obj.id;
   }
-  render(selected, rx) {
+  render(selected, rx, skipLocal) {
     return __async$8(this, null, function* () {
       const constants = getConstants();
       if (this.obj.backdrop) {
@@ -18976,7 +19063,7 @@ class Notification extends ScalingRenderable {
           }
         });
       }
-      yield __superGet(Notification.prototype, this, "render").call(this, selected, rx);
+      yield __superGet(Notification.prototype, this, "render").call(this, selected, rx, skipLocal);
     });
   }
   draw(rx) {
@@ -19107,9 +19194,7 @@ class Poem extends ScalingRenderable {
         this._height = this.obj.height;
         this._width = this.obj.width;
       } else {
-        const asset = yield getBuildInAsset(
-          `assets/poemBackgrounds/${paper.file}`
-        );
+        const asset = yield getAssetByUrl(`assets/poemBackgrounds/${paper.file}`);
         rx.drawImage({
           image: asset,
           x: flippedX - asset.width / 2,
@@ -19185,12 +19270,16 @@ const _SceneRenderer = class {
     });
     this.renderObjectCache.clear();
   }
-  render(hq, preview) {
+  render(hq, preview, skipLocalCanvases) {
     if (this._disposed)
       throw new Error("Disposed scene-renderer called");
     if (!this.panel)
       return Promise.resolve(false);
-    return this.renderer.render(this.renderCallback.bind(this), hq, preview);
+    return this.renderer.render(
+      this.renderCallback.bind(this, skipLocalCanvases),
+      hq,
+      preview
+    );
   }
   download() {
     if (this._disposed)
@@ -19204,7 +19293,10 @@ const _SceneRenderer = class {
       `${date.getMinutes()}`.padStart(2, "0"),
       `${date.getSeconds()}`.padStart(2, "0")
     ].join("-")}.png`;
-    return this.renderer.download(this.renderCallback.bind(this), filename);
+    return this.renderer.download(
+      this.renderCallback.bind(this, true),
+      filename
+    );
   }
   paintOnto(c, opts) {
     this.renderer.paintOnto(c, opts);
@@ -19212,7 +19304,7 @@ const _SceneRenderer = class {
   objectsAt(x, y) {
     return this.getRenderObjects().filter((renderObject) => renderObject.hitTest(x, y)).map((renderObject) => renderObject.id);
   }
-  renderCallback(rx) {
+  renderCallback(skipLocalCanvases, rx) {
     return __async$6(this, null, function* () {
       var _a;
       if (this._disposed)
@@ -19228,7 +19320,8 @@ const _SceneRenderer = class {
         const focused = (focusedObj == null ? void 0 : focusedObj.getAttribute("data-obj-id")) === "" + object.id;
         yield object.render(
           (selected ? SelectedState.Selected : SelectedState.None) + (focused ? SelectedState.Focused : SelectedState.None),
-          rx
+          rx,
+          skipLocalCanvases
         );
       }
       rx.applyFilters([...this.panel.filters]);
@@ -19355,7 +19448,7 @@ const _sfc_main$6 = defineComponent({
   data: () => ({
     webpSupport: false,
     heifSupport: false,
-    ppi: 0,
+    ppi: envX.supports.limitedCanvasSpace ? 10 : 0,
     pages: "",
     format: "image/png",
     quality: defaultQuality,
@@ -19511,7 +19604,7 @@ const _sfc_main$6 = defineComponent({
                 baseConst.screenHeight
               );
               try {
-                yield sceneRenderer.render(hq, false);
+                yield sceneRenderer.render(hq, false, true);
                 sceneRenderer.paintOnto(context, {
                   x: 0,
                   y: baseConst.screenHeight * panelIdx,
@@ -19686,11 +19779,49 @@ const _sfc_main$6 = defineComponent({
           );
         }));
       });
+    },
+    save() {
+      return __async$5(this, null, function* () {
+        const str = yield this.$store.dispatch("getSave", true);
+        const saveBlob = new Blob([str], {
+          type: "text/plain"
+        });
+        const date = new Date();
+        const prefix = `save-${[
+          date.getFullYear(),
+          `${date.getMonth() + 1}`.padStart(2, "0"),
+          `${date.getDate()}`.padStart(2, "0"),
+          `${date.getHours()}`.padStart(2, "0"),
+          `${date.getMinutes()}`.padStart(2, "0"),
+          `${date.getSeconds()}`.padStart(2, "0")
+        ].join("-")}`;
+        const filename = `${prefix}.dddg`;
+        const a = document.createElement("a");
+        const url = URL.createObjectURL(saveBlob);
+        a.setAttribute("download", filename);
+        a.setAttribute("href", url);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    },
+    load() {
+      return __async$5(this, null, function* () {
+        yield this.vuexHistory.transaction(() => __async$5(this, null, function* () {
+          const uploadInput = this.$refs.loadUpload;
+          if (!uploadInput.files)
+            return;
+          const data = yield blobToText(uploadInput.files[0]);
+          yield this.$store.dispatch("loadSave", data);
+        }));
+        yield this.renderThumbnail();
+      });
     }
   },
   watch: {
     quality(quality, oldQuality) {
-      if (quality === qualityFactor) {
+      if (quality === 100) {
         eventBus$1.fire(
           new ShowMessageEvent(
             "Note: 100% quality on a lossy format is still not lossless! Select PNG if you want lossless compression."
@@ -19701,7 +19832,19 @@ const _sfc_main$6 = defineComponent({
       if (oldQuality > qualityWarningThreshold && quality <= qualityWarningThreshold) {
         eventBus$1.fire(
           new ShowMessageEvent(
-            "Note: A quality level below 70% might be very noticable and impair legibility of text."
+            "Note: A quality level below 70% might be very noticeable and impair legibility of text."
+          )
+        );
+        return;
+      }
+    },
+    ppi(ppi, oldppi) {
+      if (!envX.supports.limitedCanvasSpace)
+        return;
+      if (oldppi <= 10 && ppi > 10 || ppi === 0 && this.panelButtons.length > 10) {
+        eventBus$1.fire(
+          new ShowMessageEvent(
+            "Note: Safari has strict limitations on available memory. More images per panel can easily cause crashes."
           )
         );
         return;
@@ -19709,8 +19852,20 @@ const _sfc_main$6 = defineComponent({
     }
   }
 });
-const panels_vue_vue_type_style_index_0_scoped_5d63de8a_lang = "";
-const _withScopeId$2 = (n) => (pushScopeId("data-v-5d63de8a"), n = n(), popScopeId(), n);
+function blobToText(file) {
+  return new Promise((resolve2, reject) => {
+    const reader = new FileReader();
+    reader.onload = function() {
+      resolve2(reader.result);
+    };
+    reader.onerror = function(e) {
+      reject(e);
+    };
+    reader.readAsText(file);
+  });
+}
+const panels_vue_vue_type_style_index_0_scoped_dfe32347_lang = "";
+const _withScopeId$2 = (n) => (pushScopeId("data-v-dfe32347"), n = n(), popScopeId(), n);
 const _hoisted_1$6 = { class: "panel" };
 const _hoisted_2$5 = /* @__PURE__ */ _withScopeId$2(() => /* @__PURE__ */ createBaseVNode("h1", null, "Panels", -1));
 const _hoisted_3$4 = ["onClick", "onKeydown"];
@@ -19754,6 +19909,9 @@ const _hoisted_20$1 = /* @__PURE__ */ _withScopeId$2(() => /* @__PURE__ */ creat
   ])
 ], -1));
 const _hoisted_21$1 = /* @__PURE__ */ createTextVNode(" Download ");
+const _hoisted_22$1 = { class: "column" };
+const _hoisted_23$1 = /* @__PURE__ */ createTextVNode("Save");
+const _hoisted_24 = /* @__PURE__ */ createTextVNode(" Load ");
 function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_image_options = resolveComponent("image-options");
   const _component_d_flow = resolveComponent("d-flow");
@@ -19956,11 +20114,36 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
           ])
         ]),
         _: 1
-      })
+      }),
+      createBaseVNode("div", _hoisted_22$1, [
+        createVNode(_component_d_button, {
+          icon: "save",
+          onClick: _ctx.save
+        }, {
+          default: withCtx(() => [
+            _hoisted_23$1
+          ]),
+          _: 1
+        }, 8, ["onClick"]),
+        createVNode(_component_d_button, {
+          icon: "folder_open",
+          onClick: _cache[11] || (_cache[11] = ($event) => _ctx.$refs.loadUpload.click())
+        }, {
+          default: withCtx(() => [
+            _hoisted_24,
+            createBaseVNode("input", {
+              type: "file",
+              ref: "loadUpload",
+              onChange: _cache[10] || (_cache[10] = (...args) => _ctx.load && _ctx.load(...args))
+            }, null, 544)
+          ]),
+          _: 1
+        })
+      ])
     ], 64))
   ]);
 }
-const PanelsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__scopeId", "data-v-5d63de8a"]]);
+const PanelsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__scopeId", "data-v-dfe32347"]]);
 const setableN = genericSimpleSetter("panels/setNotificationProperty");
 const _sfc_main$5 = defineComponent({
   mixins: [PanelMixin],
@@ -20836,19 +21019,30 @@ const _sfc_main$1 = defineComponent({
           return;
         for (const item of e.dataTransfer.items) {
           if (item.kind === "file" && item.type.match(/image.*/)) {
-            const name = "dropCustomAsset" + ++this.dropSpriteCount;
-            const url = registerAsset(name, item.getAsFile());
-            yield this.vuexHistory.transaction(() => __async$3(this, null, function* () {
-              yield this.$store.dispatch("panels/createSprite", {
-                assets: [
-                  {
-                    hq: url,
-                    lq: url,
-                    sourcePack: "dddg.generated.uploaded-sprites"
-                  }
-                ]
-              });
-            }));
+            const file = item.getAsFile();
+            const url = URL.createObjectURL(file);
+            try {
+              const assetUrl = yield this.$store.dispatch(
+                "uploadUrls/add",
+                {
+                  name: file.name,
+                  url
+                }
+              );
+              yield this.vuexHistory.transaction(() => __async$3(this, null, function* () {
+                yield this.$store.dispatch("panels/createSprite", {
+                  assets: [
+                    {
+                      hq: assetUrl,
+                      lq: assetUrl,
+                      sourcePack: "dddg.uploaded.sprites"
+                    }
+                  ]
+                });
+              }));
+            } catch (e2) {
+              URL.revokeObjectURL(url);
+            }
           }
         }
       });
@@ -20954,16 +21148,10 @@ var __async$2 = (__this, __arguments, generator) => {
     step((generator = generator.apply(__this, __arguments)).next());
   });
 };
-const import_meta = {};
 const aspectRatio = 16 / 9;
 const arrowMoveStepSize = 20;
 const packDialogWaitMs = 50;
 const canvasTooSmallThreshold = 200;
-let baseUrl = "";
-try {
-  baseUrl = import_meta.env.BASE_URL || "";
-} catch (e) {
-}
 const nsfwPacks = {
   "dddg.buildin.backgrounds.nsfw": `${baseUrl}packs/buildin.base.backgrounds.nsfw.json`,
   "dddg.buildin.sayori.nsfw": `${baseUrl}packs/buildin.base.sayori.nsfw.json`,
@@ -20979,10 +21167,10 @@ const _sfc_main = defineComponent({
     Render,
     ModalDialog,
     SingleBox: defineAsyncComponent(
-      () => __vitePreload(() => import("./SingleBox.457b8a7c.js"), true ? ["SingleBox.457b8a7c.js","SingleBox.378faf79.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./SingleBox.24554176.js"), true ? ["SingleBox.24554176.js","SingleBox.378faf79.css"] : void 0, import.meta.url)
     ),
     ExpressionBuilder: defineAsyncComponent(
-      () => __vitePreload(() => import("./index.3375a313.js"), true ? ["index.3375a313.js","index.21f119f2.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.6c34a058.js"), true ? ["index.6c34a058.js","index.aa47b381.css"] : void 0, import.meta.url)
     )
   },
   data: () => ({
@@ -21422,6 +21610,215 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   ], 64);
 }
 const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+function mergeContentPacks(x, y) {
+  return {
+    backgrounds: mergeBackgrounds(x.backgrounds, y.backgrounds),
+    characters: mergeCharacters(x.characters, y.characters),
+    dependencies: mergeArrayUnique(x.dependencies, y.dependencies),
+    fonts: mergeIdArrays(
+      x.fonts,
+      y.fonts,
+      (obj) => obj.id,
+      (xObj, yObj) => __spreadProps(__spreadValues({}, xObj), {
+        files: mergeArrayUnique(xObj.files, yObj.files)
+      })
+    ),
+    poemStyles: mergeIdArrays(
+      x.poemStyles,
+      y.poemStyles,
+      (obj) => obj.label,
+      () => {
+        throw new Error();
+      }
+    ),
+    poemBackgrounds: [...x.poemBackgrounds, ...y.poemBackgrounds],
+    sprites: mergeIdArrays(
+      x.sprites,
+      y.sprites,
+      (obj) => obj.id,
+      (xObj, yObj) => {
+        var _a;
+        return {
+          id: xObj.id,
+          label: xObj.label,
+          variants: [...xObj.variants, ...yObj.variants],
+          defaultScale: xObj.defaultScale,
+          hd: xObj.hd,
+          sdVersion: (_a = xObj.sdVersion) != null ? _a : yObj.sdVersion
+        };
+      }
+    ),
+    colors: mergeIdArrays(
+      x.colors,
+      y.colors,
+      (obj) => obj.color,
+      (xObj) => xObj
+    )
+  };
+}
+function mergeBackgrounds(x, y) {
+  return mergeIdArrays(x, y, (obj) => obj.id, mergeBackground);
+}
+function mergeBackground(x, y) {
+  var _a;
+  return {
+    id: x.id,
+    label: x.label,
+    variants: [...x.variants, ...y.variants],
+    scaling: x.scaling,
+    sdVersion: (_a = x.sdVersion) != null ? _a : y.sdVersion
+  };
+}
+function mergeCharacters(x, y) {
+  return mergeIdArrays(x, y, (obj) => obj.id, mergeCharacter);
+}
+function mergeCharacter(x, y) {
+  return {
+    chibi: x.chibi,
+    id: x.id,
+    label: x.label,
+    heads: mergeHeadCollections(x.heads, y.heads),
+    defaultScale: x.defaultScale,
+    hd: x.hd,
+    size: x.size,
+    sdVersion: x.sdVersion,
+    styleGroups: mergeIdArrays(
+      x.styleGroups,
+      y.styleGroups,
+      (obj) => obj.id,
+      (xStyleGroup, yStyleGroup) => {
+        return {
+          id: xStyleGroup.id,
+          styleComponents: mergeIdArrays(
+            xStyleGroup.styleComponents,
+            yStyleGroup.styleComponents,
+            (obj) => obj.id,
+            (xClasses, yClasses) => {
+              return {
+                id: xClasses.id,
+                label: xClasses.label,
+                variants: mergeStyleClasses(
+                  xClasses.variants,
+                  yClasses.variants
+                )
+              };
+            }
+          ),
+          styles: mergeIdArrays(
+            xStyleGroup.styles,
+            yStyleGroup.styles,
+            (obj) => JSON.stringify(obj.components),
+            (xStyle, yStyle) => ({
+              components: xStyle.components,
+              poses: mergeIdArrays(
+                xStyle.poses,
+                yStyle.poses,
+                (obj) => obj.id,
+                mergePose
+              )
+            })
+          )
+        };
+      }
+    )
+  };
+}
+function mergeStyleClasses(x, y) {
+  const ret = __spreadValues({}, x);
+  for (const classKey in y) {
+    if (!y.hasOwnProperty(classKey))
+      continue;
+    if (ret.hasOwnProperty(classKey))
+      continue;
+    ret[classKey] = y[classKey];
+  }
+  return ret;
+}
+function mergePose(x, y) {
+  const positions2 = __spreadValues({}, x.positions);
+  for (const key in y.positions) {
+    if (positions2[key]) {
+      positions2[key] = [...positions2[key], ...y.positions[key]];
+    } else {
+      positions2[key] = y.positions[key];
+    }
+  }
+  return {
+    id: x.id,
+    compatibleHeads: mergeArrayUnique(x.compatibleHeads, y.compatibleHeads),
+    previewOffset: x.previewOffset,
+    previewSize: x.previewSize,
+    scale: x.scale,
+    size: x.size,
+    renderCommands: x.renderCommands,
+    positions: positions2
+  };
+}
+function mergeHeadCollections(x, y) {
+  const ret = __spreadValues({}, x);
+  for (const headGroupKey in y) {
+    if (!y.hasOwnProperty(headGroupKey))
+      continue;
+    const headGroup = y[headGroupKey];
+    if (ret[headGroupKey]) {
+      const oldHeadGroup = ret[headGroupKey];
+      ret[headGroupKey] = {
+        previewOffset: oldHeadGroup.previewOffset,
+        previewSize: oldHeadGroup.previewSize,
+        variants: [...oldHeadGroup.variants, ...headGroup.variants]
+      };
+    } else {
+      ret[headGroupKey] = headGroup;
+    }
+  }
+  return ret;
+}
+function mergeArrayUnique(x, y) {
+  const ret = [...x];
+  for (const yObj of y) {
+    if (!ret.includes(yObj)) {
+      ret.push(yObj);
+    }
+  }
+  return ret;
+}
+function mergeIdArrays(x, y, getId2, merge) {
+  const ret = [...x];
+  const definedIds = new Map(
+    x.map((xObj, idx) => [getId2(xObj), idx])
+  );
+  for (const yObj of y) {
+    const yId = getId2(yObj);
+    if (definedIds.has(yId)) {
+      const existingIdx = definedIds.get(yId);
+      const existing = ret[existingIdx];
+      ret.splice(existingIdx, 1, merge(existing, yObj));
+    } else {
+      definedIds.set(yId, ret.length);
+      ret.push(yObj);
+    }
+  }
+  return ret;
+}
 function getDevtoolsGlobalHook() {
   return getTarget().__VUE_DEVTOOLS_GLOBAL_HOOK__;
 }
@@ -22329,9 +22726,8 @@ Store.prototype._withCommit = function _withCommit(fn) {
   this._committing = committing;
 };
 Object.defineProperties(Store.prototype, prototypeAccessors);
-const ui = {
-  namespaced: true,
-  state: {
+function getDefaultUiState() {
+  return {
     vertical: false,
     lqRendering: true,
     nsfw: false,
@@ -22341,7 +22737,11 @@ const ui = {
     useDarkTheme: null,
     defaultCharacterTalkingZoom: true,
     pickColor: false
-  },
+  };
+}
+const ui = {
+  namespaced: true,
+  state: getDefaultUiState(),
   mutations: {
     setVertical(state, vertical) {
       state.vertical = vertical;
@@ -23577,215 +23977,6 @@ function joinNormalize(base, sub, paths2) {
     return sub;
   return base + sub;
 }
-var __defProp = Object.defineProperty;
-var __defProps = Object.defineProperties;
-var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp.call(b, prop))
-      __defNormalProp(a, prop, b[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b)) {
-      if (__propIsEnum.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-function mergeContentPacks(x, y) {
-  return {
-    backgrounds: mergeBackgrounds(x.backgrounds, y.backgrounds),
-    characters: mergeCharacters(x.characters, y.characters),
-    dependencies: mergeArrayUnique(x.dependencies, y.dependencies),
-    fonts: mergeIdArrays(
-      x.fonts,
-      y.fonts,
-      (obj) => obj.id,
-      (xObj, yObj) => __spreadProps(__spreadValues({}, xObj), {
-        files: mergeArrayUnique(xObj.files, yObj.files)
-      })
-    ),
-    poemStyles: mergeIdArrays(
-      x.poemStyles,
-      y.poemStyles,
-      (obj) => obj.label,
-      () => {
-        throw new Error();
-      }
-    ),
-    poemBackgrounds: [...x.poemBackgrounds, ...y.poemBackgrounds],
-    sprites: mergeIdArrays(
-      x.sprites,
-      y.sprites,
-      (obj) => obj.id,
-      (xObj, yObj) => {
-        var _a;
-        return {
-          id: xObj.id,
-          label: xObj.label,
-          variants: [...xObj.variants, ...yObj.variants],
-          defaultScale: xObj.defaultScale,
-          hd: xObj.hd,
-          sdVersion: (_a = xObj.sdVersion) != null ? _a : yObj.sdVersion
-        };
-      }
-    ),
-    colors: mergeIdArrays(
-      x.colors,
-      y.colors,
-      (obj) => obj.color,
-      (xObj) => xObj
-    )
-  };
-}
-function mergeBackgrounds(x, y) {
-  return mergeIdArrays(x, y, (obj) => obj.id, mergeBackground);
-}
-function mergeBackground(x, y) {
-  var _a;
-  return {
-    id: x.id,
-    label: x.label,
-    variants: [...x.variants, ...y.variants],
-    scaling: x.scaling,
-    sdVersion: (_a = x.sdVersion) != null ? _a : y.sdVersion
-  };
-}
-function mergeCharacters(x, y) {
-  return mergeIdArrays(x, y, (obj) => obj.id, mergeCharacter);
-}
-function mergeCharacter(x, y) {
-  return {
-    chibi: x.chibi,
-    id: x.id,
-    label: x.label,
-    heads: mergeHeadCollections(x.heads, y.heads),
-    defaultScale: x.defaultScale,
-    hd: x.hd,
-    size: x.size,
-    sdVersion: x.sdVersion,
-    styleGroups: mergeIdArrays(
-      x.styleGroups,
-      y.styleGroups,
-      (obj) => obj.id,
-      (xStyleGroup, yStyleGroup) => {
-        return {
-          id: xStyleGroup.id,
-          styleComponents: mergeIdArrays(
-            xStyleGroup.styleComponents,
-            yStyleGroup.styleComponents,
-            (obj) => obj.id,
-            (xClasses, yClasses) => {
-              return {
-                id: xClasses.id,
-                label: xClasses.label,
-                variants: mergeStyleClasses(
-                  xClasses.variants,
-                  yClasses.variants
-                )
-              };
-            }
-          ),
-          styles: mergeIdArrays(
-            xStyleGroup.styles,
-            yStyleGroup.styles,
-            (obj) => JSON.stringify(obj.components),
-            (xStyle, yStyle) => ({
-              components: xStyle.components,
-              poses: mergeIdArrays(
-                xStyle.poses,
-                yStyle.poses,
-                (obj) => obj.id,
-                mergePose
-              )
-            })
-          )
-        };
-      }
-    )
-  };
-}
-function mergeStyleClasses(x, y) {
-  const ret = __spreadValues({}, x);
-  for (const classKey in y) {
-    if (!y.hasOwnProperty(classKey))
-      continue;
-    if (ret.hasOwnProperty(classKey))
-      continue;
-    ret[classKey] = y[classKey];
-  }
-  return ret;
-}
-function mergePose(x, y) {
-  const positions2 = __spreadValues({}, x.positions);
-  for (const key in y.positions) {
-    if (positions2[key]) {
-      positions2[key] = [...positions2[key], ...y.positions[key]];
-    } else {
-      positions2[key] = y.positions[key];
-    }
-  }
-  return {
-    id: x.id,
-    compatibleHeads: mergeArrayUnique(x.compatibleHeads, y.compatibleHeads),
-    previewOffset: x.previewOffset,
-    previewSize: x.previewSize,
-    scale: x.scale,
-    size: x.size,
-    renderCommands: x.renderCommands,
-    positions: positions2
-  };
-}
-function mergeHeadCollections(x, y) {
-  const ret = __spreadValues({}, x);
-  for (const headGroupKey in y) {
-    if (!y.hasOwnProperty(headGroupKey))
-      continue;
-    const headGroup = y[headGroupKey];
-    if (ret[headGroupKey]) {
-      const oldHeadGroup = ret[headGroupKey];
-      ret[headGroupKey] = {
-        previewOffset: oldHeadGroup.previewOffset,
-        previewSize: oldHeadGroup.previewSize,
-        variants: [...oldHeadGroup.variants, ...headGroup.variants]
-      };
-    } else {
-      ret[headGroupKey] = headGroup;
-    }
-  }
-  return ret;
-}
-function mergeArrayUnique(x, y) {
-  const ret = [...x];
-  for (const yObj of y) {
-    if (!ret.includes(yObj)) {
-      ret.push(yObj);
-    }
-  }
-  return ret;
-}
-function mergeIdArrays(x, y, getId2, merge) {
-  const ret = [...x];
-  const definedIds = new Map(
-    x.map((xObj, idx) => [getId2(xObj), idx])
-  );
-  for (const yObj of y) {
-    const yId = getId2(yObj);
-    if (definedIds.has(yId)) {
-      const existingIdx = definedIds.get(yId);
-      const existing = ret[existingIdx];
-      ret.splice(existingIdx, 1, merge(existing, yObj));
-    } else {
-      definedIds.set(yId, ret.length);
-      ret.push(yObj);
-    }
-  }
-  return ret;
-}
 var __async$1 = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -23810,9 +24001,8 @@ function baseDir(url) {
   return url.split("/").slice(0, -1).join("/") + "/";
 }
 const baseTypes = /* @__PURE__ */ new Set(["png", "gif", "bmp", "svg"]);
-const content = {
-  namespaced: true,
-  state: {
+function getDefaultContentState() {
+  return {
     contentPacks: [],
     current: {
       dependencies: [],
@@ -23824,7 +24014,11 @@ const content = {
       sprites: [],
       colors: []
     }
-  },
+  };
+}
+const content = {
+  namespaced: true,
+  state: getDefaultContentState(),
   mutations: {
     setContentPacks(state, packs) {
       state.contentPacks = packs;
@@ -23852,6 +24046,7 @@ const content = {
     },
     replaceContentPack(_0, _1) {
       return __async$1(this, arguments, function* ({ commit: commit2, state }, action) {
+        debugger;
         const convertedPack = action.processed ? action.contentPack : yield convertContentPack(action.contentPack);
         let packs = state.contentPacks;
         const packIdx = packs.findIndex(
@@ -23879,40 +24074,7 @@ const content = {
         }
         const contentPacks = yield Promise.all(
           urls.map((url) => __async$1(this, null, function* () {
-            const response = yield fetch(url);
-            if (!response.ok) {
-              error(
-                `Could not load content pack. Server responded with: ${response.statusText}`
-              );
-            }
-            let json;
-            try {
-              json = yield response.json();
-            } catch (e) {
-              error("Content pack is not valid json!");
-            }
-            let contentPack;
-            try {
-              const paths2 = {
-                "./": baseDir(url),
-                "/": baseDir(location.href) + "assets/"
-              };
-              if (json.version === "2.0") {
-                contentPack = normalizeContentPack_1(
-                  json,
-                  paths2
-                );
-              } else {
-                contentPack = convert_1(
-                  normalizeCharacter_1(json, paths2),
-                  paths2,
-                  false
-                );
-              }
-            } catch (e) {
-              error("Content pack is not in a valid format!", e);
-            }
-            return contentPack;
+            return loadContentPack(url);
           }))
         );
         const convertedPacks = yield Promise.all(
@@ -23955,6 +24117,39 @@ const content = {
     }
   }
 };
+function loadContentPack(url) {
+  return __async$1(this, null, function* () {
+    const response = yield fetch(url);
+    if (!response.ok) {
+      throw new Error(
+        `Could not load content pack. Server responded with: ${response.statusText}`
+      );
+    }
+    let json;
+    try {
+      json = yield response.json();
+    } catch (e) {
+      throw new Error("Content pack is not valid json!");
+    }
+    try {
+      const paths2 = {
+        "./": baseDir(url),
+        "/": baseDir(location.href) + "assets/"
+      };
+      if (json.version === "2.0") {
+        return normalizeContentPack_1(json, paths2);
+      } else {
+        return convert_1(
+          normalizeCharacter_1(json, paths2),
+          paths2,
+          false
+        );
+      }
+    } catch (e) {
+      throw new Error("Content pack is not in a valid format!");
+    }
+  });
+}
 function sortByDependencies(packs) {
   return packs;
 }
@@ -23981,10 +24176,26 @@ function convertContentPack(pack) {
     );
   });
 }
-function error(msg, payload) {
-  console.error(msg, payload);
-  throw new Error(msg);
-}
+const uploadUrls = {
+  namespaced: true,
+  state: {},
+  mutations: {
+    add(state, { name, url }) {
+      state[name] = url;
+    }
+  },
+  actions: {
+    add({ state, commit: commit2 }, { name, url }) {
+      if (state[name]) {
+        throw new Error(`There is already an uploaded file called "${name}"`);
+      }
+      const assertUrl = "uploads:" + name;
+      commit2("add", { name: assertUrl, url });
+      registerAssetWithURL(assertUrl, url);
+      return assertUrl;
+    }
+  }
+};
 var __async2 = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -24030,15 +24241,66 @@ const store = createStore({
             return void 0;
           if (key === "lastRender")
             return void 0;
+          if (key === "uploadUrls")
+            return Object.keys(value);
           if (key === "content" && compact)
-            return value.contentPacks.map((x) => x.packId).filter((x) => x == null ? void 0 : x.startsWith("dddg.buildin."));
+            return value.contentPacks.filter((x) => {
+              var _a;
+              return !((_a = x.packId) == null ? void 0 : _a.startsWith("dddg.buildin."));
+            }).map(
+              (x) => {
+                var _a;
+                return ((_a = x.packId) == null ? void 0 : _a.startsWith("dddg.uploads.")) ? x : x.packId;
+              }
+            );
           return value;
         },
         2
       );
+    },
+    loadSave(_0, _1) {
+      return __async2(this, arguments, function* ({ state }, str) {
+        const data = JSON.parse(str);
+        const contentData = data.content;
+        data.ui = getDefaultUiState();
+        data.uploadUrls = {};
+        data.content = getDefaultContentState();
+        const repo = yield Repo.getInstance();
+        data.content.contentPacks = [
+          ...state.content.contentPacks.filter(
+            (x) => {
+              var _a;
+              return (_a = x.packId) == null ? void 0 : _a.startsWith("dddg.buildin.");
+            }
+          ),
+          ...(yield Promise.all(
+            contentData.map((x) => __async2(this, null, function* () {
+              if (typeof x === "string") {
+                const pack = repo.getPack(x);
+                if (!pack) {
+                  console.warn(`Pack Id ${x} not found!`);
+                  return null;
+                }
+                const loaded = yield loadContentPack(
+                  pack.dddg2Path || pack.dddg1Path
+                );
+                return yield convertContentPack(loaded);
+              } else {
+                return x;
+              }
+            }))
+          )).filter((x) => x !== null)
+        ];
+        let combinedPack = data.content.current;
+        for (const contentPack of data.content.contentPacks) {
+          combinedPack = mergeContentPacks(combinedPack, contentPack);
+        }
+        data.content.current = combinedPack;
+        this.replaceState(data);
+      });
     }
   },
-  modules: { ui, panels, content }
+  modules: { ui, panels, content, uploadUrls }
 });
 const History = {
   install(vueApp, options = {}) {
@@ -24220,12 +24482,13 @@ const History = {
 createApp(App).use(store).use(History).mount("#main_wrapper");
 export {
   DFieldset as A,
-  getAssetByUrl as B,
-  Renderer as C,
+  getAAssetUrl as B,
+  getAssetByUrl as C,
   DropTarget as D,
-  Character as E,
+  Renderer as E,
   Fragment as F,
-  vModelSelect as G,
+  Character as G,
+  vModelSelect as H,
   L,
   Repo as R,
   SelectedState as S,
