@@ -56,7 +56,7 @@ import { defineComponent, PropType } from 'vue';
 import { DeepReadonly } from 'ts-essentials';
 import eventBus, { ColorPickedEvent } from '@/eventbus/event-bus';
 
-const generatedPackId = 'dddg.generated.colors';
+const generatedPackId = 'dddg.uploads.colors';
 
 export default defineComponent({
 	components: {
@@ -126,7 +126,7 @@ export default defineComponent({
 			if (this.swatches.find((swatch) => swatch.color === this.color)) return;
 
 			const existingPack = this.$store.state.content.contentPacks.find(
-				(pack) => pack.packId === 'generatedPackId'
+				(pack) => pack.packId === generatedPackId
 			) || {
 				packId: generatedPackId,
 				packCredits: [''],

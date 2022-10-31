@@ -111,7 +111,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { isWebPSupported } from '@/asset-manager';
+import { getAAssetUrl, isWebPSupported } from '@/asset-manager';
 import { ICreateCharacterAction } from '@/store/objectTypes/characters';
 import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
 import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
@@ -132,8 +132,8 @@ import { DeepReadonly } from 'ts-essentials';
 import { IPasteFromClipboardAction } from '@/store/objects';
 import { IPanel } from '@/store/panels';
 
-const uploadedSpritesPack: ContentPack<string> = {
-	packId: 'dddg.buildin.uploadedSprites',
+const uploadedSpritesPackDefault: ContentPack<string> = {
+	packId: 'dddg.uploads.sprites',
 	packCredits: [''],
 	dependencies: [],
 	characters: [],
@@ -218,7 +218,9 @@ export default defineComponent({
 			const url = prompt('Enter the URL of the image');
 			if (url == null) return;
 			const lastSegment = url.split('/').slice(-1)[0];
-			this.addNewCustomSprite(lastSegment, url);
+			await this.vuexHistory.transaction(async () => {
+				await this.addNewCustomSprite(lastSegment, url);
+			});
 		},
 		async addSpriteToScene(sprite: Sprite<IAssetSwitch>) {
 			await this.vuexHistory.transaction(async () => {
@@ -278,24 +280,38 @@ export default defineComponent({
 				} as ICreateCharacterAction);
 			});
 		},
-		addCustomSpriteFile(file: File) {
-			const url = URL.createObjectURL(file);
-			this.addNewCustomSprite(file.name, url);
+		async addCustomSpriteFile(file: File) {
+			await this.vuexHistory.transaction(async () => {
+				const url = URL.createObjectURL(file);
+				const assetUrl: string = await this.$store.dispatch('uploadUrls/add', {
+					name: file.name,
+					url,
+				});
+				await this.addNewCustomSprite(file.name, assetUrl);
+			});
 		},
-		addNewCustomSprite(label: string, url: string) {
-			uploadedSpritesPack.sprites.push({
-				id: url,
-				label,
-				variants: [[url]],
-				defaultScale: [1.0, 1.0],
-				hd: null,
-			});
-			this.vuexHistory.transaction(() => {
-				this.$store.dispatch('content/replaceContentPack', {
-					contentPack: uploadedSpritesPack,
-					processed: false,
-				} as ReplaceContentPackAction);
-			});
+		async addNewCustomSprite(label: string, url: string) {
+			const old =
+				this.$store.state.content.contentPacks.find(
+					(x) => x.packId === uploadedSpritesPackDefault.packId
+				) || uploadedSpritesPackDefault;
+			const newPackVersion = {
+				...old,
+				sprites: [
+					...old.sprites,
+					{
+						id: url,
+						label,
+						variants: [[url]],
+						defaultScale: [1.0, 1.0],
+						hd: null,
+					},
+				],
+			};
+			await this.$store.dispatch('content/replaceContentPack', {
+				contentPack: newPackVersion,
+				processed: false,
+			} as ReplaceContentPackAction);
 		},
 		openSpritesFolder() {
 			environment.openFolder('sprites');

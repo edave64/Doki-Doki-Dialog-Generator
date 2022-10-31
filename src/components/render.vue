@@ -288,20 +288,31 @@ export default defineComponent({
 
 			for (const item of e.dataTransfer.items) {
 				if (item.kind === 'file' && item.type.match(/image.*/)) {
-					const name = 'dropCustomAsset' + ++this.dropSpriteCount;
-					const url = registerAsset(name, item.getAsFile()!);
+					const file = item.getAsFile()!;
+					const url = URL.createObjectURL(file);
+					try {
+						const assetUrl: string = await this.$store.dispatch(
+							'uploadUrls/add',
+							{
+								name: file.name,
+								url,
+							}
+						);
 
-					await this.vuexHistory.transaction(async () => {
-						await this.$store.dispatch('panels/createSprite', {
-							assets: [
-								{
-									hq: url,
-									lq: url,
-									sourcePack: 'dddg.generated.uploaded-sprites',
-								},
-							],
-						} as ICreateSpriteAction);
-					});
+						await this.vuexHistory.transaction(async () => {
+							await this.$store.dispatch('panels/createSprite', {
+								assets: [
+									{
+										hq: assetUrl,
+										lq: assetUrl,
+										sourcePack: 'dddg.uploaded.sprites',
+									},
+								],
+							} as ICreateSpriteAction);
+						});
+					} catch (e) {
+						URL.revokeObjectURL(url);
+					}
 				}
 			}
 		},

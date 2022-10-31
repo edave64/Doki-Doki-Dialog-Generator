@@ -90,6 +90,7 @@ export default {
 			{ commit, state },
 			action: ReplaceContentPackAction
 		) {
+			debugger;
 			const convertedPack = action.processed
 				? action.contentPack
 				: await convertContentPack(action.contentPack);

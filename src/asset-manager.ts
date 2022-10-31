@@ -1,7 +1,4 @@
-import EventBus, {
-	AssetFailureEvent,
-	CustomAssetFailureEvent,
-} from './eventbus/event-bus';
+import EventBus, { AssetFailureEvent } from './eventbus/event-bus';
 import { ErrorAsset } from './render-utils/assets/error-asset';
 import { IAssetSwitch } from './store/content';
 import environment from './environments/environment';
@@ -112,7 +109,6 @@ function getAssetCache(): AssetCache | TmpAssetCache {
 			: new TmpAssetCache());
 }
 
-const customAssets: { [id: string]: Promise<IAsset> | undefined } = {};
 const customUrl: { [upload_url: string]: string } = {};
 
 export function getAAsset(
@@ -129,7 +125,8 @@ export function getAAssetUrl(asset: IAssetSwitch, hq: boolean = true): string {
 }
 
 export function getAssetByUrl(url: string): Promise<IAsset> {
-	return customAssets[url] || getAssetCache().get(url);
+	if (customUrl[url]) url = customUrl[url];
+	return getAssetCache().get(url);
 }
 
 export const baseUrl = './';
@@ -153,37 +150,19 @@ export async function getBuildInAssetUrl(
 	}${(await isWebPSupported()) ? '.webp' : '.png'}`.replace(/\/+/, '/');
 }
 
-export function registerAssetWithURL(
-	asset: string,
-	url: string
-): Promise<IAsset> {
-	return (customAssets[asset] = new Promise((resolve, reject) => {
-		const img = new Image();
-		img.addEventListener('load', () => {
-			resolve(new ImageAsset(img));
-		});
-		img.addEventListener('error', (error) => {
-			EventBus.fire(new CustomAssetFailureEvent(error));
-			reject(`Failed to load "${url}"`);
-		});
-		img.crossOrigin = 'Anonymous';
-		img.src = url;
-		img.style.display = 'none';
-		if (environment.supports.assetCaching) {
-			document.body.appendChild(img);
-		} else {
-			customAssets[asset] = undefined;
-		}
-	}));
+export function registerAssetWithURL(asset: string, url: string) {
+	customUrl[asset] = url;
 }
 
 async function requestAssetByUrl(url: string): Promise<IAsset> {
+	const isCustom = !!customUrl[url];
+	if (isCustom) url = customUrl[url];
 	return (async (): Promise<IAsset> => {
 		try {
 			return await imagePromise(url);
 		} catch (e) {
 			// Webp files sometimes fail to load on safari. Fallback to png
-			if (url.endsWith('.webp')) {
+			if (url.endsWith('.webp') && !isCustom) {
 				try {
 					return await imagePromise(url.replace(/\.webp$/, '.png'));
 				} catch (e) {
