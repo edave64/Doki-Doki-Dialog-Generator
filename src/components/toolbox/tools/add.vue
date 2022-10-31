@@ -177,7 +177,7 @@ export default defineComponent({
 	methods: {
 		assetSpriteBackground(sprite: Sprite<IAssetSwitch>) {
 			return sprite.variants[0]
-				.map((variant) => `url('${variant.lq}')`)
+				.map((variant) => `url('${getAAssetUrl(variant, false)}')`)
 				.join(',');
 		},
 		assetPath(character: Character<IAssetSwitch>) {

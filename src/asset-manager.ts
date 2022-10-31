@@ -113,12 +113,19 @@ function getAssetCache(): AssetCache | TmpAssetCache {
 }
 
 const customAssets: { [id: string]: Promise<IAsset> | undefined } = {};
+const customUrl: { [upload_url: string]: string } = {};
 
 export function getAAsset(
 	asset: IAssetSwitch,
 	hq: boolean = true
 ): Promise<IAsset> {
 	return getAssetByUrl(environment.supports.lq && !hq ? asset.lq : asset.hq);
+}
+
+export function getAAssetUrl(asset: IAssetSwitch, hq: boolean = true): string {
+	const url = environment.supports.lq && !hq ? asset.lq : asset.hq;
+	if (customUrl[url]) return customUrl[url];
+	return url;
 }
 
 export function getAssetByUrl(url: string): Promise<IAsset> {
@@ -137,11 +144,13 @@ export async function getBuildInAsset(
 	return await getAssetCache().get(url);
 }
 
-export function registerAsset(asset: string, file: File): string {
-	const url = URL.createObjectURL(file);
-	// noinspection JSIgnoredPromiseFromCall
-	registerAssetWithURL(asset, url);
-	return url;
+export async function getBuildInAssetUrl(
+	asset: string,
+	hq: boolean = true
+): Promise<string> {
+	return `${baseUrl}assets/${asset}${
+		environment.supports.lq && !hq ? '.lq' : ''
+	}${(await isWebPSupported()) ? '.webp' : '.png'}`.replace(/\/+/, '/');
 }
 
 export function registerAssetWithURL(
