@@ -24,7 +24,6 @@
 <script lang="ts">
 import { MutationPayload } from 'vuex';
 import { RenderContext } from '@/renderer/rendererContext';
-import { registerAsset } from '@/asset-manager';
 import eventBus, {
 	ColorPickedEvent,
 	InvalidateRenderEvent,
@@ -131,7 +130,7 @@ export default defineComponent({
 			if (this.$store.state.unsafe) return;
 
 			try {
-				await this.sceneRender.render(!this.lqRendering, true);
+				await this.sceneRender.render(!this.lqRendering, true, false);
 			} catch (e) {
 				console.log(e);
 			}
