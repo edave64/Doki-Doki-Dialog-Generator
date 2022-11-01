@@ -169,7 +169,11 @@ import { ITextBox } from '@/store/objectTypes/textbox';
 import { SceneRenderer } from '@/renderables/scene-renderer';
 import { DeepReadonly } from 'ts-essentials';
 import environment from '@/environments/environment';
-import eventBus, { ShowMessageEvent } from '@/eventbus/event-bus';
+import eventBus, {
+	RenderUpdatedEvent,
+	ShowMessageEvent,
+	StateLoadingEvent,
+} from '@/eventbus/event-bus';
 import { IObject } from '@/store/objects';
 import { INotification } from '@/store/objectTypes/notification';
 import { IPoem } from '@/store/objectTypes/poem';
@@ -260,6 +264,9 @@ export default defineComponent({
 		},
 	},
 	async created() {
+		eventBus.subscribe(RenderUpdatedEvent, () =>
+			requestAnimationFrame(() => this.renderThumbnail())
+		);
 		const baseConst = getConstants().Base;
 		const targetCanvas = makeCanvas();
 		targetCanvas.width = baseConst.screenWidth * thumbnailFactor;
@@ -272,7 +279,7 @@ export default defineComponent({
 	},
 	mounted() {
 		this.moveFocusToActivePanel();
-		this.renderThumbnail().catch(() => {});
+		requestAnimationFrame(() => this.renderThumbnail().catch(() => {}));
 	},
 	unmounted() {
 		disposeCanvas(this.thumbnailCtx.canvas);
@@ -586,6 +593,7 @@ export default defineComponent({
 			await this.vuexHistory.transaction(async () => {
 				const uploadInput = this.$refs.loadUpload as HTMLInputElement;
 				if (!uploadInput.files) return;
+				eventBus.fire(new StateLoadingEvent());
 				const data = await blobToText(uploadInput.files[0]);
 				await this.$store.dispatch('loadSave', data);
 			});

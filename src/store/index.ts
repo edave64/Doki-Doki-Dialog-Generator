@@ -1,3 +1,4 @@
+import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 import { Repo } from '@/models/repo';
 import { mergeContentPacks } from '@/store/content/merge';
 import { createStore } from 'vuex';
@@ -59,7 +60,16 @@ export default createStore({
 			const contentData = data.content as unknown as Array<
 				ContentPack<IAssetSwitch> | string
 			>;
-			data.ui = getDefaultUiState();
+			data.ui = {
+				...getDefaultUiState(),
+				vertical: state.ui.vertical,
+				lqRendering: state.ui.lqRendering,
+				// TODO: Sync nsfw state on load
+				nsfw: state.ui.nsfw,
+				clipboard: state.ui.clipboard,
+				useDarkTheme: state.ui.useDarkTheme,
+				defaultCharacterTalkingZoom: state.ui.defaultCharacterTalkingZoom,
+			};
 			data.uploadUrls = {};
 			data.content = getDefaultContentState();
 
@@ -98,6 +108,8 @@ export default createStore({
 			data.content.current = combinedPack;
 
 			this.replaceState(data);
+
+			eventBus.fire(new InvalidateRenderEvent());
 		},
 	},
 	modules: { ui, panels, content, uploadUrls },

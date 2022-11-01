@@ -242,11 +242,6 @@ export async function convertContentPack(
 	) as ContentPack<IAssetSwitch>;
 }
 
-function error(msg: string, payload?: any): never {
-	console.error(msg, payload);
-	throw new Error(msg);
-}
-
 export type ReplaceContentPackAction =
 	| {
 			contentPack: ContentPack<string>;

@@ -27,6 +27,8 @@ import { RenderContext } from '@/renderer/rendererContext';
 import eventBus, {
 	ColorPickedEvent,
 	InvalidateRenderEvent,
+	RenderUpdatedEvent,
+	StateLoadingEvent,
 } from '@/eventbus/event-bus';
 import { IObject, ISetObjectPositionMutation } from '@/store/objects';
 import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
@@ -135,6 +137,7 @@ export default defineComponent({
 				console.log(e);
 			}
 			this.display();
+			eventBus.fire(new RenderUpdatedEvent());
 		},
 		renderLoadingScreen() {
 			const loadingScreen = document.createElement('canvas');
@@ -349,6 +352,12 @@ export default defineComponent({
 			};
 		}
 		eventBus.subscribe(InvalidateRenderEvent, () => this.invalidateRender());
+		eventBus.subscribe(StateLoadingEvent, () => {
+			const cache = this.sceneRendererCache;
+			if (cache) {
+				cache.setPanelId(-1);
+			}
+		});
 		this.$store.subscribe((mut: MutationPayload) => {
 			if (mut.type === 'panels/setPanelPreview') return;
 			if (mut.type === 'panels/currentPanel') return;
