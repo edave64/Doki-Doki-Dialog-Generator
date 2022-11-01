@@ -5781,10 +5781,10 @@ function mitt(n) {
     });
   } };
 }
-var __defProp$O = Object.defineProperty;
-var __defNormalProp$O = (obj, key, value) => key in obj ? __defProp$O(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$P = Object.defineProperty;
+var __defNormalProp$P = (obj, key, value) => key in obj ? __defProp$P(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$r = (obj, key, value) => {
-  __defNormalProp$O(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$P(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 const eventBus = mitt();
@@ -5826,6 +5826,20 @@ class InvalidateRenderEvent {
   }
 }
 __publicField$r(InvalidateRenderEvent, "kind", "InvalidateRenderEvent");
+const _RenderUpdatedEvent = class {
+  constructor() {
+    __publicField$r(this, "kind", _RenderUpdatedEvent.kind);
+  }
+};
+let RenderUpdatedEvent = _RenderUpdatedEvent;
+__publicField$r(RenderUpdatedEvent, "kind", "RenderUpdatedEvent");
+const _StateLoadingEvent = class {
+  constructor() {
+    __publicField$r(this, "kind", _StateLoadingEvent.kind);
+  }
+};
+let StateLoadingEvent = _StateLoadingEvent;
+__publicField$r(StateLoadingEvent, "kind", "StateLoadingEvent");
 class ShowMessageEvent {
   constructor(message) {
     this.message = message;
@@ -5856,10 +5870,10 @@ class VueErrorEvent {
   }
 }
 __publicField$r(VueErrorEvent, "kind", "VueErrorEvent");
-var __defProp$N = Object.defineProperty;
-var __defNormalProp$N = (obj, key, value) => key in obj ? __defProp$N(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$O = Object.defineProperty;
+var __defNormalProp$O = (obj, key, value) => key in obj ? __defProp$O(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$q = (obj, key, value) => {
-  __defNormalProp$N(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$O(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 class ErrorAsset {
@@ -5870,27 +5884,27 @@ class ErrorAsset {
   paintOnto(_fsCtx) {
   }
 }
-var __defProp$M = Object.defineProperty;
-var __defProps$m = Object.defineProperties;
-var __getOwnPropDescs$m = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$t = Object.getOwnPropertySymbols;
-var __hasOwnProp$t = Object.prototype.hasOwnProperty;
-var __propIsEnum$t = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$M = (obj, key, value) => key in obj ? __defProp$M(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$t = (a, b) => {
+var __defProp$N = Object.defineProperty;
+var __defProps$n = Object.defineProperties;
+var __getOwnPropDescs$n = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$u = Object.getOwnPropertySymbols;
+var __hasOwnProp$u = Object.prototype.hasOwnProperty;
+var __propIsEnum$u = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$N = (obj, key, value) => key in obj ? __defProp$N(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$u = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$t.call(b, prop))
-      __defNormalProp$M(a, prop, b[prop]);
-  if (__getOwnPropSymbols$t)
-    for (var prop of __getOwnPropSymbols$t(b)) {
-      if (__propIsEnum$t.call(b, prop))
-        __defNormalProp$M(a, prop, b[prop]);
+    if (__hasOwnProp$u.call(b, prop))
+      __defNormalProp$N(a, prop, b[prop]);
+  if (__getOwnPropSymbols$u)
+    for (var prop of __getOwnPropSymbols$u(b)) {
+      if (__propIsEnum$u.call(b, prop))
+        __defNormalProp$N(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$m = (a, b) => __defProps$m(a, __getOwnPropDescs$m(b));
+var __spreadProps$n = (a, b) => __defProps$n(a, __getOwnPropDescs$n(b));
 var __publicField$p = (obj, key, value) => {
-  __defNormalProp$M(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$N(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$C = (__this, __arguments, generator) => {
@@ -5971,7 +5985,7 @@ const _Repo = class {
         return true;
       }).map((packId) => {
         var _a2, _b2, _c;
-        return __spreadProps$m(__spreadValues$t(__spreadValues$t(__spreadValues$t({}, (_a2 = onlineRepoLookup.get(packId)) != null ? _a2 : {
+        return __spreadProps$n(__spreadValues$u(__spreadValues$u(__spreadValues$u({}, (_a2 = onlineRepoLookup.get(packId)) != null ? _a2 : {
           characters: [],
           kind: [],
           authors: []
@@ -5989,7 +6003,7 @@ const _Repo = class {
       const onlineAuthors = (_a = onlineRepo2 == null ? void 0 : onlineRepo2.authors) != null ? _a : {};
       const localRepo2 = this.localRepo.value;
       const localAuthors = (_b = localRepo2 == null ? void 0 : localRepo2.authors) != null ? _b : {};
-      return __spreadValues$t(__spreadValues$t({}, onlineAuthors), localAuthors);
+      return __spreadValues$u(__spreadValues$u({}, onlineAuthors), localAuthors);
     });
     Object.freeze(this);
   }
@@ -6100,24 +6114,24 @@ __publicField$p(Repo, "$store", new Promise(
     _Repo.setStore = resolve2;
   }
 ));
-var __defProp$L = Object.defineProperty;
-var __getOwnPropSymbols$s = Object.getOwnPropertySymbols;
-var __hasOwnProp$s = Object.prototype.hasOwnProperty;
-var __propIsEnum$s = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$L = (obj, key, value) => key in obj ? __defProp$L(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$s = (a, b) => {
+var __defProp$M = Object.defineProperty;
+var __getOwnPropSymbols$t = Object.getOwnPropertySymbols;
+var __hasOwnProp$t = Object.prototype.hasOwnProperty;
+var __propIsEnum$t = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$M = (obj, key, value) => key in obj ? __defProp$M(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$t = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$s.call(b, prop))
-      __defNormalProp$L(a, prop, b[prop]);
-  if (__getOwnPropSymbols$s)
-    for (var prop of __getOwnPropSymbols$s(b)) {
-      if (__propIsEnum$s.call(b, prop))
-        __defNormalProp$L(a, prop, b[prop]);
+    if (__hasOwnProp$t.call(b, prop))
+      __defNormalProp$M(a, prop, b[prop]);
+  if (__getOwnPropSymbols$t)
+    for (var prop of __getOwnPropSymbols$t(b)) {
+      if (__propIsEnum$t.call(b, prop))
+        __defNormalProp$M(a, prop, b[prop]);
     }
   return a;
 };
 var __publicField$o = (obj, key, value) => {
-  __defNormalProp$L(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$M(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$B = (__this, __arguments, generator) => {
@@ -6339,7 +6353,7 @@ class Browser {
       };
       if (!this.isSavingEnabled.value)
         return base;
-      return __spreadValues$s(__spreadValues$s({}, base), yield IndexedDBHandler.loadSettings());
+      return __spreadValues$t(__spreadValues$t({}, base), yield IndexedDBHandler.loadSettings());
     });
   }
   saveSettings(settings) {
@@ -6489,7 +6503,7 @@ const IndexedDBHandler = {
   },
   saveSettings(settings) {
     return this.objectStorePromise("readwrite", (store2) => __async$B(this, null, function* () {
-      yield this.reqPromise(store2.put(__spreadValues$s({}, settings), "settings"));
+      yield this.reqPromise(store2.put(__spreadValues$t({}, settings), "settings"));
     }));
   },
   loadSettings() {
@@ -6554,10 +6568,10 @@ class OldEdge extends Browser {
     });
   }
 }
-var __defProp$K = Object.defineProperty;
-var __defNormalProp$K = (obj, key, value) => key in obj ? __defProp$K(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$L = Object.defineProperty;
+var __defNormalProp$L = (obj, key, value) => key in obj ? __defProp$L(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$n = (obj, key, value) => {
-  __defNormalProp$K(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$L(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$z = (__this, __arguments, generator) => {
@@ -6912,24 +6926,24 @@ function chooseEnv() {
 }
 const envX = chooseEnv();
 window.toast = envX;
-var __defProp$J = Object.defineProperty;
-var __getOwnPropSymbols$r = Object.getOwnPropertySymbols;
-var __hasOwnProp$r = Object.prototype.hasOwnProperty;
-var __propIsEnum$r = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$J = (obj, key, value) => key in obj ? __defProp$J(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$r = (a, b) => {
+var __defProp$K = Object.defineProperty;
+var __getOwnPropSymbols$s = Object.getOwnPropertySymbols;
+var __hasOwnProp$s = Object.prototype.hasOwnProperty;
+var __propIsEnum$s = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$K = (obj, key, value) => key in obj ? __defProp$K(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$s = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$r.call(b, prop))
-      __defNormalProp$J(a, prop, b[prop]);
-  if (__getOwnPropSymbols$r)
-    for (var prop of __getOwnPropSymbols$r(b)) {
-      if (__propIsEnum$r.call(b, prop))
-        __defNormalProp$J(a, prop, b[prop]);
+    if (__hasOwnProp$s.call(b, prop))
+      __defNormalProp$K(a, prop, b[prop]);
+  if (__getOwnPropSymbols$s)
+    for (var prop of __getOwnPropSymbols$s(b)) {
+      if (__propIsEnum$s.call(b, prop))
+        __defNormalProp$K(a, prop, b[prop]);
     }
   return a;
 };
 var __publicField$m = (obj, key, value) => {
-  __defNormalProp$J(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$K(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 class ImageAsset {
@@ -6941,21 +6955,21 @@ class ImageAsset {
     this.height = html.height;
   }
   paintOnto(fsCtx, opts = {}) {
-    const { w, h: h2 } = __spreadValues$r({
+    const { w, h: h2 } = __spreadValues$s({
       w: this.width,
       h: this.height
     }, opts);
-    const { x, y } = __spreadValues$r({
+    const { x, y } = __spreadValues$s({
       x: -w / 2,
       y: -h2 / 2
     }, opts);
     fsCtx.drawImage(this.html, x, y, w, h2);
   }
 }
-var __defProp$I = Object.defineProperty;
-var __defNormalProp$I = (obj, key, value) => key in obj ? __defProp$I(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$J = Object.defineProperty;
+var __defNormalProp$J = (obj, key, value) => key in obj ? __defProp$J(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$l = (obj, key, value) => {
-  __defNormalProp$I(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$J(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$y = (__this, __arguments, generator) => {
@@ -7903,25 +7917,25 @@ function _sfc_render$s(_ctx, _cache, $props, $setup, $data, $options) {
   ], 10, _hoisted_1$o);
 }
 const DButton = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["render", _sfc_render$s], ["__scopeId", "data-v-b2a4f97d"]]);
-var __defProp$H = Object.defineProperty;
-var __defProps$l = Object.defineProperties;
-var __getOwnPropDescs$l = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$q = Object.getOwnPropertySymbols;
-var __hasOwnProp$q = Object.prototype.hasOwnProperty;
-var __propIsEnum$q = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$H = (obj, key, value) => key in obj ? __defProp$H(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$q = (a, b) => {
+var __defProp$I = Object.defineProperty;
+var __defProps$m = Object.defineProperties;
+var __getOwnPropDescs$m = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$r = Object.getOwnPropertySymbols;
+var __hasOwnProp$r = Object.prototype.hasOwnProperty;
+var __propIsEnum$r = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$I = (obj, key, value) => key in obj ? __defProp$I(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$r = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$q.call(b, prop))
-      __defNormalProp$H(a, prop, b[prop]);
-  if (__getOwnPropSymbols$q)
-    for (var prop of __getOwnPropSymbols$q(b)) {
-      if (__propIsEnum$q.call(b, prop))
-        __defNormalProp$H(a, prop, b[prop]);
+    if (__hasOwnProp$r.call(b, prop))
+      __defNormalProp$I(a, prop, b[prop]);
+  if (__getOwnPropSymbols$r)
+    for (var prop of __getOwnPropSymbols$r(b)) {
+      if (__propIsEnum$r.call(b, prop))
+        __defNormalProp$I(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$l = (a, b) => __defProps$l(a, __getOwnPropDescs$l(b));
+var __spreadProps$m = (a, b) => __defProps$m(a, __getOwnPropDescs$m(b));
 var __async$v = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -8103,7 +8117,7 @@ const _sfc_main$s = defineComponent({
         const old = this.$store.state.content.contentPacks.find(
           (x) => x.packId === uploadedSpritesPackDefault.packId
         ) || uploadedSpritesPackDefault;
-        const newPackVersion = __spreadProps$l(__spreadValues$q({}, old), {
+        const newPackVersion = __spreadProps$m(__spreadValues$r({}, old), {
           sprites: [
             ...old.sprites,
             {
@@ -8371,10 +8385,10 @@ const Base$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   BaseCharacterYPos: BaseCharacterYPos$1,
   characterPositions: characterPositions$1
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$G = Object.defineProperty;
-var __defNormalProp$G = (obj, key, value) => key in obj ? __defProp$G(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$H = Object.defineProperty;
+var __defNormalProp$H = (obj, key, value) => key in obj ? __defProp$H(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$k = (obj, key, value) => {
-  __defNormalProp$G(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$H(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 const _RGBAColor = class {
@@ -8711,25 +8725,25 @@ const TextBoxCustom$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.def
   textboxOutlineColorDelta: textboxOutlineColorDelta$1,
   textboxOutlineWidth: textboxOutlineWidth$1
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$F = Object.defineProperty;
-var __defProps$k = Object.defineProperties;
-var __getOwnPropDescs$k = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$p = Object.getOwnPropertySymbols;
-var __hasOwnProp$p = Object.prototype.hasOwnProperty;
-var __propIsEnum$p = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$F = (obj, key, value) => key in obj ? __defProp$F(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$p = (a, b) => {
+var __defProp$G = Object.defineProperty;
+var __defProps$l = Object.defineProperties;
+var __getOwnPropDescs$l = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$q = Object.getOwnPropertySymbols;
+var __hasOwnProp$q = Object.prototype.hasOwnProperty;
+var __propIsEnum$q = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$G = (obj, key, value) => key in obj ? __defProp$G(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$q = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$p.call(b, prop))
-      __defNormalProp$F(a, prop, b[prop]);
-  if (__getOwnPropSymbols$p)
-    for (var prop of __getOwnPropSymbols$p(b)) {
-      if (__propIsEnum$p.call(b, prop))
-        __defNormalProp$F(a, prop, b[prop]);
+    if (__hasOwnProp$q.call(b, prop))
+      __defNormalProp$G(a, prop, b[prop]);
+  if (__getOwnPropSymbols$q)
+    for (var prop of __getOwnPropSymbols$q(b)) {
+      if (__propIsEnum$q.call(b, prop))
+        __defNormalProp$G(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$k = (a, b) => __defProps$k(a, __getOwnPropDescs$k(b));
+var __spreadProps$l = (a, b) => __defProps$l(a, __getOwnPropDescs$l(b));
 const TextBoxWidth$1 = 816;
 const TextBoxCorruptedWidth$1 = 900;
 const TextBoxHeight$1 = 146;
@@ -8769,7 +8783,7 @@ const BaseTextStyle$1 = {
   strokeColor: "",
   strokeWidth: 0
 };
-const NameboxTextStyle$1 = __spreadProps$k(__spreadValues$p({}, BaseTextStyle$1), {
+const NameboxTextStyle$1 = __spreadProps$l(__spreadValues$q({}, BaseTextStyle$1), {
   fontName: "riffic",
   fontSize: 24,
   strokeColor: nameboxStrokeDefaultColor$1,
@@ -8784,7 +8798,7 @@ const ControlsTextStyle$1 = {
     style: "#522"
   }
 };
-const ControlsTextDisabledStyle$1 = __spreadProps$k(__spreadValues$p({}, ControlsTextStyle$1), {
+const ControlsTextDisabledStyle$1 = __spreadProps$l(__spreadValues$q({}, ControlsTextStyle$1), {
   fill: {
     style: "#a66"
   }
@@ -8866,31 +8880,31 @@ const TextBox$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePro
   ControlsXStuff: ControlsXStuff$1,
   DefaultTextboxStyle: DefaultTextboxStyle$1
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$E = Object.defineProperty;
-var __defProps$j = Object.defineProperties;
-var __getOwnPropDescs$j = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$o = Object.getOwnPropertySymbols;
-var __hasOwnProp$o = Object.prototype.hasOwnProperty;
-var __propIsEnum$o = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$E = (obj, key, value) => key in obj ? __defProp$E(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$o = (a, b) => {
+var __defProp$F = Object.defineProperty;
+var __defProps$k = Object.defineProperties;
+var __getOwnPropDescs$k = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$p = Object.getOwnPropertySymbols;
+var __hasOwnProp$p = Object.prototype.hasOwnProperty;
+var __propIsEnum$p = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$F = (obj, key, value) => key in obj ? __defProp$F(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$p = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$o.call(b, prop))
-      __defNormalProp$E(a, prop, b[prop]);
-  if (__getOwnPropSymbols$o)
-    for (var prop of __getOwnPropSymbols$o(b)) {
-      if (__propIsEnum$o.call(b, prop))
-        __defNormalProp$E(a, prop, b[prop]);
+    if (__hasOwnProp$p.call(b, prop))
+      __defNormalProp$F(a, prop, b[prop]);
+  if (__getOwnPropSymbols$p)
+    for (var prop of __getOwnPropSymbols$p(b)) {
+      if (__propIsEnum$p.call(b, prop))
+        __defNormalProp$F(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$j = (a, b) => __defProps$j(a, __getOwnPropDescs$j(b));
+var __spreadProps$k = (a, b) => __defProps$k(a, __getOwnPropDescs$k(b));
 const NotificationBackgroundColor$1 = "#ffe6f4";
 const NotificationBorderColor$1 = "#ffbde1";
 const NotificationBackdropColor$1 = "rgba(255,255,255,0.6)";
 const NotificationPadding$1 = 40;
 const NotificationSpacing$1 = 30;
-const NotificationOkTextStyle$1 = __spreadProps$j(__spreadValues$o({}, BaseTextStyle$1), {
+const NotificationOkTextStyle$1 = __spreadProps$k(__spreadValues$p({}, BaseTextStyle$1), {
   fontName: "riffic",
   fontSize: 24,
   strokeColor: nameboxStrokeDefaultColor$1,
@@ -8922,25 +8936,25 @@ const Notification$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defi
   NotificationOkTextStyle: NotificationOkTextStyle$1,
   NotificationTextStyle: NotificationTextStyle$1
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$D = Object.defineProperty;
-var __defProps$i = Object.defineProperties;
-var __getOwnPropDescs$i = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$n = Object.getOwnPropertySymbols;
-var __hasOwnProp$n = Object.prototype.hasOwnProperty;
-var __propIsEnum$n = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$D = (obj, key, value) => key in obj ? __defProp$D(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$n = (a, b) => {
+var __defProp$E = Object.defineProperty;
+var __defProps$j = Object.defineProperties;
+var __getOwnPropDescs$j = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$o = Object.getOwnPropertySymbols;
+var __hasOwnProp$o = Object.prototype.hasOwnProperty;
+var __propIsEnum$o = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$E = (obj, key, value) => key in obj ? __defProp$E(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$o = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$n.call(b, prop))
-      __defNormalProp$D(a, prop, b[prop]);
-  if (__getOwnPropSymbols$n)
-    for (var prop of __getOwnPropSymbols$n(b)) {
-      if (__propIsEnum$n.call(b, prop))
-        __defNormalProp$D(a, prop, b[prop]);
+    if (__hasOwnProp$o.call(b, prop))
+      __defNormalProp$E(a, prop, b[prop]);
+  if (__getOwnPropSymbols$o)
+    for (var prop of __getOwnPropSymbols$o(b)) {
+      if (__propIsEnum$o.call(b, prop))
+        __defNormalProp$E(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$i = (a, b) => __defProps$i(a, __getOwnPropDescs$i(b));
+var __spreadProps$j = (a, b) => __defProps$j(a, __getOwnPropDescs$j(b));
 const poemBackgrounds$1 = [
   { name: "Normal paper", file: "poem.jpg" },
   { name: "Lightly soiled paper", file: "poem_y1.jpg" },
@@ -8977,47 +8991,47 @@ const BasePoemStyle$1 = {
   fontSize: 12
 };
 const poemTextStyles$1 = [
-  __spreadProps$i(__spreadValues$n({}, BasePoemStyle$1), {
+  __spreadProps$j(__spreadValues$o({}, BasePoemStyle$1), {
     name: "Sayori",
     fontName: "hashtag",
     fontSize: 34,
     lineSpacing: 1.05,
     letterSpacing: 0
   }),
-  __spreadProps$i(__spreadValues$n({}, BasePoemStyle$1), {
+  __spreadProps$j(__spreadValues$o({}, BasePoemStyle$1), {
     name: "Natsuki",
     fontName: "ammy_handwriting",
     fontSize: 28
   }),
-  __spreadProps$i(__spreadValues$n({}, BasePoemStyle$1), {
+  __spreadProps$j(__spreadValues$o({}, BasePoemStyle$1), {
     name: "Monika",
     fontName: "journal",
     fontSize: 34
   }),
-  __spreadProps$i(__spreadValues$n({}, BasePoemStyle$1), {
+  __spreadProps$j(__spreadValues$o({}, BasePoemStyle$1), {
     name: "Yuri",
     fontName: "jp_hand_slanted",
     lineSpacing: 1.5,
     fontSize: 32
   }),
-  __spreadProps$i(__spreadValues$n({}, BasePoemStyle$1), {
+  __spreadProps$j(__spreadValues$o({}, BasePoemStyle$1), {
     name: "Yuri Act 2",
     fontName: "damagrafik_script",
     fontSize: 18,
     letterSpacing: -8
   }),
-  __spreadProps$i(__spreadValues$n({}, BasePoemStyle$1), {
+  __spreadProps$j(__spreadValues$o({}, BasePoemStyle$1), {
     name: "Yuri Unused",
     fontName: "as_i_lay_dying",
     fontSize: 40
   }),
-  __spreadProps$i(__spreadValues$n({}, BasePoemStyle$1), {
+  __spreadProps$j(__spreadValues$o({}, BasePoemStyle$1), {
     name: "MC",
     fontName: "halogen",
     fontSize: 30,
     lineSpacing: 1.53
   }),
-  __spreadProps$i(__spreadValues$n({}, BasePoemStyle$1), {
+  __spreadProps$j(__spreadValues$o({}, BasePoemStyle$1), {
     name: "Console",
     fontName: "f25_bank_printer",
     fontSize: 18,
@@ -9212,25 +9226,25 @@ const TextBoxCustom = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defin
   textboxOutlineColorDelta,
   textboxOutlineWidth
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$C = Object.defineProperty;
-var __defProps$h = Object.defineProperties;
-var __getOwnPropDescs$h = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$m = Object.getOwnPropertySymbols;
-var __hasOwnProp$m = Object.prototype.hasOwnProperty;
-var __propIsEnum$m = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$C = (obj, key, value) => key in obj ? __defProp$C(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$m = (a, b) => {
+var __defProp$D = Object.defineProperty;
+var __defProps$i = Object.defineProperties;
+var __getOwnPropDescs$i = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$n = Object.getOwnPropertySymbols;
+var __hasOwnProp$n = Object.prototype.hasOwnProperty;
+var __propIsEnum$n = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$D = (obj, key, value) => key in obj ? __defProp$D(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$n = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$m.call(b, prop))
-      __defNormalProp$C(a, prop, b[prop]);
-  if (__getOwnPropSymbols$m)
-    for (var prop of __getOwnPropSymbols$m(b)) {
-      if (__propIsEnum$m.call(b, prop))
-        __defNormalProp$C(a, prop, b[prop]);
+    if (__hasOwnProp$n.call(b, prop))
+      __defNormalProp$D(a, prop, b[prop]);
+  if (__getOwnPropSymbols$n)
+    for (var prop of __getOwnPropSymbols$n(b)) {
+      if (__propIsEnum$n.call(b, prop))
+        __defNormalProp$D(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$h = (a, b) => __defProps$h(a, __getOwnPropDescs$h(b));
+var __spreadProps$i = (a, b) => __defProps$i(a, __getOwnPropDescs$i(b));
 const TextBoxWidth = 1220;
 const TextBoxCorruptedWidth = 900;
 const TextBoxHeight = 219;
@@ -9268,7 +9282,7 @@ const BaseTextStyle = {
   strokeColor: "",
   strokeWidth: 0
 };
-const NameboxTextStyle = __spreadProps$h(__spreadValues$m({}, BaseTextStyle), {
+const NameboxTextStyle = __spreadProps$i(__spreadValues$n({}, BaseTextStyle), {
   fontName: "riffic",
   fontSize: 36,
   strokeColor: nameboxStrokeDefaultColor,
@@ -9283,7 +9297,7 @@ const ControlsTextStyle = {
     style: "#522"
   }
 };
-const ControlsTextDisabledStyle = __spreadProps$h(__spreadValues$m({}, ControlsTextStyle), {
+const ControlsTextDisabledStyle = __spreadProps$i(__spreadValues$n({}, ControlsTextStyle), {
   fill: {
     style: "#a66"
   }
@@ -9363,31 +9377,31 @@ const TextBox$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePro
   ControlsXStuff,
   DefaultTextboxStyle
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$B = Object.defineProperty;
-var __defProps$g = Object.defineProperties;
-var __getOwnPropDescs$g = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$l = Object.getOwnPropertySymbols;
-var __hasOwnProp$l = Object.prototype.hasOwnProperty;
-var __propIsEnum$l = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$B = (obj, key, value) => key in obj ? __defProp$B(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$l = (a, b) => {
+var __defProp$C = Object.defineProperty;
+var __defProps$h = Object.defineProperties;
+var __getOwnPropDescs$h = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$m = Object.getOwnPropertySymbols;
+var __hasOwnProp$m = Object.prototype.hasOwnProperty;
+var __propIsEnum$m = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$C = (obj, key, value) => key in obj ? __defProp$C(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$m = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$l.call(b, prop))
-      __defNormalProp$B(a, prop, b[prop]);
-  if (__getOwnPropSymbols$l)
-    for (var prop of __getOwnPropSymbols$l(b)) {
-      if (__propIsEnum$l.call(b, prop))
-        __defNormalProp$B(a, prop, b[prop]);
+    if (__hasOwnProp$m.call(b, prop))
+      __defNormalProp$C(a, prop, b[prop]);
+  if (__getOwnPropSymbols$m)
+    for (var prop of __getOwnPropSymbols$m(b)) {
+      if (__propIsEnum$m.call(b, prop))
+        __defNormalProp$C(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$g = (a, b) => __defProps$g(a, __getOwnPropDescs$g(b));
+var __spreadProps$h = (a, b) => __defProps$h(a, __getOwnPropDescs$h(b));
 const NotificationBackgroundColor = "#ffe6f4";
 const NotificationBorderColor = "#ffbde1";
 const NotificationBackdropColor = "rgba(255,255,255,0.6)";
 const NotificationPadding = 60;
 const NotificationSpacing = 45;
-const NotificationOkTextStyle = __spreadProps$g(__spreadValues$l({}, BaseTextStyle), {
+const NotificationOkTextStyle = __spreadProps$h(__spreadValues$m({}, BaseTextStyle), {
   fontName: "riffic",
   fontSize: 36,
   strokeColor: nameboxStrokeDefaultColor,
@@ -9419,25 +9433,25 @@ const Notification$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defi
   NotificationOkTextStyle,
   NotificationTextStyle
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$A = Object.defineProperty;
-var __defProps$f = Object.defineProperties;
-var __getOwnPropDescs$f = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$k = Object.getOwnPropertySymbols;
-var __hasOwnProp$k = Object.prototype.hasOwnProperty;
-var __propIsEnum$k = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$A = (obj, key, value) => key in obj ? __defProp$A(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$k = (a, b) => {
+var __defProp$B = Object.defineProperty;
+var __defProps$g = Object.defineProperties;
+var __getOwnPropDescs$g = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$l = Object.getOwnPropertySymbols;
+var __hasOwnProp$l = Object.prototype.hasOwnProperty;
+var __propIsEnum$l = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$B = (obj, key, value) => key in obj ? __defProp$B(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$l = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$k.call(b, prop))
-      __defNormalProp$A(a, prop, b[prop]);
-  if (__getOwnPropSymbols$k)
-    for (var prop of __getOwnPropSymbols$k(b)) {
-      if (__propIsEnum$k.call(b, prop))
-        __defNormalProp$A(a, prop, b[prop]);
+    if (__hasOwnProp$l.call(b, prop))
+      __defNormalProp$B(a, prop, b[prop]);
+  if (__getOwnPropSymbols$l)
+    for (var prop of __getOwnPropSymbols$l(b)) {
+      if (__propIsEnum$l.call(b, prop))
+        __defNormalProp$B(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$f = (a, b) => __defProps$f(a, __getOwnPropDescs$f(b));
+var __spreadProps$g = (a, b) => __defProps$g(a, __getOwnPropDescs$g(b));
 const poemBackgrounds = [
   { name: "Normal paper", file: "poem.jpg" },
   { name: "Lightly soiled paper", file: "poem_y1.jpg" },
@@ -9474,47 +9488,47 @@ const BasePoemStyle = {
   fontSize: 12
 };
 const poemTextStyles = [
-  __spreadProps$f(__spreadValues$k({}, BasePoemStyle), {
+  __spreadProps$g(__spreadValues$l({}, BasePoemStyle), {
     name: "Sayori",
     fontName: "hashtag",
     fontSize: 34,
     lineSpacing: 1.05,
     letterSpacing: 0
   }),
-  __spreadProps$f(__spreadValues$k({}, BasePoemStyle), {
+  __spreadProps$g(__spreadValues$l({}, BasePoemStyle), {
     name: "Natsuki",
     fontName: "ammy_handwriting",
     fontSize: 28
   }),
-  __spreadProps$f(__spreadValues$k({}, BasePoemStyle), {
+  __spreadProps$g(__spreadValues$l({}, BasePoemStyle), {
     name: "Monika",
     fontName: "journal",
     fontSize: 34
   }),
-  __spreadProps$f(__spreadValues$k({}, BasePoemStyle), {
+  __spreadProps$g(__spreadValues$l({}, BasePoemStyle), {
     name: "Yuri",
     fontName: "jp_hand_slanted",
     lineSpacing: 1.5,
     fontSize: 32
   }),
-  __spreadProps$f(__spreadValues$k({}, BasePoemStyle), {
+  __spreadProps$g(__spreadValues$l({}, BasePoemStyle), {
     name: "Yuri Act 2",
     fontName: "damagrafik_script",
     fontSize: 18,
     letterSpacing: -8
   }),
-  __spreadProps$f(__spreadValues$k({}, BasePoemStyle), {
+  __spreadProps$g(__spreadValues$l({}, BasePoemStyle), {
     name: "Yuri Unused",
     fontName: "as_i_lay_dying",
     fontSize: 40
   }),
-  __spreadProps$f(__spreadValues$k({}, BasePoemStyle), {
+  __spreadProps$g(__spreadValues$l({}, BasePoemStyle), {
     name: "MC",
     fontName: "halogen",
     fontSize: 30,
     lineSpacing: 1.53
   }),
-  __spreadProps$f(__spreadValues$k({}, BasePoemStyle), {
+  __spreadProps$g(__spreadValues$l({}, BasePoemStyle), {
     name: "Console",
     fontName: "f25_bank_printer",
     fontSize: 18,
@@ -9570,25 +9584,25 @@ function baseProps() {
     zoom: 1
   };
 }
-var __defProp$z = Object.defineProperty;
-var __defProps$e = Object.defineProperties;
-var __getOwnPropDescs$e = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$j = Object.getOwnPropertySymbols;
-var __hasOwnProp$j = Object.prototype.hasOwnProperty;
-var __propIsEnum$j = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$z = (obj, key, value) => key in obj ? __defProp$z(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$j = (a, b) => {
+var __defProp$A = Object.defineProperty;
+var __defProps$f = Object.defineProperties;
+var __getOwnPropDescs$f = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$k = Object.getOwnPropertySymbols;
+var __hasOwnProp$k = Object.prototype.hasOwnProperty;
+var __propIsEnum$k = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$A = (obj, key, value) => key in obj ? __defProp$A(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$k = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$j.call(b, prop))
-      __defNormalProp$z(a, prop, b[prop]);
-  if (__getOwnPropSymbols$j)
-    for (var prop of __getOwnPropSymbols$j(b)) {
-      if (__propIsEnum$j.call(b, prop))
-        __defNormalProp$z(a, prop, b[prop]);
+    if (__hasOwnProp$k.call(b, prop))
+      __defNormalProp$A(a, prop, b[prop]);
+  if (__getOwnPropSymbols$k)
+    for (var prop of __getOwnPropSymbols$k(b)) {
+      if (__propIsEnum$k.call(b, prop))
+        __defNormalProp$A(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$e = (a, b) => __defProps$e(a, __getOwnPropDescs$e(b));
+var __spreadProps$f = (a, b) => __defProps$f(a, __getOwnPropDescs$f(b));
 var __async$u = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -9632,7 +9646,7 @@ const characterMutations = {
   },
   setPosePosition(state, command) {
     const obj = state.panels[command.panelId].objects[command.id];
-    obj.posePositions = __spreadValues$j(__spreadValues$j({}, obj.posePositions), command.posePositions);
+    obj.posePositions = __spreadValues$k(__spreadValues$k({}, obj.posePositions), command.posePositions);
     ++obj.version;
   },
   setFreeMove(state, command) {
@@ -9687,7 +9701,7 @@ const characterActions = {
     const char = getDataG(rootGetters, command.characterType);
     const charScale = char.hd ? constants.Base.hdCharacterScaleFactor : constants.Base.sdCharacterScaleFactor;
     commit2("create", {
-      object: __spreadProps$e(__spreadValues$j({}, baseProps()), {
+      object: __spreadProps$f(__spreadValues$k({}, baseProps()), {
         id,
         panelId: rootState.panels.currentPanel,
         onTop: false,
@@ -9932,7 +9946,7 @@ function buildPoseAndPositionData(character) {
     styleGroupId: character.styleGroupId,
     styleId: character.styleId,
     poseId: character.poseId,
-    posePositions: __spreadValues$j({}, character.posePositions)
+    posePositions: __spreadValues$k({}, character.posePositions)
   };
 }
 function commitPoseAndPositionChanges(commit2, character, poseAndPosition) {
@@ -10141,25 +10155,25 @@ function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
   }, null, 38);
 }
 const PartButton = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$p], ["__scopeId", "data-v-037b2b66"]]);
-var __defProp$y = Object.defineProperty;
-var __defProps$d = Object.defineProperties;
-var __getOwnPropDescs$d = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$i = Object.getOwnPropertySymbols;
-var __hasOwnProp$i = Object.prototype.hasOwnProperty;
-var __propIsEnum$i = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$y = (obj, key, value) => key in obj ? __defProp$y(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$i = (a, b) => {
+var __defProp$z = Object.defineProperty;
+var __defProps$e = Object.defineProperties;
+var __getOwnPropDescs$e = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$j = Object.getOwnPropertySymbols;
+var __hasOwnProp$j = Object.prototype.hasOwnProperty;
+var __propIsEnum$j = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$z = (obj, key, value) => key in obj ? __defProp$z(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$j = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$i.call(b, prop))
-      __defNormalProp$y(a, prop, b[prop]);
-  if (__getOwnPropSymbols$i)
-    for (var prop of __getOwnPropSymbols$i(b)) {
-      if (__propIsEnum$i.call(b, prop))
-        __defNormalProp$y(a, prop, b[prop]);
+    if (__hasOwnProp$j.call(b, prop))
+      __defNormalProp$z(a, prop, b[prop]);
+  if (__getOwnPropSymbols$j)
+    for (var prop of __getOwnPropSymbols$j(b)) {
+      if (__propIsEnum$j.call(b, prop))
+        __defNormalProp$z(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$d = (a, b) => __defProps$d(a, __getOwnPropDescs$d(b));
+var __spreadProps$e = (a, b) => __defProps$e(a, __getOwnPropDescs$e(b));
 const _sfc_main$p = defineComponent({
   mixins: [VerticalScrollRedirect],
   props: {
@@ -10193,7 +10207,7 @@ const _sfc_main$p = defineComponent({
     const attrs = {};
     const flowContainer = h(
       "div",
-      __spreadProps$d(__spreadValues$i({}, attrs), {
+      __spreadProps$e(__spreadValues$j({}, attrs), {
         class: ["d-flow", this.finalDirection, wrapingClass],
         style: {
           gap: this.gap
@@ -10616,10 +10630,10 @@ function genericSimpleSetter(message) {
     };
   };
 }
-var __defProp$x = Object.defineProperty;
-var __defNormalProp$x = (obj, key, value) => key in obj ? __defProp$x(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$y = Object.defineProperty;
+var __defNormalProp$y = (obj, key, value) => key in obj ? __defProp$y(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$j = (obj, key, value) => {
-  __defNormalProp$x(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$y(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 const aroundContextSize = 5;
@@ -10772,72 +10786,72 @@ function tokenStateNewLine(contents, walker) {
   walker.next();
   return tokenStateNormal;
 }
-var __defProp$w = Object.defineProperty;
-var __defProps$c = Object.defineProperties;
-var __getOwnPropDescs$c = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$h = Object.getOwnPropertySymbols;
-var __hasOwnProp$h = Object.prototype.hasOwnProperty;
-var __propIsEnum$h = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$w = (obj, key, value) => key in obj ? __defProp$w(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$h = (a, b) => {
+var __defProp$x = Object.defineProperty;
+var __defProps$d = Object.defineProperties;
+var __getOwnPropDescs$d = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$i = Object.getOwnPropertySymbols;
+var __hasOwnProp$i = Object.prototype.hasOwnProperty;
+var __propIsEnum$i = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$x = (obj, key, value) => key in obj ? __defProp$x(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$i = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$h.call(b, prop))
-      __defNormalProp$w(a, prop, b[prop]);
-  if (__getOwnPropSymbols$h)
-    for (var prop of __getOwnPropSymbols$h(b)) {
-      if (__propIsEnum$h.call(b, prop))
-        __defNormalProp$w(a, prop, b[prop]);
+    if (__hasOwnProp$i.call(b, prop))
+      __defNormalProp$x(a, prop, b[prop]);
+  if (__getOwnPropSymbols$i)
+    for (var prop of __getOwnPropSymbols$i(b)) {
+      if (__propIsEnum$i.call(b, prop))
+        __defNormalProp$x(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$c = (a, b) => __defProps$c(a, __getOwnPropDescs$c(b));
+var __spreadProps$d = (a, b) => __defProps$d(a, __getOwnPropDescs$d(b));
 const textCommands = new Map([
-  paramlessOp("i", (style) => __spreadProps$c(__spreadValues$h({}, style), { isItalic: true })),
-  paramlessOp("b", (style) => __spreadProps$c(__spreadValues$h({}, style), { isBold: true })),
-  paramlessOp("u", (style) => __spreadProps$c(__spreadValues$h({}, style), { isUnderlined: true })),
-  paramlessOp("s", (style) => __spreadProps$c(__spreadValues$h({}, style), {
+  paramlessOp("i", (style) => __spreadProps$d(__spreadValues$i({}, style), { isItalic: true })),
+  paramlessOp("b", (style) => __spreadProps$d(__spreadValues$i({}, style), { isBold: true })),
+  paramlessOp("u", (style) => __spreadProps$d(__spreadValues$i({}, style), { isUnderlined: true })),
+  paramlessOp("s", (style) => __spreadProps$d(__spreadValues$i({}, style), {
     isStrikethrough: true
   })),
-  paramlessOp("plain", (style) => __spreadProps$c(__spreadValues$h({}, style), {
+  paramlessOp("plain", (style) => __spreadProps$d(__spreadValues$i({}, style), {
     isStrikethrough: false,
     isUnderlined: false,
     isBold: false,
     isItalic: false
   })),
-  paramlessOp("edited", (style) => __spreadProps$c(__spreadValues$h({}, style), {
+  paramlessOp("edited", (style) => __spreadProps$d(__spreadValues$i({}, style), {
     fontName: "verily",
     strokeColor: "#000000",
     strokeWidth: 20,
     letterSpacing: 8
   })),
-  relativeNumberOp("k", (style, relative, parameter) => __spreadProps$c(__spreadValues$h({}, style), {
+  relativeNumberOp("k", (style, relative, parameter) => __spreadProps$d(__spreadValues$i({}, style), {
     letterSpacing: relative ? style.letterSpacing + parameter : parameter
   })),
-  relativeNumberOp("size", (style, relative, parameter) => __spreadProps$c(__spreadValues$h({}, style), {
+  relativeNumberOp("size", (style, relative, parameter) => __spreadProps$d(__spreadValues$i({}, style), {
     fontSize: relative ? style.fontSize + parameter : parameter
   })),
-  relativeNumberOp("alpha", (style, relative, parameter) => __spreadProps$c(__spreadValues$h({}, style), {
+  relativeNumberOp("alpha", (style, relative, parameter) => __spreadProps$d(__spreadValues$i({}, style), {
     alpha: relative ? style.alpha + parameter : parameter
   })),
-  relativeNumberOp("stroke", (style, relative, parameter) => __spreadProps$c(__spreadValues$h({}, style), {
+  relativeNumberOp("stroke", (style, relative, parameter) => __spreadProps$d(__spreadValues$i({}, style), {
     strokeWidth: relative ? style.strokeWidth + parameter : parameter
   })),
   [
     "font",
     (style, parameter) => {
-      return __spreadProps$c(__spreadValues$h({}, style), { fontName: parameter });
+      return __spreadProps$d(__spreadValues$i({}, style), { fontName: parameter });
     }
   ],
   [
     "color",
     (style, parameter) => {
-      return __spreadProps$c(__spreadValues$h({}, style), { color: parameter });
+      return __spreadProps$d(__spreadValues$i({}, style), { color: parameter });
     }
   ],
   [
     "outlinecolor",
     (style, parameter) => {
-      return __spreadProps$c(__spreadValues$h({}, style), { strokeColor: parameter });
+      return __spreadProps$d(__spreadValues$i({}, style), { strokeColor: parameter });
     }
   ]
 ]);
@@ -10952,10 +10966,10 @@ window.addEventListener("unload", () => {
     disposeCanvas(disposable);
   });
 });
-var __defProp$v = Object.defineProperty;
-var __defNormalProp$v = (obj, key, value) => key in obj ? __defProp$v(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$w = Object.defineProperty;
+var __defNormalProp$w = (obj, key, value) => key in obj ? __defProp$w(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$i = (obj, key, value) => {
-  __defNormalProp$v(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$w(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$r = (__this, __arguments, generator) => {
@@ -11458,24 +11472,24 @@ function applyTextStyleToCanvas(style, ctx) {
 }
 class RenderAbortedException {
 }
-var __defProp$u = Object.defineProperty;
-var __getOwnPropSymbols$g = Object.getOwnPropertySymbols;
-var __hasOwnProp$g = Object.prototype.hasOwnProperty;
-var __propIsEnum$g = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$u = (obj, key, value) => key in obj ? __defProp$u(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$g = (a, b) => {
+var __defProp$v = Object.defineProperty;
+var __getOwnPropSymbols$h = Object.getOwnPropertySymbols;
+var __hasOwnProp$h = Object.prototype.hasOwnProperty;
+var __propIsEnum$h = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$v = (obj, key, value) => key in obj ? __defProp$v(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$h = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$g.call(b, prop))
-      __defNormalProp$u(a, prop, b[prop]);
-  if (__getOwnPropSymbols$g)
-    for (var prop of __getOwnPropSymbols$g(b)) {
-      if (__propIsEnum$g.call(b, prop))
-        __defNormalProp$u(a, prop, b[prop]);
+    if (__hasOwnProp$h.call(b, prop))
+      __defNormalProp$v(a, prop, b[prop]);
+  if (__getOwnPropSymbols$h)
+    for (var prop of __getOwnPropSymbols$h(b)) {
+      if (__propIsEnum$h.call(b, prop))
+        __defNormalProp$v(a, prop, b[prop]);
     }
   return a;
 };
 var __publicField$h = (obj, key, value) => {
-  __defNormalProp$u(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$v(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$q = (__this, __arguments, generator) => {
@@ -11522,7 +11536,7 @@ class RenderContext {
       x = 0,
       y = 0,
       text = ""
-    } = __spreadValues$g(__spreadValues$g({}, {
+    } = __spreadValues$h(__spreadValues$h({}, {
       font: "20px aller",
       align: "left"
     }), params);
@@ -11548,7 +11562,7 @@ class RenderContext {
       font,
       align,
       text = ""
-    } = __spreadValues$g(__spreadValues$g({}, {
+    } = __spreadValues$h(__spreadValues$h({}, {
       font: "20px aller",
       align: "left"
     }), params);
@@ -11571,7 +11585,7 @@ class RenderContext {
       throw new RenderAbortedException();
     if (params.image instanceof ErrorAsset)
       return;
-    const { image, flip, x, y, w, h: h2, filters: filters2, composite } = __spreadValues$g({
+    const { image, flip, x, y, w, h: h2, filters: filters2, composite } = __spreadValues$h({
       flip: false,
       w: params.image.width,
       h: params.image.height,
@@ -11752,10 +11766,10 @@ class RenderContext {
     this.aborted = true;
   }
 }
-var __defProp$t = Object.defineProperty;
-var __defNormalProp$t = (obj, key, value) => key in obj ? __defProp$t(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$u = Object.defineProperty;
+var __defNormalProp$u = (obj, key, value) => key in obj ? __defProp$u(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$g = (obj, key, value) => {
-  __defNormalProp$t(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$u(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$p = (__this, __arguments, generator) => {
@@ -11885,10 +11899,10 @@ function rotateAround(x, y, relX, relY, angle) {
   const rotatedY = angleSin * translatedX + angleCos * translatedY + relY;
   return [rotatedX, rotatedY];
 }
-var __defProp$s = Object.defineProperty;
-var __defNormalProp$s = (obj, key, value) => key in obj ? __defProp$s(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$t = Object.defineProperty;
+var __defNormalProp$t = (obj, key, value) => key in obj ? __defProp$t(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$f = (obj, key, value) => {
-  __defNormalProp$s(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$t(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$o = (__this, __arguments, generator) => {
@@ -12119,12 +12133,12 @@ class OffscreenRenderable {
     this.localRenderer = null;
   }
 }
-var __defProp$r = Object.defineProperty;
+var __defProp$s = Object.defineProperty;
 var __getProtoOf$1 = Object.getPrototypeOf;
 var __reflectGet$1 = Reflect.get;
-var __defNormalProp$r = (obj, key, value) => key in obj ? __defProp$r(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defNormalProp$s = (obj, key, value) => key in obj ? __defProp$s(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$e = (obj, key, value) => {
-  __defNormalProp$r(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$s(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __superGet$1 = (cls, obj, key) => __reflectGet$1(__getProtoOf$1(cls), key, obj);
@@ -12217,19 +12231,19 @@ class ScalingRenderable extends OffscreenRenderable {
     return false;
   }
 }
-var __defProp$q = Object.defineProperty;
-var __getOwnPropSymbols$f = Object.getOwnPropertySymbols;
-var __hasOwnProp$f = Object.prototype.hasOwnProperty;
-var __propIsEnum$f = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$q = (obj, key, value) => key in obj ? __defProp$q(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$f = (a, b) => {
+var __defProp$r = Object.defineProperty;
+var __getOwnPropSymbols$g = Object.getOwnPropertySymbols;
+var __hasOwnProp$g = Object.prototype.hasOwnProperty;
+var __propIsEnum$g = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$r = (obj, key, value) => key in obj ? __defProp$r(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$g = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$f.call(b, prop))
-      __defNormalProp$q(a, prop, b[prop]);
-  if (__getOwnPropSymbols$f)
-    for (var prop of __getOwnPropSymbols$f(b)) {
-      if (__propIsEnum$f.call(b, prop))
-        __defNormalProp$q(a, prop, b[prop]);
+    if (__hasOwnProp$g.call(b, prop))
+      __defNormalProp$r(a, prop, b[prop]);
+  if (__getOwnPropSymbols$g)
+    for (var prop of __getOwnPropSymbols$g(b)) {
+      if (__propIsEnum$g.call(b, prop))
+        __defNormalProp$r(a, prop, b[prop]);
     }
   return a;
 };
@@ -12275,27 +12289,27 @@ class DdlcBase {
     const x = baseX - w2;
     const controlsCenter = x + w / 2;
     const controlsStyle = this.getControlsStyle();
-    rx.drawText(__spreadValues$f({
+    rx.drawText(__spreadValues$g({
       text: "History",
       x: controlsCenter + ControlsXHistoryOffset$1,
       y
     }, controlsStyle));
-    rx.drawText(__spreadValues$f({
+    rx.drawText(__spreadValues$g({
       text: "Skip",
       x: controlsCenter + ControlsXSkipOffset$1,
       y
     }, this.base.obj.skip ? controlsStyle : this.getControlsDisabledStyle()));
-    rx.drawText(__spreadValues$f({
+    rx.drawText(__spreadValues$g({
       text: "Auto   Save   Load   Settings",
       x: controlsCenter + ControlsXStuffOffset$1,
       y
     }, controlsStyle));
   }
 }
-var __defProp$p = Object.defineProperty;
-var __defNormalProp$p = (obj, key, value) => key in obj ? __defProp$p(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$q = Object.defineProperty;
+var __defNormalProp$q = (obj, key, value) => key in obj ? __defProp$q(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$d = (obj, key, value) => {
-  __defNormalProp$p(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$q(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$m = (__this, __arguments, generator) => {
@@ -12398,10 +12412,10 @@ __publicField$d(Default, "id", "normal");
 __publicField$d(Default, "label", "Normal");
 __publicField$d(Default, "priority", 0);
 __publicField$d(Default, "gameMode", "ddlc");
-var __defProp$o = Object.defineProperty;
-var __defNormalProp$o = (obj, key, value) => key in obj ? __defProp$o(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$p = Object.defineProperty;
+var __defNormalProp$p = (obj, key, value) => key in obj ? __defProp$p(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$c = (obj, key, value) => {
-  __defNormalProp$o(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$p(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 class Corrupted extends Default {
@@ -12447,27 +12461,27 @@ function roundedTopRectangle(ctx, x, y, w, h2, r) {
   ctx.arcTo(x, y, x + w, y, r);
   ctx.closePath();
 }
-var __defProp$n = Object.defineProperty;
-var __defProps$b = Object.defineProperties;
-var __getOwnPropDescs$b = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$e = Object.getOwnPropertySymbols;
-var __hasOwnProp$e = Object.prototype.hasOwnProperty;
-var __propIsEnum$e = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$n = (obj, key, value) => key in obj ? __defProp$n(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$e = (a, b) => {
+var __defProp$o = Object.defineProperty;
+var __defProps$c = Object.defineProperties;
+var __getOwnPropDescs$c = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$f = Object.getOwnPropertySymbols;
+var __hasOwnProp$f = Object.prototype.hasOwnProperty;
+var __propIsEnum$f = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$o = (obj, key, value) => key in obj ? __defProp$o(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$f = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$e.call(b, prop))
-      __defNormalProp$n(a, prop, b[prop]);
-  if (__getOwnPropSymbols$e)
-    for (var prop of __getOwnPropSymbols$e(b)) {
-      if (__propIsEnum$e.call(b, prop))
-        __defNormalProp$n(a, prop, b[prop]);
+    if (__hasOwnProp$f.call(b, prop))
+      __defNormalProp$o(a, prop, b[prop]);
+  if (__getOwnPropSymbols$f)
+    for (var prop of __getOwnPropSymbols$f(b)) {
+      if (__propIsEnum$f.call(b, prop))
+        __defNormalProp$o(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$b = (a, b) => __defProps$b(a, __getOwnPropDescs$b(b));
+var __spreadProps$c = (a, b) => __defProps$c(a, __getOwnPropDescs$c(b));
 var __publicField$b = (obj, key, value) => {
-  __defNormalProp$n(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$o(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$l = (__this, __arguments, generator) => {
@@ -12523,7 +12537,7 @@ class Custom extends DdlcBase {
     return NameboxTextYOffset$1;
   }
   get nameboxStyle() {
-    return __spreadProps$b(__spreadValues$e({}, NameboxTextStyle$1), {
+    return __spreadProps$c(__spreadValues$f({}, NameboxTextStyle$1), {
       strokeColor: this.nameboxOutlineColor,
       color: "#FFFFFF"
     });
@@ -12741,10 +12755,10 @@ __publicField$b(Custom, "id", "custom");
 __publicField$b(Custom, "label", "Custom");
 __publicField$b(Custom, "priority", 0);
 __publicField$b(Custom, "gameMode", "ddlc");
-var __defProp$m = Object.defineProperty;
-var __defNormalProp$m = (obj, key, value) => key in obj ? __defProp$m(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$n = Object.defineProperty;
+var __defNormalProp$n = (obj, key, value) => key in obj ? __defProp$n(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$a = (obj, key, value) => {
-  __defNormalProp$m(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$n(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$k = (__this, __arguments, generator) => {
@@ -12807,24 +12821,24 @@ __publicField$a(None, "id", "none");
 __publicField$a(None, "label", "None");
 __publicField$a(None, "priority", 0);
 __publicField$a(None, "gameMode", "ddlc");
-var __defProp$l = Object.defineProperty;
-var __getOwnPropSymbols$d = Object.getOwnPropertySymbols;
-var __hasOwnProp$d = Object.prototype.hasOwnProperty;
-var __propIsEnum$d = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$l = (obj, key, value) => key in obj ? __defProp$l(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$d = (a, b) => {
+var __defProp$m = Object.defineProperty;
+var __getOwnPropSymbols$e = Object.getOwnPropertySymbols;
+var __hasOwnProp$e = Object.prototype.hasOwnProperty;
+var __propIsEnum$e = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$m = (obj, key, value) => key in obj ? __defProp$m(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$e = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$d.call(b, prop))
-      __defNormalProp$l(a, prop, b[prop]);
-  if (__getOwnPropSymbols$d)
-    for (var prop of __getOwnPropSymbols$d(b)) {
-      if (__propIsEnum$d.call(b, prop))
-        __defNormalProp$l(a, prop, b[prop]);
+    if (__hasOwnProp$e.call(b, prop))
+      __defNormalProp$m(a, prop, b[prop]);
+  if (__getOwnPropSymbols$e)
+    for (var prop of __getOwnPropSymbols$e(b)) {
+      if (__propIsEnum$e.call(b, prop))
+        __defNormalProp$m(a, prop, b[prop]);
     }
   return a;
 };
 var __publicField$9 = (obj, key, value) => {
-  __defNormalProp$l(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$m(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 const _DdlcPlusBase = class {
@@ -12879,7 +12893,7 @@ const _DdlcPlusBase = class {
       const text = texts[i];
       const textWidth = textWidths[i];
       const style = text === "Skip" && !this.base.obj.skip ? this.getControlsDisabledStyle() : controlsStyle;
-      rx.drawText(__spreadValues$d({
+      rx.drawText(__spreadValues$e({
         text,
         x: controlX,
         y
@@ -12890,34 +12904,34 @@ const _DdlcPlusBase = class {
   static controlWidth(rx, text) {
     if (this.widthCache[text])
       return this.widthCache[text];
-    const width = rx.measureText(__spreadValues$d({ text }, ControlsTextStyle)).width;
+    const width = rx.measureText(__spreadValues$e({ text }, ControlsTextStyle)).width;
     this.widthCache[text] = width;
     return width;
   }
 };
 let DdlcPlusBase = _DdlcPlusBase;
 __publicField$9(DdlcPlusBase, "widthCache", {});
-var __defProp$k = Object.defineProperty;
-var __defProps$a = Object.defineProperties;
-var __getOwnPropDescs$a = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$c = Object.getOwnPropertySymbols;
-var __hasOwnProp$c = Object.prototype.hasOwnProperty;
-var __propIsEnum$c = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$k = (obj, key, value) => key in obj ? __defProp$k(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$c = (a, b) => {
+var __defProp$l = Object.defineProperty;
+var __defProps$b = Object.defineProperties;
+var __getOwnPropDescs$b = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$d = Object.getOwnPropertySymbols;
+var __hasOwnProp$d = Object.prototype.hasOwnProperty;
+var __propIsEnum$d = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$l = (obj, key, value) => key in obj ? __defProp$l(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$d = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$c.call(b, prop))
-      __defNormalProp$k(a, prop, b[prop]);
-  if (__getOwnPropSymbols$c)
-    for (var prop of __getOwnPropSymbols$c(b)) {
-      if (__propIsEnum$c.call(b, prop))
-        __defNormalProp$k(a, prop, b[prop]);
+    if (__hasOwnProp$d.call(b, prop))
+      __defNormalProp$l(a, prop, b[prop]);
+  if (__getOwnPropSymbols$d)
+    for (var prop of __getOwnPropSymbols$d(b)) {
+      if (__propIsEnum$d.call(b, prop))
+        __defNormalProp$l(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$a = (a, b) => __defProps$a(a, __getOwnPropDescs$a(b));
+var __spreadProps$b = (a, b) => __defProps$b(a, __getOwnPropDescs$b(b));
 var __publicField$8 = (obj, key, value) => {
-  __defNormalProp$k(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$l(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$j = (__this, __arguments, generator) => {
@@ -12973,7 +12987,7 @@ class CustomPlus extends DdlcPlusBase {
     return NameboxTextYOffset;
   }
   get nameboxStyle() {
-    return __spreadProps$a(__spreadValues$c({}, NameboxTextStyle), {
+    return __spreadProps$b(__spreadValues$d({}, NameboxTextStyle), {
       strokeColor: this.nameboxOutlineColor,
       color: "#FFFFFF"
     });
@@ -13194,10 +13208,10 @@ __publicField$8(CustomPlus, "id", "custom_plus");
 __publicField$8(CustomPlus, "label", "Custom (Plus)");
 __publicField$8(CustomPlus, "priority", 0);
 __publicField$8(CustomPlus, "gameMode", "ddlc_plus");
-var __defProp$j = Object.defineProperty;
-var __defNormalProp$j = (obj, key, value) => key in obj ? __defProp$j(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$k = Object.defineProperty;
+var __defNormalProp$k = (obj, key, value) => key in obj ? __defProp$k(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$7 = (obj, key, value) => {
-  __defNormalProp$j(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$k(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$i = (__this, __arguments, generator) => {
@@ -14115,25 +14129,25 @@ function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const SliderGroup = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["render", _sfc_render$j], ["__scopeId", "data-v-f8c6e84c"]]);
-var __defProp$i = Object.defineProperty;
-var __defProps$9 = Object.defineProperties;
-var __getOwnPropDescs$9 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$b = Object.getOwnPropertySymbols;
-var __hasOwnProp$b = Object.prototype.hasOwnProperty;
-var __propIsEnum$b = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$i = (obj, key, value) => key in obj ? __defProp$i(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$b = (a, b) => {
+var __defProp$j = Object.defineProperty;
+var __defProps$a = Object.defineProperties;
+var __getOwnPropDescs$a = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$c = Object.getOwnPropertySymbols;
+var __hasOwnProp$c = Object.prototype.hasOwnProperty;
+var __propIsEnum$c = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$j = (obj, key, value) => key in obj ? __defProp$j(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$c = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$b.call(b, prop))
-      __defNormalProp$i(a, prop, b[prop]);
-  if (__getOwnPropSymbols$b)
-    for (var prop of __getOwnPropSymbols$b(b)) {
-      if (__propIsEnum$b.call(b, prop))
-        __defNormalProp$i(a, prop, b[prop]);
+    if (__hasOwnProp$c.call(b, prop))
+      __defNormalProp$j(a, prop, b[prop]);
+  if (__getOwnPropSymbols$c)
+    for (var prop of __getOwnPropSymbols$c(b)) {
+      if (__propIsEnum$c.call(b, prop))
+        __defNormalProp$j(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$9 = (a, b) => __defProps$9(a, __getOwnPropDescs$9(b));
+var __spreadProps$a = (a, b) => __defProps$a(a, __getOwnPropDescs$a(b));
 const generatedPackId = "dddg.uploads.colors";
 const _sfc_main$i = defineComponent({
   components: {
@@ -14216,7 +14230,7 @@ const _sfc_main$i = defineComponent({
         poemBackgrounds: [],
         colors: []
       };
-      const newPack = __spreadProps$9(__spreadValues$b({}, existingPack), {
+      const newPack = __spreadProps$a(__spreadValues$c({}, existingPack), {
         colors: [
           ...existingPack.colors,
           {
@@ -14323,19 +14337,19 @@ function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
   ], 2);
 }
 const Color = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$i], ["__scopeId", "data-v-fff22846"]]);
-var __defProp$h = Object.defineProperty;
-var __getOwnPropSymbols$a = Object.getOwnPropertySymbols;
-var __hasOwnProp$a = Object.prototype.hasOwnProperty;
-var __propIsEnum$a = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$h = (obj, key, value) => key in obj ? __defProp$h(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$a = (a, b) => {
+var __defProp$i = Object.defineProperty;
+var __getOwnPropSymbols$b = Object.getOwnPropertySymbols;
+var __hasOwnProp$b = Object.prototype.hasOwnProperty;
+var __propIsEnum$b = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$i = (obj, key, value) => key in obj ? __defProp$i(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$b = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$a.call(b, prop))
-      __defNormalProp$h(a, prop, b[prop]);
-  if (__getOwnPropSymbols$a)
-    for (var prop of __getOwnPropSymbols$a(b)) {
-      if (__propIsEnum$a.call(b, prop))
-        __defNormalProp$h(a, prop, b[prop]);
+    if (__hasOwnProp$b.call(b, prop))
+      __defNormalProp$i(a, prop, b[prop]);
+  if (__getOwnPropSymbols$b)
+    for (var prop of __getOwnPropSymbols$b(b)) {
+      if (__propIsEnum$b.call(b, prop))
+        __defNormalProp$i(a, prop, b[prop]);
     }
   return a;
 };
@@ -14416,7 +14430,7 @@ function moveFilter(action, objLookup, setMutation) {
 function setFilter(action, objLookup, setMutation) {
   const obj = objLookup();
   const filters2 = [...obj.filters];
-  const filter = __spreadValues$a({}, filters2[action.idx]);
+  const filter = __spreadValues$b({}, filters2[action.idx]);
   filters2[action.idx] = filter;
   if (filter.type === "drop-shadow") {
     if (action.blurRadius !== void 0) {
@@ -14440,19 +14454,19 @@ function setFilter(action, objLookup, setMutation) {
     filters: filters2
   });
 }
-var __defProp$g = Object.defineProperty;
-var __getOwnPropSymbols$9 = Object.getOwnPropertySymbols;
-var __hasOwnProp$9 = Object.prototype.hasOwnProperty;
-var __propIsEnum$9 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$g = (obj, key, value) => key in obj ? __defProp$g(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$9 = (a, b) => {
+var __defProp$h = Object.defineProperty;
+var __getOwnPropSymbols$a = Object.getOwnPropertySymbols;
+var __hasOwnProp$a = Object.prototype.hasOwnProperty;
+var __propIsEnum$a = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$h = (obj, key, value) => key in obj ? __defProp$h(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$a = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$9.call(b, prop))
-      __defNormalProp$g(a, prop, b[prop]);
-  if (__getOwnPropSymbols$9)
-    for (var prop of __getOwnPropSymbols$9(b)) {
-      if (__propIsEnum$9.call(b, prop))
-        __defNormalProp$g(a, prop, b[prop]);
+    if (__hasOwnProp$a.call(b, prop))
+      __defNormalProp$h(a, prop, b[prop]);
+  if (__getOwnPropSymbols$a)
+    for (var prop of __getOwnPropSymbols$a(b)) {
+      if (__propIsEnum$a.call(b, prop))
+        __defNormalProp$h(a, prop, b[prop]);
     }
   return a;
 };
@@ -14731,7 +14745,7 @@ const _sfc_main$h = defineComponent({
     },
     setValue(value) {
       this.vuexHistory.transaction(() => {
-        this.$store.dispatch(this.objectTypeScope("setFilter"), __spreadValues$9({
+        this.$store.dispatch(this.objectTypeScope("setFilter"), __spreadValues$a({
           id: this.id,
           panelId: this.panelId,
           idx: this.currentFilterIdx
@@ -15919,25 +15933,25 @@ function between(min, val, max) {
     return max;
   return val;
 }
-var __defProp$f = Object.defineProperty;
-var __defProps$8 = Object.defineProperties;
-var __getOwnPropDescs$8 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$8 = Object.getOwnPropertySymbols;
-var __hasOwnProp$8 = Object.prototype.hasOwnProperty;
-var __propIsEnum$8 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$f = (obj, key, value) => key in obj ? __defProp$f(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$8 = (a, b) => {
+var __defProp$g = Object.defineProperty;
+var __defProps$9 = Object.defineProperties;
+var __getOwnPropDescs$9 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$9 = Object.getOwnPropertySymbols;
+var __hasOwnProp$9 = Object.prototype.hasOwnProperty;
+var __propIsEnum$9 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$g = (obj, key, value) => key in obj ? __defProp$g(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$9 = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$8.call(b, prop))
-      __defNormalProp$f(a, prop, b[prop]);
-  if (__getOwnPropSymbols$8)
-    for (var prop of __getOwnPropSymbols$8(b)) {
-      if (__propIsEnum$8.call(b, prop))
-        __defNormalProp$f(a, prop, b[prop]);
+    if (__hasOwnProp$9.call(b, prop))
+      __defNormalProp$g(a, prop, b[prop]);
+  if (__getOwnPropSymbols$9)
+    for (var prop of __getOwnPropSymbols$9(b)) {
+      if (__propIsEnum$9.call(b, prop))
+        __defNormalProp$g(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$8 = (a, b) => __defProps$8(a, __getOwnPropDescs$8(b));
+var __spreadProps$9 = (a, b) => __defProps$9(a, __getOwnPropDescs$9(b));
 var __async$f = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -16002,7 +16016,7 @@ const textBoxActions = {
       rotation: 0
     };
     commit2("create", {
-      object: __spreadProps$8(__spreadValues$8(__spreadValues$8({}, baseProps()), resetBounds), {
+      object: __spreadProps$9(__spreadValues$9(__spreadValues$9({}, baseProps()), resetBounds), {
         panelId: rootState.panels.currentPanel,
         id,
         onTop: true,
@@ -17338,25 +17352,25 @@ function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
   }, 8, ["class"]);
 }
 const BackgroundSettings = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$8], ["__scopeId", "data-v-c3bc3296"]]);
-var __defProp$e = Object.defineProperty;
-var __defProps$7 = Object.defineProperties;
-var __getOwnPropDescs$7 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$7 = Object.getOwnPropertySymbols;
-var __hasOwnProp$7 = Object.prototype.hasOwnProperty;
-var __propIsEnum$7 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$e = (obj, key, value) => key in obj ? __defProp$e(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$7 = (a, b) => {
+var __defProp$f = Object.defineProperty;
+var __defProps$8 = Object.defineProperties;
+var __getOwnPropDescs$8 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$8 = Object.getOwnPropertySymbols;
+var __hasOwnProp$8 = Object.prototype.hasOwnProperty;
+var __propIsEnum$8 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$f = (obj, key, value) => key in obj ? __defProp$f(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$8 = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$7.call(b, prop))
-      __defNormalProp$e(a, prop, b[prop]);
-  if (__getOwnPropSymbols$7)
-    for (var prop of __getOwnPropSymbols$7(b)) {
-      if (__propIsEnum$7.call(b, prop))
-        __defNormalProp$e(a, prop, b[prop]);
+    if (__hasOwnProp$8.call(b, prop))
+      __defNormalProp$f(a, prop, b[prop]);
+  if (__getOwnPropSymbols$8)
+    for (var prop of __getOwnPropSymbols$8(b)) {
+      if (__propIsEnum$8.call(b, prop))
+        __defNormalProp$f(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$7 = (a, b) => __defProps$7(a, __getOwnPropDescs$7(b));
+var __spreadProps$8 = (a, b) => __defProps$8(a, __getOwnPropDescs$8(b));
 var __async$e = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -17470,7 +17484,7 @@ const _sfc_main$7 = defineComponent({
       const old = this.$store.state.content.contentPacks.find(
         (x) => x.packId === uploadedBackgroundsPackDefaults.packId
       ) || uploadedBackgroundsPackDefaults;
-      const newPackVersion = __spreadProps$7(__spreadValues$7({}, old), {
+      const newPackVersion = __spreadProps$8(__spreadValues$8({}, old), {
         backgrounds: [
           ...old.backgrounds,
           {
@@ -17598,25 +17612,25 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
   ], 32);
 }
 const BackgroundsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7], ["__scopeId", "data-v-2ee6c538"]]);
-var __defProp$d = Object.defineProperty;
-var __defProps$6 = Object.defineProperties;
-var __getOwnPropDescs$6 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$6 = Object.getOwnPropertySymbols;
-var __hasOwnProp$6 = Object.prototype.hasOwnProperty;
-var __propIsEnum$6 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$d = (obj, key, value) => key in obj ? __defProp$d(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$6 = (a, b) => {
+var __defProp$e = Object.defineProperty;
+var __defProps$7 = Object.defineProperties;
+var __getOwnPropDescs$7 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$7 = Object.getOwnPropertySymbols;
+var __hasOwnProp$7 = Object.prototype.hasOwnProperty;
+var __propIsEnum$7 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$e = (obj, key, value) => key in obj ? __defProp$e(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$7 = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$6.call(b, prop))
-      __defNormalProp$d(a, prop, b[prop]);
-  if (__getOwnPropSymbols$6)
-    for (var prop of __getOwnPropSymbols$6(b)) {
-      if (__propIsEnum$6.call(b, prop))
-        __defNormalProp$d(a, prop, b[prop]);
+    if (__hasOwnProp$7.call(b, prop))
+      __defNormalProp$e(a, prop, b[prop]);
+  if (__getOwnPropSymbols$7)
+    for (var prop of __getOwnPropSymbols$7(b)) {
+      if (__propIsEnum$7.call(b, prop))
+        __defNormalProp$e(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$6 = (a, b) => __defProps$6(a, __getOwnPropDescs$6(b));
+var __spreadProps$7 = (a, b) => __defProps$7(a, __getOwnPropDescs$7(b));
 var __async$d = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -17646,7 +17660,7 @@ const spriteActions = {
         return;
       const id = state.panels[command.panelId].lastObjId + 1;
       commit2("create", {
-        object: __spreadProps$6(__spreadValues$6({}, baseProps()), {
+        object: __spreadProps$7(__spreadValues$7({}, baseProps()), {
           assets: command.assets,
           height: asset.height,
           width: asset.width,
@@ -17664,25 +17678,25 @@ const spriteActions = {
     });
   }
 };
-var __defProp$c = Object.defineProperty;
-var __defProps$5 = Object.defineProperties;
-var __getOwnPropDescs$5 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$5 = Object.getOwnPropertySymbols;
-var __hasOwnProp$5 = Object.prototype.hasOwnProperty;
-var __propIsEnum$5 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$c = (obj, key, value) => key in obj ? __defProp$c(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$5 = (a, b) => {
+var __defProp$d = Object.defineProperty;
+var __defProps$6 = Object.defineProperties;
+var __getOwnPropDescs$6 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$6 = Object.getOwnPropertySymbols;
+var __hasOwnProp$6 = Object.prototype.hasOwnProperty;
+var __propIsEnum$6 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$d = (obj, key, value) => key in obj ? __defProp$d(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$6 = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$5.call(b, prop))
-      __defNormalProp$c(a, prop, b[prop]);
-  if (__getOwnPropSymbols$5)
-    for (var prop of __getOwnPropSymbols$5(b)) {
-      if (__propIsEnum$5.call(b, prop))
-        __defNormalProp$c(a, prop, b[prop]);
+    if (__hasOwnProp$6.call(b, prop))
+      __defNormalProp$d(a, prop, b[prop]);
+  if (__getOwnPropSymbols$6)
+    for (var prop of __getOwnPropSymbols$6(b)) {
+      if (__propIsEnum$6.call(b, prop))
+        __defNormalProp$d(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$5 = (a, b) => __defProps$5(a, __getOwnPropDescs$5(b));
+var __spreadProps$6 = (a, b) => __defProps$6(a, __getOwnPropDescs$6(b));
 const choiceMutations = {
   setChoicesProperty(state, command) {
     const obj = state.panels[command.panelId].objects[command.id];
@@ -17705,7 +17719,7 @@ const choiceActions = {
     const constants = getConstants();
     const id = state.panels[command.panelId].lastObjId + 1;
     commit2("create", {
-      object: __spreadProps$5(__spreadValues$5({}, baseProps()), {
+      object: __spreadProps$6(__spreadValues$6({}, baseProps()), {
         y: constants.Choices.ChoiceY,
         width: constants.Choices.ChoiceButtonWidth,
         height: 0,
@@ -17759,6 +17773,56 @@ const choiceActions = {
     });
   }
 };
+var __defProp$c = Object.defineProperty;
+var __defProps$5 = Object.defineProperties;
+var __getOwnPropDescs$5 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$5 = Object.getOwnPropertySymbols;
+var __hasOwnProp$5 = Object.prototype.hasOwnProperty;
+var __propIsEnum$5 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$c = (obj, key, value) => key in obj ? __defProp$c(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$5 = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$5.call(b, prop))
+      __defNormalProp$c(a, prop, b[prop]);
+  if (__getOwnPropSymbols$5)
+    for (var prop of __getOwnPropSymbols$5(b)) {
+      if (__propIsEnum$5.call(b, prop))
+        __defNormalProp$c(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$5 = (a, b) => __defProps$5(a, __getOwnPropDescs$5(b));
+const notificationMutations = {
+  setNotificationProperty(state, command) {
+    const obj = state.panels[command.panelId].objects[command.id];
+    obj[command.key] = command.value;
+    ++obj.version;
+  }
+};
+const notificationActions = {
+  createNotification({ commit: commit2, rootState, state }, command) {
+    const constants = getConstants();
+    const id = state.panels[command.panelId].lastObjId + 1;
+    commit2("create", {
+      object: __spreadProps$5(__spreadValues$5({}, baseProps()), {
+        y: constants.Base.screenHeight / 2,
+        width: constants.Choices.ChoiceButtonWidth,
+        height: 0,
+        panelId: rootState.panels.currentPanel,
+        autoWrap: false,
+        id,
+        onTop: true,
+        type: "notification",
+        preserveRatio: false,
+        ratio: constants.TextBox.TextBoxWidth / constants.TextBox.TextBoxHeight,
+        customColor: constants.Choices.ChoiceButtonColor,
+        text: "Click here to edit notification",
+        backdrop: true
+      })
+    });
+    return id;
+  }
+};
 var __defProp$b = Object.defineProperty;
 var __defProps$4 = Object.defineProperties;
 var __getOwnPropDescs$4 = Object.getOwnPropertyDescriptors;
@@ -17778,56 +17842,6 @@ var __spreadValues$4 = (a, b) => {
   return a;
 };
 var __spreadProps$4 = (a, b) => __defProps$4(a, __getOwnPropDescs$4(b));
-const notificationMutations = {
-  setNotificationProperty(state, command) {
-    const obj = state.panels[command.panelId].objects[command.id];
-    obj[command.key] = command.value;
-    ++obj.version;
-  }
-};
-const notificationActions = {
-  createNotification({ commit: commit2, rootState, state }, command) {
-    const constants = getConstants();
-    const id = state.panels[command.panelId].lastObjId + 1;
-    commit2("create", {
-      object: __spreadProps$4(__spreadValues$4({}, baseProps()), {
-        y: constants.Base.screenHeight / 2,
-        width: constants.Choices.ChoiceButtonWidth,
-        height: 0,
-        panelId: rootState.panels.currentPanel,
-        autoWrap: false,
-        id,
-        onTop: true,
-        type: "notification",
-        preserveRatio: false,
-        ratio: constants.TextBox.TextBoxWidth / constants.TextBox.TextBoxHeight,
-        customColor: constants.Choices.ChoiceButtonColor,
-        text: "Click here to edit notification",
-        backdrop: true
-      })
-    });
-    return id;
-  }
-};
-var __defProp$a = Object.defineProperty;
-var __defProps$3 = Object.defineProperties;
-var __getOwnPropDescs$3 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$3 = Object.getOwnPropertySymbols;
-var __hasOwnProp$3 = Object.prototype.hasOwnProperty;
-var __propIsEnum$3 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$a = (obj, key, value) => key in obj ? __defProp$a(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$3 = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$3.call(b, prop))
-      __defNormalProp$a(a, prop, b[prop]);
-  if (__getOwnPropSymbols$3)
-    for (var prop of __getOwnPropSymbols$3(b)) {
-      if (__propIsEnum$3.call(b, prop))
-        __defNormalProp$a(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$3 = (a, b) => __defProps$3(a, __getOwnPropDescs$3(b));
 const poemMutations = {
   setPoemProperty(state, command) {
     const obj = state.panels[command.panelId].objects[command.id];
@@ -17875,7 +17889,7 @@ const poemActions = {
     const constants = getConstants();
     const id = state.panels[_command.panelId].lastObjId + 1;
     commit2("create", {
-      object: __spreadProps$3(__spreadValues$3({}, baseProps()), {
+      object: __spreadProps$4(__spreadValues$4({}, baseProps()), {
         subType: "console",
         x: constants.Poem.consoleWidth / 2,
         y: constants.Poem.consoleHeight / 2,
@@ -17896,26 +17910,26 @@ const poemActions = {
     return id;
   }
 };
-var __defProp$9 = Object.defineProperty;
-var __defProps$2 = Object.defineProperties;
-var __getOwnPropDescs$2 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$2 = Object.getOwnPropertySymbols;
-var __hasOwnProp$2 = Object.prototype.hasOwnProperty;
-var __propIsEnum$2 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$9 = (obj, key, value) => key in obj ? __defProp$9(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$2 = (a, b) => {
+var __defProp$a = Object.defineProperty;
+var __defProps$3 = Object.defineProperties;
+var __getOwnPropDescs$3 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$3 = Object.getOwnPropertySymbols;
+var __hasOwnProp$3 = Object.prototype.hasOwnProperty;
+var __propIsEnum$3 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$a = (obj, key, value) => key in obj ? __defProp$a(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$3 = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$2.call(b, prop))
-      __defNormalProp$9(a, prop, b[prop]);
-  if (__getOwnPropSymbols$2)
-    for (var prop of __getOwnPropSymbols$2(b)) {
-      if (__propIsEnum$2.call(b, prop))
-        __defNormalProp$9(a, prop, b[prop]);
+    if (__hasOwnProp$3.call(b, prop))
+      __defNormalProp$a(a, prop, b[prop]);
+  if (__getOwnPropSymbols$3)
+    for (var prop of __getOwnPropSymbols$3(b)) {
+      if (__propIsEnum$3.call(b, prop))
+        __defNormalProp$a(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$2 = (a, b) => __defProps$2(a, __getOwnPropDescs$2(b));
-const mutations = __spreadValues$2(__spreadValues$2(__spreadValues$2(__spreadValues$2(__spreadValues$2(__spreadValues$2({
+var __spreadProps$3 = (a, b) => __defProps$3(a, __getOwnPropDescs$3(b));
+const mutations = __spreadValues$3(__spreadValues$3(__spreadValues$3(__spreadValues$3(__spreadValues$3(__spreadValues$3({
   create(state, { object }) {
     const panel = state.panels[object.panelId];
     if (object.id > panel.lastObjId)
@@ -18011,7 +18025,7 @@ const mutations = __spreadValues$2(__spreadValues$2(__spreadValues$2(__spreadVal
     ++obj.version;
   }
 }, spriteMutations), characterMutations), textBoxMutations), choiceMutations), notificationMutations), poemMutations);
-const actions = __spreadValues$2(__spreadValues$2(__spreadValues$2(__spreadValues$2(__spreadValues$2(__spreadValues$2({
+const actions = __spreadValues$3(__spreadValues$3(__spreadValues$3(__spreadValues$3(__spreadValues$3(__spreadValues$3({
   removeObject({ state, commit: commit2, rootState }, command) {
     var _a;
     const panel = state.panels[command.panelId];
@@ -18151,7 +18165,7 @@ const actions = __spreadValues$2(__spreadValues$2(__spreadValues$2(__spreadValue
         }
       }
       commit2("create", {
-        object: __spreadProps$2(__spreadValues$2({}, newObject), {
+        object: __spreadProps$3(__spreadValues$3({}, newObject), {
           id: transationTable.get(sourceId),
           panelId: targetPanelId
         })
@@ -18167,7 +18181,7 @@ const actions = __spreadValues$2(__spreadValues$2(__spreadValues$2(__spreadValue
       return;
     const oldObject = JSON.parse(rootState.ui.clipboard);
     commit2("create", {
-      object: __spreadProps$2(__spreadValues$2({}, oldObject), {
+      object: __spreadProps$3(__spreadValues$3({}, oldObject), {
         id: state.panels[state.currentPanel].lastObjId + 1,
         panelId: state.currentPanel
       })
@@ -18220,25 +18234,25 @@ function fixContentPackRemoval(context, oldContent) {
     }
   }
 }
-var __defProp$8 = Object.defineProperty;
-var __defProps$1 = Object.defineProperties;
-var __getOwnPropDescs$1 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$1 = Object.getOwnPropertySymbols;
-var __hasOwnProp$1 = Object.prototype.hasOwnProperty;
-var __propIsEnum$1 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$8 = (obj, key, value) => key in obj ? __defProp$8(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$1 = (a, b) => {
+var __defProp$9 = Object.defineProperty;
+var __defProps$2 = Object.defineProperties;
+var __getOwnPropDescs$2 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$2 = Object.getOwnPropertySymbols;
+var __hasOwnProp$2 = Object.prototype.hasOwnProperty;
+var __propIsEnum$2 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$9 = (obj, key, value) => key in obj ? __defProp$9(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$2 = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$1.call(b, prop))
-      __defNormalProp$8(a, prop, b[prop]);
-  if (__getOwnPropSymbols$1)
-    for (var prop of __getOwnPropSymbols$1(b)) {
-      if (__propIsEnum$1.call(b, prop))
-        __defNormalProp$8(a, prop, b[prop]);
+    if (__hasOwnProp$2.call(b, prop))
+      __defNormalProp$9(a, prop, b[prop]);
+  if (__getOwnPropSymbols$2)
+    for (var prop of __getOwnPropSymbols$2(b)) {
+      if (__propIsEnum$2.call(b, prop))
+        __defNormalProp$9(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$1 = (a, b) => __defProps$1(a, __getOwnPropDescs$1(b));
+var __spreadProps$2 = (a, b) => __defProps$2(a, __getOwnPropDescs$2(b));
 var ScalingModes = /* @__PURE__ */ ((ScalingModes2) => {
   ScalingModes2[ScalingModes2["None"] = 0] = "None";
   ScalingModes2[ScalingModes2["Stretch"] = 1] = "Stretch";
@@ -18282,7 +18296,7 @@ const panels = {
     panelOrder: [],
     currentPanel: null
   },
-  mutations: __spreadValues$1({
+  mutations: __spreadValues$2({
     setCurrentPanel(state, { panelId }) {
       state.currentPanel = panelId;
     },
@@ -18342,7 +18356,7 @@ const panels = {
       obj.background.filters = command.filters;
     }
   }, mutations),
-  actions: __spreadValues$1({
+  actions: __spreadValues$2({
     createPanel({ state, commit: commit2 }) {
       const id = state.lastPanelId + 1;
       commit2("createPanel", {
@@ -18401,7 +18415,7 @@ const panels = {
         }
       }
       commit2("createPanel", {
-        panel: __spreadProps$1(__spreadValues$1({}, newPanel), {
+        panel: __spreadProps$2(__spreadValues$2({}, newPanel), {
           id,
           lastObjId,
           objects: newObjects,
@@ -18658,10 +18672,10 @@ const color = {
     });
   }
 };
-var __defProp$7 = Object.defineProperty;
-var __defNormalProp$7 = (obj, key, value) => key in obj ? __defProp$7(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$8 = Object.defineProperty;
+var __defNormalProp$8 = (obj, key, value) => key in obj ? __defProp$8(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$6 = (obj, key, value) => {
-  __defNormalProp$7(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$8(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$b = (__this, __arguments, generator) => {
@@ -18764,10 +18778,10 @@ function loadAssets(unloaded, hq) {
     };
   });
 }
-var __defProp$6 = Object.defineProperty;
-var __defNormalProp$6 = (obj, key, value) => key in obj ? __defProp$6(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$7 = Object.defineProperty;
+var __defNormalProp$7 = (obj, key, value) => key in obj ? __defProp$7(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$5 = (obj, key, value) => {
-  __defNormalProp$6(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$7(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$a = (__this, __arguments, generator) => {
@@ -18836,10 +18850,10 @@ class Sprite extends AssetListRenderable {
     return (_a = this.assets) != null ? _a : [];
   }
 }
-var __defProp$5 = Object.defineProperty;
-var __defNormalProp$5 = (obj, key, value) => key in obj ? __defProp$5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$6 = Object.defineProperty;
+var __defNormalProp$6 = (obj, key, value) => key in obj ? __defProp$6(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$4 = (obj, key, value) => {
-  __defNormalProp$5(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$6(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 class Character extends AssetListRenderable {
@@ -18911,10 +18925,10 @@ class Character extends AssetListRenderable {
     return this.obj.height * this.closeZoom;
   }
 }
-var __defProp$4 = Object.defineProperty;
-var __defNormalProp$4 = (obj, key, value) => key in obj ? __defProp$4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$5 = Object.defineProperty;
+var __defNormalProp$5 = (obj, key, value) => key in obj ? __defProp$5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$3 = (obj, key, value) => {
-  __defNormalProp$4(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$5(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$9 = (__this, __arguments, generator) => {
@@ -19002,12 +19016,12 @@ class Choice extends ScalingRenderable {
     });
   }
 }
-var __defProp$3 = Object.defineProperty;
+var __defProp$4 = Object.defineProperty;
 var __getProtoOf = Object.getPrototypeOf;
 var __reflectGet = Reflect.get;
-var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defNormalProp$4 = (obj, key, value) => key in obj ? __defProp$4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$2 = (obj, key, value) => {
-  __defNormalProp$3(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$4(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __superGet = (cls, obj, key) => __reflectGet(__getProtoOf(cls), key, obj);
@@ -19122,10 +19136,10 @@ class Notification extends ScalingRenderable {
     });
   }
 }
-var __defProp$2 = Object.defineProperty;
-var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$3 = Object.defineProperty;
+var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$1 = (obj, key, value) => {
-  __defNormalProp$2(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$3(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$7 = (__this, __arguments, generator) => {
@@ -19219,10 +19233,10 @@ class Poem extends ScalingRenderable {
     });
   }
 }
-var __defProp$1 = Object.defineProperty;
-var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$2 = Object.defineProperty;
+var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => {
-  __defNormalProp$1(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$2(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$6 = (__this, __arguments, generator) => {
@@ -19494,6 +19508,10 @@ const _sfc_main$6 = defineComponent({
   },
   created() {
     return __async$5(this, null, function* () {
+      eventBus$1.subscribe(
+        RenderUpdatedEvent,
+        () => requestAnimationFrame(() => this.renderThumbnail())
+      );
       const baseConst = getConstants().Base;
       const targetCanvas = makeCanvas();
       targetCanvas.width = baseConst.screenWidth * thumbnailFactor;
@@ -19507,8 +19525,8 @@ const _sfc_main$6 = defineComponent({
   },
   mounted() {
     this.moveFocusToActivePanel();
-    this.renderThumbnail().catch(() => {
-    });
+    requestAnimationFrame(() => this.renderThumbnail().catch(() => {
+    }));
   },
   unmounted() {
     disposeCanvas(this.thumbnailCtx.canvas);
@@ -19812,6 +19830,7 @@ const _sfc_main$6 = defineComponent({
           const uploadInput = this.$refs.loadUpload;
           if (!uploadInput.files)
             return;
+          eventBus$1.fire(new StateLoadingEvent());
           const data = yield blobToText(uploadInput.files[0]);
           yield this.$store.dispatch("loadSave", data);
         }));
@@ -19864,8 +19883,8 @@ function blobToText(file) {
     reader.readAsText(file);
   });
 }
-const panels_vue_vue_type_style_index_0_scoped_dfe32347_lang = "";
-const _withScopeId$2 = (n) => (pushScopeId("data-v-dfe32347"), n = n(), popScopeId(), n);
+const panels_vue_vue_type_style_index_0_scoped_e5aec7f1_lang = "";
+const _withScopeId$2 = (n) => (pushScopeId("data-v-e5aec7f1"), n = n(), popScopeId(), n);
 const _hoisted_1$6 = { class: "panel" };
 const _hoisted_2$5 = /* @__PURE__ */ _withScopeId$2(() => /* @__PURE__ */ createBaseVNode("h1", null, "Panels", -1));
 const _hoisted_3$4 = ["onClick", "onKeydown"];
@@ -20143,7 +20162,7 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64))
   ]);
 }
-const PanelsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__scopeId", "data-v-dfe32347"]]);
+const PanelsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__scopeId", "data-v-e5aec7f1"]]);
 const setableN = genericSimpleSetter("panels/setNotificationProperty");
 const _sfc_main$5 = defineComponent({
   mixins: [PanelMixin],
@@ -20867,11 +20886,12 @@ const _sfc_main$1 = defineComponent({
         if (this.$store.state.unsafe)
           return;
         try {
-          yield this.sceneRender.render(!this.lqRendering, true);
+          yield this.sceneRender.render(!this.lqRendering, true, false);
         } catch (e) {
           console.log(e);
         }
         this.display();
+        eventBus$1.fire(new RenderUpdatedEvent());
       });
     },
     renderLoadingScreen() {
@@ -21083,6 +21103,12 @@ const _sfc_main$1 = defineComponent({
         };
       }
       eventBus$1.subscribe(InvalidateRenderEvent, () => this.invalidateRender());
+      eventBus$1.subscribe(StateLoadingEvent, () => {
+        const cache = this.sceneRendererCache;
+        if (cache) {
+          cache.setPanelId(-1);
+        }
+      });
       this.$store.subscribe((mut) => {
         if (mut.type === "panels/setPanelPreview")
           return;
@@ -21167,10 +21193,10 @@ const _sfc_main = defineComponent({
     Render,
     ModalDialog,
     SingleBox: defineAsyncComponent(
-      () => __vitePreload(() => import("./SingleBox.24554176.js"), true ? ["SingleBox.24554176.js","SingleBox.378faf79.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./SingleBox.95856a42.js"), true ? ["SingleBox.95856a42.js","SingleBox.378faf79.css"] : void 0, import.meta.url)
     ),
     ExpressionBuilder: defineAsyncComponent(
-      () => __vitePreload(() => import("./index.6c34a058.js"), true ? ["index.6c34a058.js","index.aa47b381.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.db1270b3.js"), true ? ["index.db1270b3.js","index.aa47b381.css"] : void 0, import.meta.url)
     )
   },
   data: () => ({
@@ -21610,25 +21636,25 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   ], 64);
 }
 const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
-var __defProp = Object.defineProperty;
-var __defProps = Object.defineProperties;
-var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues = (a, b) => {
+var __defProp$1 = Object.defineProperty;
+var __defProps$1 = Object.defineProperties;
+var __getOwnPropDescs$1 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$1 = Object.getOwnPropertySymbols;
+var __hasOwnProp$1 = Object.prototype.hasOwnProperty;
+var __propIsEnum$1 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$1 = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp.call(b, prop))
-      __defNormalProp(a, prop, b[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b)) {
-      if (__propIsEnum.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
+    if (__hasOwnProp$1.call(b, prop))
+      __defNormalProp$1(a, prop, b[prop]);
+  if (__getOwnPropSymbols$1)
+    for (var prop of __getOwnPropSymbols$1(b)) {
+      if (__propIsEnum$1.call(b, prop))
+        __defNormalProp$1(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+var __spreadProps$1 = (a, b) => __defProps$1(a, __getOwnPropDescs$1(b));
 function mergeContentPacks(x, y) {
   return {
     backgrounds: mergeBackgrounds(x.backgrounds, y.backgrounds),
@@ -21638,7 +21664,7 @@ function mergeContentPacks(x, y) {
       x.fonts,
       y.fonts,
       (obj) => obj.id,
-      (xObj, yObj) => __spreadProps(__spreadValues({}, xObj), {
+      (xObj, yObj) => __spreadProps$1(__spreadValues$1({}, xObj), {
         files: mergeArrayUnique(xObj.files, yObj.files)
       })
     ),
@@ -21743,7 +21769,7 @@ function mergeCharacter(x, y) {
   };
 }
 function mergeStyleClasses(x, y) {
-  const ret = __spreadValues({}, x);
+  const ret = __spreadValues$1({}, x);
   for (const classKey in y) {
     if (!y.hasOwnProperty(classKey))
       continue;
@@ -21754,7 +21780,7 @@ function mergeStyleClasses(x, y) {
   return ret;
 }
 function mergePose(x, y) {
-  const positions2 = __spreadValues({}, x.positions);
+  const positions2 = __spreadValues$1({}, x.positions);
   for (const key in y.positions) {
     if (positions2[key]) {
       positions2[key] = [...positions2[key], ...y.positions[key]];
@@ -21774,7 +21800,7 @@ function mergePose(x, y) {
   };
 }
 function mergeHeadCollections(x, y) {
-  const ret = __spreadValues({}, x);
+  const ret = __spreadValues$1({}, x);
   for (const headGroupKey in y) {
     if (!y.hasOwnProperty(headGroupKey))
       continue;
@@ -24196,6 +24222,25 @@ const uploadUrls = {
     }
   }
 };
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 var __async2 = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -24262,7 +24307,14 @@ const store = createStore({
       return __async2(this, arguments, function* ({ state }, str) {
         const data = JSON.parse(str);
         const contentData = data.content;
-        data.ui = getDefaultUiState();
+        data.ui = __spreadProps(__spreadValues({}, getDefaultUiState()), {
+          vertical: state.ui.vertical,
+          lqRendering: state.ui.lqRendering,
+          nsfw: state.ui.nsfw,
+          clipboard: state.ui.clipboard,
+          useDarkTheme: state.ui.useDarkTheme,
+          defaultCharacterTalkingZoom: state.ui.defaultCharacterTalkingZoom
+        });
         data.uploadUrls = {};
         data.content = getDefaultContentState();
         const repo = yield Repo.getInstance();
@@ -24297,6 +24349,7 @@ const store = createStore({
         }
         data.content.current = combinedPack;
         this.replaceState(data);
+        eventBus$1.fire(new InvalidateRenderEvent());
       });
     }
   },
