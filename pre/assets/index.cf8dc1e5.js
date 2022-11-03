@@ -8145,8 +8145,8 @@ const _sfc_main$s = defineComponent({
     });
   }
 });
-const add_vue_vue_type_style_index_0_scoped_14c097ea_lang = "";
-const _withScopeId$e = (n) => (pushScopeId("data-v-14c097ea"), n = n(), popScopeId(), n);
+const add_vue_vue_type_style_index_0_scoped_24e67e76_lang = "";
+const _withScopeId$e = (n) => (pushScopeId("data-v-24e67e76"), n = n(), popScopeId(), n);
 const _hoisted_1$n = /* @__PURE__ */ createTextVNode("Drop here to add as a new sprite ");
 const _hoisted_2$l = /* @__PURE__ */ _withScopeId$e(() => /* @__PURE__ */ createBaseVNode("h1", null, "Add", -1));
 const _hoisted_3$j = /* @__PURE__ */ createTextVNode(" Char\xADacters ");
@@ -8334,7 +8334,7 @@ function _sfc_render$r(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)
   ], 32)) : createCommentVNode("", true);
 }
-const AddPanel = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$r], ["__scopeId", "data-v-14c097ea"]]);
+const AddPanel = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$r], ["__scopeId", "data-v-24e67e76"]]);
 function arraySeeker(array, pos, delta) {
   let val = pos + delta;
   const length = array.length;
@@ -10139,7 +10139,7 @@ const _sfc_main$q = defineComponent({
     }
   }
 });
-const partButton_vue_vue_type_style_index_0_scoped_037b2b66_lang = "";
+const partButton_vue_vue_type_style_index_0_scoped_aa6e96cb_lang = "";
 function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
   var _a;
   return openBlock(), createElementBlock("div", {
@@ -10154,7 +10154,7 @@ function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
     ]
   }, null, 38);
 }
-const PartButton = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$p], ["__scopeId", "data-v-037b2b66"]]);
+const PartButton = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$p], ["__scopeId", "data-v-aa6e96cb"]]);
 var __defProp$z = Object.defineProperty;
 var __defProps$e = Object.defineProperties;
 var __getOwnPropDescs$e = Object.getOwnPropertyDescriptors;
@@ -10859,7 +10859,7 @@ function paramlessOp(name, op) {
   return [
     name,
     (style, parameter) => {
-      if (parameter != null) {
+      if (parameter !== "") {
         throw new Error(`Operator '${name}' does not take any arguments.`);
       }
       return op(style);
@@ -10870,7 +10870,7 @@ function relativeNumberOp(name, op) {
   return [
     name,
     (style, parameter) => {
-      if (parameter == null || parameter == "")
+      if (parameter == "")
         throw new Error(`Operator '${name}' needs an argument.`);
       const relative = parameter[0] === "+" || parameter[0] === "-";
       const num = Number(parameter);
@@ -10992,7 +10992,7 @@ var __async$r = (__this, __arguments, generator) => {
     step((generator = generator.apply(__this, __arguments)).next());
   });
 };
-const _TextRenderer = class {
+class TextRenderer {
   constructor(str, baseStyle) {
     this.str = str;
     this.baseStyle = baseStyle;
@@ -11018,7 +11018,7 @@ const _TextRenderer = class {
     this.rebuildParts();
   }
   rebuildParts() {
-    this.renderParts = _TextRenderer.getRenderParts(
+    this.renderParts = TextRenderer.getRenderParts(
       this.tokens,
       this.baseStyle,
       this.loose
@@ -11051,7 +11051,7 @@ const _TextRenderer = class {
       }
       if (neededToLoad) {
         const tokens = tokenize(this.str);
-        this.renderParts = _TextRenderer.getRenderParts(
+        this.renderParts = TextRenderer.getRenderParts(
           tokens,
           this.baseStyle,
           this.loose
@@ -11198,7 +11198,7 @@ const _TextRenderer = class {
     }
     let renderParts = this.renderParts;
     if (maxLineWidth > 0) {
-      renderParts = _TextRenderer.applyLineWrapping(
+      renderParts = TextRenderer.applyLineWrapping(
         this.renderParts.slice(0),
         maxLineWidth
       );
@@ -11239,7 +11239,7 @@ const _TextRenderer = class {
   getHeight(maxLineWidth) {
     let lineHeight = 0;
     let height = 0;
-    const renderParts = maxLineWidth === 0 ? this.renderParts : _TextRenderer.applyLineWrapping(
+    const renderParts = maxLineWidth === 0 ? this.renderParts : TextRenderer.applyLineWrapping(
       this.renderParts.slice(0),
       maxLineWidth
     );
@@ -11297,10 +11297,10 @@ const _TextRenderer = class {
       const type = token.type;
       switch (type) {
         case "command":
-          if (_TextRenderer.textCommands.has(token.commandName)) {
+          if (textCommands.has(token.commandName)) {
             styleStack.push(currentStyle);
             tagStack.push(currentTag);
-            currentStyle = _TextRenderer.textCommands.get(token.commandName)(
+            currentStyle = textCommands.get(token.commandName)(
               currentStyle,
               token.argument
             );
@@ -11412,9 +11412,7 @@ const _TextRenderer = class {
     }
     return newParts;
   }
-};
-let TextRenderer = _TextRenderer;
-__publicField$i(TextRenderer, "textCommands", textCommands);
+}
 const tmpCanvas = makeCanvas();
 tmpCanvas.width = 0;
 tmpCanvas.height = 0;
@@ -14253,7 +14251,7 @@ const _sfc_main$i = defineComponent({
     }
   }
 });
-const color_vue_vue_type_style_index_0_scoped_fff22846_lang = "";
+const color_vue_vue_type_style_index_0_scoped_5ebdee88_lang = "";
 const _hoisted_1$h = { class: "column" };
 const _hoisted_2$f = { class: "hex-selector" };
 const _hoisted_3$d = ["for"];
@@ -14336,7 +14334,7 @@ function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)
   ], 2);
 }
-const Color = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$i], ["__scopeId", "data-v-fff22846"]]);
+const Color = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$i], ["__scopeId", "data-v-5ebdee88"]]);
 var __defProp$i = Object.defineProperty;
 var __getOwnPropSymbols$b = Object.getOwnPropertySymbols;
 var __hasOwnProp$b = Object.prototype.hasOwnProperty;
@@ -17172,7 +17170,7 @@ const _sfc_main$9 = defineComponent({
     }
   }
 });
-const button_vue_vue_type_style_index_0_scoped_f141eda2_lang = "";
+const button_vue_vue_type_style_index_0_scoped_e727d6d8_lang = "";
 const _hoisted_1$9 = ["title"];
 function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
@@ -17187,7 +17185,7 @@ function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
     ]
   }, toDisplayString(_ctx.title), 47, _hoisted_1$9);
 }
-const BackgroundButton = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$9], ["__scopeId", "data-v-f141eda2"]]);
+const BackgroundButton = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$9], ["__scopeId", "data-v-e727d6d8"]]);
 const _sfc_main$8 = defineComponent({
   components: { Toggle: ToggleBox, DFieldset },
   computed: {
@@ -17519,8 +17517,8 @@ const _sfc_main$7 = defineComponent({
     }
   }
 });
-const backgrounds_vue_vue_type_style_index_0_scoped_2ee6c538_lang = "";
-const _withScopeId$3 = (n) => (pushScopeId("data-v-2ee6c538"), n = n(), popScopeId(), n);
+const backgrounds_vue_vue_type_style_index_0_scoped_dd870fc5_lang = "";
+const _withScopeId$3 = (n) => (pushScopeId("data-v-dd870fc5"), n = n(), popScopeId(), n);
 const _hoisted_1$7 = /* @__PURE__ */ createTextVNode("Drop here to add as a new background ");
 const _hoisted_2$6 = /* @__PURE__ */ _withScopeId$3(() => /* @__PURE__ */ createBaseVNode("h1", null, "Background", -1));
 const _hoisted_3$5 = /* @__PURE__ */ createTextVNode(" Upload ");
@@ -17611,7 +17609,7 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64))
   ], 32);
 }
-const BackgroundsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7], ["__scopeId", "data-v-2ee6c538"]]);
+const BackgroundsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7], ["__scopeId", "data-v-dd870fc5"]]);
 var __defProp$e = Object.defineProperty;
 var __defProps$7 = Object.defineProperties;
 var __getOwnPropDescs$7 = Object.getOwnPropertyDescriptors;
@@ -19883,8 +19881,8 @@ function blobToText(file) {
     reader.readAsText(file);
   });
 }
-const panels_vue_vue_type_style_index_0_scoped_e5aec7f1_lang = "";
-const _withScopeId$2 = (n) => (pushScopeId("data-v-e5aec7f1"), n = n(), popScopeId(), n);
+const panels_vue_vue_type_style_index_0_scoped_9ef644f2_lang = "";
+const _withScopeId$2 = (n) => (pushScopeId("data-v-9ef644f2"), n = n(), popScopeId(), n);
 const _hoisted_1$6 = { class: "panel" };
 const _hoisted_2$5 = /* @__PURE__ */ _withScopeId$2(() => /* @__PURE__ */ createBaseVNode("h1", null, "Panels", -1));
 const _hoisted_3$4 = ["onClick", "onKeydown"];
@@ -20162,7 +20160,7 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64))
   ]);
 }
-const PanelsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__scopeId", "data-v-e5aec7f1"]]);
+const PanelsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__scopeId", "data-v-9ef644f2"]]);
 const setableN = genericSimpleSetter("panels/setNotificationProperty");
 const _sfc_main$5 = defineComponent({
   mixins: [PanelMixin],
@@ -21154,6 +21152,14 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   }, "HTML5 is required to use the Doki Doki Dialog Generator. ", 44, _hoisted_1$1);
 }
 const Render = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
+const NsfwPacks = {
+  "dddg.buildin.backgrounds.nsfw": `${baseUrl}packs/buildin.base.backgrounds.nsfw.json`,
+  "dddg.buildin.sayori.nsfw": `${baseUrl}packs/buildin.base.sayori.nsfw.json`,
+  "dddg.buildin.base.natsuki.nsfw": `${baseUrl}packs/buildin.base.natsuki.nsfw.json`,
+  "dddg.buildin.yuri.nsfw": `${baseUrl}packs/buildin.base.yuri.nsfw.json`
+};
+const NsfwNames = new Set(Object.keys(NsfwPacks));
+const NsfwPaths = Object.values(NsfwPacks);
 var __async$2 = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -21178,14 +21184,6 @@ const aspectRatio = 16 / 9;
 const arrowMoveStepSize = 20;
 const packDialogWaitMs = 50;
 const canvasTooSmallThreshold = 200;
-const nsfwPacks = {
-  "dddg.buildin.backgrounds.nsfw": `${baseUrl}packs/buildin.base.backgrounds.nsfw.json`,
-  "dddg.buildin.sayori.nsfw": `${baseUrl}packs/buildin.base.sayori.nsfw.json`,
-  "dddg.buildin.base.natsuki.nsfw": `${baseUrl}packs/buildin.base.natsuki.nsfw.json`,
-  "dddg.buildin.yuri.nsfw": `${baseUrl}packs/buildin.base.yuri.nsfw.json`
-};
-const names = new Set(Object.keys(nsfwPacks));
-const paths = Object.values(nsfwPacks);
 const _sfc_main = defineComponent({
   components: {
     ToolBox,
@@ -21193,10 +21191,10 @@ const _sfc_main = defineComponent({
     Render,
     ModalDialog,
     SingleBox: defineAsyncComponent(
-      () => __vitePreload(() => import("./SingleBox.95856a42.js"), true ? ["SingleBox.95856a42.js","SingleBox.378faf79.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./SingleBox.5a596653.js"), true ? ["SingleBox.5a596653.js","SingleBox.378faf79.css"] : void 0, import.meta.url)
     ),
     ExpressionBuilder: defineAsyncComponent(
-      () => __vitePreload(() => import("./index.db1270b3.js"), true ? ["index.db1270b3.js","index.aa47b381.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.6d53e0b5.js"), true ? ["index.6d53e0b5.js","index.b33ad874.css"] : void 0, import.meta.url)
     )
   },
   data: () => ({
@@ -21448,10 +21446,10 @@ const _sfc_main = defineComponent({
     nsfw(value) {
       return __async$2(this, null, function* () {
         if (value) {
-          yield this.$store.dispatch("content/loadContentPacks", paths);
+          yield this.$store.dispatch("content/loadContentPacks", NsfwPaths);
         } else {
           yield this.$store.dispatch("removePacks", {
-            packs: names
+            packs: NsfwNames
           });
         }
       });
@@ -22429,16 +22427,16 @@ function transformPathsToObjectTree(getters) {
   return result;
 }
 function getStoreModule(moduleMap, path) {
-  var names2 = path.split("/").filter(function(n) {
+  var names = path.split("/").filter(function(n) {
     return n;
   });
-  return names2.reduce(
+  return names.reduce(
     function(module, moduleName, i) {
       var child = module[moduleName];
       if (!child) {
         throw new Error('Missing module "' + moduleName + '" for path "' + path + '".');
       }
-      return i === names2.length - 1 ? child : child._children;
+      return i === names.length - 1 ? child : child._children;
     },
     path === "root" ? moduleMap : moduleMap.root._children
   );
@@ -23109,9 +23107,9 @@ var __assign = commonjsGlobal && commonjsGlobal.__assign || function() {
 Object.defineProperty(parser$1, "__esModule", { value: true });
 parser$1.expandId = parser$1.normalizeStyleComponent = parser$1.normalizeColor = parser$1.normalizeBackground = parser$1.normalizeFont = parser$1.normalizePoemBackground = parser$1.normalizePoemStyles = parser$1.normalizeSprite = parser$1.mapNormalize = normalizeContentPack_1 = parser$1.normalizeContentPack = void 0;
 var util_1 = util;
-function normalizeContentPack(contentPack, paths2) {
+function normalizeContentPack(contentPack, paths) {
   var ctx = {
-    paths: paths2,
+    paths,
     packId: contentPack.packId
   };
   var packFolder = joinNormalize$1("", contentPack.folder || "/", ctx);
@@ -23409,7 +23407,7 @@ var __spread = commonjsGlobal && commonjsGlobal.__spread || function() {
 Object.defineProperty(convertV1, "__esModule", { value: true });
 convertV1.expandOrTranslateId = convert_1 = convertV1.convert = void 0;
 var parser_1 = parser$1;
-function convert(characterV1, paths2, nsfw) {
+function convert(characterV1, paths, nsfw) {
   if (!characterV1.packId)
     throw new Error("");
   return {
@@ -23421,7 +23419,7 @@ function convert(characterV1, paths2, nsfw) {
     poemStyles: [],
     poemBackgrounds: [],
     sprites: [],
-    characters: [convertCharacter(characterV1, paths2, nsfw)],
+    characters: [convertCharacter(characterV1, paths, nsfw)],
     colors: []
   };
 }
@@ -23586,11 +23584,11 @@ var translationTables = {
 function autoDependency(v1CharId) {
   return [];
 }
-function convertCharacter(characterV1, paths2, nsfw) {
+function convertCharacter(characterV1, paths, nsfw) {
   var ctx = {
     characterId: characterV1.id,
     packId: characterV1.packId,
-    paths: paths2
+    paths
   };
   return {
     id: expandOrTranslateId("character", characterV1.id, ctx),
@@ -23870,14 +23868,14 @@ convertV1.expandOrTranslateId = expandOrTranslateId;
 var parser = {};
 Object.defineProperty(parser, "__esModule", { value: true });
 var normalizeCharacter_1 = parser.normalizeCharacter = void 0;
-function normalizeCharacter(character, paths2) {
-  var charFolder = joinNormalize("", character.folder || "/", paths2);
+function normalizeCharacter(character, paths) {
+  var charFolder = joinNormalize("", character.folder || "/", paths);
   var chibi = void 0;
   if (character.chibi) {
-    chibi = joinNormalize(charFolder, character.chibi, paths2);
+    chibi = joinNormalize(charFolder, character.chibi, paths);
   }
   if (chibi === void 0 && character.internalId) {
-    chibi = (paths2["/"] || "") + "chibis/" + character.internalId;
+    chibi = (paths["/"] || "") + "chibis/" + character.internalId;
   }
   return {
     id: character.id,
@@ -23886,26 +23884,26 @@ function normalizeCharacter(character, paths2) {
     name: character.name,
     nsfw: !!character.nsfw,
     chibi,
-    eyes: normalizeParts(character.eyes, charFolder, paths2),
-    hairs: normalizeParts(character.hairs, charFolder, paths2),
+    eyes: normalizeParts(character.eyes, charFolder, paths),
+    hairs: normalizeParts(character.hairs, charFolder, paths),
     styles: normalizeStyles(character.styles),
-    heads: normalizeHeads(character.heads, charFolder, paths2),
-    poses: normalizePoses(character.poses, charFolder, paths2)
+    heads: normalizeHeads(character.heads, charFolder, paths),
+    poses: normalizePoses(character.poses, charFolder, paths)
   };
 }
 normalizeCharacter_1 = parser.normalizeCharacter = normalizeCharacter;
-function normalizeParts(styleClasses, baseFolder, paths2) {
+function normalizeParts(styleClasses, baseFolder, paths) {
   if (!styleClasses)
     return {};
   var ret = {};
   for (var styleKey in styleClasses) {
     if (!styleClasses.hasOwnProperty(styleKey))
       continue;
-    ret[styleKey] = joinNormalize(baseFolder, styleClasses[styleKey], paths2);
+    ret[styleKey] = joinNormalize(baseFolder, styleClasses[styleKey], paths);
   }
   return ret;
 }
-function normalizeHeads(heads, baseFolder, paths2) {
+function normalizeHeads(heads, baseFolder, paths) {
   var ret = {};
   if (!heads)
     return ret;
@@ -23916,15 +23914,15 @@ function normalizeHeads(heads, baseFolder, paths2) {
     var newHeadGroup = void 0;
     if (headGroup instanceof Array) {
       newHeadGroup = {
-        all: normalizeNsfwAbleCollection(headGroup, baseFolder, paths2),
+        all: normalizeNsfwAbleCollection(headGroup, baseFolder, paths),
         nsfw: false,
         offset: [290, 70],
         size: [380, 380]
       };
     } else {
-      var subFolder = joinNormalize(baseFolder, headGroup.folder, paths2);
+      var subFolder = joinNormalize(baseFolder, headGroup.folder, paths);
       newHeadGroup = {
-        all: normalizeNsfwAbleCollection(headGroup.all, subFolder, paths2),
+        all: normalizeNsfwAbleCollection(headGroup.all, subFolder, paths),
         nsfw: !!headGroup.nsfw,
         offset: headGroup.offset || [290, 70],
         size: headGroup.size || [380, 380]
@@ -23934,11 +23932,11 @@ function normalizeHeads(heads, baseFolder, paths2) {
   }
   return ret;
 }
-function normalizePoses(poses, baseFolder, paths2) {
+function normalizePoses(poses, baseFolder, paths) {
   if (!poses)
     return [];
   return poses.map(function(pose) {
-    var poseFolder = joinNormalize(baseFolder, pose.folder, paths2);
+    var poseFolder = joinNormalize(baseFolder, pose.folder, paths);
     var ret = {
       compatibleHeads: pose.compatibleHeads || [],
       headAnchor: pose.headAnchor || [0, 0],
@@ -23950,28 +23948,28 @@ function normalizePoses(poses, baseFolder, paths2) {
       size: [960, 960]
     };
     if ("static" in pose) {
-      ret.static = joinNormalize(poseFolder, pose.static, paths2);
+      ret.static = joinNormalize(poseFolder, pose.static, paths);
     } else if ("variant" in pose) {
-      ret.variant = normalizeNsfwAbleCollection(pose.variant, poseFolder, paths2);
+      ret.variant = normalizeNsfwAbleCollection(pose.variant, poseFolder, paths);
     } else if ("left" in pose) {
-      ret.left = normalizeNsfwAbleCollection(pose.left, poseFolder, paths2);
-      ret.right = normalizeNsfwAbleCollection(pose.right, poseFolder, paths2);
+      ret.left = normalizeNsfwAbleCollection(pose.left, poseFolder, paths);
+      ret.right = normalizeNsfwAbleCollection(pose.right, poseFolder, paths);
     } else {
       throw new Error("Invalid pose");
     }
     return ret;
   });
 }
-function normalizeNsfwAbleCollection(collection, poseFolder, paths2) {
+function normalizeNsfwAbleCollection(collection, poseFolder, paths) {
   return collection.map(function(variant) {
     if (typeof variant === "string") {
       return {
-        img: joinNormalize(poseFolder, variant, paths2),
+        img: joinNormalize(poseFolder, variant, paths),
         nsfw: false
       };
     } else {
       return {
-        img: joinNormalize(poseFolder, variant.img, paths2),
+        img: joinNormalize(poseFolder, variant.img, paths),
         nsfw: variant.nsfw || false
       };
     }
@@ -23991,12 +23989,12 @@ function normalizeStyles(styles) {
 function isWebUrl(path) {
   return path.startsWith("blob:") || path.startsWith("http://") || path.startsWith("https://") || path.startsWith("://");
 }
-function joinNormalize(base, sub, paths2) {
+function joinNormalize(base, sub, paths) {
   if (!sub)
     return base;
-  for (var path in paths2) {
+  for (var path in paths) {
     if (sub.startsWith(path)) {
-      return paths2[path] + sub.slice(path.length);
+      return paths[path] + sub.slice(path.length);
     }
   }
   if (isWebUrl(sub))
@@ -24158,16 +24156,16 @@ function loadContentPack(url) {
       throw new Error("Content pack is not valid json!");
     }
     try {
-      const paths2 = {
+      const paths = {
         "./": baseDir(url),
         "/": baseDir(location.href) + "assets/"
       };
       if (json.version === "2.0") {
-        return normalizeContentPack_1(json, paths2);
+        return normalizeContentPack_1(json, paths);
       } else {
         return convert_1(
-          normalizeCharacter_1(json, paths2),
-          paths2,
+          normalizeCharacter_1(json, paths),
+          paths,
           false
         );
       }
@@ -24289,10 +24287,12 @@ const store = createStore({
           if (key === "uploadUrls")
             return Object.keys(value);
           if (key === "content" && compact)
-            return value.contentPacks.filter((x) => {
-              var _a;
-              return !((_a = x.packId) == null ? void 0 : _a.startsWith("dddg.buildin."));
-            }).map(
+            return value.contentPacks.filter(
+              (x) => {
+                var _a, _b;
+                return !((_a = x.packId) == null ? void 0 : _a.startsWith("dddg.buildin.")) || ((_b = x.packId) == null ? void 0 : _b.endsWith(".nsfw"));
+              }
+            ).map(
               (x) => {
                 var _a;
                 return ((_a = x.packId) == null ? void 0 : _a.startsWith("dddg.uploads.")) ? x : x.packId;
@@ -24310,7 +24310,9 @@ const store = createStore({
         data.ui = __spreadProps(__spreadValues({}, getDefaultUiState()), {
           vertical: state.ui.vertical,
           lqRendering: state.ui.lqRendering,
-          nsfw: state.ui.nsfw,
+          nsfw: contentData.find(
+            (pack) => typeof pack === "string" && pack.startsWith("dddg.buildin.") && pack.endsWith(".nsfw")
+          ) !== void 0,
           clipboard: state.ui.clipboard,
           useDarkTheme: state.ui.useDarkTheme,
           defaultCharacterTalkingZoom: state.ui.defaultCharacterTalkingZoom
@@ -24328,6 +24330,17 @@ const store = createStore({
           ...(yield Promise.all(
             contentData.map((x) => __async2(this, null, function* () {
               if (typeof x === "string") {
+                const alreadyLoaded = state.content.contentPacks.find(
+                  (pack2) => pack2.packId === x
+                );
+                if (alreadyLoaded)
+                  return alreadyLoaded;
+                if (x.startsWith("dddg.buildin.") && x.endsWith(".nsfw")) {
+                  const loaded2 = yield loadContentPack(
+                    NsfwPacks[x]
+                  );
+                  return yield convertContentPack(loaded2);
+                }
                 const pack = repo.getPack(x);
                 if (!pack) {
                   console.warn(`Pack Id ${x} not found!`);

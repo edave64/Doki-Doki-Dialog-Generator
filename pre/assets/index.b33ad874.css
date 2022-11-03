@@ -21,31 +21,31 @@
 	flex-grow: 1;
 	justify-content: stretch;
 }
-.expression_list_wrapper[data-v-741fa029] {
+.expression_list_wrapper[data-v-85845dba] {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   flex-shrink: 1;
 }
-.options_wrapper[data-v-741fa029] {
+.options_wrapper[data-v-85845dba] {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   flex-shrink: 1;
 }
-.expression_list[data-v-741fa029] {
+.expression_list[data-v-85845dba] {
   display: flex;
   flex-direction: row;
   overflow: auto;
 }
-.expression_list button[data-v-741fa029] {
+.expression_list button[data-v-85845dba] {
   width: 100px;
   height: 128px;
 }
-.expression_list *[data-v-741fa029] {
+.expression_list *[data-v-85845dba] {
   flex-shrink: 0;
 }
-.expression_item[data-v-741fa029] {
+.expression_item[data-v-85845dba] {
   height: 128px;
   width: 128px;
   background-position: center center;
@@ -54,25 +54,25 @@
   box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.5);
   box-sizing: border-box;
 }
-.expression_item.active[data-v-741fa029] {
+.expression_item.active[data-v-85845dba] {
   box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.25);
 }
-input[type=file][data-v-741fa029] {
+input[type=file][data-v-85845dba] {
   display: none;
 }
-.wrapper[data-v-741fa029] {
+.wrapper[data-v-85845dba] {
   height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
 }
-.page[data-v-741fa029] {
+.page[data-v-85845dba] {
   flex-grow: 1;
   flex-shrink: 1;
   display: flex;
   flex-direction: column;
 }
-.page .image[data-v-741fa029] {
+.page .image[data-v-85845dba] {
   flex-grow: 1;
   flex-shrink: 1;
   position: relative;
@@ -80,26 +80,26 @@ input[type=file][data-v-741fa029] {
   background-position: center center;
   background-repeat: no-repeat;
 }
-.page .image canvas[data-v-741fa029] {
+.page .image canvas[data-v-85845dba] {
   position: absolute;
   max-height: 100%;
   max-width: 100%;
 }
 @media only screen and (max-height: 560px) {
-.expression_list_wrapper[data-v-741fa029] {
+.expression_list_wrapper[data-v-85845dba] {
     flex-direction: row;
     height: 1px;
 }
-.expression_list_wrapper .expression_list[data-v-741fa029] {
+.expression_list_wrapper .expression_list[data-v-85845dba] {
     flex-direction: column;
     width: 128px;
     overflow: auto;
 }
-.expression_list_wrapper .expression_list button[data-v-741fa029] {
+.expression_list_wrapper .expression_list button[data-v-85845dba] {
     height: 64px;
     width: 100%;
 }
-.expression_list_wrapper .expression_list .expression_item[data-v-741fa029] {
+.expression_list_wrapper .expression_list .expression_item[data-v-85845dba] {
     width: 100%;
 }
 }
