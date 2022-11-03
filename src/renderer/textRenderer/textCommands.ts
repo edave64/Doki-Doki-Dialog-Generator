@@ -1,6 +1,6 @@
 import { ITextStyle } from './textRenderer';
 
-type Command = (style: ITextStyle, parameter?: string) => ITextStyle;
+type Command = (style: ITextStyle, parameter: string) => ITextStyle;
 
 export default new Map<string, Command>([
 	paramlessOp('i', (style) => ({ ...style, isItalic: true })),
@@ -42,19 +42,19 @@ export default new Map<string, Command>([
 	})),
 	[
 		'font',
-		(style, parameter?) => {
+		(style, parameter) => {
 			return { ...style, fontName: parameter! };
 		},
 	],
 	[
 		'color',
-		(style, parameter?) => {
+		(style, parameter) => {
 			return { ...style, color: parameter! };
 		},
 	],
 	[
 		'outlinecolor',
-		(style, parameter?) => {
+		(style, parameter) => {
 			return { ...style, strokeColor: parameter! };
 		},
 	],
@@ -66,8 +66,8 @@ function paramlessOp(
 ): [string, Command] {
 	return [
 		name,
-		(style: ITextStyle, parameter?: string) => {
-			if (parameter != null) {
+		(style: ITextStyle, parameter: string) => {
+			if (parameter !== '') {
 				throw new Error(`Operator '${name}' does not take any arguments.`);
 			}
 			return op(style);
@@ -81,8 +81,8 @@ function relativeNumberOp(
 ): [string, Command] {
 	return [
 		name,
-		(style: ITextStyle, parameter?: string) => {
-			if (parameter == null || parameter == '')
+		(style: ITextStyle, parameter: string) => {
+			if (parameter == '')
 				throw new Error(`Operator '${name}' needs an argument.`);
 			const relative = parameter[0] === '+' || parameter[0] === '-';
 			const num = Number(parameter);

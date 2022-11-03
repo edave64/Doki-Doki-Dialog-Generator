@@ -43,7 +43,6 @@ type RenderItem = IDrawCharacterItem | INewlineItem;
 // const heightCache = new Map<ITextStyle, number>();
 
 export class TextRenderer {
-	public static textCommands = textCommands;
 	private renderParts!: RenderItem[];
 	private readonly tokens: Token[];
 	private readonly loose: boolean;
@@ -386,10 +385,10 @@ export class TextRenderer {
 			const type = token.type;
 			switch (type) {
 				case 'command':
-					if (TextRenderer.textCommands.has(token.commandName)) {
+					if (textCommands.has(token.commandName)) {
 						styleStack.push(currentStyle);
 						tagStack.push(currentTag);
-						currentStyle = TextRenderer.textCommands.get(token.commandName)!(
+						currentStyle = textCommands.get(token.commandName)!(
 							currentStyle,
 							token.argument
 						);
