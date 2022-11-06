@@ -38,7 +38,8 @@ export default createStore({
 			dispatch('content/removeContentPacks', packs);
 			commit('setUnsafe', false);
 		},
-		getSave({ state }, compact: boolean) {
+		async getSave({ state }, compact: boolean) {
+			const repo = await Repo.getInstance();
 			return JSON.stringify(
 				state,
 				(key, value) => {
@@ -52,9 +53,14 @@ export default createStore({
 									!x.packId?.startsWith('dddg.buildin.') ||
 									x.packId?.endsWith('.nsfw')
 							)
-							.map((x) =>
-								x.packId?.startsWith('dddg.uploads.') ? x : x.packId
-							);
+							.map((x) => {
+								let id = x.packId?.startsWith('dddg.uploads.') ? x : x.packId;
+								if (x.packId != null) {
+									const pack = repo.getPack(x.packId);
+									if (pack && pack.repoUrl != null) id += `;${pack.repoUrl}`;
+								}
+								return id;
+							});
 					return value;
 				},
 				2
@@ -92,31 +98,38 @@ export default createStore({
 				...(
 					await Promise.all(
 						contentData.map(async (x) => {
-							if (typeof x === 'string') {
-								const alreadyLoaded = state.content.contentPacks.find(
-									(pack) => pack.packId === x
-								);
-								if (alreadyLoaded) return alreadyLoaded;
-								if (x.startsWith('dddg.buildin.') && x.endsWith('.nsfw')) {
-									const loaded = await loadContentPack(
-										(NsfwPacks as { [id: string]: string })[x]
-									);
-
-									return await convertContentPack(loaded);
-								}
-								const pack = repo.getPack(x);
-								if (!pack) {
-									console.warn(`Pack Id ${x} not found!`);
-									return null!;
-								}
+							if (typeof x !== 'string') return x;
+							let url: string | null = null;
+							let packId: string;
+							if (x.indexOf(';') >= 0) {
+								[packId, url] = x.split(';');
+							} else {
+								packId = x;
+							}
+							const alreadyLoaded = state.content.contentPacks.find(
+								(pack) => pack.packId === packId
+							);
+							if (alreadyLoaded) return alreadyLoaded;
+							if (x.startsWith('dddg.buildin.') && x.endsWith('.nsfw')) {
 								const loaded = await loadContentPack(
-									pack.dddg2Path || pack.dddg1Path
+									(NsfwPacks as { [id: string]: string })[x]
 								);
 
 								return await convertContentPack(loaded);
-							} else {
-								return x;
 							}
+							if (url != null && !repo.hasPack(packId)) {
+								await repo.loadTempPack(url);
+							}
+							const pack = repo.getPack(packId);
+							if (!pack) {
+								console.warn(`Pack Id ${x} not found!`);
+								return null!;
+							}
+							const loaded = await loadContentPack(
+								pack.dddg2Path || pack.dddg1Path
+							);
+
+							return await convertContentPack(loaded);
 						})
 					)
 				).filter((x) => x !== null),
