@@ -21191,10 +21191,10 @@ const _sfc_main = defineComponent({
     Render,
     ModalDialog,
     SingleBox: defineAsyncComponent(
-      () => __vitePreload(() => import("./SingleBox.5a596653.js"), true ? ["SingleBox.5a596653.js","SingleBox.378faf79.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./SingleBox.21ef9e1d.js"), true ? ["SingleBox.21ef9e1d.js","SingleBox.467fe7d6.css"] : void 0, import.meta.url)
     ),
     ExpressionBuilder: defineAsyncComponent(
-      () => __vitePreload(() => import("./index.6d53e0b5.js"), true ? ["index.6d53e0b5.js","index.b33ad874.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.3ca49eb0.js"), true ? ["index.3ca49eb0.js","index.b33ad874.css"] : void 0, import.meta.url)
     )
   },
   data: () => ({
@@ -24276,32 +24276,39 @@ const store = createStore({
         commit2("setUnsafe", false);
       });
     },
-    getSave({ state }, compact) {
-      return JSON.stringify(
-        state,
-        (key, value) => {
-          if (key === "ui")
-            return void 0;
-          if (key === "lastRender")
-            return void 0;
-          if (key === "uploadUrls")
-            return Object.keys(value);
-          if (key === "content" && compact)
-            return value.contentPacks.filter(
-              (x) => {
-                var _a, _b;
-                return !((_a = x.packId) == null ? void 0 : _a.startsWith("dddg.buildin.")) || ((_b = x.packId) == null ? void 0 : _b.endsWith(".nsfw"));
-              }
-            ).map(
-              (x) => {
+    getSave(_0, _1) {
+      return __async2(this, arguments, function* ({ state }, compact) {
+        const repo = yield Repo.getInstance();
+        return JSON.stringify(
+          state,
+          (key, value) => {
+            if (key === "ui")
+              return void 0;
+            if (key === "lastRender")
+              return void 0;
+            if (key === "uploadUrls")
+              return Object.keys(value);
+            if (key === "content" && compact)
+              return value.contentPacks.filter(
+                (x) => {
+                  var _a, _b;
+                  return !((_a = x.packId) == null ? void 0 : _a.startsWith("dddg.buildin.")) || ((_b = x.packId) == null ? void 0 : _b.endsWith(".nsfw"));
+                }
+              ).map((x) => {
                 var _a;
-                return ((_a = x.packId) == null ? void 0 : _a.startsWith("dddg.uploads.")) ? x : x.packId;
-              }
-            );
-          return value;
-        },
-        2
-      );
+                let id = ((_a = x.packId) == null ? void 0 : _a.startsWith("dddg.uploads.")) ? x : x.packId;
+                if (x.packId != null) {
+                  const pack = repo.getPack(x.packId);
+                  if (pack && pack.repoUrl != null)
+                    id += `;${pack.repoUrl}`;
+                }
+                return id;
+              });
+            return value;
+          },
+          2
+        );
+      });
     },
     loadSave(_0, _1) {
       return __async2(this, arguments, function* ({ state }, str) {
@@ -24329,30 +24336,38 @@ const store = createStore({
           ),
           ...(yield Promise.all(
             contentData.map((x) => __async2(this, null, function* () {
-              if (typeof x === "string") {
-                const alreadyLoaded = state.content.contentPacks.find(
-                  (pack2) => pack2.packId === x
-                );
-                if (alreadyLoaded)
-                  return alreadyLoaded;
-                if (x.startsWith("dddg.buildin.") && x.endsWith(".nsfw")) {
-                  const loaded2 = yield loadContentPack(
-                    NsfwPacks[x]
-                  );
-                  return yield convertContentPack(loaded2);
-                }
-                const pack = repo.getPack(x);
-                if (!pack) {
-                  console.warn(`Pack Id ${x} not found!`);
-                  return null;
-                }
-                const loaded = yield loadContentPack(
-                  pack.dddg2Path || pack.dddg1Path
-                );
-                return yield convertContentPack(loaded);
-              } else {
+              if (typeof x !== "string")
                 return x;
+              let url = null;
+              let packId;
+              if (x.indexOf(";") >= 0) {
+                [packId, url] = x.split(";");
+              } else {
+                packId = x;
               }
+              const alreadyLoaded = state.content.contentPacks.find(
+                (pack2) => pack2.packId === packId
+              );
+              if (alreadyLoaded)
+                return alreadyLoaded;
+              if (x.startsWith("dddg.buildin.") && x.endsWith(".nsfw")) {
+                const loaded2 = yield loadContentPack(
+                  NsfwPacks[x]
+                );
+                return yield convertContentPack(loaded2);
+              }
+              if (url != null && !repo.hasPack(packId)) {
+                yield repo.loadTempPack(url);
+              }
+              const pack = repo.getPack(packId);
+              if (!pack) {
+                console.warn(`Pack Id ${x} not found!`);
+                return null;
+              }
+              const loaded = yield loadContentPack(
+                pack.dddg2Path || pack.dddg1Path
+              );
+              return yield convertContentPack(loaded);
             }))
           )).filter((x) => x !== null)
         ];

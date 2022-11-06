@@ -1,4 +1,4 @@
-import { d as defineComponent, _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, w as withDirectives, v as vModelText, n as normalizeClass, b as withModifiers, e as createCommentVNode, f as createStaticVNode, p as pushScopeId, g as popScopeId, F as Fragment, r as renderList, t as toDisplayString, h as createVNode, i as withCtx, T as TransitionGroup, L, j as ToggleBox, k as envX, l as resolveComponent, m as createTextVNode, q as createBlock, s as normalizeStyle, R as Repo, u as eventBus, V as VueErrorEvent } from "./index.cf8dc1e5.js";
+import { d as defineComponent, _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, w as withDirectives, v as vModelText, n as normalizeClass, b as withModifiers, e as createCommentVNode, f as createStaticVNode, p as pushScopeId, g as popScopeId, F as Fragment, r as renderList, t as toDisplayString, h as createVNode, i as withCtx, T as TransitionGroup, L, j as ToggleBox, k as envX, l as resolveComponent, m as createTextVNode, q as createBlock, s as normalizeStyle, R as Repo, u as eventBus, V as VueErrorEvent } from "./index.a7459185.js";
 const debounce = 250;
 const _sfc_main$3 = defineComponent({
   props: {
@@ -1179,6 +1179,7 @@ const _sfc_main = defineComponent({
           eventBus.fire(
             new VueErrorEvent(e, "Error while loading external pack")
           );
+          console.error(e);
         }
       });
     }
@@ -1198,7 +1199,7 @@ const _sfc_main = defineComponent({
     this.focusSearchBar();
   }
 });
-const SingleBox_vue_vue_type_style_index_0_scoped_c3d2e321_lang = "";
+const SingleBox_vue_vue_type_style_index_0_scoped_a3a53c3b_lang = "";
 const _hoisted_1 = {
   key: 1,
   class: "ask-download"
@@ -1255,7 +1256,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ]))
   ], 32);
 }
-const SingleBox = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-c3d2e321"]]);
+const SingleBox = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-a3a53c3b"]]);
 export {
   SingleBox as default
 };
