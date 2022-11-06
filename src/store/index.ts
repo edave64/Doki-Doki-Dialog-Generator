@@ -13,6 +13,7 @@ import content, {
 } from './content';
 import uploadUrls, { IUploadUrlState } from './upload_urls';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { NsfwPacks } from '@/constants/nsfw';
 
 export interface IRootState {
 	ui: IUiState;
@@ -46,7 +47,11 @@ export default createStore({
 					if (key === 'uploadUrls') return Object.keys(value);
 					if (key === 'content' && compact)
 						return (value as IContentState).contentPacks
-							.filter((x) => !x.packId?.startsWith('dddg.buildin.'))
+							.filter(
+								(x) =>
+									!x.packId?.startsWith('dddg.buildin.') ||
+									x.packId?.endsWith('.nsfw')
+							)
 							.map((x) =>
 								x.packId?.startsWith('dddg.uploads.') ? x : x.packId
 							);
@@ -64,8 +69,13 @@ export default createStore({
 				...getDefaultUiState(),
 				vertical: state.ui.vertical,
 				lqRendering: state.ui.lqRendering,
-				// TODO: Sync nsfw state on load
-				nsfw: state.ui.nsfw,
+				nsfw:
+					contentData.find(
+						(pack) =>
+							typeof pack === 'string' &&
+							pack.startsWith('dddg.buildin.') &&
+							pack.endsWith('.nsfw')
+					) !== undefined,
 				clipboard: state.ui.clipboard,
 				useDarkTheme: state.ui.useDarkTheme,
 				defaultCharacterTalkingZoom: state.ui.defaultCharacterTalkingZoom,
@@ -83,6 +93,17 @@ export default createStore({
 					await Promise.all(
 						contentData.map(async (x) => {
 							if (typeof x === 'string') {
+								const alreadyLoaded = state.content.contentPacks.find(
+									(pack) => pack.packId === x
+								);
+								if (alreadyLoaded) return alreadyLoaded;
+								if (x.startsWith('dddg.buildin.') && x.endsWith('.nsfw')) {
+									const loaded = await loadContentPack(
+										(NsfwPacks as { [id: string]: string })[x]
+									);
+
+									return await convertContentPack(loaded);
+								}
 								const pack = repo.getPack(x);
 								if (!pack) {
 									console.warn(`Pack Id ${x} not found!`);

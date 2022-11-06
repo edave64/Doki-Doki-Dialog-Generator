@@ -53,6 +53,7 @@
 </template>
 
 <script lang="ts">
+import { defineAsyncComponent, defineComponent, watch } from 'vue';
 import { baseUrl } from '@/asset-manager';
 import environment from '@/environments/environment';
 import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
@@ -73,26 +74,15 @@ import MessageConsole from '@/components/message-console.vue';
 import Render from '@/components/render.vue';
 import ModalDialog from '@/components/ModalDialog.vue';
 import { ISetCurrentMutation } from '@/store/panels';
-import { defineAsyncComponent, defineComponent, watch } from 'vue';
+import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 import { Repo } from './models/repo';
 import { IRemovePacksAction } from './store';
+import { NsfwNames, NsfwPaths } from './constants/nsfw';
 
 const aspectRatio = 16 / 9;
 const arrowMoveStepSize = 20;
 const packDialogWaitMs = 50;
 const canvasTooSmallThreshold = 200;
-
-const nsfwPacks = {
-	'dddg.buildin.backgrounds.nsfw': `${baseUrl}packs/buildin.base.backgrounds.nsfw.json`,
-	'dddg.buildin.sayori.nsfw': `${baseUrl}packs/buildin.base.sayori.nsfw.json`,
-	'dddg.buildin.base.natsuki.nsfw': `${baseUrl}packs/buildin.base.natsuki.nsfw.json`,
-	'dddg.buildin.yuri.nsfw': `${baseUrl}packs/buildin.base.yuri.nsfw.json`,
-};
-
-const names = new Set(Object.keys(nsfwPacks));
-const paths = Object.values(nsfwPacks);
-
-import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 
 export default defineComponent({
 	components: {
@@ -375,10 +365,10 @@ export default defineComponent({
 		},
 		async nsfw(value: boolean) {
 			if (value) {
-				await this.$store.dispatch('content/loadContentPacks', paths);
+				await this.$store.dispatch('content/loadContentPacks', NsfwPaths);
 			} else {
 				await this.$store.dispatch('removePacks', {
-					packs: names,
+					packs: NsfwNames,
 				} as IRemovePacksAction);
 			}
 		},
