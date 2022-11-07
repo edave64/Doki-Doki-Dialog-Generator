@@ -5878,10 +5878,20 @@ var __publicField$q = (obj, key, value) => {
 };
 class ErrorAsset {
   constructor() {
-    __publicField$q(this, "width", 0);
-    __publicField$q(this, "height", 0);
+    __publicField$q(this, "width", 20);
+    __publicField$q(this, "height", 20);
   }
-  paintOnto(_fsCtx) {
+  paintOnto(fsCtx, { x, y } = {}) {
+    fsCtx.save();
+    if (x != null && y != null) {
+      fsCtx.translate(x, y);
+    }
+    fsCtx.beginPath();
+    fsCtx.moveTo(0, -10);
+    fsCtx.moveTo(-8, 10);
+    fsCtx.moveTo(8, 10);
+    fsCtx.fill("#ffff00");
+    fsCtx.stroke();
   }
 }
 var __defProp$N = Object.defineProperty;
@@ -7135,6 +7145,9 @@ function requestAssetByUrl(url) {
   });
 }
 function imagePromise(url) {
+  if (url.startsWith("uploads:")) {
+    return Promise.resolve(new ErrorAsset());
+  }
   return new Promise((resolve2, reject) => {
     const img = new Image();
     img.addEventListener("load", () => {
@@ -7917,6 +7930,7 @@ function _sfc_render$s(_ctx, _cache, $props, $setup, $data, $options) {
   ], 10, _hoisted_1$o);
 }
 const DButton = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["render", _sfc_render$s], ["__scopeId", "data-v-b2a4f97d"]]);
+const warnUrl = "" + new URL("warning.5cca00cf.svg", import.meta.url).href;
 var __defProp$I = Object.defineProperty;
 var __defProps$m = Object.defineProperties;
 var __getOwnPropDescs$m = Object.getOwnPropertyDescriptors;
@@ -7997,7 +8011,13 @@ const _sfc_main$s = defineComponent({
   },
   methods: {
     assetSpriteBackground(sprite) {
-      return sprite.variants[0].map((variant) => `url('${getAAssetUrl(variant, false)}')`).join(",");
+      return sprite.variants[0].map((variant) => {
+        const url = getAAssetUrl(variant, false);
+        if (url.startsWith("uploads:")) {
+          return `url('${warnUrl}')`;
+        }
+        return `url('${url}')`;
+      }).join(",");
     },
     assetPath(character) {
       return character.chibi ? envX.supports.lq ? character.chibi.lq : character.chibi.hq : "";
@@ -8123,7 +8143,15 @@ const _sfc_main$s = defineComponent({
             {
               id: url,
               label,
-              variants: [[url]],
+              variants: [
+                [
+                  {
+                    lq: url,
+                    hq: url,
+                    sourcePack: uploadedSpritesPackDefault.packId
+                  }
+                ]
+              ],
               defaultScale: [1, 1],
               hd: null
             }
@@ -8131,7 +8159,7 @@ const _sfc_main$s = defineComponent({
         });
         yield this.$store.dispatch("content/replaceContentPack", {
           contentPack: newPackVersion,
-          processed: false
+          processed: true
         });
       });
     },
@@ -8145,8 +8173,8 @@ const _sfc_main$s = defineComponent({
     });
   }
 });
-const add_vue_vue_type_style_index_0_scoped_24e67e76_lang = "";
-const _withScopeId$e = (n) => (pushScopeId("data-v-24e67e76"), n = n(), popScopeId(), n);
+const add_vue_vue_type_style_index_0_scoped_fe662867_lang = "";
+const _withScopeId$e = (n) => (pushScopeId("data-v-fe662867"), n = n(), popScopeId(), n);
 const _hoisted_1$n = /* @__PURE__ */ createTextVNode("Drop here to add as a new sprite ");
 const _hoisted_2$l = /* @__PURE__ */ _withScopeId$e(() => /* @__PURE__ */ createBaseVNode("h1", null, "Add", -1));
 const _hoisted_3$j = /* @__PURE__ */ createTextVNode(" Char\xADacters ");
@@ -8334,7 +8362,7 @@ function _sfc_render$r(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)
   ], 32)) : createCommentVNode("", true);
 }
-const AddPanel = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$r], ["__scopeId", "data-v-24e67e76"]]);
+const AddPanel = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$r], ["__scopeId", "data-v-fe662867"]]);
 function arraySeeker(array, pos, delta) {
   let val = pos + delta;
   const length = array.length;
@@ -17488,14 +17516,15 @@ const _sfc_main$7 = defineComponent({
           {
             id,
             label,
-            variants: [[url]],
+            variants: [[{ lq: url, hq: url }]],
             scaling: "none"
           }
         ]
       });
       this.vuexHistory.transaction(() => {
         this.$store.dispatch("content/replaceContentPack", {
-          contentPack: newPackVersion
+          contentPack: newPackVersion,
+          processed: true
         });
         this.setBackground(id);
       });
@@ -17517,8 +17546,8 @@ const _sfc_main$7 = defineComponent({
     }
   }
 });
-const backgrounds_vue_vue_type_style_index_0_scoped_dd870fc5_lang = "";
-const _withScopeId$3 = (n) => (pushScopeId("data-v-dd870fc5"), n = n(), popScopeId(), n);
+const backgrounds_vue_vue_type_style_index_0_scoped_db7d80ef_lang = "";
+const _withScopeId$3 = (n) => (pushScopeId("data-v-db7d80ef"), n = n(), popScopeId(), n);
 const _hoisted_1$7 = /* @__PURE__ */ createTextVNode("Drop here to add as a new background ");
 const _hoisted_2$6 = /* @__PURE__ */ _withScopeId$3(() => /* @__PURE__ */ createBaseVNode("h1", null, "Background", -1));
 const _hoisted_3$5 = /* @__PURE__ */ createTextVNode(" Upload ");
@@ -17609,7 +17638,7 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64))
   ], 32);
 }
-const BackgroundsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7], ["__scopeId", "data-v-dd870fc5"]]);
+const BackgroundsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7], ["__scopeId", "data-v-db7d80ef"]]);
 var __defProp$e = Object.defineProperty;
 var __defProps$7 = Object.defineProperties;
 var __getOwnPropDescs$7 = Object.getOwnPropertyDescriptors;
@@ -21191,10 +21220,10 @@ const _sfc_main = defineComponent({
     Render,
     ModalDialog,
     SingleBox: defineAsyncComponent(
-      () => __vitePreload(() => import("./SingleBox.21ef9e1d.js"), true ? ["SingleBox.21ef9e1d.js","SingleBox.467fe7d6.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./SingleBox.6799fea5.js"), true ? ["SingleBox.6799fea5.js","SingleBox.467fe7d6.css"] : void 0, import.meta.url)
     ),
     ExpressionBuilder: defineAsyncComponent(
-      () => __vitePreload(() => import("./index.3ca49eb0.js"), true ? ["index.3ca49eb0.js","index.b33ad874.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.7da3508e.js"), true ? ["index.7da3508e.js","index.b33ad874.css"] : void 0, import.meta.url)
     )
   },
   data: () => ({
