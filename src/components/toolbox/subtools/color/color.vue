@@ -56,7 +56,7 @@ import { defineComponent, PropType } from 'vue';
 import { DeepReadonly } from 'ts-essentials';
 import eventBus, { ColorPickedEvent } from '@/eventbus/event-bus';
 
-const generatedPackId = 'dddg.uploads.colors';
+const generatedPackId = 'dddg.generated.colors';
 
 export default defineComponent({
 	components: {
@@ -125,7 +125,7 @@ export default defineComponent({
 		addSwatch() {
 			if (this.swatches.find((swatch) => swatch.color === this.color)) return;
 
-			const existingPack = this.$store.state.content.contentPacks.find(
+			const existingPack: DeepReadonly<ContentPack<IAssetSwitch>> = this.$store.state.content.contentPacks.find(
 				(pack) => pack.packId === generatedPackId
 			) || {
 				packId: generatedPackId,
