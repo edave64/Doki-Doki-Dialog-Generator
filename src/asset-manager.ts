@@ -4,6 +4,7 @@ import { IAssetSwitch } from './store/content';
 import environment from './environments/environment';
 import { IAsset } from './render-utils/assets/asset';
 import { ImageAsset } from './render-utils/assets/image-asset';
+import { MissingAsset } from './render-utils/assets/missing-asset';
 
 let webpSupportPromise: Promise<boolean> | undefined;
 
@@ -179,7 +180,7 @@ async function requestAssetByUrl(url: string): Promise<IAsset> {
 	})();
 }
 
-function imagePromise(url: string): Promise<ImageAsset> {
+function imagePromise(url: string): Promise<IAsset> {
 	return new Promise((resolve, reject) => {
 		const img = new Image();
 		img.addEventListener('load', () => {
@@ -189,7 +190,7 @@ function imagePromise(url: string): Promise<ImageAsset> {
 			}
 		});
 		img.addEventListener('error', (_e) => {
-			reject(new Error(`Failed to load image ${url}`));
+			resolve(new ErrorAsset());
 			if (!environment.supports.assetCaching) {
 				document.body.removeChild(img);
 			}

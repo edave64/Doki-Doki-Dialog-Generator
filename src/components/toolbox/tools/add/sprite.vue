@@ -8,19 +8,34 @@
 		<drop-target ref="spriteDt" class="drop-target" @drop="addCustomSpriteFile"
 			>Drop here to add as a new sprite
 		</drop-target>
-		<div
-			class="sprite"
-			tabindex="0"
-			v-for="sprite of sprites"
-			:key="sprite.label"
-			:title="sprite.label"
-			:style="{ background: assetSpriteBackground(sprite) }"
-			@click="addSpriteToScene(sprite)"
-			@keypress.enter.prevent.stop="addSpriteToScene(sprite)"
-			@keypress.space.prevent.stop="addSpriteToScene(sprite)"
-		>
-			{{ sprite.label }}
-		</div>
+		<template v-for="sprite of sprites">
+			<div
+				class="sprite"
+				tabindex="0"
+				:key="sprite.label"
+				:title="sprite.label"
+				:style="{ background: reuploadingSprite(sprite) }"
+				@click="reuploadingSprite(sprite)"
+				@keypress.enter.prevent.stop="reuploadingSprite(sprite)"
+				@keypress.space.prevent.stop="reuploadingSprite(sprite)"
+				v-if="sprite.missing !== null"
+			>
+				{{ sprite.label }}
+			</div>
+			<div
+				class="sprite"
+				tabindex="0"
+				:key="sprite.label"
+				:title="sprite.label"
+				:style="{ background: assetSpriteBackground(sprite) }"
+				@click="addSpriteToScene(sprite)"
+				@keypress.enter.prevent.stop="addSpriteToScene(sprite)"
+				@keypress.space.prevent.stop="addSpriteToScene(sprite)"
+				v-else
+			>
+				{{ sprite.label }}
+			</div>
+		</template>
 
 		<d-button
 			class="custom-sprite"
@@ -39,6 +54,11 @@
 		<d-button v-if="showSpritesFolder" icon="folder" @click="openSpritesFolder">
 			Open sprites folder
 		</d-button>
+		<input
+			type="file"
+			ref="missingSpriteUpload"
+			@change="onMissingSpriteFileUpload"
+		/>
 	</div>
 </template>
 
@@ -55,8 +75,9 @@ import DButton from '@/components/ui/d-button.vue';
 import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
 import environment, { Folder } from '@/environments/environment';
 import { DeepReadonly } from 'ts-essentials';
-import { IPanel } from '@/store/panels';
 import { PanelMixin } from '../panelMixin';
+
+import MissingImage from '@/assets/missing_image.svg';
 
 const uploadedSpritesPackDefault: ContentPack<string> = {
 	packId: 'dddg.uploads.sprites',
@@ -71,17 +92,33 @@ const uploadedSpritesPackDefault: ContentPack<string> = {
 	colors: [],
 };
 
+interface ISprite extends Sprite<IAssetSwitch> {
+	missing: string | null;
+	urls: string[];
+}
+
 export default defineComponent({
 	mixins: [PanelMixin],
 	components: { DropTarget, DButton },
 	computed: {
-		currentPanel(): DeepReadonly<IPanel> {
-			return this.$store.state.panels.panels[
-				this.$store.state.panels.currentPanel
-			];
-		},
-		sprites(): DeepReadonly<Array<Sprite<IAssetSwitch>>> {
-			return this.$store.state.content.current.sprites;
+		sprites(): DeepReadonly<Array<ISprite>> {
+			return this.$store.state.content.current.sprites.map((x) => {
+				let missing: string | null = null;
+				const urls = x.variants[0].map((y) => {
+					const url = getAAssetUrl(y, false);
+					if (url.startsWith('uploads:')) {
+						missing = url;
+						return MissingImage;
+					} else {
+						return url;
+					}
+				});
+				return {
+					...x,
+					missing,
+					urls,
+				} as ISprite;
+			});
 		},
 		showSpritesFolder(): boolean {
 			return (environment.supports.openableFolders as ReadonlySet<Folder>).has(
@@ -118,6 +155,13 @@ export default defineComponent({
 				this.addCustomSpriteFile(file);
 			}
 		},
+		onMissingSpriteFileUpload(e: Event) {
+			const uploadInput = this.$refs.spriteUpload as HTMLInputElement;
+			if (!uploadInput.files) return;
+			for (const file of uploadInput.files) {
+				this.addCustomSpriteFile(file);
+			}
+		},
 		async uploadFromURL() {
 			const url = prompt('Enter the URL of the image');
 			if (url == null) return;
@@ -126,13 +170,19 @@ export default defineComponent({
 				await this.addNewCustomSprite(lastSegment, url);
 			});
 		},
-		async addSpriteToScene(sprite: Sprite<IAssetSwitch>) {
+		async addSpriteToScene(sprite: ISprite) {
 			await this.vuexHistory.transaction(async () => {
 				await this.$store.dispatch('panels/createSprite', {
-					panelId: this.currentPanel.id,
+					panelId: this.$store.state.panels.currentPanel,
 					assets: sprite.variants[0],
 				} as ICreateSpriteAction);
 			});
+		},
+		reuploadingSprite(sprite: ISprite) {
+			const missingSpriteUpload = this.$refs
+				.missingSpriteUpload as HTMLInputElement;
+			(missingSpriteUpload as any).uploadingSprite = sprite;
+			missingSpriteUpload.click();
 		},
 		async addCustomSpriteFile(file: File) {
 			await this.vuexHistory.transaction(async () => {

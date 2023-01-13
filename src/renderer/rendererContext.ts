@@ -1,6 +1,5 @@
 import { RenderAbortedException } from './renderAbortedException';
 import { Renderer } from './renderer';
-import { ErrorAsset } from '@/render-utils/assets/error-asset';
 import { SpriteFilter } from '@/store/sprite_options';
 import { IAsset } from '@/render-utils/assets/asset';
 import { DeepReadonly } from 'ts-essentials';
@@ -152,7 +151,7 @@ export class RenderContext {
 			IORotation
 	): void {
 		if (this.aborted) throw new RenderAbortedException();
-		if (params.image instanceof ErrorAsset) return;
+		//if (params.image instanceof ErrorAsset) return;
 		const { image, flip, x, y, w, h, filters, composite } = {
 			flip: false,
 			w: params.image.width,
