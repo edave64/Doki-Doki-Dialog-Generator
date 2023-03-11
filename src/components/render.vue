@@ -303,6 +303,7 @@ export default defineComponent({
 
 						await this.vuexHistory.transaction(async () => {
 							await this.$store.dispatch('panels/createSprite', {
+								panelId: this.$store.state.panels.currentPanel,
 								assets: [
 									{
 										hq: assetUrl,
