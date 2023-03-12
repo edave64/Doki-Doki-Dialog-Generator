@@ -14,11 +14,11 @@
 				tabindex="0"
 				:key="sprite.label"
 				:title="sprite.label"
-				:style="{ background: reuploadingSprite(sprite) }"
+				:style="{ background: assetSpriteBackground(sprite) }"
 				@click="reuploadingSprite(sprite)"
 				@keypress.enter.prevent.stop="reuploadingSprite(sprite)"
 				@keypress.space.prevent.stop="reuploadingSprite(sprite)"
-				v-if="sprite.missing !== null"
+				v-if="sprite.missing === null"
 			>
 				{{ sprite.label }}
 			</div>

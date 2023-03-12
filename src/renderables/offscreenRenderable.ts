@@ -21,7 +21,7 @@ export enum SelectedState {
 }
 
 export abstract class OffscreenRenderable<Obj extends IObject> {
-	private localRenderer: Renderer | null = null;
+	protected localRenderer: Renderer | null = null;
 	private lastVersion: any = null;
 	private hitDetectionFallback = false;
 	protected renderable: boolean = false;
