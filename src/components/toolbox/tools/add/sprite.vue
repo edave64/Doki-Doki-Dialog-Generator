@@ -158,7 +158,6 @@ export default defineComponent({
 			}
 		},
 		async onMissingSpriteFileUpload(e: Event) {
-			debugger;
 			const uploadInput = this.$refs.missingSpriteUpload as HTMLInputElement;
 			const spriteName = (uploadInput as any).uploadingSprite;
 			if (!uploadInput.files) return;
