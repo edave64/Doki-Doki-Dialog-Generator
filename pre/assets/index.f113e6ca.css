@@ -147,28 +147,28 @@ button[data-v-b2a4f97d]:active {
   text-shadow: 0 0 4px var(--text), -1px -1px 0 var(--text), 1px -1px 0 var(--text), -1px 1px 0 var(--text), 1px 1px 0 var(--text);
   font-size: 24px;
   font-family: riffic, sans-serif;
-}input[data-v-8d8a7832] {
+}input[data-v-2845c266] {
   display: none;
 }
-.sub-item-grid[data-v-8d8a7832] {
+.sub-item-grid[data-v-2845c266] {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
   margin: 0;
 }
-.sub-item-grid.vertical[data-v-8d8a7832] {
+.sub-item-grid.vertical[data-v-2845c266] {
   width: 100%;
   flex-direction: row;
 }
-.sub-item-grid.vertical[data-v-8d8a7832] button {
+.sub-item-grid.vertical[data-v-2845c266] button {
   width: 100%;
 }
-.sub-item-grid[data-v-8d8a7832]:not(.vertical) {
+.sub-item-grid[data-v-2845c266]:not(.vertical) {
   height: 10000px;
   max-height: 100%;
   flex-direction: column;
 }
-.sprite[data-v-8d8a7832] {
+.sprite[data-v-2845c266] {
   box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.5);
   box-shadow: inset 0 0 1px 3px var(--modal-backdrop);
   height: 198px;

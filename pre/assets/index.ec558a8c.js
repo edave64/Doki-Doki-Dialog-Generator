@@ -8357,7 +8357,7 @@ const _sfc_main$u = defineComponent({
     }
   }
 });
-const sprite_vue_vue_type_style_index_0_scoped_8d8a7832_lang = "";
+const sprite_vue_vue_type_style_index_0_scoped_2845c266_lang = "";
 const _hoisted_1$p = ["title", "onClick", "onKeypress"];
 const _hoisted_2$n = ["title", "onClick", "onKeypress"];
 function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
@@ -8380,7 +8380,7 @@ function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
     }, 8, ["onDrop"]),
     (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.sprites, (sprite) => {
       return openBlock(), createElementBlock(Fragment, null, [
-        sprite.missing === null ? (openBlock(), createElementBlock("div", {
+        sprite.missing !== null ? (openBlock(), createElementBlock("div", {
           class: "sprite",
           tabindex: "0",
           key: sprite.label,
@@ -8455,7 +8455,7 @@ function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 544)
   ], 34);
 }
-const Sprites = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["render", _sfc_render$t], ["__scopeId", "data-v-8d8a7832"]]);
+const Sprites = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["render", _sfc_render$t], ["__scopeId", "data-v-2845c266"]]);
 var __async$x = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -21544,10 +21544,10 @@ const _sfc_main = defineComponent({
     Render,
     ModalDialog,
     SingleBox: defineAsyncComponent(
-      () => __vitePreload(() => import("./SingleBox.0963340a.js"), true ? ["./SingleBox.0963340a.js","./SingleBox.467fe7d6.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./SingleBox.5df2b08f.js"), true ? ["./SingleBox.5df2b08f.js","./SingleBox.467fe7d6.css"] : void 0, import.meta.url)
     ),
     ExpressionBuilder: defineAsyncComponent(
-      () => __vitePreload(() => import("./index.2f12da1a.js"), true ? ["./index.2f12da1a.js","./index.aa47b381.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.3012451e.js"), true ? ["./index.3012451e.js","./index.aa47b381.css"] : void 0, import.meta.url)
     )
   },
   data: () => ({
