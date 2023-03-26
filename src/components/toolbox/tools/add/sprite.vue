@@ -18,7 +18,7 @@
 				@click="reuploadingSprite(sprite)"
 				@keypress.enter.prevent.stop="reuploadingSprite(sprite)"
 				@keypress.space.prevent.stop="reuploadingSprite(sprite)"
-				v-if="sprite.missing === null"
+				v-if="sprite.missing !== null"
 			>
 				{{ sprite.label }}
 			</div>
@@ -107,6 +107,8 @@ export default defineComponent({
 				const urls = x.variants[0].map((y) => {
 					const url = getAAssetUrl(y, false);
 					if (url.startsWith('uploads:')) {
+						// Force sprites to reload on upload
+						Object.keys(this.$store.state.uploadUrls);
 						missing = url;
 						return MissingImage;
 					} else {
@@ -155,12 +157,24 @@ export default defineComponent({
 				this.addCustomSpriteFile(file);
 			}
 		},
-		onMissingSpriteFileUpload(e: Event) {
-			const uploadInput = this.$refs.spriteUpload as HTMLInputElement;
+		async onMissingSpriteFileUpload(e: Event) {
+			debugger;
+			const uploadInput = this.$refs.missingSpriteUpload as HTMLInputElement;
+			const spriteName = (uploadInput as any).uploadingSprite;
 			if (!uploadInput.files) return;
-			for (const file of uploadInput.files) {
-				this.addCustomSpriteFile(file);
+			if (uploadInput.files.length !== 1) {
+				console.error('More than one file uploaded!');
+				return;
 			}
+
+			const file = uploadInput.files[0];
+			await this.vuexHistory.transaction(async () => {
+				const url = URL.createObjectURL(file);
+				await this.$store.dispatch('uploadUrls/add', {
+					name: spriteName,
+					url,
+				});
+			});
 		},
 		async uploadFromURL() {
 			const url = prompt('Enter the URL of the image');
@@ -181,7 +195,9 @@ export default defineComponent({
 		reuploadingSprite(sprite: ISprite) {
 			const missingSpriteUpload = this.$refs
 				.missingSpriteUpload as HTMLInputElement;
-			(missingSpriteUpload as any).uploadingSprite = sprite;
+			(missingSpriteUpload as any).uploadingSprite = getAAssetUrl(
+				sprite.variants[0][0]
+			).substring(8);
 			missingSpriteUpload.click();
 		},
 		async addCustomSpriteFile(file: File) {
