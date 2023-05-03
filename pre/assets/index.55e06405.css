@@ -147,28 +147,28 @@ button[data-v-b2a4f97d]:active {
   text-shadow: 0 0 4px var(--text), -1px -1px 0 var(--text), 1px -1px 0 var(--text), -1px 1px 0 var(--text), 1px 1px 0 var(--text);
   font-size: 24px;
   font-family: riffic, sans-serif;
-}input[data-v-2845c266] {
+}input[data-v-08f94fb6] {
   display: none;
 }
-.sub-item-grid[data-v-2845c266] {
+.sub-item-grid[data-v-08f94fb6] {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
   margin: 0;
 }
-.sub-item-grid.vertical[data-v-2845c266] {
+.sub-item-grid.vertical[data-v-08f94fb6] {
   width: 100%;
   flex-direction: row;
 }
-.sub-item-grid.vertical[data-v-2845c266] button {
+.sub-item-grid.vertical[data-v-08f94fb6] button {
   width: 100%;
 }
-.sub-item-grid[data-v-2845c266]:not(.vertical) {
+.sub-item-grid[data-v-08f94fb6]:not(.vertical) {
   height: 10000px;
   max-height: 100%;
   flex-direction: column;
 }
-.sprite[data-v-2845c266] {
+.sprite[data-v-08f94fb6] {
   box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.5);
   box-shadow: inset 0 0 1px 3px var(--modal-backdrop);
   height: 198px;
@@ -636,28 +636,31 @@ svg g .slider-pointer[data-v-7a5dc4a7] {
 .modal-rename dialog p {
   font-family: aller sans-serif;
   font-size: 24px;
-}fieldset table[data-v-a458f9e9] {
+}fieldset table[data-v-f2647495] {
   width: 100%;
 }
-.panel:not(.vertical) .pose-list[data-v-a458f9e9] {
+.panel:not(.vertical) .pose-list[data-v-f2647495] {
   height: 100%;
 }
-.panel[data-v-a458f9e9]:not(.vertical) fieldset {
+.panel[data-v-f2647495]:not(.vertical) fieldset {
   max-height: 100%;
   height: 100%;
   overflow: auto;
 }
-.panel.vertical fieldset input[data-v-a458f9e9] {
+.panel.vertical fieldset input[data-v-f2647495] {
   width: 60px;
 }
-.middle-button[data-v-a458f9e9] {
+.middle-button[data-v-f2647495] {
   width: 100%;
 }
-.arrow-col[data-v-a458f9e9] {
+.arrow-col[data-v-f2647495] {
   width: 24px;
 }
-.arrow-col button[data-v-a458f9e9] {
+.arrow-col button[data-v-f2647495] {
   width: 24px;
+}
+input[type=file][data-v-f2647495] {
+  display: none;
 }input[type=file][data-v-38366137] {
   display: none;
 }.panel.vertical #dialog_text_wrapper[data-v-725704da] {

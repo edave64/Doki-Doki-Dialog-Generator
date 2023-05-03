@@ -1,4 +1,4 @@
-import { x as reactive, d as defineComponent, _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, q as normalizeStyle, b as withModifiers, y as renderSlot, z as VerticalScrollRedirect, j as ToggleBox, D as DropTarget, A as DFieldset, L, B as getAAssetUrl, k as envX, C as getAssetByUrl, E as Renderer, G as Character, S as SelectedState, m as createBlock, i as withCtx, F as Fragment, l as createTextVNode, e as createCommentVNode, h as createVNode, r as renderList, n as normalizeClass, w as withDirectives, H as vModelSelect, s as resolveComponent, v as vModelText, p as pushScopeId, g as popScopeId } from "./index.ec558a8c.js";
+import { x as reactive, d as defineComponent, _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, q as normalizeStyle, b as withModifiers, y as renderSlot, z as VerticalScrollRedirect, j as ToggleBox, D as DropTarget, A as DFieldset, L, B as getAAssetUrl, k as envX, C as getAssetByUrl, E as Renderer, G as Character, S as SelectedState, m as createBlock, i as withCtx, F as Fragment, l as createTextVNode, e as createCommentVNode, h as createVNode, r as renderList, n as normalizeClass, w as withDirectives, H as vModelSelect, s as resolveComponent, v as vModelText, p as pushScopeId, g as popScopeId } from "./index.a626ad53.js";
 var __defProp$1 = Object.defineProperty;
 var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => {
@@ -791,8 +791,8 @@ const _sfc_main = defineComponent({
     }
   }
 });
-const index_vue_vue_type_style_index_0_scoped_741fa029_lang = "";
-const _withScopeId = (n) => (pushScopeId("data-v-741fa029"), n = n(), popScopeId(), n);
+const index_vue_vue_type_style_index_0_scoped_39890924_lang = "";
+const _withScopeId = (n) => (pushScopeId("data-v-39890924"), n = n(), popScopeId(), n);
 const _hoisted_1 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createBaseVNode("h1", null, "Add expressions", -1));
 const _hoisted_2 = {
   key: 0,
@@ -806,8 +806,9 @@ const _hoisted_7 = ["width", "height"];
 const _hoisted_8 = ["value"];
 const _hoisted_9 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createBaseVNode("th", null, "X:", -1));
 const _hoisted_10 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createBaseVNode("th", null, "Y:", -1));
-const _hoisted_11 = ["disabled"];
-const _hoisted_12 = { key: 1 };
+const _hoisted_11 = { key: 0 };
+const _hoisted_12 = ["disabled"];
+const _hoisted_13 = { key: 1 };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_selection = resolveComponent("selection");
   const _component_selector = resolveComponent("selector");
@@ -977,7 +978,8 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                         ])
                       ])
                     ])
-                  ])
+                  ]),
+                  _ctx.offsetX !== 0 || _ctx.offsetY !== 0 ? (openBlock(), createElementBlock("p", _hoisted_11, " WARNING: Offsets will be lost when saving/loading. ")) : createCommentVNode("", true)
                 ]),
                 _: 1
               }),
@@ -996,7 +998,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               createBaseVNode("button", {
                 disabled: _ctx.currentUploadedExpression === null,
                 onClick: _cache[13] || (_cache[13] = (...args) => _ctx.removeUploadedExpression && _ctx.removeUploadedExpression(...args))
-              }, " Remove this expression ", 8, _hoisted_11),
+              }, " Remove this expression ", 8, _hoisted_12),
               createBaseVNode("button", {
                 onClick: _cache[14] || (_cache[14] = (...args) => _ctx.finishUpload && _ctx.finishUpload(...args))
               }, "Finish"),
@@ -1006,13 +1008,13 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ])
           ])
         ])
-      ])) : (openBlock(), createElementBlock("div", _hoisted_12, [
+      ])) : (openBlock(), createElementBlock("div", _hoisted_13, [
         createBaseVNode("h2", null, " Finishing up images. " + toDisplayString(Math.round(_ctx.batchRunner.percentage * 100)) + "% ", 1)
       ]))
     ], 64)) : createCommentVNode("", true)
   ], 32);
 }
-const index = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-741fa029"]]);
+const index = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-39890924"]]);
 export {
   index as default
 };
