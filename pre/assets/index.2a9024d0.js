@@ -8613,8 +8613,8 @@ const _sfc_main$s = defineComponent({
     }
   }
 });
-const add_vue_vue_type_style_index_0_scoped_566ccba8_lang = "";
-const _withScopeId$e = (n) => (pushScopeId("data-v-566ccba8"), n = n(), popScopeId(), n);
+const add_vue_vue_type_style_index_0_scoped_1a6b7167_lang = "";
+const _withScopeId$e = (n) => (pushScopeId("data-v-1a6b7167"), n = n(), popScopeId(), n);
 const _hoisted_1$o = { class: "panel" };
 const _hoisted_2$m = /* @__PURE__ */ _withScopeId$e(() => /* @__PURE__ */ createBaseVNode("h1", null, "Add", -1));
 const _hoisted_3$i = ["innerHTML"];
@@ -8649,15 +8649,21 @@ function _sfc_render$r(_ctx, _cache, $props, $setup, $data, $options) {
     createBaseVNode("div", {
       class: normalizeClass({ "item-grid": true, vertical: _ctx.vertical })
     }, [
-      _ctx.group === "characters" ? (openBlock(), createBlock(_component_Characters, { key: 0 })) : _ctx.group === "sprites" ? (openBlock(), createBlock(_component_Sprites, { key: 1 })) : _ctx.group === "ui" ? (openBlock(), createBlock(_component_UI, { key: 2 })) : createCommentVNode("", true),
+      _ctx.group === "characters" ? (openBlock(), createBlock(_component_Characters, {
+        key: 0,
+        onShowDialog: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("show-dialog", $event))
+      })) : _ctx.group === "sprites" ? (openBlock(), createBlock(_component_Sprites, {
+        key: 1,
+        onShowDialog: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("show-dialog", $event))
+      })) : _ctx.group === "ui" ? (openBlock(), createBlock(_component_UI, { key: 2 })) : createCommentVNode("", true),
       createBaseVNode("button", {
-        onClick: _cache[0] || (_cache[0] = (...args) => _ctx.paste && _ctx.paste(...args)),
+        onClick: _cache[2] || (_cache[2] = (...args) => _ctx.paste && _ctx.paste(...args)),
         disabled: !_ctx.hasClipboardContent
       }, "Paste", 8, _hoisted_4$g)
     ], 2)
   ]);
 }
-const AddPanel = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$r], ["__scopeId", "data-v-566ccba8"]]);
+const AddPanel = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$r], ["__scopeId", "data-v-1a6b7167"]]);
 function arraySeeker(array, pos, delta) {
   let val = pos + delta;
   const length = array.length;
@@ -21633,10 +21639,10 @@ const _sfc_main = defineComponent({
     Render,
     ModalDialog,
     SingleBox: defineAsyncComponent(
-      () => __vitePreload(() => import("./SingleBox.ed5865c1.js"), true ? ["./SingleBox.ed5865c1.js","./SingleBox.467fe7d6.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./SingleBox.a9f1d34a.js"), true ? ["./SingleBox.a9f1d34a.js","./SingleBox.467fe7d6.css"] : void 0, import.meta.url)
     ),
     ExpressionBuilder: defineAsyncComponent(
-      () => __vitePreload(() => import("./index.3bc5392c.js"), true ? ["./index.3bc5392c.js","./index.b54a44f1.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.63bc2354.js"), true ? ["./index.63bc2354.js","./index.b54a44f1.css"] : void 0, import.meta.url)
     )
   },
   data: () => ({
