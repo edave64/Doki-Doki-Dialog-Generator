@@ -9,7 +9,7 @@
 			no-composition
 			@leave="
 				imageOptions = false;
-				renderThumbnail();
+				renderCurrentThumbnail();
 			"
 		/>
 		<template v-else>
@@ -161,6 +161,7 @@ import {
 	IDuplicatePanelAction,
 	IMovePanelAction,
 	IPanel,
+	IPanels,
 	ISetCurrentPanelMutation,
 	ISetPanelPreviewMutation,
 } from '@/store/panels';
@@ -186,6 +187,8 @@ import ImageOptions from '../subtools/image-options/image-options.vue';
 import getConstants from '@/constants';
 import { safeAsync } from '@/util/errors';
 import { makeCanvas, disposeCanvas } from '@/util/canvas';
+import { Store } from 'vuex';
+import { IRootState } from '@/store';
 
 interface IPanelButton {
 	id: IPanel['id'];
@@ -215,6 +218,7 @@ export default defineComponent({
 		format: 'image/png',
 		quality: defaultQuality,
 		imageOptions: false,
+		isMounted: false,
 		thumbnailCtx: null! as CanvasRenderingContext2D,
 	}),
 	computed: {
@@ -262,10 +266,19 @@ export default defineComponent({
 			const idx = panelOrder.indexOf(this.currentPanel.id);
 			return idx < panelOrder.length - 1;
 		},
+
+		missingThumbnails(): IPanel['id'][] {
+			const store = (this as any).$store as Store<DeepReadonly<IRootState>>;
+			const panelOrder = store.state.panels.panelOrder;
+			return panelOrder.filter((id) => {
+				const panel = store.state.panels.panels[id];
+				return panel.lastRender == null;
+			});
+		},
 	},
 	async created() {
 		eventBus.subscribe(RenderUpdatedEvent, () =>
-			requestAnimationFrame(() => this.renderThumbnail())
+			requestAnimationFrame(() => this.renderCurrentThumbnail())
 		);
 		const baseConst = getConstants().Base;
 		const targetCanvas = makeCanvas();
@@ -278,13 +291,36 @@ export default defineComponent({
 		]);
 	},
 	mounted() {
+		this.isMounted = true;
 		this.moveFocusToActivePanel();
-		requestAnimationFrame(() => this.renderThumbnail().catch(() => {}));
+		requestAnimationFrame(() => this.renderCurrentThumbnail().catch(() => {}));
 	},
 	unmounted() {
+		this.isMounted = false;
 		disposeCanvas(this.thumbnailCtx.canvas);
 	},
 	methods: {
+		async restoreThumbnails() {
+			const baseConst = getConstants().Base;
+			if (!this.isMounted) return;
+			if (environment.supports.limitedCanvasSpace) return;
+			const missingThumbnails = this.missingThumbnails;
+			if (missingThumbnails.length === 0) return;
+			const toRender = missingThumbnails[0];
+			const localRenderer = new SceneRenderer(
+				this.$store,
+				toRender,
+				baseConst.screenWidth,
+				baseConst.screenHeight
+			);
+
+			await localRenderer.render(false, false, true);
+
+			await this.renderPanelThumbnail(localRenderer);
+			setTimeout(() => {
+				this.restoreThumbnails();
+			}, 500);
+		},
 		async download() {
 			await safeAsync('export image', async () => {
 				const distribution = this.getPanelDistibution();
@@ -527,35 +563,40 @@ export default defineComponent({
 				} as IMovePanelAction);
 			});
 		},
-		async renderThumbnail() {
+		async renderCurrentThumbnail() {
+			// Warning, ugly hack incoming:
+			// getMainSceneRenderer is a bridge set up by renderer.vue, that allows us to
+			// borrow its renderer. It already contains the fully rendered scene, so
+			// we just need to stick it in a thumbnail.
+			// FIXME: This sadly makes it so the selection halo is visible in the thumbnails.
+			//        The renderer will lose that once the panels tab is selected, so maybe delay this?
+			const getMainSceneRenderer: undefined | (() => SceneRenderer | null) = (
+				window as any
+			).getMainSceneRenderer;
+			const sceneRenderer = getMainSceneRenderer && getMainSceneRenderer();
+
+			// Suboptimal. But whatever, it's just a thumbnail...
+			if (!sceneRenderer) return;
+
+			await this.renderPanelThumbnail(sceneRenderer);
+		},
+		async renderPanelThumbnail(sceneRenderer: SceneRenderer) {
 			await safeAsync('render thumbnail', async () => {
-				// Warning, ugly hack incoming:
-				// getMainSceneRenderer is a bridge set up by renderer.vue, that allows us to
-				// borrow its renderer. It already contains the fully rendered scene, so
-				// we just need to stick it in a thumbnail.
-				// FIXME: This sadly makes it so the selection halo is visible in the thumbnails.
-				//        The renderer will lose that once the panels tab is selected, so maybe delay this?
-				const getMainSceneRenderer: undefined | (() => SceneRenderer | null) = (
-					window as any
-				).getMainSceneRenderer;
-				const sceneRenderer = getMainSceneRenderer && getMainSceneRenderer();
-
-				// Suboptimal. But whatever, it's just a thumbnail...
-				if (!sceneRenderer) return;
-
+				const panelId = sceneRenderer.panelId;
 				sceneRenderer.paintOnto(this.thumbnailCtx, {
 					x: 0,
 					y: 0,
 					w: this.thumbnailCtx.canvas.width,
 					h: this.thumbnailCtx.canvas.height,
 				});
+
 				this.thumbnailCtx.canvas.toBlob(
 					(blob) => {
 						if (!blob) return;
 						const url = URL.createObjectURL(blob);
 						this.vuexHistory.transaction(() => {
 							this.$store.commit('panels/setPanelPreview', {
-								panelId: this.$store.state.panels.currentPanel,
+								panelId,
 								url,
 							} as ISetPanelPreviewMutation);
 						});
@@ -596,9 +637,20 @@ export default defineComponent({
 				eventBus.fire(new StateLoadingEvent());
 				const data = await blobToText(uploadInput.files[0]);
 				await this.$store.dispatch('loadSave', data);
+				if (environment.supports.limitedCanvasSpace) {
+					eventBus.fire(
+						new ShowMessageEvent(
+							'To prevent running out of memory, thumbnails will not be automatically restored in the background.'
+						)
+					);
+				}
 			});
 
-			await this.renderThumbnail();
+			await this.renderCurrentThumbnail();
+
+			setTimeout(() => {
+				this.restoreThumbnails();
+			}, 1000);
 		},
 	},
 	watch: {
