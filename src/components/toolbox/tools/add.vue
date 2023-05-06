@@ -14,8 +14,14 @@
 			</d-button>
 		</div>
 		<div :class="{ 'item-grid': true, vertical }">
-			<Characters v-if="group === 'characters'" />
-			<Sprites v-else-if="group === 'sprites'" />
+			<Characters
+				v-if="group === 'characters'"
+				@show-dialog="$emit('show-dialog', $event)"
+			/>
+			<Sprites
+				v-else-if="group === 'sprites'"
+				@show-dialog="$emit('show-dialog', $event)"
+			/>
 			<UI v-else-if="group === 'ui'" />
 			<button @click="paste" :disabled="!hasClipboardContent">Paste</button>
 		</div>
