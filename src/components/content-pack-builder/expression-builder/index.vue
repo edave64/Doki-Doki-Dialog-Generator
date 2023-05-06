@@ -97,6 +97,9 @@
 										</td>
 									</tr>
 								</table>
+								<p v-if="offsetX !== 0 || offsetY !== 0">
+									WARNING: Offsets will be lost when saving/loading.
+								</p>
 							</d-fieldset>
 							<toggle-box
 								label="Reduce to fit DDDG standard"
@@ -491,9 +494,9 @@ export default defineComponent({
 			if (!headGroup) {
 				headGroup = {
 					previewSize:
-						storeHeadGroup.previewSize as typeof headGroup['previewSize'],
+						storeHeadGroup.previewSize as (typeof headGroup)['previewSize'],
 					previewOffset:
-						storeHeadGroup.previewOffset as typeof headGroup['previewOffset'],
+						storeHeadGroup.previewOffset as (typeof headGroup)['previewOffset'],
 					variants: [],
 				};
 				character.heads[this.headGroup!.name] = headGroup;

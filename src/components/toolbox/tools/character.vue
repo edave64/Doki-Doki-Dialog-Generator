@@ -11,6 +11,18 @@
 			/>
 		</template>
 		<template v-slot:default>
+			<template v-if="missingHead">
+				<p class="warning">
+					MISSING Head sprite! Click below to re-upload
+					<span style="word-wrap: break-word">"{{ missingHead }}"</span>.
+				</p>
+				<button @click="reuploadHead()">Re-Upload</button>
+				<input
+					type="file"
+					ref="missingHeadUpload"
+					@change="onMissingHeadFileUpload"
+				/>
+			</template>
 			<d-fieldset
 				v-if="hasMultiplePoses || parts.length > 0 || hasMultipleStyles"
 				class="pose-list"
@@ -76,6 +88,7 @@ import {
 	ISeekPosePartAction,
 	ICharacter,
 	ISeekStyleAction,
+	getHeads,
 } from '@/store/objectTypes/characters';
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
@@ -88,6 +101,7 @@ import { DeepReadonly } from 'ts-essentials';
 import { defineComponent } from 'vue';
 import { genericSetable } from '@/util/simpleSettable';
 import ObjectTool from './object-tool.vue';
+import { getAAssetUrl } from '@/asset-manager';
 
 const setable = genericSetable<ICharacter>();
 
@@ -105,6 +119,19 @@ export default defineComponent({
 	computed: {
 		flip: setable('flip', 'panels/setFlip'),
 		closeUp: setable('close', 'panels/setClose'),
+		missingHead(): string | null {
+			const charData = this.charData;
+			const obj = this.object;
+
+			const heads = getHeads(charData, obj);
+			if (!heads) return null;
+			for (const asset of heads.variants) {
+				const url = getAAssetUrl(asset[0], false);
+				console.log(url);
+				if (url.startsWith('uploads:')) return url.substring(8);
+			}
+			return null;
+		},
 		selection(): IObject['id'] {
 			return this.$store.state.ui.selection!;
 		},
@@ -140,6 +167,28 @@ export default defineComponent({
 		},
 	},
 	methods: {
+		reuploadHead() {
+			const missingHeadUpload = this.$refs
+				.missingHeadUpload as HTMLInputElement;
+			missingHeadUpload.click();
+		},
+		async onMissingHeadFileUpload(e: Event) {
+			const uploadInput = this.$refs.missingHeadUpload as HTMLInputElement;
+			if (!uploadInput.files) return;
+			if (uploadInput.files.length !== 1) {
+				console.error('More than one file uploaded!');
+				return;
+			}
+
+			const file = uploadInput.files[0];
+			await this.vuexHistory.transaction(async () => {
+				const url = URL.createObjectURL(file);
+				await this.$store.dispatch('uploadUrls/add', {
+					name: this.missingHead,
+					url,
+				});
+			});
+		},
 		seekPose(delta: number): void {
 			this.vuexHistory.transaction(() => {
 				this.$store.dispatch('panels/seekPose', {
@@ -216,5 +265,8 @@ fieldset {
 	button {
 		width: 24px;
 	}
+}
+input[type='file'] {
+	display: none;
 }
 </style>
