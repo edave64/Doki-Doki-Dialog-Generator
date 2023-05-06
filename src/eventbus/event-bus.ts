@@ -55,6 +55,16 @@ export class InvalidateRenderEvent implements IEvent {
 	public readonly kind = 'InvalidateRenderEvent';
 }
 
+export class RenderUpdatedEvent implements IEvent {
+	public static readonly kind = 'RenderUpdatedEvent';
+	public readonly kind = RenderUpdatedEvent.kind;
+}
+
+export class StateLoadingEvent implements IEvent {
+	public static readonly kind = 'StateLoadingEvent';
+	public readonly kind = StateLoadingEvent.kind;
+}
+
 export class ShowMessageEvent implements IEvent {
 	public static readonly kind = 'ShowMessageEvent';
 	public readonly kind = 'ShowMessageEvent';

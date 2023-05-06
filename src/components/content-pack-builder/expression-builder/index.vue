@@ -97,6 +97,9 @@
 										</td>
 									</tr>
 								</table>
+								<p v-if="offsetX !== 0 || offsetY !== 0">
+									WARNING: Offsets will be lost when saving/loading.
+								</p>
 							</d-fieldset>
 							<toggle-box
 								label="Reduce to fit DDDG standard"
@@ -132,7 +135,7 @@
 </template>
 
 <script lang="ts">
-import { getAssetByUrl } from '@/asset-manager';
+import { getAAssetUrl, getAssetByUrl } from '@/asset-manager';
 import ToggleBox from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import L from '@/components/ui/link.vue';
@@ -157,8 +160,8 @@ import DropTarget from '../../toolbox/drop-target.vue';
 import Selection from './selection.vue';
 import Selector from './selector.vue';
 
-const uploadedExpressionsPack: ContentPack<string> = {
-	packId: 'dddg.buildin.uploadedExpressions',
+const uploadedExpressionsPackDefaults: ContentPack<IAssetSwitch> = {
+	packId: 'dddg.uploads.expressions',
 	dependencies: [],
 	packCredits: [],
 	characters: [],
@@ -255,6 +258,7 @@ export default defineComponent({
 		addMask: false,
 		addExtras: false,
 		batchRunner: null! as WorkBatch<string, string>,
+		names: {} as { [url: string]: string },
 	}),
 	created() {
 		(window as any).exp = this;
@@ -312,17 +316,19 @@ export default defineComponent({
 
 		addByImageFile(file: File) {
 			const url = URL.createObjectURL(file);
-			this.addUrl(url);
+			this.addUrl(file.name, url);
 		},
 
 		async addByUrl(): Promise<void> {
 			const url = await environment.prompt('Enter the url of the image.', '');
 			if (url == null) return;
-			this.addUrl(url);
+			const lastSegment = url.split('/').slice(-1)[0];
+			this.addUrl(lastSegment, url);
 		},
 
-		addUrl(url: string): void {
+		addUrl(name: string, url: string): void {
 			this.currentUploadedExpression = url;
+			this.names[url] = name;
 			this.uploadedExpressions.push(url);
 		},
 
@@ -383,6 +389,7 @@ export default defineComponent({
 				}
 			});
 			const finalExpression = URL.createObjectURL(blob);
+			this.names[finalExpression] = this.names[expression];
 
 			if (expression !== finalExpression && expression.startsWith('blob:')) {
 				URL.revokeObjectURL(expression);
@@ -455,7 +462,16 @@ export default defineComponent({
 			const storeCharacter = this.$store.state.content.current.characters.find(
 				(char) => char.id === this.character
 			)!;
-			let character = uploadedExpressionsPack.characters.find(
+
+			const old =
+				this.$store.state.content.contentPacks.find(
+					(x) => x.packId === uploadedExpressionsPackDefaults.packId
+				) || uploadedExpressionsPackDefaults;
+			const newPackVersion: ContentPack<IAssetSwitch> = JSON.parse(
+				JSON.stringify(old)
+			);
+
+			let character = newPackVersion.characters.find(
 				(char) => char.id === this.character
 			);
 			if (!character) {
@@ -464,12 +480,12 @@ export default defineComponent({
 					heads: {},
 					styleGroups: [],
 					label: '',
-					chibi: '',
+					chibi: null!,
 					size: [960, 960],
 					defaultScale: [0.8, 0.8],
 					hd: false,
-				} as CharacterModel<string>;
-				uploadedExpressionsPack.characters.push(character);
+				} as CharacterModel<IAssetSwitch>;
+				newPackVersion.characters.push(character);
 			}
 
 			let headGroup = character.heads[this.headGroup!.name];
@@ -477,20 +493,33 @@ export default defineComponent({
 			// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 			if (!headGroup) {
 				headGroup = {
-					previewSize: storeHeadGroup.previewSize as any,
-					previewOffset: storeHeadGroup.previewOffset as any,
+					previewSize:
+						storeHeadGroup.previewSize as (typeof headGroup)['previewSize'],
+					previewOffset:
+						storeHeadGroup.previewOffset as (typeof headGroup)['previewOffset'],
 					variants: [],
 				};
 				character.heads[this.headGroup!.name] = headGroup;
 			}
 
 			for (const processedExpression of processedExpressions) {
-				headGroup.variants.push([processedExpression]);
+				const assetUrl: string = await this.$store.dispatch('uploadUrls/add', {
+					name: 'expression_' + (this.names[processedExpression] || ''),
+					url: processedExpression,
+				});
+				headGroup.variants.push([
+					{
+						hq: assetUrl,
+						lq: assetUrl,
+						sourcePack: uploadedExpressionsPackDefaults.packId!,
+					},
+				]);
 			}
 
 			await this.vuexHistory.transaction(() => {
 				this.$store.dispatch('content/replaceContentPack', {
-					contentPack: uploadedExpressionsPack,
+					contentPack: newPackVersion,
+					processed: true,
 				} as ReplaceContentPackAction);
 			});
 
@@ -569,7 +598,9 @@ export default defineComponent({
 
 				return {
 					name: headTypeKey,
-					preview: headType.variants[0].map((asset) => asset.lq),
+					preview: headType.variants[0].map((asset) =>
+						getAAssetUrl(asset, false)
+					),
 					partsFiles: partFiles[headTypeKey] || [],
 					imagePatching: {
 						mask: masks[headTypeKey],

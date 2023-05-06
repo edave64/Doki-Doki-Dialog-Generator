@@ -12,6 +12,7 @@ export class Sprite extends AssetListRenderable<ISprite> {
 	protected ready: Promise<void> = null!;
 	protected canvasHeight: number = 0;
 	protected canvasWidth: number = 0;
+	protected needAssetUpdate = true;
 
 	constructor(obj: DeepReadonly<ISprite>) {
 		super(obj);
@@ -23,6 +24,10 @@ export class Sprite extends AssetListRenderable<ISprite> {
 	}
 
 	public async init() {
+		await this.reloadAssets();
+	}
+
+	protected async reloadAssets(): Promise<void> {
 		let readyResolve!: () => void;
 		this.ready = new Promise((resolve, _reject) => {
 			readyResolve = resolve;
@@ -47,6 +52,7 @@ export class Sprite extends AssetListRenderable<ISprite> {
 		];
 		readyResolve();
 	}
+
 	protected getAssetList(): (IDrawAssets | IDrawAssetsUnloaded)[] {
 		return this.assets ?? [];
 	}

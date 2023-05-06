@@ -19,6 +19,7 @@ import {
 import { IPanel } from '@/store/panels';
 
 export class Character extends AssetListRenderable<ICharacter> {
+	protected reloadAssets(): void {}
 	public constructor(
 		obj: DeepReadonly<ICharacter>,
 		private data: DeepReadonly<CharacterModel<IAssetSwitch>>

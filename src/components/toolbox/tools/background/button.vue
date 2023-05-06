@@ -13,14 +13,12 @@
 </template>
 
 <script lang="ts">
-import { getAAsset } from '@/asset-manager';
+import { getAAssetUrl } from '@/asset-manager';
 import { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { BackgroundLookup, IAssetSwitch } from '@/store/content';
 import { IPanel } from '@/store/panels';
 import { defineComponent } from 'vue';
 import { DeepReadonly } from 'ts-essentials';
-import { IAsset } from '@/render-utils/assets/asset';
-import { ImageAsset } from '@/render-utils/assets/image-asset';
 
 export default defineComponent({
 	props: {
@@ -31,7 +29,7 @@ export default defineComponent({
 	},
 	data: () => ({
 		isWebPSupported: null as boolean | null,
-		assets: [] as IAsset[],
+		assets: [] as IAssetSwitch[],
 	}),
 	computed: {
 		background(): DeepReadonly<IPanel['background']> {
@@ -68,21 +66,13 @@ export default defineComponent({
 				case 'buildin.transparent':
 					return {};
 			}
-			const urls = this.assets
-				.filter((img) => img instanceof ImageAsset)
-				.map((img) => `url('${(img as ImageAsset).html.src}')`)
+			const urls = this.bgData?.variants[0]
+				.map((img) => `url('${getAAssetUrl(img, false)}')`)
 				.join(',');
 			return {
-				backgroundImage: urls,
+				backgroundImage: urls ?? '',
 			};
 		},
-	},
-	async created() {
-		if (this.bgData) {
-			this.assets = await Promise.all(
-				this.bgData.variants[0].map((asset) => getAAsset(asset, false))
-			);
-		}
 	},
 });
 </script>

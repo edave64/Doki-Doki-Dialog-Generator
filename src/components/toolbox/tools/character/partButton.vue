@@ -11,9 +11,7 @@
 </template>
 
 <script lang="ts">
-import { getAAsset, getBuildInAsset } from '@/asset-manager';
-import { IAsset } from '@/render-utils/assets/asset';
-import { ImageAsset } from '@/render-utils/assets/image-asset';
+import { getAAssetUrl, getBuildInAssetUrl } from '@/asset-manager';
 import { IAssetSwitch } from '@/store/content';
 import { DeepReadonly } from 'ts-essentials';
 import { defineComponent, Prop } from 'vue';
@@ -46,7 +44,7 @@ export default defineComponent({
 		},
 	},
 	data: () => ({
-		lookups: [] as Array<IAsset | null>,
+		lookups: [] as string[],
 		loaded: false,
 	}),
 	computed: {
@@ -74,7 +72,7 @@ export default defineComponent({
 			for (let i = 0; i < this.part!.images.length; ++i) {
 				const image = this.part!.images[i];
 				const lookup = this.lookups[i];
-				if (!(lookup instanceof ImageAsset)) continue;
+				if (!lookup) continue;
 				if (i > 0) ret += ', ';
 				const localOffset = image.offset ?? [0, 0];
 				const pos =
@@ -82,7 +80,7 @@ export default defineComponent({
 						(globalOffset[0] - localOffset[0]) * -this.scaleX
 					)}px ` +
 					`${Math.floor((globalOffset[1] - localOffset[1]) * -this.scaleY)}px`;
-				ret += `url('${lookup.html.src.replace("'", "\\'")}') ${pos} / ${size}`;
+				ret += `url('${lookup.replace("'", "\\'")}') ${pos} / ${size}`;
 			}
 			return ret;
 		},
@@ -98,9 +96,9 @@ export default defineComponent({
 		this.lookups = await Promise.all(
 			this.part!.images.map((image) => {
 				if (typeof image.asset === 'string') {
-					return getBuildInAsset(image.asset, false);
+					return getBuildInAssetUrl(image.asset, false);
 				} else {
-					return getAAsset(image.asset, false);
+					return getAAssetUrl(image.asset, false);
 				}
 			})
 		);

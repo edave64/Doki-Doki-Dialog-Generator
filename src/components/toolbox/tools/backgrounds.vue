@@ -65,8 +65,8 @@ import { defineComponent } from 'vue';
 import environment, { Folder } from '@/environments/environment';
 import DButton from '@/components/ui/d-button.vue';
 
-const uploadedBackgroundsPack: ContentPack<string> = {
-	packId: 'dddg.buildin.uploadedBackgrounds',
+const uploadedBackgroundsPackDefaults: ContentPack<string> = {
+	packId: 'dddg.uploads.backgrounds',
 	dependencies: [],
 	packCredits: [],
 	characters: [],
@@ -137,9 +137,15 @@ export default defineComponent({
 				this.addImageFile(file);
 			}
 		},
-		addImageFile(file: File) {
-			const url = URL.createObjectURL(file);
-			this.addNewCustomBackground(file.name, file.name, url);
+		async addImageFile(file: File) {
+			await this.vuexHistory.transaction(async () => {
+				const url = URL.createObjectURL(file);
+				const assetUrl: string = await this.$store.dispatch('uploadUrls/add', {
+					name: file.name,
+					url,
+				});
+				this.addNewCustomBackground(file.name, file.name, assetUrl);
+			});
 		},
 		addByUrl() {
 			const url = prompt('Enter the URL of the image');
@@ -152,15 +158,25 @@ export default defineComponent({
 			label: string,
 			url: string
 		) {
-			uploadedBackgroundsPack.backgrounds.push({
-				id,
-				label,
-				variants: [[url]],
-				scaling: 'none',
-			});
+			const old =
+				this.$store.state.content.contentPacks.find(
+					(x) => x.packId === uploadedBackgroundsPackDefaults.packId
+				) || uploadedBackgroundsPackDefaults;
+			const newPackVersion = {
+				...old,
+				backgrounds: [
+					...old.backgrounds,
+					{
+						id,
+						label,
+						variants: [[url]],
+						scaling: 'none',
+					},
+				],
+			};
 			this.vuexHistory.transaction(() => {
 				this.$store.dispatch('content/replaceContentPack', {
-					contentPack: uploadedBackgroundsPack,
+					contentPack: newPackVersion,
 				} as ReplaceContentPackAction);
 				this.setBackground(id);
 			});

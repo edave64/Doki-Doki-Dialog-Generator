@@ -11,12 +11,14 @@ import { ITextBox } from '@/store/objectTypes/textbox';
 import { IHitbox } from './renderable';
 import { IAsset } from '@/render-utils/assets/asset';
 import { IPanel } from '@/store/panels';
+import { ErrorAsset } from '@/render-utils/assets/error-asset';
 
 export abstract class AssetListRenderable<
 	Obj extends IObject
 > extends OffscreenRenderable<Obj> {
 	protected refTextbox: ITextBox | null = null;
 	protected abstract getAssetList(): Array<IDrawAssetsUnloaded | IDrawAssets>;
+	protected abstract reloadAssets(): void;
 	protected get canvasDrawWidth(): number {
 		return this.width * this.objZoom;
 	}
@@ -52,6 +54,8 @@ export abstract class AssetListRenderable<
 		};
 	}
 
+	private lastUploadCount = 0;
+	private missingAsset = false;
 	public updatedContent(
 		_current: Store<DeepReadonly<IRootState>>,
 		panelId: IPanel['id']
@@ -68,19 +72,35 @@ export abstract class AssetListRenderable<
 				return;
 			}
 		}
+		const uploadCount = Object.keys(_current.state.uploadUrls).length;
+		if (this.missingAsset && uploadCount !== this.lastUploadCount) {
+			if (this.localRenderer) {
+				this.localRenderer.dispose();
+			}
+			this.localRenderer = null;
+			this.lastUploadCount = uploadCount;
+			this.reloadAssets();
+			console.log('forceing sprite rerender ' + this.id);
+		}
 	}
 
 	protected async renderLocal(rx: RenderContext): Promise<void> {
 		const drawAssetsUnloaded: Array<IDrawAssetsUnloaded | IDrawAssets> =
-			this.getAssetList();
+			await this.getAssetList();
+
+		console.log('rerendering local');
 
 		const loadedDraws = await Promise.all(
 			drawAssetsUnloaded
 				.filter((drawAsset) => drawAsset.assets)
 				.map((drawAsset) => loadAssets(drawAsset, rx.hq))
 		);
+		this.missingAsset = false;
 		for (const loadedDraw of loadedDraws) {
 			for (const asset of loadedDraw.assets) {
+				if (asset instanceof ErrorAsset) {
+					this.missingAsset = true;
+				}
 				rx.drawImage({
 					image: asset as IAsset,
 					composite: loadedDraw.composite,

@@ -127,6 +127,7 @@ export default defineComponent({
 				eventBus.fire(
 					new VueErrorEvent(e as Error, 'Error while loading external pack')
 				);
+				console.error(e);
 			}
 		},
 	},

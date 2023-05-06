@@ -9,7 +9,7 @@
 			no-composition
 			@leave="
 				imageOptions = false;
-				renderThumbnail();
+				renderCurrentThumbnail();
 			"
 		/>
 		<template v-else>
@@ -143,6 +143,13 @@
 					</tr>
 				</table>
 			</d-fieldset>
+			<div class="column">
+				<d-button icon="save" @click="save">Save</d-button>
+				<d-button icon="folder_open" @click="$refs.loadUpload.click()">
+					Load
+					<input type="file" ref="loadUpload" @change="load" />
+				</d-button>
+			</div>
 		</template>
 	</div>
 </template>
@@ -154,6 +161,7 @@ import {
 	IDuplicatePanelAction,
 	IMovePanelAction,
 	IPanel,
+	IPanels,
 	ISetCurrentPanelMutation,
 	ISetPanelPreviewMutation,
 } from '@/store/panels';
@@ -162,7 +170,11 @@ import { ITextBox } from '@/store/objectTypes/textbox';
 import { SceneRenderer } from '@/renderables/scene-renderer';
 import { DeepReadonly } from 'ts-essentials';
 import environment from '@/environments/environment';
-import eventBus, { ShowMessageEvent } from '@/eventbus/event-bus';
+import eventBus, {
+	RenderUpdatedEvent,
+	ShowMessageEvent,
+	StateLoadingEvent,
+} from '@/eventbus/event-bus';
 import { IObject } from '@/store/objects';
 import { INotification } from '@/store/objectTypes/notification';
 import { IPoem } from '@/store/objectTypes/poem';
@@ -175,6 +187,8 @@ import ImageOptions from '../subtools/image-options/image-options.vue';
 import getConstants from '@/constants';
 import { safeAsync } from '@/util/errors';
 import { makeCanvas, disposeCanvas } from '@/util/canvas';
+import { Store } from 'vuex';
+import { IRootState } from '@/store';
 
 interface IPanelButton {
 	id: IPanel['id'];
@@ -204,6 +218,7 @@ export default defineComponent({
 		format: 'image/png',
 		quality: defaultQuality,
 		imageOptions: false,
+		isMounted: false,
 		thumbnailCtx: null! as CanvasRenderingContext2D,
 	}),
 	computed: {
@@ -251,8 +266,20 @@ export default defineComponent({
 			const idx = panelOrder.indexOf(this.currentPanel.id);
 			return idx < panelOrder.length - 1;
 		},
+
+		missingThumbnails(): IPanel['id'][] {
+			const store = (this as any).$store as Store<DeepReadonly<IRootState>>;
+			const panelOrder = store.state.panels.panelOrder;
+			return panelOrder.filter((id) => {
+				const panel = store.state.panels.panels[id];
+				return panel.lastRender == null;
+			});
+		},
 	},
 	async created() {
+		eventBus.subscribe(RenderUpdatedEvent, () =>
+			requestAnimationFrame(() => this.renderCurrentThumbnail())
+		);
 		const baseConst = getConstants().Base;
 		const targetCanvas = makeCanvas();
 		targetCanvas.width = baseConst.screenWidth * thumbnailFactor;
@@ -264,13 +291,36 @@ export default defineComponent({
 		]);
 	},
 	mounted() {
+		this.isMounted = true;
 		this.moveFocusToActivePanel();
-		this.renderThumbnail().catch(() => {});
+		requestAnimationFrame(() => this.renderCurrentThumbnail().catch(() => {}));
 	},
 	unmounted() {
+		this.isMounted = false;
 		disposeCanvas(this.thumbnailCtx.canvas);
 	},
 	methods: {
+		async restoreThumbnails() {
+			const baseConst = getConstants().Base;
+			if (!this.isMounted) return;
+			if (environment.supports.limitedCanvasSpace) return;
+			const missingThumbnails = this.missingThumbnails;
+			if (missingThumbnails.length === 0) return;
+			const toRender = missingThumbnails[0];
+			const localRenderer = new SceneRenderer(
+				this.$store,
+				toRender,
+				baseConst.screenWidth,
+				baseConst.screenHeight
+			);
+
+			await localRenderer.render(false, false, true);
+
+			await this.renderPanelThumbnail(localRenderer);
+			setTimeout(() => {
+				this.restoreThumbnails();
+			}, 500);
+		},
 		async download() {
 			await safeAsync('export image', async () => {
 				const distribution = this.getPanelDistibution();
@@ -513,35 +563,40 @@ export default defineComponent({
 				} as IMovePanelAction);
 			});
 		},
-		async renderThumbnail() {
+		async renderCurrentThumbnail() {
+			// Warning, ugly hack incoming:
+			// getMainSceneRenderer is a bridge set up by renderer.vue, that allows us to
+			// borrow its renderer. It already contains the fully rendered scene, so
+			// we just need to stick it in a thumbnail.
+			// FIXME: This sadly makes it so the selection halo is visible in the thumbnails.
+			//        The renderer will lose that once the panels tab is selected, so maybe delay this?
+			const getMainSceneRenderer: undefined | (() => SceneRenderer | null) = (
+				window as any
+			).getMainSceneRenderer;
+			const sceneRenderer = getMainSceneRenderer && getMainSceneRenderer();
+
+			// Suboptimal. But whatever, it's just a thumbnail...
+			if (!sceneRenderer) return;
+
+			await this.renderPanelThumbnail(sceneRenderer);
+		},
+		async renderPanelThumbnail(sceneRenderer: SceneRenderer) {
 			await safeAsync('render thumbnail', async () => {
-				// Warning, ugly hack incoming:
-				// getMainSceneRenderer is a bridge set up by renderer.vue, that allows us to
-				// borrow its renderer. It already contains the fully rendered scene, so
-				// we just need to stick it in a thumbnail.
-				// FIXME: This sadly makes it so the selection halo is visible in the thumbnails.
-				//        The renderer will lose that once the panels tab is selected, so maybe delay this?
-				const getMainSceneRenderer: undefined | (() => SceneRenderer | null) = (
-					window as any
-				).getMainSceneRenderer;
-				const sceneRenderer = getMainSceneRenderer && getMainSceneRenderer();
-
-				// Suboptimal. But whatever, it's just a thumbnail...
-				if (!sceneRenderer) return;
-
+				const panelId = sceneRenderer.panelId;
 				sceneRenderer.paintOnto(this.thumbnailCtx, {
 					x: 0,
 					y: 0,
 					w: this.thumbnailCtx.canvas.width,
 					h: this.thumbnailCtx.canvas.height,
 				});
+
 				this.thumbnailCtx.canvas.toBlob(
 					(blob) => {
 						if (!blob) return;
 						const url = URL.createObjectURL(blob);
 						this.vuexHistory.transaction(() => {
 							this.$store.commit('panels/setPanelPreview', {
-								panelId: this.$store.state.panels.currentPanel,
+								panelId,
 								url,
 							} as ISetPanelPreviewMutation);
 						});
@@ -550,6 +605,52 @@ export default defineComponent({
 					thumbnailQuality
 				);
 			});
+		},
+		async save() {
+			const str = await this.$store.dispatch('getSave', true);
+			const saveBlob = new Blob([str], {
+				type: 'text/plain',
+			});
+			const date = new Date();
+			const prefix = `save-${[
+				date.getFullYear(),
+				`${date.getMonth() + 1}`.padStart(2, '0'),
+				`${date.getDate()}`.padStart(2, '0'),
+				`${date.getHours()}`.padStart(2, '0'),
+				`${date.getMinutes()}`.padStart(2, '0'),
+				`${date.getSeconds()}`.padStart(2, '0'),
+			].join('-')}`;
+			const filename = `${prefix}.dddg`;
+			const a = document.createElement('a');
+			const url = URL.createObjectURL(saveBlob);
+			a.setAttribute('download', filename);
+			a.setAttribute('href', url);
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+		},
+		async load() {
+			await this.vuexHistory.transaction(async () => {
+				const uploadInput = this.$refs.loadUpload as HTMLInputElement;
+				if (!uploadInput.files) return;
+				eventBus.fire(new StateLoadingEvent());
+				const data = await blobToText(uploadInput.files[0]);
+				await this.$store.dispatch('loadSave', data);
+				if (environment.supports.limitedCanvasSpace) {
+					eventBus.fire(
+						new ShowMessageEvent(
+							'To prevent running out of memory, thumbnails will not be automatically restored in the background.'
+						)
+					);
+				}
+			});
+
+			await this.renderCurrentThumbnail();
+
+			setTimeout(() => {
+				this.restoreThumbnails();
+			}, 1000);
 		},
 	},
 	watch: {
@@ -590,6 +691,19 @@ export default defineComponent({
 		},
 	},
 });
+
+function blobToText(file: File): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.onload = function () {
+			resolve(reader.result as string);
+		};
+		reader.onerror = function (e) {
+			reject(e);
+		};
+		reader.readAsText(file);
+	});
+}
 </script>
 
 <style lang="scss" scoped>
@@ -645,6 +759,10 @@ export default defineComponent({
 		white-space: pre;
 		user-select: none;
 	}
+}
+
+input[type='file'] {
+	display: none;
 }
 
 .panel_nr {

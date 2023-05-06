@@ -279,7 +279,7 @@ export default defineComponent({
 						if (color === undefined) return;
 						this.$store.commit(
 							'panels/setTextBoxProperty',
-							textboxProperty(panelId, id, 'customNameboxStroke', colorKey!)
+							textboxProperty(panelId, id, colorKey!, color)
 						);
 					});
 				},

@@ -24,10 +24,11 @@
 <script lang="ts">
 import { MutationPayload } from 'vuex';
 import { RenderContext } from '@/renderer/rendererContext';
-import { registerAsset } from '@/asset-manager';
 import eventBus, {
 	ColorPickedEvent,
 	InvalidateRenderEvent,
+	RenderUpdatedEvent,
+	StateLoadingEvent,
 } from '@/eventbus/event-bus';
 import { IObject, ISetObjectPositionMutation } from '@/store/objects';
 import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
@@ -131,11 +132,12 @@ export default defineComponent({
 			if (this.$store.state.unsafe) return;
 
 			try {
-				await this.sceneRender.render(!this.lqRendering, true);
+				await this.sceneRender.render(!this.lqRendering, true, false);
 			} catch (e) {
 				console.log(e);
 			}
 			this.display();
+			eventBus.fire(new RenderUpdatedEvent());
 		},
 		renderLoadingScreen() {
 			const loadingScreen = document.createElement('canvas');
@@ -288,20 +290,32 @@ export default defineComponent({
 
 			for (const item of e.dataTransfer.items) {
 				if (item.kind === 'file' && item.type.match(/image.*/)) {
-					const name = 'dropCustomAsset' + ++this.dropSpriteCount;
-					const url = registerAsset(name, item.getAsFile()!);
+					const file = item.getAsFile()!;
+					const url = URL.createObjectURL(file);
+					try {
+						const assetUrl: string = await this.$store.dispatch(
+							'uploadUrls/add',
+							{
+								name: file.name,
+								url,
+							}
+						);
 
-					await this.vuexHistory.transaction(async () => {
-						await this.$store.dispatch('panels/createSprite', {
-							assets: [
-								{
-									hq: url,
-									lq: url,
-									sourcePack: 'dddg.generated.uploaded-sprites',
-								},
-							],
-						} as ICreateSpriteAction);
-					});
+						await this.vuexHistory.transaction(async () => {
+							await this.$store.dispatch('panels/createSprite', {
+								panelId: this.$store.state.panels.currentPanel,
+								assets: [
+									{
+										hq: assetUrl,
+										lq: assetUrl,
+										sourcePack: 'dddg.uploaded.sprites',
+									},
+								],
+							} as ICreateSpriteAction);
+						});
+					} catch (e) {
+						URL.revokeObjectURL(url);
+					}
 				}
 			}
 		},
@@ -339,6 +353,12 @@ export default defineComponent({
 			};
 		}
 		eventBus.subscribe(InvalidateRenderEvent, () => this.invalidateRender());
+		eventBus.subscribe(StateLoadingEvent, () => {
+			const cache = this.sceneRendererCache;
+			if (cache) {
+				cache.setPanelId(-1);
+			}
+		});
 		this.$store.subscribe((mut: MutationPayload) => {
 			if (mut.type === 'panels/setPanelPreview') return;
 			if (mut.type === 'panels/currentPanel') return;

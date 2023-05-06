@@ -125,8 +125,8 @@ export default defineComponent({
 		addSwatch() {
 			if (this.swatches.find((swatch) => swatch.color === this.color)) return;
 
-			const existingPack = this.$store.state.content.contentPacks.find(
-				(pack) => pack.packId === 'generatedPackId'
+			const existingPack: DeepReadonly<ContentPack<IAssetSwitch>> = this.$store.state.content.contentPacks.find(
+				(pack) => pack.packId === generatedPackId
 			) || {
 				packId: generatedPackId,
 				packCredits: [''],

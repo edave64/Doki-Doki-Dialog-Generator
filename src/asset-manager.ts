@@ -1,12 +1,10 @@
-import EventBus, {
-	AssetFailureEvent,
-	CustomAssetFailureEvent,
-} from './eventbus/event-bus';
+import EventBus, { AssetFailureEvent } from './eventbus/event-bus';
 import { ErrorAsset } from './render-utils/assets/error-asset';
 import { IAssetSwitch } from './store/content';
 import environment from './environments/environment';
 import { IAsset } from './render-utils/assets/asset';
 import { ImageAsset } from './render-utils/assets/image-asset';
+import { MissingAsset } from './render-utils/assets/missing-asset';
 
 let webpSupportPromise: Promise<boolean> | undefined;
 
@@ -112,7 +110,7 @@ function getAssetCache(): AssetCache | TmpAssetCache {
 			: new TmpAssetCache());
 }
 
-const customAssets: { [id: string]: Promise<IAsset> | undefined } = {};
+const customUrl: { [upload_url: string]: string } = {};
 
 export function getAAsset(
 	asset: IAssetSwitch,
@@ -121,8 +119,15 @@ export function getAAsset(
 	return getAssetByUrl(environment.supports.lq && !hq ? asset.lq : asset.hq);
 }
 
+export function getAAssetUrl(asset: IAssetSwitch, hq: boolean = true): string {
+	const url = environment.supports.lq && !hq ? asset.lq : asset.hq;
+	if (customUrl[url]) return customUrl[url];
+	return url;
+}
+
 export function getAssetByUrl(url: string): Promise<IAsset> {
-	return customAssets[url] || getAssetCache().get(url);
+	if (customUrl[url]) url = customUrl[url];
+	return getAssetCache().get(url);
 }
 
 export const baseUrl = './';
@@ -137,44 +142,28 @@ export async function getBuildInAsset(
 	return await getAssetCache().get(url);
 }
 
-export function registerAsset(asset: string, file: File): string {
-	const url = URL.createObjectURL(file);
-	// noinspection JSIgnoredPromiseFromCall
-	registerAssetWithURL(asset, url);
-	return url;
+export async function getBuildInAssetUrl(
+	asset: string,
+	hq: boolean = true
+): Promise<string> {
+	return `${baseUrl}assets/${asset}${
+		environment.supports.lq && !hq ? '.lq' : ''
+	}${(await isWebPSupported()) ? '.webp' : '.png'}`.replace(/\/+/, '/');
 }
 
-export function registerAssetWithURL(
-	asset: string,
-	url: string
-): Promise<IAsset> {
-	return (customAssets[asset] = new Promise((resolve, reject) => {
-		const img = new Image();
-		img.addEventListener('load', () => {
-			resolve(new ImageAsset(img));
-		});
-		img.addEventListener('error', (error) => {
-			EventBus.fire(new CustomAssetFailureEvent(error));
-			reject(`Failed to load "${url}"`);
-		});
-		img.crossOrigin = 'Anonymous';
-		img.src = url;
-		img.style.display = 'none';
-		if (environment.supports.assetCaching) {
-			document.body.appendChild(img);
-		} else {
-			customAssets[asset] = undefined;
-		}
-	}));
+export function registerAssetWithURL(asset: string, url: string) {
+	customUrl[asset] = url;
 }
 
 async function requestAssetByUrl(url: string): Promise<IAsset> {
+	const isCustom = !!customUrl[url];
+	if (isCustom) url = customUrl[url];
 	return (async (): Promise<IAsset> => {
 		try {
 			return await imagePromise(url);
 		} catch (e) {
 			// Webp files sometimes fail to load on safari. Fallback to png
-			if (url.endsWith('.webp')) {
+			if (url.endsWith('.webp') && !isCustom) {
 				try {
 					return await imagePromise(url.replace(/\.webp$/, '.png'));
 				} catch (e) {
@@ -191,7 +180,7 @@ async function requestAssetByUrl(url: string): Promise<IAsset> {
 	})();
 }
 
-function imagePromise(url: string): Promise<ImageAsset> {
+function imagePromise(url: string): Promise<IAsset> {
 	return new Promise((resolve, reject) => {
 		const img = new Image();
 		img.addEventListener('load', () => {
@@ -201,7 +190,7 @@ function imagePromise(url: string): Promise<ImageAsset> {
 			}
 		});
 		img.addEventListener('error', (_e) => {
-			reject(new Error(`Failed to load image ${url}`));
+			resolve(new ErrorAsset());
 			if (!environment.supports.assetCaching) {
 				document.body.removeChild(img);
 			}

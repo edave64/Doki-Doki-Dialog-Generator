@@ -45,6 +45,7 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 div {
+	z-index: 1000;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -58,8 +59,10 @@ div {
 	color: $default-native-background;
 	//noinspection CssOverwrittenProperties
 	color: var(--native-background);
-	text-shadow: 0 0 4px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
-		1px 1px 0 #000;
+	text-shadow: 0 0 4px $default-text, -1px -1px 0 $default-text,
+		1px -1px 0 $default-text, -1px 1px 0 $default-text, 1px 1px 0 $default-text;
+	text-shadow: 0 0 4px var(--text), -1px -1px 0 var(--text),
+		1px -1px 0 var(--text), -1px 1px 0 var(--text), 1px 1px 0 var(--text);
 	font-size: 24px;
 	font-family: riffic, sans-serif;
 }
