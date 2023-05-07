@@ -182,6 +182,14 @@ export class Electron implements IEnvironment {
 		);
 		this.electron.ipcRenderer.send('init-dddg');
 	}
+	async storeSaveFile(save: Blob, defaultName: string): Promise<void> {
+		const buffer = await (save as any).arrayBuffer();
+		await this.electron.ipcRenderer.sendConvo(
+			'save-file-dialog',
+			defaultName,
+			new Uint8Array(buffer)
+		);
+	}
 
 	public updateDownloadFolder(): void {
 		this.electron.ipcRenderer.send('config.newDownloadFolder');

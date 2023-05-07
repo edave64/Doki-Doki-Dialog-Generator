@@ -620,15 +620,7 @@ export default defineComponent({
 				`${date.getMinutes()}`.padStart(2, '0'),
 				`${date.getSeconds()}`.padStart(2, '0'),
 			].join('-')}`;
-			const filename = `${prefix}.dddg`;
-			const a = document.createElement('a');
-			const url = URL.createObjectURL(saveBlob);
-			a.setAttribute('download', filename);
-			a.setAttribute('href', url);
-			document.body.appendChild(a);
-			a.click();
-			document.body.removeChild(a);
-			URL.revokeObjectURL(url);
+			environment.storeSaveFile(saveBlob, `${prefix}.dddg`);
 		},
 		async load() {
 			await this.vuexHistory.transaction(async () => {

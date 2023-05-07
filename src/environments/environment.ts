@@ -61,6 +61,9 @@ export interface IEnvironment {
 	loadSettings(): Promise<Settings>;
 	loadGameMode(): Promise<void>;
 	setGameMode(mode: IEnvironment['gameMode']): Promise<void>;
+
+	storeSaveFile(save: Blob, defaultName: string): Promise<void>;
+
 	connectToStore(
 		vuexHistory: IHistorySupport,
 		store: Store<DeepReadonly<IRootState>>

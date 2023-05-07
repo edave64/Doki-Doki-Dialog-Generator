@@ -129,6 +129,16 @@ export class Browser implements IEnvironment {
 			}
 		});
 	}
+	async storeSaveFile(saveBlob: Blob, defaultName: string): Promise<void> {
+		const a = document.createElement('a');
+		const url = URL.createObjectURL(saveBlob);
+		a.setAttribute('download', defaultName);
+		a.setAttribute('href', url);
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+	}
 
 	public async loadGameMode(): Promise<void> {
 		const searchParams = new URLSearchParams(location.search);
