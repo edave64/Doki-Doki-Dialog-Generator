@@ -92,7 +92,19 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 
 		if (skipLocal) return;
 
-		this.localRenderer = new Renderer(width, height);
+		if (
+			this.localRenderer &&
+			!this.localRenderer.disposed &&
+			this.localRenderer.height === height &&
+			this.localRenderer.width === width
+		) {
+			// Just reuse the renderer.
+		} else {
+			if (this.localRenderer) {
+				this.localRenderer.dispose();
+			}
+			this.localRenderer = new Renderer(width, height);
+		}
 		try {
 			await this.localRenderer.render(this.renderLocal.bind(this), hq);
 		} catch (e) {
