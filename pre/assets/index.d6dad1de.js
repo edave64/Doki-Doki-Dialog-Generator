@@ -6048,7 +6048,7 @@ class VueErrorEvent {
   }
 }
 __publicField$r(VueErrorEvent, "kind", "VueErrorEvent");
-const MissingImage = "" + new URL("missing_image.480f7f62.svg", import.meta.url).href;
+const MissingImage = "" + new URL("missing_image.81acc086.svg", import.meta.url).href;
 var __defProp$O = Object.defineProperty;
 var __getOwnPropSymbols$u = Object.getOwnPropertySymbols;
 var __hasOwnProp$u = Object.prototype.hasOwnProperty;
@@ -7552,7 +7552,7 @@ const _sfc_main$A = defineComponent({
     this.close();
   }
 });
-const ModalDialog_vue_vue_type_style_index_0_scoped_08c9e0d0_lang = "";
+const ModalDialog_vue_vue_type_style_index_0_scoped_dfb4ac8d_lang = "";
 const _hoisted_1$u = {
   key: 0,
   id: "submit-options"
@@ -7605,7 +7605,7 @@ function _sfc_render$z(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)
   ]));
 }
-const ModalDialog = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["render", _sfc_render$z], ["__scopeId", "data-v-08c9e0d0"]]);
+const ModalDialog = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["render", _sfc_render$z], ["__scopeId", "data-v-dfb4ac8d"]]);
 const _sfc_main$z = defineComponent({
   mixins: [VerticalScrollRedirect],
   props: {
@@ -7846,8 +7846,8 @@ const _sfc_main$y = defineComponent({
     }
   }
 });
-const settings_vue_vue_type_style_index_0_scoped_b2e4e2eb_lang = "";
-const _withScopeId$f = (n) => (pushScopeId("data-v-b2e4e2eb"), n = n(), popScopeId(), n);
+const settings_vue_vue_type_style_index_0_scoped_11f6d92f_lang = "";
+const _withScopeId$f = (n) => (pushScopeId("data-v-11f6d92f"), n = n(), popScopeId(), n);
 const _hoisted_1$s = { class: "panel" };
 const _hoisted_2$q = /* @__PURE__ */ _withScopeId$f(() => /* @__PURE__ */ createBaseVNode("h1", null, "Settings", -1));
 const _hoisted_3$k = { class: "modal-scroll-area" };
@@ -8023,7 +8023,7 @@ function _sfc_render$x(_ctx, _cache, $props, $setup, $data, $options) {
     ])) : createCommentVNode("", true)
   ]);
 }
-const SettingsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$y, [["render", _sfc_render$x], ["__scopeId", "data-v-b2e4e2eb"]]);
+const SettingsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$y, [["render", _sfc_render$x], ["__scopeId", "data-v-11f6d92f"]]);
 const _sfc_main$x = defineComponent({
   props: {
     icon: {
@@ -8057,7 +8057,7 @@ const _sfc_main$x = defineComponent({
     }
   }
 });
-const dButton_vue_vue_type_style_index_0_scoped_69c1c73b_lang = "";
+const dButton_vue_vue_type_style_index_0_scoped_b2a4f97d_lang = "";
 const _hoisted_1$r = ["disabled"];
 const _hoisted_2$p = {
   class: "material-icons",
@@ -8080,7 +8080,7 @@ function _sfc_render$w(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.showPopup ? (openBlock(), createElementBlock("div", _hoisted_4$h, toDisplayString(_ctx.popupText), 1)) : createCommentVNode("", true)
   ], 10, _hoisted_1$r);
 }
-const DButton = /* @__PURE__ */ _export_sfc(_sfc_main$x, [["render", _sfc_render$w], ["__scopeId", "data-v-69c1c73b"]]);
+const DButton = /* @__PURE__ */ _export_sfc(_sfc_main$x, [["render", _sfc_render$w], ["__scopeId", "data-v-b2a4f97d"]]);
 var __async$A = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -8122,7 +8122,7 @@ const _sfc_main$w = defineComponent({
     }
   }
 });
-const character_vue_vue_type_style_index_0_scoped_7bd4f0f4_lang = "";
+const character_vue_vue_type_style_index_0_scoped_11c7e802_lang = "";
 const _hoisted_1$q = ["title", "onClick", "onKeypress"];
 const _hoisted_2$o = ["src", "alt"];
 function _sfc_render$v(_ctx, _cache, $props, $setup, $data, $options) {
@@ -8158,7 +8158,7 @@ function _sfc_render$v(_ctx, _cache, $props, $setup, $data, $options) {
     })
   ], 64);
 }
-const Characters = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["render", _sfc_render$v], ["__scopeId", "data-v-7bd4f0f4"]]);
+const Characters = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["render", _sfc_render$v], ["__scopeId", "data-v-11c7e802"]]);
 const _sfc_main$v = defineComponent({
   computed: {
     vertical() {
@@ -8189,7 +8189,7 @@ const _sfc_main$v = defineComponent({
     }
   }
 });
-const dropTarget_vue_vue_type_style_index_0_scoped_88669357_lang = "";
+const dropTarget_vue_vue_type_style_index_0_scoped_9b740976_lang = "";
 function _sfc_render$u(_ctx, _cache, $props, $setup, $data, $options) {
   return _ctx.visible ? (openBlock(), createElementBlock("div", {
     key: 0,
@@ -8200,7 +8200,7 @@ function _sfc_render$u(_ctx, _cache, $props, $setup, $data, $options) {
     renderSlot(_ctx.$slots, "default", {}, void 0, true)
   ], 34)) : createCommentVNode("", true);
 }
-const DropTarget = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["render", _sfc_render$u], ["__scopeId", "data-v-88669357"]]);
+const DropTarget = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["render", _sfc_render$u], ["__scopeId", "data-v-9b740976"]]);
 var __defProp$I = Object.defineProperty;
 var __defProps$m = Object.defineProperties;
 var __getOwnPropDescs$m = Object.getOwnPropertyDescriptors;
@@ -8396,7 +8396,7 @@ const _sfc_main$u = defineComponent({
     }
   }
 });
-const sprite_vue_vue_type_style_index_0_scoped_e5df7220_lang = "";
+const sprite_vue_vue_type_style_index_0_scoped_08f94fb6_lang = "";
 const _hoisted_1$p = ["title", "onClick", "onKeypress"];
 const _hoisted_2$n = ["title", "onClick", "onKeypress"];
 function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
@@ -8494,7 +8494,7 @@ function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 544)
   ], 34);
 }
-const Sprites = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["render", _sfc_render$t], ["__scopeId", "data-v-e5df7220"]]);
+const Sprites = /* @__PURE__ */ _export_sfc(_sfc_main$u, [["render", _sfc_render$t], ["__scopeId", "data-v-08f94fb6"]]);
 var __async$y = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -8637,8 +8637,8 @@ const _sfc_main$s = defineComponent({
     }
   }
 });
-const add_vue_vue_type_style_index_0_scoped_f14fe160_lang = "";
-const _withScopeId$e = (n) => (pushScopeId("data-v-f14fe160"), n = n(), popScopeId(), n);
+const add_vue_vue_type_style_index_0_scoped_1a6b7167_lang = "";
+const _withScopeId$e = (n) => (pushScopeId("data-v-1a6b7167"), n = n(), popScopeId(), n);
 const _hoisted_1$o = { class: "panel" };
 const _hoisted_2$m = /* @__PURE__ */ _withScopeId$e(() => /* @__PURE__ */ createBaseVNode("h1", null, "Add", -1));
 const _hoisted_3$i = ["innerHTML"];
@@ -8687,7 +8687,7 @@ function _sfc_render$r(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)
   ]);
 }
-const AddPanel = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$r], ["__scopeId", "data-v-f14fe160"]]);
+const AddPanel = /* @__PURE__ */ _export_sfc(_sfc_main$s, [["render", _sfc_render$r], ["__scopeId", "data-v-1a6b7167"]]);
 function arraySeeker(array, pos, delta) {
   let val = pos + delta;
   const length = array.length;
@@ -10492,7 +10492,7 @@ const _sfc_main$q = defineComponent({
     }
   }
 });
-const partButton_vue_vue_type_style_index_0_scoped_aa6e96cb_lang = "";
+const partButton_vue_vue_type_style_index_0_scoped_037b2b66_lang = "";
 function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
   var _a;
   return openBlock(), createElementBlock("div", {
@@ -10507,7 +10507,7 @@ function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
     ]
   }, null, 38);
 }
-const PartButton = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$p], ["__scopeId", "data-v-aa6e96cb"]]);
+const PartButton = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["render", _sfc_render$p], ["__scopeId", "data-v-037b2b66"]]);
 var __defProp$z = Object.defineProperty;
 var __defProps$e = Object.defineProperties;
 var __getOwnPropDescs$e = Object.getOwnPropertyDescriptors;
@@ -10593,8 +10593,8 @@ const _sfc_main$p = defineComponent({
     }
   }
 });
-const dFlow_vue_vue_type_style_index_0_scoped_fdd024db_lang = "";
-const DFlow = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["__scopeId", "data-v-fdd024db"]]);
+const dFlow_vue_vue_type_style_index_0_scoped_f45f382d_lang = "";
+const DFlow = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["__scopeId", "data-v-f45f382d"]]);
 var __async$u = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -10849,8 +10849,8 @@ const _sfc_main$o = defineComponent({
     }
   }
 });
-const parts_vue_vue_type_style_index_0_scoped_fce4aeac_lang = "";
-const _withScopeId$d = (n) => (pushScopeId("data-v-fce4aeac"), n = n(), popScopeId(), n);
+const parts_vue_vue_type_style_index_0_scoped_15457ce1_lang = "";
+const _withScopeId$d = (n) => (pushScopeId("data-v-15457ce1"), n = n(), popScopeId(), n);
 const _hoisted_1$m = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("i", { class: "material-icons" }, "extension", -1));
 const _hoisted_2$k = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("span", { class: "text-block" }, "Create new expressions", -1));
 const _hoisted_3$g = [
@@ -10945,7 +10945,7 @@ function _sfc_render$o(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["onKeydown"]);
 }
-const Parts = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["render", _sfc_render$o], ["__scopeId", "data-v-fce4aeac"]]);
+const Parts = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["render", _sfc_render$o], ["__scopeId", "data-v-15457ce1"]]);
 function genericSetable() {
   return function setable2(key, message, action = false) {
     return {
@@ -12340,7 +12340,14 @@ class OffscreenRenderable {
       this.lastHq = hq;
       if (skipLocal)
         return;
-      this.localRenderer = new Renderer(width, height);
+      if (this.localRenderer && !this.localRenderer.disposed && this.localRenderer.height === height && this.localRenderer.width === width)
+        ;
+      else {
+        if (this.localRenderer) {
+          this.localRenderer.dispose();
+        }
+        this.localRenderer = new Renderer(width, height);
+      }
       try {
         yield this.localRenderer.render(this.renderLocal.bind(this), hq);
       } catch (e) {
@@ -13829,8 +13836,8 @@ const _sfc_main$n = defineComponent({
     }
   }
 });
-const positionAndSize_vue_vue_type_style_index_0_scoped_ffa7a993_lang = "";
-const _withScopeId$c = (n) => (pushScopeId("data-v-ffa7a993"), n = n(), popScopeId(), n);
+const positionAndSize_vue_vue_type_style_index_0_scoped_c33846f6_lang = "";
+const _withScopeId$c = (n) => (pushScopeId("data-v-c33846f6"), n = n(), popScopeId(), n);
 const _hoisted_1$l = { colspan: "2" };
 const _hoisted_2$j = { key: 0 };
 const _hoisted_3$f = { colspan: "2" };
@@ -14005,7 +14012,7 @@ function _sfc_render$n(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["title"]);
 }
-const PositionAndSize = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["render", _sfc_render$n], ["__scopeId", "data-v-ffa7a993"]]);
+const PositionAndSize = /* @__PURE__ */ _export_sfc(_sfc_main$n, [["render", _sfc_render$n], ["__scopeId", "data-v-c33846f6"]]);
 const _sfc_main$m = defineComponent({
   components: { Toggle: ToggleBox, DFieldset },
   props: {
@@ -14028,8 +14035,8 @@ const _sfc_main$m = defineComponent({
     }
   }
 });
-const layers_vue_vue_type_style_index_0_scoped_585e22f7_lang = "";
-const _withScopeId$b = (n) => (pushScopeId("data-v-585e22f7"), n = n(), popScopeId(), n);
+const layers_vue_vue_type_style_index_0_scoped_d80e9416_lang = "";
+const _withScopeId$b = (n) => (pushScopeId("data-v-d80e9416"), n = n(), popScopeId(), n);
 const _hoisted_1$k = /* @__PURE__ */ _withScopeId$b(() => /* @__PURE__ */ createBaseVNode("i", { class: "material-icons" }, "vertical_align_bottom", -1));
 const _hoisted_2$i = [
   _hoisted_1$k
@@ -14093,7 +14100,7 @@ function _sfc_render$m(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   });
 }
-const Layers = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["render", _sfc_render$m], ["__scopeId", "data-v-585e22f7"]]);
+const Layers = /* @__PURE__ */ _export_sfc(_sfc_main$m, [["render", _sfc_render$m], ["__scopeId", "data-v-d80e9416"]]);
 const _sfc_main$l = defineComponent({
   props: {
     obj: {
@@ -14192,7 +14199,7 @@ const _sfc_main$k = defineComponent({
     }
   }
 });
-const slider_vue_vue_type_style_index_0_scoped_256246ea_lang = "";
+const slider_vue_vue_type_style_index_0_scoped_7a5dc4a7_lang = "";
 const _hoisted_1$j = ["for"];
 const _hoisted_2$h = ["id", "x1", "x2"];
 const _hoisted_3$d = ["offset"];
@@ -14268,7 +14275,7 @@ function _sfc_render$k(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 40, _hoisted_6$9)) : createCommentVNode("", true)
   ], 34);
 }
-const Slider = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["render", _sfc_render$k], ["__scopeId", "data-v-256246ea"]]);
+const Slider = /* @__PURE__ */ _export_sfc(_sfc_main$k, [["render", _sfc_render$k], ["__scopeId", "data-v-7a5dc4a7"]]);
 const _sfc_main$j = defineComponent({
   components: { Slider },
   props: {
@@ -14443,7 +14450,7 @@ const _sfc_main$j = defineComponent({
     }
   }
 });
-const sliderGroup_vue_vue_type_style_index_0_scoped_3f181f4f_lang = "";
+const sliderGroup_vue_vue_type_style_index_0_scoped_f8c6e84c_lang = "";
 function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_slider = resolveComponent("slider");
   return openBlock(), createElementBlock("div", null, [
@@ -14477,7 +14484,7 @@ function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 8, ["modelValue", "gradient-stops"])
   ]);
 }
-const SliderGroup = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["render", _sfc_render$j], ["__scopeId", "data-v-3f181f4f"]]);
+const SliderGroup = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["render", _sfc_render$j], ["__scopeId", "data-v-f8c6e84c"]]);
 var __defProp$j = Object.defineProperty;
 var __defProps$a = Object.defineProperties;
 var __getOwnPropDescs$a = Object.getOwnPropertyDescriptors;
@@ -14602,7 +14609,7 @@ const _sfc_main$i = defineComponent({
     }
   }
 });
-const color_vue_vue_type_style_index_0_scoped_f8f3d802_lang = "";
+const color_vue_vue_type_style_index_0_scoped_be180e24_lang = "";
 const _hoisted_1$i = { class: "column" };
 const _hoisted_2$g = { class: "hex-selector" };
 const _hoisted_3$c = ["for"];
@@ -14684,7 +14691,7 @@ function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)
   ], 2);
 }
-const Color = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$i], ["__scopeId", "data-v-f8f3d802"]]);
+const Color = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$i], ["__scopeId", "data-v-be180e24"]]);
 var __defProp$i = Object.defineProperty;
 var __getOwnPropSymbols$b = Object.getOwnPropertySymbols;
 var __hasOwnProp$b = Object.prototype.hasOwnProperty;
@@ -15109,8 +15116,8 @@ const _sfc_main$h = defineComponent({
     }
   }
 });
-const imageOptions_vue_vue_type_style_index_0_scoped_e3b0e8df_lang = "";
-const _withScopeId$a = (n) => (pushScopeId("data-v-e3b0e8df"), n = n(), popScopeId(), n);
+const imageOptions_vue_vue_type_style_index_0_scoped_d8e66f9b_lang = "";
+const _withScopeId$a = (n) => (pushScopeId("data-v-d8e66f9b"), n = n(), popScopeId(), n);
 const _hoisted_1$h = /* @__PURE__ */ _withScopeId$a(() => /* @__PURE__ */ createBaseVNode("h2", null, "Image options", -1));
 const _hoisted_2$f = { class: "column ok-col" };
 const _hoisted_3$b = {
@@ -15471,7 +15478,7 @@ function _sfc_render$h(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }));
 }
-const ImageOptions = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["render", _sfc_render$h], ["__scopeId", "data-v-e3b0e8df"]]);
+const ImageOptions = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["render", _sfc_render$h], ["__scopeId", "data-v-d8e66f9b"]]);
 const _sfc_main$g = defineComponent({
   inheritAttrs: false,
   components: { Color },
@@ -15574,8 +15581,8 @@ const _sfc_main$g = defineComponent({
     }
   }
 });
-const text_vue_vue_type_style_index_0_scoped_d3fa7848_lang = "";
-const _withScopeId$9 = (n) => (pushScopeId("data-v-d3fa7848"), n = n(), popScopeId(), n);
+const text_vue_vue_type_style_index_0_scoped_61424637_lang = "";
+const _withScopeId$9 = (n) => (pushScopeId("data-v-61424637"), n = n(), popScopeId(), n);
 const _hoisted_1$g = { class: "column ok-col" };
 const _hoisted_2$e = { class: "column" };
 const _hoisted_3$a = ["value"];
@@ -15588,7 +15595,7 @@ const _hoisted_6$7 = /* @__PURE__ */ _withScopeId$9(() => /* @__PURE__ */ create
 const _hoisted_7$7 = { class: "column" };
 const _hoisted_8$7 = { class: "column" };
 const _hoisted_9$7 = { class: "column" };
-const _hoisted_10$7 = /* @__PURE__ */ createStaticVNode('<option value data-v-d3fa7848>Font</option><option value="aller" style="font-family:aller;" data-v-d3fa7848> Aller (Textbox) </option><option value="riffic" style="font-family:riffic;" data-v-d3fa7848> Riffic (Bold text) </option><option value="hashtag" style="font-family:hashtag;" data-v-d3fa7848> Hashtag (Sayori) </option><option value="ammy_handwriting" style="font-family:ammy_handwriting;" data-v-d3fa7848> Ammy&#39;s Handwriting (Natsuki) </option><option value="journal" style="font-family:journal;" data-v-d3fa7848> Journal (Monika) </option><option value="jp_hand_slanted" style="font-family:jp_hand_slanted;" data-v-d3fa7848> JP Hand Slanted (Yuri) </option><option value="damagrafik_script" style="font-family:damagrafik_script;" data-v-d3fa7848> Damagrafik (Yuri, Act 2) </option><option value="as_i_lay_dying" style="font-family:as_i_lay_dying;" data-v-d3fa7848> As I Lay Dying (Yuri, Act Unused) </option><option value="halogen" style="font-family:halogen;" data-v-d3fa7848> Halogen (MC) </option>', 10);
+const _hoisted_10$7 = /* @__PURE__ */ createStaticVNode('<option value data-v-61424637>Font</option><option value="aller" style="font-family:aller;" data-v-61424637> Aller (Textbox) </option><option value="riffic" style="font-family:riffic;" data-v-61424637> Riffic (Bold text) </option><option value="hashtag" style="font-family:hashtag;" data-v-61424637> Hashtag (Sayori) </option><option value="ammy_handwriting" style="font-family:ammy_handwriting;" data-v-61424637> Ammy&#39;s Handwriting (Natsuki) </option><option value="journal" style="font-family:journal;" data-v-61424637> Journal (Monika) </option><option value="jp_hand_slanted" style="font-family:jp_hand_slanted;" data-v-61424637> JP Hand Slanted (Yuri) </option><option value="damagrafik_script" style="font-family:damagrafik_script;" data-v-61424637> Damagrafik (Yuri, Act 2) </option><option value="as_i_lay_dying" style="font-family:as_i_lay_dying;" data-v-61424637> As I Lay Dying (Yuri, Act Unused) </option><option value="halogen" style="font-family:halogen;" data-v-61424637> Halogen (MC) </option>', 10);
 const _hoisted_20$2 = [
   _hoisted_10$7
 ];
@@ -15690,7 +15697,7 @@ function _sfc_render$g(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 2));
 }
-const TextEditor = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$g], ["__scopeId", "data-v-d3fa7848"]]);
+const TextEditor = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$g], ["__scopeId", "data-v-61424637"]]);
 var __async$i = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -15862,9 +15869,9 @@ const _sfc_main$f = defineComponent({
     }
   }
 });
-const objectTool_vue_vue_type_style_index_0_scoped_f18d06fb_lang = "";
+const objectTool_vue_vue_type_style_index_0_scoped_96a1ac72_lang = "";
 const objectTool_vue_vue_type_style_index_1_lang = "";
-const _withScopeId$8 = (n) => (pushScopeId("data-v-f18d06fb"), n = n(), popScopeId(), n);
+const _withScopeId$8 = (n) => (pushScopeId("data-v-96a1ac72"), n = n(), popScopeId(), n);
 const _hoisted_1$f = { class: "panel" };
 const _hoisted_2$d = /* @__PURE__ */ _withScopeId$8(() => /* @__PURE__ */ createBaseVNode("span", { class: "icon material-icons" }, "edit", -1));
 const _hoisted_3$9 = /* @__PURE__ */ _withScopeId$8(() => /* @__PURE__ */ createBaseVNode("p", { class: "modal-text" }, "Enter the new name", -1));
@@ -16049,7 +16056,7 @@ function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64))
   ]);
 }
-const ObjectTool = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$f], ["__scopeId", "data-v-f18d06fb"]]);
+const ObjectTool = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$f], ["__scopeId", "data-v-96a1ac72"]]);
 var __async$h = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -16192,7 +16199,7 @@ const _sfc_main$e = defineComponent({
     }
   }
 });
-const character_vue_vue_type_style_index_0_scoped_1b773909_lang = "";
+const character_vue_vue_type_style_index_0_scoped_f2647495_lang = "";
 const _hoisted_1$e = { class: "warning" };
 const _hoisted_2$c = { style: { "word-wrap": "break-word" } };
 const _hoisted_3$8 = { key: 0 };
@@ -16322,7 +16329,7 @@ function _sfc_render$e(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["object", "title", "showAltPanel"]);
 }
-const CharacterPanel = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$e], ["__scopeId", "data-v-1b773909"]]);
+const CharacterPanel = /* @__PURE__ */ _export_sfc(_sfc_main$e, [["render", _sfc_render$e], ["__scopeId", "data-v-f2647495"]]);
 var __async$g = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -16392,7 +16399,7 @@ const _sfc_main$d = defineComponent({
     }
   }
 });
-const sprite_vue_vue_type_style_index_0_scoped_000b5127_lang = "";
+const sprite_vue_vue_type_style_index_0_scoped_38366137_lang = "";
 const _hoisted_1$d = { class: "warning" };
 const _hoisted_2$b = { style: { "word-wrap": "break-word" } };
 function _sfc_render$d(_ctx, _cache, $props, $setup, $data, $options) {
@@ -16421,7 +16428,7 @@ function _sfc_render$d(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["object"]);
 }
-const SpritePanel = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["render", _sfc_render$d], ["__scopeId", "data-v-000b5127"]]);
+const SpritePanel = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["render", _sfc_render$d], ["__scopeId", "data-v-38366137"]]);
 function between(min, val, max) {
   if (min > val)
     return min;
@@ -16886,8 +16893,8 @@ const _sfc_main$c = defineComponent({
     }
   }
 });
-const textbox_vue_vue_type_style_index_0_scoped_bee2c661_lang = "";
-const _withScopeId$7 = (n) => (pushScopeId("data-v-bee2c661"), n = n(), popScopeId(), n);
+const textbox_vue_vue_type_style_index_0_scoped_725704da_lang = "";
+const _withScopeId$7 = (n) => (pushScopeId("data-v-725704da"), n = n(), popScopeId(), n);
 const _hoisted_1$c = { class: "upper-combos" };
 const _hoisted_2$a = /* @__PURE__ */ _withScopeId$7(() => /* @__PURE__ */ createBaseVNode("td", null, [
   /* @__PURE__ */ createBaseVNode("label", { for: "text_style" }, "Style:")
@@ -17169,7 +17176,7 @@ function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["object", "textHandler", "colorHandler"]);
 }
-const TextBoxPanel = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$c], ["__scopeId", "data-v-bee2c661"]]);
+const TextBoxPanel = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["render", _sfc_render$c], ["__scopeId", "data-v-725704da"]]);
 const setable = genericSetable();
 const _sfc_main$b = defineComponent({
   mixins: [PanelMixin],
@@ -17260,8 +17267,8 @@ function simpleButtonSettable(key) {
     }
   };
 }
-const choice_vue_vue_type_style_index_0_scoped_bdedda57_lang = "";
-const _withScopeId$6 = (n) => (pushScopeId("data-v-bdedda57"), n = n(), popScopeId(), n);
+const choice_vue_vue_type_style_index_0_scoped_60e50bc5_lang = "";
+const _withScopeId$6 = (n) => (pushScopeId("data-v-60e50bc5"), n = n(), popScopeId(), n);
 const _hoisted_1$b = ["onClick"];
 const _hoisted_2$9 = /* @__PURE__ */ _withScopeId$6(() => /* @__PURE__ */ createBaseVNode("tr", null, [
   /* @__PURE__ */ createBaseVNode("td", { colspan: "2" }, [
@@ -17346,7 +17353,7 @@ function _sfc_render$b(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["object", "textHandler"]);
 }
-const ChoicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$b], ["__scopeId", "data-v-bdedda57"]]);
+const ChoicePanel = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["render", _sfc_render$b], ["__scopeId", "data-v-60e50bc5"]]);
 const _sfc_main$a = defineComponent({
   mixins: [PanelMixin],
   components: { L }
@@ -17629,7 +17636,7 @@ const _sfc_main$9 = defineComponent({
     }
   }
 });
-const button_vue_vue_type_style_index_0_scoped_e727d6d8_lang = "";
+const button_vue_vue_type_style_index_0_scoped_f141eda2_lang = "";
 const _hoisted_1$9 = ["title"];
 function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
@@ -17644,7 +17651,7 @@ function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
     ]
   }, toDisplayString(_ctx.title), 47, _hoisted_1$9);
 }
-const BackgroundButton = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$9], ["__scopeId", "data-v-e727d6d8"]]);
+const BackgroundButton = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$9], ["__scopeId", "data-v-f141eda2"]]);
 const _sfc_main$8 = defineComponent({
   components: { Toggle: ToggleBox, DFieldset },
   computed: {
@@ -17723,8 +17730,8 @@ const _sfc_main$8 = defineComponent({
     }
   }
 });
-const settings_vue_vue_type_style_index_0_scoped_41fa88c5_lang = "";
-const _withScopeId$4 = (n) => (pushScopeId("data-v-41fa88c5"), n = n(), popScopeId(), n);
+const settings_vue_vue_type_style_index_0_scoped_c3bc3296_lang = "";
+const _withScopeId$4 = (n) => (pushScopeId("data-v-c3bc3296"), n = n(), popScopeId(), n);
 const _hoisted_1$8 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("label", { for: "bg_color" }, "Color:", -1));
 const _hoisted_2$7 = { key: 1 };
 const _hoisted_3$5 = { colspan: "3" };
@@ -17808,7 +17815,7 @@ function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["class"]);
 }
-const BackgroundSettings = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$8], ["__scopeId", "data-v-41fa88c5"]]);
+const BackgroundSettings = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$8], ["__scopeId", "data-v-c3bc3296"]]);
 var __defProp$f = Object.defineProperty;
 var __defProps$8 = Object.defineProperties;
 var __getOwnPropDescs$8 = Object.getOwnPropertyDescriptors;
@@ -17976,8 +17983,8 @@ const _sfc_main$7 = defineComponent({
     }
   }
 });
-const backgrounds_vue_vue_type_style_index_0_scoped_dd870fc5_lang = "";
-const _withScopeId$3 = (n) => (pushScopeId("data-v-dd870fc5"), n = n(), popScopeId(), n);
+const backgrounds_vue_vue_type_style_index_0_scoped_2ee6c538_lang = "";
+const _withScopeId$3 = (n) => (pushScopeId("data-v-2ee6c538"), n = n(), popScopeId(), n);
 const _hoisted_1$7 = /* @__PURE__ */ _withScopeId$3(() => /* @__PURE__ */ createBaseVNode("h1", null, "Background", -1));
 const _hoisted_2$6 = /* @__PURE__ */ _withScopeId$3(() => /* @__PURE__ */ createBaseVNode("i", { class: "material-icons" }, "extension", -1));
 function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
@@ -18063,7 +18070,7 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64))
   ], 32);
 }
-const BackgroundsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7], ["__scopeId", "data-v-dd870fc5"]]);
+const BackgroundsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7], ["__scopeId", "data-v-2ee6c538"]]);
 var __defProp$e = Object.defineProperty;
 var __defProps$7 = Object.defineProperties;
 var __getOwnPropDescs$7 = Object.getOwnPropertyDescriptors;
@@ -20403,8 +20410,8 @@ function blobToText(file) {
     reader.readAsText(file);
   });
 }
-const panels_vue_vue_type_style_index_0_scoped_ddb706c4_lang = "";
-const _withScopeId$2 = (n) => (pushScopeId("data-v-ddb706c4"), n = n(), popScopeId(), n);
+const panels_vue_vue_type_style_index_0_scoped_47595732_lang = "";
+const _withScopeId$2 = (n) => (pushScopeId("data-v-47595732"), n = n(), popScopeId(), n);
 const _hoisted_1$6 = { class: "panel" };
 const _hoisted_2$5 = /* @__PURE__ */ _withScopeId$2(() => /* @__PURE__ */ createBaseVNode("h1", null, "Panels", -1));
 const _hoisted_3$4 = ["onClick", "onKeydown"];
@@ -20674,7 +20681,7 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64))
   ]);
 }
-const PanelsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__scopeId", "data-v-ddb706c4"]]);
+const PanelsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__scopeId", "data-v-47595732"]]);
 const setableN = genericSimpleSetter("panels/setNotificationProperty");
 const _sfc_main$5 = defineComponent({
   mixins: [PanelMixin],
@@ -20716,8 +20723,8 @@ const _sfc_main$5 = defineComponent({
     renderBackdrop: setableN("backdrop")
   }
 });
-const notification_vue_vue_type_style_index_0_scoped_61859d19_lang = "";
-const _withScopeId$1 = (n) => (pushScopeId("data-v-61859d19"), n = n(), popScopeId(), n);
+const notification_vue_vue_type_style_index_0_scoped_cd3c38a2_lang = "";
+const _withScopeId$1 = (n) => (pushScopeId("data-v-cd3c38a2"), n = n(), popScopeId(), n);
 const _hoisted_1$5 = { id: "notification_text_wrapper" };
 const _hoisted_2$4 = /* @__PURE__ */ _withScopeId$1(() => /* @__PURE__ */ createBaseVNode("label", { for: "notification_text" }, "Text:", -1));
 function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
@@ -20754,7 +20761,7 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["object", "textHandler"]);
 }
-const NotificationPanel = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5], ["__scopeId", "data-v-61859d19"]]);
+const NotificationPanel = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5], ["__scopeId", "data-v-cd3c38a2"]]);
 const setableP = genericSimpleSetter(
   "panels/setPoemProperty"
 );
@@ -20805,8 +20812,8 @@ const _sfc_main$4 = defineComponent({
     poemBackground: setableP("background")
   }
 });
-const poem_vue_vue_type_style_index_0_scoped_0171fde1_lang = "";
-const _withScopeId = (n) => (pushScopeId("data-v-0171fde1"), n = n(), popScopeId(), n);
+const poem_vue_vue_type_style_index_0_scoped_47525611_lang = "";
+const _withScopeId = (n) => (pushScopeId("data-v-47525611"), n = n(), popScopeId(), n);
 const _hoisted_1$4 = { id: "poem_text" };
 const _hoisted_2$3 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createBaseVNode("label", { for: "poem_text" }, "Text:", -1));
 const _hoisted_3$3 = ["value"];
@@ -20872,7 +20879,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["object", "title", "textHandler"]);
 }
-const PoemPanel = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-0171fde1"]]);
+const PoemPanel = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-47525611"]]);
 const ToolKeybindings = {
   a: "add",
   s: "backgrounds",
@@ -21243,7 +21250,7 @@ const _sfc_main$2 = defineComponent({
     }
   }
 });
-const messageConsole_vue_vue_type_style_index_0_scoped_aa1cfe72_lang = "";
+const messageConsole_vue_vue_type_style_index_0_scoped_20f42fc5_lang = "";
 const _hoisted_1$2 = { key: 0 };
 const _hoisted_2$1 = ["onClick"];
 const _hoisted_3$1 = ["onClick"];
@@ -21287,7 +21294,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     }), 128))
   ], 2);
 }
-const MessageConsole = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-aa1cfe72"]]);
+const MessageConsole = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-20f42fc5"]]);
 var __async$3 = (__this, __arguments, generator) => {
   return new Promise((resolve2, reject) => {
     var fulfilled = (value) => {
@@ -21706,10 +21713,10 @@ const _sfc_main = defineComponent({
     Render,
     ModalDialog,
     SingleBox: defineAsyncComponent(
-      () => __vitePreload(() => import("./SingleBox.e345d397.js"), true ? ["./SingleBox.e345d397.js","./SingleBox.5310353e.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./SingleBox.336953e0.js"), true ? ["./SingleBox.336953e0.js","./SingleBox.467fe7d6.css"] : void 0, import.meta.url)
     ),
     ExpressionBuilder: defineAsyncComponent(
-      () => __vitePreload(() => import("./index.c9f3397b.js"), true ? ["./index.c9f3397b.js","./index.c54fefac.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.c85cfdcc.js"), true ? ["./index.c85cfdcc.js","./index.b54a44f1.css"] : void 0, import.meta.url)
     )
   },
   data: () => ({

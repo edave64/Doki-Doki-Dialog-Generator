@@ -1,4 +1,4 @@
-import { x as reactive, d as defineComponent, _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, q as normalizeStyle, b as withModifiers, y as renderSlot, z as VerticalScrollRedirect, j as ToggleBox, D as DropTarget, A as DFieldset, L, B as getAAssetUrl, k as envX, C as getAssetByUrl, E as Renderer, G as Character, S as SelectedState, m as createBlock, i as withCtx, F as Fragment, l as createTextVNode, e as createCommentVNode, h as createVNode, r as renderList, n as normalizeClass, w as withDirectives, H as vModelSelect, s as resolveComponent, v as vModelText, p as pushScopeId, g as popScopeId } from "./index.f0d7cdc1.js";
+import { x as reactive, d as defineComponent, _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, q as normalizeStyle, b as withModifiers, y as renderSlot, z as VerticalScrollRedirect, j as ToggleBox, D as DropTarget, A as DFieldset, L, B as getAAssetUrl, k as envX, C as getAssetByUrl, E as Renderer, G as Character, S as SelectedState, m as createBlock, i as withCtx, F as Fragment, l as createTextVNode, e as createCommentVNode, h as createVNode, r as renderList, n as normalizeClass, w as withDirectives, H as vModelSelect, s as resolveComponent, v as vModelText, p as pushScopeId, g as popScopeId } from "./index.d6dad1de.js";
 var __defProp$1 = Object.defineProperty;
 var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => {
@@ -176,7 +176,7 @@ const _sfc_main$2 = defineComponent({
     }
   }
 });
-const selection_vue_vue_type_style_index_0_scoped_2af22ee1_lang = "";
+const selection_vue_vue_type_style_index_0_scoped_9845bfb8_lang = "";
 const _hoisted_1$2 = { class: "icon material-icons" };
 const _hoisted_2$1 = { class: "label" };
 function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
@@ -189,7 +189,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     createBaseVNode("div", _hoisted_2$1, toDisplayString(_ctx.label), 1)
   ], 4);
 }
-const Selection = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-2af22ee1"]]);
+const Selection = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-9845bfb8"]]);
 const _sfc_main$1 = defineComponent({});
 const selector_vue_vue_type_style_index_0_scoped_5cd45a10_lang = "";
 const _hoisted_1$1 = { class: "selector" };
@@ -791,8 +791,8 @@ const _sfc_main = defineComponent({
     }
   }
 });
-const index_vue_vue_type_style_index_0_scoped_7a67ddd3_lang = "";
-const _withScopeId = (n) => (pushScopeId("data-v-7a67ddd3"), n = n(), popScopeId(), n);
+const index_vue_vue_type_style_index_0_scoped_39890924_lang = "";
+const _withScopeId = (n) => (pushScopeId("data-v-39890924"), n = n(), popScopeId(), n);
 const _hoisted_1 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createBaseVNode("h1", null, "Add expressions", -1));
 const _hoisted_2 = {
   key: 0,
@@ -1014,7 +1014,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64)) : createCommentVNode("", true)
   ], 32);
 }
-const index = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-7a67ddd3"]]);
+const index = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-39890924"]]);
 export {
   index as default
 };

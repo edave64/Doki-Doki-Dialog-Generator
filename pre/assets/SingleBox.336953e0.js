@@ -1,4 +1,4 @@
-import { d as defineComponent, _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, w as withDirectives, v as vModelText, n as normalizeClass, b as withModifiers, e as createCommentVNode, f as createStaticVNode, p as pushScopeId, g as popScopeId, F as Fragment, r as renderList, t as toDisplayString, h as createVNode, i as withCtx, T as TransitionGroup, L, j as ToggleBox, k as envX, l as createTextVNode, m as createBlock, q as normalizeStyle, s as resolveComponent, R as Repo, u as eventBus, V as VueErrorEvent } from "./index.f0d7cdc1.js";
+import { d as defineComponent, _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, w as withDirectives, v as vModelText, n as normalizeClass, b as withModifiers, e as createCommentVNode, f as createStaticVNode, p as pushScopeId, g as popScopeId, F as Fragment, r as renderList, t as toDisplayString, h as createVNode, i as withCtx, T as TransitionGroup, L, j as ToggleBox, k as envX, l as createTextVNode, m as createBlock, q as normalizeStyle, s as resolveComponent, R as Repo, u as eventBus, V as VueErrorEvent } from "./index.d6dad1de.js";
 const debounce = 250;
 const _sfc_main$3 = defineComponent({
   props: {
@@ -71,9 +71,9 @@ const _sfc_main$3 = defineComponent({
     }
   }
 });
-const SearchBar_vue_vue_type_style_index_0_scoped_4e604c86_lang = "";
+const SearchBar_vue_vue_type_style_index_0_scoped_2b7a0082_lang = "";
 const SearchBar_vue_vue_type_style_index_1_lang = "";
-const _withScopeId$1 = (n) => (pushScopeId("data-v-4e604c86"), n = n(), popScopeId(), n);
+const _withScopeId$1 = (n) => (pushScopeId("data-v-2b7a0082"), n = n(), popScopeId(), n);
 const _hoisted_1$3 = { class: "search-area" };
 const _hoisted_2$3 = { class: "search-bar" };
 const _hoisted_3$2 = ["disabled"];
@@ -86,7 +86,7 @@ const _hoisted_7$1 = /* @__PURE__ */ _withScopeId$1(() => /* @__PURE__ */ create
 const _hoisted_8$1 = [
   _hoisted_7$1
 ];
-const _hoisted_9$1 = /* @__PURE__ */ createStaticVNode("<p data-v-4e604c86>Enter the text you want to search for. E.g. <code data-v-4e604c86>Monika</code></p><p data-v-4e604c86> If multiple words are given, each word must be found. E.g. <code data-v-4e604c86>Monika Pose</code></p><p data-v-4e604c86> To search phrases with spaces, surround them with double quotes. E.g. <code data-v-4e604c86>&quot;Monika R63&quot; Pose</code></p><p data-v-4e604c86> To limit your search to specific attributes of a pack, you can use the following prefixes: </p><table data-v-4e604c86><tr data-v-4e604c86><th data-v-4e604c86>Prefix</th><th data-v-4e604c86>Description</th><th data-v-4e604c86>Example</th></tr><tr data-v-4e604c86><td data-v-4e604c86>Character:</td><td data-v-4e604c86></td><td data-v-4e604c86><code data-v-4e604c86>Character: Monika</code></td></tr><tr data-v-4e604c86><td data-v-4e604c86>Artist:</td><td data-v-4e604c86></td><td data-v-4e604c86><code data-v-4e604c86>Artist: edave64</code></td></tr><tr data-v-4e604c86><td data-v-4e604c86>Type:</td><td data-v-4e604c86><code data-v-4e604c86>Backgrounds</code>, <code data-v-4e604c86>Sprites</code>, <code data-v-4e604c86>Expressions</code>, <code data-v-4e604c86>Styles</code>, <code data-v-4e604c86>Poses</code> or <code data-v-4e604c86>Characters</code></td><td data-v-4e604c86><code data-v-4e604c86>Type: Poses</code></td></tr><tr data-v-4e604c86><td data-v-4e604c86>Engine:</td><td data-v-4e604c86><code data-v-4e604c86>Doki Doki Dialog Generator</code>, <code data-v-4e604c86>DDDG</code> or <code data-v-4e604c86>Doki Doki Comic Club</code>, <code data-v-4e604c86>DDCC</code></td><td data-v-4e604c86><code data-v-4e604c86>Engine: DDCC</code></td></tr><tr data-v-4e604c86><td data-v-4e604c86>Pack:</td><td data-v-4e604c86>The pack itself must contain the text</td><td data-v-4e604c86><code data-v-4e604c86>Pack: Angry</code></td></tr></table><p data-v-4e604c86> Prefixes can be shorted, so <code data-v-4e604c86>Character: Monika</code> can be shortend to <code data-v-4e604c86>C: Monika</code></p>", 6);
+const _hoisted_9$1 = /* @__PURE__ */ createStaticVNode("<p data-v-2b7a0082>Enter the text you want to search for. E.g. <code data-v-2b7a0082>Monika</code></p><p data-v-2b7a0082> If multiple words are given, each word must be found. E.g. <code data-v-2b7a0082>Monika Pose</code></p><p data-v-2b7a0082> To search phrases with spaces, surround them with double quotes. E.g. <code data-v-2b7a0082>&quot;Monika R63&quot; Pose</code></p><p data-v-2b7a0082> To limit your search to specific attributes of a pack, you can use the following prefixes: </p><table data-v-2b7a0082><tr data-v-2b7a0082><th data-v-2b7a0082>Prefix</th><th data-v-2b7a0082>Description</th><th data-v-2b7a0082>Example</th></tr><tr data-v-2b7a0082><td data-v-2b7a0082>Character:</td><td data-v-2b7a0082></td><td data-v-2b7a0082><code data-v-2b7a0082>Character: Monika</code></td></tr><tr data-v-2b7a0082><td data-v-2b7a0082>Artist:</td><td data-v-2b7a0082></td><td data-v-2b7a0082><code data-v-2b7a0082>Artist: edave64</code></td></tr><tr data-v-2b7a0082><td data-v-2b7a0082>Type:</td><td data-v-2b7a0082><code data-v-2b7a0082>Backgrounds</code>, <code data-v-2b7a0082>Sprites</code>, <code data-v-2b7a0082>Expressions</code>, <code data-v-2b7a0082>Styles</code>, <code data-v-2b7a0082>Poses</code> or <code data-v-2b7a0082>Characters</code></td><td data-v-2b7a0082><code data-v-2b7a0082>Type: Poses</code></td></tr><tr data-v-2b7a0082><td data-v-2b7a0082>Engine:</td><td data-v-2b7a0082><code data-v-2b7a0082>Doki Doki Dialog Generator</code>, <code data-v-2b7a0082>DDDG</code> or <code data-v-2b7a0082>Doki Doki Comic Club</code>, <code data-v-2b7a0082>DDCC</code></td><td data-v-2b7a0082><code data-v-2b7a0082>Engine: DDCC</code></td></tr><tr data-v-2b7a0082><td data-v-2b7a0082>Pack:</td><td data-v-2b7a0082>The pack itself must contain the text</td><td data-v-2b7a0082><code data-v-2b7a0082>Pack: Angry</code></td></tr></table><p data-v-2b7a0082> Prefixes can be shorted, so <code data-v-2b7a0082>Character: Monika</code> can be shortend to <code data-v-2b7a0082>C: Monika</code></p>", 6);
 const _hoisted_15 = [
   _hoisted_9$1
 ];
@@ -124,7 +124,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     }, _hoisted_15)) : createCommentVNode("", true)
   ]);
 }
-const SearchBar = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-4e604c86"]]);
+const SearchBar = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-2b7a0082"]]);
 const availablePrefixes = ["author", "character", "type", "pack", "engine"];
 const prefixLookup = /* @__PURE__ */ new Map();
 for (const prefix of availablePrefixes) {
@@ -599,7 +599,7 @@ const _sfc_main$2 = defineComponent({
     }
   }
 });
-const List_vue_vue_type_style_index_0_scoped_75945a1e_lang = "";
+const List_vue_vue_type_style_index_0_scoped_26744ef4_lang = "";
 const _hoisted_1$2 = { class: "list" };
 const _hoisted_2$2 = { ref: "header" };
 const _hoisted_3$1 = ["tabindex", "onClick", "onKeydown"];
@@ -663,7 +663,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const List = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-75945a1e"]]);
+const List = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-26744ef4"]]);
 const allowedTags = [
   "h3",
   "h4",
@@ -943,9 +943,9 @@ const _sfc_main$1 = defineComponent({
     }
   }
 });
-const PackDisplay_vue_vue_type_style_index_0_scoped_4d84478e_lang = "";
+const PackDisplay_vue_vue_type_style_index_0_scoped_e0f6c8f4_lang = "";
 const PackDisplay_vue_vue_type_style_index_1_lang = "";
-const _withScopeId = (n) => (pushScopeId("data-v-4d84478e"), n = n(), popScopeId(), n);
+const _withScopeId = (n) => (pushScopeId("data-v-e0f6c8f4"), n = n(), popScopeId(), n);
 const _hoisted_1$1 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createBaseVNode("i", { class: "material-icons" }, "arrow_back", -1));
 const _hoisted_2$1 = [
   _hoisted_1$1
@@ -1072,7 +1072,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     ])) : createCommentVNode("", true)
   ], 4);
 }
-const PackDisplay = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-4d84478e"]]);
+const PackDisplay = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-e0f6c8f4"]]);
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -1190,7 +1190,7 @@ const _sfc_main = defineComponent({
     this.focusSearchBar();
   }
 });
-const SingleBox_vue_vue_type_style_index_0_scoped_129f3963_lang = "";
+const SingleBox_vue_vue_type_style_index_0_scoped_a3a53c3b_lang = "";
 const _hoisted_1 = {
   key: 1,
   class: "ask-download"
@@ -1247,7 +1247,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ]))
   ], 32);
 }
-const SingleBox = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-129f3963"]]);
+const SingleBox = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-a3a53c3b"]]);
 export {
   SingleBox as default
 };
