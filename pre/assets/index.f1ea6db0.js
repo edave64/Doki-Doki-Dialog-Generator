@@ -12526,6 +12526,7 @@ class ScalingRenderable extends OffscreenRenderable {
     __publicField$e(this, "lastX", -1);
     __publicField$e(this, "lastY", -1);
     __publicField$e(this, "lastFlip", null);
+    __publicField$e(this, "lastRotation", null);
     __publicField$e(this, "canvasHeight");
     __publicField$e(this, "canvasWidth");
     __publicField$e(this, "canvasDrawHeight");
@@ -12544,7 +12545,7 @@ class ScalingRenderable extends OffscreenRenderable {
   needsRedraw() {
     if (super.needsRedraw())
       return true;
-    return this.width !== this.lastWidth || this.height !== this.lastHeight || this.x !== this.lastX || this.y !== this.lastY || this.flip !== this.lastFlip;
+    return this.width !== this.lastWidth || this.height !== this.lastHeight || this.rotation !== this.lastRotation || this.x !== this.lastX || this.y !== this.lastY || this.flip !== this.lastFlip;
   }
   updateLocalCanvas(hq, skipLocal) {
     return __async$p(this, null, function* () {
@@ -12553,6 +12554,7 @@ class ScalingRenderable extends OffscreenRenderable {
       this.lastX = this.x;
       this.lastY = this.y;
       this.lastFlip = this.flip;
+      this.lastRotation = this.rotation;
       yield __superGet$1(ScalingRenderable.prototype, this, "updateLocalCanvas").call(this, hq, skipLocal);
     });
   }
@@ -21713,10 +21715,10 @@ const _sfc_main = defineComponent({
     Render,
     ModalDialog,
     SingleBox: defineAsyncComponent(
-      () => __vitePreload(() => import("./SingleBox.336953e0.js"), true ? ["./SingleBox.336953e0.js","./SingleBox.467fe7d6.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./SingleBox.3dbf9fd6.js"), true ? ["./SingleBox.3dbf9fd6.js","./SingleBox.467fe7d6.css"] : void 0, import.meta.url)
     ),
     ExpressionBuilder: defineAsyncComponent(
-      () => __vitePreload(() => import("./index.c85cfdcc.js"), true ? ["./index.c85cfdcc.js","./index.b54a44f1.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.b2ec3b02.js"), true ? ["./index.b2ec3b02.js","./index.b54a44f1.css"] : void 0, import.meta.url)
     )
   },
   data: () => ({
