@@ -13,6 +13,7 @@ export abstract class ScalingRenderable<
 	protected lastX = -1;
 	protected lastY = -1;
 	protected lastFlip: boolean | null = null;
+	protected lastRotation: number | null = null;
 
 	protected readonly canvasHeight: number;
 	protected readonly canvasWidth: number;
@@ -39,6 +40,7 @@ export abstract class ScalingRenderable<
 		return (
 			this.width !== this.lastWidth ||
 			this.height !== this.lastHeight ||
+			this.rotation !== this.lastRotation ||
 			this.x !== this.lastX ||
 			this.y !== this.lastY ||
 			this.flip !== this.lastFlip
@@ -51,6 +53,7 @@ export abstract class ScalingRenderable<
 		this.lastX = this.x;
 		this.lastY = this.y;
 		this.lastFlip = this.flip;
+		this.lastRotation = this.rotation;
 		await super.updateLocalCanvas(hq, skipLocal);
 	}
 
