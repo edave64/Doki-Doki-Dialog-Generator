@@ -55,13 +55,17 @@ export class Poem extends ScalingRenderable<IPoem> {
 			this._width = this.obj.width;
 		} else {
 			const asset = await getAssetByUrl(`assets/poemBackgrounds/${paper.file}`);
+			const h = asset.height * constants.Poem.backgroundScale;
+			const w = asset.width * constants.Poem.backgroundScale;
 			rx.drawImage({
 				image: asset,
-				x: flippedX - asset.width / 2,
-				y: this.obj.y - asset.height / 2,
+				x: flippedX - w / 2,
+				y: this.obj.y - h / 2,
+				h,
+				w,
 			});
-			this._height = asset.height;
-			this._width = asset.width;
+			this._height = h;
+			this._width = w;
 		}
 		y -= this.height / 2;
 		x -= this.width / 2;

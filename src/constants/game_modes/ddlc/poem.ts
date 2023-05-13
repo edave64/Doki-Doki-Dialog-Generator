@@ -1,5 +1,5 @@
 import { ITextStyle } from '@/renderer/textRenderer/textRenderer';
-import { screenHeight, screenWidth } from './base';
+import { screenHeight, screenWidth, sdCharacterScaleFactor } from './base';
 
 // tslint:disable: no-magic-numbers
 export const poemBackgrounds = [
@@ -18,6 +18,7 @@ export const poemBottomPadding = 100;
 export const poemPadding = 30;
 export const defaultPoemWidth = 800;
 export const defaultPoemHeight = 720;
+export const backgroundScale = sdCharacterScaleFactor;
 
 //#region Console style
 export const consoleBackgroundColor = 'rgba(51,51,51,0.75)';
