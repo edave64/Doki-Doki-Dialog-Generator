@@ -9818,15 +9818,15 @@ const defaultPoemBackground = 0;
 const defaultPoemStyle = 0;
 const defaultX = screenWidth / 2;
 const defaultY = screenHeight / 2;
-const poemTopPadding = 33 * 1.5 - 24;
+const poemTopPadding = 26;
 const poemBottomPadding = 150;
 const poemPadding = 61;
-const defaultPoemWidth = 800 * 1.5;
-const defaultPoemHeight = 720 * 1.5;
+const defaultPoemWidth = 1200;
+const defaultPoemHeight = 1080;
 const backgroundScale = sdCharacterScaleFactor;
 const consoleBackgroundColor = "rgba(51,51,51,0.75)";
-const consoleWidth = 480 * 1.5;
-const consoleHeight = 180 * 1.5;
+const consoleWidth = 720;
+const consoleHeight = 270;
 const defaultConsoleBackground = 3;
 const defaultConsoleStyle = 7;
 const BasePoemStyle = {
@@ -9890,7 +9890,7 @@ const poemTextStyles = [
   __spreadProps$g(__spreadValues$l({}, BasePoemStyle), {
     name: "Console",
     fontName: "f25_bank_printer",
-    fontSize: 18 * 1.5,
+    fontSize: 27,
     color: "white",
     lineSpacing: 1.1
   })
@@ -17963,14 +17963,23 @@ const _sfc_main$7 = defineComponent({
           {
             id,
             label,
-            variants: [[url]],
+            variants: [
+              [
+                {
+                  hq: url,
+                  lq: url,
+                  sourcePack: uploadedBackgroundsPackDefaults.packId
+                }
+              ]
+            ],
             scaling: "none"
           }
         ]
       });
       this.vuexHistory.transaction(() => {
         this.$store.dispatch("content/replaceContentPack", {
-          contentPack: newPackVersion
+          contentPack: newPackVersion,
+          processed: true
         });
         this.setBackground(id);
       });
@@ -17992,8 +18001,8 @@ const _sfc_main$7 = defineComponent({
     }
   }
 });
-const backgrounds_vue_vue_type_style_index_0_scoped_2ee6c538_lang = "";
-const _withScopeId$3 = (n) => (pushScopeId("data-v-2ee6c538"), n = n(), popScopeId(), n);
+const backgrounds_vue_vue_type_style_index_0_scoped_563fcbc7_lang = "";
+const _withScopeId$3 = (n) => (pushScopeId("data-v-563fcbc7"), n = n(), popScopeId(), n);
 const _hoisted_1$7 = /* @__PURE__ */ _withScopeId$3(() => /* @__PURE__ */ createBaseVNode("h1", null, "Background", -1));
 const _hoisted_2$6 = /* @__PURE__ */ _withScopeId$3(() => /* @__PURE__ */ createBaseVNode("i", { class: "material-icons" }, "extension", -1));
 function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
@@ -18079,7 +18088,7 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64))
   ], 32);
 }
-const BackgroundsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7], ["__scopeId", "data-v-2ee6c538"]]);
+const BackgroundsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7], ["__scopeId", "data-v-563fcbc7"]]);
 var __defProp$e = Object.defineProperty;
 var __defProps$7 = Object.defineProperties;
 var __getOwnPropDescs$7 = Object.getOwnPropertyDescriptors;
@@ -21726,10 +21735,10 @@ const _sfc_main = defineComponent({
     Render,
     ModalDialog,
     SingleBox: defineAsyncComponent(
-      () => __vitePreload(() => import("./SingleBox.fac34840.js"), true ? ["./SingleBox.fac34840.js","./SingleBox.467fe7d6.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./SingleBox.95dfdf0c.js"), true ? ["./SingleBox.95dfdf0c.js","./SingleBox.467fe7d6.css"] : void 0, import.meta.url)
     ),
     ExpressionBuilder: defineAsyncComponent(
-      () => __vitePreload(() => import("./index.c1a49ae2.js"), true ? ["./index.c1a49ae2.js","./index.b54a44f1.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.52fd9844.js"), true ? ["./index.52fd9844.js","./index.b54a44f1.css"] : void 0, import.meta.url)
     )
   },
   data: () => ({

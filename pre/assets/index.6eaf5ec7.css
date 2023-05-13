@@ -775,10 +775,10 @@ table[data-v-c3bc3296] {
   height: 24px;
   width: 48px;
   vertical-align: middle;
-}textarea[data-v-2ee6c538] {
+}textarea[data-v-563fcbc7] {
   flex-grow: 1;
 }
-.upload-background[data-v-2ee6c538] {
+.upload-background[data-v-563fcbc7] {
   margin-top: 4px;
   display: flex;
   align-items: center;
@@ -788,15 +788,15 @@ table[data-v-c3bc3296] {
   text-align: center;
   user-select: none;
 }
-.upload-background input[data-v-2ee6c538] {
+.upload-background input[data-v-563fcbc7] {
   display: none;
 }
-.panel:not(.vertical) > .btn[data-v-2ee6c538],
-.panel:not(.vertical) button[data-v-2ee6c538],
-.panel:not(.vertical) .background[data-v-2ee6c538] {
+.panel:not(.vertical) > .btn[data-v-563fcbc7],
+.panel:not(.vertical) button[data-v-563fcbc7],
+.panel:not(.vertical) .background[data-v-563fcbc7] {
   width: 12rem;
 }
-.vertical fieldset input[data-v-2ee6c538] {
+.vertical fieldset input[data-v-563fcbc7] {
   width: 60px;
 }.panel_button[data-v-47595732] {
   height: 150px;
