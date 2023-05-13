@@ -169,7 +169,15 @@ export default defineComponent({
 					{
 						id,
 						label,
-						variants: [[url]],
+						variants: [
+							[
+								{
+									hq: url,
+									lq: url,
+									sourcePack: uploadedBackgroundsPackDefaults.packId,
+								},
+							],
+						],
 						scaling: 'none',
 					},
 				],
@@ -177,6 +185,7 @@ export default defineComponent({
 			this.vuexHistory.transaction(() => {
 				this.$store.dispatch('content/replaceContentPack', {
 					contentPack: newPackVersion,
+					processed: true,
 				} as ReplaceContentPackAction);
 				this.setBackground(id);
 			});
