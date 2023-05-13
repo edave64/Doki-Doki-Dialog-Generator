@@ -74,6 +74,7 @@ export default defineComponent({
 			return this.$store.state.ui.lqRendering;
 		},
 		sceneRender(): SceneRenderer {
+			if (this.preLoading) return null;
 			const panelId = this.$store.state.panels.currentPanel;
 			if (!this.sceneRendererCache) {
 				console.log('New scene renderer!');
@@ -128,6 +129,7 @@ export default defineComponent({
 				cancelAnimationFrame(this.queuedRender);
 				this.queuedRender = null;
 			}
+			if (this.preLoading) return;
 
 			if (this.$store.state.unsafe) return;
 
