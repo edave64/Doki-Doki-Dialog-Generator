@@ -9324,6 +9324,7 @@ const poemBottomPadding$1 = 100;
 const poemPadding$1 = 30;
 const defaultPoemWidth$1 = 800;
 const defaultPoemHeight$1 = 720;
+const backgroundScale$1 = sdCharacterScaleFactor$1;
 const consoleBackgroundColor$1 = "rgba(51,51,51,0.75)";
 const consoleWidth$1 = 480;
 const consoleHeight$1 = 180;
@@ -9404,6 +9405,7 @@ const Poem$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   poemPadding: poemPadding$1,
   defaultPoemWidth: defaultPoemWidth$1,
   defaultPoemHeight: defaultPoemHeight$1,
+  backgroundScale: backgroundScale$1,
   consoleBackgroundColor: consoleBackgroundColor$1,
   consoleWidth: consoleWidth$1,
   consoleHeight: consoleHeight$1,
@@ -9816,14 +9818,15 @@ const defaultPoemBackground = 0;
 const defaultPoemStyle = 0;
 const defaultX = screenWidth / 2;
 const defaultY = screenHeight / 2;
-const poemTopPadding = 33;
-const poemBottomPadding = 100;
-const poemPadding = 30;
-const defaultPoemWidth = 800;
-const defaultPoemHeight = 720;
+const poemTopPadding = 33 * 1.5 - 24;
+const poemBottomPadding = 150;
+const poemPadding = 61;
+const defaultPoemWidth = 800 * 1.5;
+const defaultPoemHeight = 720 * 1.5;
+const backgroundScale = sdCharacterScaleFactor;
 const consoleBackgroundColor = "rgba(51,51,51,0.75)";
-const consoleWidth = 480;
-const consoleHeight = 180;
+const consoleWidth = 480 * 1.5;
+const consoleHeight = 180 * 1.5;
 const defaultConsoleBackground = 3;
 const defaultConsoleStyle = 7;
 const BasePoemStyle = {
@@ -9838,53 +9841,56 @@ const BasePoemStyle = {
   strokeColor: "",
   strokeWidth: 0,
   fontName: "aller",
-  fontSize: 12
+  fontSize: 18
 };
 const poemTextStyles = [
   __spreadProps$g(__spreadValues$l({}, BasePoemStyle), {
     name: "Sayori",
     fontName: "hashtag",
-    fontSize: 34,
-    lineSpacing: 1.05,
-    letterSpacing: 0
+    fontSize: 45,
+    lineSpacing: 0.95,
+    letterSpacing: 1
   }),
   __spreadProps$g(__spreadValues$l({}, BasePoemStyle), {
     name: "Natsuki",
     fontName: "ammy_handwriting",
-    fontSize: 28
+    fontSize: 41,
+    letterSpacing: -0.5
   }),
   __spreadProps$g(__spreadValues$l({}, BasePoemStyle), {
     name: "Monika",
     fontName: "journal",
-    fontSize: 34
+    fontSize: 36,
+    lineSpacing: 1.4,
+    letterSpacing: 0.5
   }),
   __spreadProps$g(__spreadValues$l({}, BasePoemStyle), {
     name: "Yuri",
     fontName: "jp_hand_slanted",
-    lineSpacing: 1.5,
-    fontSize: 32
+    lineSpacing: 1.55,
+    fontSize: 48
   }),
   __spreadProps$g(__spreadValues$l({}, BasePoemStyle), {
     name: "Yuri Act 2",
     fontName: "damagrafik_script",
-    fontSize: 18,
-    letterSpacing: -8
+    fontSize: 27,
+    letterSpacing: -12
   }),
   __spreadProps$g(__spreadValues$l({}, BasePoemStyle), {
     name: "Yuri Unused",
     fontName: "as_i_lay_dying",
-    fontSize: 40
+    fontSize: 60
   }),
   __spreadProps$g(__spreadValues$l({}, BasePoemStyle), {
     name: "MC",
     fontName: "halogen",
-    fontSize: 30,
+    fontSize: 45,
     lineSpacing: 1.53
   }),
   __spreadProps$g(__spreadValues$l({}, BasePoemStyle), {
     name: "Console",
     fontName: "f25_bank_printer",
-    fontSize: 18,
+    fontSize: 18 * 1.5,
     color: "white",
     lineSpacing: 1.1
   })
@@ -9901,6 +9907,7 @@ const Poem$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   poemPadding,
   defaultPoemWidth,
   defaultPoemHeight,
+  backgroundScale,
   consoleBackgroundColor,
   consoleWidth,
   consoleHeight,
@@ -19695,13 +19702,17 @@ class Poem extends ScalingRenderable {
         this._width = this.obj.width;
       } else {
         const asset = yield getAssetByUrl(`assets/poemBackgrounds/${paper.file}`);
+        const h2 = asset.height * constants.Poem.backgroundScale;
+        const w = asset.width * constants.Poem.backgroundScale;
         rx.drawImage({
           image: asset,
-          x: flippedX - asset.width / 2,
-          y: this.obj.y - asset.height / 2
+          x: flippedX - w / 2,
+          y: this.obj.y - h2 / 2,
+          h: h2,
+          w
         });
-        this._height = asset.height;
-        this._width = asset.width;
+        this._height = h2;
+        this._width = w;
       }
       y -= this.height / 2;
       x -= this.width / 2;
@@ -21715,10 +21726,10 @@ const _sfc_main = defineComponent({
     Render,
     ModalDialog,
     SingleBox: defineAsyncComponent(
-      () => __vitePreload(() => import("./SingleBox.3dbf9fd6.js"), true ? ["./SingleBox.3dbf9fd6.js","./SingleBox.467fe7d6.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./SingleBox.fac34840.js"), true ? ["./SingleBox.fac34840.js","./SingleBox.467fe7d6.css"] : void 0, import.meta.url)
     ),
     ExpressionBuilder: defineAsyncComponent(
-      () => __vitePreload(() => import("./index.b2ec3b02.js"), true ? ["./index.b2ec3b02.js","./index.b54a44f1.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.c1a49ae2.js"), true ? ["./index.c1a49ae2.js","./index.b54a44f1.css"] : void 0, import.meta.url)
     )
   },
   data: () => ({
