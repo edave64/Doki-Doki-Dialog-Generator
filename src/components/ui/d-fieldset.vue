@@ -1,3 +1,17 @@
+<!--
+	A wrapper that shows a border and headline around multiple controls.
+
+	+- d-fieldset --+
+	|               |
+	| +-----------+ |
+	| | component | |
+	| +-----------+ |
+	|               |
+	| +-----------+ |
+	| | component | |
+	| +-----------+ |
+	+---------------+
+-->
 <template>
 	<div class="fieldset_wrapper">
 		<fieldset>

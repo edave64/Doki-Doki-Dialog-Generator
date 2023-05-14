@@ -1,3 +1,6 @@
+<!--
+	A tab that allows selecting a background
+-->
 <template>
 	<div class="panel" @dragenter="dragEnter" @mouseleave="$refs.dt.hide()">
 		<drop-target ref="dt" class="drop-target" @drop="addImageFile"

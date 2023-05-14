@@ -1,3 +1,6 @@
+<!--
+	A tool that is shown when a poem object is selected.
+-->
 <template>
 	<object-tool
 		:object="object"

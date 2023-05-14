@@ -1,3 +1,6 @@
+<!--
+	A tab allowing you to change global settings of the application.
+-->
 <template>
 	<div class="panel">
 		<h1>Settings</h1>

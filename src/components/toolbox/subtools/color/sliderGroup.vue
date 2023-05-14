@@ -1,3 +1,6 @@
+<!--
+	The four sliders in the color picker.
+-->
 <template>
 	<div>
 		<slider

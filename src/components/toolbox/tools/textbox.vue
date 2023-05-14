@@ -1,3 +1,6 @@
+<!--
+	A tool that is shown when a textbox object is selected.
+-->
 <template>
 	<object-tool
 		:object="object"

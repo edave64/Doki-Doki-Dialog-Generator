@@ -1,3 +1,6 @@
+<!--
+	Allows to drop files into the application
+-->
 <template>
 	<div
 		v-if="visible"

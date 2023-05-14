@@ -1,3 +1,6 @@
+<!--
+	A tool that is shown when a choice object is selected.
+-->
 <template>
 	<object-tool :object="object" title="Choice" :textHandler="textHandler">
 		<d-fieldset class="buttons" title="Buttons:">

@@ -1,3 +1,7 @@
+<!--
+	A layout wrapper component that orients it's child components either vertically or diagonally (see direction
+	property). It allows them to overflow in the other direction if it gets too large.
+-->
 <script lang="ts">
 import { defineComponent, h, Prop, PropType, VNode } from 'vue';
 import { VerticalScrollRedirect } from '../vertical-scroll-redirect';

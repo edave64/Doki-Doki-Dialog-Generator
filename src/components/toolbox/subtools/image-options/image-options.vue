@@ -1,3 +1,6 @@
+<!--
+	Allows picking different effects that can be applied to an object
+-->
 <template>
 	<color
 		v-if="showShadowColor"

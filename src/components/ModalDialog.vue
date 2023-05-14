@@ -1,3 +1,6 @@
+<!--
+	A wrapper for modal dialoges (Grays out the background)
+-->
 <template>
 	<dialog
 		ref="dialog"

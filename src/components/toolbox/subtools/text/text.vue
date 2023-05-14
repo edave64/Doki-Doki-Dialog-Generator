@@ -1,3 +1,6 @@
+<!--
+	An advanced text-entry that helps with formatting.
+-->
 <!--suppress CssNoGenericFontName -->
 <template>
 	<color v-if="colorSelector" v-model="selectedColor" @leave="applyColor" />

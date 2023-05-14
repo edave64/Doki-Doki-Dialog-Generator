@@ -1,3 +1,10 @@
+<!--
+	A generic button component with text, and icon, and a possible keyboard shortcut
+
+	+----------+
+	| d-button |
+	+----------+
+-->
 <template>
 	<button :class="[iconPos]" :disabled="disabled">
 		<div class="material-icons" aria-hidden="true">{{ icon }}</div>

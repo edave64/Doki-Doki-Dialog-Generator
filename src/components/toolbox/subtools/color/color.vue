@@ -1,3 +1,7 @@
+<!--
+	A color picker. It allows RGBA and HSLA color inputs, has sliders for picking colors, a color-picker button
+	and color swatches. The value is returned as either rgba or hex.
+-->
 <template>
 	<div :class="{ color: true, vertical }">
 		<h2>{{ title }}</h2>
@@ -125,20 +129,21 @@ export default defineComponent({
 		addSwatch() {
 			if (this.swatches.find((swatch) => swatch.color === this.color)) return;
 
-			const existingPack: DeepReadonly<ContentPack<IAssetSwitch>> = this.$store.state.content.contentPacks.find(
-				(pack) => pack.packId === generatedPackId
-			) || {
-				packId: generatedPackId,
-				packCredits: [''],
-				dependencies: [],
-				characters: [],
-				fonts: [],
-				backgrounds: [],
-				sprites: [],
-				poemStyles: [],
-				poemBackgrounds: [],
-				colors: [],
-			};
+			const existingPack: DeepReadonly<ContentPack<IAssetSwitch>> =
+				this.$store.state.content.contentPacks.find(
+					(pack) => pack.packId === generatedPackId
+				) || {
+					packId: generatedPackId,
+					packCredits: [''],
+					dependencies: [],
+					characters: [],
+					fonts: [],
+					backgrounds: [],
+					sprites: [],
+					poemStyles: [],
+					poemBackgrounds: [],
+					colors: [],
+				};
 
 			const newPack: ContentPack<IAssetSwitch> = {
 				...existingPack,

@@ -1,3 +1,6 @@
+<!--
+	A tool that is shown when a character object is selected.
+-->
 <template>
 	<object-tool :object="object" :title="label" :showAltPanel="!!panelForParts">
 		<template v-slot:alt-panel>

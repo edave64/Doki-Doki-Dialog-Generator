@@ -1,3 +1,6 @@
+<!--
+	A tool that is shown when a sprite object is selected.
+-->
 <template>
 	<object-tool :object="object" title="Custom Sprite">
 		<template v-if="missing">

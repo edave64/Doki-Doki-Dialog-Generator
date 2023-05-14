@@ -1,3 +1,7 @@
+<!--
+	A link to another website. Supports special prefixes "wiki:" to reference the github wiki and "github:" to link the
+	projects github page.
+-->
 <template>
 	<a target="_blank" rel="noopener noreferrer" :href="href">
 		<slot />

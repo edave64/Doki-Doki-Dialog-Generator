@@ -1,3 +1,6 @@
+<!--
+	A tool that is shown when a notification object is selected.
+-->
 <template>
 	<object-tool :object="object" title="Notification" :textHandler="textHandler">
 		<template v-slot:default>

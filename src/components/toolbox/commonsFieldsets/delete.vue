@@ -1,3 +1,6 @@
+<!--
+	A button that deletes the given object when clicked.
+-->
 <template>
 	<button @click="onClick">Delete</button>
 </template>

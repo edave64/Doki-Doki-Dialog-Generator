@@ -1,3 +1,6 @@
+<!--
+	Displays the preview render that makes up most of the user interface
+-->
 <template>
 	<canvas
 		id="scaled_display"

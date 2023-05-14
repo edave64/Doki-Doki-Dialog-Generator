@@ -1,3 +1,6 @@
+<!--
+	A transparent overlay over the preview render, displaying important messages to the player, such as network errors while loading assets.
+-->
 <template>
 	<div id="messageConsole" :class="{ vertical }">
 		<p v-if="showLoading">Loading...</p>

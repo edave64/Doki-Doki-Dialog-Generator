@@ -1,3 +1,6 @@
+<!--
+	A slider that allows to pick a value along a colored gradient. Used as part of the color picker.
+-->
 <template>
 	<div :class="{ slider: true, vertical }" @keydown.stop>
 		<label :for="_.uid" v-if="!noInput">{{ label }}</label>

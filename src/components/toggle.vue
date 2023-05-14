@@ -1,3 +1,6 @@
+<!--
+	A togglebox widget
+-->
 <template>
 	<div class="toggle_box">
 		<input :id="_.uid" type="checkbox" ref="checkbox" v-model="value" />

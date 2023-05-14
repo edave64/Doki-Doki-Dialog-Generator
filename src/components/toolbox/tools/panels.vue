@@ -1,3 +1,7 @@
+<!--
+	A tab allowing you create, delete, switch and export panels.
+	Also allows to save the entire custom dialog.
+-->
 <template>
 	<div class="panel">
 		<h1>Panels</h1>

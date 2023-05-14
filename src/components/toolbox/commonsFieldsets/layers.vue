@@ -1,3 +1,10 @@
+<!--
+	Allows shifting an object through the different layers.
+
+	+---+ +---+ +---+ +---+
+	| ⇊ | | ↑ | | ↓ | | ⇈ |
+	+---+ +---+ +---+ +---+
+-->
 <template>
 	<d-fieldset id="layerfs" title="Layer:">
 		<table>

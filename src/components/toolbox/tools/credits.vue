@@ -1,3 +1,6 @@
+<!--
+	A tab that shows the application credits.
+-->
 <template>
 	<div class="panel">
 		<h1>Help and Credits</h1>

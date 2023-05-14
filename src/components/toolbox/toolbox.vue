@@ -1,3 +1,6 @@
+<!--
+	The toolbox is the set of all the controls next to the preview render. It has multiple tabs that are called tools.
+-->
 <template>
 	<div id="panels" :class="{ vertical }" @scroll="resetScroll" ref="panels">
 		<div id="toolbar">

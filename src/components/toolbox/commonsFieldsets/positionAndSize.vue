@@ -1,3 +1,8 @@
+<!--
+	Allows setting the position and size of an object.
+	Some objects are allowed to move in steps, or move freely across the canvas.
+	Some objects cannot be resized. These restrictions are automatically applied by this component.
+-->
 <template>
 	<d-fieldset :title="'Position' + (allowSize ? '/Size' : '')">
 		<table>

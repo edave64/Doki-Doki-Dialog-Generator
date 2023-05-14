@@ -1,3 +1,6 @@
+<!--
+	A tab allowing you to add characters, sprites or ui objects to the scene.
+-->
 <template>
 	<div class="panel">
 		<h1>Add</h1>
