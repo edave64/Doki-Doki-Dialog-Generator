@@ -36,20 +36,20 @@ Helpers for renderer that should probably just be in ./renderer
 
 Code that defines how different objects are rendered
 
-# renderer
+## renderer
 
 Generic rendering code
 
-# store
+## store
 
 Contains vuex definitions, all mutations of the application state.
 
 Managing panels, content packs, ui options etc.
 
-# styles
+## styles
 
 Global css.
 
-# util
+## util
 
 Generic helper functions.
