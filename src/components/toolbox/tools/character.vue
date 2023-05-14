@@ -105,6 +105,7 @@ import { defineComponent } from 'vue';
 import { genericSetable } from '@/util/simpleSettable';
 import ObjectTool from './object-tool.vue';
 import { getAAssetUrl } from '@/asset-manager';
+import { transaction } from '@/plugins/vuex-history';
 
 const setable = genericSetable<ICharacter>();
 
@@ -184,7 +185,7 @@ export default defineComponent({
 			}
 
 			const file = uploadInput.files[0];
-			await this.vuexHistory.transaction(async () => {
+			await transaction(async () => {
 				const url = URL.createObjectURL(file);
 				await this.$store.dispatch('uploadUrls/add', {
 					name: this.missingHead,
@@ -193,7 +194,7 @@ export default defineComponent({
 			});
 		},
 		seekPose(delta: number): void {
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.dispatch('panels/seekPose', {
 					id: this.object.id,
 					panelId: this.object.panelId,
@@ -202,7 +203,7 @@ export default defineComponent({
 			});
 		},
 		seekStyle(delta: number): void {
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.dispatch('panels/seekStyle', {
 					id: this.object.id,
 					panelId: this.object.panelId,
@@ -211,7 +212,7 @@ export default defineComponent({
 			});
 		},
 		seekPart(part: string, delta: number): void {
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.dispatch('panels/seekPart', {
 					id: this.object.id,
 					panelId: this.object.panelId,

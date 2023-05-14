@@ -78,6 +78,7 @@ import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 import { Repo } from './models/repo';
 import { IRemovePacksAction } from './store';
 import { NsfwNames, NsfwPaths } from './constants/nsfw';
+import { transaction } from '@/plugins/vuex-history';
 
 const aspectRatio = 16 / 9;
 const arrowMoveStepSize = 20;
@@ -232,7 +233,7 @@ export default defineComponent({
 				return;
 			}
 
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				if (e.ctrlKey) {
 					if (e.key === 'z') {
 						// this.$store.commit('history/undo');
@@ -351,7 +352,7 @@ export default defineComponent({
 		},
 		select(id: IObject['id']): void {
 			if (this.$store.state.ui.selection === id) return;
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.commit('ui/setSelection', id);
 			});
 		},
@@ -376,7 +377,7 @@ export default defineComponent({
 	mounted(): void {
 		window.addEventListener('keypress', (e) => {
 			if (e.key === 'Escape') {
-				this.vuexHistory.transaction(() => {
+				transaction(() => {
 					if (this.$store.state.ui.selection === null) return;
 					this.$store.commit('ui/setSelection', null);
 				});
@@ -435,10 +436,10 @@ export default defineComponent({
 
 		await environment.loadGameMode();
 		this.preLoading = false;
-		environment.connectToStore(this.vuexHistory, this.$store);
+		environment.connectToStore(/* this.vuexHistory, */ this.$store);
 		const settings = await environment.loadSettings();
 
-		await this.vuexHistory.transaction(async () => {
+		await transaction(async () => {
 			environment.state.looseTextParsing = settings.looseTextParsing || true;
 			this.$store.commit('ui/setLqRendering', settings.lq ?? false);
 			this.$store.commit('ui/setDarkTheme', settings.darkMode ?? null);

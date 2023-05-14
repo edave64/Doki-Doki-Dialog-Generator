@@ -42,6 +42,7 @@ import { IPanel } from '@/store/panels';
 import Characters from './add/character.vue';
 import Sprites from './add/sprite.vue';
 import UI from './add/ui.vue';
+import { transaction } from '@/plugins/vuex-history';
 
 type GroupNames = 'characters' | 'sprites' | 'ui';
 interface Group {
@@ -86,7 +87,7 @@ export default defineComponent({
 	},
 	methods: {
 		paste() {
-			this.vuexHistory.transaction(async () => {
+			transaction(async () => {
 				await this.$store.dispatch('panels/pasteObjectFromClipboard', {
 					panelId: this.currentPanel.id,
 				} as IPasteFromClipboardAction);

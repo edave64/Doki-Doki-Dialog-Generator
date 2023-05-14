@@ -28,6 +28,7 @@ import { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/
 import DButton from '@/components/ui/d-button.vue';
 import environment from '@/environments/environment';
 import { DeepReadonly } from 'ts-essentials';
+import { transaction } from '@/plugins/vuex-history';
 
 export default defineComponent({
 	components: { DButton },
@@ -45,7 +46,7 @@ export default defineComponent({
 				: '';
 		},
 		onChosen(id: string) {
-			this.vuexHistory.transaction(async () => {
+			transaction(async () => {
 				await this.$store.dispatch('panels/createCharacters', {
 					characterType: id,
 					panelId: this.$store.state.panels.currentPanel,

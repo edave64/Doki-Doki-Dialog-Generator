@@ -127,6 +127,7 @@ import { ITextBox } from '@/store/objectTypes/textbox';
 import { defineComponent, Prop } from 'vue';
 import getConstants from '@/constants';
 import { rendererLookup } from '@/renderables/textbox';
+import { transaction } from '@/plugins/vuex-history';
 
 export default defineComponent({
 	components: { Toggle, DFieldset },
@@ -141,7 +142,7 @@ export default defineComponent({
 				return (this.obj! as ICharacter).freeMove;
 			},
 			set(freeMove: boolean) {
-				this.vuexHistory.transaction(() => {
+				transaction(() => {
 					this.$store.commit('panels/setFreeMove', {
 						id: this.obj!.id,
 						panelId: this.obj!.panelId,
@@ -155,7 +156,7 @@ export default defineComponent({
 				return (this.obj! as ICharacter).preserveRatio;
 			},
 			set(preserveRatio: boolean) {
-				this.vuexHistory.transaction(() => {
+				transaction(() => {
 					this.$store.dispatch('panels/setPreserveRatio', {
 						id: this.obj!.id,
 						panelId: this.obj!.panelId,
@@ -169,7 +170,7 @@ export default defineComponent({
 				return closestCharacterSlot(this.obj!.x);
 			},
 			set(value: number) {
-				this.vuexHistory.transaction(() => {
+				transaction(() => {
 					this.$store.dispatch('panels/setPosition', {
 						id: this.obj!.id,
 						panelId: this.obj!.panelId,
@@ -184,7 +185,7 @@ export default defineComponent({
 				return this.obj!.x;
 			},
 			set(x: number) {
-				this.vuexHistory.transaction(() => {
+				transaction(() => {
 					this.$store.commit('panels/setPosition', {
 						id: this.obj!.id,
 						panelId: this.obj!.panelId,
@@ -199,7 +200,7 @@ export default defineComponent({
 				return this.obj!.y;
 			},
 			set(y: number) {
-				this.vuexHistory.transaction(() => {
+				transaction(() => {
 					this.$store.commit('panels/setPosition', {
 						id: this.obj!.id,
 						panelId: this.obj!.panelId,
@@ -214,7 +215,7 @@ export default defineComponent({
 				return this.obj!.height;
 			},
 			set(height: number) {
-				this.vuexHistory.transaction(() => {
+				transaction(() => {
 					this.$store.dispatch('panels/setHeight', {
 						id: this.obj!.id,
 						panelId: this.obj!.panelId,
@@ -228,7 +229,7 @@ export default defineComponent({
 				return this.obj!.width;
 			},
 			set(width: number) {
-				this.vuexHistory.transaction(() => {
+				transaction(() => {
 					this.$store.dispatch('panels/setWidth', {
 						id: this.obj!.id,
 						panelId: this.obj!.panelId,

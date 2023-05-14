@@ -193,6 +193,7 @@ import { safeAsync } from '@/util/errors';
 import { makeCanvas, disposeCanvas } from '@/util/canvas';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
+import { transaction } from '@/plugins/vuex-history';
 
 interface IPanelButton {
 	id: IPanel['id'];
@@ -523,7 +524,7 @@ export default defineComponent({
 			return '';
 		},
 		async addNewPanel(): Promise<void> {
-			await this.vuexHistory.transaction(async () => {
+			await transaction(async () => {
 				await this.$store.dispatch('panels/duplicatePanel', {
 					panelId: this.$store.state.panels.currentPanel,
 				} as IDuplicatePanelAction);
@@ -532,7 +533,7 @@ export default defineComponent({
 			this.moveFocusToActivePanel();
 		},
 		updateCurrentPanel(panelId: IPanel['id']) {
-			this.vuexHistory.transaction(async () => {
+			transaction(async () => {
 				this.$store.commit('panels/setCurrentPanel', {
 					panelId,
 				} as ISetCurrentPanelMutation);
@@ -542,7 +543,7 @@ export default defineComponent({
 			});
 		},
 		deletePanel() {
-			this.vuexHistory.transaction(async () => {
+			transaction(async () => {
 				await this.$store.dispatch('panels/delete', {
 					panelId: this.$store.state.panels.currentPanel,
 				} as IDeletePanelAction);
@@ -552,7 +553,7 @@ export default defineComponent({
 			});
 		},
 		moveAhead() {
-			this.vuexHistory.transaction(async () => {
+			transaction(async () => {
 				await this.$store.dispatch('panels/move', {
 					panelId: this.currentPanel.id,
 					delta: -1,
@@ -560,7 +561,7 @@ export default defineComponent({
 			});
 		},
 		moveBehind() {
-			this.vuexHistory.transaction(async () => {
+			transaction(async () => {
 				await this.$store.dispatch('panels/move', {
 					panelId: this.currentPanel.id,
 					delta: 1,
@@ -598,7 +599,7 @@ export default defineComponent({
 					(blob) => {
 						if (!blob) return;
 						const url = URL.createObjectURL(blob);
-						this.vuexHistory.transaction(() => {
+						transaction(() => {
 							this.$store.commit('panels/setPanelPreview', {
 								panelId,
 								url,
@@ -627,7 +628,7 @@ export default defineComponent({
 			environment.storeSaveFile(saveBlob, `${prefix}.dddg`);
 		},
 		async load() {
-			await this.vuexHistory.transaction(async () => {
+			await transaction(async () => {
 				const uploadInput = this.$refs.loadUpload as HTMLInputElement;
 				if (!uploadInput.files) return;
 				eventBus.fire(new StateLoadingEvent());

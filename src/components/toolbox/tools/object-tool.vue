@@ -154,6 +154,7 @@ import {
 import ModalDialog from '@/components/ModalDialog.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import getConstants from '@/constants';
+import { transaction } from '@/plugins/vuex-history';
 
 const setable = genericSetable<IPoem>();
 
@@ -211,7 +212,7 @@ export default defineComponent({
 			},
 			set(value: string) {
 				const val = value.trim() === '' ? null : parseInt(value);
-				this.vuexHistory.transaction(async () => {
+				transaction(async () => {
 					this.$store.commit('panels/setObjectNameboxWidth', {
 						id: this.object.id,
 						panelId: this.object.panelId,
@@ -225,7 +226,7 @@ export default defineComponent({
 				return this.object.zoom * 100;
 			},
 			set(zoom: number): void {
-				this.vuexHistory.transaction(async () => {
+				transaction(async () => {
 					this.$store.commit('panels/setObjectZoom', {
 						id: this.object.id,
 						panelId: this.object.panelId,
@@ -251,7 +252,7 @@ export default defineComponent({
 				return this.object.textboxColor !== null;
 			},
 			set(val: boolean) {
-				this.vuexHistory.transaction(async () => {
+				transaction(async () => {
 					this.$store.commit('panels/setTextboxColor', {
 						panelId: this.object.panelId,
 						id: this.object.id,
@@ -265,7 +266,7 @@ export default defineComponent({
 	},
 	methods: {
 		copy() {
-			this.vuexHistory.transaction(async () => {
+			transaction(async () => {
 				await this.$store.dispatch('panels/copyObjectToClipboard', {
 					panelId: this.object.panelId,
 					id: this.object.id,
@@ -279,7 +280,7 @@ export default defineComponent({
 		renameOption(option: 'Apply' | 'Cancel') {
 			this.showRename = false;
 			if (option === 'Apply') {
-				this.vuexHistory.transaction(async () => {
+				transaction(async () => {
 					this.$store.commit('panels/setLabel', {
 						panelId: this.object.panelId,
 						id: this.object.id,
@@ -293,7 +294,7 @@ export default defineComponent({
 				title: 'Textbox color',
 				get: () => this.object.textboxColor,
 				set: (color: string) => {
-					this.vuexHistory.transaction(async () => {
+					transaction(async () => {
 						this.$store.commit('panels/setTextboxColor', {
 							panelId: this.object.panelId,
 							id: this.object.id,

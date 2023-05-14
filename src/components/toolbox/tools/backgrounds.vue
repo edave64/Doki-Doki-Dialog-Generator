@@ -67,6 +67,7 @@ import Color from '../subtools/color/color.vue';
 import { defineComponent } from 'vue';
 import environment, { Folder } from '@/environments/environment';
 import DButton from '@/components/ui/d-button.vue';
+import { transaction } from '@/plugins/vuex-history';
 
 const uploadedBackgroundsPackDefaults: ContentPack<string> = {
 	packId: 'dddg.uploads.backgrounds',
@@ -103,7 +104,7 @@ export default defineComponent({
 				].background.color;
 			},
 			set(color: string) {
-				this.vuexHistory.transaction(() => {
+				transaction(() => {
 					this.$store.commit('panels/setBackgroundColor', {
 						color,
 						panelId: this.$store.state.panels.currentPanel,
@@ -141,7 +142,7 @@ export default defineComponent({
 			}
 		},
 		async addImageFile(file: File) {
-			await this.vuexHistory.transaction(async () => {
+			await transaction(async () => {
 				const url = URL.createObjectURL(file);
 				const assetUrl: string = await this.$store.dispatch('uploadUrls/add', {
 					name: file.name,
@@ -185,7 +186,7 @@ export default defineComponent({
 					},
 				],
 			};
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.dispatch('content/replaceContentPack', {
 					contentPack: newPackVersion,
 					processed: true,

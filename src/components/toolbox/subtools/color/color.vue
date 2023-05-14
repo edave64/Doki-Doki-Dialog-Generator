@@ -59,6 +59,7 @@ import { RGBAColor } from '@/util/colors/rgb';
 import { defineComponent, PropType } from 'vue';
 import { DeepReadonly } from 'ts-essentials';
 import eventBus, { ColorPickedEvent } from '@/eventbus/event-bus';
+import { transaction } from '@/plugins/vuex-history';
 
 const generatedPackId = 'dddg.generated.colors';
 
@@ -156,7 +157,7 @@ export default defineComponent({
 				],
 			} as any;
 
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.dispatch('content/replaceContentPack', {
 					contentPack: newPack,
 					processed: true,
@@ -164,7 +165,7 @@ export default defineComponent({
 			});
 		},
 		pickColor(): void {
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.commit('ui/setColorPicker', true);
 			});
 		},

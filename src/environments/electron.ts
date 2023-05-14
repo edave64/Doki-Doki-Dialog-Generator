@@ -6,7 +6,6 @@ import eventBus, {
 } from '@/eventbus/event-bus';
 import { EnvState } from '@/environments/envState';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IHistorySupport } from '@/plugins/vuex-history';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { ReplaceContentPackAction } from '@/store/content';
@@ -15,6 +14,7 @@ import { Repo } from '@/models/repo';
 import { DeepReadonly } from 'ts-essentials';
 import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
+import { transaction } from '@/plugins/vuex-history';
 
 const installedBackgroundsPack: ContentPack<string> = {
 	packId: 'dddg.buildin.installedBackgrounds',
@@ -44,7 +44,6 @@ export class Electron implements IEnvironment {
 	private _gameMode: 'ddlc' | 'ddlc_plus' | null = null;
 	private readonly electron = window as any as IElectronWindow;
 
-	private vuexHistory: IHistorySupport | null = null;
 	private $store: Store<DeepReadonly<IRootState>> | null = null;
 	private bgInvalidation: number | null = null;
 	private readonly pendingContentPacks: string[] = [];
@@ -62,11 +61,11 @@ export class Electron implements IEnvironment {
 			'add-persistent-content-pack',
 			async (filePath: string) => {
 				await this.loadingContentPacksAllowed;
-				if (!this.$store || !this.vuexHistory) {
+				if (!this.$store) {
 					this.pendingContentPacks.push(filePath);
 					return;
 				}
-				await this.vuexHistory.transaction(async () => {
+				await transaction(async () => {
 					await this.$store!.dispatch('content/loadContentPacks', filePath);
 				});
 			}
@@ -109,11 +108,11 @@ export class Electron implements IEnvironment {
 						return pack.dddg2Path || pack.dddg1Path;
 					})
 				);
-				if (!this.$store || !this.vuexHistory) {
+				if (!this.$store) {
 					packUrls.forEach((url) => this.pendingContentPacks.push(url));
 					return;
 				}
-				await this.vuexHistory!.transaction(async () => {
+				await transaction(async () => {
 					await this.$store!.dispatch('content/loadContentPacks', packUrls);
 				});
 			}
@@ -134,10 +133,10 @@ export class Electron implements IEnvironment {
 					processed: false,
 					contentPack,
 				};
-				if (!this.$store || !this.vuexHistory) {
+				if (!this.$store) {
 					this.pendingContentPacksReplace.push(action);
 				} else {
-					await this.vuexHistory!.transaction(async () => {
+					await transaction(async () => {
 						await this.$store!.dispatch('content/replaceContentPack', action);
 					});
 				}
@@ -326,15 +325,11 @@ export class Electron implements IEnvironment {
 		);
 	}
 
-	public connectToStore(
-		vuexHistory: IHistorySupport,
-		store: Store<DeepReadonly<IRootState>>
-	) {
-		this.vuexHistory = vuexHistory;
+	public connectToStore(store: Store<DeepReadonly<IRootState>>) {
 		this.$store = store;
 		this.invalidateInstalledBGs();
 
-		this.vuexHistory.transaction(async () => {
+		transaction(async () => {
 			if (this.pendingContentPacks.length > 0) {
 				await this.$store!.dispatch(
 					'content/loadContentPacks',
@@ -350,7 +345,7 @@ export class Electron implements IEnvironment {
 	}
 
 	private invalidateInstalledBGs() {
-		if (!this.vuexHistory || !this.$store) return;
+		if (!this.$store) return;
 		if (this.bgInvalidation !== null) return;
 		this.bgInvalidation = requestAnimationFrame(() => {
 			this.updateInstalledBGs();
@@ -362,9 +357,9 @@ export class Electron implements IEnvironment {
 			cancelAnimationFrame(this.bgInvalidation);
 			this.bgInvalidation = null;
 		}
-		if (!this.vuexHistory || !this.$store) return;
+		if (!this.$store) return;
 
-		this.vuexHistory.transaction(async () => {
+		transaction(async () => {
 			await this.$store!.dispatch('content/replaceContentPack', {
 				contentPack: installedBackgroundsPack,
 			} as ReplaceContentPackAction);

@@ -268,6 +268,7 @@ import { IColor } from '@/util/colors/color';
 import { HSLAColor } from '@/util/colors/hsl';
 import L from '@/components/ui/link.vue';
 import { disposeCanvas, makeCanvas } from '@/util/canvas';
+import { transaction } from '@/plugins/vuex-history';
 
 const filterText: ReadonlyMap<SpriteFilter['type'], string> = new Map<
 	SpriteFilter['type'],
@@ -345,7 +346,7 @@ export default defineComponent({
 				return this.object.composite;
 			},
 			set(composite: CompositeModes): void {
-				this.vuexHistory.transaction(() => {
+				transaction(() => {
 					switch (this.type) {
 						case 'object':
 							this.$store.commit('panels/setComposition', {
@@ -490,7 +491,7 @@ export default defineComponent({
 			}
 		},
 		addFilter() {
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.dispatch(this.objectTypeScope('addFilter'), {
 					id: this.id,
 					panelId: this.panelId,
@@ -504,7 +505,7 @@ export default defineComponent({
 			this.currentFilterIdx = idx;
 		},
 		removeFilter() {
-			this.vuexHistory.transaction(async () => {
+			transaction(async () => {
 				await this.$store.dispatch(this.objectTypeScope('removeFilter'), {
 					id: this.id,
 					panelId: this.panelId,
@@ -519,7 +520,7 @@ export default defineComponent({
 			});
 		},
 		moveFilter(moveBy: number) {
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.dispatch(this.objectTypeScope('moveFilter'), {
 					id: this.id,
 					panelId: this.panelId,
@@ -531,7 +532,7 @@ export default defineComponent({
 			});
 		},
 		setValue(value: Omit<ISetFilterAction, 'id' | 'panelId' | 'idx'>) {
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.dispatch(this.objectTypeScope('setFilter'), {
 					id: this.id,
 					panelId: this.panelId,

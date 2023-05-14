@@ -64,6 +64,7 @@ import {
 } from '@/store/panels';
 import { defineComponent } from 'vue';
 import { DeepReadonly } from 'ts-essentials';
+import { transaction } from '@/plugins/vuex-history';
 
 export default defineComponent({
 	components: { Toggle, DFieldset },
@@ -76,7 +77,7 @@ export default defineComponent({
 				return this.background.color;
 			},
 			set(color: string): void {
-				this.vuexHistory.transaction(() => {
+				transaction(() => {
 					this.$store.commit('panels/setBackgroundColor', {
 						color,
 						panelId: this.$store.state.panels.currentPanel,
@@ -89,7 +90,7 @@ export default defineComponent({
 				return this.background.flipped;
 			},
 			set(flipped: boolean) {
-				this.vuexHistory.transaction(() => {
+				transaction(() => {
 					this.$store.commit('panels/setBackgroundFlipped', {
 						flipped,
 						panelId: this.$store.state.panels.currentPanel,
@@ -103,7 +104,7 @@ export default defineComponent({
 			},
 
 			set(scaling: string) {
-				this.vuexHistory.transaction(() => {
+				transaction(() => {
 					this.$store.commit('panels/setBackgroundScaling', {
 						scaling: parseInt(scaling, 10),
 						panelId: this.$store.state.panels.currentPanel,
@@ -137,7 +138,7 @@ export default defineComponent({
 	},
 	methods: {
 		seekVariant(delta: 1 | -1) {
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.dispatch('panels/seekBackgroundVariant', {
 					delta,
 					panelId: this.$store.state.panels.currentPanel,

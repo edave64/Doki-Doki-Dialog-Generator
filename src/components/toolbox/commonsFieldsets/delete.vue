@@ -6,6 +6,7 @@
 </template>
 
 <script lang="ts">
+import { transaction } from '@/plugins/vuex-history';
 import { IObject, IRemoveObjectAction } from '@/store/objects';
 import { defineComponent, Prop } from 'vue';
 
@@ -18,7 +19,7 @@ export default defineComponent({
 
 	methods: {
 		onClick() {
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.dispatch('panels/removeObject', {
 					panelId: this.obj!.panelId,
 					id: this.obj!.id,

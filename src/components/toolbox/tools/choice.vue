@@ -58,6 +58,7 @@ import { DeepReadonly } from 'ts-essentials';
 import { ComponentCustomProperties, defineComponent } from 'vue';
 import { genericSetable } from '@/util/simpleSettable';
 import ObjectTool, { Handler } from './object-tool.vue';
+import { transaction } from '@/plugins/vuex-history';
 
 const setable = genericSetable<IChoices>();
 
@@ -110,7 +111,7 @@ export default defineComponent({
 			this.currentIdx = idx;
 		},
 		addChoice(): void {
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.dispatch('panels/addChoice', {
 					id: this.object.id,
 					panelId: this.object.panelId,
@@ -119,7 +120,7 @@ export default defineComponent({
 			});
 		},
 		removeChoice(): void {
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				if (
 					this.currentIdx === this.object.choices.length - 1 &&
 					this.currentIdx > 0
@@ -142,7 +143,7 @@ function simpleButtonSettable<K extends keyof IChoice>(key: K) {
 			return this.object.choices[this.currentIdx][key];
 		},
 		set(this: IThis, val: IChoice[K]): void {
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.commit('panels/setChoiceProperty', {
 					id: this.object.id,
 					panelId: this.object.panelId,

@@ -40,6 +40,7 @@
 <script lang="ts">
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
+import { transaction } from '@/plugins/vuex-history';
 import { IObjectShiftLayerAction, IObject } from '@/store/objects';
 import { genericSetable } from '@/util/simpleSettable';
 import { defineComponent, Prop } from 'vue';
@@ -56,7 +57,7 @@ export default defineComponent({
 	},
 	methods: {
 		shiftLayer(delta: number) {
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.dispatch('panels/shiftLayer', {
 					id: this.object!.id,
 					panelId: this.object!.panelId,

@@ -24,5 +24,7 @@ export declare interface IMutation {
 	payload: any;
 }
 
+export function transaction(callback: () => void): Promise<void>;
+
 declare const _default: PluginObject<IHistoryOptions>;
 export default _default;

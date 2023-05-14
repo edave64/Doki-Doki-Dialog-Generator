@@ -2,11 +2,11 @@ import { EnvCapabilities, Folder, IEnvironment, Settings } from './environment';
 import { EnvState } from './envState';
 import { DeepReadonly, reactive, ref } from 'vue';
 import { Repo } from '@/models/repo';
-import { IHistorySupport } from '@/plugins/vuex-history';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
+import { transaction } from '@/plugins/vuex-history';
 
 const ua = navigator.userAgent;
 const iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
@@ -28,7 +28,6 @@ export class Browser implements IEnvironment {
 
 	private _gameMode: 'ddlc' | 'ddlc_plus' | null = null;
 
-	private vuexHistory: IHistorySupport | null = null;
 	private $store: Store<DeepReadonly<IRootState>> | null = null;
 
 	private readonly isSavingEnabled = ref(false);
@@ -123,7 +122,7 @@ export class Browser implements IEnvironment {
 						return pack.dddg2Path ?? pack.dddg1Path;
 					})
 				);
-				await this.vuexHistory!.transaction(async () => {
+				await transaction(async () => {
 					await this.$store!.dispatch('content/loadContentPacks', packUrls);
 				});
 			}
@@ -177,11 +176,7 @@ export class Browser implements IEnvironment {
 		throw new Error('Method not implemented.');
 	}
 
-	public connectToStore(
-		vuexHistory: IHistorySupport,
-		store: Store<DeepReadonly<IRootState>>
-	) {
-		this.vuexHistory = vuexHistory;
+	public connectToStore(store: Store<DeepReadonly<IRootState>>) {
 		this.$store = store;
 	}
 

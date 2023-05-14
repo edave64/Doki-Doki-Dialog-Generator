@@ -87,6 +87,7 @@ import {
 } from '@/store/objectTypes/characters';
 import { DeepReadonly } from 'ts-essentials';
 import { defineComponent, PropType } from 'vue';
+import { transaction } from '@/plugins/vuex-history';
 
 interface IPartStyleGroup {
 	label: string;
@@ -289,7 +290,7 @@ export default defineComponent({
 				});
 				if (subSelect.length > 0) selection = subSelect;
 			}
-			this.vuexHistory.transaction(async () => {
+			transaction(async () => {
 				await this.$store.dispatch('panels/setCharStyle', {
 					id: this.character.id,
 					panelId: this.character.panelId,
@@ -335,7 +336,7 @@ export default defineComponent({
 			}
 		},
 		setPart(part: ISetPartAction['part'], index: number): void {
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.dispatch('panels/setPart', {
 					id: this.character.id,
 					panelId: this.character.panelId,

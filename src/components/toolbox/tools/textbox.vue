@@ -195,6 +195,7 @@ import { genericSetable, genericSimpleSetter } from '@/util/simpleSettable';
 import ObjectTool, { Handler } from './object-tool.vue';
 import getConstants from '@/constants';
 import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
+import { transaction } from '@/plugins/vuex-history';
 
 const setable = genericSetable<ITextBox>();
 const tbSetable = genericSimpleSetter<ITextBox, TextBoxSimpleProperties>(
@@ -269,7 +270,7 @@ export default defineComponent({
 					}
 				},
 				set: (color: string) => {
-					this.vuexHistory.transaction(() => {
+					transaction(() => {
 						const panelId = this.currentPanel.id;
 						const id = this.object.id;
 						let colorKey = {
@@ -296,7 +297,7 @@ export default defineComponent({
 				return this.object.talkingObjId ?? '$null$';
 			},
 			set(val: string): void {
-				this.vuexHistory.transaction(() => {
+				transaction(() => {
 					this.$store.commit('panels/setTalkingObject', {
 						id: this.object.id,
 						panelId: this.object.panelId,
@@ -355,7 +356,7 @@ export default defineComponent({
 	},
 	methods: {
 		splitTextbox(): void {
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.dispatch('panels/splitTextbox', {
 					id: this.object.id,
 					panelId: this.object.panelId,
@@ -363,7 +364,7 @@ export default defineComponent({
 			});
 		},
 		resetPosition(): void {
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.dispatch('panels/resetTextboxBounds', {
 					id: this.object.id,
 					panelId: this.object.panelId,
@@ -371,7 +372,7 @@ export default defineComponent({
 			});
 		},
 		jumpToCharacter(): void {
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.commit('ui/setSelection', this.talkingObjId);
 			});
 		},

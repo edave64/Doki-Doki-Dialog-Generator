@@ -26,6 +26,7 @@ import { DeepReadonly } from 'ts-essentials';
 import { PanelMixin } from './panelMixin';
 import { defineComponent } from 'vue';
 import { getAAssetUrl } from '@/asset-manager';
+import { transaction } from '@/plugins/vuex-history';
 
 export default defineComponent({
 	mixins: [PanelMixin],
@@ -65,7 +66,7 @@ export default defineComponent({
 			}
 
 			const file = uploadInput.files[0];
-			await this.vuexHistory.transaction(async () => {
+			await transaction(async () => {
 				const url = URL.createObjectURL(file);
 				await this.$store.dispatch('uploadUrls/add', {
 					name: this.missing,

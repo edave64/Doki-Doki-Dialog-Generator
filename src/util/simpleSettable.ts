@@ -1,3 +1,4 @@
+import { transaction } from '@/plugins/vuex-history';
 import { IObject } from '@/store/objects';
 import { ComponentCustomProperties } from 'vue';
 
@@ -12,7 +13,7 @@ export function genericSetable<T extends IObject>() {
 				return this.object[key];
 			},
 			set(this: IThis<T>, val: T[K]): void {
-				this.vuexHistory.transaction(() => {
+				transaction(() => {
 					this.$store[action ? 'dispatch' : 'commit'](message, {
 						panelId: this.object.panelId,
 						id: this.object.id,
@@ -33,7 +34,7 @@ export function genericSimpleSetter<T extends IObject, KT extends keyof T>(
 				return this.object[key];
 			},
 			set(this: IThis<T>, value: T[K]): void {
-				this.vuexHistory.transaction(() => {
+				transaction(() => {
 					this.$store['commit'](message, {
 						panelId: this.object.panelId,
 						id: this.object.id,

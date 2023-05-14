@@ -41,6 +41,7 @@ import { defineComponent, markRaw } from 'vue';
 import getConstants from '@/constants';
 import { IPanel } from '@/store/panels';
 import { disposeCanvas } from '@/util/canvas';
+import { transaction } from '@/plugins/vuex-history';
 
 export default defineComponent({
 	props: {
@@ -114,7 +115,7 @@ export default defineComponent({
 		async download(): Promise<void> {
 			const url = await this.sceneRender.download();
 
-			await this.vuexHistory.transaction(async () => {
+			await transaction(async () => {
 				const oldUrl = this.$store.state.ui.lastDownload;
 
 				this.$store.commit('ui/setLastDownload', url);
@@ -198,7 +199,7 @@ export default defineComponent({
 				const hex = `rgba(${data[0].toString()},${data[1].toString()},${data[2].toString()},${(
 					data[3] / 255
 				).toString()})`;
-				this.vuexHistory.transaction(() => {
+				transaction(() => {
 					this.$store.commit('ui/setColorPicker', false);
 					eventBus.fire(new ColorPickedEvent(hex));
 				});
@@ -225,7 +226,7 @@ export default defineComponent({
 			}
 
 			if (this.$store.state.ui.selection === selectedObject) return;
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.commit('ui/setSelection', selectedObject);
 			});
 		},
@@ -278,7 +279,7 @@ export default defineComponent({
 					x = this.dragXOriginal;
 				}
 			}
-			this.vuexHistory.transaction(() => {
+			transaction(() => {
 				this.$store.dispatch('panels/setPosition', {
 					panelId: this.draggedObject!.panelId,
 					id: this.draggedObject!.id,
@@ -306,7 +307,7 @@ export default defineComponent({
 							}
 						);
 
-						await this.vuexHistory.transaction(async () => {
+						await transaction(async () => {
 							await this.$store.dispatch('panels/createSprite', {
 								panelId: this.$store.state.panels.currentPanel,
 								assets: [

@@ -78,6 +78,7 @@ import { DeepReadonly } from 'ts-essentials';
 import { PanelMixin } from '../panelMixin';
 
 import MissingImage from '@/assets/missing_image.svg';
+import { transaction } from '@/plugins/vuex-history';
 
 const uploadedSpritesPackDefault: ContentPack<string> = {
 	packId: 'dddg.uploads.sprites',
@@ -167,7 +168,7 @@ export default defineComponent({
 			}
 
 			const file = uploadInput.files[0];
-			await this.vuexHistory.transaction(async () => {
+			await transaction(async () => {
 				const url = URL.createObjectURL(file);
 				await this.$store.dispatch('uploadUrls/add', {
 					name: spriteName,
@@ -179,12 +180,12 @@ export default defineComponent({
 			const url = prompt('Enter the URL of the image');
 			if (url == null) return;
 			const lastSegment = url.split('/').slice(-1)[0];
-			await this.vuexHistory.transaction(async () => {
+			await transaction(async () => {
 				await this.addNewCustomSprite(lastSegment, url);
 			});
 		},
 		async addSpriteToScene(sprite: ISprite) {
-			await this.vuexHistory.transaction(async () => {
+			await transaction(async () => {
 				await this.$store.dispatch('panels/createSprite', {
 					panelId: this.$store.state.panels.currentPanel,
 					assets: sprite.variants[0],
@@ -200,7 +201,7 @@ export default defineComponent({
 			missingSpriteUpload.click();
 		},
 		async addCustomSpriteFile(file: File) {
-			await this.vuexHistory.transaction(async () => {
+			await transaction(async () => {
 				const url = URL.createObjectURL(file);
 				const assetUrl: string = await this.$store.dispatch('uploadUrls/add', {
 					name: file.name,

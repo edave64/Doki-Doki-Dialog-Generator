@@ -2,7 +2,6 @@ import { OldEdge } from './edge';
 import { Browser } from './browser';
 import { Electron } from './electron';
 import { EnvState } from './envState';
-import { IHistorySupport } from '@/plugins/vuex-history';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { DeepReadonly } from 'ts-essentials';
@@ -64,10 +63,7 @@ export interface IEnvironment {
 
 	storeSaveFile(save: Blob, defaultName: string): Promise<void>;
 
-	connectToStore(
-		vuexHistory: IHistorySupport,
-		store: Store<DeepReadonly<IRootState>>
-	): void;
+	connectToStore(store: Store<DeepReadonly<IRootState>>): void;
 }
 
 function chooseEnv(): IEnvironment {

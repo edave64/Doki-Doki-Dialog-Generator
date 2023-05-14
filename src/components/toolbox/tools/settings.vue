@@ -132,6 +132,7 @@ import { defineComponent } from 'vue';
 import ModalDialog from '@/components/ModalDialog.vue';
 import L from '@/components/ui/link.vue';
 import { safeAsync } from '@/util/errors';
+import { transaction } from '@/plugins/vuex-history';
 
 export default defineComponent({
 	mixins: [PanelMixin],
@@ -176,7 +177,7 @@ export default defineComponent({
 				return this.$store.state.ui.lqRendering;
 			},
 			set(lqRendering: boolean) {
-				this.vuexHistory.transaction(async () => {
+				transaction(async () => {
 					await this.$store.commit('ui/setLqRendering', lqRendering);
 				});
 				this.saveSettings();
@@ -187,7 +188,7 @@ export default defineComponent({
 				return !!this.$store.state.ui.nsfw;
 			},
 			set(value: boolean) {
-				this.vuexHistory.transaction(async () => {
+				transaction(async () => {
 					await this.$store.commit('ui/setNsfw', value);
 					this.saveSettings();
 				});
@@ -198,7 +199,7 @@ export default defineComponent({
 				return !!this.$store.state.ui.defaultCharacterTalkingZoom;
 			},
 			set(value: boolean) {
-				this.vuexHistory.transaction(async () => {
+				transaction(async () => {
 					await this.$store.commit('ui/setDefaultCharacterTalkingZoom', value);
 					this.saveSettings();
 				});
@@ -209,7 +210,7 @@ export default defineComponent({
 				return this.$store.state.ui.useDarkTheme;
 			},
 			set(value: boolean | null) {
-				this.vuexHistory.transaction(async () => {
+				transaction(async () => {
 					await this.$store.commit('ui/setDarkTheme', value);
 					this.saveSettings();
 				});

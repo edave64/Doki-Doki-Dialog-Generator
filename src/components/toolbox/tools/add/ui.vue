@@ -9,6 +9,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import DButton from '@/components/ui/d-button.vue';
+import { transaction } from '@/plugins/vuex-history';
 
 export default defineComponent({
 	components: { DButton },
@@ -29,7 +30,7 @@ export default defineComponent({
 			return await this.createUiElement('createConsole');
 		},
 		async createUiElement(messageName: string): Promise<void> {
-			this.vuexHistory.transaction(async () => {
+			transaction(async () => {
 				await this.$store.dispatch(`panels/${messageName}`, {
 					panelId: this.$store.state.panels.currentPanel,
 				});
