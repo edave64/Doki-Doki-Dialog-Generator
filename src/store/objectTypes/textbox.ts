@@ -272,10 +272,10 @@ export const textBoxActions: ActionTree<IPanels, IRootState> = {
 		} as ISetResetBoundsMutation);
 		const newStyle = obj.style === 'custom_plus' ? 'custom_plus' : 'custom';
 		if (obj.style !== newStyle) {
-			await dispatch(
-				'setStyle',
-				textboxProperty(command.panelId, command.id, 'style', newStyle)
-			);
+			await dispatch('setStyle', {
+				...command,
+				style: newStyle,
+			} as ISetTextBoxStyleAction);
 		}
 		const id = (await dispatch('createTextBox', {
 			panelId: command.panelId,
@@ -287,10 +287,11 @@ export const textBoxActions: ActionTree<IPanels, IRootState> = {
 				rotation: obj.rotation,
 			},
 		} as ICreateTextBoxAction)) as number;
-		await dispatch(
-			'setStyle',
-			textboxProperty(command.panelId, id, 'style', newStyle)
-		);
+		await dispatch('setStyle', {
+			panelId: command.panelId,
+			id,
+			style: newStyle,
+		} as ISetTextBoxStyleAction);
 		if (obj.flip) {
 			commit('setFlip', {
 				id,
