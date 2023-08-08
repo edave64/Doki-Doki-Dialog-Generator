@@ -181,7 +181,7 @@ export class Electron implements IEnvironment {
 		);
 		this.electron.ipcRenderer.send('init-dddg');
 	}
-	async storeSaveFile(save: Blob, defaultName: string): Promise<void> {
+	async storeSaveFile(saveBlob: Blob, defaultName: string): Promise<void> {
 		const a = document.createElement('a');
 		const url = URL.createObjectURL(saveBlob);
 		a.setAttribute('download', defaultName);
