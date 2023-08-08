@@ -115,7 +115,7 @@
 							<input
 								id="namebox_width"
 								type="number"
-								:placeholder="defaultNameboxWidth"
+								:placeholder="defaultNameboxWidth + ''"
 								v-model.lazy="nameboxWidth"
 							/>
 						</td>
@@ -205,13 +205,16 @@ export default defineComponent({
 			];
 		},
 		nameboxWidth: {
-			get(): string {
+			get(): number | '' {
 				const val = this.object.nameboxWidth;
 				if (val === null) return '';
-				return val + '';
+				return val;
 			},
-			set(value: string) {
-				const val = value.trim() === '' ? null : parseInt(value);
+			set(value: number | '') {
+				const val =
+					typeof value === 'string' && value.trim() === ''
+						? null
+						: parseInt(value + '');
 				transaction(async () => {
 					this.$store.commit('panels/setObjectNameboxWidth', {
 						id: this.object.id,

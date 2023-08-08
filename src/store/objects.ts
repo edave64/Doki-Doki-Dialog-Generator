@@ -142,11 +142,13 @@ export const mutations: MutationTree<IPanels> = {
 		const panel = state.panels[command.panelId];
 		const obj = panel.objects[command.id];
 		obj.label = command.label;
+		++obj.version;
 	},
 	setTextboxColor(state, command: ISetTextBoxColor) {
 		const panel = state.panels[command.panelId];
 		const obj = panel.objects[command.id];
 		obj.textboxColor = command.textboxColor;
+		++obj.version;
 	},
 	setEnlargeWhenTalking(state, command: ISetEnlargeWhenTalkingMutation) {
 		const panel = state.panels[command.panelId];

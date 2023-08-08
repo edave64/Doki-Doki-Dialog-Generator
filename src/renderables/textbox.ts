@@ -51,6 +51,15 @@ export function getStyles(): DeepReadonly<ITextboxRendererClass>[] {
 
 export class TextBox extends ScalingRenderable<ITextBox> {
 	public refObject: IObject | null = null;
+	public get refVars(): string {
+		const refObj = this.refObject;
+		if (!refObj) return '';
+		return JSON.stringify([
+			refObj.label,
+			refObj.textboxColor,
+			refObj.nameboxWidth,
+		]);
+	}
 
 	public get y(): number {
 		return this.obj.y;
@@ -79,6 +88,25 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		const newRenderer = new rendererConstructor(this);
 		this._lastRenderer = newRenderer;
 		return newRenderer!;
+	}
+
+	private lastForcedStyle: ITextBox['style'] | undefined;
+	private lastRefVars: string | undefined;
+	private lastRefVersion: IObject['version'] | undefined;
+	public needsRedraw(): boolean {
+		if (super.needsRedraw()) return true;
+		if (this.lastForcedStyle !== this.forcedStyle) return true;
+		const refObj = this.refObject;
+		if (refObj?.version !== this.lastRefVersion) {
+			const needsRedraw = this.lastRefVars !== this.refVars;
+			if (!needsRedraw) {
+				// An updated version doesn't mean that the textbox must redraw. If it's not the case, update the version
+				// so we don't need to recompute refVars every time.
+				this.lastRefVersion = refObj?.version;
+			}
+			return needsRedraw;
+		}
+		return false;
 	}
 
 	public get forcedStyle(): ITextBox['style'] {
@@ -119,6 +147,9 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 			: this.obj.x;
 		const x = baseX - w2;
 		const y = this.obj.y;
+		this.lastRefVars = this.refVars;
+		this.lastRefVersion = this.refObject?.version;
+		this.lastForcedStyle = this.forcedStyle;
 
 		await styleRenderer.render(rx);
 
