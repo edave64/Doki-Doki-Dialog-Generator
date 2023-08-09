@@ -89,9 +89,8 @@
 									id="custom_namebox_width"
 									type="number"
 									style="width: 48px"
-									:placeholder="nameboxWidthDefault"
+									:placeholder="nameboxWidthDefault + ''"
 									v-model.number="customNameboxWidth"
-									:disabled="overrideColor"
 									@keydown.stop
 								/>
 							</td>
