@@ -4,7 +4,6 @@ import {
 	IObjectMutation,
 } from '@/store/objects';
 import { IPanel, IPanels } from '@/store/panels';
-import { ActionTree, MutationTree } from 'vuex';
 import { IRootState } from '..';
 import { baseProps } from './baseObjectProps';
 import getConstants from '@/constants';

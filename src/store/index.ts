@@ -1,9 +1,8 @@
 import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 import { Repo } from '@/models/repo';
 import { mergeContentPacks } from '@/store/content/merge';
-import { createStore } from 'vuex';
-import ui, { getDefaultUiState, IUiState } from './ui';
-import panels, { IPanels } from './panels';
+import { useUiStore } from './ui';
+import { usePanelsStore } from './panels';
 import content, {
 	convertContentPack,
 	getDefaultContentState,
@@ -11,7 +10,7 @@ import content, {
 	IContentState,
 	loadContentPack,
 } from './content';
-import uploadUrls, { IUploadUrlState } from './upload_urls';
+import { useUploadUrlState } from './upload_urls';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { NsfwPacks } from '@/constants/nsfw';
 

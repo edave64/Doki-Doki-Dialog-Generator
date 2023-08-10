@@ -1,4 +1,3 @@
-import { Module } from 'vuex';
 import {
 	Background,
 	Character,
@@ -14,7 +13,7 @@ import { convert as convertV1 } from '@edave64/doki-doki-dialog-generator-pack-f
 import { normalizeCharacter as normalizeCharacterV1 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v1/parser';
 import { isWebPSupported } from '@/asset-manager';
 import { mergeContentPacks } from './merge';
-import { IRootState } from '..';
+import { defineStore } from 'pinia';
 
 export interface IContentState {
 	contentPacks: Array<ContentPack<IAssetSwitch>>;
@@ -55,10 +54,9 @@ export function getDefaultContentState(): IContentState {
 	};
 }
 
-export default {
-	namespaced: true,
-	state: getDefaultContentState(),
-	mutations: {
+export const useContentStore = defineStore('content', {
+	state: getDefaultContentState,
+	actions: {
 		setContentPacks(
 			state: IContentState,
 			packs: Array<ContentPack<IAssetSwitch>>
@@ -71,34 +69,27 @@ export default {
 		) {
 			state.current = content;
 		},
-	},
-	actions: {
-		removeContentPacks({ commit, state, dispatch }, packIds: Set<string>) {
+		removeContentPacks(packIds: Set<string>) {
 			const oldState: ContentPack<IAssetSwitch> = JSON.parse(
-				JSON.stringify(state.current)
+				JSON.stringify(this.current)
 			);
 			const newContentPacks = sortByDependencies(
-				state.contentPacks.filter((pack) => !packIds.has(pack.packId!))
+				this.contentPacks.filter((pack) => !packIds.has(pack.packId!))
 			);
-			commit('setContentPacks', newContentPacks);
-			commit(
-				'setCurrentContent',
-				(newContentPacks as Array<ContentPack<IAssetSwitch>>).reduce(
-					(acc, value) => mergeContentPacks(acc, value)
-				)
-			);
-			dispatch('panels/fixContentPackRemoval', oldState, { root: true });
+			this.$patch((a) => {
+				a.contentPacks = newContentPacks;
+				a.current = (
+					newContentPacks as Array<ContentPack<IAssetSwitch>>
+				).reduce((acc, value) => mergeContentPacks(acc, value));
+			});
+			//TODO: dispatch('panels/fixContentPackRemoval', oldState, { root: true });
 		},
 
-		async replaceContentPack(
-			{ commit, state },
-			action: ReplaceContentPackAction
-		) {
-			debugger;
+		async replaceContentPack(action: ReplaceContentPackAction) {
 			const convertedPack = action.processed
 				? action.contentPack
 				: await convertContentPack(action.contentPack);
-			let packs = state.contentPacks;
+			let packs = this.contentPacks;
 			const packIdx = packs.findIndex(
 				(pack) => pack.packId === action.contentPack.packId
 			);
@@ -108,16 +99,15 @@ export default {
 				packs.splice(packIdx, 1, convertedPack);
 			}
 			packs = sortByDependencies(packs);
-			commit('setContentPacks', packs);
-			commit(
-				'setCurrentContent',
-				(packs as Array<ContentPack<IAssetSwitch>>).reduce((acc, value) =>
-					mergeContentPacks(acc, value)
-				)
-			);
+			this.$patch((a) => {
+				a.contentPacks = packs;
+				a.current = (packs as Array<ContentPack<IAssetSwitch>>).reduce(
+					(acc, value) => mergeContentPacks(acc, value)
+				);
+			});
 		},
 
-		async loadContentPacks({ commit, state }, urls: string | string[]) {
+		async loadContentPacks(urls: string | string[]) {
 			if (typeof urls === 'string') {
 				urls = [urls];
 			}
@@ -129,8 +119,8 @@ export default {
 				contentPacks.map((contentPack) => convertContentPack(contentPack))
 			);
 
-			const existingPacks = new Set(state.contentPacks.map((x) => x.packId!));
-			let combinedPack = state.current;
+			const existingPacks = new Set(this.contentPacks.map((x) => x.packId!));
+			let combinedPack = this.current;
 
 			for (const convertedPack of convertedPacks) {
 				for (const dependency of convertedPack.dependencies) {
@@ -142,8 +132,10 @@ export default {
 				}
 				combinedPack = mergeContentPacks(combinedPack, convertedPack);
 			}
-			commit('setContentPacks', [...state.contentPacks, ...convertedPacks]);
-			commit('setCurrentContent', combinedPack);
+			this.$patch((a) => {
+				a.contentPacks = [...this.contentPacks, ...convertedPacks];
+				a.current = combinedPack;
+			});
 
 			return contentPacks.map((x) => x.packId);
 		},
@@ -172,7 +164,7 @@ export default {
 			return ret;
 		},
 	},
-} as Module<IContentState, IRootState>;
+});
 
 export async function loadContentPack(
 	url: string

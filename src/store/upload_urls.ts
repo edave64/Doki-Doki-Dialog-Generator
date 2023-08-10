@@ -1,28 +1,19 @@
 import { registerAssetWithURL } from '@/asset-manager';
-import { Module } from 'vuex';
-import { IRootState } from '.';
+import { defineStore } from 'pinia';
 
-export type IUploadUrlState = {
-	[name: string]: string;
-};
-
-export default {
-	namespaced: true,
-	state: {},
-	mutations: {
-		add(state, { name, url }: { name: string; url: string }) {
-			state[name] = url;
-		},
-	},
+export const useUploadUrlState = defineStore('urlState', {
+	state: () => ({
+		urls: new Map<string, string>(),
+	}),
 	actions: {
-		add({ state, commit }, { name, url }: { name: string; url: string }) {
-			if (state[name]) {
+		add({ name, url }: { name: string; url: string }) {
+			if (this.urls.has(name)) {
 				throw new Error(`There is already an uploaded file called "${name}"`);
 			}
 			const assertUrl = 'uploads:' + name;
-			commit('add', { name: assertUrl, url });
+			this.urls.set(assertUrl, url);
 			registerAssetWithURL(assertUrl, url);
 			return assertUrl;
 		},
 	},
-} as Module<IUploadUrlState, IRootState>;
+});

@@ -436,7 +436,7 @@ export default defineComponent({
 
 		await environment.loadGameMode();
 		this.preLoading = false;
-		environment.connectToStore(/* this.vuexHistory, */ this.$store);
+		environment.connectToStore(this.$store);
 		const settings = await environment.loadSettings();
 
 		await transaction(async () => {

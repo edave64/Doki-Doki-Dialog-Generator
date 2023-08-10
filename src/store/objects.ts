@@ -1,23 +1,18 @@
-import { ActionContext, ActionTree, MutationTree } from 'vuex';
-import { spriteMutations, spriteActions } from './objectTypes/sprite';
+import { ActionContext } from 'vuex';
+import { spriteMutations } from './objectTypes/sprite';
 import {
-	characterActions,
 	characterMutations,
 	fixContentPackRemovalFromCharacter,
 } from './objectTypes/characters';
-import { choiceMutations, choiceActions } from './objectTypes/choices';
+import { choiceMutations } from './objectTypes/choices';
 import {
 	ITextBox,
-	textBoxActions,
 	textBoxMutations,
 	ISetTextBoxTalkingOtherMutation,
 } from './objectTypes/textbox';
-import {
-	notificationMutations,
-	notificationActions,
-} from './objectTypes/notification';
+import { notificationMutations } from './objectTypes/notification';
 import { poemMutations, poemActions } from './objectTypes/poem';
-import { IRootState } from '.';
+import { IRootthis } from '.';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAssetSwitch } from './content';
 import {
@@ -32,10 +27,12 @@ import {
 	setFilter,
 	SpriteFilter,
 } from './sprite_options';
-import { IPanel, IPanels } from './panels';
+import { IPanel, IPanels, PanelType } from './panels';
 import { CompositeModes } from '@/renderer/rendererContext';
+import { defineStore } from 'pinia';
+import { useUiStore } from './ui';
 
-export interface IObjectsState {
+export interface IObjectsthis {
 	nextPanelId: bigint;
 	nextObjectId: bigint;
 }
@@ -69,99 +66,102 @@ export type ObjectTypes =
 	| 'notification'
 	| 'poem';
 
-export const mutations: MutationTree<IPanels> = {
-	create(state, { object }: ICreateObjectMutation) {
-		const panel = state.panels[object.panelId];
+export const mutations = {
+	create(this: PanelType, { object }: ICreateObjectMutation) {
+		const panel = this.panels[object.panelId];
 		if (object.id > panel.lastObjId) panel.lastObjId = object.id;
 		panel.objects[object.id] = object;
 		const collection = object.onTop ? panel.onTopOrder : panel.order;
 		collection.push(object.id);
 	},
-	removeFromList(state, command: IRemoveFromListMutation) {
-		const panel = state.panels[command.panelId];
+	removeFromList(this: PanelType, command: IRemoveFromListMutation) {
+		const panel = this.panels[command.panelId];
 		const collection = command.onTop ? panel.onTopOrder : panel.order;
 		const idx = collection.indexOf(command.id);
 		collection.splice(idx, 1);
 	},
-	addToList(state, command: IAddToListMutation) {
-		const panel = state.panels[command.panelId];
+	addToList(this: PanelType, command: IAddToListMutation) {
+		const panel = this.panels[command.panelId];
 		const collection = command.onTop ? panel.onTopOrder : panel.order;
 		collection.splice(command.position, 0, command.id);
 	},
-	setOnTop(state, command: ISetOnTopMutation) {
-		const panel = state.panels[command.panelId];
+	setOnTop(this: PanelType, command: ISetOnTopMutation) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id];
 		obj.onTop = command.onTop;
 	},
-	setPosition(state, command: ISetObjectPositionMutation) {
-		const panel = state.panels[command.panelId];
+	setPosition(this: PanelType, command: ISetObjectPositionMutation) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id];
 		obj.x = command.x;
 		obj.y = command.y;
 	},
-	setFlip(state, command: ISetObjectFlipMutation) {
-		const panel = state.panels[command.panelId];
+	setFlip(this: PanelType, command: ISetObjectFlipMutation) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id];
 		obj.flip = command.flip;
 	},
-	setSize(state, command: ISetSpriteSizeMutation) {
-		const panel = state.panels[command.panelId];
+	setSize(this: PanelType, command: ISetSpriteSizeMutation) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id];
 		obj.width = command.width;
 		obj.height = command.height;
 	},
-	setRatio(state, command: ISetSpriteRatioMutation) {
-		const panel = state.panels[command.panelId];
+	setRatio(this: PanelType, command: ISetSpriteRatioMutation) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id];
 		obj.preserveRatio = command.preserveRatio;
 		obj.ratio = command.ratio;
 	},
-	setRotation(state, command: ISetSpriteRotationMutation) {
-		const panel = state.panels[command.panelId];
+	setRotation(this: PanelType, command: ISetSpriteRotationMutation) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id];
 		obj.rotation =
 			command.rotation < 0
 				? 360 - (Math.abs(command.rotation) % 360)
 				: command.rotation % 360;
 	},
-	removeObject(state, command: IRemoveObjectMutation) {
-		const panel = state.panels[command.panelId];
+	removeObject(this: PanelType, command: IRemoveObjectMutation) {
+		const panel = this.panels[command.panelId];
 		delete panel.objects[command.id];
 	},
-	setComposition(state, command: ISetCompositionMutation) {
-		const panel = state.panels[command.panelId];
+	setComposition(this: PanelType, command: ISetCompositionMutation) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id];
 		obj.composite = command.composite;
 	},
-	object_setFilters(state, command: ISetFiltersMutation) {
-		const panel = state.panels[command.panelId];
+	object_setFilters(this: PanelType, command: ISetFiltersMutation) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id];
 		obj.filters = command.filters;
 	},
-	setLabel(state, command: ISetLabelMutation) {
-		const panel = state.panels[command.panelId];
+	setLabel(this: PanelType, command: ISetLabelMutation) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id];
 		obj.label = command.label;
 	},
-	setTextboxColor(state, command: ISetTextBoxColor) {
-		const panel = state.panels[command.panelId];
+	setTextboxColor(this: PanelType, command: ISetTextBoxColor) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id];
 		obj.textboxColor = command.textboxColor;
 	},
-	setEnlargeWhenTalking(state, command: ISetEnlargeWhenTalkingMutation) {
-		const panel = state.panels[command.panelId];
+	setEnlargeWhenTalking(
+		this: PanelType,
+		command: ISetEnlargeWhenTalkingMutation
+	) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id] as ITextBox;
 		obj.enlargeWhenTalking = command.enlargeWhenTalking;
 		++obj.version;
 	},
-	setObjectNameboxWidth(state, command: ISetNameboxWidthMutation) {
-		const panel = state.panels[command.panelId];
+	setObjectNameboxWidth(this: PanelType, command: ISetNameboxWidthMutation) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id] as ITextBox;
 		obj.nameboxWidth = command.nameboxWidth;
 		++obj.version;
 	},
-	setObjectZoom(state, command: ISetObjectZoomMutation) {
-		const panel = state.panels[command.panelId];
+	setObjectZoom(this: PanelType, command: ISetObjectZoomMutation) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id] as ITextBox;
 		obj.zoom = command.zoom;
 		++obj.version;
@@ -174,11 +174,11 @@ export const mutations: MutationTree<IPanels> = {
 	...poemMutations,
 };
 
-export const actions: ActionTree<IPanels, IRootState> = {
-	removeObject({ state, commit, rootState }, command: IRemoveObjectAction) {
-		const panel = state.panels[command.panelId];
+export const actions = {
+	removeObject(this: PanelType, command: IRemoveObjectAction) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id];
-		if (rootState.ui.selection === command.id) {
+		if (rootthis.ui.selection === command.id) {
 			commit('ui/setSelection', null, { root: true });
 		}
 		for (const key of [...panel.onTopOrder, ...panel.order]) {
@@ -203,8 +203,8 @@ export const actions: ActionTree<IPanels, IRootState> = {
 			panelId: command.panelId,
 		} as IRemoveObjectMutation);
 	},
-	setPosition({ state, commit, dispatch }, command: ISetPositionAction) {
-		const panel = state.panels[command.panelId];
+	setPosition(this: PanelType, command: ISetPositionAction) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id];
 		if (obj.type === 'character') {
 			dispatch('setCharacterPosition', command as ISetPositionAction);
@@ -212,8 +212,8 @@ export const actions: ActionTree<IPanels, IRootState> = {
 			commit('setPosition', command as ISetObjectPositionMutation);
 		}
 	},
-	setOnTop({ state, commit }, command: IObjectSetOnTopAction) {
-		const panel = state.panels[command.panelId];
+	setOnTop(this: PanelType, command: IObjectSetOnTopAction) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id];
 		if (obj.onTop === command.onTop) return;
 		commit('removeFromList', {
@@ -233,8 +233,8 @@ export const actions: ActionTree<IPanels, IRootState> = {
 			onTop: command.onTop,
 		} as ISetOnTopMutation);
 	},
-	shiftLayer({ state, commit }, command: IObjectShiftLayerAction) {
-		const panel = state.panels[command.panelId];
+	shiftLayer(this: PanelType, command: IObjectShiftLayerAction) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id];
 		const collection = obj.onTop ? panel.onTopOrder : panel.order;
 		const position = collection.indexOf(obj.id);
@@ -258,8 +258,8 @@ export const actions: ActionTree<IPanels, IRootState> = {
 			onTop: obj.onTop,
 		} as IAddToListMutation);
 	},
-	setPreserveRatio({ commit, state }, command: ISetRatioAction) {
-		const panel = state.panels[command.panelId];
+	setPreserveRatio(this: PanelType, command: ISetRatioAction) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id];
 		const ratio = command.preserveRatio ? obj.width / obj.height : 0;
 		commit('setRatio', {
@@ -269,8 +269,8 @@ export const actions: ActionTree<IPanels, IRootState> = {
 			ratio,
 		} as ISetSpriteRatioMutation);
 	},
-	setWidth({ commit, state }, command: ISetWidthAction) {
-		const panel = state.panels[command.panelId];
+	setWidth(this: PanelType, command: ISetWidthAction) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id];
 		const height = !obj.preserveRatio ? obj.height : command.width / obj.ratio;
 		commit('setSize', {
@@ -280,11 +280,11 @@ export const actions: ActionTree<IPanels, IRootState> = {
 			width: command.width,
 		} as ISetSpriteSizeMutation);
 	},
-	setHeight({ commit, state }, command: ISetHeightAction) {
-		const panel = state.panels[command.panelId];
+	setHeight(this: PanelType, command: ISetHeightAction) {
+		const panel = this.panels[command.panelId];
 		const obj = panel.objects[command.id];
 		const width = !obj.preserveRatio ? obj.width : command.height * obj.ratio;
-		commit('setSize', {
+		this.commit('setSize', {
 			panelId: command.panelId,
 			id: command.id,
 			height: command.height,
@@ -292,11 +292,11 @@ export const actions: ActionTree<IPanels, IRootState> = {
 		} as ISetSpriteSizeMutation);
 	},
 	copyObjects(
-		{ commit, state },
+		this: PanelType,
 		{ sourcePanelId, targetPanelId }: ICopyObjectsAction
 	) {
-		const sourcePanel = state.panels[sourcePanelId];
-		const targetPanel = state.panels[targetPanelId];
+		const sourcePanel = this.panels[sourcePanelId];
+		const targetPanel = this.panels[targetPanelId];
 		const allSourceIds = [...sourcePanel.onTopOrder, ...sourcePanel.order];
 		const transationTable = new Map<IObject['id'], IObject['id']>();
 		let lastObjId = targetPanel.lastObjId;
@@ -319,7 +319,7 @@ export const actions: ActionTree<IPanels, IRootState> = {
 					)!;
 				}
 			}
-			commit('create', {
+			this.create({
 				object: {
 					...newObject,
 					id: transationTable.get(sourceId)!,
@@ -329,64 +329,66 @@ export const actions: ActionTree<IPanels, IRootState> = {
 		}
 	},
 	copyObjectToClipboard(
-		{ commit, state },
+		this: PanelType,
 		{ id, panelId }: ICopyObjectToClipboardAction
 	) {
-		const oldObject = state.panels[panelId].objects[id];
-		commit('ui/setClipboard', JSON.stringify(oldObject), { root: true });
+		const oldObject = this.panels[panelId].objects[id];
+		const ui = useUiStore();
+		ui.clipboard = JSON.stringify(oldObject);
 	},
-	pasteObjectFromClipboard({ commit, state, rootState }) {
-		if (rootState.ui.clipboard == null) return;
-		const oldObject = JSON.parse(rootState.ui.clipboard);
-		commit('create', {
+	pasteObjectFromClipboard(this: PanelType) {
+		const ui = useUiStore();
+		if (ui.clipboard == null) return;
+		const oldObject = JSON.parse(ui.clipboard);
+		this.create({
 			object: {
 				...oldObject,
-				id: state.panels[state.currentPanel].lastObjId + 1,
-				panelId: state.currentPanel,
+				id: this.panels[this.currentPanel].lastObjId + 1,
+				panelId: this.currentPanel,
 			},
 		} as ICreateObjectMutation);
 	},
-	object_addFilter({ state, commit }, action: IAddFilterAction) {
+	object_addFilter(this: PanelType, action: IAddFilterAction) {
 		addFilter(
 			action,
-			() => state.panels[action.panelId].objects[action.id!],
-			(mutation) => commit('object_setFilters', mutation)
+			() => this.panels[action.panelId].objects[action.id!],
+			(mutation) => this.object_setFilters(mutation)
 		);
 	},
-	object_removeFilter({ state, commit }, action: IRemoveFilterAction) {
+	object_removeFilter(this: PanelType, action: IRemoveFilterAction) {
 		removeFilter(
 			action,
-			() => state.panels[action.panelId].objects[action.id!],
-			(mutation) => commit('object_setFilters', mutation)
+			() => this.panels[action.panelId].objects[action.id!],
+			(mutation) => this.object_setFilters(mutation)
 		);
 	},
-	object_moveFilter({ state, commit }, action: IMoveFilterAction) {
+	object_moveFilter(this: PanelType, action: IMoveFilterAction) {
 		moveFilter(
 			action,
-			() => state.panels[action.panelId].objects[action.id!],
-			(mutation) => commit('object_setFilters', mutation)
+			() => this.panels[action.panelId].objects[action.id!],
+			(mutation) => this.object_setFilters(mutation)
 		);
 	},
-	object_setFilter({ state, commit }, action: ISetFilterAction) {
+	object_setFilter(this: PanelType, action: ISetFilterAction) {
 		setFilter(
 			action,
-			() => state.panels[action.panelId].objects[action.id!],
-			(mutation) => commit('object_setFilters', mutation)
+			() => this.panels[action.panelId].objects[action.id!],
+			(mutation) => this.object_setFilters(mutation)
 		);
 	},
-	...spriteActions,
-	...characterActions,
-	...textBoxActions,
-	...choiceActions,
-	...notificationActions,
-	...poemActions,
+	//...spriteActions,
+	//...characterActions,
+	//...textBoxActions,
+	//...choiceActions,
+	//...notificationActions,
+	//...poemActions,
 };
 
 export function fixContentPackRemoval(
-	context: ActionContext<IPanels, IRootState>,
+	context: ActionContext<IPanels, IRootthis>,
 	oldContent: ContentPack<IAssetSwitch>
 ) {
-	const panels = context.state.panels;
+	const panels = context.this.panels;
 	for (const panelId in panels) {
 		const panel = panels[panelId];
 		for (const objectId in panel.objects) {
