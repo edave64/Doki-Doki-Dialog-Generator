@@ -118,7 +118,7 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 		return this.localRenderer === null || this.lastVersion !== this.version;
 	}
 
-	public getRenderRotation(): [number, { x: number; y: number } | undefined] {
+	public getRenderRotation(): [number, { x: number; y: number }] {
 		return [
 			this.flip ? -this.rotation : this.rotation,
 			{
@@ -200,17 +200,10 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 
 		const hitbox = this.getHitbox();
 
-		const centerX = hitbox.x0 + (hitbox.x1 - hitbox.x0) / 2;
-		const centerY = hitbox.y0 + (hitbox.y1 - hitbox.y0) / 2;
-
-		// Rotate the hit backwards, to cancle the rotation of the object
-		const [rotatedHitX, rotatedHitY] = rotateAround(
-			hx,
-			hy,
-			centerX,
-			centerY,
-			this.flip ? this.rotation : -this.rotation
-		);
+		const [angle, anchor] = this.getRenderRotation();
+		const [rotatedHitX, rotatedHitY] = this.rotation
+			? rotateAround(hx, hy, anchor.x, anchor.y, -angle)
+			: [hx, hy];
 
 		const hit =
 			rotatedHitX >= hitbox.x0 &&
@@ -234,7 +227,7 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 	public pixelPerfectHitTest(x: number, y: number): boolean {
 		if (!this.localRenderer) return false;
 		const [angle, anchor] = this.getRenderRotation();
-		const [rotatedHitX, rotatedHitY] = anchor
+		const [rotatedHitX, rotatedHitY] = this.rotation
 			? rotateAround(x, y, anchor.x, anchor.y, -angle)
 			: [x, y];
 
