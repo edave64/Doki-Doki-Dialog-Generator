@@ -236,9 +236,25 @@ export class RenderContext {
 		outline,
 		fill,
 		composition,
-	}: IRPos & IRSize & IOOutline & IOFill & IOComposition) {
+		rotation,
+		rotationAnchor,
+	}: IRPos & IRSize & IOOutline & IOFill & IOComposition & IORotation) {
 		if (this.aborted) throw new RenderAbortedException();
 		this.fsCtx.save();
+
+		if (rotation != null && rotation !== 0) {
+			const rotX = rotationAnchor ? rotationAnchor.x : 0;
+			const rotY = rotationAnchor ? rotationAnchor.y : 0;
+			if (rotationAnchor) {
+				this.fsCtx.translate(rotX, rotY);
+			}
+			//this.fsCtx.fillRect(-10, -1, 21, 3);
+			this.fsCtx.rotate(rotation);
+			if (rotationAnchor) {
+				this.fsCtx.translate(-rotX, -rotY);
+			}
+		}
+
 		this.fsCtx.beginPath();
 		this.fsCtx.rect(x, y, w, h);
 

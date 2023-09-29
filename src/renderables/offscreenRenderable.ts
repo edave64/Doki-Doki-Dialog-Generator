@@ -20,6 +20,14 @@ export enum SelectedState {
 	Both = 0b11,
 }
 
+declare global {
+	interface Window {
+		dddg_dbg_paint_hitboxes: 'none' | 'selected' | 'all';
+	}
+}
+
+window.dddg_dbg_paint_hitboxes = 'none';
+
 export abstract class OffscreenRenderable<Obj extends IObject> {
 	protected localRenderer: Renderer | null = null;
 	private lastVersion: any = null;
@@ -118,7 +126,17 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 		return this.localRenderer === null || this.lastVersion !== this.version;
 	}
 
-	public getRenderRotation(): [number, { x: number; y: number }] {
+	public getHitboxRotation(): [number, { x: number; y: number } | undefined] {
+		return [
+			this.flip ? -this.rotation : this.rotation,
+			{
+				x: this.x,
+				y: this.y + this.height / 2,
+			},
+		];
+	}
+
+	public getRenderRotation(): [number, { x: number; y: number } | undefined] {
 		return [
 			this.flip ? -this.rotation : this.rotation,
 			{
@@ -146,6 +164,29 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 		this.lastVersion = this.version;
 
 		if (!this.renderable) return;
+
+		//if (this.obj.type === 'choice') {
+		if (
+			window.dddg_dbg_paint_hitboxes == 'all' ||
+			(window.dddg_dbg_paint_hitboxes == 'selected' &&
+				selected !== SelectedState.None)
+		) {
+			const hitbox = this.getHitbox();
+			const [angle, anchor] = this.getHitboxRotation();
+			rx.drawRect({
+				h: hitbox.y1 - hitbox.y0,
+				w: hitbox.x1 - hitbox.x0,
+				x: hitbox.x0,
+				y: hitbox.y0,
+				rotation: angle,
+				rotationAnchor: anchor,
+				outline: {
+					style: '#000',
+					width: 2,
+				},
+			});
+		}
+		//}
 
 		const [rotation, rotationAnchor] = this.getRenderRotation();
 
@@ -180,7 +221,7 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 				rotation,
 				rotationAnchor,
 				flip: this.flip,
-				shadow: selected && rx.preview ? shadow : undefined,
+				shadow: shadow && rx.preview ? shadow : undefined,
 				composite: this.composite,
 				filters: this.filters,
 			});
@@ -200,8 +241,8 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 
 		const hitbox = this.getHitbox();
 
-		const [angle, anchor] = this.getRenderRotation();
-		const [rotatedHitX, rotatedHitY] = this.rotation
+		const [angle, anchor] = this.getHitboxRotation();
+		const [rotatedHitX, rotatedHitY] = anchor
 			? rotateAround(hx, hy, anchor.x, anchor.y, -angle)
 			: [hx, hy];
 
@@ -210,6 +251,10 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 			rotatedHitX <= hitbox.x1 &&
 			rotatedHitY >= hitbox.y0 &&
 			rotatedHitY <= hitbox.y1;
+
+		if (this.obj.type === 'choice') {
+			console.log('Simple hitbox test: ', hit);
+		}
 
 		if (!hit) return false;
 		// We can't do pixel perfect detection and we have a hitbox hit -> true
@@ -227,7 +272,7 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 	public pixelPerfectHitTest(x: number, y: number): boolean {
 		if (!this.localRenderer) return false;
 		const [angle, anchor] = this.getRenderRotation();
-		const [rotatedHitX, rotatedHitY] = this.rotation
+		const [rotatedHitX, rotatedHitY] = anchor
 			? rotateAround(x, y, anchor.x, anchor.y, -angle)
 			: [x, y];
 
@@ -250,6 +295,10 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 				Math.round(flippedX * scaleX),
 				Math.round(innerY * scaleY)
 			);
+
+			if (this.obj.type === 'choice') {
+				console.log('pixel test: ', data[3] !== 0);
+			}
 			return data[3] !== 0;
 		}
 		return false;

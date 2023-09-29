@@ -35,6 +35,17 @@ export abstract class ScalingRenderable<
 		return [0, undefined];
 	}
 
+	public getHitboxRotation(): [number, { x: number; y: number } | undefined] {
+		const hitbox = this.getHitbox();
+		return [
+			this.flip ? -this.rotation : this.rotation,
+			{
+				x: hitbox.x0 + (hitbox.x1 - hitbox.x0) / 2,
+				y: hitbox.y0 + (hitbox.y1 - hitbox.y0) / 2,
+			},
+		];
+	}
+
 	public needsRedraw(): boolean {
 		if (super.needsRedraw()) return true;
 		return (
