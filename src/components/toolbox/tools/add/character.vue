@@ -5,9 +5,9 @@
 		v-for="character of characters"
 		:key="character.id"
 		:title="character.label"
-		@click.left="onChosen(character.id.toLowerCase())"
-		@keypress.enter.prevent.stop="onChosen(character.id.toLowerCase())"
-		@keypress.space.prevent.stop="onChosen(character.id.toLowerCase())"
+		@click.left="onChosen(character.id)"
+		@keypress.enter.prevent.stop="onChosen(character.id)"
+		@keypress.space.prevent.stop="onChosen(character.id)"
 	>
 		<img :src="assetPath(character)" :alt="character.label" />
 	</div>
