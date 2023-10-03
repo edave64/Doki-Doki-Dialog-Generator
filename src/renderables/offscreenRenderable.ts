@@ -137,13 +137,7 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 	}
 
 	public getRenderRotation(): [number, { x: number; y: number } | undefined] {
-		return [
-			this.flip ? -this.rotation : this.rotation,
-			{
-				x: this.x,
-				y: this.y + this.height / 2,
-			},
-		];
+		return this.getHitboxRotation();
 	}
 
 	public async render(
@@ -165,7 +159,6 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 
 		if (!this.renderable) return;
 
-		//if (this.obj.type === 'choice') {
 		if (
 			window.dddg_dbg_paint_hitboxes == 'all' ||
 			(window.dddg_dbg_paint_hitboxes == 'selected' &&
@@ -186,7 +179,6 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 				},
 			});
 		}
-		//}
 
 		const [rotation, rotationAnchor] = this.getRenderRotation();
 

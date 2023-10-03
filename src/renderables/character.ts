@@ -79,7 +79,6 @@ export class Character extends AssetListRenderable<ICharacter> {
 		return drawAssetsUnloaded;
 	}
 
-	protected scaleable = true;
 	protected get canvasHeight(): number {
 		const pose = getPose(this.data, this.obj) as Pose<IAssetSwitch>;
 		return pose.size[1];
