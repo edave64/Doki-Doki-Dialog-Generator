@@ -26,7 +26,7 @@ export abstract class AssetListRenderable<
 		return this.height * this.objZoom;
 	}
 	protected get canvasDrawPosX(): number {
-		return this.x - this.width / 2 + (this.height - this.canvasDrawHeight) / 2;
+		return this.x - this.width / 2 + (this.width - this.canvasDrawWidth) / 2;
 	}
 	protected get canvasDrawPosY(): number {
 		return this.y + (this.height - this.canvasDrawHeight);
