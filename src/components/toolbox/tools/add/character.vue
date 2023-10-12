@@ -31,6 +31,7 @@ import { DeepReadonly } from 'ts-essentials';
 import { transaction } from '@/plugins/vuex-history';
 
 export default defineComponent({
+	emits: ['show-dialog'],
 	components: { DButton },
 	computed: {
 		characters(): DeepReadonly<Array<Character<IAssetSwitch>>> {

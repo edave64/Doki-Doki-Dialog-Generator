@@ -16,6 +16,7 @@ export interface IPoem extends IObject {
 	font: number;
 	text: string;
 	autoWrap: boolean;
+	consoleColor: string;
 }
 
 export const poemMutations: MutationTree<IPanels> = {
@@ -65,6 +66,7 @@ export const poemActions: ActionTree<IPanels, IRootState> = {
 				enlargeWhenTalking: true,
 				nameboxWidth: null,
 				zoom: 1,
+				consoleColor: constants.Poem.consoleBackgroundColor,
 			} as IPoem,
 		} as ICreateObjectMutation);
 		return id;
@@ -93,6 +95,7 @@ export const poemActions: ActionTree<IPanels, IRootState> = {
 				font: constants.Poem.defaultConsoleStyle,
 				text: '> _\n  \n  Console command\n  Click here to edit',
 				autoWrap: true,
+				consoleColor: constants.Poem.consoleBackgroundColor,
 			} as IPoem,
 		} as ICreateObjectMutation);
 		return id;

@@ -21,7 +21,7 @@ export const defaultPoemHeight = 1080;
 export const backgroundScale = sdCharacterScaleFactor;
 
 //#region Console style
-export const consoleBackgroundColor = 'rgba(51,51,51,0.75)';
+export const consoleBackgroundColor = '#333333bf';
 export const consoleWidth = 720;
 export const consoleHeight = 270;
 export const defaultConsoleBackground = 3;

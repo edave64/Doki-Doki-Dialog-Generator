@@ -45,7 +45,9 @@ export class Poem extends ScalingRenderable<IPoem> {
 				y: this.obj.y - h / 2,
 				h,
 				w,
-				fill: { style: constants.Poem.consoleBackgroundColor },
+				fill: {
+					style: this.obj.consoleColor || constants.Poem.consoleBackgroundColor,
+				},
 			});
 			padding = consolePadding;
 			topPadding = consoleTopPadding;

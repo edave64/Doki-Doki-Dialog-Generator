@@ -6,6 +6,7 @@
 		:object="object"
 		:title="object.subType === 'poem' ? 'Poem' : 'Console'"
 		:textHandler="textHandler"
+		:colorHandler="colorHandler"
 	>
 		<div id="poem_text">
 			<label for="poem_text">Text:</label>
@@ -29,15 +30,29 @@
 				</option>
 			</select>
 		</template>
+		<template v-else>
+			<button
+				id="console_color"
+				class="color-button"
+				:style="{ background: object.consoleColor }"
+				@click="colorSelect = 'base'"
+			>
+				Color
+			</button>
+		</template>
 	</object-tool>
 </template>
 
 <script lang="ts">
 import Toggle from '@/components/toggle.vue';
 import { IPanel } from '@/store/panels';
-import { DeepReadonly } from 'ts-essentials';
+import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
 import { PanelMixin } from './panelMixin';
-import { IPoem, PoemSimpleProperties } from '@/store/objectTypes/poem';
+import {
+	IPoem,
+	ISetTextBoxProperty,
+	PoemSimpleProperties,
+} from '@/store/objectTypes/poem';
 import {
 	poemBackgrounds,
 	poemTextStyles,
@@ -46,6 +61,7 @@ import {
 import { defineComponent } from 'vue';
 import { genericSimpleSetter } from '@/util/simpleSettable';
 import ObjectTool, { Handler } from './object-tool.vue';
+import { transaction } from '@/plugins/vuex-history';
 
 const setableP = genericSimpleSetter<IPoem, PoemSimpleProperties>(
 	'panels/setPoemProperty'
@@ -59,6 +75,7 @@ export default defineComponent({
 	},
 	data: () => ({
 		textEditor: false,
+		colorSelect: '' as '' | 'base',
 	}),
 	computed: {
 		currentPanel(): DeepReadonly<IPanel> {
@@ -89,6 +106,38 @@ export default defineComponent({
 				},
 				leave: () => {
 					this.textEditor = false;
+				},
+			};
+		},
+		colorHandler(): Handler | undefined {
+			if (!this.colorSelect) return undefined;
+			return {
+				title: 'Color',
+				get: () => {
+					switch (this.colorSelect) {
+						case '':
+							return '#000000';
+						case 'base':
+							return this.object.consoleColor;
+						default:
+							throw new UnreachableCaseError(this.colorSelect);
+					}
+				},
+				set: (color: string) => {
+					transaction(() => {
+						const panelId = this.currentPanel.id;
+						const id = this.object.id;
+						if (color === undefined) return;
+						this.$store.commit('panels/setPoemProperty', {
+							key: 'consoleColor',
+							panelId,
+							id,
+							value: color,
+						} as ISetTextBoxProperty<'consoleColor'>);
+					});
+				},
+				leave: () => {
+					this.colorSelect = '';
 				},
 			};
 		},
