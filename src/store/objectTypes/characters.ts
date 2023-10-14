@@ -8,7 +8,6 @@ import {
 } from '@/store/objects';
 import { ActionContext, ActionTree, Commit, MutationTree, Store } from 'vuex';
 import { arraySeeker } from '@/models/seekers';
-import { IHistoryOptions } from '@/plugins/vuex-history';
 import {
 	Character,
 	ContentPack,
@@ -414,7 +413,7 @@ export async function fixContentPackRemovalFromCharacter(
 	const newPosePositions: ICharacter['posePositions'] = {};
 
 	for (const key in newPose.positions) {
-		if (!newPose.positions.hasOwnProperty(key)) continue;
+		if (!Object.prototype.hasOwnProperty.call(newPose.positions, key)) continue;
 		const newPosition = newPose.positions[key];
 
 		// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
@@ -456,11 +455,12 @@ export async function fixContentPackRemovalFromCharacter(
 	commitPoseAndPositionChanges(context.commit, obj, poseAndPositionChange);
 }
 
-export const propertyOptions: IHistoryOptions = {
+export const propertyOptions = {
 	mutations: {
 		setPosePosition: {
-			combinable: (oldMut, newMut) => oldMut.payload.id === newMut.payload.id,
-			combinator: (oldMut, newMut) => ({
+			combinable: (oldMut: any, newMut: any) =>
+				oldMut.payload.id === newMut.payload.id,
+			combinator: (oldMut: any, newMut: any) => ({
 				type: newMut.type,
 				payload: {
 					id: newMut.payload.id,

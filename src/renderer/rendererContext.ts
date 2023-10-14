@@ -310,8 +310,12 @@ export class RenderContext {
 	}
 
 	public async customTransform(
-		transform: (transformContext: CanvasRenderingContext2D) => Promise<void>,
-		render: (rx: RenderContext) => Promise<void>
+		transform:
+			| ((transformContext: CanvasRenderingContext2D) => Promise<void>)
+			| ((transformContext: CanvasRenderingContext2D) => void),
+		render:
+			| ((rx: RenderContext) => Promise<void>)
+			| ((rx: RenderContext) => void)
 	) {
 		this.fsCtx.save();
 		await transform(this.fsCtx);

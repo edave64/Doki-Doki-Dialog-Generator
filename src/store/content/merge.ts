@@ -139,8 +139,8 @@ function mergeStyleClasses<A>(
 	const ret: StyleClasses<A> = { ...x };
 
 	for (const classKey in y) {
-		if (!y.hasOwnProperty(classKey)) continue;
-		if (ret.hasOwnProperty(classKey)) continue;
+		if (!Object.prototype.hasOwnProperty.call(y, classKey)) continue;
+		if (Object.prototype.hasOwnProperty.call(ret, classKey)) continue;
 		ret[classKey] = y[classKey];
 	}
 
@@ -178,7 +178,7 @@ function mergeHeadCollections<A>(
 	const ret = { ...x };
 
 	for (const headGroupKey in y) {
-		if (!y.hasOwnProperty(headGroupKey)) continue;
+		if (!Object.prototype.hasOwnProperty.call(y, headGroupKey)) continue;
 		const headGroup = y[headGroupKey];
 		// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 		if (ret[headGroupKey]) {

@@ -58,7 +58,7 @@ export class Character extends AssetListRenderable<ICharacter> {
 						assets: renderCommand.images,
 					});
 					break;
-				case 'pose-part':
+				case 'pose-part': {
 					const posePosition = pose.positions[renderCommand.part];
 					// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 					if (!posePosition || posePosition.length === 0) {
@@ -74,6 +74,7 @@ export class Character extends AssetListRenderable<ICharacter> {
 						assets: partAssets,
 					});
 					break;
+				}
 			}
 		}
 		return drawAssetsUnloaded;

@@ -2,7 +2,7 @@ import { CompositeModes, RenderContext } from '@/renderer/rendererContext';
 import { getAAsset } from '@/asset-manager';
 import { IAssetSwitch } from '@/store/content';
 import { ScalingModes } from '@/store/panels';
-import { DeepReadonly } from 'ts-essentials';
+import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
 import { SpriteFilter } from '@/store/sprite_options';
 import getConstants from '@/constants';
 
@@ -30,8 +30,9 @@ export class Background implements IBackgroundRenderer {
 			let y = 0;
 			let w = image.width;
 			let h = image.height;
+			const scale = this.scale;
 
-			switch (this.scale) {
+			switch (scale) {
 				case ScalingModes.None:
 					x = screenWidth / 2 - w / 2;
 					y = screenHeight / 2 - h / 2;
@@ -40,7 +41,7 @@ export class Background implements IBackgroundRenderer {
 					w = screenWidth;
 					h = screenHeight;
 					break;
-				case ScalingModes.Cover:
+				case ScalingModes.Cover: {
 					const ratio = w / h;
 					const screenRatio = screenWidth / screenHeight;
 
@@ -54,6 +55,10 @@ export class Background implements IBackgroundRenderer {
 
 					x = screenWidth / 2 - w / 2;
 					y = screenHeight / 2 - h / 2;
+					break;
+				}
+				default:
+					throw new UnreachableCaseError(scale);
 			}
 
 			rx.drawImage({
@@ -75,7 +80,7 @@ export const color = {
 	name: 'Static color',
 	color: '#000000',
 
-	render(rx: RenderContext): void {
+	render(rx: RenderContext): Promise<void> {
 		const { screenWidth, screenHeight } = getConstants().Base;
 		rx.drawRect({
 			x: 0,
@@ -84,6 +89,7 @@ export const color = {
 			h: screenHeight,
 			fill: { style: this.color },
 		});
+		return Promise.resolve();
 	},
 };
 

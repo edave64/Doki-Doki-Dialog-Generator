@@ -1,10 +1,9 @@
-import { IHistoryOptions } from '@/plugins/vuex-history';
 import SpriteHistoryOptions from './objectTypes/sprite_history_properties';
 
 export default {
 	mutations: {
 		'panels/*': {
-			combinable: (oldMut, newMut) =>
+			combinable: (oldMut: any, newMut: any) =>
 				oldMut.type === newMut.type &&
 				oldMut.payload.id === newMut.payload.id &&
 				oldMut.payload.panelId === newMut.payload.panelId &&
@@ -18,4 +17,4 @@ export default {
 		},
 		...SpriteHistoryOptions.mutations,
 	},
-} as IHistoryOptions;
+};

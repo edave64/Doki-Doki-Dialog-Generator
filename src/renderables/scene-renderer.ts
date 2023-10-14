@@ -162,10 +162,11 @@ export class SceneRenderer {
 					case 'sprite':
 						renderObject = new Sprite(obj as DeepReadonly<ISprite>);
 						break;
-					case 'character':
+					case 'character': {
 						const char = obj as DeepReadonly<ICharacter>;
 						renderObject = new Character(char, getData(this.store, char));
 						break;
+					}
 					case 'textBox':
 						renderObject = new TextBox(obj as DeepReadonly<ITextBox>);
 						break;
@@ -197,7 +198,7 @@ export class SceneRenderer {
 			case 'buildin.static-color':
 				color.color = panel.background.color;
 				return color;
-			default:
+			default: {
 				const lookup = this.store.getters[
 					'content/getBackgrounds'
 				] as BackgroundLookup;
@@ -212,6 +213,7 @@ export class SceneRenderer {
 					panel.background.composite,
 					panel.background.filters
 				);
+			}
 		}
 	}
 

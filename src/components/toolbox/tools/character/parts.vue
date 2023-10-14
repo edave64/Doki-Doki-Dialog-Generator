@@ -146,7 +146,7 @@ export default defineComponent({
 			const data = this.charData;
 			const currentPose = getPose(data, this.character);
 			switch (this.part) {
-				case 'head':
+				case 'head': {
 					const activeHeadTypeIdx = this.character.posePositions.headType || 0;
 					const activeHeadIdx = this.character.posePositions.head || 0;
 					for (
@@ -170,6 +170,7 @@ export default defineComponent({
 						}
 					}
 					return ret;
+				}
 				case 'pose':
 					// eslint-disable-next-line no-case-declarations
 					const currentStyle =
@@ -252,7 +253,7 @@ export default defineComponent({
 							part[0].map((x) => ({ asset: x, offset: command.offset }))
 						);
 						break;
-					case 'head':
+					case 'head': {
 						const heads = data.heads[pose.compatibleHeads[0]];
 						if (pose.compatibleHeads.length === 0) break;
 						const head = heads.variants[0];
@@ -263,6 +264,7 @@ export default defineComponent({
 							}))
 						);
 						break;
+					}
 					case 'image':
 						images = images.concat(
 							command.images.map((x) => ({ asset: x, offset: command.offset }))

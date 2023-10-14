@@ -168,6 +168,7 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 			drawDot(0, dotPatternSize);
 			drawDot(dotPatternSize, dotPatternSize);
 			drawDot(dotPatternSize / 2, dotPatternSize / 2);
+			return Promise.resolve();
 		}, true);
 		await rx.customTransform(
 			(ctx) => {
