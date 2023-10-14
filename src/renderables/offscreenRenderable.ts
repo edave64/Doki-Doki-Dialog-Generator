@@ -200,7 +200,7 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 		}
 
 		if (skipLocal) {
-			await rx.customTransform(async (ctx) => {
+			await rx.customTransform((ctx) => {
 				ctx.translate(this.canvasDrawPosX, this.canvasDrawPosY);
 			}, this.renderLocal.bind(this));
 		} else {

@@ -177,8 +177,8 @@ export default defineComponent({
 				return this.$store.state.ui.lqRendering;
 			},
 			set(lqRendering: boolean) {
-				transaction(async () => {
-					await this.$store.commit('ui/setLqRendering', lqRendering);
+				transaction(() => {
+					this.$store.commit('ui/setLqRendering', lqRendering);
 				});
 				this.saveSettings();
 			},
@@ -188,8 +188,8 @@ export default defineComponent({
 				return !!this.$store.state.ui.nsfw;
 			},
 			set(value: boolean) {
-				transaction(async () => {
-					await this.$store.commit('ui/setNsfw', value);
+				transaction(() => {
+					this.$store.commit('ui/setNsfw', value);
 					this.saveSettings();
 				});
 			},
@@ -199,8 +199,8 @@ export default defineComponent({
 				return !!this.$store.state.ui.defaultCharacterTalkingZoom;
 			},
 			set(value: boolean) {
-				transaction(async () => {
-					await this.$store.commit('ui/setDefaultCharacterTalkingZoom', value);
+				transaction(() => {
+					this.$store.commit('ui/setDefaultCharacterTalkingZoom', value);
 					this.saveSettings();
 				});
 			},
@@ -210,8 +210,8 @@ export default defineComponent({
 				return this.$store.state.ui.useDarkTheme;
 			},
 			set(value: boolean | null) {
-				transaction(async () => {
-					await this.$store.commit('ui/setDarkTheme', value);
+				transaction(() => {
+					this.$store.commit('ui/setDarkTheme', value);
 					this.saveSettings();
 				});
 			},

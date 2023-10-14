@@ -128,7 +128,7 @@ export class Browser implements IEnvironment {
 			}
 		});
 	}
-	async storeSaveFile(saveBlob: Blob, defaultName: string): Promise<void> {
+	storeSaveFile(saveBlob: Blob, defaultName: string): Promise<void> {
 		const a = document.createElement('a');
 		const url = URL.createObjectURL(saveBlob);
 		a.setAttribute('download', defaultName);
@@ -137,6 +137,7 @@ export class Browser implements IEnvironment {
 		a.click();
 		document.body.removeChild(a);
 		URL.revokeObjectURL(url);
+		return Promise.resolve();
 	}
 
 	public async loadGameMode(): Promise<void> {

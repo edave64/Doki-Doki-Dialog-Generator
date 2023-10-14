@@ -35,7 +35,7 @@ export default createStore({
 	actions: {
 		async removePacks({ dispatch, commit }, { packs }: IRemovePacksAction) {
 			commit('setUnsafe', true);
-			dispatch('content/removeContentPacks', packs);
+			await dispatch('content/removeContentPacks', packs);
 			commit('setUnsafe', false);
 		},
 		async getSave({ state }, compact: boolean) {

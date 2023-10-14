@@ -4,7 +4,6 @@ import { IAssetSwitch } from './store/content';
 import environment from './environments/environment';
 import { IAsset } from './render-utils/assets/asset';
 import { ImageAsset } from './render-utils/assets/image-asset';
-import { MissingAsset } from './render-utils/assets/missing-asset';
 
 let webpSupportPromise: Promise<boolean> | undefined;
 
@@ -158,7 +157,7 @@ export function registerAssetWithURL(asset: string, url: string) {
 async function requestAssetByUrl(url: string): Promise<IAsset> {
 	const isCustom = !!customUrl[url];
 	if (isCustom) url = customUrl[url];
-	return (async (): Promise<IAsset> => {
+	return await (async (): Promise<IAsset> => {
 		try {
 			return await imagePromise(url);
 		} catch (e) {
@@ -181,7 +180,7 @@ async function requestAssetByUrl(url: string): Promise<IAsset> {
 }
 
 function imagePromise(url: string): Promise<IAsset> {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve, _reject) => {
 		const img = new Image();
 		img.addEventListener('load', () => {
 			resolve(new ImageAsset(img));

@@ -16,7 +16,7 @@ export class Choice extends ScalingRenderable<IChoices> {
 	private choiceRenderers: TextRenderer[] = [];
 
 	protected async draw(rx: RenderContext): Promise<void> {
-		await this.updateChoiceBounds();
+		this.updateChoiceBounds();
 
 		const constants = getConstants();
 		const w = this.obj.width;
@@ -61,7 +61,7 @@ export class Choice extends ScalingRenderable<IChoices> {
 		}
 	}
 
-	private async updateChoiceBounds() {
+	private updateChoiceBounds() {
 		const constants = getConstants();
 		this.choiceRenderers = this.obj.choices.map(
 			(choice) =>

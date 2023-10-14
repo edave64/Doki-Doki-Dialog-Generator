@@ -165,7 +165,6 @@ import {
 	IDuplicatePanelAction,
 	IMovePanelAction,
 	IPanel,
-	IPanels,
 	ISetCurrentPanelMutation,
 	ISetPanelPreviewMutation,
 } from '@/store/panels';
@@ -362,7 +361,7 @@ export default defineComponent({
 			const sizes = await this.renderObjects(
 				distribution,
 				false,
-				async (imageIdx: number, canvasEle: HTMLCanvasElement) => {
+				(imageIdx: number, canvasEle: HTMLCanvasElement) => {
 					return new Promise<number>((resolve, reject) => {
 						canvasEle.toBlob(
 							(blob) => {
@@ -533,7 +532,7 @@ export default defineComponent({
 			this.moveFocusToActivePanel();
 		},
 		updateCurrentPanel(panelId: IPanel['id']) {
-			transaction(async () => {
+			transaction(() => {
 				this.$store.commit('panels/setCurrentPanel', {
 					panelId,
 				} as ISetCurrentPanelMutation);

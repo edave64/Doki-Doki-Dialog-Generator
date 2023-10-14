@@ -157,8 +157,8 @@ export default defineComponent({
 				],
 			} as any;
 
-			transaction(() => {
-				this.$store.dispatch('content/replaceContentPack', {
+			transaction(async () => {
+				await this.$store.dispatch('content/replaceContentPack', {
 					contentPack: newPack,
 					processed: true,
 				} as ReplaceContentPackAction);

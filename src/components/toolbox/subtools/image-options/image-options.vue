@@ -491,8 +491,8 @@ export default defineComponent({
 			}
 		},
 		addFilter() {
-			transaction(() => {
-				this.$store.dispatch(this.objectTypeScope('addFilter'), {
+			transaction(async () => {
+				await this.$store.dispatch(this.objectTypeScope('addFilter'), {
 					id: this.id,
 					panelId: this.panelId,
 					type: this.addEffectSelection,
@@ -520,8 +520,8 @@ export default defineComponent({
 			});
 		},
 		moveFilter(moveBy: number) {
-			transaction(() => {
-				this.$store.dispatch(this.objectTypeScope('moveFilter'), {
+			transaction(async () => {
+				await this.$store.dispatch(this.objectTypeScope('moveFilter'), {
 					id: this.id,
 					panelId: this.panelId,
 					idx: this.currentFilterIdx,
@@ -532,8 +532,8 @@ export default defineComponent({
 			});
 		},
 		setValue(value: Omit<ISetFilterAction, 'id' | 'panelId' | 'idx'>) {
-			transaction(() => {
-				this.$store.dispatch(this.objectTypeScope('setFilter'), {
+			transaction(async () => {
+				await this.$store.dispatch(this.objectTypeScope('setFilter'), {
 					id: this.id,
 					panelId: this.panelId,
 					idx: this.currentFilterIdx,

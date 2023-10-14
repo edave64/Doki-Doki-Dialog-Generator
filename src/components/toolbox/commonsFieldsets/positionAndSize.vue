@@ -156,8 +156,8 @@ export default defineComponent({
 				return (this.obj! as ICharacter).preserveRatio;
 			},
 			set(preserveRatio: boolean) {
-				transaction(() => {
-					this.$store.dispatch('panels/setPreserveRatio', {
+				transaction(async () => {
+					await this.$store.dispatch('panels/setPreserveRatio', {
 						id: this.obj!.id,
 						panelId: this.obj!.panelId,
 						preserveRatio,
@@ -170,8 +170,8 @@ export default defineComponent({
 				return closestCharacterSlot(this.obj!.x);
 			},
 			set(value: number) {
-				transaction(() => {
-					this.$store.dispatch('panels/setPosition', {
+				transaction(async () => {
+					await this.$store.dispatch('panels/setPosition', {
 						id: this.obj!.id,
 						panelId: this.obj!.panelId,
 						x: getConstants().Base.characterPositions[value],
@@ -215,8 +215,8 @@ export default defineComponent({
 				return this.obj!.height;
 			},
 			set(height: number) {
-				transaction(() => {
-					this.$store.dispatch('panels/setHeight', {
+				transaction(async () => {
+					await this.$store.dispatch('panels/setHeight', {
 						id: this.obj!.id,
 						panelId: this.obj!.panelId,
 						height,
@@ -229,8 +229,8 @@ export default defineComponent({
 				return this.obj!.width;
 			},
 			set(width: number) {
-				transaction(() => {
-					this.$store.dispatch('panels/setWidth', {
+				transaction(async () => {
+					await this.$store.dispatch('panels/setWidth', {
 						id: this.obj!.id,
 						panelId: this.obj!.panelId,
 						width,

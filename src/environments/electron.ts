@@ -85,12 +85,12 @@ export class Electron implements IEnvironment {
 				this.invalidateInstalledBGs();
 			}
 		);
-		this.electron.ipcRenderer.on('push-message', async (message: string) => {
+		this.electron.ipcRenderer.on('push-message', (message: string) => {
 			eventBus.fire(new ShowMessageEvent(message));
 		});
 		this.electron.ipcRenderer.on(
 			'config.downloadFolderUpdate',
-			async (location: string) => {
+			(location: string) => {
 				this.state.downloadLocation = location;
 			}
 		);
@@ -119,7 +119,7 @@ export class Electron implements IEnvironment {
 		);
 		this.electron.ipcRenderer.onConversation(
 			'auto-load.changed',
-			async (packIds: string[]) => {
+			(packIds: string[]) => {
 				this.state.autoAdd = packIds;
 			}
 		);
@@ -181,7 +181,7 @@ export class Electron implements IEnvironment {
 		);
 		this.electron.ipcRenderer.send('init-dddg');
 	}
-	async storeSaveFile(saveBlob: Blob, defaultName: string): Promise<void> {
+	storeSaveFile(saveBlob: Blob, defaultName: string): Promise<void> {
 		const a = document.createElement('a');
 		const url = URL.createObjectURL(saveBlob);
 		a.setAttribute('download', defaultName);
@@ -190,6 +190,7 @@ export class Electron implements IEnvironment {
 		a.click();
 		document.body.removeChild(a);
 		URL.revokeObjectURL(url);
+		return Promise.resolve();
 	}
 
 	public updateDownloadFolder(): void {

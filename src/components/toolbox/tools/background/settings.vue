@@ -138,8 +138,8 @@ export default defineComponent({
 	},
 	methods: {
 		seekVariant(delta: 1 | -1) {
-			transaction(() => {
-				this.$store.dispatch('panels/seekBackgroundVariant', {
+			transaction(async () => {
+				await this.$store.dispatch('panels/seekBackgroundVariant', {
 					delta,
 					panelId: this.$store.state.panels.currentPanel,
 				} as ISeekVariantAction);

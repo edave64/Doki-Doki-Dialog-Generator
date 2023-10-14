@@ -111,8 +111,8 @@ export default defineComponent({
 			this.currentIdx = idx;
 		},
 		addChoice(): void {
-			transaction(() => {
-				this.$store.dispatch('panels/addChoice', {
+			transaction(async () => {
+				await this.$store.dispatch('panels/addChoice', {
 					id: this.object.id,
 					panelId: this.object.panelId,
 					text: '',
@@ -120,14 +120,14 @@ export default defineComponent({
 			});
 		},
 		removeChoice(): void {
-			transaction(() => {
+			transaction(async () => {
 				if (
 					this.currentIdx === this.object.choices.length - 1 &&
 					this.currentIdx > 0
 				) {
 					this.select(this.currentIdx - 1);
 				}
-				this.$store.dispatch('panels/removeChoice', {
+				await this.$store.dispatch('panels/removeChoice', {
 					id: this.object.id,
 					panelId: this.object.panelId,
 					choiceIdx: this.currentIdx,

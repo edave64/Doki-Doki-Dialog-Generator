@@ -1,7 +1,7 @@
 import { Browser } from './browser';
 
 export class OldEdge extends Browser {
-	public async saveToFile(
+	public saveToFile(
 		downloadCanvas: HTMLCanvasElement,
 		filename: string,
 		format: string = 'image/png',
@@ -16,6 +16,6 @@ export class OldEdge extends Browser {
 
 		// IE-specific code
 		(window.navigator as any).msSaveBlob(blob, filename);
-		return url;
+		return Promise.resolve(url);
 	}
 }

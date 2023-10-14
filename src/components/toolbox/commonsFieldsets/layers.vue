@@ -57,8 +57,8 @@ export default defineComponent({
 	},
 	methods: {
 		shiftLayer(delta: number) {
-			transaction(() => {
-				this.$store.dispatch('panels/shiftLayer', {
+			transaction(async () => {
+				await this.$store.dispatch('panels/shiftLayer', {
 					id: this.object!.id,
 					panelId: this.object!.panelId,
 					delta,

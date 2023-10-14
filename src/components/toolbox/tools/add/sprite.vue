@@ -78,7 +78,7 @@ import { DeepReadonly } from 'ts-essentials';
 import { PanelMixin } from '../panelMixin';
 
 import MissingImage from '@/assets/missing_image.svg';
-import { transaction } from '@/plugins/vuex-history';
+import { TransactionLayer, transaction } from '@/plugins/vuex-history';
 
 const uploadedSpritesPackDefault: ContentPack<string> = {
 	packId: 'dddg.uploads.sprites',
@@ -158,7 +158,7 @@ export default defineComponent({
 				this.addCustomSpriteFile(file);
 			}
 		},
-		async onMissingSpriteFileUpload(e: Event) {
+		async onMissingSpriteFileUpload(_e: Event) {
 			const uploadInput = this.$refs.missingSpriteUpload as HTMLInputElement;
 			const spriteName = (uploadInput as any).uploadingSprite;
 			if (!uploadInput.files) return;
@@ -180,9 +180,7 @@ export default defineComponent({
 			const url = prompt('Enter the URL of the image');
 			if (url == null) return;
 			const lastSegment = url.split('/').slice(-1)[0];
-			await transaction(async () => {
-				await this.addNewCustomSprite(lastSegment, url);
-			});
+			await this.addNewCustomSprite(lastSegment, url);
 		},
 		async addSpriteToScene(sprite: ISprite) {
 			await transaction(async () => {
@@ -201,16 +199,20 @@ export default defineComponent({
 			missingSpriteUpload.click();
 		},
 		async addCustomSpriteFile(file: File) {
-			await transaction(async () => {
+			await transaction(async (subTransaction: TransactionLayer) => {
 				const url = URL.createObjectURL(file);
 				const assetUrl: string = await this.$store.dispatch('uploadUrls/add', {
 					name: file.name,
 					url,
 				});
-				await this.addNewCustomSprite(file.name, assetUrl);
+				await this.addNewCustomSprite(file.name, assetUrl, subTransaction);
 			});
 		},
-		async addNewCustomSprite(label: string, url: string) {
+		async addNewCustomSprite(
+			label: string,
+			url: string,
+			subTransaction: TransactionLayer = transaction
+		) {
 			const old =
 				this.$store.state.content.contentPacks.find(
 					(x) => x.packId === uploadedSpritesPackDefault.packId
@@ -228,10 +230,12 @@ export default defineComponent({
 					},
 				],
 			};
-			await this.$store.dispatch('content/replaceContentPack', {
-				contentPack: newPackVersion,
-				processed: true,
-			} as ReplaceContentPackAction);
+			await subTransaction(async () => {
+				await this.$store.dispatch('content/replaceContentPack', {
+					contentPack: newPackVersion,
+					processed: true,
+				} as ReplaceContentPackAction);
+			});
 		},
 		openSpritesFolder() {
 			environment.openFolder('sprites');

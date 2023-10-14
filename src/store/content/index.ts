@@ -122,7 +122,7 @@ export default {
 				urls = [urls];
 			}
 			const contentPacks = await Promise.all(
-				urls.map(async (url) => loadContentPack(url))
+				urls.map(async (url) => await loadContentPack(url))
 			);
 
 			const convertedPacks = await Promise.all(

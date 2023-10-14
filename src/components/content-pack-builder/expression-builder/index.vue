@@ -307,7 +307,7 @@ export default defineComponent({
 			}
 		},
 
-		async addByUpload(): Promise<void> {
+		addByUpload(): void {
 			const uploadInput = this.$refs.upload as HTMLInputElement;
 			if (!uploadInput.files) return;
 			for (const file of uploadInput.files) {
@@ -517,8 +517,8 @@ export default defineComponent({
 				]);
 			}
 
-			await transaction(() => {
-				this.$store.dispatch('content/replaceContentPack', {
+			await transaction(async () => {
+				await this.$store.dispatch('content/replaceContentPack', {
 					contentPack: newPackVersion,
 					processed: true,
 				} as ReplaceContentPackAction);

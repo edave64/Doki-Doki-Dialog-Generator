@@ -8,11 +8,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import DButton from '@/components/ui/d-button.vue';
 import { transaction } from '@/plugins/vuex-history';
 
 export default defineComponent({
-	components: { DButton },
 	methods: {
 		async addTextBox() {
 			return await this.createUiElement('createTextBox');
@@ -30,7 +28,7 @@ export default defineComponent({
 			return await this.createUiElement('createConsole');
 		},
 		async createUiElement(messageName: string): Promise<void> {
-			transaction(async () => {
+			await transaction(async () => {
 				await this.$store.dispatch(`panels/${messageName}`, {
 					panelId: this.$store.state.panels.currentPanel,
 				});

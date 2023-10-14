@@ -57,7 +57,7 @@ export default defineComponent({
 				.missingSpriteUpload as HTMLInputElement;
 			missingSpriteUpload.click();
 		},
-		async onMissingSpriteFileUpload(e: Event) {
+		async onMissingSpriteFileUpload(_e: Event) {
 			const uploadInput = this.$refs.missingSpriteUpload as HTMLInputElement;
 			if (!uploadInput.files) return;
 			if (uploadInput.files.length !== 1) {

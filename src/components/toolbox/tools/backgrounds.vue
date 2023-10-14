@@ -148,7 +148,7 @@ export default defineComponent({
 					name: file.name,
 					url,
 				});
-				this.addNewCustomBackground(file.name, file.name, assetUrl);
+				await this.addNewCustomBackground(file.name, file.name, assetUrl);
 			});
 		},
 		addByUrl() {
@@ -157,7 +157,7 @@ export default defineComponent({
 			const lastSegment = url.split('/').slice(-1)[0];
 			this.addNewCustomBackground(lastSegment, lastSegment, url);
 		},
-		addNewCustomBackground(
+		async addNewCustomBackground(
 			id: Background<IAssetSwitch>['id'],
 			label: string,
 			url: string
@@ -186,8 +186,8 @@ export default defineComponent({
 					},
 				],
 			};
-			transaction(() => {
-				this.$store.dispatch('content/replaceContentPack', {
+			await transaction(async () => {
+				await this.$store.dispatch('content/replaceContentPack', {
 					contentPack: newPackVersion,
 					processed: true,
 				} as ReplaceContentPackAction);

@@ -19,8 +19,8 @@ export default defineComponent({
 
 	methods: {
 		onClick() {
-			transaction(() => {
-				this.$store.dispatch('panels/removeObject', {
+			transaction(async () => {
+				await this.$store.dispatch('panels/removeObject', {
 					panelId: this.obj!.panelId,
 					id: this.obj!.id,
 				} as IRemoveObjectAction);

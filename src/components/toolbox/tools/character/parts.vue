@@ -336,8 +336,8 @@ export default defineComponent({
 			}
 		},
 		setPart(part: ISetPartAction['part'], index: number): void {
-			transaction(() => {
-				this.$store.dispatch('panels/setPart', {
+			transaction(async () => {
+				await this.$store.dispatch('panels/setPart', {
 					id: this.character.id,
 					panelId: this.character.panelId,
 					part,

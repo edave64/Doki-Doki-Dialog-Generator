@@ -13,8 +13,8 @@ export function genericSetable<T extends IObject>() {
 				return this.object[key];
 			},
 			set(this: IThis<T>, val: T[K]): void {
-				transaction(() => {
-					this.$store[action ? 'dispatch' : 'commit'](message, {
+				transaction(async () => {
+					await this.$store[action ? 'dispatch' : 'commit'](message, {
 						panelId: this.object.panelId,
 						id: this.object.id,
 						[key]: val,
@@ -35,7 +35,7 @@ export function genericSimpleSetter<T extends IObject, KT extends keyof T>(
 			},
 			set(this: IThis<T>, value: T[K]): void {
 				transaction(() => {
-					this.$store['commit'](message, {
+					this.$store.commit(message, {
 						panelId: this.object.panelId,
 						id: this.object.id,
 						key,

@@ -215,7 +215,7 @@ export default defineComponent({
 					typeof value === 'string' && value.trim() === ''
 						? null
 						: parseInt(value + '');
-				transaction(async () => {
+				transaction(() => {
 					this.$store.commit('panels/setObjectNameboxWidth', {
 						id: this.object.id,
 						panelId: this.object.panelId,
@@ -229,7 +229,7 @@ export default defineComponent({
 				return this.object.zoom * 100;
 			},
 			set(zoom: number): void {
-				transaction(async () => {
+				transaction(() => {
 					this.$store.commit('panels/setObjectZoom', {
 						id: this.object.id,
 						panelId: this.object.panelId,
@@ -255,7 +255,7 @@ export default defineComponent({
 				return this.object.textboxColor !== null;
 			},
 			set(val: boolean) {
-				transaction(async () => {
+				transaction(() => {
 					this.$store.commit('panels/setTextboxColor', {
 						panelId: this.object.panelId,
 						id: this.object.id,
@@ -283,7 +283,7 @@ export default defineComponent({
 		renameOption(option: 'Apply' | 'Cancel') {
 			this.showRename = false;
 			if (option === 'Apply') {
-				transaction(async () => {
+				transaction(() => {
 					this.$store.commit('panels/setLabel', {
 						panelId: this.object.panelId,
 						id: this.object.id,
@@ -297,7 +297,7 @@ export default defineComponent({
 				title: 'Textbox color',
 				get: () => this.object.textboxColor,
 				set: (color: string) => {
-					transaction(async () => {
+					transaction(() => {
 						this.$store.commit('panels/setTextboxColor', {
 							panelId: this.object.panelId,
 							id: this.object.id,

@@ -233,7 +233,7 @@ export default defineComponent({
 				return;
 			}
 
-			transaction(() => {
+			transaction(async () => {
 				if (e.ctrlKey) {
 					if (e.key === 'z') {
 						// this.$store.commit('history/undo');
@@ -244,7 +244,7 @@ export default defineComponent({
 						e.preventDefault();
 						return;
 					} else if (e.key === 'v') {
-						this.$store.dispatch(
+						await this.$store.dispatch(
 							'panels/pasteObjectFromClipboard',
 							{} as IPasteFromClipboardAction
 						);
@@ -260,7 +260,7 @@ export default defineComponent({
 					selectionPanel.objects[this.$store.state.ui.selection!];
 				if (selection == null) return;
 				if (e.key === 'Delete') {
-					this.$store.dispatch('panels/removeObject', {
+					await this.$store.dispatch('panels/removeObject', {
 						id: selection.id,
 						panelId: selection.panelId,
 					} as IRemoveObjectAction);
@@ -268,12 +268,12 @@ export default defineComponent({
 				}
 
 				if (e.key === 'c' || e.key === 'x') {
-					this.$store.dispatch('panels/copyObjectToClipboard', {
+					await this.$store.dispatch('panels/copyObjectToClipboard', {
 						id: selection.id,
 						panelId: selection.panelId,
 					} as ICopyObjectToClipboardAction);
 					if (e.key === 'x') {
-						this.$store.dispatch('panels/removeObject', {
+						await this.$store.dispatch('panels/removeObject', {
 							id: selection.id,
 							panelId: selection.panelId,
 						} as IRemoveObjectAction);
@@ -301,7 +301,7 @@ export default defineComponent({
 					const character = selection as ICharacter;
 					if (!character.freeMove) {
 						if (e.key === 'ArrowLeft') {
-							this.$store.dispatch('panels/shiftCharacterSlot', {
+							await this.$store.dispatch('panels/shiftCharacterSlot', {
 								id: character.id,
 								panelId: character.panelId,
 								delta: -1,
@@ -309,7 +309,7 @@ export default defineComponent({
 							return;
 						}
 						if (e.key === 'ArrowRight') {
-							this.$store.dispatch('panels/shiftCharacterSlot', {
+							await this.$store.dispatch('panels/shiftCharacterSlot', {
 								id: character.id,
 								panelId: character.panelId,
 								delta: 1,
@@ -319,24 +319,29 @@ export default defineComponent({
 					}
 				}
 				let { x, y } = selection;
-				if (e.key === 'ArrowLeft') {
-					x -= e.shiftKey ? 1 : arrowMoveStepSize;
-				} else if (e.key === 'ArrowRight') {
-					x += e.shiftKey ? 1 : arrowMoveStepSize;
-				} else if (e.key === 'ArrowUp') {
-					y -= e.shiftKey ? 1 : arrowMoveStepSize;
-				} else if (e.key === 'ArrowDown') {
-					y += e.shiftKey ? 1 : arrowMoveStepSize;
-				} else {
-					return;
+				switch (e.key) {
+					case 'ArrowLeft':
+						x -= e.shiftKey ? 1 : arrowMoveStepSize;
+						break;
+					case 'ArrowRight':
+						x += e.shiftKey ? 1 : arrowMoveStepSize;
+						break;
+					case 'ArrowUp':
+						y -= e.shiftKey ? 1 : arrowMoveStepSize;
+						break;
+					case 'ArrowDown':
+						y += e.shiftKey ? 1 : arrowMoveStepSize;
+						break;
+					default:
+						return;
 				}
-				this.$store.dispatch('panels/setPosition', {
+
+				await this.$store.dispatch('panels/setPosition', {
 					id: selection.id,
 					panelId: selection.panelId,
 					x,
 					y,
 				} as ISetObjectPositionMutation);
-				return;
 			});
 		},
 		onKeyup(e: KeyboardEvent) {
@@ -351,8 +356,8 @@ export default defineComponent({
 			document.body.classList.toggle('dark-theme', this.useDarkTheme);
 		},
 		select(id: IObject['id']): void {
-			if (this.$store.state.ui.selection === id) return;
 			transaction(() => {
+				if (this.$store.state.ui.selection === id) return;
 				this.$store.commit('ui/setSelection', id);
 			});
 		},
@@ -479,12 +484,12 @@ export default defineComponent({
 						' you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more!',
 				} as ICreateTextBoxAction);
 			}
-			await this.$store.commit('panels/setCurrentBackground', {
+			this.$store.commit('panels/setCurrentBackground', {
 				current: 'dddg.buildin.backgrounds:ddlc.clubroom',
 				panelId: this.$store.state.panels.currentPanel,
 			} as ISetCurrentMutation);
 
-			await this.$store.commit('ui/setNsfw', settings.nsfw ?? false);
+			this.$store.commit('ui/setNsfw', settings.nsfw ?? false);
 		});
 	},
 	unmounted(): void {

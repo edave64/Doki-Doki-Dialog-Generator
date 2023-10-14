@@ -176,7 +176,7 @@ export default defineComponent({
 				.missingHeadUpload as HTMLInputElement;
 			missingHeadUpload.click();
 		},
-		async onMissingHeadFileUpload(e: Event) {
+		async onMissingHeadFileUpload(_e: Event) {
 			const uploadInput = this.$refs.missingHeadUpload as HTMLInputElement;
 			if (!uploadInput.files) return;
 			if (uploadInput.files.length !== 1) {
@@ -194,8 +194,8 @@ export default defineComponent({
 			});
 		},
 		seekPose(delta: number): void {
-			transaction(() => {
-				this.$store.dispatch('panels/seekPose', {
+			transaction(async () => {
+				await this.$store.dispatch('panels/seekPose', {
 					id: this.object.id,
 					panelId: this.object.panelId,
 					delta,
@@ -203,8 +203,8 @@ export default defineComponent({
 			});
 		},
 		seekStyle(delta: number): void {
-			transaction(() => {
-				this.$store.dispatch('panels/seekStyle', {
+			transaction(async () => {
+				await this.$store.dispatch('panels/seekStyle', {
 					id: this.object.id,
 					panelId: this.object.panelId,
 					delta,
@@ -212,8 +212,8 @@ export default defineComponent({
 			});
 		},
 		seekPart(part: string, delta: number): void {
-			transaction(() => {
-				this.$store.dispatch('panels/seekPart', {
+			transaction(async () => {
+				await this.$store.dispatch('panels/seekPart', {
 					id: this.object.id,
 					panelId: this.object.panelId,
 					delta,

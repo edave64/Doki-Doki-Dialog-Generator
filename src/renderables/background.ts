@@ -75,7 +75,7 @@ export const color = {
 	name: 'Static color',
 	color: '#000000',
 
-	async render(rx: RenderContext): Promise<void> {
+	render(rx: RenderContext): void {
 		const { screenWidth, screenHeight } = getConstants().Base;
 		rx.drawRect({
 			x: 0,

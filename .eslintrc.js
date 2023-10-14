@@ -54,5 +54,6 @@ module.exports = {
 		'no-async-promise-executor': 'off',
 		// Maybe later
 		'vue/multi-word-component-names': 'off',
+		'require-await': 2,
 	},
 };

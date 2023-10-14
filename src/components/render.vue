@@ -115,7 +115,7 @@ export default defineComponent({
 		async download(): Promise<void> {
 			const url = await this.sceneRender.download();
 
-			await transaction(async () => {
+			await transaction(() => {
 				const oldUrl = this.$store.state.ui.lastDownload;
 
 				this.$store.commit('ui/setLastDownload', url);
@@ -225,8 +225,8 @@ export default defineComponent({
 				selectedObject = objects[objects.length - 1] ?? null;
 			}
 
-			if (this.$store.state.ui.selection === selectedObject) return;
 			transaction(() => {
+				if (this.$store.state.ui.selection === selectedObject) return;
 				this.$store.commit('ui/setSelection', selectedObject);
 			});
 		},
@@ -279,8 +279,8 @@ export default defineComponent({
 					x = this.dragXOriginal;
 				}
 			}
-			transaction(() => {
-				this.$store.dispatch('panels/setPosition', {
+			transaction(async () => {
+				await this.$store.dispatch('panels/setPosition', {
 					panelId: this.draggedObject!.panelId,
 					id: this.draggedObject!.id,
 					x,
@@ -347,7 +347,7 @@ export default defineComponent({
 			this.display();
 		},
 	},
-	async created(): Promise<void> {
+	created(): void {
 		if (typeof WeakRef !== 'undefined') {
 			const self = new WeakRef(this);
 			(window as any).getMainSceneRenderer = function () {

@@ -355,16 +355,16 @@ export default defineComponent({
 	},
 	methods: {
 		splitTextbox(): void {
-			transaction(() => {
-				this.$store.dispatch('panels/splitTextbox', {
+			transaction(async () => {
+				await this.$store.dispatch('panels/splitTextbox', {
 					id: this.object.id,
 					panelId: this.object.panelId,
 				} as ISplitTextbox);
 			});
 		},
 		resetPosition(): void {
-			transaction(() => {
-				this.$store.dispatch('panels/resetTextboxBounds', {
+			transaction(async () => {
+				await this.$store.dispatch('panels/resetTextboxBounds', {
 					id: this.object.id,
 					panelId: this.object.panelId,
 				} as IResetTextboxBounds);
