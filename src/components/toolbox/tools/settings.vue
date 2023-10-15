@@ -32,7 +32,7 @@
 			<modal-dialog
 				:options="['Deny', 'Cancle']"
 				v-if="denySavesModal"
-				@leave="denySaves('Cancle')"
+				@leave="denySaves('Cancel')"
 				@option="denySaves"
 				no-base-size
 			>
@@ -125,6 +125,7 @@
 </template>
 
 <script lang="ts">
+import { PanelMixin } from '@/components/mixins/panel-mixin';
 import ModalDialog from '@/components/modal-dialog.vue';
 import Toggle from '@/components/toggle.vue';
 import L from '@/components/ui/link.vue';
@@ -132,7 +133,6 @@ import environment from '@/environments/environment';
 import { transaction } from '@/plugins/vuex-history';
 import { safeAsync } from '@/util/errors';
 import { defineComponent } from 'vue';
-import { PanelMixin } from './panel-mixin';
 
 export default defineComponent({
 	mixins: [PanelMixin],

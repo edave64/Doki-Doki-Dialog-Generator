@@ -64,6 +64,7 @@
 
 <script lang="ts">
 import { getAAssetUrl } from '@/asset-manager';
+import { PanelMixin } from '@/components/mixins/panel-mixin';
 import DButton from '@/components/ui/d-button.vue';
 import environment, { Folder } from '@/environments/environment';
 import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
@@ -75,7 +76,6 @@ import {
 import { DeepReadonly } from 'ts-essentials';
 import { defineComponent } from 'vue';
 import DropTarget from '../../drop-target.vue';
-import { PanelMixin } from '../panel-mixin';
 
 import MissingImage from '@/assets/missing_image.svg';
 import { transaction, TransactionLayer } from '@/plugins/vuex-history';

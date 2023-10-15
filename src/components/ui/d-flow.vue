@@ -3,8 +3,8 @@
 	property). It allows them to overflow in the other direction if it gets too large.
 -->
 <script lang="ts">
+import { VerticalScrollRedirect } from '@/components/mixins/vertical-scroll-redirect';
 import { defineComponent, h, Prop, PropType, VNode } from 'vue';
-import { VerticalScrollRedirect } from '../vertical-scroll-redirect';
 
 export default defineComponent({
 	mixins: [VerticalScrollRedirect],

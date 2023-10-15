@@ -136,13 +136,13 @@
 
 <script lang="ts">
 import { getAAssetUrl, getAssetByUrl } from '@/asset-manager';
+import { VerticalScrollRedirect } from '@/components/mixins/vertical-scroll-redirect';
 import ToggleBox from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import L from '@/components/ui/link.vue';
-import { VerticalScrollRedirect } from '@/components/vertical-scroll-redirect';
 import environment from '@/environments/environment';
 import { Character } from '@/renderables/character';
-import { SelectedState } from '@/renderables/offscreenRenderable';
+import { SelectedState } from '@/renderables/offscreen-renderable';
 import { Renderer } from '@/renderer/renderer';
 import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
 import { WorkBatch } from '@/util/workBatch';

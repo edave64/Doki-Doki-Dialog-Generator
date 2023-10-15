@@ -1,4 +1,4 @@
-import { VerticalScrollRedirect } from '@/components/vertical-scroll-redirect';
+import { VerticalScrollRedirect } from '@/components/mixins/vertical-scroll-redirect';
 import { ComponentOptionsMixin } from 'vue';
 
 export const PanelMixin: ComponentOptionsMixin = {

@@ -44,6 +44,7 @@
 </template>
 
 <script lang="ts">
+import { PanelMixin } from '@/components/mixins/panel-mixin';
 import Toggle from '@/components/toggle.vue';
 import {
 	IPoemTextStyle,
@@ -61,7 +62,6 @@ import { genericSimpleSetter } from '@/util/simple-settable';
 import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
 import { defineComponent } from 'vue';
 import ObjectTool, { Handler } from './object-tool.vue';
-import { PanelMixin } from './panel-mixin';
 
 const setableP = genericSimpleSetter<IPoem, PoemSimpleProperties>(
 	'panels/setPoemProperty'

@@ -160,6 +160,7 @@
 
 <script lang="ts">
 import { isHeifSupported, isWebPSupported } from '@/asset-manager';
+import { PanelMixin } from '@/components/mixins/panel-mixin';
 import DButton from '@/components/ui/d-button.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
@@ -192,7 +193,6 @@ import { DeepReadonly } from 'ts-essentials';
 import { defineComponent, markRaw } from 'vue';
 import { Store } from 'vuex';
 import ImageOptions from '../subtools/image-options/image-options.vue';
-import { PanelMixin } from './panel-mixin';
 
 interface IPanelButton {
 	id: IPanel['id'];
@@ -595,7 +595,7 @@ export default defineComponent({
 				});
 
 				this.thumbnailCtx.canvas.toBlob(
-					(blob) => {
+					(blob: Blob | null) => {
 						if (!blob) return;
 						const url = URL.createObjectURL(blob);
 						transaction(() => {

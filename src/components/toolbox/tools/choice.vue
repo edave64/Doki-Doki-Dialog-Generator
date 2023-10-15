@@ -43,6 +43,7 @@
 </template>
 
 <script lang="ts">
+import { PanelMixin } from '@/components/mixins/panel-mixin';
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
@@ -58,7 +59,6 @@ import { genericSetable } from '@/util/simple-settable';
 import { DeepReadonly } from 'ts-essentials';
 import { ComponentCustomProperties, defineComponent } from 'vue';
 import ObjectTool, { Handler } from './object-tool.vue';
-import { PanelMixin } from './panel-mixin';
 
 const setable = genericSetable<IChoices>();
 

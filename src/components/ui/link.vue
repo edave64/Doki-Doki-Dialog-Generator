@@ -9,8 +9,8 @@
 </template>
 
 <script lang="ts">
+import { VerticalScrollRedirect } from '@/components/mixins/vertical-scroll-redirect';
 import { defineComponent } from 'vue';
-import { VerticalScrollRedirect } from '../vertical-scroll-redirect';
 /**
  * a-tag links by default kinda suck for web apps, since they leave the current
  * page and do funny stuff with shared javascript contexts.

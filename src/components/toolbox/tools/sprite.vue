@@ -20,13 +20,13 @@
 
 <script lang="ts">
 import { getAAssetUrl } from '@/asset-manager';
+import { PanelMixin } from '@/components/mixins/panel-mixin';
 import ObjectTool from '@/components/toolbox/tools/object-tool.vue';
 import { transaction } from '@/plugins/vuex-history';
 import { ISprite } from '@/store/object-types/sprite';
 import { IPanel } from '@/store/panels';
 import { DeepReadonly } from 'ts-essentials';
 import { defineComponent } from 'vue';
-import { PanelMixin } from './panel-mixin';
 
 export default defineComponent({
 	mixins: [PanelMixin],

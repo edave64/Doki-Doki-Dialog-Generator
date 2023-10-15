@@ -84,6 +84,7 @@
 
 <script lang="ts">
 import { getAAssetUrl } from '@/asset-manager';
+import { PanelMixin } from '@/components/mixins/panel-mixin';
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import { transaction } from '@/plugins/vuex-history';
@@ -105,7 +106,6 @@ import { DeepReadonly } from 'ts-essentials';
 import { defineComponent } from 'vue';
 import Parts from './character/parts.vue';
 import ObjectTool from './object-tool.vue';
-import { PanelMixin } from './panel-mixin';
 
 const setable = genericSetable<ICharacter>();
 

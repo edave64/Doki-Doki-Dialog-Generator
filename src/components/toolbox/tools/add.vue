@@ -11,6 +11,7 @@
 				:class="{ active: group === key }"
 				icon-pos="top"
 				:icon="obj.icon"
+				:shortcut="obj.shortcut"
 				@click="group = key"
 			>
 				<span v-html="obj.text" />
@@ -32,6 +33,7 @@
 </template>
 
 <script lang="ts">
+import { PanelMixin } from '@/components/mixins/panel-mixin';
 import DButton from '@/components/ui/d-button.vue';
 import environment, { Folder } from '@/environments/environment';
 import { transaction } from '@/plugins/vuex-history';
@@ -42,12 +44,12 @@ import { defineComponent } from 'vue';
 import Characters from './add/character.vue';
 import Sprites from './add/sprite.vue';
 import UI from './add/ui.vue';
-import { PanelMixin } from './panel-mixin';
 
 type GroupNames = 'characters' | 'sprites' | 'ui';
 interface Group {
 	icon: string;
 	text: string;
+	shortcut: string;
 }
 
 export default defineComponent({
@@ -59,14 +61,17 @@ export default defineComponent({
 			characters: {
 				icon: 'emoji_people',
 				text: 'Char&shy;acters',
+				shortcut: '1',
 			},
 			sprites: {
 				icon: 'change_history',
 				text: 'Sprites',
+				shortcut: '2',
 			},
 			ui: {
 				icon: 'view_quilt',
 				text: 'UI',
+				shortcut: '3',
 			},
 		} as { [P in GroupNames]: Group },
 	}),

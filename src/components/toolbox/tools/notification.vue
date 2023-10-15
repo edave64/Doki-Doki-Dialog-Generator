@@ -17,6 +17,7 @@
 </template>
 
 <script lang="ts">
+import { PanelMixin } from '@/components/mixins/panel-mixin';
 import Toggle from '@/components/toggle.vue';
 import {
 	INotification,
@@ -27,7 +28,6 @@ import { genericSimpleSetter } from '@/util/simple-settable';
 import { DeepReadonly } from 'ts-essentials';
 import { defineComponent } from 'vue';
 import ObjectTool, { Handler } from './object-tool.vue';
-import { PanelMixin } from './panel-mixin';
 
 const setableN = genericSimpleSetter<
 	INotification,

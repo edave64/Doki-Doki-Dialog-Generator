@@ -130,6 +130,7 @@
 </template>
 
 <script lang="ts">
+import { PanelMixin } from '@/components/mixins/panel-mixin';
 import ModalDialog from '@/components/modal-dialog.vue';
 import Toggle from '@/components/toggle.vue';
 import Delete from '@/components/toolbox/commons-fieldsets/delete.vue';
@@ -154,7 +155,6 @@ import { genericSetable } from '@/util/simple-settable';
 import { DeepReadonly } from 'ts-essentials';
 import { defineComponent, PropType } from 'vue';
 import TextEditor from '../subtools/text/text.vue';
-import { PanelMixin } from './panel-mixin';
 
 const setable = genericSetable<IPoem>();
 
