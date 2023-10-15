@@ -53,10 +53,10 @@ import {
 	IChoice,
 	IChoices,
 	IRemoveChoiceAction,
-} from '@/store/objectTypes/choices';
+} from '@/store/object-types/choices';
 import { DeepReadonly } from 'ts-essentials';
 import { ComponentCustomProperties, defineComponent } from 'vue';
-import { genericSetable } from '@/util/simpleSettable';
+import { genericSetable } from '@/util/simple-settable';
 import ObjectTool, { Handler } from './object-tool.vue';
 import { transaction } from '@/plugins/vuex-history';
 

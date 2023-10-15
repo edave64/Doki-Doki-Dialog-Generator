@@ -52,14 +52,14 @@ import {
 	IPoem,
 	ISetTextBoxProperty,
 	PoemSimpleProperties,
-} from '@/store/objectTypes/poem';
+} from '@/store/object-types/poem';
 import {
 	poemBackgrounds,
 	poemTextStyles,
 	IPoemTextStyle,
 } from '@/constants/game_modes/ddlc/poem';
 import { defineComponent } from 'vue';
-import { genericSimpleSetter } from '@/util/simpleSettable';
+import { genericSimpleSetter } from '@/util/simple-settable';
 import ObjectTool, { Handler } from './object-tool.vue';
 import { transaction } from '@/plugins/vuex-history';
 

@@ -115,7 +115,7 @@
 
 <script lang="ts">
 import Color from '../color/color.vue';
-import { TextRenderer } from '@/renderer/textRenderer/textRenderer';
+import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
 import { defineComponent } from 'vue';
 import getConstants from '@/constants';
 
@@ -401,4 +401,3 @@ export default defineComponent({
 		-1px -1px 0 #000, -1px 0 0 #000, -1px 1px 0 #000;
 }
 </style>
-@/renderer/text-renderer/textRenderer

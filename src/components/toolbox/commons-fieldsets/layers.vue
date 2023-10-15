@@ -42,7 +42,7 @@ import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import { transaction } from '@/plugins/vuex-history';
 import { IObjectShiftLayerAction, IObject } from '@/store/objects';
-import { genericSetable } from '@/util/simpleSettable';
+import { genericSetable } from '@/util/simple-settable';
 import { defineComponent, Prop } from 'vue';
 
 export default defineComponent({

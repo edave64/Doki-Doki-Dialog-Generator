@@ -25,9 +25,9 @@ import { PanelMixin } from './panel-mixin';
 import {
 	INotification,
 	NotificationSimpleProperties,
-} from '@/store/objectTypes/notification';
+} from '@/store/object-types/notification';
 import { defineComponent } from 'vue';
-import { genericSimpleSetter } from '@/util/simpleSettable';
+import { genericSimpleSetter } from '@/util/simple-settable';
 
 const setableN = genericSimpleSetter<
 	INotification,

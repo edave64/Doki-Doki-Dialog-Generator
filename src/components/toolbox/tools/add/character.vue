@@ -22,7 +22,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { ICreateCharacterAction } from '@/store/objectTypes/characters';
+import { ICreateCharacterAction } from '@/store/object-types/characters';
 import { IAssetSwitch } from '@/store/content';
 import { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import DButton from '@/components/ui/d-button.vue';

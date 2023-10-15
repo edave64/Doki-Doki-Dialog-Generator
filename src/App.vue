@@ -56,7 +56,7 @@
 import { defineAsyncComponent, defineComponent, watch } from 'vue';
 import { baseUrl } from '@/asset-manager';
 import environment from '@/environments/environment';
-import { ICreateTextBoxAction } from '@/store/objectTypes/textbox';
+import { ICreateTextBoxAction } from '@/store/object-types/textbox';
 import {
 	ICopyObjectToClipboardAction,
 	IObject,
@@ -68,7 +68,7 @@ import {
 import {
 	ICharacter,
 	IShiftCharacterSlotAction,
-} from '@/store/objectTypes/characters';
+} from '@/store/object-types/characters';
 import ToolBox from '@/components/toolbox/toolbox.vue';
 import MessageConsole from '@/components/message-console.vue';
 import Render from '@/components/render.vue';

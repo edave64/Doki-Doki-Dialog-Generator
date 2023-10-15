@@ -114,7 +114,7 @@ import {
 	closestCharacterSlot,
 	ISetFreeMoveMutation,
 	ICharacter,
-} from '@/store/objectTypes/characters';
+} from '@/store/object-types/characters';
 import {
 	ISetPositionAction,
 	ISetObjectPositionMutation,
@@ -123,7 +123,7 @@ import {
 	ISetWidthAction,
 	ISetRatioAction,
 } from '@/store/objects';
-import { ITextBox } from '@/store/objectTypes/textbox';
+import { ITextBox } from '@/store/object-types/textbox';
 import { defineComponent, Prop } from 'vue';
 import getConstants from '@/constants';
 import { rendererLookup } from '@/renderables/textbox';

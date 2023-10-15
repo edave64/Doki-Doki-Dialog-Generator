@@ -252,7 +252,7 @@ import Color from '@/components/toolbox/subtools/color/color.vue';
 import { IObject, ISetCompositionMutation } from '@/store/objects';
 import { IPanel } from '@/store/panels';
 import { defineComponent, Prop, PropType } from 'vue';
-import { CompositeModes } from '@/renderer/rendererContext';
+import { CompositeModes } from '@/renderer/renderer-context';
 import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
 import {
 	IAddFilterAction,
@@ -263,7 +263,7 @@ import {
 	ISetFilterAction,
 	percentageValue,
 	SpriteFilter,
-} from '@/store/sprite_options';
+} from '@/store/sprite-options';
 import { IColor } from '@/util/colors/color';
 import { HSLAColor } from '@/util/colors/hsl';
 import L from '@/components/ui/link.vue';

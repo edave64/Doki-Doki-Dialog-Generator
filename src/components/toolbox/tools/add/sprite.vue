@@ -72,10 +72,10 @@ import {
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import DropTarget from '../../drop-target.vue';
 import DButton from '@/components/ui/d-button.vue';
-import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
+import { ICreateSpriteAction } from '@/store/object-types/sprite';
 import environment, { Folder } from '@/environments/environment';
 import { DeepReadonly } from 'ts-essentials';
-import { PanelMixin } from '../panelMixin';
+import { PanelMixin } from '../panel-mixin';
 
 import MissingImage from '@/assets/missing_image.svg';
 import { TransactionLayer, transaction } from '@/plugins/vuex-history';

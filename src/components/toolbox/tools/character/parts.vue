@@ -68,7 +68,7 @@ import {
 	ISetPartAction,
 	ISetPosePositionMutation,
 	ISetStyleAction,
-} from '@/store/objectTypes/characters';
+} from '@/store/object-types/characters';
 import { DeepReadonly } from 'ts-essentials';
 import { defineComponent, PropType } from 'vue';
 import { transaction } from '@/plugins/vuex-history';

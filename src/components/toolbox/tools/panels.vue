@@ -169,7 +169,7 @@ import {
 	ISetPanelPreviewMutation,
 } from '@/store/panels';
 import { isHeifSupported, isWebPSupported } from '@/asset-manager';
-import { ITextBox } from '@/store/objectTypes/textbox';
+import { ITextBox } from '@/store/object-types/textbox';
 import { SceneRenderer } from '@/renderables/scene-renderer';
 import { DeepReadonly } from 'ts-essentials';
 import environment from '@/environments/environment';
@@ -179,9 +179,9 @@ import eventBus, {
 	StateLoadingEvent,
 } from '@/eventbus/event-bus';
 import { IObject } from '@/store/objects';
-import { INotification } from '@/store/objectTypes/notification';
-import { IPoem } from '@/store/objectTypes/poem';
-import { IChoices } from '@/store/objectTypes/choices';
+import { INotification } from '@/store/object-types/notification';
+import { IPoem } from '@/store/object-types/poem';
+import { IChoices } from '@/store/object-types/choices';
 import { defineComponent, markRaw } from 'vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';

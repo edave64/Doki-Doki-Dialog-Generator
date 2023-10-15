@@ -27,7 +27,7 @@
 
 <script lang="ts">
 import { MutationPayload } from 'vuex';
-import { RenderContext } from '@/renderer/rendererContext';
+import { RenderContext } from '@/renderer/renderer-context';
 import eventBus, {
 	ColorPickedEvent,
 	InvalidateRenderEvent,
@@ -35,7 +35,7 @@ import eventBus, {
 	StateLoadingEvent,
 } from '@/eventbus/event-bus';
 import { IObject, ISetObjectPositionMutation } from '@/store/objects';
-import { ICreateSpriteAction } from '@/store/objectTypes/sprite';
+import { ICreateSpriteAction } from '@/store/object-types/sprite';
 import { SceneRenderer } from '@/renderables/scene-renderer';
 import { DeepReadonly } from 'ts-essentials';
 import { defineComponent, markRaw } from 'vue';

@@ -140,9 +140,9 @@ import { IPanel } from '@/store/panels';
 import { DeepReadonly } from 'ts-essentials';
 import { PanelMixin } from './panel-mixin';
 import TextEditor from '../subtools/text/text.vue';
-import { IPoem } from '@/store/objectTypes/poem';
+import { IPoem } from '@/store/object-types/poem';
 import { defineComponent, PropType } from 'vue';
-import { genericSetable } from '@/util/simpleSettable';
+import { genericSetable } from '@/util/simple-settable';
 import {
 	ICopyObjectToClipboardAction,
 	IObject,

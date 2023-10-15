@@ -92,7 +92,7 @@ import {
 	ICharacter,
 	ISeekStyleAction,
 	getHeads,
-} from '@/store/objectTypes/characters';
+} from '@/store/object-types/characters';
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import { IPanel } from '@/store/panels';
@@ -102,7 +102,7 @@ import { IAssetSwitch } from '@/store/content';
 import { PanelMixin } from './panel-mixin';
 import { DeepReadonly } from 'ts-essentials';
 import { defineComponent } from 'vue';
-import { genericSetable } from '@/util/simpleSettable';
+import { genericSetable } from '@/util/simple-settable';
 import ObjectTool from './object-tool.vue';
 import { getAAssetUrl } from '@/asset-manager';
 import { transaction } from '@/plugins/vuex-history';
