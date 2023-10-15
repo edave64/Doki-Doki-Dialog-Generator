@@ -354,4 +354,3 @@ export interface Handler {
 	}
 }
 </style>
-@/store/object-types/poem @/util/simple-settable

@@ -393,4 +393,3 @@ canvas {
 	-webkit-user-select: none;
 }
 </style>
-@/renderer/renderer-context @/store/object-types/sprite

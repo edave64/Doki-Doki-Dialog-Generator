@@ -274,4 +274,3 @@ input[type='file'] {
 	display: none;
 }
 </style>
-@/store/object-types/characters @/util/simple-settable

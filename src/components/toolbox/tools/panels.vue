@@ -846,4 +846,3 @@ small {
 	}
 }
 </style>
-@/store/object-types/textbox@/store/object-types/notification@/store/object-types/poem@/store/object-types/choices

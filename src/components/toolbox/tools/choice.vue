@@ -208,4 +208,3 @@ interface IThis extends ComponentCustomProperties {
 	}
 }
 </style>
-@/store/object-types/choices @/util/simple-settable

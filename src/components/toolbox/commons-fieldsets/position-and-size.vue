@@ -305,4 +305,3 @@ input {
 	}
 }
 </style>
-@/store/object-types/characters@/store/object-types/textbox

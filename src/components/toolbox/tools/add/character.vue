@@ -64,4 +64,3 @@ export default defineComponent({
 	max-width: 72px;
 }
 </style>
-@/store/object-types/characters

@@ -104,4 +104,3 @@ export default defineComponent({
 	}
 }
 </style>
-@/store/object-types/notification @/util/simple-settable

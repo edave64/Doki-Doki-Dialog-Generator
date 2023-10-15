@@ -361,4 +361,3 @@ export default defineComponent({
 	width: 100px;
 }
 </style>
-@/store/object-types/characters

@@ -172,4 +172,3 @@ export default defineComponent({
 	}
 }
 </style>
-@/store/object-types/poem @/util/simple-settable

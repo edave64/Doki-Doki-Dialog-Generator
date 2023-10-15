@@ -83,4 +83,3 @@ input[type='file'] {
 	display: none;
 }
 </style>
-@/store/object-types/sprite

@@ -491,4 +491,3 @@ export interface IShowExpressionDialogEvent {
 	pointer-events: none;
 }
 </style>
-@/store/object-types/textbox@/store/object-types/characters

@@ -431,4 +431,3 @@ export default defineComponent({
 	vertical-align: middle;
 }
 </style>
-@/store/object-types/textbox @/util/simple-settable
