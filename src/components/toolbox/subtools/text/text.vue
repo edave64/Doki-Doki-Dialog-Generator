@@ -114,10 +114,10 @@
 </template>
 
 <script lang="ts">
-import Color from '../color/color.vue';
+import getConstants from '@/constants';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
 import { defineComponent } from 'vue';
-import getConstants from '@/constants';
+import Color from '../color/color.vue';
 
 export default defineComponent({
 	inheritAttrs: false,

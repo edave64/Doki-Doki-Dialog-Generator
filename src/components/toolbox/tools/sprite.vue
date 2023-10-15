@@ -19,14 +19,14 @@
 </template>
 
 <script lang="ts">
+import { getAAssetUrl } from '@/asset-manager';
 import ObjectTool from '@/components/toolbox/tools/object-tool.vue';
+import { transaction } from '@/plugins/vuex-history';
 import { ISprite } from '@/store/object-types/sprite';
 import { IPanel } from '@/store/panels';
 import { DeepReadonly } from 'ts-essentials';
-import { PanelMixin } from './panel-mixin';
 import { defineComponent } from 'vue';
-import { getAAssetUrl } from '@/asset-manager';
-import { transaction } from '@/plugins/vuex-history';
+import { PanelMixin } from './panel-mixin';
 
 export default defineComponent({
 	mixins: [PanelMixin],

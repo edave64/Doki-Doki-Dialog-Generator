@@ -45,23 +45,23 @@
 
 <script lang="ts">
 import Toggle from '@/components/toggle.vue';
-import { IPanel } from '@/store/panels';
-import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
-import { PanelMixin } from './panel-mixin';
+import {
+	IPoemTextStyle,
+	poemBackgrounds,
+	poemTextStyles,
+} from '@/constants/game_modes/ddlc/poem';
+import { transaction } from '@/plugins/vuex-history';
 import {
 	IPoem,
 	ISetTextBoxProperty,
 	PoemSimpleProperties,
 } from '@/store/object-types/poem';
-import {
-	poemBackgrounds,
-	poemTextStyles,
-	IPoemTextStyle,
-} from '@/constants/game_modes/ddlc/poem';
-import { defineComponent } from 'vue';
+import { IPanel } from '@/store/panels';
 import { genericSimpleSetter } from '@/util/simple-settable';
+import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
+import { defineComponent } from 'vue';
 import ObjectTool, { Handler } from './object-tool.vue';
-import { transaction } from '@/plugins/vuex-history';
+import { PanelMixin } from './panel-mixin';
 
 const setableP = genericSimpleSetter<IPoem, PoemSimpleProperties>(
 	'panels/setPoemProperty'

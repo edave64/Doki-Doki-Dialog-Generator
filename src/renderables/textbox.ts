@@ -1,22 +1,22 @@
+import getConstants from '@/constants';
+import environment from '@/environments/environment';
 import { RenderContext } from '@/renderer/renderer-context';
-import { ITextBox } from '@/store/object-types/textbox';
 import {
 	ITextStyle,
 	TextRenderer,
 } from '@/renderer/text-renderer/text-renderer';
-import { ScalingRenderable } from './scaling-renderable';
-import { Store } from 'vuex';
 import { IRootState } from '@/store';
+import { ITextBox } from '@/store/object-types/textbox';
 import { IObject } from '@/store/objects';
-import getConstants from '@/constants';
-import environment from '@/environments/environment';
-import { Default } from './textboxRenderers/default';
+import { IPanel } from '@/store/panels';
+import { DeepReadonly } from 'ts-essentials';
+import { Store } from 'vuex';
+import { ScalingRenderable } from './scaling-renderable';
 import { Corrupted } from './textboxRenderers/corrupt';
 import { Custom } from './textboxRenderers/custom';
-import { None } from './textboxRenderers/none';
 import { CustomPlus } from './textboxRenderers/custom-plus';
-import { DeepReadonly } from 'ts-essentials';
-import { IPanel } from '@/store/panels';
+import { Default } from './textboxRenderers/default';
+import { None } from './textboxRenderers/none';
 
 export const styleRenderers: ReadonlyArray<ITextboxRendererClass> = [
 	Default,

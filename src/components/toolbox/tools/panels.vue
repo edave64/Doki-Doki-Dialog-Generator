@@ -159,7 +159,25 @@
 </template>
 
 <script lang="ts">
-import { PanelMixin } from './panel-mixin';
+import { isHeifSupported, isWebPSupported } from '@/asset-manager';
+import DButton from '@/components/ui/d-button.vue';
+import DFieldset from '@/components/ui/d-fieldset.vue';
+import DFlow from '@/components/ui/d-flow.vue';
+import getConstants from '@/constants';
+import environment from '@/environments/environment';
+import eventBus, {
+	RenderUpdatedEvent,
+	ShowMessageEvent,
+	StateLoadingEvent,
+} from '@/eventbus/event-bus';
+import { transaction } from '@/plugins/vuex-history';
+import { SceneRenderer } from '@/renderables/scene-renderer';
+import { IRootState } from '@/store';
+import { IChoices } from '@/store/object-types/choices';
+import { INotification } from '@/store/object-types/notification';
+import { IPoem } from '@/store/object-types/poem';
+import { ITextBox } from '@/store/object-types/textbox';
+import { IObject } from '@/store/objects';
 import {
 	IDeletePanelAction,
 	IDuplicatePanelAction,
@@ -168,31 +186,13 @@ import {
 	ISetCurrentPanelMutation,
 	ISetPanelPreviewMutation,
 } from '@/store/panels';
-import { isHeifSupported, isWebPSupported } from '@/asset-manager';
-import { ITextBox } from '@/store/object-types/textbox';
-import { SceneRenderer } from '@/renderables/scene-renderer';
-import { DeepReadonly } from 'ts-essentials';
-import environment from '@/environments/environment';
-import eventBus, {
-	RenderUpdatedEvent,
-	ShowMessageEvent,
-	StateLoadingEvent,
-} from '@/eventbus/event-bus';
-import { IObject } from '@/store/objects';
-import { INotification } from '@/store/object-types/notification';
-import { IPoem } from '@/store/object-types/poem';
-import { IChoices } from '@/store/object-types/choices';
-import { defineComponent, markRaw } from 'vue';
-import DFieldset from '@/components/ui/d-fieldset.vue';
-import DFlow from '@/components/ui/d-flow.vue';
-import DButton from '@/components/ui/d-button.vue';
-import ImageOptions from '../subtools/image-options/image-options.vue';
-import getConstants from '@/constants';
+import { disposeCanvas, makeCanvas } from '@/util/canvas';
 import { safeAsync } from '@/util/errors';
-import { makeCanvas, disposeCanvas } from '@/util/canvas';
+import { DeepReadonly } from 'ts-essentials';
+import { defineComponent, markRaw } from 'vue';
 import { Store } from 'vuex';
-import { IRootState } from '@/store';
-import { transaction } from '@/plugins/vuex-history';
+import ImageOptions from '../subtools/image-options/image-options.vue';
+import { PanelMixin } from './panel-mixin';
 
 interface IPanelButton {
 	id: IPanel['id'];

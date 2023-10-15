@@ -3,15 +3,15 @@ import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dis
 import { Module } from 'vuex';
 import { IRootState } from '.';
 import { BackgroundLookup, IAssetSwitch } from './content';
+import { ITextBox } from './object-types/textbox';
 import {
 	actions as objectActions,
+	fixContentPackRemoval as objectsFixContentPackRemoval,
 	IObject,
 	ISetCompositionMutation,
 	ISetFiltersMutation,
 	mutations as objectMutations,
-	fixContentPackRemoval as objectsFixContentPackRemoval,
 } from './objects';
-import { ITextBox } from './object-types/textbox';
 import {
 	addFilter,
 	IAddFilterAction,

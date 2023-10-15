@@ -53,18 +53,18 @@
 <script lang="ts">
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
-import { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { transaction } from '@/plugins/vuex-history';
 import { IAssetSwitch } from '@/store/content';
 import {
+	IPanel,
+	ISeekVariantAction,
 	ISetColorMutation,
 	ISetFlipMutation,
-	ISeekVariantAction,
 	ISetScalingMutation,
-	IPanel,
 } from '@/store/panels';
-import { defineComponent } from 'vue';
+import { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { DeepReadonly } from 'ts-essentials';
-import { transaction } from '@/plugins/vuex-history';
+import { defineComponent } from 'vue';
 
 export default defineComponent({
 	components: { Toggle, DFieldset },

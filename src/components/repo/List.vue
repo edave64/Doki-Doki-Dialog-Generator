@@ -53,11 +53,11 @@
 </template>
 
 <script lang="ts">
-import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
-import run from '@edave64/dddg-repo-filters/dist/main';
-import { defineComponent, PropType } from 'vue';
 import { Pack, Repo } from '@/models/repo';
+import run from '@edave64/dddg-repo-filters/dist/main';
+import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 import { DeepReadonly } from 'ts-essentials';
+import { defineComponent, PropType } from 'vue';
 
 const pageKeyMoveBy = 10;
 

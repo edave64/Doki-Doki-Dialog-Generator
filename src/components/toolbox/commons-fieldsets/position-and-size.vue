@@ -110,24 +110,24 @@
 <script lang="ts">
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
+import getConstants from '@/constants';
+import { transaction } from '@/plugins/vuex-history';
+import { rendererLookup } from '@/renderables/textbox';
 import {
 	closestCharacterSlot,
-	ISetFreeMoveMutation,
 	ICharacter,
+	ISetFreeMoveMutation,
 } from '@/store/object-types/characters';
+import { ITextBox } from '@/store/object-types/textbox';
 import {
-	ISetPositionAction,
-	ISetObjectPositionMutation,
 	IObject,
 	ISetHeightAction,
-	ISetWidthAction,
+	ISetObjectPositionMutation,
+	ISetPositionAction,
 	ISetRatioAction,
+	ISetWidthAction,
 } from '@/store/objects';
-import { ITextBox } from '@/store/object-types/textbox';
 import { defineComponent, Prop } from 'vue';
-import getConstants from '@/constants';
-import { rendererLookup } from '@/renderables/textbox';
-import { transaction } from '@/plugins/vuex-history';
 
 export default defineComponent({
 	components: { Toggle, DFieldset },

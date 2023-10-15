@@ -130,19 +130,17 @@
 </template>
 
 <script lang="ts">
+import ModalDialog from '@/components/modal-dialog.vue';
 import Toggle from '@/components/toggle.vue';
-import PositionAndSize from '@/components/toolbox/commons-fieldsets/position-and-size.vue';
-import Layers from '@/components/toolbox/commons-fieldsets/layers.vue';
 import Delete from '@/components/toolbox/commons-fieldsets/delete.vue';
-import ImageOptions from '@/components/toolbox/subtools/image-options/image-options.vue';
+import Layers from '@/components/toolbox/commons-fieldsets/layers.vue';
+import PositionAndSize from '@/components/toolbox/commons-fieldsets/position-and-size.vue';
 import Color from '@/components/toolbox/subtools/color/color.vue';
-import { IPanel } from '@/store/panels';
-import { DeepReadonly } from 'ts-essentials';
-import { PanelMixin } from './panel-mixin';
-import TextEditor from '../subtools/text/text.vue';
+import ImageOptions from '@/components/toolbox/subtools/image-options/image-options.vue';
+import DFieldset from '@/components/ui/d-fieldset.vue';
+import getConstants from '@/constants';
+import { transaction } from '@/plugins/vuex-history';
 import { IPoem } from '@/store/object-types/poem';
-import { defineComponent, PropType } from 'vue';
-import { genericSetable } from '@/util/simple-settable';
 import {
 	ICopyObjectToClipboardAction,
 	IObject,
@@ -151,10 +149,12 @@ import {
 	ISetObjectZoomMutation,
 	ISetTextBoxColor,
 } from '@/store/objects';
-import ModalDialog from '@/components/modal-dialog.vue';
-import DFieldset from '@/components/ui/d-fieldset.vue';
-import getConstants from '@/constants';
-import { transaction } from '@/plugins/vuex-history';
+import { IPanel } from '@/store/panels';
+import { genericSetable } from '@/util/simple-settable';
+import { DeepReadonly } from 'ts-essentials';
+import { defineComponent, PropType } from 'vue';
+import TextEditor from '../subtools/text/text.vue';
+import { PanelMixin } from './panel-mixin';
 
 const setable = genericSetable<IPoem>();
 

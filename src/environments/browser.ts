@@ -1,12 +1,12 @@
-import { EnvCapabilities, Folder, IEnvironment, Settings } from './environment';
-import { EnvState } from './env-state';
-import { DeepReadonly, reactive, ref } from 'vue';
 import { Repo } from '@/models/repo';
-import { Store } from 'vuex';
+import { transaction } from '@/plugins/vuex-history';
 import { IRootState } from '@/store';
 import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
-import { transaction } from '@/plugins/vuex-history';
+import { DeepReadonly, reactive, ref } from 'vue';
+import { Store } from 'vuex';
+import { EnvState } from './env-state';
+import { EnvCapabilities, Folder, IEnvironment, Settings } from './environment';
 
 const ua = navigator.userAgent;
 const iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);

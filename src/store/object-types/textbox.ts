@@ -1,20 +1,20 @@
+import getConstants from '@/constants';
+import { rendererLookup } from '@/renderables/textbox';
 import {
 	ICreateObjectMutation,
 	IObject,
-	ISetObjectPositionMutation,
-	ISetObjectFlipMutation,
-	ISetSpriteRotationMutation,
 	IObjectMutation,
+	ISetObjectFlipMutation,
+	ISetObjectPositionMutation,
+	ISetSpriteRotationMutation,
 } from '@/store/objects';
 import { IPanel, IPanels } from '@/store/panels';
-import { MutationTree, ActionTree } from 'vuex';
-import { ISetSpriteSizeMutation } from './characters';
+import { between } from '@/util/math';
+import { rotateAround } from '@/util/rotation';
+import { ActionTree, MutationTree } from 'vuex';
 import { IRootState } from '..';
 import { baseProps } from './base-object-props';
-import { rotateAround } from '@/util/rotation';
-import getConstants from '@/constants';
-import { rendererLookup } from '@/renderables/textbox';
-import { between } from '@/util/math';
+import { ISetSpriteSizeMutation } from './characters';
 
 export interface ITextBox extends IObject {
 	type: 'textBox';

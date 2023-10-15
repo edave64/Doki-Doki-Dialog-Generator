@@ -2,9 +2,9 @@ import getConstants from '@/constants';
 import {
 	ControlsTextDisabledStyle,
 	ControlsTextStyle,
-	TextBoxWidth,
-	TextBoxHeight,
 	NameboxHeight,
+	TextBoxHeight,
+	TextBoxWidth,
 } from '@/constants/game_modes/ddlc_plus/text-box';
 import { RenderContext } from '@/renderer/renderer-context';
 import { DeepReadonly } from 'vue';

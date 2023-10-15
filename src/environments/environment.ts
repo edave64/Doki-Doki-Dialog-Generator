@@ -1,12 +1,12 @@
-import { OldEdge } from './edge';
-import { Browser } from './browser';
-import { Electron } from './electron';
-import { EnvState } from './env-state';
-import { Store } from 'vuex';
 import { IRootState } from '@/store';
-import { DeepReadonly } from 'ts-essentials';
 import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
+import { DeepReadonly } from 'ts-essentials';
+import { Store } from 'vuex';
+import { Browser } from './browser';
+import { OldEdge } from './edge';
+import { Electron } from './electron';
+import { EnvState } from './env-state';
 
 export type Folder = 'downloads' | 'sprites' | 'backgrounds';
 

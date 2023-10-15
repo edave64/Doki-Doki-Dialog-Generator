@@ -7,8 +7,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
 import { transaction } from '@/plugins/vuex-history';
+import { defineComponent } from 'vue';
 
 export default defineComponent({
 	methods: {

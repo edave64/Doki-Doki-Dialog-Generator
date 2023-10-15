@@ -96,22 +96,22 @@
 </template>
 
 <script lang="ts">
+import environment from '@/environments/environment';
+import { IObject, ObjectTypes } from '@/store/objects';
 import { IPanel } from '@/store/panels';
 import { DeepReadonly } from 'ts-essentials';
-import SettingsPanel from './tools/settings.vue';
+import { defineComponent } from 'vue';
 import AddPanel from './tools/add.vue';
+import BackgroundsPanel from './tools/backgrounds.vue';
 import CharacterPanel from './tools/character.vue';
-import SpritePanel from './tools/sprite.vue';
-import TextBoxPanel from './tools/textbox.vue';
 import ChoicePanel from './tools/choice.vue';
 import CreditsPanel from './tools/credits.vue';
-import BackgroundsPanel from './tools/backgrounds.vue';
-import PanelsPanel from './tools/panels.vue';
 import NotificationPanel from './tools/notification.vue';
+import PanelsPanel from './tools/panels.vue';
 import PoemPanel from './tools/poem.vue';
-import { IObject, ObjectTypes } from '@/store/objects';
-import environment from '@/environments/environment';
-import { defineComponent } from 'vue';
+import SettingsPanel from './tools/settings.vue';
+import SpritePanel from './tools/sprite.vue';
+import TextBoxPanel from './tools/textbox.vue';
 
 type PanelNames =
 	| 'add'

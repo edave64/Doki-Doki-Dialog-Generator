@@ -1,8 +1,8 @@
+import getConstants from '@/constants';
 import { RenderContext } from '@/renderer/renderer-context';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
 import { IChoices } from '@/store/object-types/choices';
 import { ScalingRenderable } from './scaling-renderable';
-import getConstants from '@/constants';
 
 export class Choice extends ScalingRenderable<IChoices> {
 	private _height: number = 0;

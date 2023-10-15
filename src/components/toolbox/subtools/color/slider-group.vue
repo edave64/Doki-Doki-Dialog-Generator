@@ -32,10 +32,10 @@
 
 <script lang="ts">
 import { IColor } from '@/util/colors/color';
-import { RGBAColor } from '@/util/colors/rgb';
 import { HSLAColor } from '@/util/colors/hsl';
-import Slider from './slider.vue';
+import { RGBAColor } from '@/util/colors/rgb';
 import { defineComponent, Prop } from 'vue';
+import Slider from './slider.vue';
 
 export default defineComponent({
 	components: { Slider },

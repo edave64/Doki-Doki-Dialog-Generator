@@ -1,7 +1,7 @@
-import { ITextboxRenderer } from '../textbox';
 import * as TBConstants from '@/constants/game_modes/ddlc/text-box';
-import { DdlcBase } from './ddlc-base';
 import { RenderContext } from '@/renderer/renderer-context';
+import { ITextboxRenderer } from '../textbox';
+import { DdlcBase } from './ddlc-base';
 
 export class None extends DdlcBase implements ITextboxRenderer {
 	static readonly id = 'none';

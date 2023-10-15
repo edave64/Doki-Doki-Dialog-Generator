@@ -1,3 +1,4 @@
+import getConstants from '@/constants';
 import {
 	ICreateObjectMutation,
 	IObject,
@@ -7,7 +8,6 @@ import { IPanel, IPanels } from '@/store/panels';
 import { ActionTree, MutationTree } from 'vuex';
 import { IRootState } from '..';
 import { baseProps } from './base-object-props';
-import getConstants from '@/constants';
 
 export interface IChoice {
 	text: string;

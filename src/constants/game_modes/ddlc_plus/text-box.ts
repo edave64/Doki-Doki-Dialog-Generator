@@ -1,5 +1,5 @@
-import { ITextStyle } from '@/renderer/text-renderer/text-renderer';
 import { screenWidth } from '@/constants/game_modes/ddlc_plus/base';
+import { ITextStyle } from '@/renderer/text-renderer/text-renderer';
 import { nameboxStrokeDefaultColor } from './text-box-custom';
 
 // tslint:disable: no-magic-numbers

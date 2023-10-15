@@ -14,11 +14,11 @@
 
 <script lang="ts">
 import { getAAssetUrl } from '@/asset-manager';
-import { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { BackgroundLookup, IAssetSwitch } from '@/store/content';
 import { IPanel } from '@/store/panels';
-import { defineComponent } from 'vue';
+import { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { DeepReadonly } from 'ts-essentials';
+import { defineComponent } from 'vue';
 
 export default defineComponent({
 	props: {

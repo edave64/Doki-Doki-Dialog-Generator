@@ -48,18 +48,18 @@
 </template>
 
 <script lang="ts">
+import eventBus, { ColorPickedEvent } from '@/eventbus/event-bus';
+import { transaction } from '@/plugins/vuex-history';
+import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
+import { RGBAColor } from '@/util/colors/rgb';
 import {
 	Color,
 	ContentPack,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
-import SliderGroup from './slider-group.vue';
-import DButton from '../../../ui/d-button.vue';
-import { RGBAColor } from '@/util/colors/rgb';
-import { defineComponent, PropType } from 'vue';
 import { DeepReadonly } from 'ts-essentials';
-import eventBus, { ColorPickedEvent } from '@/eventbus/event-bus';
-import { transaction } from '@/plugins/vuex-history';
+import { defineComponent, PropType } from 'vue';
+import DButton from '../../../ui/d-button.vue';
+import SliderGroup from './slider-group.vue';
 
 const generatedPackId = 'dddg.generated.colors';
 

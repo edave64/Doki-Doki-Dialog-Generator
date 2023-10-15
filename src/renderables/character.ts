@@ -1,22 +1,22 @@
-import {
-	ICharacter,
-	getPose,
-	getHeads,
-	getData,
-} from '@/store/object-types/characters';
-import {
-	Pose,
-	Character as CharacterModel,
-} from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { IRootState } from '@/store';
 import { IAssetSwitch } from '@/store/content';
+import {
+	getData,
+	getHeads,
+	getPose,
+	ICharacter,
+} from '@/store/object-types/characters';
+import { IPanel } from '@/store/panels';
+import {
+	Character as CharacterModel,
+	Pose,
+} from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { DeepReadonly } from 'ts-essentials';
 import { Store } from 'vuex';
-import { IRootState } from '@/store';
 import {
 	AssetListRenderable,
 	IDrawAssetsUnloaded,
 } from './asset-list-renderable';
-import { IPanel } from '@/store/panels';
 
 export class Character extends AssetListRenderable<ICharacter> {
 	protected reloadAssets(): void {}

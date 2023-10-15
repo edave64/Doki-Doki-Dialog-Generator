@@ -175,26 +175,26 @@
 </template>
 
 <script lang="ts">
-import { IObject } from '@/store/objects';
-import {
-	ITextBox,
-	textboxProperty,
-	ISplitTextbox,
-	IResetTextboxBounds,
-	ISetTextBoxTalkingObjMutation,
-	TextBoxSimpleProperties,
-} from '@/store/object-types/textbox';
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
-import { IPanel } from '@/store/panels';
-import { defineComponent } from 'vue';
-import { PanelMixin } from './panel-mixin';
-import { genericSetable, genericSimpleSetter } from '@/util/simple-settable';
-import ObjectTool, { Handler } from './object-tool.vue';
 import getConstants from '@/constants';
-import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
 import { transaction } from '@/plugins/vuex-history';
+import {
+	IResetTextboxBounds,
+	ISetTextBoxTalkingObjMutation,
+	ISplitTextbox,
+	ITextBox,
+	textboxProperty,
+	TextBoxSimpleProperties,
+} from '@/store/object-types/textbox';
+import { IObject } from '@/store/objects';
+import { IPanel } from '@/store/panels';
+import { genericSetable, genericSimpleSetter } from '@/util/simple-settable';
+import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
+import { defineComponent } from 'vue';
+import ObjectTool, { Handler } from './object-tool.vue';
+import { PanelMixin } from './panel-mixin';
 
 const setable = genericSetable<ITextBox>();
 const tbSetable = genericSimpleSetter<ITextBox, TextBoxSimpleProperties>(

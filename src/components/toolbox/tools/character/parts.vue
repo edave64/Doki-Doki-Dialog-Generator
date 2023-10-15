@@ -53,13 +53,10 @@
 
 <script lang="ts">
 import { isWebPSupported } from '@/asset-manager';
-import PartButton, { IPartButtonImage, IPartImage } from './part-button.vue';
-import DFlow from '@/components/ui/d-flow.vue';
+import DButton from '@/components/ui/d-button.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
-import {
-	Character,
-	Pose,
-} from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import DFlow from '@/components/ui/d-flow.vue';
+import { transaction } from '@/plugins/vuex-history';
 import { IAssetSwitch } from '@/store/content';
 import {
 	getData,
@@ -69,10 +66,13 @@ import {
 	ISetPosePositionMutation,
 	ISetStyleAction,
 } from '@/store/object-types/characters';
+import {
+	Character,
+	Pose,
+} from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { DeepReadonly } from 'ts-essentials';
 import { defineComponent, PropType } from 'vue';
-import { transaction } from '@/plugins/vuex-history';
-import DButton from '@/components/ui/d-button.vue';
+import PartButton, { IPartButtonImage, IPartImage } from './part-button.vue';
 
 interface IPartStyleGroup {
 	label: string;

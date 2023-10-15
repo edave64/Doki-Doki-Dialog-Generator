@@ -38,15 +38,15 @@
 </template>
 
 <script lang="ts">
-import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
-import SearchBar from '../search-bar.vue';
-import List from '../list.vue';
-import { SelectedEvent } from '../types';
-import PackDisplay from '../pack-display.vue';
-import { defineComponent } from 'vue';
-import { Pack, Repo } from '@/models/repo';
-import { DeepReadonly } from 'ts-essentials';
 import eventBus, { VueErrorEvent } from '@/eventbus/event-bus';
+import { Pack, Repo } from '@/models/repo';
+import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
+import { DeepReadonly } from 'ts-essentials';
+import { defineComponent } from 'vue';
+import List from '../list.vue';
+import PackDisplay from '../pack-display.vue';
+import SearchBar from '../search-bar.vue';
+import { SelectedEvent } from '../types';
 
 export default defineComponent({
 	components: {

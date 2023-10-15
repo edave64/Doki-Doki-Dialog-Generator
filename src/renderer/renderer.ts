@@ -1,8 +1,8 @@
-import { RenderContext } from './renderer-context';
-import { RenderAbortedException } from './render-aborted-exception';
-import environment from '@/environments/environment';
 import getConstants from '@/constants';
+import environment from '@/environments/environment';
 import { disposeCanvas, makeCanvas } from '@/util/canvas';
+import { RenderAbortedException } from './render-aborted-exception';
+import { RenderContext } from './renderer-context';
 
 export class Renderer {
 	private readonly previewCanvas: HTMLCanvasElement;

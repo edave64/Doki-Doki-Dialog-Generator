@@ -1,17 +1,17 @@
+import { Renderer } from '@/renderer/renderer';
 import {
 	CompositeModes,
 	IShadow,
 	RenderContext,
 } from '@/renderer/renderer-context';
-import { Renderer } from '@/renderer/renderer';
-import { IHitbox } from './renderable';
-import { DeepReadonly } from 'ts-essentials';
-import { SpriteFilter } from '@/store/sprite-options';
-import { IObject } from '@/store/objects';
-import { Store } from 'vuex';
 import { IRootState } from '@/store';
-import { rotateAround } from '@/util/rotation';
+import { IObject } from '@/store/objects';
 import { IPanel } from '@/store/panels';
+import { SpriteFilter } from '@/store/sprite-options';
+import { rotateAround } from '@/util/rotation';
+import { DeepReadonly } from 'ts-essentials';
+import { Store } from 'vuex';
+import { IHitbox } from './renderable';
 
 export enum SelectedState {
 	None = 0b00,

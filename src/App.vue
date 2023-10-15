@@ -53,9 +53,18 @@
 </template>
 
 <script lang="ts">
-import { defineAsyncComponent, defineComponent, watch } from 'vue';
 import { baseUrl } from '@/asset-manager';
+import MessageConsole from '@/components/message-console.vue';
+import ModalDialog from '@/components/modal-dialog.vue';
+import Render from '@/components/render.vue';
+import ToolBox from '@/components/toolbox/toolbox.vue';
 import environment from '@/environments/environment';
+import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
+import { transaction } from '@/plugins/vuex-history';
+import {
+	ICharacter,
+	IShiftCharacterSlotAction,
+} from '@/store/object-types/characters';
 import { ICreateTextBoxAction } from '@/store/object-types/textbox';
 import {
 	ICopyObjectToClipboardAction,
@@ -65,20 +74,11 @@ import {
 	ISetObjectPositionMutation,
 	ISetSpriteRotationMutation,
 } from '@/store/objects';
-import {
-	ICharacter,
-	IShiftCharacterSlotAction,
-} from '@/store/object-types/characters';
-import ToolBox from '@/components/toolbox/toolbox.vue';
-import MessageConsole from '@/components/message-console.vue';
-import Render from '@/components/render.vue';
-import ModalDialog from '@/components/modal-dialog.vue';
 import { ISetCurrentMutation } from '@/store/panels';
-import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
+import { defineAsyncComponent, defineComponent, watch } from 'vue';
+import { NsfwNames, NsfwPaths } from './constants/nsfw';
 import { Repo } from './models/repo';
 import { IRemovePacksAction } from './store';
-import { NsfwNames, NsfwPaths } from './constants/nsfw';
-import { transaction } from '@/plugins/vuex-history';
 
 const aspectRatio = 16 / 9;
 const arrowMoveStepSize = 20;

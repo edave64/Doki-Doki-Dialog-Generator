@@ -1,9 +1,9 @@
-import { OffscreenRenderable } from './offscreen-renderable';
-import { IObject } from '@/store/objects';
-import { RenderContext } from '@/renderer/renderer-context';
-import { IHitbox } from './renderable';
 import getConstants from '@/constants';
+import { RenderContext } from '@/renderer/renderer-context';
+import { IObject } from '@/store/objects';
 import { DeepReadonly } from 'ts-essentials';
+import { OffscreenRenderable } from './offscreen-renderable';
+import { IHitbox } from './renderable';
 
 export abstract class ScalingRenderable<
 	Obj extends IObject

@@ -1,25 +1,27 @@
+import { CompositeModes } from '@/renderer/renderer-context';
+import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { ActionContext, ActionTree, MutationTree } from 'vuex';
-import { spriteMutations, spriteActions } from './object-types/sprite';
+import { IRootState } from '.';
+import { IAssetSwitch } from './content';
 import {
 	characterActions,
 	characterMutations,
 	fixContentPackRemovalFromCharacter,
 } from './object-types/characters';
-import { choiceMutations, choiceActions } from './object-types/choices';
+import { choiceActions, choiceMutations } from './object-types/choices';
 import {
+	notificationActions,
+	notificationMutations,
+} from './object-types/notification';
+import { poemActions, poemMutations } from './object-types/poem';
+import { spriteActions, spriteMutations } from './object-types/sprite';
+import {
+	ISetTextBoxTalkingOtherMutation,
 	ITextBox,
 	textBoxActions,
 	textBoxMutations,
-	ISetTextBoxTalkingOtherMutation,
 } from './object-types/textbox';
-import {
-	notificationMutations,
-	notificationActions,
-} from './object-types/notification';
-import { poemMutations, poemActions } from './object-types/poem';
-import { IRootState } from '.';
-import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAssetSwitch } from './content';
+import { IPanel, IPanels } from './panels';
 import {
 	addFilter,
 	IAddFilterAction,
@@ -32,8 +34,6 @@ import {
 	setFilter,
 	SpriteFilter,
 } from './sprite-options';
-import { IPanel, IPanels } from './panels';
-import { CompositeModes } from '@/renderer/renderer-context';
 
 export interface IObjectsState {
 	nextPanelId: bigint;

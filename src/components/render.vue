@@ -26,23 +26,23 @@
 </template>
 
 <script lang="ts">
-import { MutationPayload } from 'vuex';
-import { RenderContext } from '@/renderer/renderer-context';
+import getConstants from '@/constants';
 import eventBus, {
 	ColorPickedEvent,
 	InvalidateRenderEvent,
 	RenderUpdatedEvent,
 	StateLoadingEvent,
 } from '@/eventbus/event-bus';
-import { IObject, ISetObjectPositionMutation } from '@/store/objects';
-import { ICreateSpriteAction } from '@/store/object-types/sprite';
+import { transaction } from '@/plugins/vuex-history';
 import { SceneRenderer } from '@/renderables/scene-renderer';
-import { DeepReadonly } from 'ts-essentials';
-import { defineComponent, markRaw } from 'vue';
-import getConstants from '@/constants';
+import { RenderContext } from '@/renderer/renderer-context';
+import { ICreateSpriteAction } from '@/store/object-types/sprite';
+import { IObject, ISetObjectPositionMutation } from '@/store/objects';
 import { IPanel } from '@/store/panels';
 import { disposeCanvas } from '@/util/canvas';
-import { transaction } from '@/plugins/vuex-history';
+import { DeepReadonly } from 'ts-essentials';
+import { defineComponent, markRaw } from 'vue';
+import { MutationPayload } from 'vuex';
 
 export default defineComponent({
 	props: {

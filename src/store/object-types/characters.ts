@@ -1,3 +1,5 @@
+import getConstants from '@/constants';
+import { arraySeeker } from '@/models/seekers';
 import {
 	ICreateObjectMutation,
 	IObject,
@@ -6,20 +8,18 @@ import {
 	ISetObjectPositionMutation,
 	ISetPositionAction,
 } from '@/store/objects';
-import { ActionContext, ActionTree, Commit, MutationTree, Store } from 'vuex';
-import { arraySeeker } from '@/models/seekers';
 import {
 	Character,
 	ContentPack,
 	HeadCollection,
 	Pose,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAssetSwitch } from '../content';
-import { IRootState } from '..';
 import { DeepReadonly } from 'ts-essentials';
-import { baseProps } from './base-object-props';
-import getConstants from '@/constants';
+import { ActionContext, ActionTree, Commit, MutationTree, Store } from 'vuex';
+import { IRootState } from '..';
+import { IAssetSwitch } from '../content';
 import { IPanel, IPanels } from '../panels';
+import { baseProps } from './base-object-props';
 
 export interface ICharacter extends IObject {
 	type: 'character';

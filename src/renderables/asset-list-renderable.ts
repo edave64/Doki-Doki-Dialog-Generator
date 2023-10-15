@@ -1,17 +1,17 @@
-import { RenderContext } from '@/renderer/renderer-context';
 import { getAAsset } from '@/asset-manager';
-import { PoseRenderCommand } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAssetSwitch } from '@/store/content';
-import { DeepReadonly } from 'ts-essentials';
-import { IObject } from '@/store/objects';
-import { OffscreenRenderable } from './offscreen-renderable';
-import { Store } from 'vuex';
-import { IRootState } from '@/store';
-import { ITextBox } from '@/store/object-types/textbox';
-import { IHitbox } from './renderable';
 import { IAsset } from '@/render-utils/assets/asset';
-import { IPanel } from '@/store/panels';
 import { ErrorAsset } from '@/render-utils/assets/error-asset';
+import { RenderContext } from '@/renderer/renderer-context';
+import { IRootState } from '@/store';
+import { IAssetSwitch } from '@/store/content';
+import { ITextBox } from '@/store/object-types/textbox';
+import { IObject } from '@/store/objects';
+import { IPanel } from '@/store/panels';
+import { PoseRenderCommand } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { DeepReadonly } from 'ts-essentials';
+import { Store } from 'vuex';
+import { OffscreenRenderable } from './offscreen-renderable';
+import { IHitbox } from './renderable';
 
 export abstract class AssetListRenderable<
 	Obj extends IObject

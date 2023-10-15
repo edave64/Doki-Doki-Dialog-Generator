@@ -1,9 +1,9 @@
+import getConstants from '@/constants';
 import { SelectedState } from '@/renderables/offscreen-renderable';
 import { RenderContext } from '@/renderer/renderer-context';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
 import { INotification } from '@/store/object-types/notification';
 import { ScalingRenderable } from './scaling-renderable';
-import getConstants from '@/constants';
 
 export class Notification extends ScalingRenderable<INotification> {
 	private _height: number = 0;

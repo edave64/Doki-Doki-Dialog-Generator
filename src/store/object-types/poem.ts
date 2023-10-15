@@ -1,13 +1,13 @@
+import getConstants from '@/constants';
 import {
 	ICreateObjectMutation,
 	IObject,
 	IObjectMutation,
 } from '@/store/objects';
 import { IPanel, IPanels } from '@/store/panels';
-import { MutationTree, ActionTree } from 'vuex';
+import { ActionTree, MutationTree } from 'vuex';
 import { IRootState } from '..';
 import { baseProps } from './base-object-props';
-import getConstants from '@/constants';
 
 export interface IPoem extends IObject {
 	type: 'poem';

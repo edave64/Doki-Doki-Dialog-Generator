@@ -1,20 +1,20 @@
-import { EnvCapabilities, Folder, IEnvironment, Settings } from './environment';
 import { registerAssetWithURL } from '@/asset-manager';
+import { EnvState } from '@/environments/env-state';
 import eventBus, {
 	ResolvableErrorEvent,
 	ShowMessageEvent,
 } from '@/eventbus/event-bus';
-import { EnvState } from '@/environments/env-state';
-import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { Store } from 'vuex';
+import { Repo } from '@/models/repo';
+import { transaction } from '@/plugins/vuex-history';
 import { IRootState } from '@/store';
 import { ReplaceContentPackAction } from '@/store/content';
-import { reactive } from 'vue';
-import { Repo } from '@/models/repo';
-import { DeepReadonly } from 'ts-essentials';
 import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
-import { transaction } from '@/plugins/vuex-history';
+import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { DeepReadonly } from 'ts-essentials';
+import { reactive } from 'vue';
+import { Store } from 'vuex';
+import { EnvCapabilities, Folder, IEnvironment, Settings } from './environment';
 
 const installedBackgroundsPack: ContentPack<string> = {
 	packId: 'dddg.buildin.installedBackgrounds',

@@ -18,16 +18,16 @@
 
 <script lang="ts">
 import Toggle from '@/components/toggle.vue';
-import { IPanel } from '@/store/panels';
-import { DeepReadonly } from 'ts-essentials';
-import ObjectTool, { Handler } from './object-tool.vue';
-import { PanelMixin } from './panel-mixin';
 import {
 	INotification,
 	NotificationSimpleProperties,
 } from '@/store/object-types/notification';
-import { defineComponent } from 'vue';
+import { IPanel } from '@/store/panels';
 import { genericSimpleSetter } from '@/util/simple-settable';
+import { DeepReadonly } from 'ts-essentials';
+import { defineComponent } from 'vue';
+import ObjectTool, { Handler } from './object-tool.vue';
+import { PanelMixin } from './panel-mixin';
 
 const setableN = genericSimpleSetter<
 	INotification,

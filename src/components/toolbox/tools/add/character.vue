@@ -21,14 +21,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { ICreateCharacterAction } from '@/store/object-types/characters';
-import { IAssetSwitch } from '@/store/content';
-import { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import DButton from '@/components/ui/d-button.vue';
 import environment from '@/environments/environment';
-import { DeepReadonly } from 'ts-essentials';
 import { transaction } from '@/plugins/vuex-history';
+import { IAssetSwitch } from '@/store/content';
+import { ICreateCharacterAction } from '@/store/object-types/characters';
+import { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { DeepReadonly } from 'ts-essentials';
+import { defineComponent } from 'vue';
 
 export default defineComponent({
 	emits: ['show-dialog'],

@@ -32,17 +32,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { PanelMixin } from './panel-mixin';
 import DButton from '@/components/ui/d-button.vue';
 import environment, { Folder } from '@/environments/environment';
-import { DeepReadonly } from 'ts-essentials';
+import { transaction } from '@/plugins/vuex-history';
 import { IPasteFromClipboardAction } from '@/store/objects';
 import { IPanel } from '@/store/panels';
+import { DeepReadonly } from 'ts-essentials';
+import { defineComponent } from 'vue';
 import Characters from './add/character.vue';
 import Sprites from './add/sprite.vue';
 import UI from './add/ui.vue';
-import { transaction } from '@/plugins/vuex-history';
+import { PanelMixin } from './panel-mixin';
 
 type GroupNames = 'characters' | 'sprites' | 'ui';
 interface Group {

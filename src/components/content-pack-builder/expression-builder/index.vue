@@ -157,9 +157,9 @@ import { defineComponent } from 'vue';
 import DropTarget from '../../toolbox/drop-target.vue';
 
 // App.vue has currently so many responsiblities that it's best to break it into chunks
+import { transaction } from '@/plugins/vuex-history';
 import Selection from './selection.vue';
 import Selector from './selector.vue';
-import { transaction } from '@/plugins/vuex-history';
 
 const uploadedExpressionsPackDefaults: ContentPack<IAssetSwitch> = {
 	packId: 'dddg.uploads.expressions',

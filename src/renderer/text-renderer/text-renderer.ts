@@ -1,9 +1,9 @@
 import environment from '@/environments/environment';
 import { ICommandToken, Token, tokenize } from './tokenizer';
 
-import textCommands from './text-commands';
-import { UnreachableCaseError } from 'ts-essentials';
 import { makeCanvas } from '@/util/canvas';
+import { UnreachableCaseError } from 'ts-essentials';
+import textCommands from './text-commands';
 
 export interface ITextStyle {
 	fontName: string;

@@ -245,15 +245,15 @@
 </template>
 
 <script lang="ts">
-import DFlow from '@/components/ui/d-flow.vue';
-import DFieldset from '@/components/ui/d-fieldset.vue';
-import Slider from '@/components/toolbox/subtools/color/slider.vue';
 import Color from '@/components/toolbox/subtools/color/color.vue';
+import Slider from '@/components/toolbox/subtools/color/slider.vue';
+import DFieldset from '@/components/ui/d-fieldset.vue';
+import DFlow from '@/components/ui/d-flow.vue';
+import L from '@/components/ui/link.vue';
+import { transaction } from '@/plugins/vuex-history';
+import { CompositeModes } from '@/renderer/renderer-context';
 import { IObject, ISetCompositionMutation } from '@/store/objects';
 import { IPanel } from '@/store/panels';
-import { defineComponent, Prop, PropType } from 'vue';
-import { CompositeModes } from '@/renderer/renderer-context';
-import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
 import {
 	IAddFilterAction,
 	IHasSpriteFilters,
@@ -264,11 +264,11 @@ import {
 	percentageValue,
 	SpriteFilter,
 } from '@/store/sprite-options';
+import { disposeCanvas, makeCanvas } from '@/util/canvas';
 import { IColor } from '@/util/colors/color';
 import { HSLAColor } from '@/util/colors/hsl';
-import L from '@/components/ui/link.vue';
-import { disposeCanvas, makeCanvas } from '@/util/canvas';
-import { transaction } from '@/plugins/vuex-history';
+import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
+import { defineComponent, Prop, PropType } from 'vue';
 
 const filterText: ReadonlyMap<SpriteFilter['type'], string> = new Map<
 	SpriteFilter['type'],

@@ -1,10 +1,10 @@
-import { ITextboxRenderer } from '../textbox';
-import * as TBConstants from '@/constants/game_modes/ddlc/text-box';
-import { DdlcBase } from './ddlc-base';
-import { RenderContext } from '@/renderer/renderer-context';
-import getConstants from '@/constants';
 import { getBuildInAsset } from '@/asset-manager';
+import getConstants from '@/constants';
+import * as TBConstants from '@/constants/game_modes/ddlc/text-box';
+import { RenderContext } from '@/renderer/renderer-context';
 import { ITextBox } from '@/store/object-types/textbox';
+import { ITextboxRenderer } from '../textbox';
+import { DdlcBase } from './ddlc-base';
 
 export class Default extends DdlcBase implements ITextboxRenderer {
 	static readonly id: ITextBox['style'] = 'normal';

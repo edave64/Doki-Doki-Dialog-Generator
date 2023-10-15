@@ -83,29 +83,29 @@
 </template>
 
 <script lang="ts">
-import { IObject } from '@/store/objects';
-import {
-	getData,
-	getParts,
-	ISeekPoseAction,
-	ISeekPosePartAction,
-	ICharacter,
-	ISeekStyleAction,
-	getHeads,
-} from '@/store/object-types/characters';
+import { getAAssetUrl } from '@/asset-manager';
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
-import { IPanel } from '@/store/panels';
-import Parts from './character/parts.vue';
-import { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { transaction } from '@/plugins/vuex-history';
 import { IAssetSwitch } from '@/store/content';
-import { PanelMixin } from './panel-mixin';
+import {
+	getData,
+	getHeads,
+	getParts,
+	ICharacter,
+	ISeekPoseAction,
+	ISeekPosePartAction,
+	ISeekStyleAction,
+} from '@/store/object-types/characters';
+import { IObject } from '@/store/objects';
+import { IPanel } from '@/store/panels';
+import { genericSetable } from '@/util/simple-settable';
+import { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { DeepReadonly } from 'ts-essentials';
 import { defineComponent } from 'vue';
-import { genericSetable } from '@/util/simple-settable';
+import Parts from './character/parts.vue';
 import ObjectTool from './object-tool.vue';
-import { getAAssetUrl } from '@/asset-manager';
-import { transaction } from '@/plugins/vuex-history';
+import { PanelMixin } from './panel-mixin';
 
 const setable = genericSetable<ICharacter>();
 

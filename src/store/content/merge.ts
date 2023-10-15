@@ -1,7 +1,7 @@
 import {
-	ContentPack,
 	Background,
 	Character,
+	ContentPack,
 	HeadCollections,
 	Pose,
 	StyleClasses,

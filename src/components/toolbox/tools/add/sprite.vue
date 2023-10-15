@@ -63,22 +63,22 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
 import { getAAssetUrl } from '@/asset-manager';
+import DButton from '@/components/ui/d-button.vue';
+import environment, { Folder } from '@/environments/environment';
 import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
+import { ICreateSpriteAction } from '@/store/object-types/sprite';
 import {
 	ContentPack,
 	Sprite,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import DropTarget from '../../drop-target.vue';
-import DButton from '@/components/ui/d-button.vue';
-import { ICreateSpriteAction } from '@/store/object-types/sprite';
-import environment, { Folder } from '@/environments/environment';
 import { DeepReadonly } from 'ts-essentials';
+import { defineComponent } from 'vue';
+import DropTarget from '../../drop-target.vue';
 import { PanelMixin } from '../panel-mixin';
 
 import MissingImage from '@/assets/missing_image.svg';
-import { TransactionLayer, transaction } from '@/plugins/vuex-history';
+import { transaction, TransactionLayer } from '@/plugins/vuex-history';
 
 const uploadedSpritesPackDefault: ContentPack<string> = {
 	packId: 'dddg.uploads.sprites',

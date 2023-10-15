@@ -1,5 +1,5 @@
-import { HSLAColor } from '@/util/colors/hsl';
 import { ITextStyle } from '@/renderer/text-renderer/text-renderer';
+import { HSLAColor } from '@/util/colors/hsl';
 import { screenHeight } from './base';
 
 // tslint:disable: no-magic-numbers

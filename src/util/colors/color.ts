@@ -1,5 +1,5 @@
-import { RGBAColor } from './rgb';
 import { HSLAColor } from './hsl';
+import { RGBAColor } from './rgb';
 
 export interface IColor {
 	toCss(): string;

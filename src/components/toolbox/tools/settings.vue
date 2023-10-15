@@ -125,14 +125,14 @@
 </template>
 
 <script lang="ts">
-import Toggle from '@/components/toggle.vue';
-import { PanelMixin } from './panel-mixin';
-import environment from '@/environments/environment';
-import { defineComponent } from 'vue';
 import ModalDialog from '@/components/modal-dialog.vue';
+import Toggle from '@/components/toggle.vue';
 import L from '@/components/ui/link.vue';
-import { safeAsync } from '@/util/errors';
+import environment from '@/environments/environment';
 import { transaction } from '@/plugins/vuex-history';
+import { safeAsync } from '@/util/errors';
+import { defineComponent } from 'vue';
+import { PanelMixin } from './panel-mixin';
 
 export default defineComponent({
 	mixins: [PanelMixin],

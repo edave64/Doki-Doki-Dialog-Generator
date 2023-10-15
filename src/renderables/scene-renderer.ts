@@ -1,26 +1,26 @@
-import { Store } from 'vuex';
-import { IRootState } from '@/store';
-import { Background, color, IBackgroundRenderer } from './background';
-import { IPanel } from '@/store/panels';
-import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
-import { ISprite } from '@/store/object-types/sprite';
-import { Sprite } from './sprite';
-import { Character } from './character';
-import { getData, ICharacter } from '@/store/object-types/characters';
-import { ITextBox } from '@/store/object-types/textbox';
-import { TextBox } from './textbox';
-import { Choice } from './choices';
-import { RenderContext } from '@/renderer/renderer-context';
 import { getBuildInAsset } from '@/asset-manager';
+import { Notification } from '@/renderables/notification';
 import { Renderer } from '@/renderer/renderer';
+import { RenderContext } from '@/renderer/renderer-context';
+import { IRootState } from '@/store';
 import { BackgroundLookup } from '@/store/content';
+import { getData, ICharacter } from '@/store/object-types/characters';
 import { IChoices } from '@/store/object-types/choices';
 import { INotification } from '@/store/object-types/notification';
-import { Notification } from '@/renderables/notification';
-import { Poem } from './poem';
 import { IPoem } from '@/store/object-types/poem';
+import { ISprite } from '@/store/object-types/sprite';
+import { ITextBox } from '@/store/object-types/textbox';
 import { IObject } from '@/store/objects';
+import { IPanel } from '@/store/panels';
+import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
+import { Store } from 'vuex';
+import { Background, color, IBackgroundRenderer } from './background';
+import { Character } from './character';
+import { Choice } from './choices';
 import { OffscreenRenderable, SelectedState } from './offscreen-renderable';
+import { Poem } from './poem';
+import { Sprite } from './sprite';
+import { TextBox } from './textbox';
 
 export class SceneRenderer {
 	// Support for browsers without :focus-visible
