@@ -69,9 +69,13 @@ export default defineComponent({
 			let ret = '';
 			const size = this.backgroundSize;
 			const globalOffset = this.part!.offset ?? [0, 0];
-			for (let i = 0; i < this.part!.images.length; ++i) {
-				const image = this.part!.images[i];
-				const lookup = this.lookups[i];
+			// The indexing in this loop is reversed, since the images are in order of painting, like dddgs render commands,
+			// where the last object in the list is drawn last, and thus above all others.
+			// Css handles this in reverse, where prior layers are draw above the later ones.
+			const max = this.part!.images.length - 1;
+			for (let i = 0; i <= max; ++i) {
+				const image = this.part!.images[max - i];
+				const lookup = this.lookups[max - i];
 				if (!lookup) continue;
 				if (i > 0) ret += ', ';
 				const localOffset = image.offset ?? [0, 0];
