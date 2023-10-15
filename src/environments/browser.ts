@@ -1,5 +1,5 @@
 import { EnvCapabilities, Folder, IEnvironment, Settings } from './environment';
-import { EnvState } from './envState';
+import { EnvState } from './env-state';
 import { DeepReadonly, reactive, ref } from 'vue';
 import { Repo } from '@/models/repo';
 import { Store } from 'vuex';

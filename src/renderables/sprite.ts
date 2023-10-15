@@ -1,11 +1,11 @@
 import { getAAsset } from '@/asset-manager';
-import { ISprite } from '@/store/objectTypes/sprite';
+import { ISprite } from '@/store/object-types/sprite';
 import { DeepReadonly } from 'ts-essentials';
 import {
 	AssetListRenderable,
 	IDrawAssets,
 	IDrawAssetsUnloaded,
-} from './assetListRenderable';
+} from './asset-list-renderable';
 
 export class Sprite extends AssetListRenderable<ISprite> {
 	private assets!: IDrawAssets[];

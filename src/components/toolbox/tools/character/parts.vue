@@ -1,42 +1,26 @@
 <template>
 	<d-flow no-wraping @keydown="onKeydown">
 		<button @click="$emit('leave')">Back</button>
-		<button
+		<d-button
+			icon="extension"
 			@click="
 				$emit('show-expression-dialog', { character: character.characterType })
 			"
 			v-if="part === 'head'"
-			class="icon-button"
 		>
-			<i class="material-icons">extension</i>
-			<span class="text-block">Create new expressions</span>
-		</button>
-		<button
+			Create new expressions
+		</d-button>
+		<d-button
+			icon="extension"
 			@click="
-				$emit('show-dialog', 'type: Expressions character: ' + charData.label)
+				$emit(
+					'show-dialog',
+					`type: ${packSearchType} character: ${charData.label}`
+				)
 			"
-			v-if="part === 'head'"
-			class="icon-button"
 		>
-			<i class="material-icons">extension</i>
-			<span class="text-block">Search in content packs</span>
-		</button>
-		<button
-			@click="$emit('show-dialog', 'type: Styles character: ' + charData.label)"
-			v-else-if="part === 'style'"
-			class="icon-button"
-		>
-			<i class="material-icons">extension</i>
-			<span>Search in content packs</span>
-		</button>
-		<button
-			@click="$emit('show-dialog', 'type: Poses character: ' + charData.label)"
-			v-else
-			class="icon-button"
-		>
-			<i class="material-icons">extension</i>
-			<span>Search in content packs</span>
-		</button>
+			Search in content packs
+		</d-button>
 		<part-button
 			v-for="(part, index) of parts"
 			:key="index"
@@ -69,7 +53,7 @@
 
 <script lang="ts">
 import { isWebPSupported } from '@/asset-manager';
-import PartButton, { IPartButtonImage, IPartImage } from './partButton.vue';
+import PartButton, { IPartButtonImage, IPartImage } from './part-button.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import {
@@ -88,6 +72,7 @@ import {
 import { DeepReadonly } from 'ts-essentials';
 import { defineComponent, PropType } from 'vue';
 import { transaction } from '@/plugins/vuex-history';
+import DButton from '@/components/ui/d-button.vue';
 
 interface IPartStyleGroup {
 	label: string;
@@ -96,7 +81,7 @@ interface IPartStyleGroup {
 }
 
 export default defineComponent({
-	components: { PartButton, DFieldset, DFlow },
+	components: { PartButton, DFieldset, DFlow, DButton },
 	props: {
 		character: {
 			type: Object as PropType<DeepReadonly<ICharacter>>,
@@ -115,6 +100,16 @@ export default defineComponent({
 		stylePriorities: [] as Array<[string, string]>,
 	}),
 	computed: {
+		packSearchType() {
+			switch (this.part) {
+				case 'head':
+					return 'Expressions';
+				case 'style':
+					return 'Styles';
+				default:
+					return 'Poses';
+			}
+		},
 		vertical(): boolean {
 			return this.$store.state.ui.vertical;
 		},
@@ -366,3 +361,4 @@ export default defineComponent({
 	width: 100px;
 }
 </style>
+@/store/object-types/characters

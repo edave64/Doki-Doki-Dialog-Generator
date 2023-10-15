@@ -1,39 +1,36 @@
-import { ITextStyle } from '@/renderer/textRenderer/textRenderer';
-import { screenWidth } from './base';
-import { nameboxStrokeDefaultColor } from './textBoxCustom';
+import { ITextStyle } from '@/renderer/text-renderer/text-renderer';
+import { screenWidth } from '@/constants/game_modes/ddlc_plus/base';
+import { nameboxStrokeDefaultColor } from './text-box-custom';
 
 // tslint:disable: no-magic-numbers
-export const TextBoxWidth = 816;
+export const TextBoxWidth = 1220;
 export const TextBoxCorruptedWidth = 900;
-export const TextBoxHeight = 146;
+export const TextBoxHeight = 219;
 export const TextBoxKerning = 0;
 export const TextBoxLineHeight = 29;
 export const TextBoxCorruptedKerning = 8;
-export const TextBoxTextXOffset = 38;
-export const TextBoxTextYOffset = 44;
-export const TextBoxBottomSpacing = 6;
-
-export const HdSpacing = 93;
-export const HdSideMargin = 404;
+export const TextBoxTextXOffset = 57;
+export const TextBoxTextYOffset = 68;
+export const TextBoxBottomSpacing = 54;
 
 export const TextBoxTextCorruptedXOffset = 9;
 export const TextBoxTextCorruptedYOffset = 9;
 
-export const NameboxHeight = 39;
-export const NameboxWidth = 168;
-export const NameboxXOffset = 34;
-export const NameboxTextYOffset = 29;
+export const NameboxHeight = 59;
+export const NameboxWidth = 252;
+export const NameboxXOffset = 49;
+export const NameboxTextYOffset = 43;
 
-export const ControlsYBottomOffset = 12;
-export const ControlsXHistoryOffset = -126;
-export const ControlsXSkipOffset = -72;
-export const ControlsXStuffOffset = -38;
+export const ControlsYBottomOffset = 12 * 1.5;
+export const ControlsXHistoryOffset = -126 * 1.5;
+export const ControlsXSkipOffset = -72 * 1.5;
+export const ControlsXStuffOffset = -38 * 1.5;
 
-export const ArrowXRightOffset = 30.75;
-export const ArrowYBottomOffset = 26;
+export const ArrowXRightOffset = 30.75 * 1.5;
+export const ArrowYBottomOffset = 26 * 1.5;
 
-export const GlowRX = 426;
-export const GlowRY = 58;
+export const GlowRX = 426 * 1.5;
+export const GlowRY = 58 * 1.5;
 
 export const BaseTextStyle: ITextStyle = {
 	alpha: 1,
@@ -44,8 +41,8 @@ export const BaseTextStyle: ITextStyle = {
 	isItalic: false,
 	isStrikethrough: false,
 	isUnderlined: false,
-	letterSpacing: 0,
-	lineSpacing: 1,
+	letterSpacing: 1,
+	lineSpacing: 1.2,
 	strokeColor: '',
 	strokeWidth: 0,
 };
@@ -53,16 +50,16 @@ export const BaseTextStyle: ITextStyle = {
 export const NameboxTextStyle: ITextStyle = {
 	...BaseTextStyle,
 	fontName: 'riffic',
-	fontSize: 24,
+	fontSize: 36,
 	strokeColor: nameboxStrokeDefaultColor,
-	strokeWidth: 6,
+	strokeWidth: 9,
 	color: 'white',
-	letterSpacing: 1,
+	letterSpacing: 2,
 };
 
 export const ControlsTextStyle = {
 	align: 'left' as CanvasTextAlign,
-	font: '13px aller',
+	font: '24px aller',
 	fill: {
 		style: '#522',
 	},
@@ -74,20 +71,22 @@ export const ControlsTextDisabledStyle = {
 		style: '#a66',
 	},
 };
-/*
+
 export const TextBoxStyle = {
-	...BaseTextStyle,
-	align: 'left' as CanvasTextAlign,
-	font: '24px aller',
-	outline: {
-		style: '#523140',
-		width: 4,
-	},
-	fill: {
-		style: '#fff',
-	},
+	alpha: 1,
+	color: '#ffffff',
+	fontName: 'aller',
+	fontSize: 30,
+	isBold: false,
+	isItalic: false,
+	isStrikethrough: false,
+	isUnderlined: false,
+	letterSpacing: 0,
+	strokeColor: '#523140',
+	strokeWidth: 5,
+	lineSpacing: 1.2,
 };
-*/
+
 export const TextBoxCorruptedStyle = {
 	align: 'left' as CanvasTextAlign,
 	font: '24px verily',
@@ -98,21 +97,6 @@ export const TextBoxCorruptedStyle = {
 	fill: {
 		style: '#fff',
 	},
-};
-
-export const TextBoxStyle = {
-	alpha: 1,
-	color: '#ffffff',
-	fontName: 'aller',
-	fontSize: 24,
-	isBold: false,
-	isItalic: false,
-	isStrikethrough: false,
-	isUnderlined: false,
-	letterSpacing: 0,
-	strokeColor: '#523140',
-	strokeWidth: 4,
-	lineSpacing: 1.2,
 };
 
 export const TextBoxX = screenWidth / 2 - TextBoxWidth / 2; // 232
@@ -126,4 +110,4 @@ export const ControlsXHistory = TextBoxX + ControlsXHistoryOffset;
 export const ControlsXSkip = TextBoxX + ControlsXSkipOffset;
 export const ControlsXStuff = TextBoxX + ControlsXStuffOffset;
 
-export const DefaultTextboxStyle = 'normal';
+export const DefaultTextboxStyle = 'custom_plus';

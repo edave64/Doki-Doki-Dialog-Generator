@@ -2,11 +2,11 @@ import {
 	CompositeModes,
 	IShadow,
 	RenderContext,
-} from '@/renderer/rendererContext';
+} from '@/renderer/renderer-context';
 import { Renderer } from '@/renderer/renderer';
 import { IHitbox } from './renderable';
 import { DeepReadonly } from 'ts-essentials';
-import { SpriteFilter } from '@/store/sprite_options';
+import { SpriteFilter } from '@/store/sprite-options';
 import { IObject } from '@/store/objects';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';

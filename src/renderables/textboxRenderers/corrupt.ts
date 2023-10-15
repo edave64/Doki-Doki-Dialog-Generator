@@ -1,7 +1,7 @@
 import {
 	TextBoxCorruptedWidth,
 	TextBoxWidth,
-} from '@/constants/game_modes/ddlc/textBox';
+} from '@/constants/game_modes/ddlc/text-box';
 import { Default } from './default';
 
 export class Corrupted extends Default {

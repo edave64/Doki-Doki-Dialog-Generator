@@ -53,7 +53,7 @@ import {
 	ContentPack,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
-import SliderGroup from './sliderGroup.vue';
+import SliderGroup from './slider-group.vue';
 import DButton from '../../../ui/d-button.vue';
 import { RGBAColor } from '@/util/colors/rgb';
 import { defineComponent, PropType } from 'vue';

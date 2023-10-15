@@ -1,10 +1,10 @@
 import { ITextboxRenderer } from '../textbox';
-import * as TBConstants from '@/constants/game_modes/ddlc/textBox';
-import { DdlcBase } from './ddlc_base';
-import { RenderContext } from '@/renderer/rendererContext';
+import * as TBConstants from '@/constants/game_modes/ddlc/text-box';
+import { DdlcBase } from './ddlc-base';
+import { RenderContext } from '@/renderer/renderer-context';
 import getConstants from '@/constants';
 import { getBuildInAsset } from '@/asset-manager';
-import { roundedRectangle, roundedTopRectangle } from '@/renderer/pathTools';
+import { roundedRectangle, roundedTopRectangle } from '@/renderer/path-tools';
 import {
 	dotColorDelta,
 	dotPatternSize,
@@ -19,7 +19,7 @@ import {
 	textboxOutlineWidth,
 	textboxRounding,
 	textboxRoundingBuffer,
-} from '@/constants/game_modes/ddlc/textBoxCustom';
+} from '@/constants/game_modes/ddlc/text-box-custom';
 import { RGBAColor } from '@/util/colors/rgb';
 import { Renderer } from '@/renderer/renderer';
 

@@ -99,7 +99,7 @@ import { IPanel } from '@/store/panels';
 import Parts from './character/parts.vue';
 import { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAssetSwitch } from '@/store/content';
-import { PanelMixin } from './panelMixin';
+import { PanelMixin } from './panel-mixin';
 import { DeepReadonly } from 'ts-essentials';
 import { defineComponent } from 'vue';
 import { genericSetable } from '@/util/simpleSettable';
@@ -274,3 +274,4 @@ input[type='file'] {
 	display: none;
 }
 </style>
+@/store/object-types/characters @/util/simple-settable

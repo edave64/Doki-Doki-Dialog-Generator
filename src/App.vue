@@ -72,7 +72,7 @@ import {
 import ToolBox from '@/components/toolbox/toolbox.vue';
 import MessageConsole from '@/components/message-console.vue';
 import Render from '@/components/render.vue';
-import ModalDialog from '@/components/ModalDialog.vue';
+import ModalDialog from '@/components/modal-dialog.vue';
 import { ISetCurrentMutation } from '@/store/panels';
 import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 import { Repo } from './models/repo';
@@ -92,7 +92,7 @@ export default defineComponent({
 		Render,
 		ModalDialog,
 		SingleBox: defineAsyncComponent(
-			() => import('@/components/repo/layouts/SingleBox.vue')
+			() => import('@/components/repo/layouts/single-box.vue')
 		),
 		ExpressionBuilder: defineAsyncComponent(
 			() =>
@@ -114,7 +114,6 @@ export default defineComponent({
 		systemPrefersDarkMode: false,
 		preLoading: true,
 		classes: new Set() as Set<string>,
-		classTimeout: null as number | null,
 		queuedRerender: null as number | null,
 	}),
 	computed: {
@@ -215,16 +214,6 @@ export default defineComponent({
 			});
 		},
 		onKeydown(e: KeyboardEvent) {
-			if (e.key === 'Control') {
-				if (this.classTimeout === null) {
-					this.classTimeout = setTimeout(() => {
-						this.classTimeout = null;
-						this.classes.add('ctrl-key');
-					}, 500);
-				}
-				return;
-			}
-
 			if (
 				e.target instanceof HTMLInputElement ||
 				e.target instanceof HTMLTextAreaElement
@@ -344,14 +333,6 @@ export default defineComponent({
 				} as ISetObjectPositionMutation);
 			});
 		},
-		onKeyup(e: KeyboardEvent) {
-			if (e.key === 'Control') {
-				if (this.classTimeout != null) clearTimeout(this.classTimeout);
-				this.classTimeout = null;
-				this.classes.delete('ctrl-key');
-				return;
-			}
-		},
 		applyTheme(): void {
 			document.body.classList.toggle('dark-theme', this.useDarkTheme);
 		},
@@ -390,9 +371,7 @@ export default defineComponent({
 		});
 
 		window.addEventListener('resize', this.updateArea);
-		window.removeEventListener('keydown', this.onKeydown);
 		window.addEventListener('keydown', this.onKeydown);
-		window.addEventListener('keyup', this.onKeyup);
 
 		if (window.matchMedia != null) {
 			/* The viewport is less than, or equal to, 700 pixels wide */
@@ -481,7 +460,7 @@ export default defineComponent({
 						`${
 							this.$store.state.ui.vertical ? 'To the right' : 'At the bottom'
 						}` +
-						' you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more!',
+						' you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more! Use the camera icon to download the image.',
 				} as ICreateTextBoxAction);
 			}
 			this.$store.commit('panels/setCurrentBackground', {
@@ -493,8 +472,8 @@ export default defineComponent({
 		});
 	},
 	unmounted(): void {
+		window.removeEventListener('resize', this.updateArea);
 		window.removeEventListener('keydown', this.onKeydown);
-		window.removeEventListener('keyup', this.onKeyup);
 	},
 });
 
@@ -512,3 +491,4 @@ export interface IShowExpressionDialogEvent {
 	pointer-events: none;
 }
 </style>
+@/store/object-types/textbox@/store/object-types/characters

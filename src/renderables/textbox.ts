@@ -1,7 +1,10 @@
-import { RenderContext } from '@/renderer/rendererContext';
-import { ITextBox } from '@/store/objectTypes/textbox';
-import { ITextStyle, TextRenderer } from '@/renderer/textRenderer/textRenderer';
-import { ScalingRenderable } from './scalingRenderable';
+import { RenderContext } from '@/renderer/renderer-context';
+import { ITextBox } from '@/store/object-types/textbox';
+import {
+	ITextStyle,
+	TextRenderer,
+} from '@/renderer/text-renderer/text-renderer';
+import { ScalingRenderable } from './scaling-renderable';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { IObject } from '@/store/objects';
@@ -11,7 +14,7 @@ import { Default } from './textboxRenderers/default';
 import { Corrupted } from './textboxRenderers/corrupt';
 import { Custom } from './textboxRenderers/custom';
 import { None } from './textboxRenderers/none';
-import { CustomPlus } from './textboxRenderers/custom_plus';
+import { CustomPlus } from './textboxRenderers/custom-plus';
 import { DeepReadonly } from 'ts-essentials';
 import { IPanel } from '@/store/panels';
 

@@ -4,7 +4,7 @@ import eventBus, {
 	ResolvableErrorEvent,
 	ShowMessageEvent,
 } from '@/eventbus/event-bus';
-import { EnvState } from '@/environments/envState';
+import { EnvState } from '@/environments/env-state';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';

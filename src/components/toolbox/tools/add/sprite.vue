@@ -288,3 +288,4 @@ input {
 	justify-content: center;
 }
 </style>
+../panel-mixin @/store/object-types/sprite

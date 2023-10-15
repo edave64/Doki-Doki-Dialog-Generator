@@ -39,10 +39,10 @@
 
 <script lang="ts">
 import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
-import SearchBar from '../SearchBar.vue';
-import List from '../List.vue';
+import SearchBar from '../search-bar.vue';
+import List from '../list.vue';
 import { SelectedEvent } from '../types';
-import PackDisplay from '../PackDisplay.vue';
+import PackDisplay from '../pack-display.vue';
 import { defineComponent } from 'vue';
 import { Pack, Repo } from '@/models/repo';
 import { DeepReadonly } from 'ts-essentials';

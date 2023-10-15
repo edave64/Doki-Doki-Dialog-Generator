@@ -1,6 +1,6 @@
-import { OffscreenRenderable } from './offscreenRenderable';
+import { OffscreenRenderable } from './offscreen-renderable';
 import { IObject } from '@/store/objects';
-import { RenderContext } from '@/renderer/rendererContext';
+import { RenderContext } from '@/renderer/renderer-context';
 import { IHitbox } from './renderable';
 import getConstants from '@/constants';
 import { DeepReadonly } from 'ts-essentials';

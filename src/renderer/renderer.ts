@@ -1,5 +1,5 @@
-import { RenderContext } from './rendererContext';
-import { RenderAbortedException } from './renderAbortedException';
+import { RenderContext } from './renderer-context';
+import { RenderAbortedException } from './render-aborted-exception';
 import environment from '@/environments/environment';
 import getConstants from '@/constants';
 import { disposeCanvas, makeCanvas } from '@/util/canvas';

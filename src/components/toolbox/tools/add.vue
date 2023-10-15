@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { PanelMixin } from './panelMixin';
+import { PanelMixin } from './panel-mixin';
 import DButton from '@/components/ui/d-button.vue';
 import environment, { Folder } from '@/environments/environment';
 import { DeepReadonly } from 'ts-essentials';

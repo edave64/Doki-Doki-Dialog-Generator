@@ -20,7 +20,8 @@
 		@drop="onDrop"
 		@mouseenter="onMouseEnter"
 		@contextmenu.prevent
-		>HTML5 is required to use the Doki Doki Dialog Generator.
+	>
+		HTML5 is required to use the Doki Doki Dialog Generator.
 	</canvas>
 </template>
 
@@ -388,5 +389,8 @@ export default defineComponent({
 canvas {
 	position: fixed;
 	display: block;
+	user-select: none;
+	-webkit-user-select: none;
 }
 </style>
+@/renderer/renderer-context @/store/object-types/sprite

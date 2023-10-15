@@ -1,7 +1,7 @@
 import { OldEdge } from './edge';
 import { Browser } from './browser';
 import { Electron } from './electron';
-import { EnvState } from './envState';
+import { EnvState } from './env-state';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
 import { DeepReadonly } from 'ts-essentials';

@@ -1,6 +1,6 @@
-import { ITextStyle } from '@/renderer/textRenderer/textRenderer';
-import { BaseTextStyle } from './textBox';
-import { nameboxStrokeDefaultColor } from './textBoxCustom';
+import { ITextStyle } from '@/renderer/text-renderer/text-renderer';
+import { BaseTextStyle } from './text-box';
+import { nameboxStrokeDefaultColor } from './text-box-custom';
 
 // tslint:disable: no-magic-numbers
 export const NotificationBackgroundColor = '#ffe6f4';

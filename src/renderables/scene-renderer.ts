@@ -3,24 +3,24 @@ import { IRootState } from '@/store';
 import { Background, color, IBackgroundRenderer } from './background';
 import { IPanel } from '@/store/panels';
 import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
-import { ISprite } from '@/store/objectTypes/sprite';
+import { ISprite } from '@/store/object-types/sprite';
 import { Sprite } from './sprite';
 import { Character } from './character';
-import { getData, ICharacter } from '@/store/objectTypes/characters';
-import { ITextBox } from '@/store/objectTypes/textbox';
+import { getData, ICharacter } from '@/store/object-types/characters';
+import { ITextBox } from '@/store/object-types/textbox';
 import { TextBox } from './textbox';
 import { Choice } from './choices';
-import { RenderContext } from '@/renderer/rendererContext';
+import { RenderContext } from '@/renderer/renderer-context';
 import { getBuildInAsset } from '@/asset-manager';
 import { Renderer } from '@/renderer/renderer';
 import { BackgroundLookup } from '@/store/content';
-import { IChoices } from '@/store/objectTypes/choices';
-import { INotification } from '@/store/objectTypes/notification';
+import { IChoices } from '@/store/object-types/choices';
+import { INotification } from '@/store/object-types/notification';
 import { Notification } from '@/renderables/notification';
 import { Poem } from './poem';
-import { IPoem } from '@/store/objectTypes/poem';
+import { IPoem } from '@/store/object-types/poem';
 import { IObject } from '@/store/objects';
-import { OffscreenRenderable, SelectedState } from './offscreenRenderable';
+import { OffscreenRenderable, SelectedState } from './offscreen-renderable';
 
 export class SceneRenderer {
 	// Support for browsers without :focus-visible

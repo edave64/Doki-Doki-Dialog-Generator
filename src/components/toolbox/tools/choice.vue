@@ -47,7 +47,7 @@ import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import { IPanel } from '@/store/panels';
-import { PanelMixin } from './panelMixin';
+import { PanelMixin } from './panel-mixin';
 import {
 	IAddChoiceAction,
 	IChoice,
@@ -208,3 +208,4 @@ interface IThis extends ComponentCustomProperties {
 	}
 }
 </style>
+@/store/object-types/choices @/util/simple-settable

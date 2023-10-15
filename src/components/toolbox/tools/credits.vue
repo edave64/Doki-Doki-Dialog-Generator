@@ -107,7 +107,7 @@
 </template>
 
 <script lang="ts">
-import { PanelMixin } from './panelMixin';
+import { PanelMixin } from './panel-mixin';
 import L from '@/components/ui/link.vue';
 import { defineComponent } from 'vue';
 

@@ -47,7 +47,7 @@
 import Toggle from '@/components/toggle.vue';
 import { IPanel } from '@/store/panels';
 import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
-import { PanelMixin } from './panelMixin';
+import { PanelMixin } from './panel-mixin';
 import {
 	IPoem,
 	ISetTextBoxProperty,
@@ -172,3 +172,4 @@ export default defineComponent({
 	}
 }
 </style>
+@/store/object-types/poem @/util/simple-settable

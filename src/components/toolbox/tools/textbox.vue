@@ -189,7 +189,7 @@ import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import { IPanel } from '@/store/panels';
 import { defineComponent } from 'vue';
-import { PanelMixin } from './panelMixin';
+import { PanelMixin } from './panel-mixin';
 import { genericSetable, genericSimpleSetter } from '@/util/simpleSettable';
 import ObjectTool, { Handler } from './object-tool.vue';
 import getConstants from '@/constants';
@@ -431,3 +431,4 @@ export default defineComponent({
 	vertical-align: middle;
 }
 </style>
+@/store/object-types/textbox @/util/simple-settable

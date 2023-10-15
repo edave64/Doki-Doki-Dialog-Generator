@@ -6,7 +6,7 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"typeCheck": "tsc --noEmit",
-		"lint": "eslint .",
+		"lint": "eslint . | ls-lint",
 		"assetConversions": "node ./scripts/asset-conversions.js",
 		"build:pre": "vite build -c vite.config.pre.js",
 		"build:web": "vite build",
@@ -20,7 +20,6 @@
 		"@edave64/dddg-repo-filters": "^0.4.0",
 		"@edave64/doki-doki-dialog-generator-pack-format": "^2.0.0",
 		"mitt": "^3.0.0",
-		"pako": "^2.0.4",
 		"typescript": "^4.8.4",
 		"vue": "^3.2.25",
 		"vuex": "^4.0.2"
@@ -35,6 +34,7 @@
 		"prettier": "^2.7.1",
 		"sass": "^1.55.0",
 		"ts-essentials": "^9.3.0",
-		"vite": "^3.2.7"
+		"vite": "^3.2.7",
+		"@ls-lint/ls-lint": "^2.2.0"
 	}
 }

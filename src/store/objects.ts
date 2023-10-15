@@ -1,22 +1,22 @@
 import { ActionContext, ActionTree, MutationTree } from 'vuex';
-import { spriteMutations, spriteActions } from './objectTypes/sprite';
+import { spriteMutations, spriteActions } from './object-types/sprite';
 import {
 	characterActions,
 	characterMutations,
 	fixContentPackRemovalFromCharacter,
-} from './objectTypes/characters';
-import { choiceMutations, choiceActions } from './objectTypes/choices';
+} from './object-types/characters';
+import { choiceMutations, choiceActions } from './object-types/choices';
 import {
 	ITextBox,
 	textBoxActions,
 	textBoxMutations,
 	ISetTextBoxTalkingOtherMutation,
-} from './objectTypes/textbox';
+} from './object-types/textbox';
 import {
 	notificationMutations,
 	notificationActions,
-} from './objectTypes/notification';
-import { poemMutations, poemActions } from './objectTypes/poem';
+} from './object-types/notification';
+import { poemMutations, poemActions } from './object-types/poem';
 import { IRootState } from '.';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAssetSwitch } from './content';
@@ -31,9 +31,9 @@ import {
 	removeFilter,
 	setFilter,
 	SpriteFilter,
-} from './sprite_options';
+} from './sprite-options';
 import { IPanel, IPanels } from './panels';
-import { CompositeModes } from '@/renderer/rendererContext';
+import { CompositeModes } from '@/renderer/renderer-context';
 
 export interface IObjectsState {
 	nextPanelId: bigint;

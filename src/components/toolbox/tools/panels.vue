@@ -159,7 +159,7 @@
 </template>
 
 <script lang="ts">
-import { PanelMixin } from './panelMixin';
+import { PanelMixin } from './panel-mixin';
 import {
 	IDeletePanelAction,
 	IDuplicatePanelAction,
@@ -846,3 +846,4 @@ small {
 	}
 }
 </style>
+@/store/object-types/textbox@/store/object-types/notification@/store/object-types/poem@/store/object-types/choices

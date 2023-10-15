@@ -1,9 +1,9 @@
 import { ITextboxRenderer } from '../textbox';
-import * as TBConstants from '@/constants/game_modes/ddlc_plus/textBox';
-import { RenderContext } from '@/renderer/rendererContext';
+import * as TBConstants from '@/constants/game_modes/ddlc_plus/text-box';
+import { RenderContext } from '@/renderer/renderer-context';
 import getConstants from '@/constants';
 import { getBuildInAsset } from '@/asset-manager';
-import { roundedRectangle, roundedTopRectangle } from '@/renderer/pathTools';
+import { roundedRectangle, roundedTopRectangle } from '@/renderer/path-tools';
 import {
 	dotColorDelta,
 	dotPatternSize,
@@ -18,10 +18,10 @@ import {
 	textboxOutlineWidth,
 	textboxRounding,
 	textboxRoundingBuffer,
-} from '@/constants/game_modes/ddlc_plus/textBoxCustom';
+} from '@/constants/game_modes/ddlc_plus/text-box-custom';
 import { RGBAColor } from '@/util/colors/rgb';
 import { Renderer } from '@/renderer/renderer';
-import { DdlcPlusBase } from './ddlc_plus_base';
+import { DdlcPlusBase } from './ddlc-plus-base';
 
 export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 	static readonly id = 'custom_plus';

@@ -3,7 +3,7 @@ import {
 	getPose,
 	getHeads,
 	getData,
-} from '@/store/objectTypes/characters';
+} from '@/store/object-types/characters';
 import {
 	Pose,
 	Character as CharacterModel,
@@ -15,7 +15,7 @@ import { IRootState } from '@/store';
 import {
 	AssetListRenderable,
 	IDrawAssetsUnloaded,
-} from './assetListRenderable';
+} from './asset-list-renderable';
 import { IPanel } from '@/store/panels';
 
 export class Character extends AssetListRenderable<ICharacter> {

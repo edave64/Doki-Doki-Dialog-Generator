@@ -1,9 +1,9 @@
-import { CompositeModes, RenderContext } from '@/renderer/rendererContext';
+import { CompositeModes, RenderContext } from '@/renderer/renderer-context';
 import { getAAsset } from '@/asset-manager';
 import { IAssetSwitch } from '@/store/content';
 import { ScalingModes } from '@/store/panels';
 import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
-import { SpriteFilter } from '@/store/sprite_options';
+import { SpriteFilter } from '@/store/sprite-options';
 import getConstants from '@/constants';
 
 export interface IBackgroundRenderer {

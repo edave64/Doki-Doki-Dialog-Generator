@@ -1,6 +1,6 @@
-import { RenderAbortedException } from './renderAbortedException';
+import { RenderAbortedException } from './render-aborted-exception';
 import { Renderer } from './renderer';
-import { SpriteFilter } from '@/store/sprite_options';
+import { SpriteFilter } from '@/store/sprite-options';
 import { IAsset } from '@/render-utils/assets/asset';
 import { DeepReadonly } from 'ts-essentials';
 

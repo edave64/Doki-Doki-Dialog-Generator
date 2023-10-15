@@ -2,15 +2,19 @@ import getConstants from '@/constants';
 import {
 	ControlsTextDisabledStyle,
 	ControlsTextStyle,
-	TextBoxWidth,
-	TextBoxHeight,
+	ControlsXHistoryOffset,
+	ControlsXSkipOffset,
+	ControlsXStuffOffset,
 	NameboxHeight,
-} from '@/constants/game_modes/ddlc_plus/textBox';
-import { RenderContext } from '@/renderer/rendererContext';
+	TextBoxHeight,
+	TextBoxStyle,
+	TextBoxWidth,
+} from '@/constants/game_modes/ddlc/text-box';
+import { RenderContext } from '@/renderer/renderer-context';
 import { DeepReadonly } from 'vue';
 import { TextBox } from '../textbox';
 
-export abstract class DdlcPlusBase {
+export abstract class DdlcBase {
 	public abstract readonly width: number;
 	public abstract readonly height: number;
 
@@ -52,6 +56,9 @@ export abstract class DdlcPlusBase {
 	protected getControlsDisabledStyle() {
 		return ControlsTextDisabledStyle;
 	}
+	public get textboxStyle() {
+		return TextBoxStyle;
+	}
 
 	public renderControls(rx: RenderContext, y: number) {
 		const constants = getConstants();
@@ -62,43 +69,27 @@ export abstract class DdlcPlusBase {
 			: this.base.obj.x;
 		const x = baseX - w2;
 
+		const controlsCenter = x + w / 2;
+
 		const controlsStyle = this.getControlsStyle();
 
-		const texts = ['History', 'Skip', 'Auto', 'Save', 'Load', 'Settings'];
-		const textWidths = [];
-		let combinedLength = 0;
-
-		for (const text of texts) {
-			const width = DdlcPlusBase.controlWidth(rx, text);
-			textWidths.push(width);
-			combinedLength += width;
-		}
-
-		const spacing = Math.min((w - combinedLength) / (texts.length + 2), 78);
-
-		let controlX = x + (w - combinedLength - spacing * (texts.length - 1)) / 2;
-		for (let i = 0; i < texts.length; ++i) {
-			const text = texts[i];
-			const textWidth = textWidths[i];
-			const style =
-				text === 'Skip' && !this.base.obj.skip
-					? this.getControlsDisabledStyle()
-					: controlsStyle;
-			rx.drawText({
-				text,
-				x: controlX,
-				y,
-				...style,
-			});
-			controlX += textWidth + spacing;
-		}
-	}
-
-	private static widthCache: { [text: string]: number } = {};
-	private static controlWidth(rx: RenderContext, text: string) {
-		if (this.widthCache[text]) return this.widthCache[text];
-		const width = rx.measureText({ text, ...ControlsTextStyle }).width;
-		this.widthCache[text] = width;
-		return width;
+		rx.drawText({
+			text: 'History',
+			x: controlsCenter + ControlsXHistoryOffset,
+			y,
+			...controlsStyle,
+		});
+		rx.drawText({
+			text: 'Skip',
+			x: controlsCenter + ControlsXSkipOffset,
+			y,
+			...(this.base.obj.skip ? controlsStyle : this.getControlsDisabledStyle()),
+		});
+		rx.drawText({
+			text: 'Auto   Save   Load   Settings',
+			x: controlsCenter + ControlsXStuffOffset,
+			y,
+			...controlsStyle,
+		});
 	}
 }

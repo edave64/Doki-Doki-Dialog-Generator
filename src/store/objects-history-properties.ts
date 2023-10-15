@@ -1,4 +1,4 @@
-import SpriteHistoryOptions from './objectTypes/sprite_history_properties';
+import SpriteHistoryOptions from './object-types/sprite-history-properties';
 
 export default {
 	mutations: {

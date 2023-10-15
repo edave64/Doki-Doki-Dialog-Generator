@@ -11,7 +11,7 @@ import content, {
 	IContentState,
 	loadContentPack,
 } from './content';
-import uploadUrls, { IUploadUrlState } from './upload_urls';
+import uploadUrls, { IUploadUrlState } from './upload-urls';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { NsfwPacks } from '@/constants/nsfw';
 

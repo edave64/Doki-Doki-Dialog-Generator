@@ -34,6 +34,30 @@ npm run dev
 npm run build:web
 ```
 
+## Dependencies
+
+Here, we list the dependencies that are used in the code and what they do. Everything not listed here is not required to contribute.
+
+### [TypeScript](https://www.typescriptlang.org)
+
+All code is written in typescript, an typed variant of javascript. At least basic knowledge is recommend learning for any code changes.
+
+### [Vue](https://vuejs.org)
+
+Used to create and manage the GUI. Everything in the components folder uses this and it is recommended learning for anyone who wants to make UI changes.
+
+### [VueX](https://vuex.vuejs.org)
+
+A state management tool that stores the current state of the application. All of the panels, objects, positions, etc. Basically everything that ends up in a save file.
+Recommended it learn for anyone who wants to change the behaviors of objects.
+The mayority of code using it is in the "store" folder, although the "components" frequently query and send commands to the stores.
+
+### [Mitt](https://github.com/developit/mitt)
+
+A simple event bus to allow multiple components to communicate without needing to directly connect all components. Generally isn't needed for most tasks, but also trivial enough that learning it isn't a big deal.
+
 ## Recommended IDE Setup
 
-- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
+- [VSCode](https://code.visualstudio.com/) - A free code editor
+- [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) - An extension that enables support for vue components
+- [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) - An extension that enables automatic prettier formatting on save

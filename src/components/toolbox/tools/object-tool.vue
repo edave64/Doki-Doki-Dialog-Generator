@@ -131,14 +131,14 @@
 
 <script lang="ts">
 import Toggle from '@/components/toggle.vue';
-import PositionAndSize from '@/components/toolbox/commonsFieldsets/positionAndSize.vue';
-import Layers from '@/components/toolbox/commonsFieldsets/layers.vue';
-import Delete from '@/components/toolbox/commonsFieldsets/delete.vue';
+import PositionAndSize from '@/components/toolbox/commons-fieldsets/position-and-size.vue';
+import Layers from '@/components/toolbox/commons-fieldsets/layers.vue';
+import Delete from '@/components/toolbox/commons-fieldsets/delete.vue';
 import ImageOptions from '@/components/toolbox/subtools/image-options/image-options.vue';
 import Color from '@/components/toolbox/subtools/color/color.vue';
 import { IPanel } from '@/store/panels';
 import { DeepReadonly } from 'ts-essentials';
-import { PanelMixin } from './panelMixin';
+import { PanelMixin } from './panel-mixin';
 import TextEditor from '../subtools/text/text.vue';
 import { IPoem } from '@/store/objectTypes/poem';
 import { defineComponent, PropType } from 'vue';
@@ -151,7 +151,7 @@ import {
 	ISetObjectZoomMutation,
 	ISetTextBoxColor,
 } from '@/store/objects';
-import ModalDialog from '@/components/ModalDialog.vue';
+import ModalDialog from '@/components/modal-dialog.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import getConstants from '@/constants';
 import { transaction } from '@/plugins/vuex-history';
@@ -354,3 +354,4 @@ export interface Handler {
 	}
 }
 </style>
+@/store/object-types/poem @/util/simple-settable

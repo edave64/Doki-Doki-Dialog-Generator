@@ -1,4 +1,4 @@
-import { CompositeModes } from '@/renderer/rendererContext';
+import { CompositeModes } from '@/renderer/renderer-context';
 import { UnreachableCaseError } from 'ts-essentials';
 import { IObject, ISetFiltersMutation } from './objects';
 import { IPanel } from './panels';

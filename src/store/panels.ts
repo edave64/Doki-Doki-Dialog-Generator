@@ -11,7 +11,7 @@ import {
 	mutations as objectMutations,
 	fixContentPackRemoval as objectsFixContentPackRemoval,
 } from './objects';
-import { ITextBox } from './objectTypes/textbox';
+import { ITextBox } from './object-types/textbox';
 import {
 	addFilter,
 	IAddFilterAction,
@@ -22,7 +22,7 @@ import {
 	moveFilter,
 	removeFilter,
 	setFilter,
-} from './sprite_options';
+} from './sprite-options';
 
 export enum ScalingModes {
 	None = 0,

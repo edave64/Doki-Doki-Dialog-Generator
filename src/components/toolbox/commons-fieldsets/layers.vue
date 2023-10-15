@@ -78,3 +78,4 @@ table {
 	}
 }
 </style>
+@/util/simple-settable

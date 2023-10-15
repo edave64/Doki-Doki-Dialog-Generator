@@ -126,10 +126,10 @@
 
 <script lang="ts">
 import Toggle from '@/components/toggle.vue';
-import { PanelMixin } from './panelMixin';
+import { PanelMixin } from './panel-mixin';
 import environment from '@/environments/environment';
 import { defineComponent } from 'vue';
-import ModalDialog from '@/components/ModalDialog.vue';
+import ModalDialog from '@/components/modal-dialog.vue';
 import L from '@/components/ui/link.vue';
 import { safeAsync } from '@/util/errors';
 import { transaction } from '@/plugins/vuex-history';

@@ -1,13 +1,13 @@
-import { RenderContext } from '@/renderer/rendererContext';
+import { RenderContext } from '@/renderer/renderer-context';
 import { getAAsset } from '@/asset-manager';
 import { PoseRenderCommand } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { IAssetSwitch } from '@/store/content';
 import { DeepReadonly } from 'ts-essentials';
 import { IObject } from '@/store/objects';
-import { OffscreenRenderable } from './offscreenRenderable';
+import { OffscreenRenderable } from './offscreen-renderable';
 import { Store } from 'vuex';
 import { IRootState } from '@/store';
-import { ITextBox } from '@/store/objectTypes/textbox';
+import { ITextBox } from '@/store/object-types/textbox';
 import { IHitbox } from './renderable';
 import { IAsset } from '@/render-utils/assets/asset';
 import { IPanel } from '@/store/panels';

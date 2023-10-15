@@ -21,7 +21,7 @@ import Toggle from '@/components/toggle.vue';
 import { IPanel } from '@/store/panels';
 import { DeepReadonly } from 'ts-essentials';
 import ObjectTool, { Handler } from './object-tool.vue';
-import { PanelMixin } from './panelMixin';
+import { PanelMixin } from './panel-mixin';
 import {
 	INotification,
 	NotificationSimpleProperties,
@@ -104,3 +104,4 @@ export default defineComponent({
 	}
 }
 </style>
+@/store/object-types/notification @/util/simple-settable

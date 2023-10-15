@@ -6,7 +6,7 @@ import {
 import { IPanel, IPanels } from '@/store/panels';
 import { MutationTree, ActionTree } from 'vuex';
 import { IRootState } from '..';
-import { baseProps } from './baseObjectProps';
+import { baseProps } from './base-object-props';
 import getConstants from '@/constants';
 
 export interface IPoem extends IObject {

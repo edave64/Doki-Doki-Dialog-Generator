@@ -21,18 +21,24 @@
 				@change-color="colorSelect = true"
 				@open-image-options="imageOptions = true"
 			/>
-
-			<button class="btn upload-background" @click="$refs.upload.click()">
+			<d-button
+				icon="upload"
+				class="upload-background"
+				@click="$refs.upload.click()"
+			>
 				Upload
 				<input type="file" ref="upload" @change="onFileUpload" />
-			</button>
-			<button class="upload-background" @click="addByUrl">Add by URL</button>
-			<button
+			</d-button>
+			<d-button icon="link" class="upload-background" @click="addByUrl">
+				Add by URL
+			</d-button>
+			<d-button
+				icon="extension"
 				class="upload-background"
 				@click="$emit('show-dialog', 'type: Backgrounds')"
 			>
-				<i class="material-icons">extension</i> Search in content packs
-			</button>
+				Search in content packs
+			</d-button>
 			<d-button
 				v-if="showBackgroundsFolder"
 				icon="folder"
@@ -62,7 +68,7 @@ import {
 	ContentPack,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { ISetColorMutation, ISetCurrentMutation } from '@/store/panels';
-import { PanelMixin } from './panelMixin';
+import { PanelMixin } from './panel-mixin';
 import Color from '../subtools/color/color.vue';
 import { defineComponent } from 'vue';
 import environment, { Folder } from '@/environments/environment';

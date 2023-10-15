@@ -635,3 +635,4 @@ h2 {
 	}
 }
 </style>
+@/renderer/renderer-context @/store/sprite-options

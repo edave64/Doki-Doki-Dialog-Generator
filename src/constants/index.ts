@@ -1,6 +1,6 @@
 import environment from '@/environments/environment';
-import { ITextStyle } from '@/renderer/textRenderer/textRenderer';
-import { ITextBox } from '@/store/objectTypes/textbox';
+import { ITextStyle } from '@/renderer/text-renderer/text-renderer';
+import { ITextBox } from '@/store/object-types/textbox';
 import { HSLAColor } from '@/util/colors/hsl';
 import Ddlc from './game_modes/ddlc';
 import { IPoemTextStyle } from './game_modes/ddlc/poem';

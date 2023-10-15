@@ -1,0 +1,10 @@
+ls:
+  src/*:
+    .js: kebab-case
+    .ts: kebab-case
+    .vue: kebab-case
+
+ignore:
+  - node_modules
+  - dist
+  - public

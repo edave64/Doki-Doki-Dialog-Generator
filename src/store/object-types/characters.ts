@@ -17,7 +17,7 @@ import {
 import { IAssetSwitch } from '../content';
 import { IRootState } from '..';
 import { DeepReadonly } from 'ts-essentials';
-import { baseProps } from './baseObjectProps';
+import { baseProps } from './base-object-props';
 import getConstants from '@/constants';
 import { IPanel, IPanels } from '../panels';
 

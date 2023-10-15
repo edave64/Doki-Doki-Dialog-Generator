@@ -3,7 +3,7 @@ import { ICreateObjectMutation, IObject } from '@/store/objects';
 import { MutationTree, ActionTree } from 'vuex';
 import { IRootState } from '..';
 import { IAssetSwitch } from '../content';
-import { baseProps } from './baseObjectProps';
+import { baseProps } from './base-object-props';
 import { ImageAsset } from '@/render-utils/assets/image-asset';
 import { IPanel, IPanels } from '../panels';
 

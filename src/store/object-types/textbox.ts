@@ -10,7 +10,7 @@ import { IPanel, IPanels } from '@/store/panels';
 import { MutationTree, ActionTree } from 'vuex';
 import { ISetSpriteSizeMutation } from './characters';
 import { IRootState } from '..';
-import { baseProps } from './baseObjectProps';
+import { baseProps } from './base-object-props';
 import { rotateAround } from '@/util/rotation';
 import getConstants from '@/constants';
 import { rendererLookup } from '@/renderables/textbox';

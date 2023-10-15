@@ -23,7 +23,7 @@ import ObjectTool from '@/components/toolbox/tools/object-tool.vue';
 import { ISprite } from '@/store/objectTypes/sprite';
 import { IPanel } from '@/store/panels';
 import { DeepReadonly } from 'ts-essentials';
-import { PanelMixin } from './panelMixin';
+import { PanelMixin } from './panel-mixin';
 import { defineComponent } from 'vue';
 import { getAAssetUrl } from '@/asset-manager';
 import { transaction } from '@/plugins/vuex-history';
@@ -83,3 +83,4 @@ input[type='file'] {
 	display: none;
 }
 </style>
+@/store/object-types/sprite

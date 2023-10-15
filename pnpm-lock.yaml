@@ -14,9 +14,6 @@ dependencies:
   mitt:
     specifier: ^3.0.0
     version: 3.0.0
-  pako:
-    specifier: ^2.0.4
-    version: 2.1.0
   typescript:
     specifier: ^4.8.4
     version: 4.9.5
@@ -28,6 +25,9 @@ dependencies:
     version: 4.1.0(vue@3.2.47)
 
 devDependencies:
+  '@ls-lint/ls-lint':
+    specifier: ^2.2.0
+    version: 2.2.0
   '@rushstack/eslint-patch':
     specifier: ^1.2.0
     version: 1.2.0
@@ -160,6 +160,13 @@ packages:
 
   /@humanwhocodes/object-schema@1.2.1:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
+    dev: true
+
+  /@ls-lint/ls-lint@2.2.0:
+    resolution: {integrity: sha512-CojXyhZtGBfxwncgi2P5qw+k+hqYq3xW2Ucg4QWiZBWCpRAfDAt6EPjMZ6SDg+hrnI/RbCy/LQoWxNdueAMvPA==}
+    cpu: [x64, arm64, s390x]
+    os: [darwin, linux, win32]
+    hasBin: true
     dev: true
 
   /@nodelib/fs.scandir@2.1.5:
@@ -1340,10 +1347,6 @@ packages:
     dependencies:
       p-limit: 3.1.0
     dev: true
-
-  /pako@2.1.0:
-    resolution: {integrity: sha512-w+eufiZ1WuJYgPXbV/PO3NCMEc3xqylkKHzp8bxp1uW4qaSNQUkwmLLEc3kKsfz8lpV1F8Ht3U1Cm+9Srog2ug==}
-    dev: false
 
   /parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
