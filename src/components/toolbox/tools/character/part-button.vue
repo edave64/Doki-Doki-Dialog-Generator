@@ -108,7 +108,7 @@ export default defineComponent({
 		);
 	},
 	methods: {
-		quickClick(e: MouseEvent) {
+		quickClick(e: KeyboardEvent) {
 			e.preventDefault();
 			this.$emit('quick-click');
 		},
