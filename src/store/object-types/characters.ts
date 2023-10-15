@@ -1,5 +1,4 @@
 import getConstants from '@/constants';
-import { arraySeeker } from '@/models/seekers';
 import {
 	ICreateObjectMutation,
 	IObject,
@@ -8,6 +7,7 @@ import {
 	ISetObjectPositionMutation,
 	ISetPositionAction,
 } from '@/store/objects';
+import { arraySeeker } from '@/util/seekers';
 import {
 	Character,
 	ContentPack,

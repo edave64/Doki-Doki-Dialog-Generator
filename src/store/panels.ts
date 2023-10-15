@@ -1,4 +1,4 @@
-import { arraySeeker } from '@/models/seekers';
+import { arraySeeker } from '@/util/seekers';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { Module } from 'vuex';
 import { IRootState } from '.';
