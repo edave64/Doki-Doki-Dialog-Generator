@@ -1,4 +1,8 @@
 /**
+ * A helper for managing canvases in the memory restricted environment of mobile safari.
+ */
+
+/**
  * Safari has as strict limit on canvases that can be open at once. To mitigate
  * this, we set canvases that are no longer needed to have no size
  * @param canvas
@@ -28,6 +32,8 @@ export function markForDisposal(canvas: HTMLCanvasElement) {
 	);
 }
 
+// An oddity of mobile safari is that the canvases do not seem to cleaned up even when the tab is releaded
+// So we try to force safari to unload all current canvases.
 window.addEventListener('unload', () => {
 	disposables.forEach((x) => {
 		const disposable = x.deref();

@@ -2,16 +2,28 @@ import { IColor } from './color';
 import { RGBAColor } from './rgb';
 
 // tslint:disable: no-magic-numbers
+
+/**
+ * A class representing a HSLA (Hue/Saturation/Lightness) color value.
+ * Allows for easier color-space conversion and color math.
+ */
 export class HSLAColor implements IColor {
 	public constructor(
+		// The hue component 
 		public readonly h: number,
+		// The saturation component
 		public readonly s: number,
+		// The lightness component
 		public readonly l: number,
+		// The alpha component
 		public readonly a: number
 	) {
 		Object.freeze(this);
 	}
 
+	/**
+	 * Converts an HSLA object to a css hsla string
+	 */
 	public toCss(): string {
 		if (this.a >= 1) {
 			return `hsl(${this.h}, ${this.s}, ${this.l})`;
@@ -19,6 +31,10 @@ export class HSLAColor implements IColor {
 		return `hsla(${this.h}, ${this.s}, ${this.l}, ${this.a})`;
 	}
 
+	/**
+	 * Shifts all compoents in the color by the components of another color. This is used to derive colors from a
+	 * single base color
+	 */
 	public shift(deltas: HSLAColor): HSLAColor {
 		let { h, s, l, a } = this;
 		h += deltas.h;
@@ -48,6 +64,9 @@ export class HSLAColor implements IColor {
 		return new HSLAColor(h, s, l, a);
 	}
 
+	/**
+	 * Converts the color to an rgba color
+	 */
 	public toRgb(): RGBAColor {
 		const { h, s, l, a } = this;
 		let r: number;

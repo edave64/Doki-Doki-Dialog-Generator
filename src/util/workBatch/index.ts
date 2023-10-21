@@ -7,6 +7,12 @@ type Runner<P, R> = (
 
 type Disposer<R> = (payload: R) => Promise<void>;
 
+/**
+ * Takes a set of data and splits it multiple asyncronous functions.
+ * This is meant to paralellize mutltiple heavy functions, but I feel like this wouldn't actually do anything without
+ * any web-workers.
+ * TODO: Investigate if this should maybe just be dropped.
+ */
 export class WorkBatch<P, R> {
 	private state = reactive({
 		busy: false,

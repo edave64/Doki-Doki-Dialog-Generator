@@ -1,3 +1,7 @@
+/**
+ * Loads assets from urls for use in canvas painting, keeps them cached, and loads webP images if supported.
+ */
+
 import environment from './environments/environment';
 import EventBus, { AssetFailureEvent } from './eventbus/event-bus';
 import { IAsset } from './render-utils/assets/asset';
@@ -29,6 +33,10 @@ export function isWebPSupported(): Promise<boolean> {
 	})());
 }
 
+/**
+ * Tests if an image from a given URL loads, or fails to.
+ * Used for testing browser capability.
+ */
 function canLoadImg(
 	url: string,
 	height: number,
@@ -53,22 +61,16 @@ let heifSupportPromise: Promise<boolean> | undefined;
  */
 export function isHeifSupported(): Promise<boolean> {
 	if (heifSupportPromise) return heifSupportPromise;
-	return (heifSupportPromise = new Promise((resolve, _reject) => {
+	return (heifSupportPromise = (async () => {
 		const losslessCode =
 			'data:image/heic;base64,AAAAGGZ0eXBoZWljAAAAAG1pZjFoZWljAAAAsW1ldGEAAAAAAAAAIWhkbHIAAAAAAAAAAHBpY3QAXABjAGMAcwBsAGEAAAAADnBpdG0AAAAAAAEAAAAQaWxvYwAAAABEQAAAAAAAI2lpbmYAAAAAAAEAAAAVaW5mZQIAAAAAAQAAaHZjMQAAAABDaXBycAAAACdpcGNvAAAAH2h2Y0NmzGx1ci0AAAAAAABv9HP+//v9bjr3AAAAABRpcG1hAAAAAAAAAAEAAQGBAAAACG1kYXQ=';
-		const img = document.createElement('img');
-		img.addEventListener('load', () => {
-			console.log('Heif no error. ' + (img.width === 2 && img.height === 1));
-			resolve(img.width === 2 && img.height === 1);
-		});
-		img.addEventListener('error', () => {
-			console.log('Heif not supported');
-			resolve(false);
-		});
-		img.src = losslessCode;
-	}));
+		return await canLoadImg(losslessCode, 1, 2);
+	})());
 }
 
+/**
+ * A cache that stores assets and keeps them loaded
+ */
 class AssetCache {
 	private cache = new Map<string, Promise<IAsset>>();
 	get(url: string) {
@@ -84,6 +86,10 @@ class AssetCache {
 	}
 }
 
+/**
+ * A cache that weakly stores assets only until the browser garbage collects them on it's own.
+ * This is especially used on Safari, which imposes strict memory limits for images.
+ */
 class TmpAssetCache {
 	private cache = new Map<string, WeakRef<Promise<IAsset>>>();
 	get(url: string) {

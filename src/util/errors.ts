@@ -1,4 +1,9 @@
+/**
+ * A helper for error reporting, even in async actions.
+ */
+
 import eventBus, { FailureEvent } from '@/eventbus/event-bus';
+
 
 export async function safeAsync(name: string, callback: () => Promise<void>) {
 	try {

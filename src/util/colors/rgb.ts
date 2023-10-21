@@ -1,11 +1,22 @@
 import { HSLAColor } from './hsl';
 
 // tslint:disable: no-magic-numbers
+
+/**
+ * A class representing an RGBA color value.
+ * Allows for easier color-space conversion and color math.
+ */
 export class RGBAColor {
+	/**
+	 * Checks if a given string is a valid CSS color, either rgb or hex
+	 */
 	public static validCss(str: string): boolean {
 		return this.validCssRgb(str) || this.validHex(str);
 	}
 
+	/**
+	 * Takes a css color value and converts it into an RGBAColor object if it is an rgb(a) string or a hex string
+	 */
 	public static fromCss(str: string): RGBAColor {
 		if (this.validCssRgb(str)) {
 			return this.fromCssRgb(str);
@@ -16,10 +27,16 @@ export class RGBAColor {
 		throw new Error('Invalid RGB color format');
 	}
 
+	/**
+	 * Tests if a string is a valid rgb or rgba css value
+	 */
 	public static validCssRgb(str: string): boolean {
 		return this.rgbEx.test(str) || this.rgbaEx.test(str);
 	}
 
+	/**
+	 * Takes an rgb(a) css value and converts it into an RGBAColor object
+	 */
 	public static fromCssRgb(str: string): RGBAColor {
 		if (!this.validCssRgb(str)) throw new Error('Invalid RGB color format');
 		const rgbHead = str.slice(0, -1);
@@ -34,10 +51,16 @@ export class RGBAColor {
 		);
 	}
 
+	/**
+	 * Tests if a given string is a valid hex color
+	 */
 	public static validHex(str: string): boolean {
 		return this.hexShortEx.test(str) || this.hexLongEx.test(str);
 	}
 
+	/**
+	 * Converts a given hex color into an RGBAColor object
+	 */
 	public static fromHex(str: string): RGBAColor {
 		if (!this.validHex(str)) throw new Error('Invalid Hex color format');
 		const hexTail = str.slice(1);
@@ -76,18 +99,27 @@ export class RGBAColor {
 		throw new Error('Invalid Hex color format length');
 	}
 
-	private static rgbEx = /^rgb\((\d*?),(\d*?),(\d*?)\)$/i;
+	private static rgbEx  = /^rgb\((\d*?),(\d*?),(\d*?)\)$/i;
 	private static rgbaEx = /^rgba\((\d{1,3}),(\d{1,3}),(\d{1,3}),([\d.]+)\)$/i;
-	private static hexShortEx = /^#[0-9A-Z]{3,4}$/i;
-	private static hexLongEx = /^#[0-9A-Z]{6,8}$/i;
+	private static hexShortEx = /^#[0-9A-F]{3,4}$/i;
+	private static hexLongEx = /^#[0-9A-F]{6,8}$/i;
 
 	public constructor(
+		// The red component 0-255
 		public readonly r: number,
+		// The green component 0-255
 		public readonly g: number,
+		// The blue component 0-255
 		public readonly b: number,
+		// The alpha component 0-1
 		public readonly a: number
-	) {}
+	) {
+		Object.freeze(this);
+	}
 
+	/**
+	 * Converts the object into an rgb(a) css color string
+	 */
 	public toCss(): string {
 		if (this.a > 1) {
 			return `rgb(${this.r},${this.g},${this.b})`;
@@ -95,6 +127,9 @@ export class RGBAColor {
 		return `rgba(${this.r},${this.g},${this.b},${this.a})`;
 	}
 
+	/**
+	 * Converts the object into an hex css color string
+	 */
 	public toHex(): string {
 		return `#${Math.round(this.r).toString(16).padStart(2, '0')}${Math.round(
 			this.g
@@ -145,6 +180,7 @@ export class RGBAColor {
 		return new HSLAColor(h!, s, l, a);
 	}
 
+	/** Computes the luminance of a color */
 	public get luminance(): number {
 		return Math.sqrt(
 			Math.pow(0.299 * (this.r / 255), 2) +
