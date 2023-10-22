@@ -5,6 +5,14 @@ import { DeepReadonly } from 'ts-essentials';
 import { OffscreenRenderable } from './offscreen-renderable';
 import { IHitbox } from './renderable';
 
+/**
+ * A scaling renderable is a component drawn from pure code, that can be scaled to any size without pixelation.
+ * Because of text overflow, this components can paint over it's border, requireing us to allocate a local canvas
+ * of the same size as the main canvas.
+ * 
+ * TODO: Find a more efficient way to do that. Overflow is an edge case in most components and this wastes a lot of
+ * memory.
+ */
 export abstract class ScalingRenderable<
 	Obj extends IObject
 > extends OffscreenRenderable<Obj> {

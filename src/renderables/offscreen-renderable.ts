@@ -13,21 +13,12 @@ import { DeepReadonly } from 'ts-essentials';
 import { Store } from 'vuex';
 import { IHitbox } from './renderable';
 
-export enum SelectedState {
-	None = 0b00,
-	Selected = 0b01,
-	Focused = 0b10,
-	Both = 0b11,
-}
-
-declare global {
-	interface Window {
-		dddg_dbg_paint_hitboxes: 'none' | 'selected' | 'all';
-	}
-}
-
-window.dddg_dbg_paint_hitboxes = 'none';
-
+/**
+ * An offscreen renderable is the baseclass for all renderable objects in DDDG. It (generally) first renders the object
+ * onto a seperate canvas, then renders than onto the scene. This prevents seams when scaling objects that consist of
+ * multiple sprites and serves as a cache to prevent frequent rerendering of complex objects. It also allows for pixel
+ * perfect hit tests for clicking on objects.
+ */
 export abstract class OffscreenRenderable<Obj extends IObject> {
 	protected localRenderer: Renderer | null = null;
 	private lastVersion: any = null;
@@ -324,3 +315,18 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 		this.localRenderer = null;
 	}
 }
+
+export enum SelectedState {
+	None = 0b00,
+	Selected = 0b01,
+	Focused = 0b10,
+	Both = 0b11,
+}
+
+declare global {
+	interface Window {
+		dddg_dbg_paint_hitboxes: 'none' | 'selected' | 'all';
+	}
+}
+
+window.dddg_dbg_paint_hitboxes = 'none';
