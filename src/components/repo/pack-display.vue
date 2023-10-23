@@ -16,10 +16,10 @@
 		<section
 			class="disclaimer"
 			v-if="pack.disclaimer"
-			v-html="sanitize(pack.disclaimer)"
+			v-html="sanitize(pack.disclaimer as string)"
 		/>
 		<section v-if="pack.source">
-			<l :to="pack.source">Source</l>
+			<l :to="pack.source as string">Source</l>
 		</section>
 		<section>
 			<button v-if="addable" @click="add">
@@ -76,15 +76,15 @@
 </template>
 
 <script lang="ts">
-import { sanitize } from '@/components/toolbox/tools/character-pack-sanitizer';
-import L from '@/components/ui/link.vue';
-import environment from '@/environments/environment';
-import { Pack, Repo } from '@/models/repo';
-import { IRemovePacksAction } from '@/store';
-import { IAuthor, IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
-import { DeepReadonly } from 'ts-essentials';
-import { defineComponent, PropType } from 'vue';
-import Toggle from '../toggle.vue';
+import { sanitize } from "@/components/toolbox/tools/character-pack-sanitizer";
+import L from "@/components/ui/link.vue";
+import environment from "@/environments/environment";
+import { Pack, Repo } from "@/models/repo";
+import { IRemovePacksAction } from "@/store";
+import { IAuthor, IAuthors } from "@edave64/dddg-repo-filters/dist/authors";
+import { DeepReadonly } from "ts-essentials";
+import { defineComponent, PropType } from "vue";
+import Toggle from "../toggle.vue";
 
 const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 	['reddit', 'https://reddit.com/u/%1', 'reddit.png'],
@@ -105,7 +105,7 @@ export default defineComponent({
 			required: true,
 		},
 		repo: {
-			type: Object as PropType<Repo>,
+			type: Object as PropType<Repo | null>,
 			require: true,
 		},
 		showBack: {

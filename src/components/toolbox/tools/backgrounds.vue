@@ -58,22 +58,19 @@
 </template>
 
 <script lang="ts">
-import DButton from '@/components/ui/d-button.vue';
-import environment, { Folder } from '@/environments/environment';
-import { transaction } from '@/plugins/vuex-history';
-import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
-import { ISetColorMutation, ISetCurrentMutation } from '@/store/panels';
-import {
-	Background,
-	ContentPack,
-} from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { defineComponent } from 'vue';
-import DropTarget from '../drop-target.vue';
-import Color from '../subtools/color/color.vue';
-import ImageOptions from '../subtools/image-options/image-options.vue';
-import BackgroundButton from './background/button.vue';
-import BackgroundSettings from './background/settings.vue';
-import { PanelMixin } from './panel-mixin';
+import DButton from "@/components/ui/d-button.vue";
+import environment, { Folder } from "@/environments/environment";
+import { transaction } from "@/plugins/vuex-history";
+import { IAssetSwitch, ReplaceContentPackAction } from "@/store/content";
+import { ISetColorMutation, ISetCurrentMutation } from "@/store/panels";
+import { Background, ContentPack } from "@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model";
+import { defineComponent } from "vue";
+import DropTarget from "../drop-target.vue";
+import Color from "../subtools/color/color.vue";
+import ImageOptions from "../subtools/image-options/image-options.vue";
+import BackgroundButton from "./background/button.vue";
+import BackgroundSettings from "./background/settings.vue";
+import { PanelMixin } from "../../mixins/panel-mixin";
 
 const uploadedBackgroundsPackDefaults: ContentPack<string> = {
 	packId: 'dddg.uploads.backgrounds',
@@ -170,7 +167,7 @@ export default defineComponent({
 		) {
 			const old =
 				this.$store.state.content.contentPacks.find(
-					(x) => x.packId === uploadedBackgroundsPackDefaults.packId
+					(x: ContentPack<IAssetSwitch>) => x.packId === uploadedBackgroundsPackDefaults.packId
 				) || uploadedBackgroundsPackDefaults;
 			const newPackVersion = {
 				...old,

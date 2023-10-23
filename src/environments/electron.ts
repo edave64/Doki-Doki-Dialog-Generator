@@ -1,20 +1,17 @@
-import { registerAssetWithURL } from '@/asset-manager';
-import { EnvState } from '@/environments/env-state';
-import eventBus, {
-	ResolvableErrorEvent,
-	ShowMessageEvent,
-} from '@/eventbus/event-bus';
-import { Repo } from '@/models/repo';
-import { transaction } from '@/plugins/vuex-history';
-import { IRootState } from '@/store';
-import { ReplaceContentPackAction } from '@/store/content';
-import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
-import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
-import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { DeepReadonly } from 'ts-essentials';
-import { reactive } from 'vue';
-import { Store } from 'vuex';
-import { EnvCapabilities, Folder, IEnvironment, Settings } from './environment';
+import { registerAssetWithURL } from "@/asset-manager";
+import { EnvState } from "@/environments/env-state";
+import eventBus, { ResolvableErrorEvent, ShowMessageEvent } from "@/eventbus/event-bus";
+import { Repo } from "@/models/repo";
+import { transaction } from "@/plugins/vuex-history";
+import { IRootState } from "@/store";
+import { ReplaceContentPackAction } from "@/store/content";
+import { IAuthors } from "@edave64/dddg-repo-filters/dist/authors";
+import { IPack } from "@edave64/dddg-repo-filters/dist/pack";
+import { ContentPack } from "@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model";
+import { DeepReadonly } from "ts-essentials";
+import { reactive } from "vue";
+import { Store } from "vuex";
+import { EnvCapabilities, Folder, IEnvironment, Settings } from "./environment";
 
 const installedBackgroundsPack: ContentPack<string> = {
 	packId: 'dddg.buildin.installedBackgrounds',
@@ -49,7 +46,7 @@ export class Electron implements IEnvironment {
 	private readonly pendingContentPacks: string[] = [];
 	private readonly pendingContentPacksReplace: ReplaceContentPackAction[] = [];
 
-	private loadingContentPacksAllowed: Promise<void>;
+	private readonly loadingContentPacksAllowed: Promise<void>;
 	public loadContentPacks!: () => void;
 
 	constructor() {

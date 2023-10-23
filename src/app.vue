@@ -53,32 +53,30 @@
 </template>
 
 <script lang="ts">
-import { baseUrl } from '@/asset-manager';
-import MessageConsole from '@/components/message-console.vue';
-import ModalDialog from '@/components/modal-dialog.vue';
-import Render from '@/components/render.vue';
-import ToolBox from '@/components/toolbox/toolbox.vue';
-import environment from '@/environments/environment';
-import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
-import { transaction } from '@/plugins/vuex-history';
-import {
-	ICharacter,
-	IShiftCharacterSlotAction,
-} from '@/store/object-types/characters';
-import { ICreateTextBoxAction } from '@/store/object-types/textbox';
+import { baseUrl } from "@/asset-manager";
+import MessageConsole from "@/components/message-console.vue";
+import ModalDialog from "@/components/modal-dialog.vue";
+import Render from "@/components/render.vue";
+import ToolBox from "@/components/toolbox/toolbox.vue";
+import environment from "@/environments/environment";
+import eventBus, { InvalidateRenderEvent } from "@/eventbus/event-bus";
+import { transaction } from "@/plugins/vuex-history";
+import { ICharacter, IShiftCharacterSlotAction } from "@/store/object-types/characters";
+import { ICreateTextBoxAction } from "@/store/object-types/textbox";
 import {
 	ICopyObjectToClipboardAction,
 	IObject,
 	IPasteFromClipboardAction,
 	IRemoveObjectAction,
 	ISetObjectPositionMutation,
-	ISetSpriteRotationMutation,
-} from '@/store/objects';
-import { ISetCurrentMutation } from '@/store/panels';
-import { defineAsyncComponent, defineComponent, watch } from 'vue';
-import { NsfwNames, NsfwPaths } from './constants/nsfw';
-import { Repo } from './models/repo';
-import { IRemovePacksAction } from './store';
+	ISetSpriteRotationMutation
+} from "@/store/objects";
+import { ISetCurrentMutation } from "@/store/panels";
+import { defineAsyncComponent, defineComponent, watch } from "vue";
+import { NsfwNames, NsfwPaths } from "./constants/nsfw";
+import { Repo } from "./models/repo";
+import { IRemovePacksAction } from "./store";
+import AppShortcuts from "@/components/mixins/app-shortcuts";
 
 const aspectRatio = 16 / 9;
 const arrowMoveStepSize = 20;
@@ -86,6 +84,7 @@ const packDialogWaitMs = 50;
 const canvasTooSmallThreshold = 200;
 
 export default defineComponent({
+	mixins: [AppShortcuts],
 	components: {
 		ToolBox,
 		MessageConsole,

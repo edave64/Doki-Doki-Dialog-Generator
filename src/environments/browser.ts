@@ -1,12 +1,12 @@
-import { Repo } from '@/models/repo';
-import { transaction } from '@/plugins/vuex-history';
-import { IRootState } from '@/store';
-import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
-import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
-import { DeepReadonly, reactive, ref } from 'vue';
-import { Store } from 'vuex';
-import { EnvState } from './env-state';
-import { EnvCapabilities, Folder, IEnvironment, Settings } from './environment';
+import { Repo } from "@/models/repo";
+import { transaction } from "@/plugins/vuex-history";
+import { IRootState } from "@/store";
+import { IAuthors } from "@edave64/dddg-repo-filters/dist/authors";
+import { IPack } from "@edave64/dddg-repo-filters/dist/pack";
+import { DeepReadonly, reactive, ref } from "vue";
+import { Store } from "vuex";
+import { EnvState } from "./env-state";
+import { EnvCapabilities, Folder, IEnvironment, Settings } from "./environment";
 
 const ua = navigator.userAgent;
 const iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
@@ -37,7 +37,7 @@ export class Browser implements IEnvironment {
 	private readonly loading: Promise<void>;
 	private creatingDB?: Promise<IDBDatabase | void>;
 
-	private loadingContentPacksAllowed: Promise<void>;
+	private readonly loadingContentPacksAllowed: Promise<void>;
 	public loadContentPacks!: () => void;
 
 	public get savingEnabled() {

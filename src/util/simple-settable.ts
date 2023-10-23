@@ -1,10 +1,8 @@
 /** Helper methods that allow you to create simple vue getters/setters of vuex properties */
 
-import { transaction } from '@/plugins/vuex-history';
-import { IRootState } from '@/store';
-import { IObject } from '@/store/objects';
-import { ComponentCustomProperties, DeepReadonly } from 'vue';
-import { Store } from 'vuex';
+import { transaction } from "@/plugins/vuex-history";
+import { IObject } from "@/store/objects";
+import { ComponentCustomProperties } from "vue";
 
 export function genericSetable<T extends IObject>() {
 	return function setable<K extends keyof T>(
@@ -52,6 +50,5 @@ export function genericSimpleSetter<T extends IObject, KT extends keyof T>(
 }
 
 interface IThis<T extends IObject> extends ComponentCustomProperties {
-	$store: Store<DeepReadonly<IRootState>>;
 	object: T;
 }

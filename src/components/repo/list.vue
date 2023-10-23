@@ -10,7 +10,7 @@
 							['kind', 'Type'],
 							['authors', 'Authors'],
 							['state', 'Status'],
-						]"
+						] as const"
 						:key="idx"
 						:tabindex="disabled ? -1 : 0"
 						@click="sortBy(header[0])"
@@ -53,11 +53,12 @@
 </template>
 
 <script lang="ts">
-import { Pack, Repo } from '@/models/repo';
-import run from '@edave64/dddg-repo-filters/dist/main';
-import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
-import { DeepReadonly } from 'ts-essentials';
-import { defineComponent, PropType } from 'vue';
+import { Pack, Repo } from "@/models/repo";
+import run from "@edave64/dddg-repo-filters/dist/main";
+import { IPack } from "@edave64/dddg-repo-filters/dist/pack";
+import { DeepReadonly } from "ts-essentials";
+import { defineComponent, PropType } from "vue";
+import { IPackWithState } from "@/components/repo/types";
 
 const pageKeyMoveBy = 10;
 
@@ -65,7 +66,7 @@ export default defineComponent({
 	props: {
 		search: { type: String, required: true },
 		repo: {
-			type: Object as PropType<Repo>,
+			type: Object as PropType<Repo | null>,
 		},
 		disabled: {
 			type: Boolean,
@@ -73,7 +74,7 @@ export default defineComponent({
 		},
 	},
 	data: () => ({
-		sort: '' as keyof IPack | '',
+		sort: '' as keyof IPackWithState | '',
 		desc: false,
 		focusedItem: '',
 		wordCache: {} as { [id: string]: Set<string> },
@@ -175,7 +176,7 @@ export default defineComponent({
 				}
 			}
 		},
-		headerKeydownListener(event: KeyboardEvent, headerId: keyof IPack) {
+		headerKeydownListener(event: KeyboardEvent, headerId: keyof IPackWithState) {
 			switch (event.key) {
 				case 'Enter':
 				case ' ':
@@ -227,7 +228,7 @@ export default defineComponent({
 				}
 			});
 		},
-		sortBy(by: keyof IPack) {
+		sortBy(by: keyof IPackWithState) {
 			if (this.sort === by) {
 				if (!this.desc) {
 					this.desc = true;

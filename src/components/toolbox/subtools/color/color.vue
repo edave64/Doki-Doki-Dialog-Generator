@@ -48,18 +48,15 @@
 </template>
 
 <script lang="ts">
-import eventBus, { ColorPickedEvent } from '@/eventbus/event-bus';
-import { transaction } from '@/plugins/vuex-history';
-import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
-import { RGBAColor } from '@/util/colors/rgb';
-import {
-	Color,
-	ContentPack,
-} from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { DeepReadonly } from 'ts-essentials';
-import { defineComponent, PropType } from 'vue';
-import DButton from '../../../ui/d-button.vue';
-import SliderGroup from './slider-group.vue';
+import eventBus, { ColorPickedEvent } from "@/eventbus/event-bus";
+import { transaction } from "@/plugins/vuex-history";
+import { IAssetSwitch, ReplaceContentPackAction } from "@/store/content";
+import { RGBAColor } from "@/util/colors/rgb";
+import { Color, ContentPack } from "@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model";
+import { DeepReadonly } from "ts-essentials";
+import { defineComponent, PropType } from "vue";
+import DButton from "../../../ui/d-button.vue";
+import SliderGroup from "./slider-group.vue";
 
 const generatedPackId = 'dddg.generated.colors';
 
@@ -129,7 +126,6 @@ export default defineComponent({
 		},
 		addSwatch() {
 			if (this.swatches.find((swatch) => swatch.color === this.color)) return;
-
 			const existingPack: DeepReadonly<ContentPack<IAssetSwitch>> =
 				this.$store.state.content.contentPacks.find(
 					(pack) => pack.packId === generatedPackId

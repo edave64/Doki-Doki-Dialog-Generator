@@ -29,7 +29,7 @@
 				ref="dialog"
 				class="pack-display"
 				:repo="repo"
-				:selected="selected"
+				:selected="selected!"
 				show-back
 				@leave="leavePackDisplay"
 			/>
@@ -38,15 +38,15 @@
 </template>
 
 <script lang="ts">
-import eventBus, { VueErrorEvent } from '@/eventbus/event-bus';
-import { Pack, Repo } from '@/models/repo';
-import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
-import { DeepReadonly } from 'ts-essentials';
-import { defineComponent } from 'vue';
-import List from '../list.vue';
-import PackDisplay from '../pack-display.vue';
-import SearchBar from '../search-bar.vue';
-import { SelectedEvent } from '../types';
+import eventBus, { VueErrorEvent } from "@/eventbus/event-bus";
+import { Pack, Repo } from "@/models/repo";
+import { IAuthors } from "@edave64/dddg-repo-filters/dist/authors";
+import { DeepReadonly } from "ts-essentials";
+import { defineComponent } from "vue";
+import List from "../list.vue";
+import PackDisplay from "../pack-display.vue";
+import SearchBar from "../search-bar.vue";
+import { SelectedEvent } from "../types";
 
 export default defineComponent({
 	components: {

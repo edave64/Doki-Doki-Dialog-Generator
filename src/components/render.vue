@@ -26,23 +26,23 @@
 </template>
 
 <script lang="ts">
-import getConstants from '@/constants';
+import getConstants from "@/constants";
 import eventBus, {
 	ColorPickedEvent,
 	InvalidateRenderEvent,
 	RenderUpdatedEvent,
-	StateLoadingEvent,
-} from '@/eventbus/event-bus';
-import { transaction } from '@/plugins/vuex-history';
-import { SceneRenderer } from '@/renderables/scene-renderer';
-import { RenderContext } from '@/renderer/renderer-context';
-import { ICreateSpriteAction } from '@/store/object-types/sprite';
-import { IObject, ISetObjectPositionMutation } from '@/store/objects';
-import { IPanel } from '@/store/panels';
-import { disposeCanvas } from '@/util/canvas';
-import { DeepReadonly } from 'ts-essentials';
-import { defineComponent, markRaw } from 'vue';
-import { MutationPayload } from 'vuex';
+	StateLoadingEvent
+} from "@/eventbus/event-bus";
+import { transaction } from "@/plugins/vuex-history";
+import { SceneRenderer } from "@/renderables/scene-renderer";
+import { RenderContext } from "@/renderer/renderer-context";
+import { ICreateSpriteAction } from "@/store/object-types/sprite";
+import { IObject, ISetObjectPositionMutation } from "@/store/objects";
+import { IPanel } from "@/store/panels";
+import { disposeCanvas } from "@/util/canvas";
+import { DeepReadonly } from "ts-essentials";
+import { defineComponent, markRaw } from "vue";
+import { MutationPayload } from "vuex";
 
 export default defineComponent({
 	props: {
@@ -79,7 +79,7 @@ export default defineComponent({
 			return this.$store.state.ui.lqRendering;
 		},
 		sceneRender(): SceneRenderer {
-			if (this.preLoading) return null;
+			if (this.preLoading) return null!;
 			const panelId = this.$store.state.panels.currentPanel;
 			if (!this.sceneRendererCache) {
 				console.log('New scene renderer!');
@@ -98,10 +98,12 @@ export default defineComponent({
 			return this.sceneRendererCache as SceneRenderer;
 		},
 		bitmapHeight(): number {
+			// Stupid hack to make vue reevaluate this property when loading is done.
 			this.preLoading;
 			return getConstants().Base.screenHeight;
 		},
 		bitmapWidth(): number {
+			// Stupid hack to make vue reevaluate this property when loading is done.
 			this.preLoading;
 			return getConstants().Base.screenWidth;
 		},
