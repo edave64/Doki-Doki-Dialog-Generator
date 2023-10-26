@@ -6,7 +6,13 @@
 	+----------+
 -->
 <template>
-	<button :class="[iconPos]" :disabled="disabled">
+	<button
+		:class="[iconPos]"
+		:disabled="disabled"
+		:title="title ?? undefined"
+		:aria-label="title ?? undefined"
+		ref="btn"
+	>
 		<div class="material-icons" aria-hidden="true" v-if="icon">{{ icon }}</div>
 		<div class="content">
 			<slot />
@@ -15,39 +21,64 @@
 	</button>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
+<script lang="ts" setup>
+import { computed, onMounted, onUnmounted, PropType, ref, VNodeRef } from 'vue';
 
-export default defineComponent({
-	props: {
-		icon: {
-			type: String,
-			required: true,
-		},
-		iconPos: {
-			type: String as PropType<'left' | 'top'>,
-			default: 'left',
-		},
-		disabled: {
-			type: Boolean,
-			default: false,
-		},
-		shortcut: {
-			type: String as PropType<string | null>,
-			default: null,
-		},
+const props = defineProps({
+	icon: {
+		type: String,
+		required: true,
 	},
-	computed: {
-		showPopup(): boolean {
-			return this.shortcut != null && !this.shortcut.startsWith('!');
-		},
-		popupText(): string {
-			const shortcut = this.shortcut;
-			if (shortcut == null) return '';
-			if (shortcut.startsWith('!')) return shortcut.substring(1);
-			return shortcut;
-		},
+	iconPos: {
+		type: String as PropType<'left' | 'top'>,
+		default: 'left',
 	},
+	disabled: {
+		type: Boolean,
+		default: false,
+	},
+	shortcut: {
+		type: String as PropType<string | null>,
+		default: null,
+	},
+	title: {
+		type: String as PropType<string | null>,
+		default: null,
+	},
+});
+const btn = ref(null! as VNodeRef);
+const showPopup = computed(
+	() => props.shortcut != null && !props.shortcut.startsWith('!')
+);
+const popupText = computed(() => {
+	const shortcut = props.shortcut;
+	if (shortcut == null) return '';
+	if (shortcut.startsWith('!')) return shortcut.substring(1);
+	return shortcut;
+});
+
+function fireShortcut(e: KeyboardEvent) {
+	if (props.disabled) return;
+	if (
+		e.key === props.shortcut &&
+		e.ctrlKey &&
+		!e.altKey &&
+		!e.metaKey &&
+		!e.shiftKey
+	) {
+		(btn.value as HTMLButtonElement).focus({ focusVisible: false });
+		(btn.value as HTMLButtonElement).click();
+		e.preventDefault();
+		e.stopPropagation();
+	}
+}
+
+onMounted(() => {
+	if (!props.shortcut) return;
+	window.addEventListener('keydown', fireShortcut);
+});
+onUnmounted(() => {
+	window.removeEventListener('keydown', fireShortcut);
 });
 </script>
 

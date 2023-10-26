@@ -4,42 +4,38 @@
 <template>
 	<div id="panels" :class="{ vertical }" @scroll="resetScroll" ref="panels">
 		<div id="toolbar">
-			<button
+			<d-button
+				icon="add_box"
+				icon-pos="top"
 				:class="{ active: panel === 'add' }"
-				@click="setPanel('add')"
 				title="Add new objects to the scene"
-				aria-label="Add new objects to the scene"
-			>
-				<i class="material-icons" aria-hidden="true">add_box</i>
-				<div class="shortcut-popup">A</div>
-			</button>
-			<button
+				shortcut="a"
+				@click="setPanel('add')"
+			/>
+			<d-button
+				icon="panorama"
+				icon-pos="top"
 				:class="{ active: panel === 'backgrounds' }"
-				@click="setPanel('backgrounds')"
-				aria-label="Change the current background"
 				title="Change the current background"
-			>
-				<i class="material-icons" aria-hidden="true">panorama</i>
-				<div class="shortcut-popup">S</div>
-			</button>
-			<button
+				shortcut="s"
+				@click="setPanel('backgrounds')"
+			/>
+			<d-button
+				icon="view_module"
+				icon-pos="top"
 				:class="{ active: panel === 'panels' }"
 				title="Panels"
-				aria-label="Panels"
+				shortcut="d"
 				@click="setPanel('panels')"
-			>
-				<i class="material-icons" aria-hidden="true">view_module</i>
-				<div class="shortcut-popup">D</div>
-			</button>
-			<button
+			/>
+			<d-button
+				icon="settings_applications"
+				icon-pos="top"
 				:class="{ active: panel === 'settings' }"
 				title="Settings"
-				aria-label="Settings"
+				shortcut="f"
 				@click="setPanel('settings')"
-			>
-				<i class="material-icons" aria-hidden="true">settings_applications</i>
-				<div class="shortcut-popup">F</div>
-			</button>
+			/>
 		</div>
 		<settings-panel v-if="panel === 'settings'" />
 		<backgrounds-panel
@@ -60,37 +56,36 @@
 		<poem-panel v-else-if="panel === 'poem'" />
 		<add-panel v-else @show-dialog="$emit('show-dialog', $event)" />
 		<div id="toolbar-end">
-			<button
+			<d-button
+				icon="help"
+				icon-pos="top"
 				:class="{ active: panel === 'help_credits' }"
-				@click="setPanel('help_credits')"
 				title="Help &amp; Credits"
-				aria-label="Help &amp; Credits"
-			>
-				<i class="material-icons" aria-hidden="true">help</i>
-			</button>
-			<button
-				:class="{ active: panel === 'packs' }"
+				shortcut="h"
+				@click="setPanel('help_credits')"
+			/>
+			<d-button
+				icon="extension"
+				icon-pos="top"
+				title="Content Packs"
+				shortcut="c"
 				@click="$emit('show-dialog')"
-				title="Content packs"
-				aria-label="Content packs"
-			>
-				<i class="material-icons" aria-hidden="true">extension</i>
-			</button>
-			<button
-				@click="$emit('show-prev-render')"
+			/>
+			<d-button
+				icon="flip_to_back"
+				icon-pos="top"
 				title="Show last downloaded panel"
-				aria-label="Show last downloaded panel"
+				shortcut="l"
+				@click="$emit('show-prev-render')"
 				:disabled="!hasPrevRender"
-			>
-				<i class="material-icons" aria-hidden="true">flip_to_back</i>
-			</button>
-			<button
+			/>
+			<d-button
+				icon="photo_camera"
+				icon-pos="top"
 				title="Take a screenshot of the current scene"
-				aria-label="Take a screenshot of the current scene"
+				shortcut="i"
 				@click="$emit('download')"
-			>
-				<i class="material-icons" aria-hidden="true">photo_camera</i>
-			</button>
+			/>
 		</div>
 	</div>
 </template>
@@ -101,6 +96,7 @@ import { IObject, ObjectTypes } from '@/store/objects';
 import { IPanel } from '@/store/panels';
 import { DeepReadonly } from 'ts-essentials';
 import { defineComponent } from 'vue';
+import DButton from '../ui/d-button.vue';
 import AddPanel from './tools/add.vue';
 import BackgroundsPanel from './tools/backgrounds.vue';
 import CharacterPanel from './tools/character.vue';
@@ -124,13 +120,6 @@ type PanelNames =
 	| 'notification'
 	| 'poem';
 
-const ToolKeybindings: { [key: string]: PanelNames | undefined } = {
-	a: 'add',
-	s: 'backgrounds',
-	d: 'panels',
-	f: 'settings',
-};
-
 export default defineComponent({
 	components: {
 		SettingsPanel,
@@ -144,6 +133,7 @@ export default defineComponent({
 		PanelsPanel,
 		NotificationPanel,
 		PoemPanel,
+		DButton,
 	},
 	data: () => ({
 		panelSelection: 'add' as PanelNames,
@@ -190,16 +180,6 @@ export default defineComponent({
 				this.$refs.panels.scrollLeft = 0;
 			}
 		},
-		onKeydown(e: KeyboardEvent) {
-			if (e.ctrlKey) {
-				const newPanel = ToolKeybindings[e.key];
-				if (newPanel) {
-					this.setPanel(newPanel);
-					e.preventDefault();
-					e.stopPropagation();
-				}
-			}
-		},
 	},
 	watch: {
 		selection(newSelection: IObject | null) {
@@ -216,8 +196,6 @@ export default defineComponent({
 		environment.onPanelChange((panel: string) => {
 			this.panelSelection = panel as PanelNames;
 		});
-		window.removeEventListener('keydown', this.onKeydown);
-		window.addEventListener('keydown', this.onKeydown);
 	},
 });
 </script>
