@@ -1,8 +1,5 @@
 <template>
-	<div v-if="canvasTooSmall && isSafari">
-		Protrait mode is not supported by safari. Please turn the device sideways.
-	</div>
-	<div v-else id="app" :class="Array.from(classes)">
+	<div id="app">
 		<div class="hidden-selectors">
 			<div
 				v-for="obj in objects"
@@ -52,429 +49,455 @@
 	<div id="modal-messages"></div>
 </template>
 
-<script lang="ts">
-import { baseUrl } from "@/asset-manager";
-import MessageConsole from "@/components/message-console.vue";
-import ModalDialog from "@/components/modal-dialog.vue";
-import Render from "@/components/render.vue";
-import ToolBox from "@/components/toolbox/toolbox.vue";
-import environment from "@/environments/environment";
-import eventBus, { InvalidateRenderEvent } from "@/eventbus/event-bus";
-import { transaction } from "@/plugins/vuex-history";
-import { ICharacter, IShiftCharacterSlotAction } from "@/store/object-types/characters";
-import { ICreateTextBoxAction } from "@/store/object-types/textbox";
+<script lang="ts" setup>
+import { baseUrl } from '@/asset-manager';
+import MessageConsole from '@/components/message-console.vue';
+import ModalDialog from '@/components/modal-dialog.vue';
+import Render from '@/components/render.vue';
+import ToolBox from '@/components/toolbox/toolbox.vue';
+import environment from '@/environments/environment';
+import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
+import { transaction } from '@/plugins/vuex-history';
+import {
+	ICharacter,
+	IShiftCharacterSlotAction,
+} from '@/store/object-types/characters';
+import { ICreateTextBoxAction } from '@/store/object-types/textbox';
 import {
 	ICopyObjectToClipboardAction,
 	IObject,
 	IPasteFromClipboardAction,
 	IRemoveObjectAction,
 	ISetObjectPositionMutation,
-	ISetSpriteRotationMutation
-} from "@/store/objects";
-import { ISetCurrentMutation } from "@/store/panels";
-import { defineAsyncComponent, defineComponent, watch } from "vue";
-import { NsfwNames, NsfwPaths } from "./constants/nsfw";
-import { Repo } from "./models/repo";
-import { IRemovePacksAction } from "./store";
-import AppShortcuts from "@/components/mixins/app-shortcuts";
-
-const aspectRatio = 16 / 9;
+	ISetSpriteRotationMutation,
+} from '@/store/objects';
+import { ISetCurrentMutation } from '@/store/panels';
+import {
+	computed,
+	defineAsyncComponent,
+	nextTick,
+	onMounted,
+	onUnmounted,
+	ref,
+	watch,
+} from 'vue';
+import { Store, useStore } from 'vuex';
+import { Repo } from './models/repo';
+import { IRemovePacksAction, IRootState } from './store';
+const SingleBox = defineAsyncComponent(
+	() => import('@/components/repo/layouts/single-box.vue')
+);
+const ExpressionBuilder = defineAsyncComponent(
+	() => import('@/components/content-pack-builder/expression-builder/index.vue')
+);
 const arrowMoveStepSize = 20;
+const store = useStore() as Store<IRootState>;
+const preLoading = ref(false);
+const render = ref(null! as typeof Render);
+
+const objects = computed(() => {
+	const panels = store.state.panels;
+	const currentPanel = panels.panels[panels.currentPanel];
+	if (currentPanel == null) return [];
+	return [...currentPanel.order, ...currentPanel.onTopOrder];
+});
+
+function drawLastDownload(): void {
+	const last = store.state.ui.lastDownload;
+	if (last == null) return;
+	render.value.blendOver(last);
+}
+
+//#region drag-and-drop
+function cancleEvent(e: Event) {
+	e.preventDefault();
+}
+onMounted(() => {
+	document.body.addEventListener('drop', cancleEvent, true);
+	document.body.addEventListener('dragover', cancleEvent, true);
+});
+onUnmounted(() => {
+	document.body.removeEventListener('drop', cancleEvent, true);
+	document.body.removeEventListener('dragover', cancleEvent, true);
+});
+//#endregion drag-and-drop
+//#region responsive layouting
+const aspectRatio = 16 / 9;
+const canvasWidth = ref(0);
+const canvasHeight = ref(0);
+const uiSize = ref(192);
+
+function optimum(sw: number, sh: number): [number, number] {
+	let rh = sw / aspectRatio;
+	let rw = sh * aspectRatio;
+
+	if (rh > sh) {
+		rh = sh;
+	} else {
+		rw = sw;
+	}
+
+	return [rw, rh];
+}
+
+function optimizeWithMenu(sw: number, sh: number): [number, number, boolean] {
+	const opth = optimum(sw, sh - uiSize.value);
+	const optv = optimum(sw - uiSize.value, sh);
+
+	if (opth[0] * opth[1] > optv[0] * optv[1]) {
+		return [opth[0], opth[1], false];
+	} else {
+		return [optv[0], optv[1], true];
+	}
+}
+
+function updateArea(): void {
+	const [cw, ch, v] = optimizeWithMenu(
+		document.documentElement.clientWidth,
+		document.documentElement.clientHeight
+	);
+
+	canvasWidth.value = cw;
+	canvasHeight.value = ch;
+
+	if (store.state.ui.vertical === v) return;
+	store.commit('ui/setVertical', v);
+}
+
+updateArea();
+onMounted(() => {
+	window.addEventListener('resize', updateArea);
+});
+onUnmounted(() => {
+	window.removeEventListener('resize', updateArea);
+});
+//#endregion responsive layouting
+//#region dark mode
+const systemPrefersDarkMode = ref(false);
+const userPrefersDarkMode = computed(() => store.state.ui.useDarkTheme);
+const useDarkTheme = computed(
+	() => userPrefersDarkMode.value ?? systemPrefersDarkMode.value
+);
+
+watch(
+	() => useDarkTheme.value,
+	(value) => {
+		document.body.classList.toggle('dark-theme', value);
+	},
+	{ immediate: true }
+);
+
+if (window.matchMedia != null) {
+	/* The viewport is less than, or equal to, 700 pixels wide */
+	const matcher = window.matchMedia('(prefers-color-scheme: dark)');
+	systemPrefersDarkMode.value = matcher.matches;
+	const handler = (match: MediaQueryListEvent) =>
+		(systemPrefersDarkMode.value = match.matches);
+
+	// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+	if (matcher.addEventListener) {
+		matcher.addEventListener('change', handler);
+	} else {
+		matcher.addListener(handler);
+	}
+}
+//#endregion dark mode
+//#region expression dialog
+const expressionBuilderVisible = ref(false);
+const expressionBuilderCharacter = ref('');
+const expressionBuilderHeadGroup = ref(undefined as string | undefined);
+
+function showExpressionDialog(e: IShowExpressionDialogEvent) {
+	expressionBuilderVisible.value = true;
+	expressionBuilderCharacter.value = e.character;
+	expressionBuilderHeadGroup.value = e.headGroup;
+}
+//#endregion expression dialog
+//#region pack dialog
 const packDialogWaitMs = 50;
-const canvasTooSmallThreshold = 200;
+const packDialog = ref(null! as typeof SingleBox);
+const dialogVisable = ref(false);
+function showDialog(search: string | undefined) {
+	dialogVisable.value = true;
+	if (search == null) return;
+	const wait = () => {
+		if (packDialog.value) {
+			// This strange doubling is to get around the async component wrapper
+			packDialog.value.setSearch(search);
+		} else {
+			setTimeout(wait, packDialogWaitMs);
+		}
+	};
+	nextTick(wait);
+}
+//#endregion pack dialog
+//#region nsfw
+import { NsfwNames, NsfwPaths } from './constants/nsfw';
 
-export default defineComponent({
-	mixins: [AppShortcuts],
-	components: {
-		ToolBox,
-		MessageConsole,
-		Render,
-		ModalDialog,
-		SingleBox: defineAsyncComponent(
-			() => import('@/components/repo/layouts/single-box.vue')
-		),
-		ExpressionBuilder: defineAsyncComponent(
-			() =>
-				import('@/components/content-pack-builder/expression-builder/index.vue')
-		),
-	},
-	data: () => ({
-		canvasWidth: 0,
-		canvasHeight: 0,
-		blendOver: null as string | null,
-		uiSize: 192,
-		currentlyRendering: false,
-		panel: '',
-		dialogVisable: false,
-		canvasTooSmall: false,
-		expressionBuilderVisible: false,
-		expressionBuilderCharacter: '',
-		expressionBuilderHeadGroup: undefined as string | undefined,
-		systemPrefersDarkMode: false,
-		preLoading: true,
-		classes: new Set() as Set<string>,
-		queuedRerender: null as number | null,
-	}),
-	computed: {
-		isSafari(): boolean {
-			return false;
-			/*		return !!(
-			navigator.vendor &&
-			navigator.vendor.indexOf('Apple') > -1 &&
-			navigator.userAgent &&
-			navigator.userAgent.indexOf('CriOS') === -1 &&
-			navigator.userAgent.indexOf('FxiOS') === -1
-		);*/
-		},
-		useDarkTheme(): boolean {
-			return this.userPrefersDarkMode ?? this.systemPrefersDarkMode;
-		},
-		userPrefersDarkMode(): boolean | null {
-			return this.$store.state.ui.useDarkTheme;
-		},
-		nsfw(): boolean {
-			return this.$store.state.ui.nsfw;
-		},
-		objects(): Array<IObject['id']> {
-			const panels = this.$store.state.panels;
-			const currentPanel = panels.panels[panels.currentPanel];
-			if (currentPanel == null) return [];
-			return [...currentPanel.order, ...currentPanel.onTopOrder];
-		},
-	},
-	methods: {
-		drawLastDownload(): void {
-			const last = this.$store.state.ui.lastDownload;
-			if (last == null) return;
-			(this.$refs.render as typeof Render).blendOver(last);
-		},
-		setBlendOver(): void {
-			this.blendOver = this.$store.state.ui.lastDownload;
-		},
-		optimum(sw: number, sh: number): [number, number] {
-			let rh = sw / aspectRatio;
-			let rw = sh * aspectRatio;
+const nsfw = computed(() => store.state.ui.nsfw);
+watch(
+	() => nsfw.value,
+	async (value) => {
+		if (value) {
+			await store.dispatch('content/loadContentPacks', NsfwPaths);
+		} else {
+			await store.dispatch('removePacks', {
+				packs: NsfwNames,
+			} as IRemovePacksAction);
+		}
+	}
+);
+//#endregion nsfw
+//#region rerender
+let queuedRerender: number | null = null;
 
-			if (rh > sh) {
-				rh = sh;
-			} else {
-				rw = sw;
-			}
+function rerender() {
+	if (queuedRerender != null) return;
+	queuedRerender = requestAnimationFrame(() => {
+		queuedRerender = null;
+		eventBus.fire(new InvalidateRenderEvent());
+	});
+}
+//#endregion rerender
+//#region keyboard actions
+function onKeydown(e: KeyboardEvent) {
+	if (
+		e.target instanceof HTMLInputElement ||
+		e.target instanceof HTMLTextAreaElement
+	) {
+		console.log('skip keydown on potential target');
+		return;
+	}
 
-			return [rw, rh];
-		},
-		optimizeWithMenu(sw: number, sh: number): [number, number, boolean] {
-			const opth = this.optimum(sw, sh - this.uiSize);
-			const optv = this.optimum(sw - this.uiSize, sh);
-
-			if (!this.isSafari && opth[0] * opth[1] > optv[0] * optv[1]) {
-				return [opth[0], opth[1], false];
-			} else {
-				return [optv[0], optv[1], true];
-			}
-		},
-		updateArea(): void {
-			const [cw, ch, v] = this.optimizeWithMenu(
-				document.documentElement.clientWidth,
-				document.documentElement.clientHeight
+	transaction(async () => {
+		const ctrl = e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey;
+		const noMod = !e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey;
+		if (ctrl && e.key === 'v') {
+			await store.dispatch(
+				'panels/pasteObjectFromClipboard',
+				{} as IPasteFromClipboardAction
 			);
-
-			this.canvasWidth = cw;
-			this.canvasHeight = ch;
-
-			this.canvasTooSmall = Math.max(cw, ch) < canvasTooSmallThreshold;
-
-			if (this.$store.state.ui.vertical === v) return;
-			this.$store.commit('ui/setVertical', v);
-		},
-		showDialog(search: string | undefined) {
-			this.dialogVisable = true;
-			if (search == null) return;
-			const wait = () => {
-				if (this.$refs.packDialog) {
-					// This strange doubling is to get around the async component wrapper
-					(this.$refs.packDialog as any).setSearch(search);
-				} else {
-					setTimeout(wait, packDialogWaitMs);
-				}
-			};
-			this.$nextTick(wait);
-		},
-		showExpressionDialog(e: IShowExpressionDialogEvent) {
-			this.expressionBuilderVisible = true;
-			this.expressionBuilderCharacter = e.character;
-			this.expressionBuilderHeadGroup = e.headGroup;
-		},
-		rerender() {
-			if (this.queuedRerender != null) return;
-			this.queuedRerender = requestAnimationFrame(() => {
-				this.queuedRerender = null;
-				eventBus.fire(new InvalidateRenderEvent());
-			});
-		},
-		onKeydown(e: KeyboardEvent) {
-			if (
-				e.target instanceof HTMLInputElement ||
-				e.target instanceof HTMLTextAreaElement
-			) {
-				console.log('skip keydown on potential target');
-				return;
-			}
-
-			transaction(async () => {
-				if (e.ctrlKey) {
-					if (e.key === 'z') {
-						// this.$store.commit('history/undo');
-						e.preventDefault();
-						return;
-					} else if (e.key === 'y') {
-						// this.$store.commit('history/redo');
-						e.preventDefault();
-						return;
-					} else if (e.key === 'v') {
-						await this.$store.dispatch(
-							'panels/pasteObjectFromClipboard',
-							{} as IPasteFromClipboardAction
-						);
-						e.preventDefault();
-						return;
-					}
-				}
-				const selectionPanel =
-					this.$store.state.panels.panels[
-						this.$store.state.panels.currentPanel
-					];
-				const selection =
-					selectionPanel.objects[this.$store.state.ui.selection!];
-				if (selection == null) return;
-				if (e.key === 'Delete') {
-					await this.$store.dispatch('panels/removeObject', {
+			e.preventDefault();
+			return;
+		}
+		if (noMod && e.key === 'Escape') {
+			if (store.state.ui.selection === null) return;
+			store.commit('ui/setSelection', null);
+			return;
+		}
+		const selectionPanel =
+			store.state.panels.panels[store.state.panels.currentPanel];
+		const selection = selectionPanel.objects[store.state.ui.selection!];
+		if (selection == null) return;
+		if (ctrl) {
+			if (e.key === 'c' || e.key === 'x') {
+				await store.dispatch('panels/copyObjectToClipboard', {
+					id: selection.id,
+					panelId: selection.panelId,
+				} as ICopyObjectToClipboardAction);
+				if (e.key === 'x') {
+					await store.dispatch('panels/removeObject', {
 						id: selection.id,
 						panelId: selection.panelId,
 					} as IRemoveObjectAction);
-					return;
 				}
-
-				if (e.key === 'c' || e.key === 'x') {
-					await this.$store.dispatch('panels/copyObjectToClipboard', {
-						id: selection.id,
-						panelId: selection.panelId,
-					} as ICopyObjectToClipboardAction);
-					if (e.key === 'x') {
-						await this.$store.dispatch('panels/removeObject', {
-							id: selection.id,
-							panelId: selection.panelId,
-						} as IRemoveObjectAction);
-					}
-					e.preventDefault();
-					return;
-				}
-
-				if (e.key === '/' || e.key === '*') {
-					let delta = e.key === '/' ? -10 : 10;
-					if (e.shiftKey) {
-						delta /= Math.abs(delta);
-					}
-					this.$store.commit('panels/setRotation', {
-						id: selection.id,
-						panelId: selection.panelId,
-						rotation: selection.rotation + delta,
-					} as ISetSpriteRotationMutation);
-					e.stopPropagation();
-					e.preventDefault();
-					return;
-				}
-
-				if (selection.type === 'character') {
-					const character = selection as ICharacter;
-					if (!character.freeMove) {
-						if (e.key === 'ArrowLeft') {
-							await this.$store.dispatch('panels/shiftCharacterSlot', {
-								id: character.id,
-								panelId: character.panelId,
-								delta: -1,
-							} as IShiftCharacterSlotAction);
-							return;
-						}
-						if (e.key === 'ArrowRight') {
-							await this.$store.dispatch('panels/shiftCharacterSlot', {
-								id: character.id,
-								panelId: character.panelId,
-								delta: 1,
-							} as IShiftCharacterSlotAction);
-							return;
-						}
-					}
-				}
-				let { x, y } = selection;
-				switch (e.key) {
-					case 'ArrowLeft':
-						x -= e.shiftKey ? 1 : arrowMoveStepSize;
-						break;
-					case 'ArrowRight':
-						x += e.shiftKey ? 1 : arrowMoveStepSize;
-						break;
-					case 'ArrowUp':
-						y -= e.shiftKey ? 1 : arrowMoveStepSize;
-						break;
-					case 'ArrowDown':
-						y += e.shiftKey ? 1 : arrowMoveStepSize;
-						break;
-					default:
-						return;
-				}
-
-				await this.$store.dispatch('panels/setPosition', {
+				e.preventDefault();
+				return;
+			}
+		} else if (noMod) {
+			if (e.key === 'Delete') {
+				await store.dispatch('panels/removeObject', {
 					id: selection.id,
 					panelId: selection.panelId,
-					x,
-					y,
-				} as ISetObjectPositionMutation);
-			});
-		},
-		applyTheme(): void {
-			document.body.classList.toggle('dark-theme', this.useDarkTheme);
-		},
-		select(id: IObject['id']): void {
-			transaction(() => {
-				if (this.$store.state.ui.selection === id) return;
-				this.$store.commit('ui/setSelection', id);
-			});
-		},
-	},
-	watch: {
-		systemPrefersDarkMode() {
-			this.applyTheme();
-		},
-		userPrefersDarkMode() {
-			this.applyTheme();
-		},
-		async nsfw(value: boolean) {
-			if (value) {
-				await this.$store.dispatch('content/loadContentPacks', NsfwPaths);
-			} else {
-				await this.$store.dispatch('removePacks', {
-					packs: NsfwNames,
-				} as IRemovePacksAction);
+				} as IRemoveObjectAction);
+				return;
 			}
-		},
-	},
-	mounted(): void {
-		window.addEventListener('keypress', (e) => {
-			if (e.key === 'Escape') {
-				transaction(() => {
-					if (this.$store.state.ui.selection === null) return;
-					this.$store.commit('ui/setSelection', null);
-				});
+
+			if (e.key === '/' || e.key === '*') {
+				let delta = e.key === '/' ? -10 : 10;
+				if (e.shiftKey) {
+					delta /= Math.abs(delta);
+				}
+				store.commit('panels/setRotation', {
+					id: selection.id,
+					panelId: selection.panelId,
+					rotation: selection.rotation + delta,
+				} as ISetSpriteRotationMutation);
+				e.stopPropagation();
+				e.preventDefault();
+				return;
 			}
-		});
 
-		window.addEventListener('resize', this.updateArea);
-		window.addEventListener('keydown', this.onKeydown);
+			if (selection.type === 'character') {
+				const character = selection as ICharacter;
+				if (!character.freeMove) {
+					if (e.key === 'ArrowLeft') {
+						await store.dispatch('panels/shiftCharacterSlot', {
+							id: character.id,
+							panelId: character.panelId,
+							delta: -1,
+						} as IShiftCharacterSlotAction);
+						return;
+					}
+					if (e.key === 'ArrowRight') {
+						await store.dispatch('panels/shiftCharacterSlot', {
+							id: character.id,
+							panelId: character.panelId,
+							delta: 1,
+						} as IShiftCharacterSlotAction);
+						return;
+					}
+				}
+			}
+			let { x, y } = selection;
+			const stepSize = e.shiftKey ? 1 : arrowMoveStepSize;
+			switch (e.key) {
+				case 'ArrowLeft':
+					x -= stepSize;
+					break;
+				case 'ArrowRight':
+					x += stepSize;
+					break;
+				case 'ArrowUp':
+					y -= stepSize;
+					break;
+				case 'ArrowDown':
+					y += stepSize;
+					break;
+				default:
+					return;
+			}
 
-		if (window.matchMedia != null) {
-			/* The viewport is less than, or equal to, 700 pixels wide */
-			const matcher = window.matchMedia('(prefers-color-scheme: dark)');
-			this.systemPrefersDarkMode = matcher.matches;
-			matcher.addListener((match) => {
-				this.systemPrefersDarkMode = match.matches;
+			await store.dispatch('panels/setPosition', {
+				id: selection.id,
+				panelId: selection.panelId,
+				x,
+				y,
+			} as ISetObjectPositionMutation);
+		}
+	});
+}
+onMounted(() => {
+	window.addEventListener('keydown', onKeydown);
+});
+onUnmounted(() => {
+	window.removeEventListener('keydown', onKeydown);
+});
+//#endregion keyboard actions
+//#region shortcuts
+let ctrlTimeout: number | null = null;
+let ctrlShown = false;
+function testShortcutKey(e: MouseEvent | KeyboardEvent) {
+	if (e.ctrlKey) {
+		if (!ctrlShown && ctrlTimeout === null) {
+			ctrlTimeout = setTimeout(showCtrlLabels);
+		}
+	} else {
+		removeCtrlLables();
+	}
+}
+function showCtrlLabels() {
+	document.body.classList.add('ctrl-key');
+	ctrlShown = true;
+}
+function removeCtrlLables() {
+	if (ctrlTimeout !== null) {
+		clearTimeout(ctrlTimeout);
+		ctrlTimeout = null;
+	}
+	document.body.classList.remove('ctrl-key');
+	ctrlShown = false;
+}
+onMounted(() => {
+	for (const eventType of ['keydown', 'keyup', 'mousemove'] as const) {
+		window.addEventListener(eventType, testShortcutKey, true);
+	}
+	window.addEventListener('blur', removeCtrlLables);
+});
+onUnmounted(() => {
+	for (const eventType of ['keydown', 'keyup', 'mousemove'] as const) {
+		window.removeEventListener(eventType, testShortcutKey, true);
+	}
+	window.removeEventListener('blur', removeCtrlLables);
+});
+//#endregion shortcuts
+//#region selection
+function select(id: IObject['id']): void {
+	transaction(() => {
+		if (store.state.ui.selection === id) return;
+		store.commit('ui/setSelection', id);
+	});
+}
+
+watch(
+	() => store.state.ui.selection,
+	(id) => {
+		if (document.activeElement?.getAttribute('data-obj-id') !== '' + id) {
+			(document.querySelector(`*[data-obj-id='${id}']`) as HTMLElement)?.focus({
+				focusVisible: false,
+				preventScroll: true,
 			});
 		}
 	},
-	async created(): Promise<void> {
-		// Moving this to the "mounted"-handler crashes safari over version 12.
-		// My best guess is because it runs in a microtask, which have been added in that Version.
-		this.updateArea();
-		Repo.setStore(this.$store);
+	{ immediate: true }
+);
+//#endregion selection
+//#region initialize
+Repo.setStore(store);
 
-		(window as any).app = this;
-		(window as any).store = this.$store;
-		(window as any).env = environment;
+(window as any).store = store;
+(window as any).env = environment;
 
-		watch(
-			() => this.$store.state.ui.selection,
-			(id) => {
-				if (document.activeElement?.getAttribute('data-obj-id') !== '' + id) {
-					(
-						document.querySelector(`*[data-obj-id='${id}']`) as HTMLElement
-					)?.focus({ focusVisible: false, preventScroll: true });
-				}
-			}
+onMounted(async () => {
+	await environment.loadGameMode();
+	environment.connectToStore(/* this.vuexHistory, */ store);
+	preLoading.value = false;
+	const settings = await environment.loadSettings();
+
+	await transaction(async () => {
+		environment.state.looseTextParsing = settings.looseTextParsing || true;
+		store.commit('ui/setLqRendering', settings.lq ?? false);
+		store.commit('ui/setDarkTheme', settings.darkMode ?? null);
+		store.commit(
+			'ui/setDefaultCharacterTalkingZoom',
+			settings.defaultCharacterTalkingZoom ?? true
 		);
 
-		document.body.addEventListener(
-			'drop',
-			(event: Event) => {
-				event.preventDefault();
-			},
-			true
-		);
-		document.body.addEventListener(
-			'dragover',
-			(event: Event) => {
-				event.preventDefault();
-			},
-			true
-		);
+		await store.dispatch('content/loadContentPacks', [
+			`${baseUrl}packs/buildin.base.backgrounds.json`,
+			`${baseUrl}packs/buildin.base.monika.json`,
+			`${baseUrl}packs/buildin.base.sayori.json`,
+			`${baseUrl}packs/buildin.base.natsuki.json`,
+			`${baseUrl}packs/buildin.base.yuri.json`,
+			`${baseUrl}packs/buildin.extra.mc.json`,
+			`${baseUrl}packs/buildin.extra.concept_mc.json`,
+			`${baseUrl}packs/buildin.extra.mc_chad.json`,
+			`${baseUrl}packs/buildin.extra.femc.json`,
+			`${baseUrl}packs/buildin.extra.concept_femc.json`,
+			`${baseUrl}packs/buildin.extra.amy.json`,
+		]);
 
-		await environment.loadGameMode();
-		this.preLoading = false;
-		environment.connectToStore(/* this.vuexHistory, */ this.$store);
-		const settings = await environment.loadSettings();
+		await environment.loadContentPacks();
 
-		await transaction(async () => {
-			environment.state.looseTextParsing = settings.looseTextParsing || true;
-			this.$store.commit('ui/setLqRendering', settings.lq ?? false);
-			this.$store.commit('ui/setDarkTheme', settings.darkMode ?? null);
-			this.$store.commit(
-				'ui/setDefaultCharacterTalkingZoom',
-				settings.defaultCharacterTalkingZoom ?? true
-			);
+		const panelId = await store.dispatch('panels/createPanel');
+		if (Object.keys(store.state.panels.panels[panelId].objects).length === 0) {
+			await store.dispatch('panels/createTextBox', {
+				panelId,
+				text:
+					'Hi! Click here to edit this textbox! ' +
+					`${store.state.ui.vertical ? 'To the right' : 'At the bottom'}` +
+					' you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more! Use the camera icon to download the image.',
+			} as ICreateTextBoxAction);
+		}
+		store.commit('panels/setCurrentBackground', {
+			current: 'dddg.buildin.backgrounds:ddlc.clubroom',
+			panelId: store.state.panels.currentPanel,
+		} as ISetCurrentMutation);
 
-			await this.$store.dispatch('content/loadContentPacks', [
-				`${baseUrl}packs/buildin.base.backgrounds.json`,
-				`${baseUrl}packs/buildin.base.monika.json`,
-				`${baseUrl}packs/buildin.base.sayori.json`,
-				`${baseUrl}packs/buildin.base.natsuki.json`,
-				`${baseUrl}packs/buildin.base.yuri.json`,
-				`${baseUrl}packs/buildin.extra.mc.json`,
-				`${baseUrl}packs/buildin.extra.concept_mc.json`,
-				`${baseUrl}packs/buildin.extra.mc_chad.json`,
-				`${baseUrl}packs/buildin.extra.femc.json`,
-				`${baseUrl}packs/buildin.extra.concept_femc.json`,
-				`${baseUrl}packs/buildin.extra.amy.json`,
-			]);
-
-			await environment.loadContentPacks();
-
-			const panelId = await this.$store.dispatch('panels/createPanel');
-			if (
-				Object.keys(this.$store.state.panels.panels[panelId].objects).length ===
-				0
-			) {
-				await this.$store.dispatch('panels/createTextBox', {
-					panelId,
-					text:
-						'Hi! Click here to edit this textbox! ' +
-						`${
-							this.$store.state.ui.vertical ? 'To the right' : 'At the bottom'
-						}` +
-						' you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more! Use the camera icon to download the image.',
-				} as ICreateTextBoxAction);
-			}
-			this.$store.commit('panels/setCurrentBackground', {
-				current: 'dddg.buildin.backgrounds:ddlc.clubroom',
-				panelId: this.$store.state.panels.currentPanel,
-			} as ISetCurrentMutation);
-
-			this.$store.commit('ui/setNsfw', settings.nsfw ?? false);
-		});
-	},
-	unmounted(): void {
-		window.removeEventListener('resize', this.updateArea);
-		window.removeEventListener('keydown', this.onKeydown);
-	},
+		store.commit('ui/setNsfw', settings.nsfw ?? false);
+	});
 });
+//#endregion Initialize
 
 export interface IShowExpressionDialogEvent {
 	character: string;
