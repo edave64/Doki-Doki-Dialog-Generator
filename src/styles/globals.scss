@@ -148,9 +148,10 @@ p {
 }
 
 body {
-	--native-background: #ffffff;
-	--accent-background: #ffe6f4;
-	--border: #ffbde1;
+	--pinkHue: 326;
+	--native-background: #f8f8f8;
+	--accent-background: hsl(var(--pinkHue), 100%, 95%);
+	--border: hsl(var(--pinkHue), 100%, 75%);
 	--text: #000000;
 	--text-disabled: rgba(20, 20, 20, 0.5);
 	--error: #880000;
@@ -169,9 +170,9 @@ body {
 
 //noinspection CssUnusedSymbol
 body.dark-theme {
-	--native-background: #242424;
-	--accent-background: #200f19;
-	--border: #5b2545;
+	--native-background: #080808;
+	--accent-background: hsl(var(--pinkHue), 100%, 5%);
+	--border: hsl(var(--pinkHue), 100%, 25%);
 	--text: #ffffff;
 	--text-disabled: rgba(220, 220, 220, 0.5);
 	--error: #ff5555;
