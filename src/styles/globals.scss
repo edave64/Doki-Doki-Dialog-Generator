@@ -97,6 +97,13 @@ select:disabled,
 	color: var(--text-disabled);
 }
 
+input,
+button,
+select,
+.btn {
+	height: 28px;
+}
+
 button,
 .btn {
 	padding: 2px;
@@ -152,6 +159,7 @@ body {
 	--native-background: #f8f8f8;
 	--accent-background: hsl(var(--pinkHue), 100%, 95%);
 	--border: hsl(var(--pinkHue), 100%, 75%);
+	--border-fieldset: hsla(var(--pinkHue), 100%, 75%, 50%);
 	--text: #000000;
 	--text-disabled: rgba(20, 20, 20, 0.5);
 	--error: #880000;
@@ -173,10 +181,62 @@ body.dark-theme {
 	--native-background: #080808;
 	--accent-background: hsl(var(--pinkHue), 100%, 5%);
 	--border: hsl(var(--pinkHue), 100%, 25%);
+	--border-fieldset: hsla(var(--pinkHue), 100%, 25%, 50%);
 	--text: #ffffff;
 	--text-disabled: rgba(220, 220, 220, 0.5);
 	--error: #ff5555;
 	--link: #6666ee;
 	--modal-backdrop: rgba(255, 255, 255, 0.5);
 	--modal-backdrop-light: rgba(255, 255, 255, 0.75);
+}
+
+.panel.vertical {
+	.v-w100 {
+		width: 100%;
+	}
+	.v-bt0 {
+		border-top: 0;
+	}
+	.v-bl0 {
+		border-left: 0;
+	}
+}
+
+.panel:not(.vertical) {
+	.h-h100 {
+		height: 100%;
+	}
+	.h-bt0 {
+		border-top: 0;
+	}
+	.h-bl0 {
+		border-left: 0;
+	}
+}
+
+.w100 {
+	width: 100%;
+}
+
+.bt0 {
+	border-top: 0;
+}
+
+.bl0 {
+	border-left: 0;
+}
+
+.button-tbl {
+	border-collapse: collapse;
+	width: 100%;
+	td {
+		//noinspection CssOverwrittenProperties
+		border: 2px solid $default-border;
+		//noinspection CssOverwrittenProperties
+		border: 2px solid var(--border);
+
+		> * {
+			border: 0;
+		}
+	}
 }

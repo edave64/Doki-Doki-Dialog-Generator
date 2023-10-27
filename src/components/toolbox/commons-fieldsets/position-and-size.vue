@@ -5,7 +5,7 @@
 -->
 <template>
 	<d-fieldset :title="'Position' + (allowSize ? '/Size' : '')">
-		<table>
+		<table class="v-w100">
 			<tr>
 				<td colspan="2">
 					<toggle
@@ -17,13 +17,18 @@
 			</tr>
 			<tr v-if="allowStepMove && !freeMove">
 				<td colspan="2">
-					<table>
+					<table class="v-w100 button-tbl">
 						<tr>
 							<td class="arrow-col">
 								<button @click="--pos" :disabled="isFirstPos">&lt;</button>
 							</td>
 							<td>
-								<select id="current_talking" v-model.number="pos">
+								<select
+									id="current_talking"
+									class="v-w100"
+									style="text-align: center"
+									v-model.number="pos"
+								>
 									<option
 										v-for="(val, key) of positionNames"
 										:key="key"

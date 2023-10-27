@@ -43,6 +43,7 @@
 				<d-button icon="add_to_queue" @click="addNewPanel"> Add new</d-button>
 				<d-button
 					icon="remove_from_queue"
+					class="bt0"
 					@click="deletePanel"
 					:disabled="!canDeletePanel"
 				>
@@ -51,6 +52,7 @@
 
 				<d-button
 					icon="arrow_upward"
+					class="bt0"
 					@click="moveAhead"
 					:disabled="!canMoveAhead"
 				>
@@ -58,17 +60,18 @@
 				</d-button>
 				<d-button
 					icon="arrow_downward"
+					class="bt0"
 					@click="moveBehind"
 					:disabled="!canMoveBehind"
 				>
 					Move behind
 				</d-button>
-				<d-button icon="color_lens" @click="imageOptions = true">
+				<d-button class="bt0" icon="color_lens" @click="imageOptions = true">
 					Image options
 				</d-button>
 			</div>
-			<d-fieldset title="Export">
-				<table>
+			<d-fieldset title="Export" class="h-h100">
+				<table class="v-w100">
 					<tr>
 						<td>
 							<label for="export_format">Format</label>
@@ -106,7 +109,9 @@
 						<td>
 							<label for="export_ppi">
 								Panels per image:
-								<br /><small>(0 for one single image)</small>
+								<small v-if="!isLossy || vertical"
+									><br />(0 for one single image)</small
+								>
 							</label>
 						</td>
 						<td>
@@ -124,7 +129,9 @@
 						<td>
 							<label for="export_pages">
 								Panels to export:
-								<br /><small>(Leave empty for all)</small>
+								<small v-if="!isLossy || vertical"
+									><br />(Leave empty for all)</small
+								>
 							</label>
 						</td>
 						<td>
@@ -142,14 +149,20 @@
 							</d-button>
 						</td>
 						<td>
-							<button @click="estimateExportSize">Estimate filesizes</button>
+							<button class="v-bt0" @click="estimateExportSize">
+								Estimate filesizes
+							</button>
 						</td>
 					</tr>
 				</table>
 			</d-fieldset>
 			<div class="column">
-				<d-button icon="save" @click="save">Save</d-button>
-				<d-button icon="folder_open" @click="$refs.loadUpload.click()">
+				<d-button class="v-bt0" icon="save" @click="save">Save</d-button>
+				<d-button
+					class="v-bt0"
+					icon="folder_open"
+					@click="$refs.loadUpload.click()"
+				>
 					Load
 					<input type="file" ref="loadUpload" @change="load" />
 				</d-button>
@@ -766,9 +779,13 @@ input[type='file'] {
 	color: #fff;
 }
 
-#export_ppi,
-#export_pages {
-	width: 128px;
+.panel:not(.vertical) {
+	#export_ppi,
+	#export_pages,
+	#export_quality,
+	#export_format {
+		width: 128px;
+	}
 }
 
 small {
@@ -805,7 +822,11 @@ small {
 
 				td {
 					width: 100%;
-					display: table-row;
+					display: block;
+
+					> * {
+						width: 100%;
+					}
 				}
 			}
 		}

@@ -40,6 +40,7 @@
 				<td colspan="3">
 					<button
 						id="image_options_button"
+						class="v-w100"
 						@click="$emit('open-image-options')"
 					>
 						Image options

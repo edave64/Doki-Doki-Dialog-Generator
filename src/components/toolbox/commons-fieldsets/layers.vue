@@ -7,7 +7,7 @@
 -->
 <template>
 	<d-fieldset id="layerfs" title="Layer:">
-		<table>
+		<table class="button-tbl">
 			<tbody>
 				<tr>
 					<td>
@@ -75,6 +75,12 @@ table {
 
 	button {
 		width: 100%;
+		height: auto;
 	}
+}
+
+.button-tbl {
+	margin: 2px;
+	width: calc(100% - 4px);
 }
 </style>

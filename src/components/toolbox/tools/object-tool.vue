@@ -52,35 +52,40 @@
 			<slot />
 			<position-and-size :obj="object" />
 			<layers :object="object" />
-			<toggle v-model="flip" label="Flip?" />
-			<table class="input-table">
-				<tr>
-					<td><label for="rotation">Rotation: °</label></td>
-					<td>
-						<input
-							id="rotation"
-							class="smol"
-							type="number"
-							v-model="rotation"
-							@keydown.stop
-						/>
-					</td>
-				</tr>
-				<tr v-if="object.type === 'character' || object.type === 'sprite'">
-					<td><label for="zoom">Zoom: </label></td>
-					<td>
-						<input
-							id="zoom"
-							type="number"
-							class="smol"
-							step="1"
-							min="0"
-							v-model="zoom"
-							@keydown.stop
-						/>
-					</td>
-				</tr>
-			</table>
+			<d-fieldset title="Transform">
+				<toggle v-model="flip" label="Flip?" />
+				<table class="input-table v-w100">
+					<tr>
+						<td>
+							<label for="rotation" class="v-w100">Rotation:&nbsp;°</label>
+						</td>
+						<td>
+							<input
+								id="rotation"
+								class="smol v-w100"
+								type="number"
+								v-model="rotation"
+								@keydown.stop
+							/>
+						</td>
+					</tr>
+					<tr v-if="object.type === 'character' || object.type === 'sprite'">
+						<td><label for="zoom" class="v-w100">Zoom: </label></td>
+						<td>
+							<input
+								id="zoom"
+								type="number"
+								class="smol v-w100"
+								step="1"
+								min="0"
+								v-model="zoom"
+								@keydown.stop
+							/>
+						</td>
+					</tr>
+				</table>
+				<slot name="transform" />
+			</d-fieldset>
 
 			<slot name="options" />
 			<d-fieldset v-if="hasLabel" title="Textbox settings">
@@ -89,10 +94,7 @@
 					v-model="enlargeWhenTalking"
 					v-if="object.type === 'character' || object.type === 'sprite'"
 				/>
-				<toggle
-					label="Use custom textbox color"
-					v-model="useCustomTextboxColor"
-				/>
+				<toggle label="Own textbox color" v-model="useCustomTextboxColor" />
 				<table>
 					<tr v-if="useCustomTextboxColor">
 						<td>
@@ -123,8 +125,8 @@
 				</table>
 			</d-fieldset>
 			<button @click="imageOptionsOpen = true">Image options</button>
-			<button @click="copy">Copy</button>
-			<delete :obj="object" />
+			<button class="v-bt0" @click="copy">Copy</button>
+			<delete class="v-bt0" :obj="object" />
 		</template>
 	</div>
 </template>

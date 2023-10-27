@@ -4,10 +4,12 @@
 	max-height: 100%;
 }
 
-$default-native-background: #ffffff;
-$default-accent-background: #ffe6f4;
+$pinkHue: 326;
+$default-native-background: #f8f8f8;
+$default-accent-background: hsl($pinkHue, 100%, 95%);
 $default-text-disabled: rgba(20, 20, 20, 0.5);
-$default-border: #ffbde1;
+$default-border: hsl($pinkHue, 100%, 75%);
+$default-border-fieldset: hsla($pinkHue, 100%, 75%, 50%);
 $default-text: #000000;
 $default-error: #880000;
 $default-link: #0000ee;

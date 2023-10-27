@@ -8,7 +8,11 @@
 			<d-button
 				v-for="(obj, key) in groups"
 				:key="key"
-				:class="{ active: group === key }"
+				:class="{
+					active: group === key,
+					'v-bl0': key !== 'characters',
+					'h-bt0': key !== 'characters',
+				}"
 				icon-pos="top"
 				:icon="obj.icon"
 				:shortcut="obj.shortcut"
@@ -27,7 +31,9 @@
 				@show-dialog="$emit('show-dialog', $event)"
 			/>
 			<UI v-else-if="group === 'ui'" />
-			<button @click="paste" :disabled="!hasClipboardContent">Paste</button>
+			<button class="v-w100" @click="paste" :disabled="!hasClipboardContent">
+				Paste
+			</button>
 		</div>
 	</div>
 </template>
@@ -133,10 +139,6 @@ function paste() {
 		margin-top: 4px;
 		width: 100%;
 		flex-direction: row;
-
-		:deep(button) {
-			width: 100%;
-		}
 	}
 
 	&:not(.vertical) {

@@ -11,6 +11,7 @@
 		:disabled="disabled"
 		:title="title ?? undefined"
 		:aria-label="title ?? undefined"
+		:style="icon ? 'height: auto' : ''"
 		ref="btn"
 	>
 		<div class="material-icons" aria-hidden="true" v-if="icon">{{ icon }}</div>

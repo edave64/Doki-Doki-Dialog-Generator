@@ -98,11 +98,11 @@
 			title="Silently ignore parse errors in texts. (Like unexpected '{' characters) Prevents beginners from getting stuck working with textboxes, but also makes it harder to understand what you are doing wrong."
 			v-model="looseTextParsing"
 		/>
-		<table>
+		<table class="v-w100">
 			<tr>
 				<td><label>Theme:</label></td>
 				<td>
-					<select v-model="theme">
+					<select v-model="theme" class="v-w100">
 						<option :value="null">System</option>
 						<option :value="false">Light</option>
 						<option :value="true">Dark</option>

@@ -64,10 +64,17 @@
 
 			<toggle label="Auto quoting?" v-model="autoQuoting" />
 			<toggle label="Auto line wrap?" v-model="autoWrap" />
-			<div id="dialog_text_wrapper">
+			<div id="dialog_text_wrapper" class="v-w100">
 				<label for="dialog_text">Dialog:</label>
-				<textarea v-model="dialog" id="dialog_text" @keydown.stop></textarea>
-				<button @click="textEditor = 'body'">Formatting</button>
+				<textarea
+					class="v-w100"
+					v-model="dialog"
+					id="dialog_text"
+					@keydown.stop
+				></textarea>
+				<button class="w100 bt0" @click="textEditor = 'body'">
+					Formatting
+				</button>
 			</div>
 		</template>
 		<template v-slot:options>
@@ -169,7 +176,7 @@
 				</d-flow>
 			</d-fieldset>
 			<button @click="resetPosition">Reset position</button>
-			<button @click="splitTextbox">Split textbox</button>
+			<button class="v-bt0" @click="splitTextbox">Split textbox</button>
 		</template>
 	</object-tool>
 </template>
@@ -381,14 +388,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .panel {
 	&.vertical {
-		#dialog_text_wrapper {
-			width: 173px;
-
-			textarea {
-				width: 100%;
-			}
-		}
-
 		table {
 			width: 100%;
 
@@ -396,6 +395,10 @@ export default defineComponent({
 			select {
 				width: 100px;
 			}
+		}
+
+		textarea {
+			resize: vertical;
 		}
 	}
 
@@ -421,6 +424,10 @@ export default defineComponent({
 
 		.customization-set {
 			@include height-100();
+		}
+
+		textarea {
+			resize: horizontal;
 		}
 	}
 }

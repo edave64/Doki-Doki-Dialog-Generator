@@ -1,9 +1,9 @@
 <template>
-	<button @click="addTextBox">Textbox</button>
-	<button @click="addPoem">Poem</button>
-	<button @click="addDialog">Notification</button>
-	<button @click="addChoice">Choice</button>
-	<button @click="addConsole">Console</button>
+	<button class="v-w100" @click="addTextBox">Textbox</button>
+	<button class="v-w100" @click="addPoem">Poem</button>
+	<button class="v-w100" @click="addDialog">Notification</button>
+	<button class="v-w100" @click="addChoice">Choice</button>
+	<button class="v-w100" @click="addConsole">Console</button>
 </template>
 
 <script lang="ts">

@@ -31,7 +31,7 @@
 				class="pose-list"
 				title="Pose:"
 			>
-				<table>
+				<table class="button-tbl">
 					<tbody>
 						<tr v-if="hasMultipleStyles">
 							<td class="arrow-col">
@@ -76,7 +76,7 @@
 				</table>
 			</d-fieldset>
 		</template>
-		<template v-slot:options>
+		<template v-slot:transform>
 			<toggle v-model="closeUp" label="Close up?" />
 		</template>
 	</object-tool>
@@ -272,5 +272,10 @@ fieldset {
 }
 input[type='file'] {
 	display: none;
+}
+
+.button-tbl {
+	margin: 2px;
+	width: calc(100% - 4px);
 }
 </style>
