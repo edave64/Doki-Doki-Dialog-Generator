@@ -1,5 +1,5 @@
 <!--
-	A tool that is shown when a poem object is selected.
+	A tool that is shown when a poem/console object is selected.
 -->
 <template>
 	<object-tool
@@ -31,14 +31,20 @@
 			</select>
 		</template>
 		<template v-else>
-			<button
-				id="console_color"
-				class="color-button"
-				:style="{ background: object.consoleColor }"
-				@click="colorSelect = 'base'"
-			>
-				Color
-			</button>
+			<table>
+				<tr>
+					<td style="width: 0">Color:</td>
+					<td class="v-w100">
+						<button
+							id="console_color"
+							class="w100"
+							:style="{ background: object.consoleColor }"
+							style="min-width: 64px"
+							@click="colorSelect = 'base'"
+						></button>
+					</td>
+				</tr>
+			</table>
 		</template>
 	</object-tool>
 </template>
@@ -46,6 +52,7 @@
 <script lang="ts">
 import { PanelMixin } from '@/components/mixins/panel-mixin';
 import Toggle from '@/components/toggle.vue';
+import DFlow from '@/components/ui/d-flow.vue';
 import {
 	IPoemTextStyle,
 	poemBackgrounds,
@@ -72,6 +79,7 @@ export default defineComponent({
 	components: {
 		Toggle,
 		ObjectTool,
+		DFlow,
 	},
 	data: () => ({
 		textEditor: false,
