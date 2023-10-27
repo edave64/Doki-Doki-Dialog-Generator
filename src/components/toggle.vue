@@ -60,7 +60,7 @@ export default defineComponent({
 	}
 
 	> input:focus-visible + .switch {
-		background-color: blue;
+		outline: 1px white auto;
 	}
 
 	> .toggle_label {
