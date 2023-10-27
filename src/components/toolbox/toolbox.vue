@@ -68,7 +68,7 @@
 				icon="extension"
 				icon-pos="top"
 				title="Content Packs"
-				shortcut="c"
+				shortcut="p"
 				@click="$emit('show-dialog')"
 			/>
 			<d-button
