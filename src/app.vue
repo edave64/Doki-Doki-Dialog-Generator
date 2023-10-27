@@ -13,7 +13,7 @@
 			></div>
 		</div>
 		<render
-			ref="render"
+			ref="renderer"
 			:canvasWidth="canvasWidth"
 			:canvasHeight="canvasHeight"
 			:preLoading="preLoading"
@@ -21,7 +21,7 @@
 		<message-console />
 		<tool-box
 			@show-prev-render="drawLastDownload"
-			@download="$refs.render.download()"
+			@download="renderer.download()"
 			@show-dialog="showDialog"
 			@show-expression-dialog="showExpressionDialog"
 		/>
@@ -93,7 +93,7 @@ const ExpressionBuilder = defineAsyncComponent(
 const arrowMoveStepSize = 20;
 const store = useStore() as Store<IRootState>;
 const preLoading = ref(false);
-const render = ref(null! as typeof Render);
+const renderer = ref(null! as typeof Render);
 
 const objects = computed(() => {
 	const panels = store.state.panels;
