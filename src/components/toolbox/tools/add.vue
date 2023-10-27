@@ -2,7 +2,7 @@
 	A tab allowing you to add characters, sprites or ui objects to the scene.
 -->
 <template>
-	<div class="panel">
+	<div class="panel" ref="root">
 		<h1>Add</h1>
 		<div :class="{ 'group-selector': true, vertical }">
 			<d-button
@@ -32,15 +32,13 @@
 	</div>
 </template>
 
-<script lang="ts">
-import { PanelMixin } from '@/components/mixins/panel-mixin';
+<script lang="ts" setup>
+import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import DButton from '@/components/ui/d-button.vue';
-import environment, { Folder } from '@/environments/environment';
 import { transaction } from '@/plugins/vuex-history';
 import { IPasteFromClipboardAction } from '@/store/objects';
-import { IPanel } from '@/store/panels';
-import { DeepReadonly } from 'ts-essentials';
-import { defineComponent } from 'vue';
+import { computed, ref } from 'vue';
+import { useStore } from 'vuex';
 import Characters from './add/character.vue';
 import Sprites from './add/sprite.vue';
 import UI from './add/ui.vue';
@@ -52,54 +50,44 @@ interface Group {
 	shortcut: string;
 }
 
-export default defineComponent({
-	mixins: [PanelMixin],
-	components: { DButton, Characters, Sprites, UI },
-	data: () => ({
-		group: 'characters' as GroupNames,
-		groups: {
-			characters: {
-				icon: 'emoji_people',
-				text: 'Char&shy;acters',
-				shortcut: '1',
-			},
-			sprites: {
-				icon: 'change_history',
-				text: 'Sprites',
-				shortcut: '2',
-			},
-			ui: {
-				icon: 'view_quilt',
-				text: 'UI',
-				shortcut: '3',
-			},
-		} as { [P in GroupNames]: Group },
-	}),
-	computed: {
-		currentPanel(): DeepReadonly<IPanel> {
-			return this.$store.state.panels.panels[
-				this.$store.state.panels.currentPanel
-			];
-		},
-		hasClipboardContent(): boolean {
-			return this.$store.state.ui.clipboard != null;
-		},
-		showSpritesFolder(): boolean {
-			return (environment.supports.openableFolders as ReadonlySet<Folder>).has(
-				'sprites'
-			);
-		},
+const groups = {
+	characters: {
+		icon: 'emoji_people',
+		text: 'Char&shy;acters',
+		shortcut: '1',
 	},
-	methods: {
-		paste() {
-			transaction(async () => {
-				await this.$store.dispatch('panels/pasteObjectFromClipboard', {
-					panelId: this.currentPanel.id,
-				} as IPasteFromClipboardAction);
-			});
-		},
+	sprites: {
+		icon: 'change_history',
+		text: 'Sprites',
+		shortcut: '2',
 	},
+	ui: {
+		icon: 'view_quilt',
+		text: 'UI',
+		shortcut: '3',
+	},
+} as { [P in GroupNames]: Group };
+
+const root = ref(null! as HTMLElement);
+const group = ref('characters' as GroupNames);
+const store = useStore();
+const { vertical } = setupPanelMixin(root);
+
+const currentPanel = computed(() => {
+	return store.state.panels.panels[store.state.panels.currentPanel];
 });
+
+const hasClipboardContent = computed(() => {
+	return store.state.ui.clipboard != null;
+});
+
+function paste() {
+	transaction(async () => {
+		await store.dispatch('panels/pasteObjectFromClipboard', {
+			panelId: currentPanel.value.id,
+		} as IPasteFromClipboardAction);
+	});
+}
 </script>
 
 <style lang="scss" scoped>
