@@ -25,366 +25,355 @@
 	</canvas>
 </template>
 
-<script lang="ts">
-import getConstants from "@/constants";
+<script lang="ts" setup>
+import getConstants from '@/constants';
 import eventBus, {
 	ColorPickedEvent,
 	InvalidateRenderEvent,
 	RenderUpdatedEvent,
-	StateLoadingEvent
-} from "@/eventbus/event-bus";
-import { transaction } from "@/plugins/vuex-history";
-import { SceneRenderer } from "@/renderables/scene-renderer";
-import { RenderContext } from "@/renderer/renderer-context";
-import { ICreateSpriteAction } from "@/store/object-types/sprite";
-import { IObject, ISetObjectPositionMutation } from "@/store/objects";
-import { IPanel } from "@/store/panels";
-import { disposeCanvas } from "@/util/canvas";
-import { DeepReadonly } from "ts-essentials";
-import { defineComponent, markRaw } from "vue";
-import { MutationPayload } from "vuex";
+	StateLoadingEvent,
+} from '@/eventbus/event-bus';
+import { transaction } from '@/plugins/vuex-history';
+import { SceneRenderer } from '@/renderables/scene-renderer';
+import { RenderContext } from '@/renderer/renderer-context';
+import { IRootState } from '@/store';
+import { ICreateSpriteAction } from '@/store/object-types/sprite';
+import { IObject, ISetObjectPositionMutation } from '@/store/objects';
+import { disposeCanvas } from '@/util/canvas';
+import { DeepReadonly } from 'ts-essentials';
+import { computed, markRaw, onMounted, onUnmounted, ref, watch } from 'vue';
+import { MutationPayload, Store, useStore } from 'vuex';
 
-export default defineComponent({
-	props: {
-		canvasWidth: { default: 0 },
-		canvasHeight: { default: 0 },
-		preLoading: { type: Boolean },
-	},
-	data: () => ({
-		sdCtx: null! as CanvasRenderingContext2D,
-		currentlyRendering: false,
-		queuedRender: null as null | number,
-		showingLast: false,
-		dropSpriteCount: 0,
-		dropPreventClick: false,
-
-		draggedObject: null as DeepReadonly<IObject> | null,
-		dragXOffset: 0,
-		dragYOffset: 0,
-		dragXOriginal: 0,
-		dragYOriginal: 0,
-
-		sceneRendererCache: null as SceneRenderer | null,
-	}),
-	computed: {
-		selection(): IObject['id'] | null {
-			return this.$store.state.ui.selection ?? null;
-		},
-		currentPanel(): DeepReadonly<IPanel> {
-			return this.$store.state.panels.panels[
-				this.$store.state.panels.currentPanel
-			];
-		},
-		lqRendering(): boolean {
-			return this.$store.state.ui.lqRendering;
-		},
-		sceneRender(): SceneRenderer {
-			if (this.preLoading) return null!;
-			const panelId = this.$store.state.panels.currentPanel;
-			if (!this.sceneRendererCache) {
-				console.log('New scene renderer!');
-				// eslint-disable-next-line vue/no-side-effects-in-computed-properties
-				this.sceneRendererCache = markRaw(
-					new SceneRenderer(
-						this.$store,
-						panelId,
-						this.bitmapWidth,
-						this.bitmapHeight
-					)
-				);
-			} else {
-				this.sceneRendererCache.setPanelId(panelId);
-			}
-			return this.sceneRendererCache as SceneRenderer;
-		},
-		bitmapHeight(): number {
-			// Stupid hack to make vue reevaluate this property when loading is done.
-			this.preLoading;
-			return getConstants().Base.screenHeight;
-		},
-		bitmapWidth(): number {
-			// Stupid hack to make vue reevaluate this property when loading is done.
-			this.preLoading;
-			return getConstants().Base.screenWidth;
-		},
-		pickerMode(): boolean {
-			return this.$store.state.ui.pickColor;
-		},
-		cursor(): 'default' | 'crosshair' {
-			return this.pickerMode ? 'crosshair' : 'default';
-		},
-	},
-	methods: {
-		async download(): Promise<void> {
-			const url = await this.sceneRender.download();
-
-			await transaction(() => {
-				const oldUrl = this.$store.state.ui.lastDownload;
-
-				this.$store.commit('ui/setLastDownload', url);
-				if (oldUrl != null) {
-					URL.revokeObjectURL(oldUrl);
-				}
-			});
-		},
-		invalidateRender() {
-			if (this.queuedRender != null) return;
-			this.queuedRender = requestAnimationFrame(this.render_);
-		},
-		async render_(): Promise<void> {
-			if (this.queuedRender != null) {
-				cancelAnimationFrame(this.queuedRender);
-				this.queuedRender = null;
-			}
-			if (this.preLoading) return;
-
-			if (this.$store.state.unsafe) return;
-
-			try {
-				await this.sceneRender.render(!this.lqRendering, true, false);
-			} catch (e) {
-				console.log(e);
-			}
-			this.display();
-			eventBus.fire(new RenderUpdatedEvent());
-		},
-		renderLoadingScreen() {
-			const loadingScreen = document.createElement('canvas');
-			loadingScreen.height = this.bitmapHeight;
-			loadingScreen.width = this.bitmapWidth;
-			try {
-				const rctx = RenderContext.make(loadingScreen, true, false);
-				rctx.drawText({
-					text: 'Starting...',
-					x: loadingScreen.width / 2,
-					y: loadingScreen.height / 2,
-					align: 'center',
-					outline: {
-						width: 5,
-						style: '#b59',
-					},
-					font: '32px riffic',
-					fill: {
-						style: 'white',
-					},
-				});
-				this.sdCtx!.drawImage(
-					loadingScreen,
-					this.canvasWidth,
-					this.canvasHeight
-				);
-			} finally {
-				disposeCanvas(loadingScreen);
-			}
-		},
-		display(): void {
-			this.showingLast = false;
-			this.sceneRender.paintOnto(this.sdCtx, {
-				x: 0,
-				y: 0,
-				w: this.bitmapWidth,
-				h: this.bitmapHeight,
-			});
-		},
-		toRendererCoordinate(x: number, y: number): [number, number] {
-			const sd = this.$refs.sd as HTMLCanvasElement;
-			const rx = x - sd.offsetLeft;
-			const ry = y - sd.offsetTop;
-			const sx = (rx / sd.offsetWidth) * sd.width;
-			const sy = (ry / sd.offsetWidth) * sd.width;
-			return [sx, sy];
-		},
-		onUiClick(e: MouseEvent): void {
-			const [sx, sy] = this.toRendererCoordinate(e.clientX, e.clientY);
-
-			if (this.pickerMode) {
-				const data = this.sdCtx.getImageData(sx, sy, 1, 1).data;
-				const hex = `rgba(${data[0].toString()},${data[1].toString()},${data[2].toString()},${(
-					data[3] / 255
-				).toString()})`;
-				transaction(() => {
-					this.$store.commit('ui/setColorPicker', false);
-					eventBus.fire(new ColorPickedEvent(hex));
-				});
-				return;
-			}
-
-			if (this.dropPreventClick) {
-				this.dropPreventClick = false;
-				return;
-			}
-
-			const objects = this.sceneRender.objectsAt(sx, sy);
-
-			const currentObjectIdx = objects.findIndex((id) => id === this.selection);
-			let selectedObject: IObject['id'] | null;
-
-			if (currentObjectIdx === 0) {
-				selectedObject = null;
-			} else if (currentObjectIdx !== -1) {
-				// Select the next lower character
-				selectedObject = objects[currentObjectIdx - 1];
-			} else {
-				selectedObject = objects[objects.length - 1] ?? null;
-			}
-
-			transaction(() => {
-				if (this.$store.state.ui.selection === selectedObject) return;
-				this.$store.commit('ui/setSelection', selectedObject);
-			});
-		},
-		onDragStart(e: DragEvent) {
-			e.preventDefault();
-			if (this.selection === null) return;
-			this.draggedObject = this.currentPanel.objects[this.selection];
-			const [x, y] = this.toRendererCoordinate(e.clientX, e.clientY);
-			this.dragXOffset = x - this.draggedObject.x;
-			this.dragYOffset = y - this.draggedObject.y;
-			this.dragXOriginal = this.draggedObject.x;
-			this.dragYOriginal = this.draggedObject.y;
-		},
-		onTouchStart(e: TouchEvent) {
-			if (this.selection === null) return;
-			this.draggedObject = this.currentPanel.objects[this.selection];
-			const [x, y] = this.toRendererCoordinate(
-				e.touches[0].clientX,
-				e.touches[0].clientY
-			);
-			this.dragXOffset = x - this.draggedObject.x;
-			this.dragYOffset = y - this.draggedObject.y;
-			this.dragXOriginal = this.draggedObject.x;
-			this.dragYOriginal = this.draggedObject.y;
-		},
-		onDragOver(e: DragEvent) {
-			e.stopPropagation();
-			e.preventDefault();
-			e.dataTransfer!.dropEffect = 'copy';
-		},
-		onSpriteDragMove(e: MouseEvent | TouchEvent) {
-			if (!this.draggedObject) return;
-			e.preventDefault();
-			let [x, y] =
-				e instanceof MouseEvent
-					? this.toRendererCoordinate(e.clientX, e.clientY)
-					: this.toRendererCoordinate(
-							e.touches[0].clientX,
-							e.touches[0].clientY
-					  );
-			x -= this.dragXOffset;
-			y -= this.dragYOffset;
-			const deltaX = Math.abs(x - this.dragXOriginal);
-			const deltaY = Math.abs(y - this.dragYOriginal);
-			if (deltaX + deltaY > 1) this.dropPreventClick = true;
-			if (e.shiftKey) {
-				if (deltaX > deltaY) {
-					y = this.dragYOriginal;
-				} else {
-					x = this.dragXOriginal;
-				}
-			}
-			transaction(async () => {
-				await this.$store.dispatch('panels/setPosition', {
-					panelId: this.draggedObject!.panelId,
-					id: this.draggedObject!.id,
-					x,
-					y,
-				} as ISetObjectPositionMutation);
-			});
-		},
-		async onDrop(e: DragEvent) {
-			e.stopPropagation();
-			e.preventDefault();
-
-			if (!e.dataTransfer) return;
-
-			for (const item of e.dataTransfer.items) {
-				if (item.kind === 'file' && item.type.match(/image.*/)) {
-					const file = item.getAsFile()!;
-					const url = URL.createObjectURL(file);
-					try {
-						const assetUrl: string = await this.$store.dispatch(
-							'uploadUrls/add',
-							{
-								name: file.name,
-								url,
-							}
-						);
-
-						await transaction(async () => {
-							await this.$store.dispatch('panels/createSprite', {
-								panelId: this.$store.state.panels.currentPanel,
-								assets: [
-									{
-										hq: assetUrl,
-										lq: assetUrl,
-										sourcePack: 'dddg.uploaded.sprites',
-									},
-								],
-							} as ICreateSpriteAction);
-						});
-					} catch (e) {
-						URL.revokeObjectURL(url);
-					}
-				}
-			}
-		},
-		onSpriteDrop(e: MouseEvent | TouchEvent) {
-			if (this.draggedObject) {
-				if ('TouchEvent' in window && e instanceof TouchEvent) {
-					this.dropPreventClick = false;
-				}
-				this.draggedObject = null;
-			}
-		},
-		onMouseEnter(e: MouseEvent) {
-			if (e.buttons !== 1) {
-				this.draggedObject = null;
-			}
-		},
-	},
-	watch: {
-		canvasWidth() {
-			this.display();
-		},
-		canvasHeight() {
-			this.display();
-		},
-	},
-	created(): void {
-		if (typeof WeakRef !== 'undefined') {
-			const self = new WeakRef(this);
-			(window as any).getMainSceneRenderer = function () {
-				return self.deref()?.sceneRender;
-			};
-		} else {
-			(window as any).getMainSceneRenderer = () => {
-				return this.sceneRender;
-			};
-		}
-		eventBus.subscribe(InvalidateRenderEvent, () => this.invalidateRender());
-		eventBus.subscribe(StateLoadingEvent, () => {
-			const cache = this.sceneRendererCache;
-			if (cache) {
-				cache.setPanelId(-1);
-			}
-		});
-		this.$store.subscribe((mut: MutationPayload) => {
-			if (mut.type === 'panels/setPanelPreview') return;
-			if (mut.type === 'panels/currentPanel') return;
-			this.invalidateRender();
-		});
-	},
-	mounted(): void {
-		const sd = this.$refs.sd as HTMLCanvasElement;
-		this.sdCtx = sd.getContext('2d')!;
-
-		this.renderLoadingScreen();
-		this.invalidateRender();
-	},
-	unmounted(): void {
-		this.sceneRendererCache?.dispose();
-	},
+const store = useStore() as Store<DeepReadonly<IRootState>>;
+const props = defineProps({
+	canvasWidth: { default: 0 },
+	canvasHeight: { default: 0 },
+	preLoading: { type: Boolean },
 });
+
+const sd = ref(null! as HTMLCanvasElement);
+const sdCtx = ref(null! as CanvasRenderingContext2D);
+const queuedRender = ref(null as null | number);
+const showingLast = ref(false);
+const dropPreventClick = ref(false);
+
+const sceneRendererCache = ref(null as SceneRenderer | null);
+const selection = computed(() => store.state.ui.selection ?? null);
+const currentPanel = computed(
+	() => store.state.panels.panels[store.state.panels.currentPanel]
+);
+const lqRendering = computed(() => store.state.ui.lqRendering);
+const sceneRender = computed(() => {
+	if (props.preLoading) return null!;
+	const panelId = store.state.panels.currentPanel;
+	if (!sceneRendererCache.value) {
+		console.log('New scene renderer!');
+		// eslint-disable-next-line vue/no-side-effects-in-computed-properties
+		sceneRendererCache.value = markRaw(
+			new SceneRenderer(store, panelId, bitmapWidth.value, bitmapHeight.value)
+		);
+	} else {
+		sceneRendererCache.value.setPanelId(panelId);
+	}
+	return sceneRendererCache.value as SceneRenderer;
+});
+const bitmapHeight = computed(() => {
+	// Stupid hack to make vue reevaluate this property when loading is done.
+	props.preLoading;
+	return getConstants().Base.screenHeight;
+});
+const bitmapWidth = computed(() => {
+	// Stupid hack to make vue reevaluate this property when loading is done.
+	props.preLoading;
+	return getConstants().Base.screenWidth;
+});
+
+function invalidateRender() {
+	if (queuedRender.value != null) return;
+	queuedRender.value = requestAnimationFrame(render_);
+}
+async function render_(): Promise<void> {
+	if (queuedRender.value != null) {
+		cancelAnimationFrame(queuedRender.value);
+		queuedRender.value = null;
+	}
+	if (props.preLoading) return;
+	if (store.state.unsafe) return;
+
+	try {
+		await sceneRender.value.render(!lqRendering.value, true, false);
+	} catch (e) {
+		console.log(e);
+	}
+	display();
+	eventBus.fire(new RenderUpdatedEvent());
+}
+function renderLoadingScreen() {
+	const loadingScreen = document.createElement('canvas');
+	loadingScreen.height = bitmapHeight.value;
+	loadingScreen.width = bitmapWidth.value;
+	try {
+		const rctx = RenderContext.make(loadingScreen, true, false);
+		rctx.drawText({
+			text: 'Starting...',
+			x: loadingScreen.width / 2,
+			y: loadingScreen.height / 2,
+			align: 'center',
+			outline: {
+				width: 5,
+				style: '#b59',
+			},
+			font: '32px riffic',
+			fill: {
+				style: 'white',
+			},
+		});
+		sdCtx.value!.drawImage(
+			loadingScreen,
+			props.canvasWidth,
+			props.canvasHeight
+		);
+	} finally {
+		disposeCanvas(loadingScreen);
+	}
+}
+function display(): void {
+	showingLast.value = false;
+	sceneRender.value.paintOnto(sdCtx.value, {
+		x: 0,
+		y: 0,
+		w: bitmapWidth.value,
+		h: bitmapHeight.value,
+	});
+}
+function toRendererCoordinate(x: number, y: number): [number, number] {
+	const canvas = sd.value as HTMLCanvasElement;
+	const rx = x - canvas.offsetLeft;
+	const ry = y - canvas.offsetTop;
+	const sx = (rx / canvas.offsetWidth) * canvas.width;
+	const sy = (ry / canvas.offsetWidth) * canvas.width;
+	return [sx, sy];
+}
+function onUiClick(e: MouseEvent): void {
+	const [sx, sy] = toRendererCoordinate(e.clientX, e.clientY);
+
+	if (handleColorPickerClick(sx, sy)) return;
+
+	if (dropPreventClick.value) {
+		dropPreventClick.value = false;
+		return;
+	}
+
+	const objects = sceneRender.value.objectsAt(sx, sy);
+
+	const currentObjectIdx = objects.findIndex((id) => id === selection.value);
+	let selectedObject: IObject['id'] | null;
+
+	if (currentObjectIdx === 0) {
+		selectedObject = null;
+	} else if (currentObjectIdx !== -1) {
+		// Select the next lower character
+		selectedObject = objects[currentObjectIdx - 1];
+	} else {
+		selectedObject = objects[objects.length - 1] ?? null;
+	}
+
+	transaction(() => {
+		if (store.state.ui.selection === selectedObject) return;
+		store.commit('ui/setSelection', selectedObject);
+	});
+}
+
+watch(
+	() => [props.canvasWidth, props.canvasHeight],
+	() => display()
+);
+
+eventBus.subscribe(InvalidateRenderEvent, invalidateRender);
+eventBus.subscribe(StateLoadingEvent, () => {
+	const cache = sceneRendererCache.value;
+	if (cache) {
+		cache.setPanelId(-1);
+	}
+});
+store.subscribe((mut: MutationPayload) => {
+	if (mut.type === 'panels/setPanelPreview') return;
+	if (mut.type === 'panels/currentPanel') return;
+	invalidateRender();
+});
+
+onMounted(() => {
+	const canvas = sd.value as HTMLCanvasElement;
+	sdCtx.value = canvas.getContext('2d')!;
+
+	renderLoadingScreen();
+	invalidateRender();
+});
+
+onUnmounted(() => {
+	sceneRendererCache.value?.dispose();
+});
+//#region picker
+const pickerMode = computed(() => store.state.ui.pickColor);
+const cursor = computed((): 'default' | 'crosshair' =>
+	pickerMode.value ? 'crosshair' : 'default'
+);
+function handleColorPickerClick(sx: number, sy: number) {
+	if (pickerMode.value) {
+		const data = sdCtx.value.getImageData(sx, sy, 1, 1).data;
+		const hex = `rgba(${data[0].toString()},${data[1].toString()},${data[2].toString()},${(
+			data[3] / 255
+		).toString()})`;
+		transaction(() => {
+			store.commit('ui/setColorPicker', false);
+			eventBus.fire(new ColorPickedEvent(hex));
+		});
+		return true;
+	}
+	return false;
+}
+//#endregion picker
+//#region expose renderer
+// This is a shortcutting trick to speed up thumbnail rendering.
+// Instead of creating a new scene renderer for the thumbnails, we use the one already used for the preview.
+// Since the currently viewed panel is the one that is most commonly re-rendered, this saves a lot of rendering
+// time.
+if (typeof WeakRef !== 'undefined') {
+	const self = new WeakRef(sceneRender);
+	(window as any).getMainSceneRenderer = function () {
+		return self.deref()?.value;
+	};
+} else {
+	(window as any).getMainSceneRenderer = () => {
+		return sceneRender.value;
+	};
+}
+//#endregion expose renderer
+//#region download
+async function download(): Promise<void> {
+	const url = await sceneRender.value.download();
+
+	await transaction(() => {
+		const oldUrl = store.state.ui.lastDownload;
+
+		store.commit('ui/setLastDownload', url);
+		if (oldUrl != null) {
+			URL.revokeObjectURL(oldUrl);
+		}
+	});
+}
+defineExpose({ download });
+//#endregion download
+//#region drag and drop
+const draggedObject = ref(null as DeepReadonly<IObject> | null);
+const dragXOffset = ref(0);
+const dragYOffset = ref(0);
+const dragXOriginal = ref(0);
+const dragYOriginal = ref(0);
+
+function onDragStart(e: DragEvent) {
+	e.preventDefault();
+	if (selection.value === null) return;
+	draggedObject.value = currentPanel.value.objects[selection.value];
+	const [x, y] = toRendererCoordinate(e.clientX, e.clientY);
+	dragXOffset.value = x - draggedObject.value.x;
+	dragYOffset.value = y - draggedObject.value.y;
+	dragXOriginal.value = draggedObject.value.x;
+	dragYOriginal.value = draggedObject.value.y;
+}
+function onTouchStart(e: TouchEvent) {
+	if (selection.value === null) return;
+	draggedObject.value = currentPanel.value.objects[selection.value];
+	const [x, y] = toRendererCoordinate(
+		e.touches[0].clientX,
+		e.touches[0].clientY
+	);
+	dragXOffset.value = x - draggedObject.value.x;
+	dragYOffset.value = y - draggedObject.value.y;
+	dragXOriginal.value = draggedObject.value.x;
+	dragYOriginal.value = draggedObject.value.y;
+}
+function onDragOver(e: DragEvent) {
+	e.stopPropagation();
+	e.preventDefault();
+	e.dataTransfer!.dropEffect = 'copy';
+}
+function onSpriteDragMove(e: MouseEvent | TouchEvent) {
+	if (!draggedObject.value) return;
+	e.preventDefault();
+	let [x, y] =
+		e instanceof MouseEvent
+			? toRendererCoordinate(e.clientX, e.clientY)
+			: toRendererCoordinate(e.touches[0].clientX, e.touches[0].clientY);
+	x -= dragXOffset.value;
+	y -= dragYOffset.value;
+	const deltaX = Math.abs(x - dragXOriginal.value);
+	const deltaY = Math.abs(y - dragYOriginal.value);
+	if (deltaX + deltaY > 1) dropPreventClick.value = true;
+	if (e.shiftKey) {
+		if (deltaX > deltaY) {
+			y = dragYOriginal.value;
+		} else {
+			x = dragXOriginal.value;
+		}
+	}
+	transaction(async () => {
+		await store.dispatch('panels/setPosition', {
+			panelId: draggedObject.value!.panelId,
+			id: draggedObject.value!.id,
+			x,
+			y,
+		} as ISetObjectPositionMutation);
+	});
+}
+async function onDrop(e: DragEvent) {
+	e.stopPropagation();
+	e.preventDefault();
+
+	if (!e.dataTransfer) return;
+
+	for (const item of e.dataTransfer.items) {
+		if (item.kind === 'file' && item.type.match(/image.*/)) {
+			const file = item.getAsFile()!;
+			const url = URL.createObjectURL(file);
+			try {
+				const assetUrl: string = await store.dispatch('uploadUrls/add', {
+					name: file.name,
+					url,
+				});
+
+				await transaction(async () => {
+					await store.dispatch('panels/createSprite', {
+						panelId: store.state.panels.currentPanel,
+						assets: [
+							{
+								hq: assetUrl,
+								lq: assetUrl,
+								sourcePack: 'dddg.uploaded.sprites',
+							},
+						],
+					} as ICreateSpriteAction);
+				});
+			} catch (e) {
+				URL.revokeObjectURL(url);
+			}
+		}
+	}
+}
+function onSpriteDrop(e: MouseEvent | TouchEvent) {
+	if (draggedObject.value) {
+		if ('TouchEvent' in window && e instanceof TouchEvent) {
+			dropPreventClick.value = false;
+		}
+		draggedObject.value = null;
+	}
+}
+function onMouseEnter(e: MouseEvent) {
+	if (e.buttons !== 1) {
+		draggedObject.value = null;
+	}
+}
+//#endregion drag and drop
 </script>
 
 <style lang="scss">
