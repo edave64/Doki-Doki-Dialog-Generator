@@ -71,8 +71,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 table {
-	width: 100%;
-
 	button {
 		width: 100%;
 		height: auto;

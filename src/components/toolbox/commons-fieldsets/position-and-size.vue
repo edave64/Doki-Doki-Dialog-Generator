@@ -47,12 +47,13 @@
 			</tr>
 			<template v-else>
 				<tr>
-					<td>
+					<td class="v-w50">
 						<label for="sprite_x">X:</label>
 					</td>
-					<td>
+					<td class="v-w50">
 						<input
 							id="sprite_x"
+							class="w100"
 							type="number"
 							v-model.number="x"
 							@keydown.stop
@@ -60,11 +61,12 @@
 					</td>
 				</tr>
 				<tr>
-					<td>
+					<td class="v-w50">
 						<label for="sprite_y">Y:</label>
 					</td>
-					<td>
+					<td class="v-w50">
 						<input
+							class="w100"
 							id="sprite_y"
 							type="number"
 							v-model.number="y"
@@ -75,10 +77,10 @@
 			</template>
 			<template v-if="allowSize">
 				<tr>
-					<td>
+					<td class="v-w50">
 						<label for="sprite_w">Width:</label>
 					</td>
-					<td>
+					<td class="v-w50">
 						<input
 							id="sprite_w"
 							min="0"
@@ -89,10 +91,10 @@
 					</td>
 				</tr>
 				<tr>
-					<td>
+					<td class="v-w50">
 						<label for="sprite_h">Height:</label>
 					</td>
-					<td>
+					<td class="v-w50">
 						<input
 							id="sprite_h"
 							min="0"
@@ -286,14 +288,6 @@ fieldset {
 			select {
 				width: 100%;
 			}
-		}
-	}
-}
-
-.vertical {
-	fieldset {
-		input {
-			width: 64px;
 		}
 	}
 }

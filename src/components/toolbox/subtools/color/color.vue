@@ -3,7 +3,7 @@
 	and color swatches. The value is returned as either rgba or hex.
 -->
 <template>
-	<div :class="{ color: true, vertical }">
+	<div :class="{ color: true, vertical }" class="v-w100 h-h100">
 		<h2>{{ title }}</h2>
 		<button @click="$emit('leave')">OK</button>
 		<table>
@@ -17,7 +17,7 @@
 			</tr>
 		</table>
 
-		<div class="column">
+		<div class="v-w100 h-h100">
 			<slider-group :mode="mode" v-model="color" :relative="true" />
 			<div class="hex-selector">
 				<label class="hex-label" :for="`hex_${_.uid}`">Hex</label>
@@ -28,8 +28,12 @@
 					@keydown.stop
 				/>
 			</div>
-			<button @click="addSwatch">Add as swatch</button>
-			<d-button icon="colorize" @click="pickColor">Pick color</d-button>
+			<d-flow direction="global" class="color-tools">
+				<button @click="addSwatch">Add as swatch</button>
+				<d-button class="h-bl0 v-bt0" icon="colorize" @click="pickColor"
+					>Pick color</d-button
+				>
+			</d-flow>
 		</div>
 		<div id="color-swatches" :class="{ vertical }">
 			<button
@@ -48,15 +52,19 @@
 </template>
 
 <script lang="ts">
-import eventBus, { ColorPickedEvent } from "@/eventbus/event-bus";
-import { transaction } from "@/plugins/vuex-history";
-import { IAssetSwitch, ReplaceContentPackAction } from "@/store/content";
-import { RGBAColor } from "@/util/colors/rgb";
-import { Color, ContentPack } from "@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model";
-import { DeepReadonly } from "ts-essentials";
-import { defineComponent, PropType } from "vue";
-import DButton from "../../../ui/d-button.vue";
-import SliderGroup from "./slider-group.vue";
+import DFlow from '@/components/ui/d-flow.vue';
+import eventBus, { ColorPickedEvent } from '@/eventbus/event-bus';
+import { transaction } from '@/plugins/vuex-history';
+import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
+import { RGBAColor } from '@/util/colors/rgb';
+import {
+	Color,
+	ContentPack,
+} from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { DeepReadonly } from 'ts-essentials';
+import { defineComponent, PropType } from 'vue';
+import DButton from '../../../ui/d-button.vue';
+import SliderGroup from './slider-group.vue';
 
 const generatedPackId = 'dddg.generated.colors';
 
@@ -64,6 +72,7 @@ export default defineComponent({
 	components: {
 		SliderGroup,
 		DButton,
+		DFlow,
 	},
 	inheritAttrs: false,
 	emits: ['leave', 'update:modelValue'],
@@ -185,25 +194,15 @@ export default defineComponent({
 
 	&.vertical {
 		flex-direction: row;
-		width: 100%;
-
-		.column {
-			width: 100%;
-		}
 	}
 
 	&:not(.vertical) {
 		flex-direction: column;
-		@include height-100();
 
 		h2 {
 			writing-mode: vertical-rl;
 			height: inherit;
 			width: min-content;
-		}
-
-		.column {
-			@include height-100();
 		}
 	}
 }
@@ -257,5 +256,9 @@ export default defineComponent({
 		margin: 1px;
 		border-color: black;
 	}
+}
+
+.color-tools button {
+	height: 30px;
 }
 </style>
