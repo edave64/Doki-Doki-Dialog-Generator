@@ -3,7 +3,7 @@
 	Also allows to save the entire custom dialog.
 -->
 <template>
-	<div class="panel">
+	<div class="panel" ref="root">
 		<h1>Panels</h1>
 		<image-options
 			v-if="imageOptions"
@@ -121,7 +121,7 @@
 								min="0"
 								v-model.number="ppi"
 								@keydown.stop
-								@blur="if (ppi === '') ppi = 0;"
+								@blur="if ((ppi as any) === '') ppi = 0;"
 							/>
 						</td>
 					</tr>
@@ -148,21 +148,12 @@
 								Download
 							</d-button>
 						</td>
-						<td>
-							<button class="v-bt0" @click="estimateExportSize">
-								Estimate filesizes
-							</button>
-						</td>
 					</tr>
 				</table>
 			</d-fieldset>
 			<div class="column">
-				<d-button class="v-bt0" icon="save" @click="save">Save</d-button>
-				<d-button
-					class="v-bt0"
-					icon="folder_open"
-					@click="$refs.loadUpload.click()"
-				>
+				<d-button icon="save" @click="save">Save</d-button>
+				<d-button class="v-bt0" icon="folder_open" @click="loadUpload.click()">
 					Load
 					<input type="file" ref="loadUpload" @change="load" />
 				</d-button>
@@ -171,9 +162,8 @@
 	</div>
 </template>
 
-<script lang="ts">
-import { isHeifSupported, isWebPSupported } from '@/asset-manager';
-import { PanelMixin } from '@/components/mixins/panel-mixin';
+<script lang="ts" setup>
+import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import DButton from '@/components/ui/d-button.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
@@ -187,10 +177,6 @@ import eventBus, {
 import { transaction } from '@/plugins/vuex-history';
 import { SceneRenderer } from '@/renderables/scene-renderer';
 import { IRootState } from '@/store';
-import { IChoices } from '@/store/object-types/choices';
-import { INotification } from '@/store/object-types/notification';
-import { IPoem } from '@/store/object-types/poem';
-import { ITextBox } from '@/store/object-types/textbox';
 import { IObject } from '@/store/objects';
 import {
 	IDeletePanelAction,
@@ -200,11 +186,10 @@ import {
 	ISetCurrentPanelMutation,
 	ISetPanelPreviewMutation,
 } from '@/store/panels';
-import { disposeCanvas, makeCanvas } from '@/util/canvas';
 import { safeAsync } from '@/util/errors';
 import { DeepReadonly } from 'ts-essentials';
-import { defineComponent, markRaw } from 'vue';
-import { Store } from 'vuex';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
+import { Store, useStore } from 'vuex';
 import ImageOptions from '../subtools/image-options/image-options.vue';
 
 interface IPanelButton {
@@ -213,493 +198,430 @@ interface IPanelButton {
 	text: string;
 }
 
-// tslint:disable: no-magic-numbers
-const estimateFactor = 1.5;
+const qualityFactor = 100;
+const defaultQuality = 90;
+const qualityWarningThreshold = 70;
+
+const store = useStore() as Store<IRootState>;
+const root = ref(null! as HTMLElement);
+const { vertical, getRoot } = setupPanelMixin(root);
+
+const ppi = ref(environment.supports.limitedCanvasSpace ? 10 : 0);
+const pages = ref('');
+const format = ref('image/png');
+const quality = ref(defaultQuality);
+const imageOptions = ref(false);
+const loadUpload = ref(null! as HTMLInputElement);
+const baseConst = getConstants().Base;
+
+const currentPanel = computed(
+	() => store.state.panels.panels[store.state.panels.currentPanel]
+);
+const isLossy = computed(() => format.value !== 'image/png');
+const canDeletePanel = computed(() => panelButtons.value.length > 1);
+
+//#region Format-Support
+import { isHeifSupported, isWebPSupported } from '@/asset-manager';
+const webpSupport = ref(false);
+const heifSupport = ref(false);
+
+Promise.allSettled([isWebPSupported(), isHeifSupported()]).then(
+	([webp, heif]) => {
+		if (webp.status === 'fulfilled') webpSupport.value = webp.value;
+		if (heif.status === 'fulfilled') heifSupport.value = heif.value;
+	}
+);
+//#endregion Format-Support
+//#region Panel-Buttons
+import { IChoices } from '@/store/object-types/choices';
+import { INotification } from '@/store/object-types/notification';
+import { IPoem } from '@/store/object-types/poem';
+import { ITextBox } from '@/store/object-types/textbox';
+
+const canMoveAhead = computed((): boolean => {
+	const panelOrder = store.state.panels.panelOrder;
+	const idx = panelOrder.indexOf(currentPanel.value.id);
+	return idx > 0;
+});
+
+const canMoveBehind = computed((): boolean => {
+	const panelOrder = store.state.panels.panelOrder;
+	const idx = panelOrder.indexOf(currentPanel.value.id);
+	return idx < panelOrder.length - 1;
+});
+
+const panelButtons = computed((): IPanelButton[] => {
+	const panelOrder = store.state.panels.panelOrder;
+	return panelOrder.map((id) => {
+		const panel = store.state.panels.panels[id];
+		const objectOrders = store.state.panels.panels[id];
+		const txtBox = [...objectOrders.order, ...objectOrders.onTopOrder]
+			.map((objId) => store.state.panels.panels[id].objects[objId])
+			.map(extractObjectText);
+		return {
+			id,
+			image: panel.lastRender,
+			text: txtBox.reduce(
+				(acc, current) => (acc.length > current.length ? acc : current),
+				''
+			),
+		} as IPanelButton;
+	});
+});
+
+function extractObjectText(obj: DeepReadonly<IObject>) {
+	switch (obj.type) {
+		case 'textBox':
+			return (obj as ITextBox).text;
+		case 'notification':
+			return (obj as INotification).text;
+		case 'poem':
+			return (obj as IPoem).text;
+		case 'choice':
+			return (obj as IChoices).choices
+				.map((choice) => `[${choice.text}]`)
+				.join('\n');
+	}
+	return '';
+}
+function moveFocusToActivePanel() {
+	const active = getRoot().querySelector('.panel_button.active') as HTMLElement;
+	if (active) {
+		scrollIntoView(active);
+	}
+}
+function scrollIntoView(ele: HTMLElement) {
+	const parent = ele.parentElement!.parentElement!;
+	if (store.state.ui.vertical) {
+		parent.scrollTop = ele.offsetTop - parent.clientHeight / 2;
+		parent.scrollLeft = 0;
+	} else {
+		parent.scrollLeft = ele.offsetLeft - parent.clientWidth / 2;
+		parent.scrollTop = 0;
+	}
+}
+onMounted(() => {
+	moveFocusToActivePanel();
+});
+//#endregion Panel-Buttons
+//#region Download
+function getDownloadFilenamePrefix() {
+	const date = new Date();
+	return `cd-${[
+		date.getFullYear(),
+		`${date.getMonth() + 1}`.padStart(2, '0'),
+		`${date.getDate()}`.padStart(2, '0'),
+		`${date.getHours()}`.padStart(2, '0'),
+		`${date.getMinutes()}`.padStart(2, '0'),
+		`${date.getSeconds()}`.padStart(2, '0'),
+	].join('-')}`;
+}
+async function download() {
+	await safeAsync('export image', async () => {
+		const distribution = getPanelDistibution();
+		const extension = format.value.split('/')[1];
+		const format_ = format.value;
+		const quality_ = quality.value;
+		const prefix = getDownloadFilenamePrefix();
+		await renderObjects(
+			distribution,
+			true,
+			async (imageIdx: number, canvasEle: HTMLCanvasElement) => {
+				await environment.saveToFile(
+					canvasEle,
+					`${prefix}_${imageIdx}.${extension}`,
+					format_,
+					quality_ / qualityFactor
+				);
+			}
+		);
+	});
+}
+async function renderObjects<T>(
+	distribution: DeepReadonly<IPanel['id'][][]>,
+	hq: boolean,
+	mapper: (imageIdx: number, canvas: HTMLCanvasElement) => Promise<T>
+): Promise<T[]> {
+	const baseConst = getConstants().Base;
+	const ret = [];
+	for (let imageIdx = 0; imageIdx < distribution.length; ++imageIdx) {
+		const image = distribution[imageIdx];
+		const targetCanvas = document.createElement('canvas');
+		targetCanvas.width = baseConst.screenWidth;
+		targetCanvas.height = baseConst.screenHeight * image.length;
+		try {
+			const context = targetCanvas.getContext('2d')!;
+
+			for (let panelIdx = 0; panelIdx < image.length; ++panelIdx) {
+				const panelId = image[panelIdx];
+				const sceneRenderer = new SceneRenderer(
+					store,
+					panelId,
+					baseConst.screenWidth,
+					baseConst.screenHeight
+				);
+				try {
+					await sceneRenderer.render(hq, false, true);
+
+					sceneRenderer.paintOnto(context, {
+						x: 0,
+						y: baseConst.screenHeight * panelIdx,
+						w: baseConst.screenWidth,
+						h: baseConst.screenHeight,
+					});
+				} finally {
+					sceneRenderer.dispose();
+				}
+			}
+
+			ret.push(await mapper(imageIdx, targetCanvas));
+		} finally {
+			disposeCanvas(targetCanvas);
+		}
+	}
+	return ret;
+}
+function getLimitedPanelList(): DeepReadonly<IPanel['id'][]> {
+	const max = store.state.panels.panelOrder.length - 1;
+	const min = 0;
+	const parts = pages.value.split(',');
+	const listedPages: number[] = [];
+	let foundMatch = false;
+
+	for (const part of parts) {
+		const trimmedPart = part.trim();
+		const match = trimmedPart.match(/^\s*((\d+)|(\d+)\s*-\s*(\d+))\s*$/);
+		if (!match) {
+			if (trimmedPart !== '') {
+				eventBus.fire(
+					new ShowMessageEvent(`Could not read '${part}' in the page list.`)
+				);
+			}
+			continue;
+		}
+		foundMatch = true;
+		if (match[2]) {
+			listedPages.push(parseInt(match[2], 10) - 1);
+		} else {
+			const from = Math.max(parseInt(match[3], 10) - 1, min);
+			const to = Math.min(parseInt(match[4], 10) - 1, max);
+			if (from == undefined || to == undefined || from > to) continue;
+			for (let i = from; i <= to; ++i) {
+				listedPages.push(i);
+			}
+		}
+	}
+
+	if (!foundMatch) {
+		return store.state.panels.panelOrder;
+	}
+
+	return listedPages
+		.sort((a, b) => a - b)
+		.filter((value, idx, ary) => ary[idx - 1] !== value)
+		.map((pageIdx) => store.state.panels.panelOrder[pageIdx]);
+}
+function getPanelDistibution(): DeepReadonly<IPanel['id'][][]> {
+	const panelOrder = getLimitedPanelList();
+	if (isNaN(ppi.value)) {
+		ppi.value = 0;
+	}
+	if (ppi.value === 0) return [panelOrder];
+	const images: IPanel['id'][][] = [];
+	for (let imageI = 0; imageI < panelOrder.length / ppi.value; ++imageI) {
+		const sliceStart = imageI * ppi.value;
+		const sliceEnd = sliceStart + ppi.value;
+		images.push([...panelOrder.slice(sliceStart, sliceEnd)]);
+	}
+	return images;
+}
+//#endregion Download
+//#region Actions
+async function addNewPanel(): Promise<void> {
+	await transaction(async () => {
+		await store.dispatch('panels/duplicatePanel', {
+			panelId: store.state.panels.currentPanel,
+		} as IDuplicatePanelAction);
+	});
+	await nextTick();
+	moveFocusToActivePanel();
+}
+function updateCurrentPanel(panelId: IPanel['id']) {
+	transaction(() => {
+		store.commit('panels/setCurrentPanel', {
+			panelId,
+		} as ISetCurrentPanelMutation);
+	});
+	nextTick(() => {
+		moveFocusToActivePanel();
+	});
+}
+function deletePanel() {
+	transaction(async () => {
+		await store.dispatch('panels/delete', {
+			panelId: store.state.panels.currentPanel,
+		} as IDeletePanelAction);
+	});
+	nextTick(() => {
+		moveFocusToActivePanel();
+	});
+}
+function moveAhead() {
+	transaction(async () => {
+		await store.dispatch('panels/move', {
+			panelId: currentPanel.value.id,
+			delta: -1,
+		} as IMovePanelAction);
+	});
+}
+function moveBehind() {
+	transaction(async () => {
+		await store.dispatch('panels/move', {
+			panelId: currentPanel.value.id,
+			delta: 1,
+		} as IMovePanelAction);
+	});
+}
+//#endregion Actions
+//#region Thumbnails
+import { disposeCanvas, makeCanvas } from '@/util/canvas';
+
 const thumbnailFactor = 1 / 4;
 const thumbnailQuality = 0.5;
-const qualityFactor = 100;
+const targetCanvas = makeCanvas();
+targetCanvas.width = baseConst.screenWidth * thumbnailFactor;
+targetCanvas.height = baseConst.screenHeight * thumbnailFactor;
+const thumbnailCtx = targetCanvas.getContext('2d')!;
+const isMounted = ref(false);
 
-const defaultQuality = 90;
+const missingThumbnails = computed((): IPanel['id'][] => {
+	const store = (this as any).$store as Store<DeepReadonly<IRootState>>;
+	const panelOrder = store.state.panels.panelOrder;
+	return panelOrder.filter((id) => {
+		const panel = store.state.panels.panels[id];
+		return panel.lastRender == null;
+	});
+});
 
-const qualityWarningThreshold = 70;
-// tslint:enable: no-magic-numbers
+async function renderCurrentThumbnail() {
+	// Warning, ugly hack incoming:
+	// getMainSceneRenderer is a bridge set up by renderer.vue, that allows us to
+	// borrow its renderer. It already contains the fully rendered scene, so
+	// we just need to stick it in a thumbnail.
+	// FIXME: This sadly makes it so the selection halo is visible in the thumbnails.
+	//        The renderer will lose that once the panels tab is selected, so maybe delay this?
+	const getMainSceneRenderer: undefined | (() => SceneRenderer | null) = (
+		window as any
+	).getMainSceneRenderer;
+	const sceneRenderer = getMainSceneRenderer && getMainSceneRenderer();
 
-export default defineComponent({
-	mixins: [PanelMixin],
-	components: { DFieldset, DFlow, DButton, ImageOptions },
-	data: () => ({
-		webpSupport: false,
-		heifSupport: false,
-		ppi: environment.supports.limitedCanvasSpace ? 10 : 0,
-		pages: '',
-		format: 'image/png',
-		quality: defaultQuality,
-		imageOptions: false,
-		isMounted: false,
-		thumbnailCtx: null! as CanvasRenderingContext2D,
-	}),
-	computed: {
-		currentPanel(): DeepReadonly<IPanel> {
-			return this.$store.state.panels.panels[
-				this.$store.state.panels.currentPanel
-			];
-		},
+	// Suboptimal. But whatever, it's just a thumbnail...
+	if (!sceneRenderer) return;
 
-		isLossy(): boolean {
-			return this.format !== 'image/png';
-		},
+	await renderPanelThumbnail(sceneRenderer);
+}
 
-		canDeletePanel(): boolean {
-			return this.panelButtons.length > 1;
-		},
+async function renderPanelThumbnail(sceneRenderer: SceneRenderer) {
+	await safeAsync('render thumbnail', async () => {
+		const panelId = sceneRenderer.panelId;
+		sceneRenderer.paintOnto(thumbnailCtx, {
+			x: 0,
+			y: 0,
+			w: thumbnailCtx.canvas.width,
+			h: thumbnailCtx.canvas.height,
+		});
 
-		panelButtons(): IPanelButton[] {
-			const panelOrder = this.$store.state.panels.panelOrder;
-			return panelOrder.map((id) => {
-				const panel = this.$store.state.panels.panels[id];
-				const objectOrders = this.$store.state.panels.panels[id];
-				const txtBox = [...objectOrders.order, ...objectOrders.onTopOrder]
-					.map((objId) => this.$store.state.panels.panels[id].objects[objId])
-					.map(this.extractObjectText);
-				return {
-					id,
-					image: panel.lastRender,
-					text: txtBox.reduce(
-						(acc, current) => (acc.length > current.length ? acc : current),
-						''
-					),
-				} as IPanelButton;
-			});
-		},
-
-		canMoveAhead(): boolean {
-			const panelOrder = this.$store.state.panels.panelOrder;
-			const idx = panelOrder.indexOf(this.currentPanel.id);
-			return idx > 0;
-		},
-
-		canMoveBehind(): boolean {
-			const panelOrder = this.$store.state.panels.panelOrder;
-			const idx = panelOrder.indexOf(this.currentPanel.id);
-			return idx < panelOrder.length - 1;
-		},
-
-		missingThumbnails(): IPanel['id'][] {
-			const store = (this as any).$store as Store<DeepReadonly<IRootState>>;
-			const panelOrder = store.state.panels.panelOrder;
-			return panelOrder.filter((id) => {
-				const panel = store.state.panels.panels[id];
-				return panel.lastRender == null;
-			});
-		},
-	},
-	async created() {
-		eventBus.subscribe(RenderUpdatedEvent, () =>
-			requestAnimationFrame(() => this.renderCurrentThumbnail())
+		thumbnailCtx.canvas.toBlob(
+			(blob: Blob | null) => {
+				if (!blob) return;
+				const url = URL.createObjectURL(blob);
+				transaction(() => {
+					store.commit('panels/setPanelPreview', {
+						panelId,
+						url,
+					} as ISetPanelPreviewMutation);
+				});
+			},
+			(await isWebPSupported()) ? 'image/webp' : 'image/jpeg',
+			thumbnailQuality
 		);
-		const baseConst = getConstants().Base;
-		const targetCanvas = makeCanvas();
-		targetCanvas.width = baseConst.screenWidth * thumbnailFactor;
-		targetCanvas.height = baseConst.screenHeight * thumbnailFactor;
-		this.thumbnailCtx = markRaw(targetCanvas.getContext('2d')!);
-		[this.webpSupport, this.heifSupport] = await Promise.all([
-			isWebPSupported(),
-			isHeifSupported(),
-		]);
-	},
-	mounted() {
-		this.isMounted = true;
-		this.moveFocusToActivePanel();
-		requestAnimationFrame(() => this.renderCurrentThumbnail().catch(() => {}));
-	},
-	unmounted() {
-		this.isMounted = false;
-		disposeCanvas(this.thumbnailCtx.canvas);
-	},
-	methods: {
-		async restoreThumbnails() {
-			const baseConst = getConstants().Base;
-			if (!this.isMounted) return;
-			if (environment.supports.limitedCanvasSpace) return;
-			const missingThumbnails = this.missingThumbnails;
-			if (missingThumbnails.length === 0) return;
-			const toRender = missingThumbnails[0];
-			const localRenderer = new SceneRenderer(
-				this.$store,
-				toRender,
-				baseConst.screenWidth,
-				baseConst.screenHeight
-			);
+	});
+}
 
-			await localRenderer.render(false, false, true);
+async function restoreThumbnails() {
+	const baseConst = getConstants().Base;
+	if (!isMounted.value) return;
+	if (environment.supports.limitedCanvasSpace) return;
+	const missingThumbnails_ = missingThumbnails.value;
+	if (missingThumbnails_.length === 0) return;
+	const toRender = missingThumbnails_[0];
+	const localRenderer = new SceneRenderer(
+		store,
+		toRender,
+		baseConst.screenWidth,
+		baseConst.screenHeight
+	);
 
-			await this.renderPanelThumbnail(localRenderer);
-			setTimeout(() => {
-				this.restoreThumbnails();
-			}, 500);
-		},
-		async download() {
-			await safeAsync('export image', async () => {
-				const distribution = this.getPanelDistibution();
-				const date = new Date();
-				const prefix = `cd-${[
-					date.getFullYear(),
-					`${date.getMonth() + 1}`.padStart(2, '0'),
-					`${date.getDate()}`.padStart(2, '0'),
-					`${date.getHours()}`.padStart(2, '0'),
-					`${date.getMinutes()}`.padStart(2, '0'),
-					`${date.getSeconds()}`.padStart(2, '0'),
-				].join('-')}`;
-				const extension = this.format.split('/')[1];
-				const format = this.format;
-				const quality = this.quality;
-				await this.renderObjects(
-					distribution,
-					true,
-					async (imageIdx: number, canvasEle: HTMLCanvasElement) => {
-						await environment.saveToFile(
-							canvasEle,
-							`${prefix}_${imageIdx}.${extension}`,
-							format,
-							quality / qualityFactor
-						);
-					}
-				);
-			});
-		},
-		async estimateExportSize() {
-			const distribution = this.getPanelDistibution();
-			const format = this.format || 'image/png';
-			const quality = this.quality || defaultQuality;
-			const sizes = await this.renderObjects(
-				distribution,
-				false,
-				(imageIdx: number, canvasEle: HTMLCanvasElement) => {
-					return new Promise<number>((resolve, reject) => {
-						canvasEle.toBlob(
-							(blob) => {
-								if (!blob) {
-									reject(`Image ${imageIdx + 1} could not be rendered.`);
-									return;
-								}
-								resolve(blob.size);
-							},
-							format,
-							quality / qualityFactor
-						);
-					});
-				}
-			);
-			const readableSizes = sizes.map(
-				(size) => ((size * estimateFactor) / 1024 / 1024).toFixed(2) + 'MiB'
-			);
-			const filePluralize = readableSizes.length > 1 ? 'files' : 'file';
-			const itPluralize = readableSizes.length > 1 ? 'These' : 'It';
-			const sizePluralize = readableSizes.length > 1 ? 'sizes' : 'size';
+	await localRenderer.render(false, false, true);
+
+	await renderPanelThumbnail(localRenderer);
+	setTimeout(() => {
+		restoreThumbnails();
+	}, 500);
+}
+
+onMounted(() => {
+	isMounted.value = true;
+	requestAnimationFrame(() => renderCurrentThumbnail().catch(() => {}));
+});
+onUnmounted(() => {
+	isMounted.value = false;
+	disposeCanvas(thumbnailCtx.canvas);
+});
+eventBus.subscribe(RenderUpdatedEvent, () =>
+	requestAnimationFrame(renderCurrentThumbnail)
+);
+//#endregion Thumbnails
+//#region Saving/Loading
+async function save() {
+	const str = await store.dispatch('getSave', true);
+	const saveBlob = new Blob([str], {
+		type: 'text/plain',
+	});
+	const date = new Date();
+	const prefix = `save-${[
+		date.getFullYear(),
+		`${date.getMonth() + 1}`.padStart(2, '0'),
+		`${date.getDate()}`.padStart(2, '0'),
+		`${date.getHours()}`.padStart(2, '0'),
+		`${date.getMinutes()}`.padStart(2, '0'),
+		`${date.getSeconds()}`.padStart(2, '0'),
+	].join('-')}`;
+	environment.storeSaveFile(saveBlob, `${prefix}.dddg`);
+}
+
+async function load() {
+	await transaction(async () => {
+		const uploadInput = loadUpload.value;
+		if (!uploadInput.files) return;
+		eventBus.fire(new StateLoadingEvent());
+		const data = await blobToText(uploadInput.files[0]);
+		await store.dispatch('loadSave', data);
+		if (environment.supports.limitedCanvasSpace) {
 			eventBus.fire(
 				new ShowMessageEvent(
-					`This would export ${
-						readableSizes.length
-					} ${filePluralize}. ${itPluralize} would have the following (aproximate) ${sizePluralize}: ${readableSizes.join(
-						','
-					)}`
+					'To prevent running out of memory, thumbnails will not be automatically restored in the background.'
 				)
 			);
-		},
-		async renderObjects<T>(
-			distribution: DeepReadonly<IPanel['id'][][]>,
-			hq: boolean,
-			mapper: (imageIdx: number, canvas: HTMLCanvasElement) => Promise<T>
-		): Promise<T[]> {
-			const baseConst = getConstants().Base;
-			const ret = [];
-			for (let imageIdx = 0; imageIdx < distribution.length; ++imageIdx) {
-				const image = distribution[imageIdx];
-				const targetCanvas = document.createElement('canvas');
-				targetCanvas.width = baseConst.screenWidth;
-				targetCanvas.height = baseConst.screenHeight * image.length;
-				try {
-					const context = targetCanvas.getContext('2d')!;
+		}
+	});
 
-					for (let panelIdx = 0; panelIdx < image.length; ++panelIdx) {
-						const panelId = image[panelIdx];
-						const sceneRenderer = new SceneRenderer(
-							this.$store,
-							panelId,
-							baseConst.screenWidth,
-							baseConst.screenHeight
-						);
-						try {
-							await sceneRenderer.render(hq, false, true);
+	await renderCurrentThumbnail();
 
-							sceneRenderer.paintOnto(context, {
-								x: 0,
-								y: baseConst.screenHeight * panelIdx,
-								w: baseConst.screenWidth,
-								h: baseConst.screenHeight,
-							});
-						} finally {
-							sceneRenderer.dispose();
-						}
-					}
-
-					ret.push(await mapper(imageIdx, targetCanvas));
-				} finally {
-					disposeCanvas(targetCanvas);
-				}
-			}
-			return ret;
-		},
-		getLimitedPanelList(): DeepReadonly<IPanel['id'][]> {
-			const max = this.$store.state.panels.panelOrder.length - 1;
-			const min = 0;
-			const parts = this.pages.split(',');
-			const listedPages: number[] = [];
-			let foundMatch = false;
-
-			for (const part of parts) {
-				const trimmedPart = part.trim();
-				const match = trimmedPart.match(/^\s*((\d+)|(\d+)\s*-\s*(\d+))\s*$/);
-				if (!match) {
-					if (trimmedPart !== '') {
-						eventBus.fire(
-							new ShowMessageEvent(`Could not read '${part}' in the page list.`)
-						);
-					}
-					continue;
-				}
-				foundMatch = true;
-				if (match[2]) {
-					listedPages.push(parseInt(match[2], 10) - 1);
-				} else {
-					const from = Math.max(parseInt(match[3], 10) - 1, min);
-					const to = Math.min(parseInt(match[4], 10) - 1, max);
-					if (from == undefined || to == undefined || from > to) continue;
-					for (let i = from; i <= to; ++i) {
-						listedPages.push(i);
-					}
-				}
-			}
-
-			if (!foundMatch) {
-				return this.$store.state.panels.panelOrder;
-			}
-
-			return listedPages
-				.sort((a, b) => a - b)
-				.filter((value, idx, ary) => ary[idx - 1] !== value)
-				.map((pageIdx) => this.$store.state.panels.panelOrder[pageIdx]);
-		},
-		getPanelDistibution(): DeepReadonly<IPanel['id'][][]> {
-			const panelOrder = this.getLimitedPanelList();
-			if (isNaN(this.ppi)) {
-				this.ppi = 0;
-			}
-			if (this.ppi === 0) return [panelOrder];
-			const images: IPanel['id'][][] = [];
-			for (let imageI = 0; imageI < panelOrder.length / this.ppi; ++imageI) {
-				const sliceStart = imageI * this.ppi;
-				const sliceEnd = sliceStart + this.ppi;
-				images.push([...panelOrder.slice(sliceStart, sliceEnd)]);
-			}
-			return images;
-		},
-		moveFocusToActivePanel() {
-			const active = this.$el.querySelector('.panel_button.active');
-			if (active) {
-				this.scrollIntoView(active);
-			}
-		},
-		scrollIntoView(ele: HTMLElement) {
-			const parent = ele.parentElement!.parentElement!;
-			if (this.$store.state.ui.vertical) {
-				parent.scrollTop = ele.offsetTop - parent.clientHeight / 2;
-				parent.scrollLeft = 0;
-			} else {
-				parent.scrollLeft = ele.offsetLeft - parent.clientWidth / 2;
-				parent.scrollTop = 0;
-			}
-		},
-		extractObjectText(obj: DeepReadonly<IObject>) {
-			switch (obj.type) {
-				case 'textBox':
-					return (obj as ITextBox).text;
-				case 'notification':
-					return (obj as INotification).text;
-				case 'poem':
-					return (obj as IPoem).text;
-				case 'choice':
-					return (obj as IChoices).choices
-						.map((choice) => `[${choice.text}]`)
-						.join('\n');
-			}
-			return '';
-		},
-		async addNewPanel(): Promise<void> {
-			await transaction(async () => {
-				await this.$store.dispatch('panels/duplicatePanel', {
-					panelId: this.$store.state.panels.currentPanel,
-				} as IDuplicatePanelAction);
-			});
-			await this.$nextTick();
-			this.moveFocusToActivePanel();
-		},
-		updateCurrentPanel(panelId: IPanel['id']) {
-			transaction(() => {
-				this.$store.commit('panels/setCurrentPanel', {
-					panelId,
-				} as ISetCurrentPanelMutation);
-			});
-			this.$nextTick(() => {
-				this.moveFocusToActivePanel();
-			});
-		},
-		deletePanel() {
-			transaction(async () => {
-				await this.$store.dispatch('panels/delete', {
-					panelId: this.$store.state.panels.currentPanel,
-				} as IDeletePanelAction);
-			});
-			this.$nextTick(() => {
-				this.moveFocusToActivePanel();
-			});
-		},
-		moveAhead() {
-			transaction(async () => {
-				await this.$store.dispatch('panels/move', {
-					panelId: this.currentPanel.id,
-					delta: -1,
-				} as IMovePanelAction);
-			});
-		},
-		moveBehind() {
-			transaction(async () => {
-				await this.$store.dispatch('panels/move', {
-					panelId: this.currentPanel.id,
-					delta: 1,
-				} as IMovePanelAction);
-			});
-		},
-		async renderCurrentThumbnail() {
-			// Warning, ugly hack incoming:
-			// getMainSceneRenderer is a bridge set up by renderer.vue, that allows us to
-			// borrow its renderer. It already contains the fully rendered scene, so
-			// we just need to stick it in a thumbnail.
-			// FIXME: This sadly makes it so the selection halo is visible in the thumbnails.
-			//        The renderer will lose that once the panels tab is selected, so maybe delay this?
-			const getMainSceneRenderer: undefined | (() => SceneRenderer | null) = (
-				window as any
-			).getMainSceneRenderer;
-			const sceneRenderer = getMainSceneRenderer && getMainSceneRenderer();
-
-			// Suboptimal. But whatever, it's just a thumbnail...
-			if (!sceneRenderer) return;
-
-			await this.renderPanelThumbnail(sceneRenderer);
-		},
-		async renderPanelThumbnail(sceneRenderer: SceneRenderer) {
-			await safeAsync('render thumbnail', async () => {
-				const panelId = sceneRenderer.panelId;
-				sceneRenderer.paintOnto(this.thumbnailCtx, {
-					x: 0,
-					y: 0,
-					w: this.thumbnailCtx.canvas.width,
-					h: this.thumbnailCtx.canvas.height,
-				});
-
-				this.thumbnailCtx.canvas.toBlob(
-					(blob: Blob | null) => {
-						if (!blob) return;
-						const url = URL.createObjectURL(blob);
-						transaction(() => {
-							this.$store.commit('panels/setPanelPreview', {
-								panelId,
-								url,
-							} as ISetPanelPreviewMutation);
-						});
-					},
-					(await isWebPSupported()) ? 'image/webp' : 'image/jpeg',
-					thumbnailQuality
-				);
-			});
-		},
-		async save() {
-			const str = await this.$store.dispatch('getSave', true);
-			const saveBlob = new Blob([str], {
-				type: 'text/plain',
-			});
-			const date = new Date();
-			const prefix = `save-${[
-				date.getFullYear(),
-				`${date.getMonth() + 1}`.padStart(2, '0'),
-				`${date.getDate()}`.padStart(2, '0'),
-				`${date.getHours()}`.padStart(2, '0'),
-				`${date.getMinutes()}`.padStart(2, '0'),
-				`${date.getSeconds()}`.padStart(2, '0'),
-			].join('-')}`;
-			environment.storeSaveFile(saveBlob, `${prefix}.dddg`);
-		},
-		async load() {
-			await transaction(async () => {
-				const uploadInput = this.$refs.loadUpload as HTMLInputElement;
-				if (!uploadInput.files) return;
-				eventBus.fire(new StateLoadingEvent());
-				const data = await blobToText(uploadInput.files[0]);
-				await this.$store.dispatch('loadSave', data);
-				if (environment.supports.limitedCanvasSpace) {
-					eventBus.fire(
-						new ShowMessageEvent(
-							'To prevent running out of memory, thumbnails will not be automatically restored in the background.'
-						)
-					);
-				}
-			});
-
-			await this.renderCurrentThumbnail();
-
-			setTimeout(() => {
-				this.restoreThumbnails();
-			}, 1000);
-		},
-	},
-	watch: {
-		quality(quality: number, oldQuality: number) {
-			if (quality === 100) {
-				eventBus.fire(
-					new ShowMessageEvent(
-						'Note: 100% quality on a lossy format is still not lossless! Select PNG if you want lossless compression.'
-					)
-				);
-				return;
-			}
-			if (
-				oldQuality > qualityWarningThreshold &&
-				quality <= qualityWarningThreshold
-			) {
-				eventBus.fire(
-					new ShowMessageEvent(
-						'Note: A quality level below 70% might be very noticeable and impair legibility of text.'
-					)
-				);
-				return;
-			}
-		},
-		ppi(ppi: number, oldppi: number) {
-			if (!environment.supports.limitedCanvasSpace) return;
-			if (
-				(oldppi <= 10 && ppi > 10) ||
-				(ppi === 0 && this.panelButtons.length > 10)
-			) {
-				eventBus.fire(
-					new ShowMessageEvent(
-						'Note: Safari has strict limitations on available memory. More images per panel can easily cause crashes.'
-					)
-				);
-				return;
-			}
-		},
-	},
-});
+	setTimeout(() => {
+		restoreThumbnails();
+	}, 1000);
+}
 
 function blobToText(file: File): Promise<string> {
 	return new Promise((resolve, reject) => {
@@ -713,6 +635,50 @@ function blobToText(file: File): Promise<string> {
 		reader.readAsText(file);
 	});
 }
+//#endregion Saving/Loading
+//#region Warnings
+watch(
+	() => quality.value,
+	(quality: number, oldQuality: number) => {
+		if (quality === 100) {
+			eventBus.fire(
+				new ShowMessageEvent(
+					'Note: 100% quality on a lossy format is still not lossless! Select PNG if you want lossless compression.'
+				)
+			);
+			return;
+		}
+		if (
+			oldQuality > qualityWarningThreshold &&
+			quality <= qualityWarningThreshold
+		) {
+			eventBus.fire(
+				new ShowMessageEvent(
+					'Note: A quality level below 70% might be very noticeable and impair legibility of text.'
+				)
+			);
+			return;
+		}
+	}
+);
+watch(
+	() => ppi.value,
+	(ppi: number, oldppi: number) => {
+		if (!environment.supports.limitedCanvasSpace) return;
+		if (
+			(oldppi <= 10 && ppi > 10) ||
+			(ppi === 0 && panelButtons.value.length > 10)
+		) {
+			eventBus.fire(
+				new ShowMessageEvent(
+					'Note: Safari has strict limitations on available memory. More images per panel can easily cause crashes.'
+				)
+			);
+			return;
+		}
+	}
+);
+//#endregion Warnings
 </script>
 
 <style lang="scss" scoped>

@@ -78,5 +78,5 @@ export function setupPanelMixin(
 		);
 	});
 
-	return { vertical };
+	return { vertical, getRoot };
 }
