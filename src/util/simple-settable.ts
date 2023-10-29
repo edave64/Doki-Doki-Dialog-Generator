@@ -1,8 +1,12 @@
 /** Helper methods that allow you to create simple vue getters/setters of vuex properties */
 
-import { transaction } from "@/plugins/vuex-history";
-import { IObject } from "@/store/objects";
-import { ComponentCustomProperties } from "vue";
+import { transaction } from '@/plugins/vuex-history';
+import { IRootState } from '@/store';
+import { IObject } from '@/store/objects';
+import { ComponentCustomProperties, computed, Ref } from 'vue';
+import { Store, useStore } from 'vuex';
+
+const store = useStore() as Store<IRootState>;
 
 export function genericSetable<T extends IObject>() {
 	return function setable<K extends keyof T>(
@@ -37,7 +41,7 @@ export function genericSimpleSetter<T extends IObject, KT extends keyof T>(
 			},
 			set(this: IThis<T>, value: T[K]): void {
 				transaction(() => {
-					this.$store.commit(message, {
+					store.commit(message, {
 						panelId: this.object.panelId,
 						id: this.object.id,
 						key,
@@ -47,6 +51,52 @@ export function genericSimpleSetter<T extends IObject, KT extends keyof T>(
 			},
 		};
 	};
+}
+
+export function genericSetterSplit<T extends IObject, K extends keyof T>(
+	store: Store<IRootState>,
+	object: Ref<T>,
+	message: string,
+	action: boolean,
+	key: K
+) {
+	return computed({
+		get(): T[K] {
+			return object.value[key];
+		},
+		set(value: T[K]): void {
+			transaction(() => {
+				store[action ? 'dispatch' : 'commit'](message, {
+					panelId: object.value.panelId,
+					id: object.value.id,
+					key,
+					value,
+				});
+			});
+		},
+	});
+}
+export function genericSetterMerged<T extends IObject, K extends keyof T>(
+	store: Store<IRootState>,
+	object: Ref<T>,
+	message: string,
+	action: boolean,
+	key: K
+) {
+	return computed({
+		get(): T[K] {
+			return object.value[key];
+		},
+		set(value: T[K]): void {
+			transaction(() => {
+				store[action ? 'dispatch' : 'commit'](message, {
+					panelId: object.value.panelId,
+					id: object.value.id,
+					[key]: value,
+				});
+			});
+		},
+	});
 }
 
 interface IThis<T extends IObject> extends ComponentCustomProperties {

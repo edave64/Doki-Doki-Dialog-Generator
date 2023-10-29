@@ -203,6 +203,10 @@ body.dark-theme {
 	.v-bl0 {
 		border-left: 0;
 	}
+
+	textarea {
+		resize: vertical;
+	}
 }
 
 .panel:not(.vertical) {
@@ -214,6 +218,10 @@ body.dark-theme {
 	}
 	.h-bl0 {
 		border-left: 0;
+	}
+
+	textarea {
+		resize: horizontal;
 	}
 }
 

@@ -3,6 +3,7 @@
 -->
 <template>
 	<object-tool
+		ref="root"
 		:object="object"
 		title="Textbox"
 		:textHandler="textHandler"
@@ -68,6 +69,7 @@
 				<label for="dialog_text">Dialog:</label>
 				<textarea
 					class="v-w100"
+					ref="textarea"
 					v-model="dialog"
 					id="dialog_text"
 					@keydown.stop
@@ -181,8 +183,8 @@
 	</object-tool>
 </template>
 
-<script lang="ts">
-import { PanelMixin } from '@/components/mixins/panel-mixin';
+<script lang="ts" setup>
+import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
@@ -198,238 +200,240 @@ import {
 } from '@/store/object-types/textbox';
 import { IObject } from '@/store/objects';
 import { IPanel } from '@/store/panels';
-import { genericSetable, genericSimpleSetter } from '@/util/simple-settable';
+import {
+	genericSetterSplit,
+	genericSetterMerged,
+} from '@/util/simple-settable';
 import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
-import { defineComponent } from 'vue';
+import { computed, ref, watch } from 'vue';
 import ObjectTool, { Handler } from './object-tool.vue';
+import { Store, useStore } from 'vuex';
+import { IRootState } from '@/store';
 
-const setable = genericSetable<ITextBox>();
-const tbSetable = genericSimpleSetter<ITextBox, TextBoxSimpleProperties>(
-	'panels/setTextBoxProperty'
+const store = useStore() as Store<IRootState>;
+const root = ref(null! as HTMLElement);
+const textarea = ref(null! as HTMLTextAreaElement);
+const { vertical } = setupPanelMixin(root);
+const textEditor = ref('' as '' | 'name' | 'body');
+const colorSelect = ref(
+	'' as '' | 'base' | 'controls' | 'namebox' | 'nameboxStroke'
 );
 
-export default defineComponent({
-	components: {
-		Toggle,
-		DFieldset,
-		ObjectTool,
-		DFlow,
-	},
-	mixins: [PanelMixin],
-	data: () => ({
-		textEditor: '' as '' | 'name' | 'body',
-		colorSelect: '' as '' | 'base' | 'controls' | 'namebox' | 'nameboxStroke',
-	}),
-	computed: {
-		currentPanel(): DeepReadonly<IPanel> {
-			return this.$store.state.panels.panels[
-				this.$store.state.panels.currentPanel
-			];
-		},
-		customizable(): boolean {
-			return this.textBoxStyle.startsWith('custom');
-		},
-		nameboxWidthDefault(): number {
-			return getConstants().TextBox.NameboxWidth;
-		},
-		object(): ITextBox {
-			const obj = this.currentPanel.objects[this.$store.state.ui.selection!];
-			if (obj.type !== 'textBox') return undefined!;
-			return obj as ITextBox;
-		},
-		textHandler(): Handler | undefined {
-			if (!this.textEditor) return undefined;
-			return {
-				title: this.textEditorName,
-				get: () => {
-					if (this.textEditor === 'name') return this.object.talkingOther;
-					if (this.textEditor === 'body') return this.dialog;
-					return '';
-				},
-				set: (text: string) => {
-					if (this.textEditor === 'name') this.talkingOther = text;
-					else if (this.textEditor === 'body') this.dialog = text;
-				},
-				leave: () => {
-					this.textEditor = '';
-				},
-			};
-		},
-		colorHandler(): Handler | undefined {
-			if (!this.colorSelect) return undefined;
-			return {
-				title: this.colorName,
-				get: () => {
-					switch (this.colorSelect) {
-						case '':
-							return '#000000';
-						case 'base':
-							return this.object.customColor;
-						case 'controls':
-							return this.object.customControlsColor;
-						case 'namebox':
-							return this.object.customNameboxColor;
-						case 'nameboxStroke':
-							return this.object.customNameboxStroke;
-						default:
-							throw new UnreachableCaseError(this.colorSelect);
-					}
-				},
-				set: (color: string) => {
-					transaction(() => {
-						const panelId = this.currentPanel.id;
-						const id = this.object.id;
-						let colorKey = {
-							base: 'customColor',
-							controls: 'customControlsColor',
-							namebox: 'customNameboxColor',
-							nameboxStroke: 'customNameboxStroke',
-							'': undefined,
-						}[this.colorSelect] as TextBoxSimpleProperties | undefined;
-						if (color === undefined) return;
-						this.$store.commit(
-							'panels/setTextBoxProperty',
-							textboxProperty(panelId, id, colorKey!, color)
-						);
-					});
-				},
-				leave: () => {
-					this.colorSelect = '';
-				},
-			};
-		},
-		talkingObjId: {
-			get(): '$null$' | '$other$' | IObject['id'] {
-				return this.object.talkingObjId ?? '$null$';
-			},
-			set(val: string): void {
-				transaction(() => {
-					this.$store.commit('panels/setTalkingObject', {
-						id: this.object.id,
-						panelId: this.object.panelId,
-						talkingObjId: val === '$null$' ? null : val,
-					} as ISetTextBoxTalkingObjMutation);
-				});
-			},
-		},
-		talkingOther: setable('talkingOther', 'panels/setTalkingOther'),
-		textBoxStyle: setable('style', 'panels/setStyle', true),
-		showControls: tbSetable('controls'),
-		allowSkipping: tbSetable('skip'),
-		autoQuoting: tbSetable('autoQuoting'),
-		autoWrap: tbSetable('autoWrap'),
-		showContinueArrow: tbSetable('continue'),
-		dialog: tbSetable('text'),
-		overrideColor: tbSetable('overrideColor'),
-		deriveCustomColors: tbSetable('deriveCustomColors'),
-		customNameboxWidth: tbSetable('customNameboxWidth'),
-		nameList(): [IObject['id'], string][] {
-			const panel = this.currentPanel;
+watch(
+	() => vertical.value,
+	() => {
+		textarea.value.style.height = '';
+		textarea.value.style.width = '';
+	}
+);
 
-			const ret: [IObject['id'], string][] = [];
-
-			for (const id of [...panel.order, ...panel.onTopOrder]) {
-				const obj = panel.objects[id];
-				if (obj.label === null) continue;
-				ret.push([id, obj.label!]);
-			}
-			return ret;
-		},
-		textEditorName(): string {
-			if (this.textEditor === 'name') return 'Name';
-			if (this.textEditor === 'body') return 'Dialog';
+const currentPanel = computed((): DeepReadonly<IPanel> => {
+	return store.state.panels.panels[store.state.panels.currentPanel];
+});
+const customizable = computed((): boolean => {
+	return textBoxStyle.value.startsWith('custom');
+});
+const nameboxWidthDefault = computed((): number => {
+	return getConstants().TextBox.NameboxWidth;
+});
+const object = computed((): ITextBox => {
+	const obj = currentPanel.value.objects[store.state.ui.selection!];
+	if (obj.type !== 'textBox') return undefined!;
+	return obj as ITextBox;
+});
+const tbSetable = <K extends TextBoxSimpleProperties>(k: K) =>
+	genericSetterSplit<ITextBox, K>(
+		store,
+		object,
+		'panels/setTextBoxProperty',
+		false,
+		k
+	);
+const textHandler = computed((): Handler | undefined => {
+	if (!textEditor.value) return undefined;
+	return {
+		title: textEditorName.value,
+		get(): string {
+			if (textEditor.value === 'name') return object.value.talkingOther;
+			if (textEditor.value === 'body') return dialog.value;
 			return '';
 		},
-		customControlsColor(): string {
-			return this.object.customControlsColor;
+		set(text: string) {
+			if (textEditor.value === 'name') talkingOther.value = text;
+			else if (textEditor.value === 'body') dialog.value = text;
 		},
-		colorName(): string {
-			switch (this.colorSelect) {
+		leave() {
+			textEditor.value = '';
+		},
+	};
+});
+const colorHandler = computed((): Handler | undefined => {
+	if (!colorSelect.value) return undefined;
+	return {
+		title: colorName.value,
+		get: () => {
+			switch (colorSelect.value) {
 				case '':
-					return '';
+					return '#000000';
 				case 'base':
-					return 'Base color';
+					return object.value.customColor;
 				case 'controls':
-					return 'Controls color';
+					return object.value.customControlsColor;
 				case 'namebox':
-					return 'Namebox color';
+					return object.value.customNameboxColor;
 				case 'nameboxStroke':
-					return 'Namebox text stroke';
+					return object.value.customNameboxStroke;
 				default:
-					throw new UnreachableCaseError(this.colorSelect);
+					throw new UnreachableCaseError(colorSelect.value);
 			}
 		},
-	},
-	methods: {
-		splitTextbox(): void {
-			transaction(async () => {
-				await this.$store.dispatch('panels/splitTextbox', {
-					id: this.object.id,
-					panelId: this.object.panelId,
-				} as ISplitTextbox);
-			});
-		},
-		resetPosition(): void {
-			transaction(async () => {
-				await this.$store.dispatch('panels/resetTextboxBounds', {
-					id: this.object.id,
-					panelId: this.object.panelId,
-				} as IResetTextboxBounds);
-			});
-		},
-		jumpToCharacter(): void {
+		set: (color: string) => {
 			transaction(() => {
-				this.$store.commit('ui/setSelection', this.talkingObjId);
+				const panelId = currentPanel.value.id;
+				const id = object.value.id;
+				let colorKey = {
+					base: 'customColor',
+					controls: 'customControlsColor',
+					namebox: 'customNameboxColor',
+					nameboxStroke: 'customNameboxStroke',
+					'': undefined,
+				}[colorSelect.value] as TextBoxSimpleProperties | undefined;
+				if (color === undefined) return;
+				store.commit(
+					'panels/setTextBoxProperty',
+					textboxProperty(panelId, id, colorKey!, color)
+				);
 			});
 		},
+		leave: () => {
+			colorSelect.value = '';
+		},
+	};
+});
+const talkingObjId = computed({
+	get(): '$null$' | '$other$' | IObject['id'] {
+		return object.value.talkingObjId ?? '$null$';
+	},
+	set(val: '$null$' | '$other$' | IObject['id']): void {
+		transaction(() => {
+			store.commit('panels/setTalkingObject', {
+				id: object.value.id,
+				panelId: object.value.panelId,
+				talkingObjId: val === '$null$' ? null : val,
+			} as ISetTextBoxTalkingObjMutation);
+		});
 	},
 });
+const talkingOther = genericSetterMerged(
+	store,
+	object,
+	'panels/setTalkingOther',
+	false,
+	'talkingOther'
+);
+const textBoxStyle = genericSetterMerged(
+	store,
+	object,
+	'panels/setStyle',
+	false,
+	'style'
+);
+const showControls = tbSetable('controls');
+const allowSkipping = tbSetable('skip');
+const autoQuoting = tbSetable('autoQuoting');
+const autoWrap = tbSetable('autoWrap');
+const showContinueArrow = tbSetable('continue');
+const dialog = tbSetable('text');
+const overrideColor = tbSetable('overrideColor');
+const deriveCustomColors = tbSetable('deriveCustomColors');
+const customNameboxWidth = tbSetable('customNameboxWidth');
+const nameList = computed((): [IObject['id'], string][] => {
+	const panel = currentPanel.value;
+
+	const ret: [IObject['id'], string][] = [];
+
+	for (const id of [...panel.order, ...panel.onTopOrder]) {
+		const obj = panel.objects[id];
+		if (obj.label === null) continue;
+		ret.push([id, obj.label!]);
+	}
+	return ret;
+});
+const textEditorName = computed((): string => {
+	if (textEditor.value === 'name') return 'Name';
+	if (textEditor.value === 'body') return 'Dialog';
+	return '';
+});
+const colorName = computed((): string => {
+	switch (colorSelect.value) {
+		case '':
+			return '';
+		case 'base':
+			return 'Base color';
+		case 'controls':
+			return 'Controls color';
+		case 'namebox':
+			return 'Namebox color';
+		case 'nameboxStroke':
+			return 'Namebox text stroke';
+		default:
+			throw new UnreachableCaseError(colorSelect.value);
+	}
+});
+
+function splitTextbox(): void {
+	transaction(async () => {
+		await store.dispatch('panels/splitTextbox', {
+			id: object.value.id,
+			panelId: object.value.panelId,
+		} as ISplitTextbox);
+	});
+}
+function resetPosition(): void {
+	transaction(async () => {
+		await store.dispatch('panels/resetTextboxBounds', {
+			id: object.value.id,
+			panelId: object.value.panelId,
+		} as IResetTextboxBounds);
+	});
+}
+function jumpToCharacter(): void {
+	transaction(() => {
+		store.commit('ui/setSelection', talkingObjId.value);
+	});
+}
+//#region
 </script>
 <style lang="scss" scoped>
 .panel {
-	&.vertical {
-		table {
+	table {
+		td:first-child {
+			width: 0;
+		}
+
+		input,
+		select {
 			width: 100%;
-
-			input,
-			select {
-				width: 100px;
-			}
 		}
-
-		textarea {
-			resize: vertical;
+		button {
+			width: 25px;
 		}
-	}
-
-	textarea {
-		display: block;
-		height: 114px;
 	}
 
 	&:not(.vertical) {
 		table.upper-combos {
-			width: 256px;
-
-			select {
-				width: 100px;
-			}
-			input {
-				width: 75px;
-			}
-			button {
-				width: 25px;
-			}
+			width: 200px;
 		}
 
 		.customization-set {
 			@include height-100();
 		}
-
-		textarea {
-			resize: horizontal;
-		}
 	}
+}
+
+textarea {
+	display: block;
+	min-height: 128px;
 }
 
 .color-button {

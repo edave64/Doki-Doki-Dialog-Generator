@@ -3,21 +3,22 @@
 -->
 <template>
 	<object-tool
+		ref="root"
 		:object="object"
 		:title="object.subType === 'poem' ? 'Poem' : 'Console'"
 		:textHandler="textHandler"
 		:colorHandler="colorHandler"
 	>
-		<div id="poem_text">
+		<div id="poem_text" class="v-w100">
 			<label for="poem_text">Text:</label>
-			<textarea v-model="text" @keydown.stop />
-			<button @click="textEditor = true">Formatting</button>
+			<textarea class="v-w100" ref="textarea" v-model="text" @keydown.stop />
+			<button class="w100 bt0" @click="textEditor = true">Formatting</button>
 		</div>
 		<toggle label="Auto line wrap?" v-model="autoWrap" />
 		<template v-if="object.subType === 'poem'">
 			<select v-model="poemBackground" @keydown.stop>
 				<option
-					v-for="(background, idx) of backgrounds"
+					v-for="(background, idx) of poemBackgrounds"
 					:value="idx"
 					:key="idx"
 				>
@@ -49,12 +50,10 @@
 	</object-tool>
 </template>
 
-<script lang="ts">
-import { PanelMixin } from '@/components/mixins/panel-mixin';
+<script lang="ts" setup>
+import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import Toggle from '@/components/toggle.vue';
-import DFlow from '@/components/ui/d-flow.vue';
 import {
-	IPoemTextStyle,
 	poemBackgrounds,
 	poemTextStyles,
 } from '@/constants/game_modes/ddlc/poem';
@@ -64,119 +63,109 @@ import {
 	ISetTextBoxProperty,
 	PoemSimpleProperties,
 } from '@/store/object-types/poem';
-import { IPanel } from '@/store/panels';
-import { genericSimpleSetter } from '@/util/simple-settable';
-import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
-import { defineComponent } from 'vue';
+import { genericSetterSplit } from '@/util/simple-settable';
+import { UnreachableCaseError } from 'ts-essentials';
+import { computed, ref, watch } from 'vue';
 import ObjectTool, { Handler } from './object-tool.vue';
+import { Store, useStore } from 'vuex';
+import { IRootState } from '@/store';
 
-const setableP = genericSimpleSetter<IPoem, PoemSimpleProperties>(
-	'panels/setPoemProperty'
+const store = useStore() as Store<IRootState>;
+const root = ref(null! as HTMLElement);
+const textarea = ref(null! as HTMLTextAreaElement);
+const { vertical } = setupPanelMixin(root);
+const textEditor = ref(false);
+const colorSelect = ref('' as '' | 'base');
+
+watch(
+	() => vertical.value,
+	() => {
+		textarea.value.style.height = '';
+		textarea.value.style.width = '';
+	}
 );
 
-export default defineComponent({
-	mixins: [PanelMixin],
-	components: {
-		Toggle,
-		ObjectTool,
-		DFlow,
-	},
-	data: () => ({
-		textEditor: false,
-		colorSelect: '' as '' | 'base',
-	}),
-	computed: {
-		currentPanel(): DeepReadonly<IPanel> {
-			return this.$store.state.panels.panels[
-				this.$store.state.panels.currentPanel
-			];
-		},
-		backgrounds(): Array<{ name: string; file: string }> {
-			return poemBackgrounds;
-		},
-		poemTextStyles(): IPoemTextStyle[] {
-			return poemTextStyles;
-		},
-		object(): IPoem {
-			const obj = this.currentPanel.objects[this.$store.state.ui.selection!];
-			if (obj.type !== 'poem') return undefined!;
-			return obj as IPoem;
-		},
-		textHandler(): Handler | undefined {
-			if (!this.textEditor) return undefined;
-			return {
-				title: 'Text',
-				get: () => {
-					return this.text;
-				},
-				set: (text: string) => {
-					this.text = text;
-				},
-				leave: () => {
-					this.textEditor = false;
-				},
-			};
-		},
-		colorHandler(): Handler | undefined {
-			if (!this.colorSelect) return undefined;
-			return {
-				title: 'Color',
-				get: () => {
-					switch (this.colorSelect) {
-						case '':
-							return '#000000';
-						case 'base':
-							return this.object.consoleColor;
-						default:
-							throw new UnreachableCaseError(this.colorSelect);
-					}
-				},
-				set: (color: string) => {
-					transaction(() => {
-						const panelId = this.currentPanel.id;
-						const id = this.object.id;
-						if (color === undefined) return;
-						this.$store.commit('panels/setPoemProperty', {
-							key: 'consoleColor',
-							panelId,
-							id,
-							value: color,
-						} as ISetTextBoxProperty<'consoleColor'>);
-					});
-				},
-				leave: () => {
-					this.colorSelect = '';
-				},
-			};
-		},
-		text: setableP('text'),
-		autoWrap: setableP('autoWrap'),
-		poemStyle: setableP('font'),
-		poemBackground: setableP('background'),
-	},
+const currentPanel = computed(
+	() => store.state.panels.panels[store.state.panels.currentPanel]
+);
+const object = computed((): IPoem => {
+	const obj = currentPanel.value.objects[store.state.ui.selection!];
+	if (obj.type !== 'poem') return undefined!;
+	return obj as IPoem;
 });
+
+const setableP = <K extends PoemSimpleProperties>(k: K) =>
+	genericSetterSplit<IPoem, K>(
+		store,
+		object,
+		'panels/setPoemProperty',
+		false,
+		k
+	);
+const textHandler = computed((): Handler | undefined => {
+	if (!textEditor.value) return undefined;
+	return {
+		title: 'Text',
+		get: () => {
+			return text.value;
+		},
+		set: (val: string) => {
+			text.value = val;
+		},
+		leave: () => {
+			textEditor.value = false;
+		},
+	};
+});
+const colorHandler = computed((): Handler | undefined => {
+	if (!colorSelect.value) return undefined;
+	return {
+		title: 'Color',
+		get: () => {
+			switch (colorSelect.value) {
+				case '':
+					return '#000000';
+				case 'base':
+					return object.value.consoleColor;
+				default:
+					throw new UnreachableCaseError(colorSelect.value);
+			}
+		},
+		set: (color: string) => {
+			transaction(() => {
+				const panelId = currentPanel.value.id;
+				const id = object.value.id;
+				if (color === undefined) return;
+				store.commit('panels/setPoemProperty', {
+					key: 'consoleColor',
+					panelId,
+					id,
+					value: color,
+				} as ISetTextBoxProperty<'consoleColor'>);
+			});
+		},
+		leave: () => {
+			colorSelect.value = '';
+		},
+	};
+});
+const text = setableP('text');
+const autoWrap = setableP('autoWrap');
+const poemStyle = setableP('font');
+const poemBackground = setableP('background');
 </script>
 
 <style lang="scss" scoped>
 .panel {
 	&.vertical {
-		#poem_text {
-			width: 173px;
-
-			textarea {
-				width: 100%;
-			}
-		}
-
 		fieldset.buttons {
 			width: 100%;
 		}
 	}
-	&:not(.vertical) {
-		textarea {
-			display: block;
-			height: 114px;
-		}
-	}
+}
+
+textarea {
+	display: block;
+	min-height: 128px;
 }
 </style>
