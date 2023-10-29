@@ -58,19 +58,22 @@
 </template>
 
 <script lang="ts">
-import DButton from "@/components/ui/d-button.vue";
-import environment, { Folder } from "@/environments/environment";
-import { transaction } from "@/plugins/vuex-history";
-import { IAssetSwitch, ReplaceContentPackAction } from "@/store/content";
-import { ISetColorMutation, ISetCurrentMutation } from "@/store/panels";
-import { Background, ContentPack } from "@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model";
-import { defineComponent } from "vue";
-import DropTarget from "../drop-target.vue";
-import Color from "../subtools/color/color.vue";
-import ImageOptions from "../subtools/image-options/image-options.vue";
-import BackgroundButton from "./background/button.vue";
-import BackgroundSettings from "./background/settings.vue";
-import { PanelMixin } from "../../mixins/panel-mixin";
+import DButton from '@/components/ui/d-button.vue';
+import environment, { Folder } from '@/environments/environment';
+import { transaction } from '@/plugins/vuex-history';
+import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
+import { ISetColorMutation, ISetCurrentMutation } from '@/store/panels';
+import {
+	Background,
+	ContentPack,
+} from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { defineComponent } from 'vue';
+import DropTarget from '../drop-target.vue';
+import Color from '../subtools/color/color.vue';
+import ImageOptions from '../subtools/image-options/image-options.vue';
+import BackgroundButton from './background/button.vue';
+import BackgroundSettings from './background/settings.vue';
+import { PanelMixin } from '../../mixins/panel-mixin';
 
 const uploadedBackgroundsPackDefaults: ContentPack<string> = {
 	packId: 'dddg.uploads.backgrounds',
@@ -167,7 +170,8 @@ export default defineComponent({
 		) {
 			const old =
 				this.$store.state.content.contentPacks.find(
-					(x: ContentPack<IAssetSwitch>) => x.packId === uploadedBackgroundsPackDefaults.packId
+					(x: ContentPack<IAssetSwitch>) =>
+						x.packId === uploadedBackgroundsPackDefaults.packId
 				) || uploadedBackgroundsPackDefaults;
 			const newPackVersion = {
 				...old,
@@ -237,11 +241,23 @@ textarea {
 	}
 }
 
-.panel:not(.vertical) {
+#panels .panel:not(.vertical) {
 	> .btn,
 	button,
 	.background {
+		height: calc(33% - 4px);
+		min-height: calc(33% - 4px);
+		margin-top: 4px;
+		margin-right: 4px;
 		width: 12rem;
+	}
+}
+
+#panels .panel.vertical {
+	> .btn,
+	button,
+	.background {
+		width: 100%;
 	}
 }
 

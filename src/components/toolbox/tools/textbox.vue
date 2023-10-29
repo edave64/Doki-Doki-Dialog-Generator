@@ -63,8 +63,16 @@
 				</tr>
 			</table>
 
-			<toggle label="Auto quoting?" v-model="autoQuoting" />
-			<toggle label="Auto line wrap?" v-model="autoWrap" />
+			<toggle
+				label="Auto quoting?"
+				v-model="autoQuoting"
+				title="Try to automatically fix missing/unclosed quotation marks when a character is speaking"
+			/>
+			<toggle
+				label="Auto line wrap?"
+				v-model="autoWrap"
+				title="Automatically insert line breaks when a line of text is larger than the textbox"
+			/>
 			<div id="dialog_text_wrapper" class="v-w100">
 				<label for="dialog_text">Dialog:</label>
 				<textarea
@@ -134,7 +142,7 @@
 						<template v-if="overrideColor && !deriveCustomColors">
 							<tr>
 								<td>
-									<label for="custom_controls_color">Controls Color:</label>
+									<label for="custom_controls_color">Controls color:</label>
 								</td>
 								<td>
 									<button
@@ -147,7 +155,7 @@
 							</tr>
 							<tr>
 								<td>
-									<label for="custom_namebox_color">Namebox Color:</label>
+									<label for="custom_namebox_color">Namebox color:</label>
 								</td>
 								<td>
 									<button
@@ -178,7 +186,7 @@
 				</d-flow>
 			</d-fieldset>
 			<button @click="resetPosition">Reset position</button>
-			<button class="v-bt0" @click="splitTextbox">Split textbox</button>
+			<button class="bt0" @click="splitTextbox">Split textbox</button>
 		</template>
 	</object-tool>
 </template>
@@ -199,12 +207,11 @@ import {
 	TextBoxSimpleProperties,
 } from '@/store/object-types/textbox';
 import { IObject } from '@/store/objects';
-import { IPanel } from '@/store/panels';
 import {
 	genericSetterSplit,
 	genericSetterMerged,
 } from '@/util/simple-settable';
-import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
+import { UnreachableCaseError } from 'ts-essentials';
 import { computed, ref, watch } from 'vue';
 import ObjectTool, { Handler } from './object-tool.vue';
 import { Store, useStore } from 'vuex';
@@ -227,15 +234,9 @@ watch(
 	}
 );
 
-const currentPanel = computed((): DeepReadonly<IPanel> => {
-	return store.state.panels.panels[store.state.panels.currentPanel];
-});
-const customizable = computed((): boolean => {
-	return textBoxStyle.value.startsWith('custom');
-});
-const nameboxWidthDefault = computed((): number => {
-	return getConstants().TextBox.NameboxWidth;
-});
+const currentPanel = computed(
+	() => store.state.panels.panels[store.state.panels.currentPanel]
+);
 const object = computed((): ITextBox => {
 	const obj = currentPanel.value.objects[store.state.ui.selection!];
 	if (obj.type !== 'textBox') return undefined!;
@@ -331,22 +332,6 @@ const talkingOther = genericSetterMerged(
 	false,
 	'talkingOther'
 );
-const textBoxStyle = genericSetterMerged(
-	store,
-	object,
-	'panels/setStyle',
-	true,
-	'style'
-);
-const showControls = tbSetable('controls');
-const allowSkipping = tbSetable('skip');
-const autoQuoting = tbSetable('autoQuoting');
-const autoWrap = tbSetable('autoWrap');
-const showContinueArrow = tbSetable('continue');
-const dialog = tbSetable('text');
-const overrideColor = tbSetable('overrideColor');
-const deriveCustomColors = tbSetable('deriveCustomColors');
-const customNameboxWidth = tbSetable('customNameboxWidth');
 const nameList = computed((): [IObject['id'], string][] => {
 	const panel = currentPanel.value;
 
@@ -380,7 +365,33 @@ const colorName = computed((): string => {
 			throw new UnreachableCaseError(colorSelect.value);
 	}
 });
-
+//#region Text
+const autoQuoting = tbSetable('autoQuoting');
+const autoWrap = tbSetable('autoWrap');
+const dialog = tbSetable('text');
+//#endregion Text
+//#region Style
+const customizable = computed(() => textBoxStyle.value.startsWith('custom'));
+const textBoxStyle = genericSetterMerged(
+	store,
+	object,
+	'panels/setStyle',
+	true,
+	'style'
+);
+//#endregion Style
+//#region Customization - General
+const showControls = tbSetable('controls');
+const allowSkipping = tbSetable('skip');
+const showContinueArrow = tbSetable('continue');
+//#endregion Customization - General
+//#region Customization - Custom
+const overrideColor = tbSetable('overrideColor');
+const deriveCustomColors = tbSetable('deriveCustomColors');
+const customNameboxWidth = tbSetable('customNameboxWidth');
+const nameboxWidthDefault = computed(() => getConstants().TextBox.NameboxWidth);
+//#endregion Customization - Custom
+//#region Actions
 function splitTextbox(): void {
 	transaction(async () => {
 		await store.dispatch('panels/splitTextbox', {
@@ -402,15 +413,11 @@ function jumpToCharacter(): void {
 		store.commit('ui/setSelection', talkingObjId.value);
 	});
 }
-//#region
+//#endregion Actions
 </script>
 <style lang="scss" scoped>
 .panel {
 	table {
-		td:first-child {
-			width: 0;
-		}
-
 		input,
 		select {
 			width: 100%;

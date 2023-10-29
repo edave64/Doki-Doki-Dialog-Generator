@@ -80,7 +80,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 //noinspection CssOverwrittenProperties
 .background {
-	margin-top: 4px;
 	background-size: cover;
 	text-shadow: 0 0 4px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
 		1px 1px 0 #000;
@@ -94,7 +93,8 @@ export default defineComponent({
 	min-height: 48px;
 	text-align: center;
 	user-select: none;
-
+	margin-top: 4px;
+	margin-right: 4px !important;
 	&.active {
 		box-shadow: inset 0 0 1px 3px $default-modal-backdrop-light;
 		box-shadow: inset 0 0 1px 3px var(--modal-backdrop-light);
