@@ -335,7 +335,7 @@ const textBoxStyle = genericSetterMerged(
 	store,
 	object,
 	'panels/setStyle',
-	false,
+	true,
 	'style'
 );
 const showControls = tbSetable('controls');
