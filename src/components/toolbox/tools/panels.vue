@@ -143,8 +143,8 @@
 						</td>
 					</tr>
 					<tr>
-						<td>
-							<d-button icon="photo_camera" @click="download">
+						<td colspan="2">
+							<d-button icon="photo_camera" class="w100" @click="download">
 								Download
 							</d-button>
 						</td>
