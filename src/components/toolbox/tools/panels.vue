@@ -121,7 +121,7 @@
 								min="0"
 								v-model.number="ppi"
 								@keydown.stop
-								@blur="if ((ppi as any) === '') ppi = 0;"
+								@blur="if (emptyStringInInt(ppi)) ppi = 0;"
 							/>
 						</td>
 					</tr>
@@ -219,6 +219,11 @@ const currentPanel = computed(
 );
 const isLossy = computed(() => format.value !== 'image/png');
 const canDeletePanel = computed(() => panelButtons.value.length > 1);
+
+function emptyStringInInt(v: string | number) {
+	if (v === '') return true;
+	return false;
+}
 
 //#region Format-Support
 import { isHeifSupported, isWebPSupported } from '@/asset-manager';
