@@ -2,7 +2,7 @@
 	A tab that allows selecting a background
 -->
 <template>
-	<div class="panel" @dragenter="dragEnter" @mouseleave="$refs.dt.hide()">
+	<div class="panel" ref="root" @dragenter="dragEnter" @mouseleave="dt.hide()">
 		<drop-target ref="dt" class="drop-target" @drop="addImageFile"
 			>Drop here to add as a new background
 		</drop-target>
@@ -12,7 +12,7 @@
 			v-else-if="imageOptions"
 			type="background"
 			title=""
-			:panel-id="$store.state.panels.currentPanel"
+			:panel-id="store.state.panels.currentPanel"
 			no-composition
 			@leave="imageOptions = false"
 		/>
@@ -21,11 +21,7 @@
 				@change-color="colorSelect = true"
 				@open-image-options="imageOptions = true"
 			/>
-			<d-button
-				icon="upload"
-				class="upload-background"
-				@click="$refs.upload.click()"
-			>
+			<d-button icon="upload" class="upload-background" @click="upload.click()">
 				Upload
 				<input type="file" ref="upload" @change="onFileUpload" />
 			</d-button>
@@ -57,7 +53,7 @@
 	</div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import DButton from '@/components/ui/d-button.vue';
 import environment, { Folder } from '@/environments/environment';
 import { transaction } from '@/plugins/vuex-history';
@@ -67,13 +63,15 @@ import {
 	Background,
 	ContentPack,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { defineComponent } from 'vue';
+import { computed, ref } from 'vue';
 import DropTarget from '../drop-target.vue';
 import Color from '../subtools/color/color.vue';
 import ImageOptions from '../subtools/image-options/image-options.vue';
 import BackgroundButton from './background/button.vue';
 import BackgroundSettings from './background/settings.vue';
-import { PanelMixin } from '../../mixins/panel-mixin';
+import { setupPanelMixin } from '../../mixins/panel-mixin';
+import { Store, useStore } from 'vuex';
+import { IRootState } from '@/store';
 
 const uploadedBackgroundsPackDefaults: ContentPack<string> = {
 	packId: 'dddg.uploads.backgrounds',
@@ -88,137 +86,130 @@ const uploadedBackgroundsPackDefaults: ContentPack<string> = {
 	colors: [],
 };
 
-export default defineComponent({
-	mixins: [PanelMixin],
-	components: {
-		BackgroundButton,
-		BackgroundSettings,
-		DropTarget,
-		Color,
-		ImageOptions,
-		DButton,
+const store = useStore() as Store<IRootState>;
+const root = ref(null! as HTMLElement);
+setupPanelMixin(root);
+
+const colorSelect = ref(false);
+const imageOptions = ref(false);
+const bgColor = computed({
+	get(): string {
+		return store.state.panels.panels[store.state.panels.currentPanel].background
+			.color;
 	},
-	data: () => ({
-		colorSelect: false,
-		imageOptions: false,
-	}),
-	computed: {
-		bgColor: {
-			get(): string {
-				return this.$store.state.panels.panels[
-					this.$store.state.panels.currentPanel
-				].background.color;
-			},
-			set(color: string) {
-				transaction(() => {
-					this.$store.commit('panels/setBackgroundColor', {
-						color,
-						panelId: this.$store.state.panels.currentPanel,
-					} as ISetColorMutation);
-				});
-			},
-		},
-		backgrounds(): Array<Background<IAssetSwitch>['id']> {
-			return [
-				...this.$store.state.content.current.backgrounds.map(
-					(background) => background.id
-				),
-				'buildin.static-color',
-				'buildin.transparent',
-			];
-		},
-		showBackgroundsFolder(): boolean {
-			return (environment.supports.openableFolders as ReadonlySet<Folder>).has(
-				'backgrounds'
-			);
-		},
-	},
-	methods: {
-		setBackground(id: Background<IAssetSwitch>['id']) {
-			this.$store.commit('panels/setCurrentBackground', {
-				current: id,
-				panelId: this.$store.state.panels.currentPanel,
-			} as ISetCurrentMutation);
-		},
-		onFileUpload(_e: Event) {
-			const uploadInput = this.$refs.upload as HTMLInputElement;
-			if (!uploadInput.files) return;
-			for (const file of uploadInput.files) {
-				this.addImageFile(file);
-			}
-		},
-		async addImageFile(file: File) {
-			await transaction(async () => {
-				const url = URL.createObjectURL(file);
-				const assetUrl: string = await this.$store.dispatch('uploadUrls/add', {
-					name: file.name,
-					url,
-				});
-				await this.addNewCustomBackground(file.name, file.name, assetUrl);
-			});
-		},
-		addByUrl() {
-			const url = prompt('Enter the URL of the image');
-			if (url == null) return;
-			const lastSegment = url.split('/').slice(-1)[0];
-			this.addNewCustomBackground(lastSegment, lastSegment, url);
-		},
-		async addNewCustomBackground(
-			id: Background<IAssetSwitch>['id'],
-			label: string,
-			url: string
-		) {
-			const old =
-				this.$store.state.content.contentPacks.find(
-					(x: ContentPack<IAssetSwitch>) =>
-						x.packId === uploadedBackgroundsPackDefaults.packId
-				) || uploadedBackgroundsPackDefaults;
-			const newPackVersion = {
-				...old,
-				backgrounds: [
-					...old.backgrounds,
-					{
-						id,
-						label,
-						variants: [
-							[
-								{
-									hq: url,
-									lq: url,
-									sourcePack: uploadedBackgroundsPackDefaults.packId,
-								},
-							],
-						],
-						scaling: 'none',
-					},
-				],
-			};
-			await transaction(async () => {
-				await this.$store.dispatch('content/replaceContentPack', {
-					contentPack: newPackVersion,
-					processed: true,
-				} as ReplaceContentPackAction);
-				this.setBackground(id);
-			});
-		},
-		dragEnter(e: DragEvent) {
-			if (!e.dataTransfer) return;
-			e.dataTransfer.effectAllowed = 'none';
-			if (
-				!Array.from(e.dataTransfer.items).find((item) =>
-					item.type.match(/^image.*$/)
-				)
-			) {
-				return;
-			}
-			e.dataTransfer.effectAllowed = 'link';
-			(this.$refs.dt as any).show();
-		},
-		openBackgroundFolder() {
-			environment.openFolder('backgrounds');
-		},
+	set(color: string) {
+		transaction(() => {
+			store.commit('panels/setBackgroundColor', {
+				color,
+				panelId: store.state.panels.currentPanel,
+			} as ISetColorMutation);
+		});
 	},
 });
+const backgrounds = computed((): Array<Background<IAssetSwitch>['id']> => {
+	return [
+		...store.state.content.current.backgrounds.map(
+			(background) => background.id
+		),
+		'buildin.static-color',
+		'buildin.transparent',
+	];
+});
+const showBackgroundsFolder = computed((): boolean => {
+	return (environment.supports.openableFolders as ReadonlySet<Folder>).has(
+		'backgrounds'
+	);
+});
+
+function setBackground(id: Background<IAssetSwitch>['id']) {
+	store.commit('panels/setCurrentBackground', {
+		current: id,
+		panelId: store.state.panels.currentPanel,
+	} as ISetCurrentMutation);
+}
+function openBackgroundFolder() {
+	environment.openFolder('backgrounds');
+}
+//#region Uploads
+const upload = ref(null! as HTMLInputElement);
+function onFileUpload(_e: Event) {
+	const uploadInput = upload.value;
+	if (!uploadInput.files) return;
+	for (const file of uploadInput.files) {
+		addImageFile(file);
+	}
+}
+async function addImageFile(file: File) {
+	await transaction(async () => {
+		const url = URL.createObjectURL(file);
+		const assetUrl: string = await store.dispatch('uploadUrls/add', {
+			name: file.name,
+			url,
+		});
+		await addNewCustomBackground(file.name, file.name, assetUrl);
+	});
+}
+function addByUrl() {
+	const url = prompt('Enter the URL of the image');
+	if (url == null) return;
+	const lastSegment = url.split('/').slice(-1)[0];
+	addNewCustomBackground(lastSegment, lastSegment, url);
+}
+async function addNewCustomBackground(
+	id: Background<IAssetSwitch>['id'],
+	label: string,
+	url: string
+) {
+	const old =
+		store.state.content.contentPacks.find(
+			(x: ContentPack<IAssetSwitch>) =>
+				x.packId === uploadedBackgroundsPackDefaults.packId
+		) || uploadedBackgroundsPackDefaults;
+	const newPackVersion = {
+		...old,
+		backgrounds: [
+			...old.backgrounds,
+			{
+				id,
+				label,
+				variants: [
+					[
+						{
+							hq: url,
+							lq: url,
+							sourcePack: uploadedBackgroundsPackDefaults.packId,
+						},
+					],
+				],
+				scaling: 'none',
+			},
+		],
+	};
+	await transaction(async () => {
+		await store.dispatch('content/replaceContentPack', {
+			contentPack: newPackVersion,
+			processed: true,
+		} as ReplaceContentPackAction);
+		setBackground(id);
+	});
+}
+//#endregion Uploads
+//#region Drag and Drop
+const dt = ref(null! as typeof DropTarget);
+function dragEnter(e: DragEvent) {
+	if (!e.dataTransfer) return;
+	e.dataTransfer.effectAllowed = 'none';
+	if (
+		!Array.from(e.dataTransfer.items).find((item) =>
+			item.type.match(/^image.*$/)
+		)
+	) {
+		return;
+	}
+	e.dataTransfer.effectAllowed = 'link';
+	dt.value.show();
+}
+//#endregion Drag and Drop
 </script>
 
 <style lang="scss" scoped>
