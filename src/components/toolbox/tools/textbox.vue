@@ -419,6 +419,11 @@ function jumpToCharacter(): void {
 			width: 25px;
 		}
 	}
+	table.upper-combos {
+		td:first-child {
+			width: 0;
+		}
+	}
 
 	&:not(.vertical) {
 		table.upper-combos {
