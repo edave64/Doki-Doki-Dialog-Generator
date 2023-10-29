@@ -1,70 +1,58 @@
 <template>
-	<div
-		class="sub-item-grid"
-		:class="{ vertical }"
-		@dragenter="showDropTarget"
-		@mouseleave="hideDropTarget"
-	>
-		<drop-target ref="spriteDt" class="drop-target" @drop="addCustomSpriteFile"
-			>Drop here to add as a new sprite
-		</drop-target>
-		<template v-for="sprite of sprites">
-			<div
-				class="sprite"
-				tabindex="0"
-				:key="sprite.label"
-				:title="sprite.label"
-				:style="{ background: assetSpriteBackground(sprite) }"
-				@click="reuploadingSprite(sprite)"
-				@keypress.enter.prevent.stop="reuploadingSprite(sprite)"
-				@keypress.space.prevent.stop="reuploadingSprite(sprite)"
-				v-if="sprite.missing !== null"
-			>
-				{{ sprite.label }}
-			</div>
-			<div
-				class="sprite"
-				tabindex="0"
-				:key="sprite.label"
-				:title="sprite.label"
-				:style="{ background: assetSpriteBackground(sprite) }"
-				@click="addSpriteToScene(sprite)"
-				@keypress.enter.prevent.stop="addSpriteToScene(sprite)"
-				@keypress.space.prevent.stop="addSpriteToScene(sprite)"
-				v-else
-			>
-				{{ sprite.label }}
-			</div>
-		</template>
-
-		<d-button
-			class="custom-sprite"
-			icon="publish"
-			@click="$refs.spriteUpload.click()"
+	<drop-target ref="spriteDt" class="drop-target" @drop="addCustomSpriteFile"
+		>Drop here to add as a new sprite
+	</drop-target>
+	<template v-for="sprite of sprites">
+		<div
+			class="sprite"
+			tabindex="0"
+			:key="`${sprite.label}_missing`"
+			:title="sprite.label"
+			:style="{ background: assetSpriteBackground(sprite) }"
+			@click="reuploadingSprite(sprite)"
+			@keypress.enter.prevent.stop="reuploadingSprite(sprite)"
+			@keypress.space.prevent.stop="reuploadingSprite(sprite)"
+			v-if="sprite.missing !== null"
 		>
-			Upload new sprite
-			<input type="file" ref="spriteUpload" @change="onSpriteFileUpload" />
-		</d-button>
-		<d-button icon="insert_link" @click="uploadFromURL">
-			New sprite from URL
-		</d-button>
-		<d-button icon="extension" @click="$emit('show-dialog', 'type: Sprites')">
-			Search in content packs
-		</d-button>
-		<d-button v-if="showSpritesFolder" icon="folder" @click="openSpritesFolder">
-			Open sprites folder
-		</d-button>
-		<input
-			type="file"
-			ref="missingSpriteUpload"
-			@change="onMissingSpriteFileUpload"
-		/>
-	</div>
+			{{ sprite.label }}
+		</div>
+		<div
+			class="sprite"
+			tabindex="0"
+			:key="sprite.label"
+			:title="sprite.label"
+			:style="{ background: assetSpriteBackground(sprite) }"
+			@click="addSpriteToScene(sprite)"
+			@keypress.enter.prevent.stop="addSpriteToScene(sprite)"
+			@keypress.space.prevent.stop="addSpriteToScene(sprite)"
+			v-else
+		>
+			{{ sprite.label }}
+		</div>
+	</template>
+
+	<d-button class="custom-sprite" icon="publish" @click="spriteUpload.click()">
+		Upload new sprite
+		<input type="file" ref="spriteUpload" @change="onSpriteFileUpload" />
+	</d-button>
+	<d-button icon="insert_link" @click="uploadFromURL">
+		New sprite from URL
+	</d-button>
+	<d-button icon="extension" @click="$emit('show-dialog', 'type: Sprites')">
+		Search in content packs
+	</d-button>
+	<d-button v-if="showSpritesFolder" icon="folder" @click="openSpritesFolder">
+		Open sprites folder
+	</d-button>
+	<input
+		type="file"
+		ref="missingSpriteUpload"
+		@change="onMissingSpriteFileUpload"
+	/>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { getAAssetUrl } from '@/asset-manager';
-import { PanelMixin } from '@/components/mixins/panel-mixin';
 import DButton from '@/components/ui/d-button.vue';
 import environment, { Folder } from '@/environments/environment';
 import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
@@ -74,12 +62,18 @@ import {
 	Sprite,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { DeepReadonly } from 'ts-essentials';
-import { defineComponent } from 'vue';
+import { computed, ref } from 'vue';
 import DropTarget from '../../drop-target.vue';
 
 import MissingImage from '@/assets/missing_image.svg';
 import { transaction, TransactionLayer } from '@/plugins/vuex-history';
+import { Store, useStore } from 'vuex';
+import { IRootState } from '@/store';
 
+const store = useStore() as Store<IRootState>;
+const spriteUpload = ref(null! as HTMLInputElement);
+const missingSpriteUpload = ref(null! as HTMLInputElement);
+const spriteDt = ref(null! as typeof DropTarget);
 const uploadedSpritesPackDefault: ContentPack<string> = {
 	packId: 'dddg.uploads.sprites',
 	packCredits: [''],
@@ -98,150 +92,143 @@ interface ISprite extends Sprite<IAssetSwitch> {
 	urls: string[];
 }
 
-export default defineComponent({
-	mixins: [PanelMixin],
-	components: { DropTarget, DButton },
-	computed: {
-		sprites(): DeepReadonly<Array<ISprite>> {
-			return this.$store.state.content.current.sprites.map((x) => {
-				let missing: string | null = null;
-				const urls = x.variants[0].map((y) => {
-					const url = getAAssetUrl(y, false);
-					if (url.startsWith('uploads:')) {
-						// Force sprites to reload on upload
-						Object.keys(this.$store.state.uploadUrls);
-						missing = url;
-						return MissingImage;
-					} else {
-						return url;
-					}
-				});
-				return {
-					...x,
-					missing,
-					urls,
-				} as ISprite;
-			});
-		},
-		showSpritesFolder(): boolean {
-			return (environment.supports.openableFolders as ReadonlySet<Folder>).has(
-				'sprites'
-			);
-		},
-	},
-	methods: {
-		assetSpriteBackground(sprite: Sprite<IAssetSwitch>) {
-			return sprite.variants[0]
-				.map((variant) => `url('${getAAssetUrl(variant, false)}')`)
-				.join(',');
-		},
-		showDropTarget(e: DragEvent) {
-			if (!e.dataTransfer) return;
-			e.dataTransfer.effectAllowed = 'none';
-			if (
-				!Array.from(e.dataTransfer.items).find((item) =>
-					item.type.match(/^image.*$/)
-				)
-			) {
-				return;
+const sprites = computed((): DeepReadonly<Array<ISprite>> => {
+	return store.state.content.current.sprites.map((x) => {
+		let missing: string | null = null;
+		const urls = x.variants[0].map((y) => {
+			const url = getAAssetUrl(y, false);
+			if (url.startsWith('uploads:')) {
+				// Force sprites to reload on upload
+				Object.keys(store.state.uploadUrls);
+				missing = url;
+				return MissingImage;
+			} else {
+				return url;
 			}
-			e.dataTransfer.effectAllowed = 'link';
-			(this.$refs.spriteDt as any).show();
-		},
-		hideDropTarget() {
-			(this.$refs.spriteDt as any).hide();
-		},
-		onSpriteFileUpload() {
-			const uploadInput = this.$refs.spriteUpload as HTMLInputElement;
-			if (!uploadInput.files) return;
-			for (const file of uploadInput.files) {
-				this.addCustomSpriteFile(file);
-			}
-		},
-		async onMissingSpriteFileUpload(_e: Event) {
-			const uploadInput = this.$refs.missingSpriteUpload as HTMLInputElement;
-			const spriteName = (uploadInput as any).uploadingSprite;
-			if (!uploadInput.files) return;
-			if (uploadInput.files.length !== 1) {
-				console.error('More than one file uploaded!');
-				return;
-			}
-
-			const file = uploadInput.files[0];
-			await transaction(async () => {
-				const url = URL.createObjectURL(file);
-				await this.$store.dispatch('uploadUrls/add', {
-					name: spriteName,
-					url,
-				});
-			});
-		},
-		async uploadFromURL() {
-			const url = prompt('Enter the URL of the image');
-			if (url == null) return;
-			const lastSegment = url.split('/').slice(-1)[0];
-			await this.addNewCustomSprite(lastSegment, url);
-		},
-		async addSpriteToScene(sprite: ISprite) {
-			await transaction(async () => {
-				await this.$store.dispatch('panels/createSprite', {
-					panelId: this.$store.state.panels.currentPanel,
-					assets: sprite.variants[0],
-				} as ICreateSpriteAction);
-			});
-		},
-		reuploadingSprite(sprite: ISprite) {
-			const missingSpriteUpload = this.$refs
-				.missingSpriteUpload as HTMLInputElement;
-			(missingSpriteUpload as any).uploadingSprite = getAAssetUrl(
-				sprite.variants[0][0]
-			).substring(8);
-			missingSpriteUpload.click();
-		},
-		async addCustomSpriteFile(file: File) {
-			await transaction(async (subTransaction: TransactionLayer) => {
-				const url = URL.createObjectURL(file);
-				const assetUrl: string = await this.$store.dispatch('uploadUrls/add', {
-					name: file.name,
-					url,
-				});
-				await this.addNewCustomSprite(file.name, assetUrl, subTransaction);
-			});
-		},
-		async addNewCustomSprite(
-			label: string,
-			url: string,
-			subTransaction: TransactionLayer = transaction
-		) {
-			const old =
-				this.$store.state.content.contentPacks.find(
-					(x) => x.packId === uploadedSpritesPackDefault.packId
-				) || uploadedSpritesPackDefault;
-			const newPackVersion = {
-				...old,
-				sprites: [
-					...old.sprites,
-					{
-						id: url,
-						label,
-						variants: [[{ lq: url, hq: url }]],
-						defaultScale: [1.0, 1.0],
-						hd: null,
-					},
-				],
-			};
-			await subTransaction(async () => {
-				await this.$store.dispatch('content/replaceContentPack', {
-					contentPack: newPackVersion,
-					processed: true,
-				} as ReplaceContentPackAction);
-			});
-		},
-		openSpritesFolder() {
-			environment.openFolder('sprites');
-		},
-	},
+		});
+		return {
+			...x,
+			missing,
+			urls,
+		} as ISprite;
+	});
 });
+
+const showSpritesFolder = computed(() => {
+	return (environment.supports.openableFolders as ReadonlySet<Folder>).has(
+		'sprites'
+	);
+});
+
+function assetSpriteBackground(sprite: DeepReadonly<Sprite<IAssetSwitch>>) {
+	return sprite.variants[0]
+		.map((variant) => `url('${getAAssetUrl(variant, false)}')`)
+		.join(',');
+}
+function showDropTarget(e: DragEvent) {
+	if (!e.dataTransfer) return;
+	e.dataTransfer.effectAllowed = 'none';
+	if (
+		!Array.from(e.dataTransfer.items).find((item) =>
+			item.type.match(/^image.*$/)
+		)
+	) {
+		return;
+	}
+	e.dataTransfer.effectAllowed = 'link';
+	spriteDt.value.show();
+}
+function hideDropTarget() {
+	spriteDt.value.hide();
+}
+function onSpriteFileUpload() {
+	const uploadInput = spriteDt.value;
+	if (!uploadInput.files) return;
+	for (const file of uploadInput.files) {
+		addCustomSpriteFile(file);
+	}
+}
+async function onMissingSpriteFileUpload(_e: Event) {
+	const uploadInput = missingSpriteUpload.value;
+	const spriteName = (uploadInput as any).uploadingSprite;
+	if (!uploadInput.files) return;
+	if (uploadInput.files.length !== 1) {
+		console.error('More than one file uploaded!');
+		return;
+	}
+
+	const file = uploadInput.files[0];
+	await transaction(async () => {
+		const url = URL.createObjectURL(file);
+		await store.dispatch('uploadUrls/add', {
+			name: spriteName,
+			url,
+		});
+	});
+}
+async function uploadFromURL() {
+	const url = prompt('Enter the URL of the image');
+	if (url == null) return;
+	const lastSegment = url.split('/').slice(-1)[0];
+	await addNewCustomSprite(lastSegment, url);
+}
+async function addSpriteToScene(sprite: DeepReadonly<ISprite>) {
+	await transaction(async () => {
+		await store.dispatch('panels/createSprite', {
+			panelId: store.state.panels.currentPanel,
+			assets: sprite.variants[0],
+		} as ICreateSpriteAction);
+	});
+}
+function reuploadingSprite(sprite: DeepReadonly<ISprite>) {
+	const missingSpriteUpload_ = missingSpriteUpload.value;
+	(missingSpriteUpload_ as any).uploadingSprite = getAAssetUrl(
+		sprite.variants[0][0]
+	).substring(8);
+	missingSpriteUpload_.click();
+}
+async function addCustomSpriteFile(file: File) {
+	await transaction(async (subTransaction: TransactionLayer) => {
+		const url = URL.createObjectURL(file);
+		const assetUrl: string = await store.dispatch('uploadUrls/add', {
+			name: file.name,
+			url,
+		});
+		await addNewCustomSprite(file.name, assetUrl, subTransaction);
+	});
+}
+async function addNewCustomSprite(
+	label: string,
+	url: string,
+	subTransaction: TransactionLayer = transaction
+) {
+	const old =
+		store.state.content.contentPacks.find(
+			(x) => x.packId === uploadedSpritesPackDefault.packId
+		) || uploadedSpritesPackDefault;
+	const newPackVersion = {
+		...old,
+		sprites: [
+			...old.sprites,
+			{
+				id: url,
+				label,
+				variants: [[{ lq: url, hq: url }]],
+				defaultScale: [1.0, 1.0],
+				hd: null,
+			},
+		],
+	};
+	await subTransaction(async () => {
+		await store.dispatch('content/replaceContentPack', {
+			contentPack: newPackVersion,
+			processed: true,
+		} as ReplaceContentPackAction);
+	});
+}
+function openSpritesFolder() {
+	environment.openFolder('sprites');
+}
 </script>
 
 <style lang="scss" scoped>
@@ -249,27 +236,6 @@ export default defineComponent({
 
 input {
 	display: none;
-}
-
-.sub-item-grid {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-evenly;
-	margin: 0;
-
-	&.vertical {
-		width: 100%;
-		flex-direction: row;
-
-		:deep(button) {
-			width: 100%;
-		}
-	}
-
-	&:not(.vertical) {
-		@include height-100();
-		flex-direction: column;
-	}
 }
 
 .sprite {
