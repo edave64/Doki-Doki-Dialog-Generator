@@ -12,68 +12,60 @@
 	</div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { getAAssetUrl } from '@/asset-manager';
-import { BackgroundLookup, IAssetSwitch } from '@/store/content';
-import { IPanel } from '@/store/panels';
-import { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { DeepReadonly } from 'ts-essentials';
-import { defineComponent } from 'vue';
+import { IRootState } from '@/store';
+import { BackgroundLookup } from '@/store/content';
+import { computed } from 'vue';
+import { Store, useStore } from 'vuex';
 
-export default defineComponent({
-	props: {
-		backgroundId: {
-			type: String,
-			required: true,
-		},
+const store = useStore() as Store<IRootState>;
+const props = defineProps({
+	backgroundId: {
+		type: String,
+		required: true,
 	},
-	data: () => ({
-		isWebPSupported: null as boolean | null,
-		assets: [] as IAssetSwitch[],
-	}),
-	computed: {
-		background(): DeepReadonly<IPanel['background']> {
-			const currentPanel = this.$store.state.panels.currentPanel;
-			return this.$store.state.panels.panels[currentPanel].background;
-		},
+});
 
-		bgData(): Background<IAssetSwitch> | null {
-			const backgrounds: BackgroundLookup =
-				this.$store.getters['content/getBackgrounds'];
-			return backgrounds.get(this.backgroundId) || null;
-		},
+const background = computed(() => {
+	const currentPanel = store.state.panels.currentPanel;
+	return store.state.panels.panels[currentPanel].background;
+});
 
-		isActive(): boolean {
-			return this.backgroundId === this.background.current;
-		},
+const bgData = computed(() => {
+	const backgrounds: BackgroundLookup = store.getters['content/getBackgrounds'];
+	return backgrounds.get(props.backgroundId) || null;
+});
 
-		title(): string {
-			switch (this.backgroundId) {
-				case 'buildin.static-color':
-					return 'Static color';
-				case 'buildin.transparent':
-					return 'Transparent';
-			}
-			return this.bgData!.label ?? '';
-		},
+const isActive = computed(() => {
+	return props.backgroundId === background.value.current;
+});
 
-		style(): { [id: string]: string } {
-			switch (this.backgroundId) {
-				case 'buildin.static-color':
-					return {
-						'background-color': this.background.color,
-					};
-				case 'buildin.transparent':
-					return {};
-			}
-			const urls = this.bgData?.variants[0]
-				.map((img) => `url('${getAAssetUrl(img, false)}')`)
-				.join(',');
+const title = computed(() => {
+	switch (props.backgroundId) {
+		case 'buildin.static-color':
+			return 'Static color';
+		case 'buildin.transparent':
+			return 'Transparent';
+	}
+	return bgData.value!.label ?? '';
+});
+
+const style = computed((): { [id: string]: string } => {
+	switch (props.backgroundId) {
+		case 'buildin.static-color':
 			return {
-				backgroundImage: urls ?? '',
+				'background-color': background.value.color,
 			};
-		},
-	},
+		case 'buildin.transparent':
+			return {};
+	}
+	const urls = bgData.value?.variants[0]
+		.map((img) => `url('${getAAssetUrl(img, false)}')`)
+		.join(',');
+	return {
+		backgroundImage: urls ?? '',
+	};
 });
 </script>
 
