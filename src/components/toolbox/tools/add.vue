@@ -2,7 +2,12 @@
 	A tab allowing you to add characters, sprites or ui objects to the scene.
 -->
 <template>
-	<div class="panel" ref="root">
+	<div
+		class="panel"
+		ref="root"
+		@dragenter="sprites?.showDropTarget"
+		@mouseleave="sprites?.hideDropTarget"
+	>
 		<h1>Add</h1>
 		<div :class="{ 'group-selector': true, vertical }">
 			<d-button
@@ -28,6 +33,7 @@
 			/>
 			<Sprites
 				v-else-if="group === 'sprites'"
+				ref="sprites"
 				@show-dialog="$emit('show-dialog', $event)"
 			/>
 			<UI v-else-if="group === 'ui'" />
@@ -76,6 +82,7 @@ const groups = {
 
 const root = ref(null! as HTMLElement);
 const group = ref('characters' as GroupNames);
+const sprites = ref(null! as typeof Sprites | null);
 const store = useStore();
 const { vertical } = setupPanelMixin(root);
 

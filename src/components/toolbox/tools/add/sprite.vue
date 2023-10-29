@@ -64,28 +64,12 @@ import {
 import { DeepReadonly } from 'ts-essentials';
 import { computed, ref } from 'vue';
 import DropTarget from '../../drop-target.vue';
-
 import MissingImage from '@/assets/missing_image.svg';
 import { transaction, TransactionLayer } from '@/plugins/vuex-history';
 import { Store, useStore } from 'vuex';
 import { IRootState } from '@/store';
 
 const store = useStore() as Store<IRootState>;
-const spriteUpload = ref(null! as HTMLInputElement);
-const missingSpriteUpload = ref(null! as HTMLInputElement);
-const spriteDt = ref(null! as typeof DropTarget);
-const uploadedSpritesPackDefault: ContentPack<string> = {
-	packId: 'dddg.uploads.sprites',
-	packCredits: [''],
-	dependencies: [],
-	characters: [],
-	fonts: [],
-	sprites: [],
-	poemStyles: [],
-	poemBackgrounds: [],
-	backgrounds: [],
-	colors: [],
-};
 
 interface ISprite extends Sprite<IAssetSwitch> {
 	missing: string | null;
@@ -125,29 +109,19 @@ function assetSpriteBackground(sprite: DeepReadonly<Sprite<IAssetSwitch>>) {
 		.map((variant) => `url('${getAAssetUrl(variant, false)}')`)
 		.join(',');
 }
-function showDropTarget(e: DragEvent) {
-	if (!e.dataTransfer) return;
-	e.dataTransfer.effectAllowed = 'none';
-	if (
-		!Array.from(e.dataTransfer.items).find((item) =>
-			item.type.match(/^image.*$/)
-		)
-	) {
-		return;
-	}
-	e.dataTransfer.effectAllowed = 'link';
-	spriteDt.value.show();
+async function addSpriteToScene(sprite: DeepReadonly<ISprite>) {
+	await transaction(async () => {
+		await store.dispatch('panels/createSprite', {
+			panelId: store.state.panels.currentPanel,
+			assets: sprite.variants[0],
+		} as ICreateSpriteAction);
+	});
 }
-function hideDropTarget() {
-	spriteDt.value.hide();
+function openSpritesFolder() {
+	environment.openFolder('sprites');
 }
-function onSpriteFileUpload() {
-	const uploadInput = spriteDt.value;
-	if (!uploadInput.files) return;
-	for (const file of uploadInput.files) {
-		addCustomSpriteFile(file);
-	}
-}
+//#region Reupload missing sprite
+const missingSpriteUpload = ref(null! as HTMLInputElement);
 async function onMissingSpriteFileUpload(_e: Event) {
 	const uploadInput = missingSpriteUpload.value;
 	const spriteName = (uploadInput as any).uploadingSprite;
@@ -166,20 +140,6 @@ async function onMissingSpriteFileUpload(_e: Event) {
 		});
 	});
 }
-async function uploadFromURL() {
-	const url = prompt('Enter the URL of the image');
-	if (url == null) return;
-	const lastSegment = url.split('/').slice(-1)[0];
-	await addNewCustomSprite(lastSegment, url);
-}
-async function addSpriteToScene(sprite: DeepReadonly<ISprite>) {
-	await transaction(async () => {
-		await store.dispatch('panels/createSprite', {
-			panelId: store.state.panels.currentPanel,
-			assets: sprite.variants[0],
-		} as ICreateSpriteAction);
-	});
-}
 function reuploadingSprite(sprite: DeepReadonly<ISprite>) {
 	const missingSpriteUpload_ = missingSpriteUpload.value;
 	(missingSpriteUpload_ as any).uploadingSprite = getAAssetUrl(
@@ -187,6 +147,37 @@ function reuploadingSprite(sprite: DeepReadonly<ISprite>) {
 	).substring(8);
 	missingSpriteUpload_.click();
 }
+//#endregion Reupload missing sprite
+//#region Sprite Upload
+const uploadedSpritesPackDefault: ContentPack<string> = {
+	packId: 'dddg.uploads.sprites',
+	packCredits: [''],
+	dependencies: [],
+	characters: [],
+	fonts: [],
+	sprites: [],
+	poemStyles: [],
+	poemBackgrounds: [],
+	backgrounds: [],
+	colors: [],
+};
+
+const spriteUpload = ref(null! as HTMLInputElement);
+function onSpriteFileUpload() {
+	const uploadInput = spriteUpload.value;
+	if (!uploadInput.files) return;
+	for (const file of uploadInput.files) {
+		addCustomSpriteFile(file);
+	}
+}
+
+async function uploadFromURL() {
+	const url = prompt('Enter the URL of the image');
+	if (url == null) return;
+	const lastSegment = url.split('/').slice(-1)[0];
+	await addNewCustomSprite(lastSegment, url);
+}
+
 async function addCustomSpriteFile(file: File) {
 	await transaction(async (subTransaction: TransactionLayer) => {
 		const url = URL.createObjectURL(file);
@@ -197,6 +188,7 @@ async function addCustomSpriteFile(file: File) {
 		await addNewCustomSprite(file.name, assetUrl, subTransaction);
 	});
 }
+
 async function addNewCustomSprite(
 	label: string,
 	url: string,
@@ -226,9 +218,29 @@ async function addNewCustomSprite(
 		} as ReplaceContentPackAction);
 	});
 }
-function openSpritesFolder() {
-	environment.openFolder('sprites');
+//#endregion Sprite Upload
+//#region Drag and Drop
+const spriteDt = ref(null! as typeof DropTarget);
+function showDropTarget(e: DragEvent) {
+	if (!e.dataTransfer) return;
+	e.dataTransfer.effectAllowed = 'none';
+	if (
+		!Array.from(e.dataTransfer.items).find((item) =>
+			item.type.match(/^image.*$/)
+		)
+	) {
+		return;
+	}
+	e.dataTransfer.effectAllowed = 'link';
+	spriteDt.value.show();
 }
+
+function hideDropTarget() {
+	spriteDt.value.hide();
+}
+
+defineExpose({ showDropTarget, hideDropTarget });
+//#endregion Drag and Drop
 </script>
 
 <style lang="scss" scoped>
