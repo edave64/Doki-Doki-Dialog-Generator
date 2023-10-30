@@ -1,5 +1,5 @@
 <template>
-	<div class="wrapper" @dragenter="dragEnter" @mouseleave="hideDt">
+	<div class="wrapper" @dragenter="dragEnter" @mouseleave="dt.hide()">
 		<h1>Add expressions</h1>
 		<selector
 			v-if="!headGroup"
@@ -13,23 +13,7 @@
 				@selected="headGroup = headgroup"
 			/>
 		</selector>
-		<selector
-			v-else-if="!method"
-			label="How would you like to add the new expressions?"
-		>
-			<selection
-				label="Build expressions from parts"
-				icon="info"
-				:disabled="hasParts"
-				@selected="method = 'parts'"
-			/>
-			<selection
-				label="Upload expression images"
-				icon="info"
-				@selected="method = 'upload'"
-			/>
-		</selector>
-		<template v-else-if="method === 'upload'">
+		<template v-else>
 			<div v-if="!uploadsFinished" class="page">
 				<h2>
 					Upload new '{{ normalizeName(headGroup.name) }}' expressions
@@ -41,7 +25,7 @@
 				</drop-target>
 				<div class="expression_list_wrapper">
 					<div class="expression_list" @wheel.passive="verticalScrollRedirect">
-						<button @click="$refs.upload.click()">
+						<button @click="upload.click()">
 							Upload expression
 							<input type="file" ref="upload" multiple @change="addByUpload" />
 						</button>
@@ -134,9 +118,8 @@
 	</div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { getAAssetUrl, getAssetByUrl } from '@/asset-manager';
-import { VerticalScrollRedirect } from '@/components/mixins/vertical-scroll-redirect';
 import ToggleBox from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import L from '@/components/ui/link.vue';
@@ -152,14 +135,13 @@ import {
 	IHeadCommand,
 	Pose,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { DeepReadonly } from 'ts-essentials';
-import { defineComponent } from 'vue';
+import { DeepReadonly, computed, nextTick, ref, watch } from 'vue';
 import DropTarget from '../../toolbox/drop-target.vue';
-
-// App.vue has currently so many responsiblities that it's best to break it into chunks
 import { transaction } from '@/plugins/vuex-history';
 import Selection from './selection.vue';
 import Selector from './selector.vue';
+import { useStore } from '@/store';
+import { verticalScrollRedirect } from '@/components/mixins/vertical-scroll-redirect';
 
 const uploadedExpressionsPackDefaults: ContentPack<IAssetSwitch> = {
 	packId: 'dddg.uploads.expressions',
@@ -174,6 +156,510 @@ const uploadedExpressionsPackDefaults: ContentPack<IAssetSwitch> = {
 	colors: [],
 };
 
+const partFiles: { [s: string]: string[] | undefined } = {};
+
+const props = defineProps({
+	character: {
+		type: String,
+		required: true,
+	},
+	initHeadGroup: String,
+});
+const store = useStore();
+const target = ref(null! as HTMLCanvasElement);
+const emit = defineEmits(['leave']);
+
+const headGroup = ref(null as null | IHeadGroup);
+const uploadedExpressions = ref([] as string[]);
+const currentUploadedExpression = ref(null as string | null);
+const previewPoseIdx = ref(0);
+const offsetX = ref(0);
+const offsetY = ref(0);
+const addMask = ref(false);
+const addExtras = ref(false);
+const names = ref({} as { [url: string]: string });
+
+const characterData = computed(() => {
+	return store.state.content.current.characters.find(
+		(char) => char.id === props.character
+	)!;
+});
+
+const availableHeadGroups = computed(() => {
+	const headTypes = Object.keys(characterData.value.heads);
+	return headTypes.map((headTypeKey) => {
+		const headType = characterData.value.heads[headTypeKey];
+
+		return {
+			name: headTypeKey,
+			preview: headType.variants[0].map((asset) => getAAssetUrl(asset, false)),
+			partsFiles: partFiles[headTypeKey] || [],
+			imagePatching: {
+				mask: masks[headTypeKey],
+				addition: adds[headTypeKey],
+			},
+		} as IHeadGroup;
+	});
+});
+(window as any).exp = this;
+if (props.initHeadGroup != null) {
+	headGroup.value = availableHeadGroups.value.find(
+		(group) => group.name === props.initHeadGroup
+	)!;
+}
+applySingleHeadGroup();
+
+function applySingleHeadGroup() {
+	if (availableHeadGroups.value.length === 1) {
+		headGroup.value = availableHeadGroups.value[0];
+	}
+}
+
+function leave() {
+	emit('leave');
+	headGroup.value = null;
+	uploadedExpressions.value = [];
+}
+
+function removeUploadedExpression() {
+	if (currentUploadedExpression.value == null) return;
+	const expression = currentUploadedExpression.value;
+	currentUploadedExpression.value = null;
+	if (expression.startsWith('blob:')) {
+		URL.revokeObjectURL(expression);
+	}
+	let idx = uploadedExpressions.value.indexOf(expression);
+	uploadedExpressions.value.splice(idx, 1);
+	if (idx > uploadedExpressions.value.length - 1) {
+		idx = uploadedExpressions.value.length - 1;
+	}
+	currentUploadedExpression.value = uploadedExpressions.value[idx] || null;
+}
+
+function normalizeName(name: string): string {
+	const parts = name.split(':');
+	let actualName = parts[parts.length - 1];
+	const packId = parts.length > 1 ? parts[0].trim() : '';
+
+	actualName = (actualName[0].toUpperCase() + actualName.slice(1).toLowerCase())
+		.split('_')
+		.join(' ');
+	if (packId.startsWith('dddg.') || packId === '') {
+		return actualName;
+	}
+	return packId + ': ' + actualName;
+}
+
+const downloadLink = computed((): string | null => {
+	const character = characterData.value;
+	if (!headGroup.value) return null;
+	const headType = character.heads[headGroup.value!.name];
+	return headType.variants[0][0].hq;
+});
+
+const listLink = computed((): string | null => {
+	if (!headGroup.value) return null;
+	const charName = characterData.value.id;
+	const headGroupName = headGroup.value.name;
+	return (
+		listPaths[charName + ':' + headGroupName] ?? listPaths[charName] ?? null
+	);
+});
+
+//#region Drag and Drop
+const dt = ref(null! as typeof DropTarget);
+function dragEnter(e: DragEvent) {
+	if (!headGroup.value) return;
+	if (!e.dataTransfer) return;
+	e.dataTransfer.effectAllowed = 'none';
+	if (
+		!Array.from(e.dataTransfer.items).find((item) =>
+			item.type.match(/^image.*$/)
+		)
+	) {
+		return;
+	}
+	e.dataTransfer.effectAllowed = 'link';
+	dt.value.show();
+}
+//#endregion Drag and Drop
+//#region Preview
+async function redraw() {
+	if (uploadsFinished.value) return;
+	const pose = previewPoses.value[previewPoseIdx.value];
+	let charRenderer: Character;
+	try {
+		charRenderer = new Character(
+			{
+				...charDefDefaults,
+				width: pose.width,
+				height: pose.height,
+				poseId: previewPoseIdx.value,
+				x: pose.width / 2,
+				posePositions: {
+					headGroup: 0,
+					head: uploadedExpressions.value.indexOf(
+						currentUploadedExpression.value!
+					),
+				},
+				label: null,
+				textboxColor: null,
+				enlargeWhenTalking: false,
+				nameboxWidth: null,
+				zoom: 1,
+			},
+			await temporaryCharacterModel.value
+		);
+	} catch (e) {
+		return;
+	}
+
+	// noinspection ES6MissingAwait
+	nextTick(async () => {
+		if (uploadsFinished.value) return;
+		const renderer = new Renderer(pose.width, pose.height);
+		try {
+			await renderer.render(async (rx) => {
+				await charRenderer.render(SelectedState.None, rx, false);
+			});
+
+			const ctx = target.value.getContext('2d')!;
+			ctx.clearRect(0, 0, target.value.width, target.value.height);
+			renderer.paintOnto(ctx, {
+				x: 0,
+				y: 0,
+				w: target.value.width,
+				h: target.value.height,
+			});
+		} finally {
+			charRenderer.dispose();
+			renderer.dispose();
+		}
+	});
+}
+
+const previewPoses = computed((): IPose[] => {
+	const character = characterData.value;
+	if (!headGroup.value) return [];
+	const poses: IPose[] = [];
+
+	for (
+		let styleGroupIdx = 0;
+		styleGroupIdx < character.styleGroups.length;
+		++styleGroupIdx
+	) {
+		const styleGroup = character.styleGroups[styleGroupIdx];
+		for (let styleIdx = 0; styleIdx < styleGroup.styles.length; ++styleIdx) {
+			const style = styleGroup.styles[styleIdx];
+			for (let poseIdx = 0; poseIdx < style.poses.length; ++poseIdx) {
+				const pose = style.poses[poseIdx];
+				if (pose.compatibleHeads.includes(headGroup.value.name)) {
+					poses.push({
+						name: pose.id,
+						styleGroupId: styleGroupIdx,
+						styleId: styleIdx,
+						poseId: poseIdx,
+						width: pose.size[0],
+						height: pose.size[1],
+					});
+				}
+			}
+		}
+	}
+
+	return poses;
+});
+
+const expressionModels = computed((): IAssetSwitch[][] => {
+	return uploadedExpressions.value.map((expression) => [
+		{
+			hq: expression,
+			lq: expression,
+			sourcePack: 'dddg.temp1:default',
+		} as IAssetSwitch,
+	]);
+});
+
+const temporaryCharacterModel = computed((): CharacterModel<IAssetSwitch> => {
+	const poses = previewPoses.value;
+	const character: DeepReadonly<CharacterModel<IAssetSwitch>> =
+		store.state.content.current.characters.find(
+			(char) => char.id === props.character
+		)!;
+
+	return {
+		id: character.id,
+		size: [960, 960],
+		defaultScale: [0.8, 0.8],
+		hd: false,
+		heads: {
+			'dddg.temp1:default': {
+				variants: expressionModels.value,
+				previewSize: [0, 0],
+				previewOffset: [0, 0],
+			},
+		},
+		styleGroups: [
+			{
+				id: 'preview',
+				styleComponents: [],
+				styles: [
+					{
+						components: {},
+						poses: poses.map((pose, idx) => {
+							const styleGroup = character.styleGroups[pose.styleGroupId];
+							const style = styleGroup.styles[pose.styleId];
+							const renderCommands =
+								style.poses[pose.poseId].renderCommands.slice(0);
+							let headIdx = renderCommands.findIndex(
+								(command) => command.type === 'head'
+							);
+							const headRenderCommand = renderCommands[headIdx];
+							const newHeadCommand: IHeadCommand = {
+								type: 'head',
+								offset: [
+									headRenderCommand.offset[0] + offsetX.value,
+									headRenderCommand.offset[1] + offsetY.value,
+								],
+							};
+
+							if (
+								addMask.value &&
+								headGroup.value &&
+								headGroup.value.imagePatching &&
+								headGroup.value.imagePatching.mask != null
+							) {
+								const mask = headGroup.value.imagePatching.mask;
+								renderCommands.splice(headIdx, 1);
+								headIdx = 1;
+								renderCommands.splice(0, 0, newHeadCommand, {
+									type: 'image',
+									images: [
+										{
+											hq: mask,
+											lq: mask,
+											sourcePack: 'dddg.temp1',
+										},
+									],
+									composite: 'destination-in',
+									offset: headRenderCommand.offset,
+								});
+							} else {
+								renderCommands.splice(headIdx, 1, newHeadCommand);
+							}
+
+							if (
+								addExtras.value &&
+								headGroup.value &&
+								headGroup.value.imagePatching &&
+								headGroup.value.imagePatching.addition != null
+							) {
+								const add = headGroup.value.imagePatching.addition;
+								renderCommands.splice(headIdx + 1, 0, {
+									type: 'image',
+									images: [
+										{
+											hq: add,
+											lq: add,
+											sourcePack: 'dddg.temp1',
+										},
+									],
+									offset: headRenderCommand.offset,
+								});
+							}
+
+							return {
+								...style.poses[pose.poseId],
+								renderCommands,
+								id: 'dddg.temp1:pose' + idx,
+								compatibleHeads: ['dddg.temp1:default'],
+							} as Pose<IAssetSwitch>;
+						}),
+					},
+				],
+			},
+		],
+		label: '',
+		chibi: null!,
+	};
+});
+//#endregion Preview
+//#region Content Pack Export
+const uploadsFinished = ref(false);
+
+const batchRunner = ref(null! as WorkBatch<string, string>);
+batchRunner.value = new WorkBatch<string, string>(
+	processExpression,
+	async () => {}
+);
+async function processExpression(
+	expression: string,
+	isRunning: () => boolean
+): Promise<string | undefined> {
+	const asset = await getAssetByUrl(expression);
+	if (!isRunning()) return undefined;
+	const renderer = new Renderer(
+		asset.width + offsetX.value,
+		asset.height + offsetY.value
+	);
+	const blob = await renderer.renderToBlob(async (rx) => {
+		rx.drawImage({
+			image: asset,
+			x: offsetX.value,
+			y: offsetY.value,
+			w: asset.width,
+			h: asset.height,
+		});
+
+		if (
+			addMask.value &&
+			headGroup.value &&
+			headGroup.value.imagePatching &&
+			headGroup.value.imagePatching.mask != null
+		) {
+			const mask = await getAssetByUrl(headGroup.value.imagePatching.mask);
+			if (!isRunning()) return undefined;
+			rx.drawImage({
+				image: mask,
+				x: 0,
+				y: 0,
+				w: mask.width,
+				h: mask.height,
+				composite: 'destination-in',
+			});
+		}
+
+		if (
+			addExtras.value &&
+			headGroup.value &&
+			headGroup.value.imagePatching &&
+			headGroup.value.imagePatching.addition != null
+		) {
+			const addition = await getAssetByUrl(
+				headGroup.value.imagePatching.addition
+			);
+			if (!isRunning()) return undefined;
+			rx.drawImage({
+				image: addition,
+				x: 0,
+				y: 0,
+				w: addition.width,
+				h: addition.height,
+			});
+		}
+	});
+	const finalExpression = URL.createObjectURL(blob);
+	names.value[finalExpression] = names.value[expression];
+
+	if (expression !== finalExpression && expression.startsWith('blob:')) {
+		URL.revokeObjectURL(expression);
+	}
+
+	return finalExpression;
+}
+
+async function finishUpload() {
+	uploadsFinished.value = true;
+	const processedExpressions = (
+		await batchRunner.value.run(uploadedExpressions.value)
+	).filter((exp) => exp) as string[];
+
+	const storeCharacter = store.state.content.current.characters.find(
+		(char) => char.id === props.character
+	)!;
+
+	const old =
+		store.state.content.contentPacks.find(
+			(x) => x.packId === uploadedExpressionsPackDefaults.packId
+		) || uploadedExpressionsPackDefaults;
+	const newPackVersion: ContentPack<IAssetSwitch> = JSON.parse(
+		JSON.stringify(old)
+	);
+
+	let character = newPackVersion.characters.find(
+		(char) => char.id === props.character
+	);
+	if (!character) {
+		character = {
+			id: props.character,
+			heads: {},
+			styleGroups: [],
+			label: '',
+			chibi: null!,
+			size: [960, 960],
+			defaultScale: [0.8, 0.8],
+			hd: false,
+		} as CharacterModel<IAssetSwitch>;
+		newPackVersion.characters.push(character);
+	}
+
+	let headGroup_ = character.heads[headGroup.value!.name];
+	const storeHeadGroup = storeCharacter.heads[headGroup.value!.name];
+	// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+	if (!headGroup_) {
+		headGroup_ = {
+			previewSize:
+				storeHeadGroup.previewSize as (typeof headGroup_)['previewSize'],
+			previewOffset:
+				storeHeadGroup.previewOffset as (typeof headGroup_)['previewOffset'],
+			variants: [],
+		};
+		character.heads[headGroup.value!.name] = headGroup_;
+	}
+
+	for (const processedExpression of processedExpressions) {
+		const assetUrl: string = await store.dispatch('uploadUrls/add', {
+			name: 'expression_' + (names.value[processedExpression] || ''),
+			url: processedExpression,
+		});
+		headGroup_.variants.push([
+			{
+				hq: assetUrl,
+				lq: assetUrl,
+				sourcePack: uploadedExpressionsPackDefaults.packId!,
+			},
+		]);
+	}
+
+	await transaction(async () => {
+		await store.dispatch('content/replaceContentPack', {
+			contentPack: newPackVersion,
+			processed: true,
+		} as ReplaceContentPackAction);
+	});
+
+	leave();
+}
+//#endregion Content Pack Export
+//#region Upload
+const upload = ref(null! as HTMLInputElement);
+function addByUpload(): void {
+	const uploadInput = upload.value;
+	if (!uploadInput.files) return;
+	for (const file of uploadInput.files) {
+		addByImageFile(file);
+	}
+}
+
+function addByImageFile(file: File) {
+	const url = URL.createObjectURL(file);
+	addUrl(file.name, url);
+}
+
+async function addByUrl(): Promise<void> {
+	const url = await environment.prompt('Enter the url of the image.', '');
+	if (url == null) return;
+	const lastSegment = url.split('/').slice(-1)[0];
+	addUrl(lastSegment, url);
+}
+
+function addUrl(name: string, url: string): void {
+	currentUploadedExpression.value = url;
+	names.value[url] = name;
+	uploadedExpressions.value.push(url);
+}
+//#endregion Upload
+//#region Constants
 const masks: { [s: string]: string | undefined } = {
 	'dddg.buildin.base.monika:straight': 'assets/mask/monika-a-mask.png',
 	'dddg.buildin.base.monika:sideways': 'assets/mask/monika-b-mask.png',
@@ -211,8 +697,6 @@ const listPaths: { [s: string]: string | undefined } = {
 	'dddg.buildin.mc_chad:ddlc.fan.mc_chad:straight_red': `${baseUrl}chad/red`,
 };
 
-const partFiles: { [s: string]: string[] | undefined } = {};
-
 const charDefDefaults = {
 	type: 'character' as 'character',
 	characterType: '',
@@ -235,556 +719,22 @@ const charDefDefaults = {
 	composite: 'source-over' as 'source-over',
 	filters: [],
 };
+//#endregion Constants
 
-export default defineComponent({
-	mixins: [VerticalScrollRedirect],
-	components: { Selection, Selector, ToggleBox, DropTarget, DFieldset, L },
-	props: {
-		character: {
-			type: String,
-			required: true,
-		},
-		initHeadGroup: String,
-	},
-	data: () => ({
-		method: 'upload' as null | 'upload' | 'parts',
-		headGroup: null as null | IHeadGroup,
-		uploadsFinished: false,
-		everythingBroken: false,
-		uploadedExpressions: [] as string[],
-		currentUploadedExpression: null as string | null,
-		previewPoseIdx: 0,
-		offsetX: 0,
-		offsetY: 0,
-		addMask: false,
-		addExtras: false,
-		batchRunner: null! as WorkBatch<string, string>,
-		names: {} as { [url: string]: string },
-	}),
-	created() {
-		(window as any).exp = this;
-		this.batchRunner = new WorkBatch<string, string>(
-			this.processExpression.bind(this),
-			async () => {}
-		);
-		if (this.initHeadGroup != null) {
-			this.headGroup = this.availableHeadGroups.find(
-				(group) => group.name === this.initHeadGroup
-			)!;
-		}
-		this.applySingleHeadGroup();
-	},
-	watch: {
-		availableHeadGroups() {
-			this.applySingleHeadGroup();
-		},
-		previewPoseIdx() {
-			this.redraw();
-		},
-		previewPoses() {
-			this.redraw();
-		},
-		currentUploadedExpression() {
-			this.redraw();
-		},
-		offsetX() {
-			this.redraw();
-		},
-		offsetY() {
-			this.redraw();
-		},
-		addMask() {
-			this.redraw();
-		},
-		addExtras() {
-			this.redraw();
-		},
-	},
-	methods: {
-		applySingleHeadGroup() {
-			if (this.availableHeadGroups.length === 1) {
-				this.headGroup = this.availableHeadGroups[0];
-			}
-		},
-
-		addByUpload(): void {
-			const uploadInput = this.$refs.upload as HTMLInputElement;
-			if (!uploadInput.files) return;
-			for (const file of uploadInput.files) {
-				this.addByImageFile(file);
-			}
-		},
-
-		addByImageFile(file: File) {
-			const url = URL.createObjectURL(file);
-			this.addUrl(file.name, url);
-		},
-
-		async addByUrl(): Promise<void> {
-			const url = await environment.prompt('Enter the url of the image.', '');
-			if (url == null) return;
-			const lastSegment = url.split('/').slice(-1)[0];
-			this.addUrl(lastSegment, url);
-		},
-
-		addUrl(name: string, url: string): void {
-			this.currentUploadedExpression = url;
-			this.names[url] = name;
-			this.uploadedExpressions.push(url);
-		},
-
-		async processExpression(
-			expression: string,
-			isRunning: () => boolean
-		): Promise<string | undefined> {
-			const asset = await getAssetByUrl(expression);
-			if (!isRunning()) return undefined;
-			const renderer = new Renderer(
-				asset.width + this.offsetX,
-				asset.height + this.offsetY
-			);
-			const blob = await renderer.renderToBlob(async (rx) => {
-				rx.drawImage({
-					image: asset,
-					x: this.offsetX,
-					y: this.offsetY,
-					w: asset.width,
-					h: asset.height,
-				});
-
-				if (
-					this.addMask &&
-					this.headGroup &&
-					this.headGroup.imagePatching &&
-					this.headGroup.imagePatching.mask != null
-				) {
-					const mask = await getAssetByUrl(this.headGroup.imagePatching.mask);
-					if (!isRunning()) return undefined;
-					rx.drawImage({
-						image: mask,
-						x: 0,
-						y: 0,
-						w: mask.width,
-						h: mask.height,
-						composite: 'destination-in',
-					});
-				}
-
-				if (
-					this.addExtras &&
-					this.headGroup &&
-					this.headGroup.imagePatching &&
-					this.headGroup.imagePatching.addition != null
-				) {
-					const addition = await getAssetByUrl(
-						this.headGroup.imagePatching.addition
-					);
-					if (!isRunning()) return undefined;
-					rx.drawImage({
-						image: addition,
-						x: 0,
-						y: 0,
-						w: addition.width,
-						h: addition.height,
-					});
-				}
-			});
-			const finalExpression = URL.createObjectURL(blob);
-			this.names[finalExpression] = this.names[expression];
-
-			if (expression !== finalExpression && expression.startsWith('blob:')) {
-				URL.revokeObjectURL(expression);
-			}
-
-			return finalExpression;
-		},
-
-		async redraw() {
-			if (this.uploadsFinished) return;
-			const pose = this.previewPoses[this.previewPoseIdx];
-			let charRenderer: Character;
-			try {
-				charRenderer = new Character(
-					{
-						...charDefDefaults,
-						width: pose.width,
-						height: pose.height,
-						poseId: this.previewPoseIdx,
-						x: pose.width / 2,
-						posePositions: {
-							headGroup: 0,
-							head: this.uploadedExpressions.indexOf(
-								this.currentUploadedExpression!
-							),
-						},
-						label: null,
-						textboxColor: null,
-						enlargeWhenTalking: false,
-						nameboxWidth: null,
-						zoom: 1,
-					},
-					await this.temporaryCharacterModel
-				);
-			} catch (e) {
-				return;
-			}
-
-			// noinspection ES6MissingAwait
-			this.$nextTick(async () => {
-				if (this.uploadsFinished) return;
-				const renderer = new Renderer(pose.width, pose.height);
-				try {
-					await renderer.render(async (rx) => {
-						await charRenderer.render(SelectedState.None, rx, false);
-					});
-
-					const target = this.$refs.target as HTMLCanvasElement;
-					const ctx = target.getContext('2d')!;
-					ctx.clearRect(0, 0, target.width, target.height);
-					renderer.paintOnto(ctx, {
-						x: 0,
-						y: 0,
-						w: target.width,
-						h: target.height,
-					});
-				} finally {
-					charRenderer.dispose();
-					renderer.dispose();
-				}
-			});
-		},
-
-		async finishUpload() {
-			this.uploadsFinished = true;
-			const processedExpressions = (
-				await this.batchRunner.run(this.uploadedExpressions)
-			).filter((exp) => exp) as string[];
-
-			const storeCharacter = this.$store.state.content.current.characters.find(
-				(char) => char.id === this.character
-			)!;
-
-			const old =
-				this.$store.state.content.contentPacks.find(
-					(x) => x.packId === uploadedExpressionsPackDefaults.packId
-				) || uploadedExpressionsPackDefaults;
-			const newPackVersion: ContentPack<IAssetSwitch> = JSON.parse(
-				JSON.stringify(old)
-			);
-
-			let character = newPackVersion.characters.find(
-				(char) => char.id === this.character
-			);
-			if (!character) {
-				character = {
-					id: this.character,
-					heads: {},
-					styleGroups: [],
-					label: '',
-					chibi: null!,
-					size: [960, 960],
-					defaultScale: [0.8, 0.8],
-					hd: false,
-				} as CharacterModel<IAssetSwitch>;
-				newPackVersion.characters.push(character);
-			}
-
-			let headGroup = character.heads[this.headGroup!.name];
-			const storeHeadGroup = storeCharacter.heads[this.headGroup!.name];
-			// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-			if (!headGroup) {
-				headGroup = {
-					previewSize:
-						storeHeadGroup.previewSize as (typeof headGroup)['previewSize'],
-					previewOffset:
-						storeHeadGroup.previewOffset as (typeof headGroup)['previewOffset'],
-					variants: [],
-				};
-				character.heads[this.headGroup!.name] = headGroup;
-			}
-
-			for (const processedExpression of processedExpressions) {
-				const assetUrl: string = await this.$store.dispatch('uploadUrls/add', {
-					name: 'expression_' + (this.names[processedExpression] || ''),
-					url: processedExpression,
-				});
-				headGroup.variants.push([
-					{
-						hq: assetUrl,
-						lq: assetUrl,
-						sourcePack: uploadedExpressionsPackDefaults.packId!,
-					},
-				]);
-			}
-
-			await transaction(async () => {
-				await this.$store.dispatch('content/replaceContentPack', {
-					contentPack: newPackVersion,
-					processed: true,
-				} as ReplaceContentPackAction);
-			});
-
-			this.leave();
-		},
-
-		leave() {
-			this.$emit('leave');
-			this.method = null;
-			this.headGroup = null;
-			this.uploadedExpressions = [];
-		},
-
-		removeUploadedExpression() {
-			if (this.currentUploadedExpression == null) return;
-			const expression = this.currentUploadedExpression;
-			this.currentUploadedExpression = null;
-			if (expression.startsWith('blob:')) {
-				URL.revokeObjectURL(expression);
-			}
-			let idx = this.uploadedExpressions.indexOf(expression);
-			this.uploadedExpressions.splice(idx, 1);
-			if (idx > this.uploadedExpressions.length - 1) {
-				idx = this.uploadedExpressions.length - 1;
-			}
-			this.currentUploadedExpression = this.uploadedExpressions[idx] || null;
-		},
-
-		normalizeName(name: string): string {
-			const parts = name.split(':');
-			let actualName = parts[parts.length - 1];
-			const packId = parts.length > 1 ? parts[0].trim() : '';
-
-			actualName = (
-				actualName[0].toUpperCase() + actualName.slice(1).toLowerCase()
-			)
-				.split('_')
-				.join(' ');
-			if (packId.startsWith('dddg.') || packId === '') {
-				return actualName;
-			}
-			return packId + ': ' + actualName;
-		},
-
-		dragEnter(e: DragEvent) {
-			if (!this.headGroup || this.method !== 'upload') return;
-			if (!e.dataTransfer) return;
-			e.dataTransfer.effectAllowed = 'none';
-			if (
-				!Array.from(e.dataTransfer.items).find((item) =>
-					item.type.match(/^image.*$/)
-				)
-			) {
-				return;
-			}
-			e.dataTransfer.effectAllowed = 'link';
-			(this.$refs.dt as any).show();
-		},
-
-		hideDt() {
-			if (this.$refs.dt) (this.$refs.dt as any).hide();
-		},
-	},
-	computed: {
-		characterData(): DeepReadonly<CharacterModel<IAssetSwitch>> {
-			return this.$store.state.content.current.characters.find(
-				(char) => char.id === this.character
-			)!;
-		},
-
-		availableHeadGroups(): IHeadGroup[] {
-			const characterData = this.characterData;
-			const headTypes = Object.keys(characterData.heads);
-			return headTypes.map((headTypeKey) => {
-				const headType = characterData.heads[headTypeKey];
-
-				return {
-					name: headTypeKey,
-					preview: headType.variants[0].map((asset) =>
-						getAAssetUrl(asset, false)
-					),
-					partsFiles: partFiles[headTypeKey] || [],
-					imagePatching: {
-						mask: masks[headTypeKey],
-						addition: adds[headTypeKey],
-					},
-				} as IHeadGroup;
-			});
-		},
-
-		hasParts(): boolean {
-			return !!this.availableHeadGroups.find(
-				(headGroup) => headGroup.partsFiles.length > 0
-			);
-		},
-
-		downloadLink(): string | null {
-			const character = this.characterData;
-			if (!this.headGroup) return null;
-			const headType = character.heads[this.headGroup!.name];
-			return headType.variants[0][0].hq;
-		},
-
-		listLink(): string | null {
-			if (!this.headGroup) return null;
-			const charName = this.characterData.id;
-			const headGroupName = this.headGroup.name;
-			return (
-				listPaths[charName + ':' + headGroupName] ?? listPaths[charName] ?? null
-			);
-		},
-
-		previewPoses(): IPose[] {
-			const character = this.characterData;
-			if (!this.headGroup) return [];
-			const poses: IPose[] = [];
-
-			for (
-				let styleGroupIdx = 0;
-				styleGroupIdx < character.styleGroups.length;
-				++styleGroupIdx
-			) {
-				const styleGroup = character.styleGroups[styleGroupIdx];
-				for (
-					let styleIdx = 0;
-					styleIdx < styleGroup.styles.length;
-					++styleIdx
-				) {
-					const style = styleGroup.styles[styleIdx];
-					for (let poseIdx = 0; poseIdx < style.poses.length; ++poseIdx) {
-						const pose = style.poses[poseIdx];
-						if (pose.compatibleHeads.includes(this.headGroup.name)) {
-							poses.push({
-								name: pose.id,
-								styleGroupId: styleGroupIdx,
-								styleId: styleIdx,
-								poseId: poseIdx,
-								width: pose.size[0],
-								height: pose.size[1],
-							});
-						}
-					}
-				}
-			}
-
-			return poses;
-		},
-
-		expressionModels(): IAssetSwitch[][] {
-			return this.uploadedExpressions.map((expression) => [
-				{
-					hq: expression,
-					lq: expression,
-					sourcePack: 'dddg.temp1:default',
-				} as IAssetSwitch,
-			]);
-		},
-
-		temporaryCharacterModel(): CharacterModel<IAssetSwitch> {
-			const poses = this.previewPoses;
-			const character = this.$store.state.content.current.characters.find(
-				(char) => char.id === this.character
-			)!;
-			const offsetX = this.offsetX;
-			const offsetY = this.offsetY;
-
-			return {
-				id: this.character,
-				size: [960, 960],
-				defaultScale: [0.8, 0.8],
-				hd: false,
-				heads: {
-					'dddg.temp1:default': {
-						variants: this.expressionModels,
-						previewSize: [0, 0],
-						previewOffset: [0, 0],
-					},
-				},
-				styleGroups: [
-					{
-						id: 'preview',
-						styleComponents: [],
-						styles: [
-							{
-								components: {},
-								poses: poses.map((pose, idx) => {
-									const styleGroup = character.styleGroups[pose.styleGroupId];
-									const style = styleGroup.styles[pose.styleId];
-									const renderCommands =
-										style.poses[pose.poseId].renderCommands.slice(0);
-									let headIdx = renderCommands.findIndex(
-										(command) => command.type === 'head'
-									);
-									const headRenderCommand = renderCommands[headIdx];
-									const newHeadCommand: IHeadCommand = {
-										type: 'head',
-										offset: [
-											headRenderCommand.offset[0] + offsetX,
-											headRenderCommand.offset[1] + offsetY,
-										],
-									};
-
-									if (
-										this.addMask &&
-										this.headGroup &&
-										this.headGroup.imagePatching &&
-										this.headGroup.imagePatching.mask != null
-									) {
-										const mask = this.headGroup.imagePatching.mask;
-										renderCommands.splice(headIdx, 1);
-										headIdx = 1;
-										renderCommands.splice(0, 0, newHeadCommand, {
-											type: 'image',
-											images: [
-												{
-													hq: mask,
-													lq: mask,
-													sourcePack: 'dddg.temp1',
-												},
-											],
-											composite: 'destination-in',
-											offset: headRenderCommand.offset,
-										});
-									} else {
-										renderCommands.splice(headIdx, 1, newHeadCommand);
-									}
-
-									if (
-										this.addExtras &&
-										this.headGroup &&
-										this.headGroup.imagePatching &&
-										this.headGroup.imagePatching.addition != null
-									) {
-										const add = this.headGroup.imagePatching.addition;
-										renderCommands.splice(headIdx + 1, 0, {
-											type: 'image',
-											images: [
-												{
-													hq: add,
-													lq: add,
-													sourcePack: 'dddg.temp1',
-												},
-											],
-											offset: headRenderCommand.offset,
-										});
-									}
-
-									return {
-										...style.poses[pose.poseId],
-										renderCommands,
-										id: 'dddg.temp1:pose' + idx,
-										compatibleHeads: ['dddg.temp1:default'],
-									} as Pose<IAssetSwitch>;
-								}),
-							},
-						],
-					},
-				],
-				label: '',
-				chibi: null!,
-			};
-		},
-	},
-});
+watch(() => availableHeadGroups.value, applySingleHeadGroup);
+watch(
+	() => [
+		availableHeadGroups.value,
+		previewPoseIdx.value,
+		previewPoses.value,
+		currentUploadedExpression.value,
+		offsetX.value,
+		offsetY.value,
+		addMask.value,
+		addExtras.value,
+	],
+	redraw
+);
 
 interface IPose {
 	name: string;
