@@ -5,27 +5,26 @@
 	<button @click="onClick">Delete</button>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { transaction } from '@/plugins/vuex-history';
+import { useStore } from '@/store';
 import { IObject, IRemoveObjectAction } from '@/store/objects';
-import { defineComponent, Prop } from 'vue';
+import { PropType } from 'vue';
 
-export default defineComponent({
-	props: {
-		obj: {
-			required: true,
-		} as Prop<IObject>,
-	},
-
-	methods: {
-		onClick() {
-			transaction(async () => {
-				await this.$store.dispatch('panels/removeObject', {
-					panelId: this.obj!.panelId,
-					id: this.obj!.id,
-				} as IRemoveObjectAction);
-			});
-		},
+const store = useStore();
+const props = defineProps({
+	obj: {
+		required: true,
+		type: Object as PropType<IObject>,
 	},
 });
+
+function onClick() {
+	transaction(async () => {
+		await store.dispatch('panels/removeObject', {
+			panelId: props.obj.panelId,
+			id: props.obj.id,
+		} as IRemoveObjectAction);
+	});
+}
 </script>
