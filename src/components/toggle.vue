@@ -3,34 +3,31 @@
 -->
 <template>
 	<div class="toggle_box">
-		<input :id="_.uid" type="checkbox" ref="checkbox" v-model="value" />
-		<label :for="_.uid" class="switch"></label>
-		<label :for="_.uid" class="toggle_label">{{ label }}</label>
+		<input :id="id" type="checkbox" ref="checkbox" v-model="value" />
+		<label :for="id" class="switch"></label>
+		<label :for="id" class="toggle_label">{{ label }}</label>
 	</div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
+import { computed, ref } from 'vue';
+import uniqId from '@/util/uniqueId';
 
-export default defineComponent({
-	props: {
-		label: String,
-		modelValue: { type: Boolean, default: false },
+const props = defineProps({
+	label: String,
+	modelValue: { type: Boolean, default: false },
+});
+const id = uniqId();
+const emit = defineEmits(['update:modelValue']);
+const value = computed({
+	get(): boolean {
+		return props.modelValue;
 	},
-	computed: {
-		value: {
-			get(): boolean {
-				return this.modelValue;
-			},
-			set(value: boolean) {
-				this.$emit('update:modelValue', value);
-			},
-		},
-		checkbox(): HTMLInputElement {
-			return this.$refs.checkbox as HTMLInputElement;
-		},
+	set(value: boolean) {
+		emit('update:modelValue', value);
 	},
 });
+const checkbox = ref(null! as HTMLInputElement);
 </script>
 
 <style lang="scss">
