@@ -6,6 +6,7 @@
 import { VerticalScrollRedirect } from '@/components/mixins/vertical-scroll-redirect';
 import { defineComponent, h, Prop, PropType, VNode } from 'vue';
 
+// This function still uses the old syntax because I don't know how to use a render function in the new syntax.
 export default defineComponent({
 	mixins: [VerticalScrollRedirect],
 	props: {
