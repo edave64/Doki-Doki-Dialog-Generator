@@ -38,7 +38,7 @@
 	<d-button icon="insert_link" @click="uploadFromURL">
 		New sprite from URL
 	</d-button>
-	<d-button icon="extension" @click="$emit('show-dialog', 'type: Sprites')">
+	<d-button icon="extension" @click="emit('show-dialog', 'type: Sprites')">
 		Search in content packs
 	</d-button>
 	<d-button v-if="showSpritesFolder" icon="folder" @click="openSpritesFolder">
@@ -69,6 +69,7 @@ import { transaction, TransactionLayer } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 
 const store = useStore();
+const emit = defineEmits(['show-dialog']);
 
 interface ISprite extends Sprite<IAssetSwitch> {
 	missing: string | null;
