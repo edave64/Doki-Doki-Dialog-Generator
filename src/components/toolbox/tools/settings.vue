@@ -2,7 +2,7 @@
 	A tab allowing you to change global settings of the application.
 -->
 <template>
-	<div class="panel">
+	<div class="panel" ref="root">
 		<h1>Settings</h1>
 		<teleport to="#modal-messages">
 			<modal-dialog
@@ -124,152 +124,161 @@
 	</div>
 </template>
 
-<script lang="ts">
-import { PanelMixin } from '@/components/mixins/panel-mixin';
+<script lang="ts" setup>
+import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import ModalDialog from '@/components/modal-dialog.vue';
 import Toggle from '@/components/toggle.vue';
 import L from '@/components/ui/link.vue';
 import environment from '@/environments/environment';
 import { transaction } from '@/plugins/vuex-history';
+import { useStore } from '@/store';
 import { safeAsync } from '@/util/errors';
-import { defineComponent } from 'vue';
+import { computed, ref, watch } from 'vue';
 
-export default defineComponent({
-	mixins: [PanelMixin],
-	components: { Toggle, ModalDialog, L },
-	data: () => ({
-		allowSavesModal: false,
-		denySavesModal: false,
-		waitOnSaveChange: false,
-		showModeDialog: false,
-	}),
-	computed: {
-		savesAllowed: {
-			get(): boolean {
-				return environment.savingEnabled;
-			},
-			set(allowed: boolean) {
-				this.waitOnSaveChange = true;
-				environment.savingEnabled = allowed;
-				this.saveSettings();
-			},
-		},
-		inPlusMode(): boolean {
-			return environment.gameMode === 'ddlc_plus';
-		},
-		savesEnabledInEnv(): boolean {
-			return environment.supports.optionalSaving;
-		},
-		lqAllowed(): boolean {
-			return environment.supports.lq;
-		},
-		looseTextParsing: {
-			get(): boolean {
-				return environment.state.looseTextParsing;
-			},
-			set(looseTextParsing: boolean) {
-				environment.state.looseTextParsing = looseTextParsing;
-				this.saveSettings();
-			},
-		},
-		lqRendering: {
-			get(): boolean {
-				return this.$store.state.ui.lqRendering;
-			},
-			set(lqRendering: boolean) {
-				transaction(() => {
-					this.$store.commit('ui/setLqRendering', lqRendering);
-				});
-				this.saveSettings();
-			},
-		},
-		nsfw: {
-			get(): boolean {
-				return !!this.$store.state.ui.nsfw;
-			},
-			set(value: boolean) {
-				transaction(() => {
-					this.$store.commit('ui/setNsfw', value);
-					this.saveSettings();
-				});
-			},
-		},
-		defaultCharacterTalkingZoom: {
-			get(): boolean {
-				return !!this.$store.state.ui.defaultCharacterTalkingZoom;
-			},
-			set(value: boolean) {
-				transaction(() => {
-					this.$store.commit('ui/setDefaultCharacterTalkingZoom', value);
-					this.saveSettings();
-				});
-			},
-		},
-		theme: {
-			get(): boolean | null {
-				return this.$store.state.ui.useDarkTheme;
-			},
-			set(value: boolean | null) {
-				transaction(() => {
-					this.$store.commit('ui/setDarkTheme', value);
-					this.saveSettings();
-				});
-			},
-		},
-		showDownloadFolder(): boolean {
-			return environment.supports.setDownloadFolder;
-		},
-		downloadFolder(): string {
-			return environment.state.downloadLocation;
-		},
+const store = useStore();
+const root = ref(null! as HTMLElement);
+setupPanelMixin(root);
+
+function saveSettings() {
+	environment.saveSettings({
+		lq: store.state.ui.lqRendering,
+		nsfw: store.state.ui.nsfw,
+		darkMode: store.state.ui.useDarkTheme ?? undefined,
+		looseTextParsing: environment.state.looseTextParsing,
+		defaultCharacterTalkingZoom: store.state.ui.defaultCharacterTalkingZoom,
+	});
+}
+//#region Allow saving
+const savesEnabledInEnv = computed(() => environment.supports.optionalSaving);
+const allowSavesModal = ref(false);
+const denySavesModal = ref(false);
+const waitOnSaveChange = ref(false);
+
+const savesAllowed = computed({
+	get(): boolean {
+		return environment.savingEnabled;
 	},
-	watch: {
-		savesAllowed() {
-			this.waitOnSaveChange = false;
-		},
-	},
-	methods: {
-		allowSaves(choice: 'Allow' | 'Deny') {
-			this.allowSavesModal = false;
-			if (choice === 'Allow') {
-				this.savesAllowed = true;
-			}
-		},
-		denySaves(choice: 'Deny' | 'Cancel') {
-			this.denySavesModal = false;
-			if (choice === 'Deny') {
-				this.savesAllowed = false;
-			}
-		},
-		modeChange(choice: 'Enter Classic Mode' | 'Enter Plus mode' | 'Stay') {
-			safeAsync('changing modes', async () => {
-				if (choice === 'Enter Classic Mode') {
-					await environment.setGameMode('ddlc');
-				} else if (choice === 'Enter Plus mode') {
-					await environment.setGameMode('ddlc_plus');
-				} else {
-					this.showModeDialog = false;
-				}
-			});
-		},
-		saveSettings() {
-			environment.saveSettings({
-				lq: this.$store.state.ui.lqRendering,
-				nsfw: this.$store.state.ui.nsfw,
-				darkMode: this.$store.state.ui.useDarkTheme ?? undefined,
-				looseTextParsing: environment.state.looseTextParsing,
-				defaultCharacterTalkingZoom:
-					this.$store.state.ui.defaultCharacterTalkingZoom,
-			});
-		},
-		setDownloadFolder() {
-			environment.updateDownloadFolder();
-		},
-		openDownloadFolder() {
-			environment.openFolder('downloads');
-		},
+	set(allowed: boolean) {
+		waitOnSaveChange.value = true;
+		environment.savingEnabled = allowed;
+		saveSettings();
 	},
 });
+
+function allowSaves(choice: 'Allow' | 'Deny') {
+	allowSavesModal.value = false;
+	if (choice === 'Allow') {
+		savesAllowed.value = true;
+	}
+}
+
+function denySaves(choice: 'Deny' | 'Cancel') {
+	denySavesModal.value = false;
+	if (choice === 'Deny') {
+		savesAllowed.value = false;
+	}
+}
+
+watch(
+	() => savesAllowed.value,
+	() => (waitOnSaveChange.value = false)
+);
+//#endregion Allow saving
+//#region Mode changer
+const showModeDialog = ref(false);
+const inPlusMode = computed(() => environment.gameMode === 'ddlc_plus');
+function modeChange(choice: 'Enter Classic Mode' | 'Enter Plus mode' | 'Stay') {
+	safeAsync('changing modes', async () => {
+		if (choice === 'Enter Classic Mode') {
+			await environment.setGameMode('ddlc');
+		} else if (choice === 'Enter Plus mode') {
+			await environment.setGameMode('ddlc_plus');
+		} else {
+			showModeDialog.value = false;
+		}
+	});
+}
+//#endregion Mode changer
+//#region LQ preview
+const lqAllowed = computed(() => environment.supports.lq);
+const lqRendering = computed({
+	get(): boolean {
+		return store.state.ui.lqRendering;
+	},
+	set(lqRendering: boolean) {
+		transaction(() => {
+			store.commit('ui/setLqRendering', lqRendering);
+		});
+		saveSettings();
+	},
+});
+//#endregion LQ preview
+//#region NSFW mode
+const nsfw = computed({
+	get(): boolean {
+		return !!store.state.ui.nsfw;
+	},
+	set(value: boolean) {
+		transaction(() => {
+			store.commit('ui/setNsfw', value);
+			saveSettings();
+		});
+	},
+});
+//#endregion NSFW mode
+//#region Enlarge when talking
+const defaultCharacterTalkingZoom = computed({
+	get(): boolean {
+		return !!store.state.ui.defaultCharacterTalkingZoom;
+	},
+	set(value: boolean) {
+		transaction(() => {
+			store.commit('ui/setDefaultCharacterTalkingZoom', value);
+			saveSettings();
+		});
+	},
+});
+//#endregion Enlarge when talking
+//#region Loose text parsing
+const looseTextParsing = computed({
+	get(): boolean {
+		return environment.state.looseTextParsing;
+	},
+	set(looseTextParsing: boolean) {
+		environment.state.looseTextParsing = looseTextParsing;
+		saveSettings();
+	},
+});
+//#endregion Loose text parsing
+//#region Theme
+const theme = computed({
+	get(): boolean | null {
+		return store.state.ui.useDarkTheme;
+	},
+	set(value: boolean | null) {
+		transaction(() => {
+			store.commit('ui/setDarkTheme', value);
+			saveSettings();
+		});
+	},
+});
+//#endregion Theme
+//#region Download folder
+const showDownloadFolder = computed(
+	(): boolean => environment.supports.setDownloadFolder
+);
+const downloadFolder = computed(
+	(): string => environment.state.downloadLocation
+);
+
+function setDownloadFolder() {
+	environment.updateDownloadFolder();
+}
+
+function openDownloadFolder() {
+	environment.openFolder('downloads');
+}
+//#endregion Download folder
 </script>
 
 <style lang="scss" scoped>
