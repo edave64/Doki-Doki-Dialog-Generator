@@ -91,7 +91,7 @@ const ExpressionBuilder = defineAsyncComponent(
 );
 const arrowMoveStepSize = 20;
 const store = useStore();
-const preLoading = ref(false);
+const preLoading = ref(true);
 const renderer = ref(null! as typeof Render);
 
 const objects = computed(() => {
