@@ -40,13 +40,13 @@
 		<settings-panel v-if="panel === 'settings'" />
 		<backgrounds-panel
 			v-else-if="panel === 'backgrounds'"
-			@show-dialog="$emit('show-dialog', $event)"
+			@show-dialog="emit('show-dialog', $event)"
 		/>
 		<credits-panel v-else-if="panel === 'help_credits'" />
 		<character-panel
 			v-else-if="panel === 'character'"
-			@show-dialog="$emit('show-dialog', $event)"
-			@show-expression-dialog="$emit('show-expression-dialog', $event)"
+			@show-dialog="emit('show-dialog', $event)"
+			@show-expression-dialog="emit('show-expression-dialog', $event)"
 		/>
 		<sprite-panel v-else-if="panel === 'sprite'" />
 		<text-box-panel v-else-if="panel === 'textBox'" />
@@ -54,7 +54,7 @@
 		<panels-panel v-else-if="panel === 'panels'" />
 		<notification-panel v-else-if="panel === 'notification'" />
 		<poem-panel v-else-if="panel === 'poem'" />
-		<add-panel v-else @show-dialog="$emit('show-dialog', $event)" />
+		<add-panel v-else @show-dialog="emit('show-dialog', $event)" />
 		<div id="toolbar-end">
 			<d-button
 				icon="help"
@@ -69,14 +69,14 @@
 				icon-pos="top"
 				title="Content Packs"
 				shortcut="p"
-				@click="$emit('show-dialog')"
+				@click="emit('show-dialog')"
 			/>
 			<d-button
 				icon="flip_to_back"
 				icon-pos="top"
 				title="Show last downloaded panel"
 				shortcut="l"
-				@click="$emit('show-prev-render')"
+				@click="emit('show-prev-render')"
 				:disabled="!hasPrevRender"
 			/>
 			<d-button
@@ -84,18 +84,16 @@
 				icon-pos="top"
 				title="Take a screenshot of the current scene"
 				shortcut="i"
-				@click="$emit('download')"
+				@click="emit('download')"
 			/>
 		</div>
 	</div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import environment from '@/environments/environment';
-import { IObject, ObjectTypes } from '@/store/objects';
-import { IPanel } from '@/store/panels';
-import { DeepReadonly } from 'ts-essentials';
-import { defineComponent } from 'vue';
+import { ObjectTypes } from '@/store/objects';
+import { computed, ref, watch } from 'vue';
 import DButton from '../ui/d-button.vue';
 import AddPanel from './tools/add.vue';
 import BackgroundsPanel from './tools/backgrounds.vue';
@@ -108,6 +106,7 @@ import PoemPanel from './tools/poem.vue';
 import SettingsPanel from './tools/settings.vue';
 import SpritePanel from './tools/sprite.vue';
 import TextBoxPanel from './tools/textbox.vue';
+import { useStore } from '@/store';
 
 type PanelNames =
 	| 'add'
@@ -120,83 +119,62 @@ type PanelNames =
 	| 'notification'
 	| 'poem';
 
-export default defineComponent({
-	components: {
-		SettingsPanel,
-		AddPanel,
-		BackgroundsPanel,
-		CreditsPanel,
-		CharacterPanel,
-		TextBoxPanel,
-		ChoicePanel,
-		SpritePanel,
-		PanelsPanel,
-		NotificationPanel,
-		PoemPanel,
-		DButton,
-	},
-	data: () => ({
-		panelSelection: 'add' as PanelNames,
-	}),
-	computed: {
-		currentPanel(): DeepReadonly<IPanel> {
-			return this.$store.state.panels.panels[
-				this.$store.state.panels.currentPanel
-			];
-		},
-		vertical(): boolean {
-			return this.$store.state.ui.vertical;
-		},
-		selection(): IObject['id'] | null {
-			return this.$store.state.ui.selection;
-		},
-		panel(): PanelNames | ObjectTypes {
-			if (this.panelSelection === 'selection') {
-				if (this.selection === null) {
-					// eslint-disable-next-line vue/no-side-effects-in-computed-properties
-					this.panelSelection = 'add';
-				} else {
-					return this.currentPanel.objects[this.selection].type;
-				}
-			}
-			return this.panelSelection;
-		},
-		hasPrevRender(): boolean {
-			return this.$store.state.ui.lastDownload !== null;
-		},
-	},
-	methods: {
-		setPanel(name: PanelNames) {
-			if (name === this.panelSelection) name = 'add';
-			this.panelSelection = name;
-			if (this.selection !== null) {
-				this.$store.commit('ui/setSelection', null);
-			}
-		},
-		resetScroll() {
-			console.log('resetting scrolls');
-			if (this.$refs.panels instanceof HTMLElement) {
-				this.$refs.panels.scrollTop = 0;
-				this.$refs.panels.scrollLeft = 0;
-			}
-		},
-	},
-	watch: {
-		selection(newSelection: IObject | null) {
-			if (newSelection != null) {
-				this.panelSelection = 'selection';
-				return;
-			}
-			if (this.panelSelection === 'selection') {
-				this.panelSelection = 'add';
-			}
-		},
-	},
-	created() {
-		environment.onPanelChange((panel: string) => {
-			this.panelSelection = panel as PanelNames;
-		});
-	},
+const store = useStore();
+const emit = defineEmits([
+	'show-dialog',
+	'show-prev-render',
+	'download',
+	'show-expression-dialog',
+]);
+const panels = ref(null! as HTMLDivElement);
+
+const panelSelection = ref('add' as PanelNames);
+
+const currentPanel = computed(() => {
+	return store.state.panels.panels[store.state.panels.currentPanel];
+});
+const vertical = computed(() => store.state.ui.vertical);
+const selection = computed(() => store.state.ui.selection);
+const panel = computed((): PanelNames | ObjectTypes => {
+	if (panelSelection.value === 'selection') {
+		if (selection.value === null) {
+			// eslint-disable-next-line vue/no-side-effects-in-computed-properties
+			panelSelection.value = 'add';
+		} else {
+			return currentPanel.value.objects[selection.value].type;
+		}
+	}
+	return panelSelection.value;
+});
+const hasPrevRender = computed(() => store.state.ui.lastDownload !== null);
+function setPanel(name: PanelNames) {
+	if (name === panelSelection.value) name = 'add';
+	panelSelection.value = name;
+	if (selection.value !== null) {
+		store.commit('ui/setSelection', null);
+	}
+}
+function resetScroll() {
+	if (panels.value instanceof HTMLElement) {
+		panels.value.scrollTop = 0;
+		panels.value.scrollLeft = 0;
+	}
+}
+
+watch(
+	() => selection.value,
+	(newSelection) => {
+		if (newSelection != null) {
+			panelSelection.value = 'selection';
+			return;
+		}
+		if (panelSelection.value === 'selection') {
+			panelSelection.value = 'add';
+		}
+	}
+);
+environment.onPanelChange((panel: string) => {
+	panelSelection.value = panel as PanelNames;
 });
 </script>
 
