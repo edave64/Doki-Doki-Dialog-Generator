@@ -114,12 +114,13 @@
 	</d-fieldset>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import getConstants from '@/constants';
 import { transaction } from '@/plugins/vuex-history';
 import { rendererLookup } from '@/renderables/textbox';
+import { useStore } from '@/store';
 import {
 	closestCharacterSlot,
 	ICharacter,
@@ -134,144 +135,140 @@ import {
 	ISetRatioAction,
 	ISetWidthAction,
 } from '@/store/objects';
-import { defineComponent, Prop } from 'vue';
+import { computed, PropType } from 'vue';
 
-export default defineComponent({
-	components: { Toggle, DFieldset },
-	props: {
-		obj: {
-			required: true,
-		} as Prop<IObject>,
-	},
-	computed: {
-		freeMove: {
-			get(): boolean {
-				return (this.obj! as ICharacter).freeMove;
-			},
-			set(freeMove: boolean) {
-				transaction(() => {
-					this.$store.commit('panels/setFreeMove', {
-						id: this.obj!.id,
-						panelId: this.obj!.panelId,
-						freeMove,
-					} as ISetFreeMoveMutation);
-				});
-			},
-		},
-		preserveRatio: {
-			get(): boolean {
-				return (this.obj! as ICharacter).preserveRatio;
-			},
-			set(preserveRatio: boolean) {
-				transaction(async () => {
-					await this.$store.dispatch('panels/setPreserveRatio', {
-						id: this.obj!.id,
-						panelId: this.obj!.panelId,
-						preserveRatio,
-					} as ISetRatioAction);
-				});
-			},
-		},
-		pos: {
-			get(): number {
-				return closestCharacterSlot(this.obj!.x);
-			},
-			set(value: number) {
-				transaction(async () => {
-					await this.$store.dispatch('panels/setPosition', {
-						id: this.obj!.id,
-						panelId: this.obj!.panelId,
-						x: getConstants().Base.characterPositions[value],
-						y: this.obj!.y,
-					} as ISetPositionAction);
-				});
-			},
-		},
-		x: {
-			get(): number {
-				return this.obj!.x;
-			},
-			set(x: number) {
-				transaction(() => {
-					this.$store.commit('panels/setPosition', {
-						id: this.obj!.id,
-						panelId: this.obj!.panelId,
-						x,
-						y: this.y,
-					} as ISetObjectPositionMutation);
-				});
-			},
-		},
-		y: {
-			get(): number {
-				return this.obj!.y;
-			},
-			set(y: number) {
-				transaction(() => {
-					this.$store.commit('panels/setPosition', {
-						id: this.obj!.id,
-						panelId: this.obj!.panelId,
-						x: this.x,
-						y,
-					} as ISetObjectPositionMutation);
-				});
-			},
-		},
-		height: {
-			get(): number {
-				return this.obj!.height;
-			},
-			set(height: number) {
-				transaction(async () => {
-					await this.$store.dispatch('panels/setHeight', {
-						id: this.obj!.id,
-						panelId: this.obj!.panelId,
-						height,
-					} as ISetHeightAction);
-				});
-			},
-		},
-		width: {
-			get(): number {
-				return this.obj!.width;
-			},
-			set(width: number) {
-				transaction(async () => {
-					await this.$store.dispatch('panels/setWidth', {
-						id: this.obj!.id,
-						panelId: this.obj!.panelId,
-						width,
-					} as ISetWidthAction);
-				});
-			},
-		},
-		allowSize(): boolean {
-			const obj = this.obj!;
-			if (obj.type === 'textBox') {
-				const renderer = rendererLookup[(obj as ITextBox).style];
-				return renderer.resizable;
-			}
-			if (obj.type === 'character' && !(obj as ICharacter).freeMove) {
-				return false;
-			}
-			return true;
-		},
-		allowStepMove(): boolean {
-			return 'freeMove' in this.obj!;
-		},
-		positionNames(): string[] {
-			return getConstants().Base.positions;
-		},
-
-		isFirstPos(): boolean {
-			return this.pos === 0;
-		},
-
-		isLastPos(): boolean {
-			return this.pos === getConstants().Base.positions.length - 1;
-		},
+const store = useStore();
+const props = defineProps({
+	obj: {
+		required: true,
+		type: Object as PropType<IObject>,
 	},
 });
+
+//#region Size
+const preserveRatio = computed({
+	get(): boolean {
+		return props.obj.preserveRatio;
+	},
+	set(preserveRatio: boolean) {
+		transaction(async () => {
+			await store.dispatch('panels/setPreserveRatio', {
+				id: props.obj.id,
+				panelId: props.obj.panelId,
+				preserveRatio,
+			} as ISetRatioAction);
+		});
+	},
+});
+const height = computed({
+	get(): number {
+		return props.obj.height;
+	},
+	set(height: number) {
+		transaction(async () => {
+			await store.dispatch('panels/setHeight', {
+				id: props.obj.id,
+				panelId: props.obj.panelId,
+				height,
+			} as ISetHeightAction);
+		});
+	},
+});
+const width = computed({
+	get(): number {
+		return props.obj.width;
+	},
+	set(width: number) {
+		transaction(async () => {
+			await store.dispatch('panels/setWidth', {
+				id: props.obj.id,
+				panelId: props.obj.panelId,
+				width,
+			} as ISetWidthAction);
+		});
+	},
+});
+const allowSize = computed(() => {
+	const obj = props.obj;
+	if (obj.type === 'textBox') {
+		const renderer = rendererLookup[(obj as ITextBox).style];
+		return renderer.resizable;
+	}
+	if (obj.type === 'character' && !(obj as ICharacter).freeMove) {
+		return false;
+	}
+	return true;
+});
+//#endregion Size
+//#region Step Position
+const allowStepMove = computed(() => 'freeMove' in props.obj!);
+const positionNames = computed(() => getConstants().Base.positions);
+const isFirstPos = computed(() => pos.value === 0);
+const isLastPos = computed(
+	() => pos.value === getConstants().Base.positions.length - 1
+);
+const pos = computed({
+	get(): number {
+		return closestCharacterSlot(props.obj.x);
+	},
+	set(value: number) {
+		transaction(async () => {
+			await store.dispatch('panels/setPosition', {
+				id: props.obj.id,
+				panelId: props.obj.panelId,
+				x: getConstants().Base.characterPositions[value],
+				y: props.obj.y,
+			} as ISetPositionAction);
+		});
+	},
+});
+//#endregion Step Position
+//#region Position
+const freeMove = computed({
+	get(): boolean {
+		return !!(props.obj as ICharacter).freeMove;
+	},
+	set(freeMove: boolean) {
+		transaction(() => {
+			store.commit('panels/setFreeMove', {
+				id: props.obj.id,
+				panelId: props.obj.panelId,
+				freeMove,
+			} as ISetFreeMoveMutation);
+		});
+	},
+});
+const x = computed({
+	get(): number {
+		return props.obj.x;
+	},
+	set(x: number) {
+		transaction(() => {
+			store.commit('panels/setPosition', {
+				id: props.obj.id,
+				panelId: props.obj.panelId,
+				x,
+				y: y.value,
+			} as ISetObjectPositionMutation);
+		});
+	},
+});
+const y = computed({
+	get(): number {
+		return props.obj.y;
+	},
+	set(y: number) {
+		transaction(() => {
+			store.commit('panels/setPosition', {
+				id: props.obj.id,
+				panelId: props.obj.panelId,
+				x: x.value,
+				y,
+			} as ISetObjectPositionMutation);
+		});
+	},
+});
+//#endregion Position
 </script>
 
 <style lang="scss" scoped>
