@@ -11,40 +11,35 @@
 		<slot />
 	</div>
 </template>
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
+import { useStore } from '@/store';
+import { computed, ref } from 'vue';
 
-export default defineComponent({
-	computed: {
-		vertical(): boolean {
-			return this.$store.state.ui.vertical;
-		},
-	},
-	data: () => ({
-		visible: false,
-	}),
-	methods: {
-		show(): void {
-			this.visible = true;
-		},
-		hide(): void {
-			this.visible = false;
-		},
-		drop(e: DragEvent): void {
-			this.hide();
-			e.stopPropagation();
-			e.preventDefault();
+const emit = defineEmits(['drop']);
+const store = useStore();
+const visible = ref(false);
+const vertical = computed(() => store.state.ui.vertical);
 
-			if (!e.dataTransfer) return;
+function show(): void {
+	visible.value = true;
+}
+function hide(): void {
+	visible.value = false;
+}
+function drop(e: DragEvent): void {
+	hide();
+	e.stopPropagation();
+	e.preventDefault();
 
-			for (const item of e.dataTransfer.items) {
-				if (item.kind === 'file' && item.type.match(/image.*/)) {
-					this.$emit('drop', item.getAsFile());
-				}
-			}
-		},
-	},
-});
+	if (!e.dataTransfer) return;
+
+	for (const item of e.dataTransfer.items) {
+		if (item.kind === 'file' && item.type.match(/image.*/)) {
+			emit('drop', item.getAsFile());
+		}
+	}
+}
+defineExpose({ show, hide });
 </script>
 <style lang="scss" scoped>
 div {
