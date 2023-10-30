@@ -7,78 +7,84 @@
 -->
 <template>
 	<d-fieldset id="layerfs" title="Layer:">
-		<table class="button-tbl">
-			<tbody>
-				<tr>
-					<td>
-						<button @click="shiftLayer(-Infinity)" title="Move to back">
-							<i class="material-icons">vertical_align_bottom</i>
-						</button>
-					</td>
-					<td>
-						<button @click="shiftLayer(-1)" title="Move backwards">
-							<i class="material-icons">arrow_downward</i>
-						</button>
-					</td>
-					<td>
-						<button @click="shiftLayer(1)" title="Move forwards">
-							<i class="material-icons">arrow_upward</i>
-						</button>
-					</td>
-					<td>
-						<button @click="shiftLayer(Infinity)" title="Move to front">
-							<i class="material-icons">vertical_align_top</i>
-						</button>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+		<d-flow class="layer_flow" direction="horizontal">
+			<d-button
+				icon="vertical_align_bottom"
+				icon-pos="top"
+				@click="shiftLayer(-Infinity)"
+				title="Move to back"
+			/>
+			<d-button
+				icon="arrow_downward"
+				icon-pos="top"
+				@click="shiftLayer(-1)"
+				title="Move backwards"
+			/>
+			<d-button
+				icon="arrow_upward"
+				icon-pos="top"
+				@click="shiftLayer(1)"
+				title="Move forwards"
+			/>
+			<d-button
+				icon="vertical_align_top"
+				icon-pos="top"
+				@click="shiftLayer(Infinity)"
+				title="Move to front"
+			/>
+		</d-flow>
 		<toggle v-model="onTop" label="In front?" />
 	</d-fieldset>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import Toggle from '@/components/toggle.vue';
+import DButton from '@/components/ui/d-button.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
+import DFlow from '@/components/ui/d-flow.vue';
 import { transaction } from '@/plugins/vuex-history';
+import { useStore } from '@/store';
 import { IObject, IObjectShiftLayerAction } from '@/store/objects';
-import { genericSetable } from '@/util/simple-settable';
-import { defineComponent, Prop } from 'vue';
+import { genericSetterMerged } from '@/util/simple-settable';
+import { computed, PropType } from 'vue';
 
-export default defineComponent({
-	components: { Toggle, DFieldset },
-	props: {
-		object: {
-			required: true,
-		} as Prop<IObject>,
-	},
-	computed: {
-		onTop: genericSetable<IObject>()('onTop', 'panels/setOnTop', true),
-	},
-	methods: {
-		shiftLayer(delta: number) {
-			transaction(async () => {
-				await this.$store.dispatch('panels/shiftLayer', {
-					id: this.object!.id,
-					panelId: this.object!.panelId,
-					delta,
-				} as IObjectShiftLayerAction);
-			});
-		},
+const store = useStore();
+const props = defineProps({
+	object: {
+		required: true,
+		type: Object as PropType<IObject>,
 	},
 });
+
+const onTop = genericSetterMerged(
+	store,
+	computed(() => props.object),
+	'panels/setOnTop',
+	true,
+	'onTop'
+);
+
+function shiftLayer(delta: number) {
+	transaction(async () => {
+		await store.dispatch('panels/shiftLayer', {
+			id: props.object.id,
+			panelId: props.object.panelId,
+			delta,
+		} as IObjectShiftLayerAction);
+	});
+}
 </script>
 
 <style lang="scss" scoped>
-table {
-	button {
-		width: 100%;
-		height: auto;
-	}
-}
-
-.button-tbl {
+.layer_flow {
 	margin: 2px;
 	width: calc(100% - 4px);
+	& > button {
+		flex-grow: 1;
+
+		&:not(:last-child) {
+			border-right: 0;
+		}
+	}
 }
 </style>
