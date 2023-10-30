@@ -15,7 +15,7 @@
 <template>
 	<div class="fieldset_wrapper">
 		<fieldset>
-			<legend v-if="title > ''">{{ title }}</legend>
+			<legend v-if="title > ''">{{ props.title }}</legend>
 			<div class="fieldset_contents">
 				<slot />
 			</div>
@@ -23,15 +23,11 @@
 	</div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-	props: {
-		title: {
-			required: true,
-			type: String,
-		},
+<script lang="ts" setup>
+const props = defineProps({
+	title: {
+		required: true,
+		type: String,
 	},
 });
 </script>
