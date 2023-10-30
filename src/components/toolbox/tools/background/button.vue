@@ -14,12 +14,11 @@
 
 <script lang="ts" setup>
 import { getAAssetUrl } from '@/asset-manager';
-import { IRootState } from '@/store';
+import { useStore } from '@/store';
 import { BackgroundLookup } from '@/store/content';
 import { computed } from 'vue';
-import { Store, useStore } from 'vuex';
 
-const store = useStore() as Store<IRootState>;
+const store = useStore();
 const props = defineProps({
 	backgroundId: {
 		type: String,

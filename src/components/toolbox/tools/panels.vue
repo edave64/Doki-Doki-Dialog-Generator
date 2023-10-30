@@ -176,7 +176,7 @@ import eventBus, {
 } from '@/eventbus/event-bus';
 import { transaction } from '@/plugins/vuex-history';
 import { SceneRenderer } from '@/renderables/scene-renderer';
-import { IRootState } from '@/store';
+import { useStore } from '@/store';
 import { IObject } from '@/store/objects';
 import {
 	IDeletePanelAction,
@@ -189,7 +189,6 @@ import {
 import { safeAsync } from '@/util/errors';
 import { DeepReadonly } from 'ts-essentials';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
-import { Store, useStore } from 'vuex';
 import ImageOptions from '../subtools/image-options/image-options.vue';
 
 interface IPanelButton {
@@ -202,7 +201,7 @@ const qualityFactor = 100;
 const defaultQuality = 90;
 const qualityWarningThreshold = 70;
 
-const store = useStore() as Store<IRootState>;
+const store = useStore();
 const root = ref(null! as HTMLElement);
 const { vertical, getRoot } = setupPanelMixin(root);
 
@@ -500,7 +499,6 @@ const thumbnailCtx = targetCanvas.getContext('2d')!;
 const isMounted = ref(false);
 
 const missingThumbnails = computed((): IPanel['id'][] => {
-	const store = (this as any).$store as Store<DeepReadonly<IRootState>>;
 	const panelOrder = store.state.panels.panelOrder;
 	return panelOrder.filter((id) => {
 		const panel = store.state.panels.panels[id];

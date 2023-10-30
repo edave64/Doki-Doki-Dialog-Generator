@@ -36,15 +36,15 @@ import eventBus, {
 import { transaction } from '@/plugins/vuex-history';
 import { SceneRenderer } from '@/renderables/scene-renderer';
 import { RenderContext } from '@/renderer/renderer-context';
-import { IRootState } from '@/store';
+import { useStore } from '@/store';
 import { ICreateSpriteAction } from '@/store/object-types/sprite';
 import { IObject, ISetObjectPositionMutation } from '@/store/objects';
 import { disposeCanvas } from '@/util/canvas';
 import { DeepReadonly } from 'ts-essentials';
 import { computed, markRaw, onMounted, onUnmounted, ref, watch } from 'vue';
-import { MutationPayload, Store, useStore } from 'vuex';
+import { MutationPayload } from 'vuex';
 
-const store = useStore() as Store<DeepReadonly<IRootState>>;
+const store = useStore();
 const props = defineProps({
 	canvasWidth: { default: 0 },
 	canvasHeight: { default: 0 },

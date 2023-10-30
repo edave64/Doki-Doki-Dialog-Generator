@@ -50,10 +50,10 @@ import DButton from '@/components/ui/d-button.vue';
 import { transaction } from '@/plugins/vuex-history';
 import { IPasteFromClipboardAction } from '@/store/objects';
 import { computed, ref } from 'vue';
-import { useStore } from 'vuex';
 import Characters from './add/character.vue';
 import Sprites from './add/sprite.vue';
 import UI from './add/ui.vue';
+import { useStore } from '@/store';
 
 type GroupNames = 'characters' | 'sprites' | 'ui';
 interface Group {

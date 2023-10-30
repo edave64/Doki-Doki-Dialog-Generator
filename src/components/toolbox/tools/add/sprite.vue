@@ -66,10 +66,9 @@ import { computed, ref } from 'vue';
 import DropTarget from '../../drop-target.vue';
 import MissingImage from '@/assets/missing_image.svg';
 import { transaction, TransactionLayer } from '@/plugins/vuex-history';
-import { Store, useStore } from 'vuex';
-import { IRootState } from '@/store';
+import { useStore } from '@/store';
 
-const store = useStore() as Store<IRootState>;
+const store = useStore();
 
 interface ISprite extends Sprite<IAssetSwitch> {
 	missing: string | null;

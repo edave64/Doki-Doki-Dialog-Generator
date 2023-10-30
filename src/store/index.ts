@@ -3,7 +3,7 @@ import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 import { Repo } from '@/models/repo';
 import { mergeContentPacks } from '@/store/content/merge';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { createStore } from 'vuex';
+import { createStore, Store, useStore as vuexUseStore } from 'vuex';
 import content, {
 	convertContentPack,
 	getDefaultContentState,
@@ -21,6 +21,10 @@ export interface IRootState {
 	content: IContentState;
 	uploadUrls: IUploadUrlState;
 	unsafe: boolean;
+}
+
+export function useStore() {
+	return vuexUseStore() as Store<IRootState>;
 }
 
 export default createStore({

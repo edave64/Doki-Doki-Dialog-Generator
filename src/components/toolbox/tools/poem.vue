@@ -67,10 +67,9 @@ import { genericSetterSplit } from '@/util/simple-settable';
 import { UnreachableCaseError } from 'ts-essentials';
 import { computed, ref, watch } from 'vue';
 import ObjectTool, { Handler } from './object-tool.vue';
-import { Store, useStore } from 'vuex';
-import { IRootState } from '@/store';
+import { useStore } from '@/store';
 
-const store = useStore() as Store<IRootState>;
+const store = useStore();
 const root = ref(null! as HTMLElement);
 const textarea = ref(null! as HTMLTextAreaElement);
 const { vertical } = setupPanelMixin(root);

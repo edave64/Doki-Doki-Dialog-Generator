@@ -81,9 +81,8 @@ import {
 	ref,
 	watch,
 } from 'vue';
-import { Store, useStore } from 'vuex';
 import { Repo } from './models/repo';
-import { IRemovePacksAction, IRootState } from './store';
+import { IRemovePacksAction, useStore } from './store';
 const SingleBox = defineAsyncComponent(
 	() => import('@/components/repo/layouts/single-box.vue')
 );
@@ -91,7 +90,7 @@ const ExpressionBuilder = defineAsyncComponent(
 	() => import('@/components/content-pack-builder/expression-builder/index.vue')
 );
 const arrowMoveStepSize = 20;
-const store = useStore() as Store<IRootState>;
+const store = useStore();
 const preLoading = ref(false);
 const renderer = ref(null! as typeof Render);
 
@@ -105,7 +104,7 @@ const objects = computed(() => {
 function drawLastDownload(): void {
 	const last = store.state.ui.lastDownload;
 	if (last == null) return;
-	render.value.blendOver(last);
+	renderer.value.blendOver(last);
 }
 
 //#region drag-and-drop

@@ -8,10 +8,9 @@
 
 <script lang="ts" setup>
 import { transaction } from '@/plugins/vuex-history';
-import { IRootState } from '@/store';
-import { Store, useStore } from 'vuex';
+import { useStore } from '@/store';
 
-const store = useStore() as Store<IRootState>;
+const store = useStore();
 async function addTextBox() {
 	return await createUiElement('createTextBox');
 }

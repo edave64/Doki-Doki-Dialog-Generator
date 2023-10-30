@@ -4,9 +4,7 @@ import { transaction } from '@/plugins/vuex-history';
 import { IRootState } from '@/store';
 import { IObject } from '@/store/objects';
 import { ComponentCustomProperties, computed, Ref } from 'vue';
-import { Store, useStore } from 'vuex';
-
-const store = useStore() as Store<IRootState>;
+import { Store } from 'vuex';
 
 export function genericSetable<T extends IObject>() {
 	return function setable<K extends keyof T>(
@@ -41,7 +39,7 @@ export function genericSimpleSetter<T extends IObject, KT extends keyof T>(
 			},
 			set(this: IThis<T>, value: T[K]): void {
 				transaction(() => {
-					store.commit(message, {
+					this.$store.commit(message, {
 						panelId: this.object.panelId,
 						id: this.object.id,
 						key,

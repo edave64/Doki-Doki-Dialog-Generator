@@ -70,8 +70,7 @@ import ImageOptions from '../subtools/image-options/image-options.vue';
 import BackgroundButton from './background/button.vue';
 import BackgroundSettings from './background/settings.vue';
 import { setupPanelMixin } from '../../mixins/panel-mixin';
-import { Store, useStore } from 'vuex';
-import { IRootState } from '@/store';
+import { useStore } from '@/store';
 
 const uploadedBackgroundsPackDefaults: ContentPack<string> = {
 	packId: 'dddg.uploads.backgrounds',
@@ -86,7 +85,7 @@ const uploadedBackgroundsPackDefaults: ContentPack<string> = {
 	colors: [],
 };
 
-const store = useStore() as Store<IRootState>;
+const store = useStore();
 const root = ref(null! as HTMLElement);
 setupPanelMixin(root);
 

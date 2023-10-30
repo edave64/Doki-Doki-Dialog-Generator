@@ -1,5 +1,5 @@
 import { verticalScrollRedirect } from '@/components/mixins/vertical-scroll-redirect';
-import { IRootState } from '@/store';
+import { useStore } from '@/store';
 import {
 	ComponentOptionsMixin,
 	ComponentPublicInstance,
@@ -8,7 +8,6 @@ import {
 	Ref,
 	watch,
 } from 'vue';
-import { Store, useStore } from 'vuex';
 
 export const PanelMixin: ComponentOptionsMixin = {
 	computed: {
@@ -48,7 +47,7 @@ export const PanelMixin: ComponentOptionsMixin = {
 export function setupPanelMixin(
 	root: Ref<HTMLElement | ComponentPublicInstance>
 ) {
-	const store = useStore() as Store<IRootState>;
+	const store = useStore();
 	const vertical = computed(() => store.state.ui.vertical);
 
 	function getRoot(): HTMLElement {
