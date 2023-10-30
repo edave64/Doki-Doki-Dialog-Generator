@@ -26,6 +26,7 @@
 </template>
 
 <script lang="ts" setup>
+import { imagePromise } from '@/asset-manager';
 import getConstants from '@/constants';
 import eventBus, {
 	ColorPickedEvent,
@@ -145,6 +146,7 @@ function display(): void {
 		w: bitmapWidth.value,
 		h: bitmapHeight.value,
 	});
+	inBlendOver.value = false;
 }
 function toRendererCoordinate(x: number, y: number): [number, number] {
 	const canvas = sd.value as HTMLCanvasElement;
@@ -203,8 +205,7 @@ store.subscribe((mut: MutationPayload) => {
 });
 
 onMounted(() => {
-	const canvas = sd.value as HTMLCanvasElement;
-	sdCtx.value = canvas.getContext('2d')!;
+	sdCtx.value = sd.value.getContext('2d')!;
 
 	renderLoadingScreen();
 	invalidateRender();
@@ -213,6 +214,25 @@ onMounted(() => {
 onUnmounted(() => {
 	sceneRendererCache.value?.dispose();
 });
+//#region Blend over
+const inBlendOver = ref(false);
+async function blendOver(url: string) {
+	if (inBlendOver.value) {
+		render_();
+		inBlendOver.value = false;
+	} else {
+		const image = await imagePromise(url, true);
+		sdCtx.value.clearRect(0, 0, sd.value.width, sd.value.height);
+		image.paintOnto(sdCtx.value, {
+			x: 0,
+			y: 0,
+		});
+		inBlendOver.value = true;
+	}
+	sdCtx.value;
+}
+//#endregion Blend over
+//#endregion picker
 //#region picker
 const pickerMode = computed(() => store.state.ui.pickColor);
 const cursor = computed((): 'default' | 'crosshair' =>
@@ -262,7 +282,6 @@ async function download(): Promise<void> {
 		}
 	});
 }
-defineExpose({ download });
 //#endregion download
 //#region drag and drop
 const draggedObject = ref(null as DeepReadonly<IObject> | null);
@@ -374,6 +393,7 @@ function onMouseEnter(e: MouseEvent) {
 	}
 }
 //#endregion drag and drop
+defineExpose({ download, blendOver });
 </script>
 
 <style lang="scss">

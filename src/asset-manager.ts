@@ -185,18 +185,18 @@ async function requestAssetByUrl(url: string): Promise<IAsset> {
 	})();
 }
 
-function imagePromise(url: string): Promise<IAsset> {
+export function imagePromise(url: string, noCache = false): Promise<IAsset> {
 	return new Promise((resolve, _reject) => {
 		const img = new Image();
 		img.addEventListener('load', () => {
 			resolve(new ImageAsset(img));
-			if (!environment.supports.assetCaching) {
+			if (noCache || !environment.supports.assetCaching) {
 				document.body.removeChild(img);
 			}
 		});
 		img.addEventListener('error', (_e) => {
 			resolve(new ErrorAsset());
-			if (!environment.supports.assetCaching) {
+			if (noCache || !environment.supports.assetCaching) {
 				document.body.removeChild(img);
 			}
 		});
