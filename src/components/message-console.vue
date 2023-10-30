@@ -27,7 +27,7 @@
 	</div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import EventBus, {
 	AssetFailureEvent,
 	CustomAssetFailureEvent,
@@ -36,120 +36,113 @@ import EventBus, {
 	ShowMessageEvent,
 	VueErrorEvent,
 } from '@/eventbus/event-bus';
-import { defineComponent } from 'vue';
+import { useStore } from '@/store';
+import { computed, defineComponent, ref, watch } from 'vue';
 
 const shortHidingTime = 5000;
 const longHidingTime = 20000;
 const hideShowTimeouts = 100;
 
-export default defineComponent({
-	props: {
-		loading: {
-			default: false,
-			type: Boolean,
-		},
-	},
-	data: () => ({
-		messages: [] as string[],
-		errors: [] as string[],
-		resolvableErrors: [] as ResolvableErrorEvent[],
-		showLoading: false,
-		showLoadingTimeout: 0,
-		hideLoadingTimeout: 0,
-	}),
-	computed: {
-		vertical(): boolean {
-			return this.$store.state.ui.vertical;
-		},
-	},
-	created() {
-		this.onLoadingChange(this.loading);
-		EventBus.subscribe(AssetFailureEvent, (ev) => {
-			this.messages.push(`Failed to load asset '${ev.path}'`);
-			setTimeout(() => {
-				this.messages.shift();
-			}, shortHidingTime);
-		});
-
-		EventBus.subscribe(CustomAssetFailureEvent, (_ev) => {
-			this.messages.push(
-				'Failed to load custom asset. Try to download it manually and then upload it.'
-			);
-			setTimeout(() => {
-				this.messages.shift();
-			}, longHidingTime);
-		});
-
-		EventBus.subscribe(FailureEvent, (ev) => {
-			this.errors.push(ev.message);
-		});
-
-		EventBus.subscribe(ResolvableErrorEvent, (ev) => {
-			this.resolvableErrors.push(ev);
-		});
-
-		EventBus.subscribe(ShowMessageEvent, (ev) => {
-			this.messages.push(ev.message);
-			setTimeout(() => {
-				this.messages.shift();
-			}, longHidingTime);
-		});
-
-		EventBus.subscribe(VueErrorEvent, (ev) => {
-			this.messages.push(ev.error.name);
-			this.messages.push(JSON.stringify(ev.error.stack));
-			this.messages.push(ev.info);
-			setTimeout(() => {
-				this.messages.shift();
-				this.messages.shift();
-				this.messages.shift();
-			}, longHidingTime);
-		});
-	},
-
-	methods: {
-		onLoadingChange(newValue: boolean) {
-			if (newValue) {
-				if (this.hideLoadingTimeout) {
-					clearTimeout(this.hideLoadingTimeout);
-					this.hideLoadingTimeout = 0;
-				}
-				if (!this.showLoading && !this.showLoadingTimeout) {
-					this.showLoadingTimeout = setTimeout(() => {
-						this.showLoading = true;
-						this.showLoadingTimeout = 0;
-					}, hideShowTimeouts);
-				}
-			} else {
-				if (this.showLoadingTimeout) {
-					clearTimeout(this.showLoadingTimeout);
-					this.showLoadingTimeout = 0;
-				}
-				if (this.showLoading && !this.hideLoadingTimeout) {
-					this.hideLoadingTimeout = setTimeout(() => {
-						this.showLoading = false;
-						this.hideLoadingTimeout = 0;
-					}, hideShowTimeouts);
-				}
-			}
-		},
-		dismissError(i: number) {
-			this.errors.splice(i, 1);
-		},
-		async resolvableAction(i: number, actionName: string) {
-			const error = this.resolvableErrors[i];
-			this.resolvableErrors.splice(i, 1);
-			const action = error.actions.find((a) => a.name === actionName)!;
-			await action.exec();
-		},
-	},
-
-	watch: {
-		loading(newValue: boolean) {
-			this.onLoadingChange(newValue);
-		},
+const store = useStore();
+const props = defineProps({
+	loading: {
+		default: false,
+		type: Boolean,
 	},
 });
+const messages = ref([] as string[]);
+const errors = ref([] as string[]);
+const resolvableErrors = ref([] as ResolvableErrorEvent[]);
+const showLoading = ref(false);
+const showLoadingTimeout = ref(0);
+const hideLoadingTimeout = ref(0);
+
+const vertical = computed(() => store.state.ui.vertical);
+
+onLoadingChange(props.loading);
+EventBus.subscribe(AssetFailureEvent, (ev) => {
+	messages.value.push(`Failed to load asset '${ev.path}'`);
+	setTimeout(() => {
+		messages.value.shift();
+	}, shortHidingTime);
+});
+
+EventBus.subscribe(CustomAssetFailureEvent, (_ev) => {
+	messages.value.push(
+		'Failed to load custom asset. Try to download it manually and then upload it.'
+	);
+	setTimeout(() => {
+		messages.value.shift();
+	}, longHidingTime);
+});
+
+EventBus.subscribe(FailureEvent, (ev) => {
+	errors.value.push(ev.message);
+});
+
+EventBus.subscribe(ResolvableErrorEvent, (ev) => {
+	resolvableErrors.value.push(ev);
+});
+
+EventBus.subscribe(ShowMessageEvent, (ev) => {
+	messages.value.push(ev.message);
+	setTimeout(() => {
+		messages.value.shift();
+	}, longHidingTime);
+});
+
+EventBus.subscribe(VueErrorEvent, (ev) => {
+	messages.value.push(ev.error.name);
+	messages.value.push(JSON.stringify(ev.error.stack));
+	messages.value.push(ev.info);
+	setTimeout(() => {
+		messages.value.shift();
+		messages.value.shift();
+		messages.value.shift();
+	}, longHidingTime);
+});
+
+function onLoadingChange(newValue: boolean) {
+	if (newValue) {
+		if (hideLoadingTimeout.value) {
+			clearTimeout(hideLoadingTimeout.value);
+			hideLoadingTimeout.value = 0;
+		}
+		if (!showLoading.value && !showLoadingTimeout.value) {
+			showLoadingTimeout.value = setTimeout(() => {
+				showLoading.value = true;
+				showLoadingTimeout.value = 0;
+			}, hideShowTimeouts);
+		}
+	} else {
+		if (showLoadingTimeout.value) {
+			clearTimeout(showLoadingTimeout.value);
+			showLoadingTimeout.value = 0;
+		}
+		if (showLoading.value && !hideLoadingTimeout.value) {
+			hideLoadingTimeout.value = setTimeout(() => {
+				showLoading.value = false;
+				hideLoadingTimeout.value = 0;
+			}, hideShowTimeouts);
+		}
+	}
+}
+function dismissError(i: number) {
+	errors.value.splice(i, 1);
+}
+async function resolvableAction(i: number, actionName: string) {
+	const error = resolvableErrors.value[i];
+	resolvableErrors.value.splice(i, 1);
+	const action = error.actions.find((a) => a.name === actionName)!;
+	await action.exec();
+}
+
+watch(
+	() => props.loading,
+	(newValue: boolean) => {
+		onLoadingChange(newValue);
+	}
+);
 </script>
 
 <style lang="scss" scoped>
