@@ -20,7 +20,7 @@
 				>[?]
 			</l>
 			<select id="compositionSelect" v-model="compositionMode" @keydown.stop>
-				<option value="source-over">source-over</option>
+				<option value="source-over">Normal</option>
 				<!--
 				<option value="source-in">source-in</option>
 				<option value="source-out">source-out</option>
@@ -176,9 +176,7 @@
 									type="number"
 									:max="maxValue"
 									:min="minValue"
-									@input="
-										setValue({ value: Number($event.target.value / 100) })
-									"
+									@input="updateValue"
 									@keydown.stop
 								/>%
 							</td>
@@ -192,7 +190,7 @@
 									:modelValue="currentFilter.value * 100"
 									no-input
 									@update:modelValue="
-										setValue({ value: Math.round($event) / 100 })
+										setFilterProperty({ value: Math.round($event) / 100 })
 									"
 								/>
 							</td>
@@ -204,14 +202,13 @@
 								<label for="filter_value">Value:</label>
 							</td>
 							<td>
-								<!--suppress XmlDuplicatedId -->
 								<input
 									id="filter_value"
 									:value="currentFilter.value"
 									type="number"
 									:max="maxValue"
 									:min="minValue"
-									@input="setValue({ value: Number($event.target.value) })"
+									@input="updateValue"
 									@keydown.stop
 								/>
 							</td>
@@ -224,7 +221,9 @@
 									:maxValue="maxValue"
 									:modelValue="currentFilter.value"
 									no-input
-									@update:modelValue="setValue({ value: Math.round($event) })"
+									@update:modelValue="
+										setFilterProperty({ value: Math.round($event) })
+									"
 								/>
 								<slider
 									:gradientStops="hueStops"
@@ -244,7 +243,7 @@
 	</d-flow>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import Color from '@/components/toolbox/subtools/color/color.vue';
 import Slider from '@/components/toolbox/subtools/color/slider.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
@@ -252,11 +251,12 @@ import DFlow from '@/components/ui/d-flow.vue';
 import L from '@/components/ui/link.vue';
 import { transaction } from '@/plugins/vuex-history';
 import { CompositeModes } from '@/renderer/renderer-context';
+import { useStore } from '@/store';
 import { IObject, ISetCompositionMutation } from '@/store/objects';
 import { IPanel } from '@/store/panels';
 import {
 	IAddFilterAction,
-	IHasSpriteFilters,
+	IDropShadowSpriteFilter,
 	IMoveFilterAction,
 	INumericSpriteFilter,
 	IRemoveFilterAction,
@@ -267,8 +267,8 @@ import {
 import { disposeCanvas, makeCanvas } from '@/util/canvas';
 import { IColor } from '@/util/colors/color';
 import { HSLAColor } from '@/util/colors/hsl';
-import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
-import { defineComponent, Prop, PropType } from 'vue';
+import { UnreachableCaseError } from 'ts-essentials';
+import { computed, Prop, PropType, ref, WritableComputedRef } from 'vue';
 
 const filterText: ReadonlyMap<SpriteFilter['type'], string> = new Map<
 	SpriteFilter['type'],
@@ -286,7 +286,7 @@ const filterText: ReadonlyMap<SpriteFilter['type'], string> = new Map<
 	['drop-shadow', 'Drop shadow'],
 ]);
 
-const filters: ReadonlyArray<SpriteFilter['type']> = (() => {
+const filterTypes: ReadonlyArray<SpriteFilter['type']> = (() => {
 	try {
 		const canvas = makeCanvas();
 		canvas.width = 0;
@@ -301,255 +301,245 @@ const filters: ReadonlyArray<SpriteFilter['type']> = (() => {
 	return ['opacity'];
 })();
 
-export default defineComponent({
-	components: { DFlow, DFieldset, Color, Slider, L },
-	props: {
-		type: {
-			type: String as PropType<'object' | 'background' | 'panel'>,
-			required: true,
-		},
-		title: {
-			type: String,
-		},
-		id: {} as Prop<IObject['id']>,
-		panelId: {
-			required: true,
-		} as Prop<IPanel['id']>,
-		noComposition: {
-			type: Boolean,
-			default: false,
-		},
+const props = defineProps({
+	type: {
+		type: String as PropType<'object' | 'background' | 'panel'>,
+		required: true,
 	},
-	emits: ['leave'],
-	data: () => ({
-		addEffectSelection: '' as SpriteFilter['type'] | '',
-		currentFilterIdx: 0,
-		showShadowColor: false,
-	}),
-	computed: {
-		object(): DeepReadonly<IHasSpriteFilters> {
-			switch (this.type) {
-				case 'object':
-					return this.$store.state.panels.panels[this.panelId!].objects[
-						this.id!
-					];
-				case 'background':
-					return this.$store.state.panels.panels[this.panelId!].background;
-				case 'panel':
-					return this.$store.state.panels.panels[this.panelId!];
-				default:
-					throw new UnreachableCaseError(this.type);
-			}
-		},
-		compositionMode: {
-			get(): CompositeModes {
-				return this.object.composite;
-			},
-			set(composite: CompositeModes): void {
-				transaction(() => {
-					switch (this.type) {
-						case 'object':
-							this.$store.commit('panels/setComposition', {
-								id: this.id,
-								panelId: this.panelId,
-								composite,
-							} as ISetCompositionMutation);
-							break;
-						case 'background':
-							break;
-						case 'panel':
-							break;
-						default:
-							throw new UnreachableCaseError(this.type);
-					}
-				});
-			},
-		},
-		filters(): DeepReadonly<SpriteFilter[]> {
-			return this.object.filters;
-		},
-		filterTypes(): ReadonlyArray<SpriteFilter['type']> {
-			return filters;
-		},
-		currentFilter(): DeepReadonly<SpriteFilter> | null {
-			return this.filters[this.currentFilterIdx] ?? null;
-		},
-		isPercentFilter(): boolean {
-			const filter = this.currentFilter;
-			if (!filter) return false;
-			return percentageValue.has(filter.type);
-		},
-		maxValue(): number | undefined {
-			const filter = this.currentFilter;
-			if (!filter) return undefined;
-
-			if (filter.type === 'hue-rotate') return 360;
-			if (
-				filter.type === 'grayscale' ||
-				filter.type === 'sepia' ||
-				filter.type === 'opacity' ||
-				filter.type === 'invert'
-			)
-				return 100;
-
-			return undefined;
-		},
-		minValue(): number | undefined {
-			const filter = this.currentFilter;
-			if (!filter) return undefined;
-
-			switch (filter.type) {
-				case 'blur':
-				case 'brightness':
-				case 'contrast':
-				case 'grayscale':
-				case 'hue-rotate':
-				case 'invert':
-				case 'opacity':
-				case 'saturate':
-				case 'sepia':
-					return 0;
-			}
-
-			return undefined;
-		},
-		shadowColor: {
-			get(): string | undefined {
-				const filter = this.currentFilter;
-				if (!filter) return undefined;
-				if (!('color' in filter)) return undefined;
-				return filter.color;
-			},
-			set(color: string) {
-				this.setValue({ color });
-			},
-		},
-		shadowX: {
-			get(): number | undefined {
-				const filter = this.currentFilter;
-				if (!filter) return undefined;
-				if (!('offsetX' in filter)) return undefined;
-				return filter.offsetX;
-			},
-			set(offsetX: number) {
-				this.setValue({ offsetX });
-			},
-		},
-		shadowY: {
-			get(): number | undefined {
-				const filter = this.currentFilter;
-				if (!filter) return undefined;
-				if (!('offsetY' in filter)) return undefined;
-				return filter.offsetY;
-			},
-			set(offsetY: number) {
-				this.setValue({ offsetY });
-			},
-		},
-		shadowBlur: {
-			get(): number | undefined {
-				const filter = this.currentFilter;
-				if (!filter) return undefined;
-				if (!('blurRadius' in filter)) return undefined;
-				return filter.blurRadius;
-			},
-			set(blurRadius: number) {
-				this.setValue({ blurRadius });
-			},
-		},
-		hueStops(): string[] {
-			const stops = this.eightsStops((i) => new HSLAColor(i, 1, 0.5, 1));
-			return stops.map((stop) => stop.toRgb().toCss());
-		},
+	title: {
+		type: String,
 	},
-	methods: {
-		getFilterLabel(type: SpriteFilter['type']): string {
-			return filterText.get(type)!;
-		},
-		getFilterText(filter: SpriteFilter): string {
-			if (percentageValue.has(filter.type)) {
-				return `${filterText.get(filter.type)} ${(
-					(filter as INumericSpriteFilter<any>).value * 100
-				).toFixed()}%`;
-			} else if (filter.type === 'hue-rotate') {
-				return `${filterText.get(filter.type)} ${filter.value.toFixed()}°`;
-			} else if (filter.type === 'blur') {
-				return `${filterText.get(filter.type)} ${filter.value.toFixed()}px`;
-			}
-			return filterText.get(filter.type)!;
-		},
-		objectTypeScope(command: string): string {
-			switch (this.type) {
-				case 'object':
-					return 'panels/object_' + command;
-				case 'background':
-					return (
-						'panels/background' + command[0].toUpperCase() + command.slice(1)
-					);
-				case 'panel':
-					return 'panels/' + command;
-			}
-		},
-		addFilter() {
-			transaction(async () => {
-				await this.$store.dispatch(this.objectTypeScope('addFilter'), {
-					id: this.id,
-					panelId: this.panelId,
-					type: this.addEffectSelection,
-					idx: this.currentFilterIdx + 1,
-				} as IAddFilterAction);
-				return;
-			});
-		},
-		selectFilter(idx: number) {
-			this.currentFilterIdx = idx;
-		},
-		removeFilter() {
-			transaction(async () => {
-				await this.$store.dispatch(this.objectTypeScope('removeFilter'), {
-					id: this.id,
-					panelId: this.panelId,
-					idx: this.currentFilterIdx,
-				} as IRemoveFilterAction);
-
-				if (this.currentFilterIdx >= this.object.filters.length) {
-					this.currentFilterIdx = this.object.filters.length - 1;
-				}
-
-				return;
-			});
-		},
-		moveFilter(moveBy: number) {
-			transaction(async () => {
-				await this.$store.dispatch(this.objectTypeScope('moveFilter'), {
-					id: this.id,
-					panelId: this.panelId,
-					idx: this.currentFilterIdx,
-					moveBy,
-				} as IMoveFilterAction);
-				this.currentFilterIdx += moveBy;
-				return;
-			});
-		},
-		setValue(value: Omit<ISetFilterAction, 'id' | 'panelId' | 'idx'>) {
-			transaction(async () => {
-				await this.$store.dispatch(this.objectTypeScope('setFilter'), {
-					id: this.id,
-					panelId: this.panelId,
-					idx: this.currentFilterIdx,
-					...value,
-				} as ISetFilterAction);
-			});
-		},
-		eightsStops(gen: (i: number) => IColor): IColor[] {
-			const stops: IColor[] = [];
-			for (let i = 0; i <= 8; ++i) {
-				stops.push(gen(i / 8));
-			}
-			return stops;
-		},
+	id: {} as Prop<IObject['id']>,
+	panelId: {
+		required: true,
+	} as Prop<IPanel['id']>,
+	noComposition: {
+		type: Boolean,
+		default: false,
 	},
 });
+const emit = defineEmits(['leave']);
+const store = useStore();
+
+const addEffectSelection = ref('' as SpriteFilter['type'] | '');
+const currentFilterIdx = ref(0);
+
+const object = computed(() => {
+	switch (props.type) {
+		case 'object':
+			return store.state.panels.panels[props.panelId!].objects[props.id!];
+		case 'background':
+			return store.state.panels.panels[props.panelId!].background;
+		case 'panel':
+			return store.state.panels.panels[props.panelId!];
+		default:
+			throw new UnreachableCaseError(props.type);
+	}
+});
+
+const compositionMode = computed({
+	get(): CompositeModes {
+		return object.value.composite;
+	},
+	set(composite: CompositeModes): void {
+		transaction(() => {
+			switch (props.type) {
+				case 'object':
+					store.commit('panels/setComposition', {
+						id: props.id,
+						panelId: props.panelId,
+						composite,
+					} as ISetCompositionMutation);
+					break;
+				case 'background':
+					break;
+				case 'panel':
+					break;
+				default:
+					throw new UnreachableCaseError(props.type);
+			}
+		});
+	},
+});
+
+const filters = computed(() => object.value.filters);
+const currentFilter = computed(
+	() => filters.value[currentFilterIdx.value] ?? null
+);
+
+const isPercentFilter = computed(() => {
+	const filter = currentFilter.value;
+	if (!filter) return false;
+	return percentageValue.has(filter.type);
+});
+
+const maxValue = computed(() => {
+	const filter = currentFilter.value;
+	if (!filter) return undefined;
+
+	if (filter.type === 'hue-rotate') return 360;
+	if (
+		filter.type === 'grayscale' ||
+		filter.type === 'sepia' ||
+		filter.type === 'opacity' ||
+		filter.type === 'invert'
+	)
+		return 100;
+
+	return undefined;
+});
+
+const minValue = computed((): number | undefined => {
+	const filter = currentFilter.value;
+	if (!filter) return undefined;
+
+	switch (filter.type) {
+		case 'blur':
+		case 'brightness':
+		case 'contrast':
+		case 'grayscale':
+		case 'hue-rotate':
+		case 'invert':
+		case 'opacity':
+		case 'saturate':
+		case 'sepia':
+			return 0;
+	}
+
+	return undefined;
+});
+
+function getFilterLabel(type: SpriteFilter['type']): string {
+	return filterText.get(type)!;
+}
+
+function getFilterText(filter: SpriteFilter): string {
+	if (percentageValue.has(filter.type)) {
+		return `${filterText.get(filter.type)} ${(
+			(filter as INumericSpriteFilter<any>).value * 100
+		).toFixed()}%`;
+	} else if (filter.type === 'hue-rotate') {
+		return `${filterText.get(filter.type)} ${filter.value.toFixed()}°`;
+	} else if (filter.type === 'blur') {
+		return `${filterText.get(filter.type)} ${filter.value.toFixed()}px`;
+	}
+	return filterText.get(filter.type)!;
+}
+
+function objectTypeScope(command: string): string {
+	switch (props.type) {
+		case 'object':
+			return 'panels/object_' + command;
+		case 'background':
+			return 'panels/background' + command[0].toUpperCase() + command.slice(1);
+		case 'panel':
+			return 'panels/' + command;
+	}
+}
+
+function addFilter() {
+	transaction(async () => {
+		await store.dispatch(objectTypeScope('addFilter'), {
+			id: props.id,
+			panelId: props.panelId,
+			type: addEffectSelection.value,
+			idx: currentFilterIdx.value + 1,
+		} as IAddFilterAction);
+		return;
+	});
+}
+
+function selectFilter(idx: number) {
+	currentFilterIdx.value = idx;
+}
+
+function removeFilter() {
+	transaction(async () => {
+		await store.dispatch(objectTypeScope('removeFilter'), {
+			id: props.id,
+			panelId: props.panelId,
+			idx: currentFilterIdx.value,
+		} as IRemoveFilterAction);
+
+		if (currentFilterIdx.value >= object.value.filters.length) {
+			currentFilterIdx.value = object.value.filters.length - 1;
+		}
+
+		return;
+	});
+}
+
+function moveFilter(moveBy: number) {
+	transaction(async () => {
+		await store.dispatch(objectTypeScope('moveFilter'), {
+			id: props.id,
+			panelId: props.panelId,
+			idx: currentFilterIdx.value,
+			moveBy,
+		} as IMoveFilterAction);
+		currentFilterIdx.value += moveBy;
+		return;
+	});
+}
+
+function updateValue(event: Event) {
+	if (!(event instanceof InputEvent)) return;
+	let value = Number((event.target as HTMLInputElement).value);
+	if (isPercentFilter.value) {
+		value = value / 100;
+	}
+	setFilterProperty({ value });
+}
+
+function setFilterProperty(
+	value: Omit<ISetFilterAction, 'id' | 'panelId' | 'idx'>
+) {
+	transaction(async () => {
+		await store.dispatch(objectTypeScope('setFilter'), {
+			id: props.id,
+			panelId: props.panelId,
+			idx: currentFilterIdx.value,
+			...value,
+		} as ISetFilterAction);
+	});
+}
+//#region Hue
+const hueStops = computed((): string[] => {
+	const stops = eightsStops((i) => new HSLAColor(i, 1, 0.5, 1));
+	return stops.map((stop) => stop.toRgb().toCss());
+});
+
+function eightsStops(gen: (i: number) => IColor): IColor[] {
+	const stops: IColor[] = [];
+	for (let i = 0; i <= 8; ++i) {
+		stops.push(gen(i / 8));
+	}
+	return stops;
+}
+//#endregion Hue
+//#region Drop Shadow
+const showShadowColor = ref(false);
+const shadowColor = shadowProp('color');
+const shadowX = shadowProp('offsetX');
+const shadowY = shadowProp('offsetY');
+const shadowBlur = shadowProp('blurRadius');
+
+function shadowProp<K extends keyof Omit<IDropShadowSpriteFilter, 'type'>>(
+	prop: K
+): WritableComputedRef<IDropShadowSpriteFilter[K]> {
+	return computed({
+		get(): IDropShadowSpriteFilter[K] {
+			const filter = currentFilter.value;
+			if (!filter || !(prop in filter))
+				throw new Error('Tried reading shadow prop on a non shadow object');
+			return (filter as any)[prop];
+		},
+		set(value: IDropShadowSpriteFilter[K]) {
+			setFilterProperty({ [prop]: value });
+		},
+	});
+}
+//#endregion Drop Shadow
 </script>
 
 <style lang="scss" scoped>
