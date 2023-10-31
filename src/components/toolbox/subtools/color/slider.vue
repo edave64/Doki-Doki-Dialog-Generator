@@ -3,22 +3,20 @@
 -->
 <template>
 	<div :class="{ slider: true, vertical }" @keydown.stop>
-		<label :for="_.uid" v-if="!noInput">{{ label }}</label>
+		<label :for="id" v-if="!noInput">{{ label }}</label>
 		<div>
 			<svg
 				ref="svg"
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 271 24"
-				@mousedown="enterSlide"
-				@touchstart="enterSlide"
-				@mousemove="moveSlide"
-				@touchmove="moveSlide"
-				@mouseup="exitSlide"
-				@touchend="exitSlide"
+				@mousedown="startDrag"
+				@touchstart="startDrag"
+				@touchmove="moveDrag"
+				@touchend="endDrag"
 			>
 				<defs>
 					<linearGradient
-						:id="`gradient${_.uid}`"
+						:id="`gradient${id}`"
 						:x1="gradientOffset * 100 + '%'"
 						y1="0%"
 						:x2="(gradientOffset + 1) * 100 + '%'"
@@ -38,108 +36,119 @@
 						d="M7 0H262V24H7z"
 						stroke-width="2"
 						paint-order="fill stroke markers"
-						:fill="`url(#gradient${_.uid})`"
+						:fill="`url(#gradient${id})`"
 					/>
 					<path :d="pointerPath" stroke-width="2" class="slider-pointer" />
 				</g>
 			</svg>
 		</div>
 		<input
-			:id="_.uid"
+			:id="id"
 			class="sliderInput"
 			min="0"
 			:max="maxValue"
 			:value="modelValue"
 			type="number"
 			v-if="!noInput"
-			@input="$emit('update:modelValue', parseFloat($event.target.value))"
+			@input="onInput"
 			@keydown.stop
 		/>
 	</div>
 </template>
 
-<script lang="ts">
-import { defineComponent, Prop } from 'vue';
+<script lang="ts" setup>
+import { useStore } from '@/store';
+import uniqId from '@/util/uniqueId';
+import { computed, PropType, ref } from 'vue';
 
 const sliderLength = 255;
 const sliderOffset = 8;
+const id = uniqId();
 
-export default defineComponent({
-	props: {
-		label: {
-			type: String,
-			required: true,
-		},
-		gradientStops: {
-			required: true,
-		} as Prop<string[]>,
-		modelValue: {
-			type: Number,
-			required: true,
-		},
-		maxValue: {
-			type: Number,
-			required: true,
-		},
-		shiftGradient: {
-			type: Boolean,
-			default: false,
-		},
-		noInput: {
-			type: Boolean,
-			default: false,
-		},
+const props = defineProps({
+	label: {
+		type: String,
+		required: true,
 	},
-	data: () => ({
-		slideActive: false,
-	}),
-	computed: {
-		vertical(): boolean {
-			return this.$store.state.ui.vertical;
-		},
-		pointerPath(): string {
-			const val = (this.modelValue / this.maxValue) * sliderLength;
-			return `M${val} 0L${val + 14} 0L${val + 7} 12Z`;
-		},
-		gradientOffset(): number {
-			if (!this.shiftGradient) return 0;
-			if (this.modelValue === 0) return 0;
-			return this.modelValue / this.maxValue;
-		},
+	gradientStops: {
+		required: true,
+		type: Array as PropType<string[]>,
 	},
-	methods: {
-		enterSlide(event: MouseEvent | TouchEvent): void {
-			this.slideActive = true;
-			this.moveSlide(event);
-		},
-		moveSlide(event: MouseEvent | TouchEvent) {
-			if (!this.slideActive) return;
-			const svg = this.$refs.svg as HTMLElement;
-			if (!svg.contains(event.target as Node) && event.target !== svg) return;
-			if (event instanceof MouseEvent && event.which !== 1) {
-				this.slideActive = false;
-				return;
-			}
-			const bounding = svg.getBoundingClientRect();
-			const scale =
-				bounding.width / (sliderOffset + sliderLength + sliderOffset);
-			const x =
-				(event instanceof MouseEvent
-					? event.clientX
-					: event.touches[0].clientX) - bounding.x;
-			const scaledX = x / scale;
-			event.preventDefault();
-			const value =
-				(Math.max(Math.min(scaledX - sliderOffset, sliderLength), 0) /
-					sliderLength) *
-				this.maxValue;
-			this.$emit('update:modelValue', value);
-		},
-		exitSlide() {
-			this.slideActive = false;
-		},
+	modelValue: {
+		type: Number,
+		required: true,
+	},
+	maxValue: {
+		type: Number,
+		required: true,
+	},
+	shiftGradient: {
+		default: false,
+	},
+	noInput: {
+		default: false,
 	},
 });
+
+const store = useStore();
+const emit = defineEmits(['update:modelValue']);
+const vertical = computed(() => store.state.ui.vertical);
+const svg = ref(null! as SVGElement);
+
+const pointerPath = computed(() => {
+	const val = (props.modelValue / props.maxValue) * sliderLength;
+	return `M${val} 0L${val + 14} 0L${val + 7} 12Z`;
+});
+const gradientOffset = computed(() => {
+	if (!props.shiftGradient) return 0;
+	if (props.modelValue === 0) return 0;
+	return props.modelValue / props.maxValue;
+});
+
+function onInput(event: Event) {
+	emit(
+		'update:modelValue',
+		parseFloat((event.target as HTMLInputElement).value)
+	);
+}
+//#region Drag and Drop
+const dragActive = ref(false);
+function startDrag(event: MouseEvent | TouchEvent): void {
+	dragActive.value = true;
+	moveDrag(event);
+	if (event instanceof MouseEvent) {
+		window.addEventListener('mousemove', moveDrag);
+		window.addEventListener('mouseup', endDrag);
+	}
+	event.preventDefault();
+}
+function moveDrag(event: MouseEvent | TouchEvent) {
+	if (!dragActive.value) return;
+	const svgE = svg.value;
+	if (event instanceof MouseEvent && event.buttons === 0) {
+		endDrag();
+		return;
+	}
+	event.preventDefault();
+	const bounding = svgE.getBoundingClientRect();
+	const scale = bounding.width / (sliderOffset + sliderLength + sliderOffset);
+	const x =
+		(event instanceof MouseEvent ? event.clientX : event.touches[0].clientX) -
+		bounding.x;
+	const scaledX = x / scale;
+	const value =
+		(Math.max(Math.min(scaledX - sliderOffset, sliderLength), 0) /
+			sliderLength) *
+		props.maxValue;
+	emit('update:modelValue', value);
+	event.preventDefault();
+}
+function endDrag() {
+	dragActive.value = false;
+	window.removeEventListener('mousemove', moveDrag);
+	window.removeEventListener('mouseup', endDrag);
+}
+//#endregion Drag and Drop
 </script>
 
 <style lang="scss" scoped>
