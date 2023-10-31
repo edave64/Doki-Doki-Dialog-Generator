@@ -2,7 +2,12 @@
 	A tool that is shown when a choice object is selected.
 -->
 <template>
-	<object-tool :object="object" title="Choice" :textHandler="textHandler">
+	<object-tool
+		ref="root"
+		:object="object"
+		title="Choice"
+		:textHandler="textHandler"
+	>
 		<d-fieldset class="buttons" title="Buttons:">
 			<d-flow maxSize="100%" direction="vertical" noWraping>
 				<div
@@ -42,8 +47,8 @@
 	</object-tool>
 </template>
 
-<script lang="ts">
-import { PanelMixin } from '@/components/mixins/panel-mixin';
+<script lang="ts" setup>
+import { PanelMixin, setupPanelMixin } from '@/components/mixins/panel-mixin';
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
@@ -55,105 +60,98 @@ import {
 	IRemoveChoiceAction,
 } from '@/store/object-types/choices';
 import { IPanel } from '@/store/panels';
-import { genericSetable } from '@/util/simple-settable';
+import { genericSetable, genericSetterMerged } from '@/util/simple-settable';
 import { DeepReadonly } from 'ts-essentials';
-import { ComponentCustomProperties, defineComponent } from 'vue';
+import { ComponentCustomProperties, computed, defineComponent, ref } from 'vue';
 import ObjectTool, { Handler } from './object-tool.vue';
+import { useStore } from '@/store';
 
-const setable = genericSetable<IChoices>();
-
-export default defineComponent({
-	mixins: [PanelMixin],
-	components: {
-		Toggle,
-		DFieldset,
-		DFlow,
-		ObjectTool,
-	},
-	data: () => ({
-		currentIdx: 0,
-		textEditor: false,
-	}),
-	computed: {
-		currentPanel(): DeepReadonly<IPanel> {
-			return this.$store.state.panels.panels[
-				this.$store.state.panels.currentPanel
-			];
-		},
-		object(): IChoices {
-			const obj = this.currentPanel.objects[this.$store.state.ui.selection!];
-			if (obj.type !== 'choice') return undefined!;
-			return obj as IChoices;
-		},
-		autoWrap: setable('autoWrap', 'panels/setAutoWrapping'),
-		buttonText: simpleButtonSettable('text'),
-		buttons(): DeepReadonly<IChoice[]> {
-			return this.object.choices;
-		},
-		textHandler(): Handler | undefined {
-			if (!this.textEditor) return undefined;
-			return {
-				title: 'Text',
-				get: () => {
-					return this.buttonText;
-				},
-				set: (text: string) => {
-					this.buttonText = text;
-				},
-				leave: () => {
-					this.textEditor = false;
-				},
-			};
-		},
-	},
-	methods: {
-		select(idx: number): void {
-			this.currentIdx = idx;
-		},
-		addChoice(): void {
-			transaction(async () => {
-				await this.$store.dispatch('panels/addChoice', {
-					id: this.object.id,
-					panelId: this.object.panelId,
-					text: '',
-				} as IAddChoiceAction);
-			});
-		},
-		removeChoice(): void {
-			transaction(async () => {
-				if (
-					this.currentIdx === this.object.choices.length - 1 &&
-					this.currentIdx > 0
-				) {
-					this.select(this.currentIdx - 1);
-				}
-				await this.$store.dispatch('panels/removeChoice', {
-					id: this.object.id,
-					panelId: this.object.panelId,
-					choiceIdx: this.currentIdx,
-				} as IRemoveChoiceAction);
-			});
-		},
-	},
+const store = useStore();
+const root = ref(null! as HTMLElement);
+setupPanelMixin(root);
+const currentPanel = computed((): DeepReadonly<IPanel> => {
+	return store.state.panels.panels[store.state.panels.currentPanel];
+});
+const object = computed((): IChoices => {
+	const obj = currentPanel.value.objects[store.state.ui.selection!];
+	if (obj.type !== 'choice') return undefined!;
+	return obj as IChoices;
 });
 
-function simpleButtonSettable<K extends keyof IChoice>(key: K) {
+const setable = <K extends keyof IChoices>(prop: K, message: string) =>
+	genericSetterMerged(store, object, message, false, prop);
+
+const currentIdx = ref(0);
+const textEditor = ref(false);
+
+const autoWrap = setable('autoWrap', 'panels/setAutoWrapping');
+const buttonText = simpleButtonSettable('text');
+const buttons = computed(() => {
+	return object.value.choices;
+});
+const textHandler = computed((): Handler | undefined => {
+	if (!textEditor.value) return undefined;
 	return {
+		title: 'Text',
+		get: () => {
+			return buttonText.value;
+		},
+		set: (text: string) => {
+			buttonText.value = text;
+		},
+		leave: () => {
+			textEditor.value = false;
+		},
+	};
+});
+
+function select(idx: number): void {
+	currentIdx.value = idx;
+}
+
+function addChoice(): void {
+	transaction(async () => {
+		await store.dispatch('panels/addChoice', {
+			id: object.value.id,
+			panelId: object.value.panelId,
+			text: '',
+		} as IAddChoiceAction);
+	});
+}
+
+function removeChoice(): void {
+	transaction(async () => {
+		if (
+			currentIdx.value === object.value.choices.length - 1 &&
+			currentIdx.value > 0
+		) {
+			select(currentIdx.value - 1);
+		}
+		await store.dispatch('panels/removeChoice', {
+			id: object.value.id,
+			panelId: object.value.panelId,
+			choiceIdx: currentIdx.value,
+		} as IRemoveChoiceAction);
+	});
+}
+
+function simpleButtonSettable<K extends keyof IChoice>(key: K) {
+	return computed({
 		get(this: IThis): IChoice[K] {
-			return this.object.choices[this.currentIdx][key];
+			return object.value.choices[currentIdx.value][key];
 		},
 		set(this: IThis, val: IChoice[K]): void {
 			transaction(() => {
-				this.$store.commit('panels/setChoiceProperty', {
-					id: this.object.id,
-					panelId: this.object.panelId,
-					choiceIdx: this.currentIdx,
+				store.commit('panels/setChoiceProperty', {
+					id: object.value.id,
+					panelId: object.value.panelId,
+					choiceIdx: currentIdx.value,
 					key,
 					value: val,
 				});
 			});
 		},
-	};
+	});
 }
 
 interface IThis extends ComponentCustomProperties {
