@@ -1,5 +1,5 @@
 <template>
-	<div class="panel">
+	<div class="panel" ref="root">
 		<h1
 			:style="{ fontStyle: hasLabel ? 'italic' : 'normal' }"
 			@click="enableNameEdit"
@@ -104,7 +104,7 @@
 							<button
 								id="textbox_color"
 								class="color-button"
-								:style="{ background: object.textboxColor }"
+								:style="{ background: object.textboxColor ?? '' }"
 								@click="selectTextboxColor"
 							/>
 						</td>
@@ -131,8 +131,8 @@
 	</div>
 </template>
 
-<script lang="ts">
-import { PanelMixin } from '@/components/mixins/panel-mixin';
+<script lang="ts" setup>
+import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import ModalDialog from '@/components/modal-dialog.vue';
 import Toggle from '@/components/toggle.vue';
 import Delete from '@/components/toolbox/commons-fieldsets/delete.vue';
@@ -143,7 +143,6 @@ import ImageOptions from '@/components/toolbox/subtools/image-options/image-opti
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import getConstants from '@/constants';
 import { transaction } from '@/plugins/vuex-history';
-import { IPoem } from '@/store/object-types/poem';
 import {
 	ICopyObjectToClipboardAction,
 	IObject,
@@ -153,167 +152,158 @@ import {
 	ISetTextBoxColor,
 } from '@/store/objects';
 import { IPanel } from '@/store/panels';
-import { genericSetable } from '@/util/simple-settable';
+import { genericSetterMerged } from '@/util/simple-settable';
 import { DeepReadonly } from 'ts-essentials';
-import { defineComponent, PropType } from 'vue';
+import { computed, PropType, ref } from 'vue';
 import TextEditor from '../subtools/text/text.vue';
+import { useStore } from '@/store';
 
-const setable = genericSetable<IPoem>();
+const store = useStore();
+const root = ref(null! as HTMLElement);
+const props = defineProps({
+	object: {
+		type: Object as PropType<IObject>,
+		required: true,
+	},
+	title: String,
+	textHandler: {
+		type: Object as PropType<Handler>,
+	},
+	colorHandler: {
+		type: Object as PropType<Handler>,
+	},
+	showAltPanel: Boolean,
+});
+const setable = <K extends keyof IObject>(prop: K, message: string) =>
+	genericSetterMerged(
+		store,
+		computed(() => props.object),
+		message,
+		false,
+		prop
+	);
+setupPanelMixin(root);
 
-export default defineComponent({
-	mixins: [PanelMixin],
-	components: {
-		Toggle,
-		PositionAndSize,
-		Layers,
-		Delete,
-		TextEditor,
-		ImageOptions,
-		Color,
-		ModalDialog,
-		DFieldset,
+const imageOptionsOpen = ref(false);
+const modalNameInput = ref('');
+const showRename = ref(false);
+const localColorHandler = ref(null as Handler | null);
+
+const flip = setable('flip', 'panels/setFlip');
+const rotation = setable('rotation', 'panels/setRotation');
+const enlargeWhenTalking = setable(
+	'enlargeWhenTalking',
+	'panels/setEnlargeWhenTalking'
+);
+
+const currentPanel = computed((): DeepReadonly<IPanel> => {
+	return store.state.panels.panels[store.state.panels.currentPanel];
+});
+
+const nameboxWidth = computed({
+	get(): number | '' {
+		const val = props.object.nameboxWidth;
+		if (val === null) return '';
+		return val;
 	},
-	props: {
-		object: {
-			type: Object as PropType<IObject>,
-			required: true,
-		},
-		title: String,
-		textHandler: {
-			type: Object as PropType<Handler>,
-		},
-		colorHandler: {
-			type: Object as PropType<Handler>,
-		},
-		showAltPanel: Boolean,
-	},
-	data: () => ({
-		imageOptionsOpen: false,
-		canEdit: true,
-		modalNameInput: '',
-		showRename: false,
-		localColorHandler: null as Handler | null,
-	}),
-	computed: {
-		flip: setable('flip', 'panels/setFlip'),
-		rotation: setable('rotation', 'panels/setRotation'),
-		enlargeWhenTalking: setable(
-			'enlargeWhenTalking',
-			'panels/setEnlargeWhenTalking'
-		),
-		currentPanel(): DeepReadonly<IPanel> {
-			return this.$store.state.panels.panels[
-				this.$store.state.panels.currentPanel
-			];
-		},
-		nameboxWidth: {
-			get(): number | '' {
-				const val = this.object.nameboxWidth;
-				if (val === null) return '';
-				return val;
-			},
-			set(value: number | '') {
-				const val =
-					typeof value === 'string' && value.trim() === ''
-						? null
-						: parseInt(value + '');
-				transaction(() => {
-					this.$store.commit('panels/setObjectNameboxWidth', {
-						id: this.object.id,
-						panelId: this.object.panelId,
-						nameboxWidth: val,
-					} as ISetNameboxWidthMutation);
-				});
-			},
-		},
-		zoom: {
-			get(): number {
-				return this.object.zoom * 100;
-			},
-			set(zoom: number): void {
-				transaction(() => {
-					this.$store.commit('panels/setObjectZoom', {
-						id: this.object.id,
-						panelId: this.object.panelId,
-						zoom: zoom / 100,
-					} as ISetObjectZoomMutation);
-				});
-			},
-		},
-		defaultNameboxWidth(): number {
-			return getConstants().TextBox.NameboxWidth;
-		},
-		finalColorHandler(): Handler | null {
-			return this.localColorHandler || this.colorHandler || null;
-		},
-		hasLabel(): boolean {
-			return this.object.label !== null;
-		},
-		heading(): string {
-			return this.object.label ?? this.title ?? 'Object';
-		},
-		useCustomTextboxColor: {
-			get(): boolean {
-				return this.object.textboxColor !== null;
-			},
-			set(val: boolean) {
-				transaction(() => {
-					this.$store.commit('panels/setTextboxColor', {
-						panelId: this.object.panelId,
-						id: this.object.id,
-						textboxColor: val
-							? getConstants().TextBoxCustom.textboxDefaultColor
-							: null,
-					} as ICopyObjectToClipboardAction);
-				});
-			},
-		},
-	},
-	methods: {
-		copy() {
-			transaction(async () => {
-				await this.$store.dispatch('panels/copyObjectToClipboard', {
-					panelId: this.object.panelId,
-					id: this.object.id,
-				} as ICopyObjectToClipboardAction);
-			});
-		},
-		enableNameEdit() {
-			this.modalNameInput = this.object.label ?? '';
-			this.showRename = true;
-		},
-		renameOption(option: 'Apply' | 'Cancel') {
-			this.showRename = false;
-			if (option === 'Apply') {
-				transaction(() => {
-					this.$store.commit('panels/setLabel', {
-						panelId: this.object.panelId,
-						id: this.object.id,
-						label: this.modalNameInput,
-					} as ISetLabelMutation);
-				});
-			}
-		},
-		selectTextboxColor() {
-			this.localColorHandler = {
-				title: 'Textbox color',
-				get: () => this.object.textboxColor,
-				set: (color: string) => {
-					transaction(() => {
-						this.$store.commit('panels/setTextboxColor', {
-							panelId: this.object.panelId,
-							id: this.object.id,
-							textboxColor: color,
-						} as ISetTextBoxColor);
-					});
-				},
-				leave: () => {
-					this.localColorHandler = null;
-				},
-			} as Handler;
-		},
+	set(value: number | '') {
+		const val =
+			typeof value === 'string' && value.trim() === ''
+				? null
+				: parseInt(value + '');
+		transaction(() => {
+			store.commit('panels/setObjectNameboxWidth', {
+				id: props.object.id,
+				panelId: props.object.panelId,
+				nameboxWidth: val,
+			} as ISetNameboxWidthMutation);
+		});
 	},
 });
+
+const zoom = computed({
+	get(): number {
+		return props.object.zoom * 100;
+	},
+	set(zoom: number): void {
+		transaction(() => {
+			store.commit('panels/setObjectZoom', {
+				id: props.object.id,
+				panelId: props.object.panelId,
+				zoom: zoom / 100,
+			} as ISetObjectZoomMutation);
+		});
+	},
+});
+
+const defaultNameboxWidth = computed(() => getConstants().TextBox.NameboxWidth);
+const finalColorHandler = computed(
+	() => localColorHandler.value || props.colorHandler || null
+);
+const hasLabel = computed(() => props.object.label !== null);
+const heading = computed(() => props.object.label ?? props.title ?? 'Object');
+const useCustomTextboxColor = computed({
+	get(): boolean {
+		return props.object.textboxColor !== null;
+	},
+	set(val: boolean) {
+		transaction(() => {
+			store.commit('panels/setTextboxColor', {
+				panelId: props.object.panelId,
+				id: props.object.id,
+				textboxColor: val
+					? getConstants().TextBoxCustom.textboxDefaultColor
+					: null,
+			} as ICopyObjectToClipboardAction);
+		});
+	},
+});
+
+function copy() {
+	transaction(async () => {
+		await store.dispatch('panels/copyObjectToClipboard', {
+			panelId: props.object.panelId,
+			id: props.object.id,
+		} as ICopyObjectToClipboardAction);
+	});
+}
+
+function enableNameEdit() {
+	modalNameInput.value = props.object.label ?? '';
+	showRename.value = true;
+}
+
+function renameOption(option: 'Apply' | 'Cancel') {
+	showRename.value = false;
+	if (option === 'Apply') {
+		transaction(() => {
+			store.commit('panels/setLabel', {
+				panelId: props.object.panelId,
+				id: props.object.id,
+				label: modalNameInput.value,
+			} as ISetLabelMutation);
+		});
+	}
+}
+
+function selectTextboxColor() {
+	localColorHandler.value = {
+		title: 'Textbox color',
+		get: () => props.object.textboxColor,
+		set: (color: string) => {
+			transaction(() => {
+				store.commit('panels/setTextboxColor', {
+					panelId: props.object.panelId,
+					id: props.object.id,
+					textboxColor: color,
+				} as ISetTextBoxColor);
+			});
+		},
+		leave: () => {
+			localColorHandler.value = null;
+		},
+	} as Handler;
+}
 
 export interface Handler {
 	title: string;
