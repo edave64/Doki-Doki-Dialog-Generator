@@ -20,9 +20,9 @@
 		<div class="v-w100 h-h100">
 			<slider-group :mode="mode" v-model="color" :relative="true" />
 			<div class="hex-selector">
-				<label class="hex-label" :for="`hex_${_.uid}`">Hex</label>
+				<label class="hex-label" :for="`hex_${id}`">Hex</label>
 				<input
-					:id="`hex_${_.uid}`"
+					:id="`hex_${id}`"
 					:value="color"
 					@input="updateHex"
 					@keydown.stop
@@ -44,138 +44,132 @@
 				:title="swatch.label"
 				@click="
 					color = swatch.color;
-					$emit('leave');
+					emit('leave');
 				"
 			></button>
 		</div>
 	</div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import DFlow from '@/components/ui/d-flow.vue';
 import eventBus, { ColorPickedEvent } from '@/eventbus/event-bus';
 import { transaction } from '@/plugins/vuex-history';
 import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
 import { RGBAColor } from '@/util/colors/rgb';
-import {
-	Color,
-	ContentPack,
-} from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { DeepReadonly } from 'ts-essentials';
-import { defineComponent, PropType } from 'vue';
+import { computed, onMounted, onUnmounted, PropType, ref } from 'vue';
 import DButton from '../../../ui/d-button.vue';
 import SliderGroup from './slider-group.vue';
+import { useStore } from '@/store';
+import uniqId from '@/util/uniqueId';
 
 const generatedPackId = 'dddg.generated.colors';
-
-export default defineComponent({
-	components: {
-		SliderGroup,
-		DButton,
-		DFlow,
+const id = uniqId();
+const store = useStore();
+defineOptions({ inheritAttrs: false });
+const emit = defineEmits(['leave', 'update:modelValue']);
+const props = defineProps({
+	modelValue: {
+		required: true,
+		type: String,
 	},
-	inheritAttrs: false,
-	emits: ['leave', 'update:modelValue'],
-	props: {
-		modelValue: {
-			required: true,
-			type: String,
-		},
-		title: { default: '' },
-		format: {
-			type: String as PropType<'rgb' | 'hex'>,
-			default: 'hex',
-		},
-	},
-	data: () => ({
-		mode: 'hsla',
-		relative: true,
-	}),
-	computed: {
-		vertical(): boolean {
-			return this.$store.state.ui.vertical;
-		},
-		swatches(): DeepReadonly<Color[]> {
-			return this.$store.state.content.current.colors;
-		},
-		color: {
-			get(): string {
-				if (this.format === 'rgb') {
-					const rgb = RGBAColor.fromCss(this.modelValue);
-					return rgb.toHex();
-				} else {
-					return this.modelValue;
-				}
-			},
-			set(newColor: string) {
-				if (this.format === 'rgb') {
-					const rgb = RGBAColor.fromCss(newColor);
-					this.$emit('update:modelValue', rgb.toCss());
-				} else {
-					this.$emit('update:modelValue', newColor);
-				}
-			},
-		},
-	},
-	mounted() {
-		eventBus.subscribe(ColorPickedEvent, this.settingColor);
-	},
-	unmounted() {
-		eventBus.unsubscribe(ColorPickedEvent, this.settingColor);
-	},
-	methods: {
-		settingColor(ev: ColorPickedEvent) {
-			this.color = RGBAColor.fromCss(ev.color).toHex();
-		},
-		updateHex(event: Event) {
-			const hex = (event.target as HTMLInputElement).value;
-			if (RGBAColor.validHex(hex) && (hex.length === 7 || hex.length === 9)) {
-				this.color = hex;
-			}
-		},
-		addSwatch() {
-			if (this.swatches.find((swatch) => swatch.color === this.color)) return;
-			const existingPack: DeepReadonly<ContentPack<IAssetSwitch>> =
-				this.$store.state.content.contentPacks.find(
-					(pack) => pack.packId === generatedPackId
-				) || {
-					packId: generatedPackId,
-					packCredits: [''],
-					dependencies: [],
-					characters: [],
-					fonts: [],
-					backgrounds: [],
-					sprites: [],
-					poemStyles: [],
-					poemBackgrounds: [],
-					colors: [],
-				};
-
-			const newPack: ContentPack<IAssetSwitch> = {
-				...existingPack,
-				colors: [
-					...existingPack.colors,
-					{
-						label: this.color,
-						color: this.color,
-					},
-				],
-			} as any;
-
-			transaction(async () => {
-				await this.$store.dispatch('content/replaceContentPack', {
-					contentPack: newPack,
-					processed: true,
-				} as ReplaceContentPackAction);
-			});
-		},
-		pickColor(): void {
-			transaction(() => {
-				this.$store.commit('ui/setColorPicker', true);
-			});
-		},
+	title: { default: '' },
+	format: {
+		type: String as PropType<'rgb' | 'hex'>,
+		default: 'hex',
 	},
 });
+
+const mode = ref('hsla' as 'hsla' | 'rgba' | undefined);
+const vertical = computed(() => store.state.ui.vertical);
+const color = computed({
+	get(): string {
+		if (props.format === 'rgb') {
+			const rgb = RGBAColor.fromCss(props.modelValue);
+			return rgb.toHex();
+		} else {
+			return props.modelValue;
+		}
+	},
+	set(newColor: string) {
+		if (props.format === 'rgb') {
+			const rgb = RGBAColor.fromCss(newColor);
+			emit('update:modelValue', rgb.toCss());
+		} else {
+			emit('update:modelValue', newColor);
+		}
+	},
+});
+
+function updateHex(event: Event) {
+	const hex = (event.target as HTMLInputElement).value;
+	if (RGBAColor.validHex(hex) && (hex.length === 7 || hex.length === 9)) {
+		color.value = hex;
+	}
+}
+//#region Swatches
+const swatches = computed(() => store.state.content.current.colors);
+
+function addSwatch() {
+	if (swatches.value.find((swatch) => swatch.color === color.value)) return;
+	const existingPack: DeepReadonly<ContentPack<IAssetSwitch>> =
+		store.state.content.contentPacks.find(
+			(pack) => pack.packId === generatedPackId
+		) || {
+			packId: generatedPackId,
+			packCredits: [''],
+			dependencies: [],
+			characters: [],
+			fonts: [],
+			backgrounds: [],
+			sprites: [],
+			poemStyles: [],
+			poemBackgrounds: [],
+			colors: [],
+		};
+
+	const newPack: ContentPack<IAssetSwitch> = {
+		...existingPack,
+		colors: [
+			...existingPack.colors,
+			{
+				label: color.value,
+				color: color.value,
+			},
+		],
+	} as any;
+
+	transaction(async () => {
+		await store.dispatch('content/replaceContentPack', {
+			contentPack: newPack,
+			processed: true,
+		} as ReplaceContentPackAction);
+	});
+}
+//#endregion Swatches
+//#region Picker
+function pickColor(): void {
+	transaction(() => {
+		// Notifies the render.vue to switch into color picker mode
+		store.commit('ui/setColorPicker', true);
+	});
+}
+
+function settingColor(ev: ColorPickedEvent) {
+	color.value = RGBAColor.fromCss(ev.color).toHex();
+}
+
+onMounted(() => {
+	// Notification from render.vue, that a color was picked
+	eventBus.subscribe(ColorPickedEvent, settingColor);
+});
+
+onUnmounted(() => {
+	eventBus.unsubscribe(ColorPickedEvent, settingColor);
+});
+//#endregion Picker
 </script>
 
 <style lang="scss" scoped>
