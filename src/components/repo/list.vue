@@ -1,5 +1,5 @@
 <template>
-	<div class="list">
+	<div ref="root" class="list">
 		<table>
 			<thead>
 				<tr ref="header">
@@ -39,7 +39,7 @@
 						focused: focusedItem === pack.id,
 					}"
 					@mousedown="focusedItem = pack.id"
-					@click="$emit('selected', { id: pack.id, source: 'pointer' })"
+					@click="emit('selected', { id: pack.id, source: 'pointer' })"
 				>
 					<td>{{ pack.name }}</td>
 					<td>{{ pack.characters.join(', ') }}</td>
@@ -52,218 +52,208 @@
 	</div>
 </template>
 
-<script lang="ts">
-import { Pack, Repo } from "@/models/repo";
-import run from "@edave64/dddg-repo-filters/dist/main";
-import { IPack } from "@edave64/dddg-repo-filters/dist/pack";
-import { DeepReadonly } from "ts-essentials";
-import { defineComponent, PropType } from "vue";
-import { IPackWithState } from "@/components/repo/types";
+<script lang="ts" setup>
+import { Pack, Repo } from '@/models/repo';
+import run from '@edave64/dddg-repo-filters/dist/main';
+import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
+import { DeepReadonly } from 'ts-essentials';
+import {
+	ComponentPublicInstance,
+	computed,
+	nextTick,
+	PropType,
+	ref,
+	watch,
+} from 'vue';
+import { IPackWithState } from '@/components/repo/types';
 
 const pageKeyMoveBy = 10;
-
-export default defineComponent({
-	props: {
-		search: { type: String, required: true },
-		repo: {
-			type: Object as PropType<Repo | null>,
-		},
-		disabled: {
-			type: Boolean,
-			default: false,
-		},
+const props = defineProps({
+	search: { type: String, required: true },
+	repo: {
+		type: Object as PropType<Repo | null>,
 	},
-	data: () => ({
-		sort: '' as keyof IPackWithState | '',
-		desc: false,
-		focusedItem: '',
-		wordCache: {} as { [id: string]: Set<string> },
-	}),
-	computed: {
-		packs(): DeepReadonly<Pack[]> {
-			if (!this.repo) return [];
-			return this.repo.getPacks();
-		},
-		list(): DeepReadonly<Pack[]> {
-			const filtered = this.filterList(this.packs, this.search);
-			if (this.sort && filtered.length > 0) {
-				const sort = this.sort as keyof IPack;
-				let sortFunc:
-					| ((a: DeepReadonly<IPack>, b: DeepReadonly<IPack>) => number)
-					| undefined;
-				if (typeof filtered[0][sort] === 'string') {
-					sortFunc = (a, b) => a.name.localeCompare(b.name);
-				} else if (filtered[0][sort] instanceof Array) {
-					sortFunc = (a, b) =>
-						(a as any)[sort]
-							.join(', ')
-							.localeCompare((b as any)[sort].join(', '));
-				}
-				if (sortFunc) {
-					if (this.desc) {
-						const oldSort = sortFunc;
-						sortFunc = (b, a) => oldSort(a, b);
-					}
-					filtered.sort(sortFunc);
-				}
-			}
-			return filtered;
-		},
-		listById(): DeepReadonly<Map<string, IPack>> {
-			return new Map(this.packs.map((pack) => [pack.id, pack]));
-		},
-		uniqueCharacters(): string[] {
-			return Array.from(
-				new Set(
-					this.packs.flatMap((pack) =>
-						pack.characters.map((char) => char.toLowerCase())
-					)
-				)
-			);
-		},
-	},
-	methods: {
-		focus(): void {
-			((this.$refs.tbody as any).$el as HTMLElement).focus();
-		},
-		keydownHandler(event: KeyboardEvent) {
-			const indexOf = this.list.findIndex(
-				(pack) => pack.id === this.focusedItem
-			);
-			console.log(indexOf);
-			switch (event.key) {
-				case 'Enter':
-					this.$emit('selected', { id: this.focusedItem, source: 'keyboard' });
-					event.stopPropagation();
-					event.preventDefault();
-					break;
-				case 'ArrowUp':
-					event.preventDefault();
-					event.stopPropagation();
-					if (indexOf === 0) {
-						this.$emit('select-search-bar');
-					} else {
-						this.focusedItem = this.list[indexOf - 1].id;
-					}
-					break;
-				case 'ArrowDown':
-					event.preventDefault();
-					event.stopPropagation();
-					if (indexOf < this.list.length - 1) {
-						this.focusedItem = this.list[indexOf + 1].id;
-					}
-					break;
-				case 'PageUp': {
-					event.preventDefault();
-					event.stopPropagation();
-					let newIdx = indexOf - pageKeyMoveBy;
-					if (newIdx < 0) {
-						newIdx = 0;
-					}
-					this.focusedItem = this.list[newIdx].id;
-					break;
-				}
-				case 'PageDown': {
-					event.preventDefault();
-					event.stopPropagation();
-					let newIdx = indexOf + pageKeyMoveBy;
-					const max = this.list.length - 1;
-					if (newIdx > max) {
-						newIdx = max;
-					}
-					this.focusedItem = this.list[newIdx].id;
-					break;
-				}
-			}
-		},
-		headerKeydownListener(event: KeyboardEvent, headerId: keyof IPackWithState) {
-			switch (event.key) {
-				case 'Enter':
-				case ' ':
-					this.sortBy(headerId);
-					event.preventDefault();
-					event.stopPropagation();
-					break;
-				case 'ArrowDown':
-					this.focus();
-					event.stopPropagation();
-					event.preventDefault();
-					break;
-				case 'ArrowUp':
-					this.$emit('select-search-bar');
-					event.stopPropagation();
-					event.preventDefault();
-					break;
-			}
-		},
-		updateFocusedItem() {
-			if (this.list.length === 0) {
-				this.focusedItem = '';
-				return;
-			}
-			if (this.focusedItem === '') {
-				this.focusedItem = this.list[0].id;
-			}
-
-			this.$nextTick(() => {
-				const header = this.$refs.header as HTMLElement;
-				const element = document.querySelector('.list tbody .focused') as
-					| HTMLDivElement
-					| undefined;
-
-				const containerHeight =
-					(this.$el as HTMLElement).offsetHeight - header.offsetHeight;
-				const scrollTop = this.$el.scrollTop;
-				const scrollBottom = scrollTop + containerHeight;
-
-				if (element) {
-					const itemTop = element.offsetTop - header.offsetHeight;
-					const itemBottom = itemTop + element.offsetHeight;
-
-					if (itemBottom > scrollBottom) {
-						this.$el.scrollTop = itemBottom - containerHeight;
-					} else if (itemTop < scrollTop) {
-						this.$el.scrollTop = itemTop;
-					}
-				}
-			});
-		},
-		sortBy(by: keyof IPackWithState) {
-			if (this.sort === by) {
-				if (!this.desc) {
-					this.desc = true;
-				} else {
-					this.sort = '';
-					this.desc = false;
-				}
-			} else {
-				this.sort = by;
-				this.desc = false;
-			}
-		},
-		filterList(
-			list: DeepReadonly<Array<Pack>>,
-			search: string
-		): Array<DeepReadonly<Pack>> {
-			if (!search) return [...list];
-			return run(
-				search,
-				this.repo ? this.repo!.getAuthors() : {},
-				list as any
-			) as Pack[];
-		},
-		translatePackState(state: DeepReadonly<Pack>) {
-			if (state.loaded) return 'Active';
-			if (state.installed) return 'Installed';
-			return '';
-		},
-	},
-	watch: {
-		focusedItem() {
-			this.updateFocusedItem();
-		},
+	disabled: {
+		type: Boolean,
+		default: false,
 	},
 });
+const emit = defineEmits(['selected', 'select-search-bar']);
+const root = ref(null! as HTMLDivElement);
+const tbody = ref(null! as ComponentPublicInstance);
+const header = ref(null! as HTMLTableRowElement);
+const sort = ref('' as keyof IPackWithState | '');
+const desc = ref(false);
+const focusedItem = ref('');
+
+const packs = computed(() => {
+	if (!props.repo) return [];
+	return props.repo.getPacks();
+});
+
+const list = computed((): DeepReadonly<Pack[]> => {
+	const filtered = filterList(packs.value, props.search);
+	if (sort.value && filtered.length > 0) {
+		const sort_ = sort.value as keyof IPack;
+		let sortFunc:
+			| ((a: DeepReadonly<IPack>, b: DeepReadonly<IPack>) => number)
+			| undefined;
+		if (typeof filtered[0][sort_] === 'string') {
+			sortFunc = (a, b) => a.name.localeCompare(b.name);
+		} else if (filtered[0][sort_] instanceof Array) {
+			sortFunc = (a, b) =>
+				(a as any)[sort_]
+					.join(', ')
+					.localeCompare((b as any)[sort_].join(', '));
+		}
+		if (sortFunc) {
+			if (desc.value) {
+				const oldSort = sortFunc;
+				sortFunc = (b, a) => oldSort(a, b);
+			}
+			filtered.sort(sortFunc);
+		}
+	}
+	return filtered;
+});
+
+function focus(): void {
+	tbody.value.$el.focus();
+}
+
+function keydownHandler(event: KeyboardEvent) {
+	const indexOf = list.value.findIndex((pack) => pack.id === focusedItem.value);
+	switch (event.key) {
+		case 'Enter':
+			emit('selected', { id: focusedItem.value, source: 'keyboard' });
+			event.stopPropagation();
+			event.preventDefault();
+			break;
+		case 'ArrowUp':
+			event.preventDefault();
+			event.stopPropagation();
+			if (indexOf === 0) {
+				emit('select-search-bar');
+			} else {
+				focusedItem.value = list.value[indexOf - 1].id;
+			}
+			break;
+		case 'ArrowDown':
+			event.preventDefault();
+			event.stopPropagation();
+			if (indexOf < list.value.length - 1) {
+				focusedItem.value = list.value[indexOf + 1].id;
+			}
+			break;
+		case 'PageUp': {
+			event.preventDefault();
+			event.stopPropagation();
+			let newIdx = indexOf - pageKeyMoveBy;
+			if (newIdx < 0) {
+				newIdx = 0;
+			}
+			focusedItem.value = list.value[newIdx].id;
+			break;
+		}
+		case 'PageDown': {
+			event.preventDefault();
+			event.stopPropagation();
+			let newIdx = indexOf + pageKeyMoveBy;
+			const max = list.value.length - 1;
+			if (newIdx > max) {
+				newIdx = max;
+			}
+			focusedItem.value = list.value[newIdx].id;
+			break;
+		}
+	}
+}
+
+function headerKeydownListener(
+	event: KeyboardEvent,
+	headerId: keyof IPackWithState
+) {
+	switch (event.key) {
+		case 'Enter':
+		case ' ':
+			sortBy(headerId);
+			event.preventDefault();
+			event.stopPropagation();
+			break;
+		case 'ArrowDown':
+			focus();
+			event.stopPropagation();
+			event.preventDefault();
+			break;
+		case 'ArrowUp':
+			emit('select-search-bar');
+			event.stopPropagation();
+			event.preventDefault();
+			break;
+	}
+}
+
+function updateFocusedItem() {
+	if (list.value.length === 0) {
+		focusedItem.value = '';
+		return;
+	}
+	if (focusedItem.value === '') {
+		focusedItem.value = list.value[0].id;
+	}
+
+	nextTick(() => {
+		const element = document.querySelector('.list tbody .focused') as
+			| HTMLDivElement
+			| undefined;
+
+		const containerHeight = root.value.offsetHeight - header.value.offsetHeight;
+		const scrollTop = root.value.scrollTop;
+		const scrollBottom = scrollTop + containerHeight;
+
+		if (element) {
+			const itemTop = element.offsetTop - header.value.offsetHeight;
+			const itemBottom = itemTop + element.offsetHeight;
+
+			if (itemBottom > scrollBottom) {
+				root.value.scrollTop = itemBottom - containerHeight;
+			} else if (itemTop < scrollTop) {
+				root.value.scrollTop = itemTop;
+			}
+		}
+	});
+}
+
+function sortBy(by: keyof IPackWithState) {
+	if (sort.value === by) {
+		if (!desc.value) {
+			desc.value = true;
+		} else {
+			sort.value = '';
+			desc.value = false;
+		}
+	} else {
+		sort.value = by;
+		desc.value = false;
+	}
+}
+
+function filterList(list: DeepReadonly<Array<Pack>>, search: string) {
+	if (!search) return [...list];
+	return run(
+		search,
+		props.repo ? props.repo!.getAuthors() : {},
+		list as any
+	) as Pack[];
+}
+
+function translatePackState(state: DeepReadonly<Pack>) {
+	if (state.loaded) return 'Active';
+	if (state.installed) return 'Installed';
+	return '';
+}
+
+watch(() => focusedItem.value, updateFocusedItem);
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
