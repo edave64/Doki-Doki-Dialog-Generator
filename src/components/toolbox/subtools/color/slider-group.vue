@@ -30,179 +30,186 @@
 	</div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { IColor } from '@/util/colors/color';
 import { HSLAColor } from '@/util/colors/hsl';
 import { RGBAColor } from '@/util/colors/rgb';
-import { defineComponent, Prop } from 'vue';
+import { computed, ComputedRef, PropType, Ref, ref, watch } from 'vue';
 import Slider from './slider.vue';
+import { useStore } from '@/store';
 
-export default defineComponent({
-	components: { Slider },
-	props: {
-		modelValue: {
-			type: String,
-			validator: (val: string): boolean => !!val.match(/^#[0-9a-f]{6,8}$/i),
-		},
-		mode: {
-			type: String,
-		} as Prop<'hsla' | 'rgba'>,
-		relative: Boolean,
+const store = useStore();
+const emit = defineEmits(['update:modelValue']);
+const props = defineProps({
+	modelValue: {
+		type: String,
+		validator: (val: string): boolean => !!val.match(/^#[0-9a-f]{6,8}$/i),
 	},
-	data: () => ({
-		lastRGBEmit: null as string | null,
-		v1: 0,
-		v2: 0,
-		v3: 0,
-		a: 0,
-	}),
-	computed: {
-		vertical(): boolean {
-			return this.$store.state.ui.vertical;
-		},
-		maxValue1(): number {
-			if (this.mode === 'rgba') return 255;
-			return 360;
-		},
-		label1(): string {
-			if (this.mode === 'rgba') return 'Red';
-			return 'Hue';
-		},
-		stops1(): string[] {
-			let stops: IColor[] = [];
-			if (this.mode === 'rgba') {
-				const g = this.relative ? this.v2 : 0;
-				const b = this.relative ? this.v3 : 0;
-				stops = [new RGBAColor(0, g, b, 1), new RGBAColor(255, g, b, 1)];
-			} else {
-				const s = this.relative ? this.v2 / 100 : 1;
-				const l = this.relative ? this.v3 / 100 : 0.5;
-				stops = this.eightsStops((i) => new HSLAColor(i, s, l, 1));
-			}
-			return stops.map((stop) => stop.toRgb().toCss());
-		},
-		maxValue2(): number {
-			if (this.mode === 'rgba') return 255;
-			return 100;
-		},
-		label2(): string {
-			if (this.mode === 'rgba') return 'Green';
-			return 'Saturation';
-		},
-		stops2(): string[] {
-			let stops: IColor[] = [];
-			if (this.mode === 'rgba') {
-				const r = this.relative ? this.v1 : 0;
-				const b = this.relative ? this.v3 : 0;
-				stops = [new RGBAColor(r, 0, b, 1), new RGBAColor(r, 255, b, 1)];
-			} else {
-				const h = this.relative ? this.v1 / 360 : 0;
-				const l = this.relative ? this.v3 / 100 : 0.5;
-				stops = this.eightsStops((i) => new HSLAColor(h, i, l, 1));
-			}
-			return stops.map((stop) => stop.toRgb().toCss());
-		},
-		maxValue3(): number {
-			if (this.mode === 'rgba') return 255;
-			return 100;
-		},
-		label3(): string {
-			if (this.mode === 'rgba') return 'Blue';
-			return 'Luminosity';
-		},
-		stops3(): string[] {
-			let stops: IColor[] = [];
-			if (this.mode === 'rgba') {
-				const r = this.relative ? this.v1 : 0;
-				const g = this.relative ? this.v2 : 0;
-				stops = [new RGBAColor(r, g, 0, 1), new RGBAColor(r, g, 255, 1)];
-			} else {
-				const h = this.relative ? this.v1 / 360 : 0;
-				const s = this.relative ? this.v2 / 100 : 0.5;
-				stops = this.eightsStops((i) => new HSLAColor(h, s, i, 1));
-			}
-			return stops.map((stop) => stop.toRgb().toCss());
-		},
-		stopsAlpha(): string[] {
-			const color = RGBAColor.fromHex(this.modelValue!);
-			return [
-				new RGBAColor(color.r, color.g, color.b, 0).toCss(),
-				new RGBAColor(color.r, color.g, color.b, 1).toCss(),
-			];
+	mode: {
+		type: String as PropType<'hsla' | 'rgba'>,
+	},
+	relative: Boolean,
+});
+
+const lastRGBEmit = ref(null as string | null);
+const v1 = ref(0);
+const v2 = ref(0);
+const v3 = ref(0);
+const a = ref(0);
+
+const {
+	maxValue: maxValue1,
+	label: label1,
+	stops: stops1,
+} = stop({
+	rgba: {
+		label: 'Red',
+		stops() {
+			const g = props.relative ? v2.value : 0;
+			const b = props.relative ? v3.value : 0;
+			return [new RGBAColor(0, g, b, 1), new RGBAColor(255, g, b, 1)];
 		},
 	},
-	created() {
-		this.initValues();
-	},
-	methods: {
-		valueChanged() {
-			if (this.modelValue === this.lastRGBEmit) return;
-			this.initValues();
-		},
-		updateValue() {
-			let newColor: IColor;
-			if (this.mode === 'rgba') {
-				newColor = new RGBAColor(this.v1, this.v2, this.v3, this.a / 255);
-			} else {
-				newColor = new HSLAColor(
-					this.v1 / 360,
-					this.v2 / 100,
-					this.v3 / 100,
-					this.a / 255
-				);
-			}
-			const rgbColor = newColor.toRgb().toHex();
-			if (this.lastRGBEmit === rgbColor) return;
-			if (rgbColor.length !== 9) {
-				throw new Error(`Invalid color code: ${rgbColor}`);
-			}
-			this.lastRGBEmit = rgbColor;
-			this.$emit('update:modelValue', rgbColor);
-		},
-		initValues() {
-			const color = RGBAColor.fromHex(this.modelValue!);
-			this.lastRGBEmit = color.toHex();
-			this.a = color.a * 255;
-			if (this.mode === 'hsla') {
-				const hslColor = color.toHSL();
-				this.v1 = hslColor.h * 360;
-				this.v2 = hslColor.s * 100;
-				this.v3 = hslColor.l * 100;
-			} else {
-				this.v1 = color.r;
-				this.v2 = color.g;
-				this.v3 = color.b;
-			}
-		},
-		eightsStops(gen: (i: number) => IColor): IColor[] {
-			const stops: IColor[] = [];
-			for (let i = 0; i <= 8; ++i) {
-				stops.push(gen(i / 8));
-			}
-			return stops;
-		},
-	},
-	watch: {
-		value() {
-			this.valueChanged();
-		},
-		v1() {
-			this.updateValue();
-		},
-		v2() {
-			this.updateValue();
-		},
-		v3() {
-			this.updateValue();
-		},
-		a() {
-			this.updateValue();
-		},
-		mode() {
-			this.initValues();
+	hsla: {
+		label: 'Hue',
+		max: 360,
+		stops() {
+			const s = props.relative ? v2.value / 100 : 1;
+			const l = props.relative ? v3.value / 100 : 0.5;
+			return eightsStops((i) => new HSLAColor(i, s, l, 1));
 		},
 	},
 });
+
+const {
+	maxValue: maxValue2,
+	label: label2,
+	stops: stops2,
+} = stop({
+	rgba: {
+		label: 'Green',
+		stops() {
+			const r = props.relative ? v1.value : 0;
+			const b = props.relative ? v3.value : 0;
+			return [new RGBAColor(r, 0, b, 1), new RGBAColor(r, 255, b, 1)];
+		},
+	},
+	hsla: {
+		label: 'Saturation',
+		stops() {
+			const h = props.relative ? v1.value / 360 : 0;
+			const l = props.relative ? v3.value / 100 : 0.5;
+			return eightsStops((i) => new HSLAColor(h, i, l, 1));
+		},
+	},
+});
+
+const {
+	maxValue: maxValue3,
+	label: label3,
+	stops: stops3,
+} = stop({
+	rgba: {
+		label: 'Blue',
+		stops() {
+			const r = props.relative ? v1.value : 0;
+			const g = props.relative ? v2.value : 0;
+			return [new RGBAColor(r, g, 0, 1), new RGBAColor(r, g, 255, 1)];
+		},
+	},
+	hsla: {
+		label: 'Luminosity',
+		stops() {
+			const h = props.relative ? v1.value / 360 : 0;
+			const s = props.relative ? v2.value / 100 : 0.5;
+			return eightsStops((i) => new HSLAColor(h, s, i, 1));
+		},
+	},
+});
+
+const stopsAlpha = computed((): string[] => {
+	const color = RGBAColor.fromHex(props.modelValue!);
+	return [
+		new RGBAColor(color.r, color.g, color.b, 0).toCss(),
+		new RGBAColor(color.r, color.g, color.b, 1).toCss(),
+	];
+});
+
+function valueChanged() {
+	if (props.modelValue === lastRGBEmit.value) return;
+	initValues();
+}
+function updateValue() {
+	let newColor: IColor;
+	if (props.mode === 'rgba') {
+		newColor = new RGBAColor(v1.value, v2.value, v3.value, a.value / 255);
+	} else {
+		newColor = new HSLAColor(
+			v1.value / 360,
+			v2.value / 100,
+			v3.value / 100,
+			a.value / 255
+		);
+	}
+	const rgbColor = newColor.toRgb().toHex();
+	if (lastRGBEmit.value === rgbColor) return;
+	if (rgbColor.length !== 9) {
+		throw new Error(`Invalid color code: ${rgbColor}`);
+	}
+	lastRGBEmit.value = rgbColor;
+	emit('update:modelValue', rgbColor);
+}
+function initValues() {
+	const color = RGBAColor.fromHex(props.modelValue!);
+	lastRGBEmit.value = color.toHex();
+	a.value = color.a * 255;
+	if (props.mode === 'hsla') {
+		const hslColor = color.toHSL();
+		v1.value = hslColor.h * 360;
+		v2.value = hslColor.s * 100;
+		v3.value = hslColor.l * 100;
+	} else {
+		v1.value = color.r;
+		v2.value = color.g;
+		v3.value = color.b;
+	}
+}
+function eightsStops(gen: (i: number) => IColor): IColor[] {
+	const stops: IColor[] = [];
+	for (let i = 0; i <= 8; ++i) {
+		stops.push(gen(i / 8));
+	}
+	return stops;
+}
+
+watch(() => props.modelValue, valueChanged);
+watch(() => props.mode, initValues, { immediate: true });
+watch(() => [v1.value, v2.value, v3.value, a.value], updateValue);
+
+interface IConfig {
+	label: string;
+	max?: number;
+	stops: () => IColor[];
+}
+
+function stop({ rgba, hsla }: { rgba: IConfig; hsla: IConfig }): {
+	maxValue: ComputedRef<number>;
+	label: ComputedRef<string>;
+	stops: ComputedRef<string[]>;
+} {
+	const maxValue = computed(() =>
+		props.mode === 'rgba' ? 255 : hsla.max ?? 100
+	);
+	const label = computed(() =>
+		props.mode === 'rgba' ? rgba.label : hsla.label
+	);
+	const stops = computed(() => {
+		const stops = props.mode === 'rgba' ? rgba.stops() : hsla.stops();
+		return stops.map((stop) => stop.toRgb().toCss());
+	});
+
+	return { maxValue, label, stops };
+}
 </script>
 
 <style lang="scss" scoped>
