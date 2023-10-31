@@ -4,22 +4,22 @@
 <template>
 	<div>
 		<slider
-			:label="label1"
+			:label="slider1.label.value"
 			v-model="v1"
-			:max-value="maxValue1"
-			:gradient-stops="stops1"
+			:max-value="slider1.maxValue.value"
+			:gradient-stops="slider1.stops.value"
 		/>
 		<slider
-			:label="label2"
+			:label="slider2.label.value"
 			v-model="v2"
-			:max-value="maxValue2"
-			:gradient-stops="stops2"
+			:max-value="slider2.maxValue.value"
+			:gradient-stops="slider2.stops.value"
 		/>
 		<slider
-			:label="label3"
+			:label="slider3.label.value"
 			v-model="v3"
-			:max-value="maxValue3"
-			:gradient-stops="stops3"
+			:max-value="slider3.maxValue.value"
+			:gradient-stops="slider3.stops.value"
 		/>
 		<slider
 			label="Alpha"
@@ -34,11 +34,9 @@
 import { IColor } from '@/util/colors/color';
 import { HSLAColor } from '@/util/colors/hsl';
 import { RGBAColor } from '@/util/colors/rgb';
-import { computed, ComputedRef, PropType, Ref, ref, watch } from 'vue';
+import { computed, ComputedRef, PropType, ref, watch } from 'vue';
 import Slider from './slider.vue';
-import { useStore } from '@/store';
 
-const store = useStore();
 const emit = defineEmits(['update:modelValue']);
 const props = defineProps({
 	modelValue: {
@@ -57,11 +55,7 @@ const v2 = ref(0);
 const v3 = ref(0);
 const a = ref(0);
 
-const {
-	maxValue: maxValue1,
-	label: label1,
-	stops: stops1,
-} = stop({
+const slider1 = stop({
 	rgba: {
 		label: 'Red',
 		stops() {
@@ -81,11 +75,7 @@ const {
 	},
 });
 
-const {
-	maxValue: maxValue2,
-	label: label2,
-	stops: stops2,
-} = stop({
+const slider2 = stop({
 	rgba: {
 		label: 'Green',
 		stops() {
@@ -104,11 +94,7 @@ const {
 	},
 });
 
-const {
-	maxValue: maxValue3,
-	label: label3,
-	stops: stops3,
-} = stop({
+const slider3 = stop({
 	rgba: {
 		label: 'Blue',
 		stops() {
@@ -139,6 +125,7 @@ function valueChanged() {
 	if (props.modelValue === lastRGBEmit.value) return;
 	initValues();
 }
+
 function updateValue() {
 	let newColor: IColor;
 	if (props.mode === 'rgba') {
@@ -159,6 +146,7 @@ function updateValue() {
 	lastRGBEmit.value = rgbColor;
 	emit('update:modelValue', rgbColor);
 }
+
 function initValues() {
 	const color = RGBAColor.fromHex(props.modelValue!);
 	lastRGBEmit.value = color.toHex();
@@ -174,6 +162,7 @@ function initValues() {
 		v3.value = color.b;
 	}
 }
+
 function eightsStops(gen: (i: number) => IColor): IColor[] {
 	const stops: IColor[] = [];
 	for (let i = 0; i <= 8; ++i) {
