@@ -9,24 +9,21 @@
 	</div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
+import { computed } from 'vue';
 
-export default defineComponent({
-	props: {
-		icon: String,
-		label: String,
-		images: {
-			default: [] as string[],
-		},
+const props = defineProps({
+	icon: String,
+	label: String,
+	images: {
+		default: [] as string[],
 	},
-	computed: {
-		background(): string {
-			return this.images
-				.map((i) => `center / contain no-repeat url('${i}')`)
-				.join(',');
-		},
-	},
+});
+
+const background = computed(() => {
+	return props.images
+		.map((i) => `center / contain no-repeat url('${i}')`)
+		.join(',');
 });
 </script>
 
