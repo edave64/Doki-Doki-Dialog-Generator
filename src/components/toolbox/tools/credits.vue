@@ -2,7 +2,7 @@
 	A tab that shows the application credits.
 -->
 <template>
-	<div class="panel">
+	<div class="panel" ref="root">
 		<h1>Help and Credits</h1>
 		<l class="btn" to="wiki://Dokumentation">Help</l>
 		<l class="btn" to="github://">Fork me on GitHub</l>
@@ -106,15 +106,13 @@
 	</div>
 </template>
 
-<script lang="ts">
-import { PanelMixin } from '@/components/mixins/panel-mixin';
+<script lang="ts" setup>
+import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import L from '@/components/ui/link.vue';
-import { defineComponent } from 'vue';
+import { ref } from 'vue';
 
-export default defineComponent({
-	mixins: [PanelMixin],
-	components: { L },
-});
+const root = ref(null! as HTMLDivElement);
+setupPanelMixin(root);
 </script>
 
 <style lang="scss" scoped>
