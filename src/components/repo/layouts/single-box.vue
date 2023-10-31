@@ -7,7 +7,7 @@
 				v-model="search"
 				:disabled="!!selected"
 				@focus-list="focusListHandler"
-				@leave="$emit('leave')"
+				@leave="emit('leave')"
 			/>
 			<list
 				class="list"
@@ -17,7 +17,7 @@
 				:disabled="!!selected"
 				v-if="!isRepoUrl"
 				@selected="onSelect"
-				@select-search-bar="$refs.searchBar.focus()"
+				@select-search-bar="searchBar.focus()"
 			/>
 			<div class="ask-download" v-else>
 				Do you want to download the pack from '{{ search }}'?
@@ -37,112 +37,107 @@
 	</div>
 </template>
 
-<script lang="ts">
-import eventBus, { VueErrorEvent } from "@/eventbus/event-bus";
-import { Pack, Repo } from "@/models/repo";
-import { IAuthors } from "@edave64/dddg-repo-filters/dist/authors";
-import { DeepReadonly } from "ts-essentials";
-import { defineComponent } from "vue";
-import List from "../list.vue";
-import PackDisplay from "../pack-display.vue";
-import SearchBar from "../search-bar.vue";
-import { SelectedEvent } from "../types";
+<script lang="ts" setup>
+import eventBus, { VueErrorEvent } from '@/eventbus/event-bus';
+import { Pack, Repo } from '@/models/repo';
+import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
+import { DeepReadonly } from 'ts-essentials';
+import { computed, nextTick, onActivated, onMounted, ref } from 'vue';
+import List from '../list.vue';
+import PackDisplay from '../pack-display.vue';
+import SearchBar from '../search-bar.vue';
+import { SelectedEvent } from '../types';
+import { safeAsync } from '@/util/errors';
 
-export default defineComponent({
-	components: {
-		SearchBar,
-		List,
-		PackDisplay,
-	},
-	data: () => ({
-		search: '',
-		packs: [] as DeepReadonly<Pack[]>,
-		authors: {} as IAuthors,
-		repo: null as null | Repo,
-		selected: null as string | null,
-	}),
-	computed: {
-		isRepoUrl() {
-			return (
-				this.search.endsWith('.json') &&
-				(this.search.startsWith('http://') ||
-					this.search.startsWith('https://'))
-			);
-		},
-	},
-	methods: {
-		focus(): void {},
-		setSearch(str: string): void {
-			this.selected = null;
-			this.search = str;
-		},
-		leavePackDisplay(moveFocus: boolean) {
-			this.selected = null;
-			if (moveFocus) {
-				this.focusSearchBar();
-			}
-		},
-		keydownHandler(event: KeyboardEvent) {
-			if (event.key === 'Escape') {
-				this.selected = '';
-				this.$nextTick(() => {
-					(this.$refs.searchBar as any).focus();
-				});
-			}
-		},
-		onSelect({ id, source }: SelectedEvent) {
-			this.selected = id;
-			if (source === 'keyboard') {
-				this.$nextTick(() => {
-					const dialog = this.$refs.dialog as any;
-					dialog.focus();
-				});
-			}
-		},
-		focusListHandler() {
-			this.$nextTick(() => {
-				const list = this.$refs.list as any;
-				if (list) {
-					list.focus();
-				}
-			});
-		},
-		focusSearchBar() {
-			this.$nextTick(() => {
-				const searchBar = this.$refs.searchBar as any;
-				if (searchBar) {
-					searchBar.focus();
-				}
-			});
-		},
-		async add_repo_pack() {
-			try {
-				const repo = await Repo.getInstance();
-				const packId = await repo.loadTempPack(this.search);
-				this.search = '';
-				if (packId) {
-					this.selected = packId;
-				}
-			} catch (e) {
-				eventBus.fire(
-					new VueErrorEvent(e as Error, 'Error while loading external pack')
-				);
-				console.error(e);
-			}
-		},
-	},
-	async created() {
+const emit = defineEmits(['leave']);
+const searchBar = ref(null! as typeof SearchBar);
+const list = ref(null! as typeof List);
+const dialog = ref(null! as typeof PackDisplay);
+
+const search = ref('');
+const packs = ref([] as DeepReadonly<Pack[]>);
+const authors = ref({} as IAuthors);
+const repo = ref(null as null | Repo);
+const selected = ref(null as string | null);
+
+const isRepoUrl = computed(() => {
+	return (
+		search.value.endsWith('.json') &&
+		(search.value.startsWith('http://') || search.value.startsWith('https://'))
+	);
+});
+
+function setSearch(str: string): void {
+	selected.value = null;
+	search.value = str;
+}
+defineExpose({ setSearch });
+
+function leavePackDisplay(moveFocus: boolean) {
+	selected.value = null;
+	if (moveFocus) {
+		focusSearchBar();
+	}
+}
+
+function keydownHandler(event: KeyboardEvent) {
+	if (event.key === 'Escape') {
+		selected.value = '';
+		nextTick(() => {
+			searchBar.value.focus();
+		});
+	}
+}
+
+function onSelect({ id, source }: SelectedEvent) {
+	selected.value = id;
+	if (source === 'keyboard') {
+		nextTick(() => {
+			dialog.value.focus();
+		});
+	}
+}
+
+function focusListHandler() {
+	nextTick(() => {
+		if (list.value) {
+			list.value.focus();
+		}
+	});
+}
+
+function focusSearchBar() {
+	nextTick(() => {
+		if (searchBar.value) {
+			searchBar.value.focus();
+		}
+	});
+}
+
+async function add_repo_pack() {
+	try {
 		const repo = await Repo.getInstance();
-		this.repo = repo;
-		this.packs = repo.getPacks();
-		this.authors = repo.getAuthors();
-	},
-	activated() {
-		this.focusSearchBar();
-	},
-	mounted() {
-		this.focusSearchBar();
-	},
+		const packId = await repo.loadTempPack(search.value);
+		search.value = '';
+		if (packId) {
+			selected.value = packId;
+		}
+	} catch (e) {
+		eventBus.fire(
+			new VueErrorEvent(e as Error, 'Error while loading external pack')
+		);
+		console.error(e);
+	}
+}
+
+onActivated(focusSearchBar);
+onMounted(focusSearchBar);
+
+safeAsync('Initializing repo list', async () => {
+	const repo_ = await Repo.getInstance();
+	repo.value = repo_;
+	packs.value = repo_.getPacks();
+	authors.value = repo_.getAuthors();
 });
 </script>
 

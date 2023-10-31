@@ -71,7 +71,7 @@ const pageKeyMoveBy = 10;
 const props = defineProps({
 	search: { type: String, required: true },
 	repo: {
-		type: Object as PropType<Repo | null>,
+		type: Object as PropType<DeepReadonly<Repo> | null>,
 	},
 	disabled: {
 		type: Boolean,
