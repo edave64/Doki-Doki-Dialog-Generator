@@ -7,24 +7,21 @@
 				v-model="message"
 				:disabled="disabled"
 				@input="onUpdate"
-				@click="$event.dontCloseHelp = true"
+				@click.stop
 				@keydown="keydownHandler"
 			/>
 			<button
 				:class="{ help: true, toggled: showHelp }"
 				:disabled="disabled"
-				@click.stop="
-					showHelp = !showHelp;
-					$event.dontCloseHelp = true;
-				"
+				@click.stop="showHelp = !showHelp"
 			>
 				<i class="material-icons">info</i>
 			</button>
-			<button class="exit-button" @click="$emit('leave', true)">
+			<button class="exit-button" @click="emit('leave', true)">
 				<i class="material-icons">clear</i>
 			</button>
 		</div>
-		<div class="info-area" v-if="showHelp" @click="$event.dontCloseHelp = true">
+		<div class="info-area" v-if="showHelp" @click.stop>
 			<p>Enter the text you want to search for. E.g. <code>Monika</code></p>
 			<p>
 				If multiple words are given, each word must be found. E.g.
@@ -86,79 +83,80 @@
 	</div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 
 const debounce = 250;
-
-export default defineComponent({
-	props: {
-		disabled: {
-			type: Boolean,
-			default: false,
-		},
-		modelValue: {
-			type: String,
-			default: '',
-		},
+const props = defineProps({
+	disabled: {
+		type: Boolean,
+		default: false,
 	},
-	data: () => ({
-		showHelp: false,
-		message: '',
-		debounceTimeout: null as number | null,
-		lastSend: '',
-	}),
-	methods: {
-		focus() {
-			const ele = this.$refs.input as HTMLElement | undefined;
-			if (ele) {
-				ele.focus();
-			}
-		},
-		documentClickHandler(event: MouseEvent & { dontCloseHelp?: boolean }) {
-			if (event.dontCloseHelp) return;
-			this.showHelp = false;
-		},
-		keydownHandler(event: KeyboardEvent) {
-			if (event.key === 'ArrowDown') {
-				this.$emit('focus-list');
-				event.preventDefault();
-				event.stopPropagation();
-			}
-		},
-		updateInternalValue() {
-			if (this.lastSend === this.modelValue) {
-				this.lastSend = '';
-				return;
-			}
-			this.message = this.modelValue;
-		},
-		onUpdate() {
-			if (this.debounceTimeout != null) clearTimeout(this.debounceTimeout);
-			this.debounceTimeout = setTimeout(this.doUpdate, debounce);
-		},
-		doUpdate() {
-			if (this.debounceTimeout != null) clearTimeout(this.debounceTimeout);
-			this.debounceTimeout = null;
-			const div = document.createElement('div');
-			div.innerHTML = this.message;
-			this.lastSend = div.innerText;
-			this.$emit('update:modelValue', div.innerText);
-		},
-	},
-	mounted() {
-		document.body.addEventListener('click', this.documentClickHandler);
-		this.updateInternalValue();
-	},
-	unmounted() {
-		document.body.removeEventListener('click', this.documentClickHandler);
-	},
-	watch: {
-		modelValue() {
-			this.updateInternalValue();
-		},
+	modelValue: {
+		type: String,
+		default: '',
 	},
 });
+const emit = defineEmits(['leave', 'focus-list', 'update:modelValue']);
+const input = ref(null! as HTMLInputElement);
+
+const message = ref('');
+const debounceTimeout = ref(null as number | null);
+const lastSend = ref('');
+
+function focus() {
+	const ele = input.value;
+	if (ele) {
+		ele.focus();
+	}
+}
+defineExpose({ focus });
+
+function keydownHandler(event: KeyboardEvent) {
+	if (event.key === 'ArrowDown') {
+		emit('focus-list');
+		event.preventDefault();
+		event.stopPropagation();
+	}
+}
+
+function updateInternalValue() {
+	if (lastSend.value === props.modelValue) {
+		lastSend.value = '';
+		return;
+	}
+	message.value = props.modelValue;
+}
+
+function onUpdate() {
+	if (debounceTimeout.value != null) clearTimeout(debounceTimeout.value);
+	debounceTimeout.value = setTimeout(doUpdate, debounce);
+}
+
+function doUpdate() {
+	if (debounceTimeout.value != null) clearTimeout(debounceTimeout.value);
+	debounceTimeout.value = null;
+	const div = document.createElement('div');
+	div.innerHTML = message.value;
+	lastSend.value = div.innerText;
+	emit('update:modelValue', div.innerText);
+}
+
+watch(() => props.modelValue, updateInternalValue, { immediate: true });
+//#region Help Popup
+const showHelp = ref(false);
+function documentClickHandler(event: MouseEvent) {
+	showHelp.value = false;
+}
+
+onMounted(() => {
+	document.body.addEventListener('click', documentClickHandler);
+});
+
+onUnmounted(() => {
+	document.body.removeEventListener('click', documentClickHandler);
+});
+//#endregion Help Popup
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -211,7 +209,7 @@ a {
 	background-color: var(--native-background);
 	max-height: calc(100vh - 56px);
 	overflow: auto;
-	box-shadow: 0 2px 4px 4px rgba(255, 189, 225, 1);
+	box-shadow: 0 2px 4px 4px var(--accent-background);
 
 	code {
 		padding: 2px;
