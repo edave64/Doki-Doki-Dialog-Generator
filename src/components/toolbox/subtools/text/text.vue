@@ -1,13 +1,12 @@
 <!--
 	An advanced text-entry that helps with formatting.
 -->
-<!--suppress CssNoGenericFontName -->
 <template>
 	<color v-if="colorSelector" v-model="selectedColor" @leave="applyColor" />
 	<div v-else :class="{ 'text-subpanel': true, vertical }">
 		<h2>{{ title }}</h2>
 		<div class="column ok-col">
-			<button @click="$emit('leave')">OK</button>
+			<button @click="emit('leave')">OK</button>
 		</div>
 		<div class="column">
 			<textarea
@@ -113,114 +112,114 @@
 	</div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import getConstants from '@/constants';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
-import { defineComponent } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import Color from '../color/color.vue';
+import { useStore } from '@/store';
 
-export default defineComponent({
+defineOptions({
 	inheritAttrs: false,
-	components: { Color },
-	props: {
-		modelValue: {
-			type: String,
-			required: true,
-		},
-		title: {
-			type: String,
-			default: '',
-		},
+});
+defineProps({
+	modelValue: {
+		type: String,
+		required: true,
 	},
-	data: () => ({
-		colorSelector: '' as '' | 'text' | 'outline',
-		selectedFont: '',
-		selectedColor: '#000000',
-		rememberedStart: 0,
-		rememberedEnd: 0,
-		error: '',
-	}),
-	computed: {
-		vertical(): boolean {
-			return this.$store.state.ui.vertical;
-		},
-	},
-	watch: {
-		selectedFont() {
-			if (this.selectedFont === '') return;
-			this.insertCommand('font', this.selectedFont);
-			this.selectedFont = '';
-		},
-	},
-	methods: {
-		onValueChanged() {
-			const constants = getConstants();
-			const val = (this.$refs.textArea as HTMLTextAreaElement).value;
-			try {
-				// tslint:disable-next-line: no-unused-expression
-				new TextRenderer(val, constants.TextBox.NameboxTextStyle);
-				this.error = '';
-			} catch (e) {
-				this.error = (e as Error).message;
-			}
-			this.$emit('update:modelValue', val);
-		},
-		selectColor(colorSelector: '' | 'text' | 'outline') {
-			const el = this.$refs.textArea as HTMLTextAreaElement;
-			this.colorSelector = colorSelector;
-			this.rememberedStart = el.selectionStart;
-			this.rememberedEnd = el.selectionEnd;
-		},
-		applyColor() {
-			const color = this.selectedColor;
-			const colorSelector = this.colorSelector;
-			const apply = () => {
-				const el = this.$refs.textArea as HTMLTextAreaElement | undefined;
-				if (!el) {
-					this.$nextTick(apply);
-					return;
-				}
-				el.selectionStart = this.rememberedStart;
-				el.selectionEnd = this.rememberedEnd;
-				this.insertCommand(
-					colorSelector === 'text' ? 'color' : 'outlinecolor',
-					color
-				);
-			};
-			this.$nextTick(apply);
-			this.selectedColor = '#000000';
-			this.colorSelector = '';
-		},
-		insertText(text: string) {
-			const el = this.$refs.textArea as HTMLTextAreaElement;
-			const val = el.value;
-			const selStart = el.selectionStart;
-			const selEnd = el.selectionEnd;
-			el.value = val.slice(0, selStart) + text + val.slice(selEnd);
-			el.selectionStart = el.selectionEnd = selStart + text.length;
-			el.focus();
-			this.onValueChanged();
-		},
-		insertCommand(command: string, arg?: any) {
-			const el = this.$refs.textArea as HTMLTextAreaElement;
-			const val = el.value;
-			const selStart = el.selectionStart;
-			const selEnd = el.selectionEnd;
-			const selectedText = val.slice(selStart, selEnd);
-			const before = val.slice(0, selStart);
-			const after = val.slice(selEnd);
-			let commandOpen = command;
-			if (arg) {
-				commandOpen += '=' + arg;
-			}
-			el.value = `${before}{${commandOpen}}${selectedText}{/${command}}${after}`;
-			el.selectionStart = selStart + commandOpen.length + 2;
-			el.selectionEnd = el.selectionStart + selectedText.length;
-			el.focus();
-			this.onValueChanged();
-		},
+	title: {
+		type: String,
+		default: '',
 	},
 });
+const store = useStore();
+const emit = defineEmits(['update:modelValue', 'leave']);
+const textArea = ref(null! as HTMLTextAreaElement);
+const colorSelector = ref('' as '' | 'text' | 'outline');
+const selectedFont = ref('');
+const selectedColor = ref('#000000');
+const rememberedStart = ref(0);
+const rememberedEnd = ref(0);
+const error = ref('');
+
+const vertical = computed(() => store.state.ui.vertical);
+
+watch(
+	() => selectedFont.value,
+	() => {
+		if (selectedFont.value === '') return;
+		insertCommand('font', selectedFont.value);
+		selectedFont.value = '';
+	}
+);
+
+function onValueChanged() {
+	const constants = getConstants();
+	const val = textArea.value.value;
+	try {
+		// tslint:disable-next-line: no-unused-expression
+		new TextRenderer(val, constants.TextBox.NameboxTextStyle);
+		error.value = '';
+	} catch (e) {
+		error.value = (e as Error).message;
+	}
+	emit('update:modelValue', val);
+}
+
+function selectColor(colorSelector_: '' | 'text' | 'outline') {
+	const el = textArea.value;
+	colorSelector.value = colorSelector_;
+	rememberedStart.value = el.selectionStart;
+	rememberedEnd.value = el.selectionEnd;
+}
+
+function applyColor() {
+	const color = selectedColor.value;
+	const colorSelector_ = colorSelector.value;
+	const apply = () => {
+		const el = textArea.value;
+		if (!el) {
+			nextTick(apply);
+			return;
+		}
+		el.selectionStart = rememberedStart.value;
+		el.selectionEnd = rememberedEnd.value;
+		insertCommand(colorSelector_ === 'text' ? 'color' : 'outlinecolor', color);
+	};
+	nextTick(apply);
+	selectedColor.value = '#000000';
+	colorSelector.value = '';
+}
+
+function insertText(text: string) {
+	const el = textArea.value;
+	const val = el.value;
+	const selStart = el.selectionStart;
+	const selEnd = el.selectionEnd;
+	el.value = val.slice(0, selStart) + text + val.slice(selEnd);
+	el.selectionStart = el.selectionEnd = selStart + text.length;
+	el.focus();
+	onValueChanged();
+}
+
+function insertCommand(command: string, arg?: any) {
+	const el = textArea.value;
+	const val = el.value;
+	const selStart = el.selectionStart;
+	const selEnd = el.selectionEnd;
+	const selectedText = val.slice(selStart, selEnd);
+	const before = val.slice(0, selStart);
+	const after = val.slice(selEnd);
+	let commandOpen = command;
+	if (arg) {
+		commandOpen += '=' + arg;
+	}
+	el.value = `${before}{${commandOpen}}${selectedText}{/${command}}${after}`;
+	el.selectionStart = selStart + commandOpen.length + 2;
+	el.selectionEnd = el.selectionStart + selectedText.length;
+	el.focus();
+	onValueChanged();
+}
 </script>
 
 <style lang="scss" scoped>
