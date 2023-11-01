@@ -3,18 +3,19 @@
 		:class="{ part: true, active: part?.active }"
 		:style="style"
 		tabindex="0"
-		@click="$emit('click')"
+		@click="emit('click')"
 		@contextmenu="quickClick"
-		@keydown.enter.prevent="$emit('click')"
+		@keydown.enter.prevent="emit('click')"
 		@keydown.space.prevent="quickClick"
 	></div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { getAAssetUrl, getBuildInAssetUrl } from '@/asset-manager';
 import { IAssetSwitch } from '@/store/content';
+import { safeAsync } from '@/util/errors';
 import { DeepReadonly } from 'ts-essentials';
-import { defineComponent, Prop } from 'vue';
+import { computed, PropType, ref } from 'vue';
 
 export interface IPartButtonImage {
 	images: IPartImage[];
@@ -29,91 +30,81 @@ export interface IPartImage {
 }
 
 const spriteSize = 960;
-
-export default defineComponent({
-	props: {
-		part: {
-			required: true,
-		} as Prop<DeepReadonly<IPartButtonImage>>,
-		value: {
-			required: true,
-		},
-		size: {
-			type: Number,
-			default: 150,
-		},
+const props = defineProps({
+	part: {
+		required: true,
+		type: Object as PropType<DeepReadonly<IPartButtonImage>>,
 	},
-	data: () => ({
-		lookups: [] as string[],
-		loaded: false,
-	}),
-	computed: {
-		scaleX(): number {
-			return this.size / this.part!.size[0];
-		},
-		scaleY(): number {
-			return this.size / this.part!.size[1];
-		},
-		backgroundSize(): string {
-			return `${Math.floor(spriteSize * this.scaleX)}px ${Math.floor(
-				spriteSize * this.scaleY
-			)}px`;
-		},
-		backgroundPosition(): string {
-			return (
-				`${Math.floor(this.part!.offset[0] * -this.scaleX)}px ` +
-				`${Math.floor(this.part!.offset[1] * -this.scaleY)}px`
-			);
-		},
-		background() {
-			let ret = '';
-			const size = this.backgroundSize;
-			const globalOffset = this.part!.offset ?? [0, 0];
-			// The indexing in this loop is reversed, since the images are in order of painting, like dddgs render commands,
-			// where the last object in the list is drawn last, and thus above all others.
-			// Css handles this in reverse, where prior layers are draw above the later ones.
-			const max = this.part!.images.length - 1;
-			for (let i = 0; i <= max; ++i) {
-				const image = this.part!.images[max - i];
-				const lookup = this.lookups[max - i];
-				if (!lookup) continue;
-				if (i > 0) ret += ', ';
-				const localOffset = image.offset ?? [0, 0];
-				const pos =
-					`${Math.floor(
-						(globalOffset[0] - localOffset[0]) * -this.scaleX
-					)}px ` +
-					`${Math.floor((globalOffset[1] - localOffset[1]) * -this.scaleY)}px`;
-				ret += `url('${lookup.replace("'", "\\'")}') ${pos} / ${size}`;
-			}
-			return ret;
-		},
-		style(): { [id: string]: string } {
-			return {
-				height: this.size + 'px',
-				width: this.size + 'px',
-				background: this.background,
-			};
-		},
+	value: {
+		required: true,
 	},
-	async created() {
-		this.lookups = await Promise.all(
-			this.part!.images.map((image) => {
-				if (typeof image.asset === 'string') {
-					return getBuildInAssetUrl(image.asset, false);
-				} else {
-					return getAAssetUrl(image.asset, false);
-				}
-			})
-		);
-	},
-	methods: {
-		quickClick(e: KeyboardEvent) {
-			e.preventDefault();
-			this.$emit('quick-click');
-		},
+	size: {
+		type: Number,
+		default: 150,
 	},
 });
+const emit = defineEmits(['quick-click', 'click']);
+const lookups = ref([] as string[]);
+
+const scaleX = computed((): number => {
+	return props.size / props.part!.size[0];
+});
+const scaleY = computed((): number => {
+	return props.size / props.part!.size[1];
+});
+const backgroundSize = computed((): string => {
+	return `${Math.floor(spriteSize * scaleX.value)}px ${Math.floor(
+		spriteSize * scaleY.value
+	)}px`;
+});
+const background = computed(() => {
+	let ret = '';
+	const size = backgroundSize.value;
+	const globalOffset = props.part!.offset ?? [0, 0];
+	// The indexing in this loop is reversed, since the images are in order of painting, like dddgs render commands,
+	// where the last object in the list is drawn last, and thus above all others.
+	// Css handles this in reverse, where prior layers are draw above the later ones.
+	const max = props.part!.images.length - 1;
+	for (let i = 0; i <= max; ++i) {
+		const image = props.part!.images[max - i];
+		const lookup = lookups.value[max - i];
+		if (!lookup) continue;
+		if (i > 0) ret += ', ';
+		const localOffset = image.offset ?? [0, 0];
+		const pos =
+			`${Math.floor((globalOffset[0] - localOffset[0]) * -scaleX.value)}px ` +
+			`${Math.floor((globalOffset[1] - localOffset[1]) * -scaleY.value)}px`;
+		ret += `url('${lookup.replace("'", "\\'")}') ${pos} / ${size}`;
+	}
+	return ret;
+});
+const style = computed((): { [id: string]: string } => {
+	return {
+		height: props.size + 'px',
+		width: props.size + 'px',
+		background: background.value,
+	};
+});
+
+function quickClick(e: Event) {
+	e.preventDefault();
+	emit('quick-click');
+}
+//#region Init
+async function init() {
+	lookups.value = await Promise.all(
+		props.part!.images.map((image) => {
+			if (typeof image.asset === 'string') {
+				return getBuildInAssetUrl(image.asset, false);
+			} else {
+				return getAAssetUrl(image.asset, false);
+			}
+		})
+	);
+}
+
+safeAsync('Initialization of parts button', init);
+//#endregion Init
 </script>
 
 <style lang="scss" scoped>
