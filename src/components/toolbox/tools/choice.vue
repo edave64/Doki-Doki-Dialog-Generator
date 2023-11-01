@@ -48,7 +48,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PanelMixin, setupPanelMixin } from '@/components/mixins/panel-mixin';
+import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
@@ -60,7 +60,7 @@ import {
 	IRemoveChoiceAction,
 } from '@/store/object-types/choices';
 import { IPanel } from '@/store/panels';
-import { genericSetable, genericSetterMerged } from '@/util/simple-settable';
+import { genericSetterMerged } from '@/util/simple-settable';
 import { DeepReadonly } from 'ts-essentials';
 import { ComponentCustomProperties, computed, defineComponent, ref } from 'vue';
 import ObjectTool, { Handler } from './object-tool.vue';
