@@ -335,13 +335,11 @@ export interface Handler {
 #namebox_width {
 	width: 5em;
 }
-</style>
-<style lang="scss">
-.modal-rename dialog {
+dialog.modal-rename {
 	padding: 4px;
 
 	p {
-		font-family: aller sans-serif;
+		font-family: aller, sans-serif;
 		font-size: 24px;
 	}
 }
