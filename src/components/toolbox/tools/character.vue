@@ -2,7 +2,12 @@
 	A tool that is shown when a character object is selected.
 -->
 <template>
-	<object-tool :object="object" :title="label" :showAltPanel="!!panelForParts">
+	<object-tool
+		ref="root"
+		:object="object"
+		:title="label"
+		:showAltPanel="!!panelForParts"
+	>
 		<template v-slot:alt-panel>
 			<parts
 				v-if="panelForParts"
@@ -82,13 +87,12 @@
 	</object-tool>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { getAAssetUrl } from '@/asset-manager';
-import { PanelMixin } from '@/components/mixins/panel-mixin';
+import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import { transaction } from '@/plugins/vuex-history';
-import { IAssetSwitch } from '@/store/content';
 import {
 	getData,
 	getHeads,
@@ -98,148 +102,128 @@ import {
 	ISeekPosePartAction,
 	ISeekStyleAction,
 } from '@/store/object-types/characters';
-import { IObject } from '@/store/objects';
-import { IPanel } from '@/store/panels';
-import { genericSetable } from '@/util/simple-settable';
-import { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { DeepReadonly } from 'ts-essentials';
-import { defineComponent } from 'vue';
+import { genericSetterMerged } from '@/util/simple-settable';
+import { computed, ref, watch } from 'vue';
 import Parts from './character/parts.vue';
 import ObjectTool from './object-tool.vue';
+import { useStore } from '@/store';
 
-const setable = genericSetable<ICharacter>();
+const store = useStore();
 
-export default defineComponent({
-	mixins: [PanelMixin],
-	components: {
-		Toggle,
-		Parts,
-		DFieldset,
-		ObjectTool,
-	},
-	data: () => ({
-		panelForParts: null as string | null,
-	}),
-	computed: {
-		flip: setable('flip', 'panels/setFlip'),
-		closeUp: setable('close', 'panels/setClose'),
-		missingHead(): string | null {
-			const charData = this.charData;
-			const obj = this.object;
+const root = ref(null! as HTMLElement);
+const missingHeadUpload = ref(null! as HTMLInputElement);
+setupPanelMixin(root);
 
-			const heads = getHeads(charData, obj);
-			if (!heads) return null;
-			for (const asset of heads.variants) {
-				const url = getAAssetUrl(asset[0], false);
-				console.log(url);
-				if (url.startsWith('uploads:')) return url.substring(8);
-			}
-			return null;
-		},
-		selection(): IObject['id'] {
-			return this.$store.state.ui.selection!;
-		},
-		currentPanel(): DeepReadonly<IPanel> {
-			return this.$store.state.panels.panels[
-				this.$store.state.panels.currentPanel
-			];
-		},
-		object(): DeepReadonly<ICharacter> {
-			const obj = this.currentPanel.objects[this.selection];
-			if (obj.type !== 'character') return undefined!;
-			return obj as ICharacter;
-		},
-		charData(): DeepReadonly<Character<IAssetSwitch>> {
-			return getData(this.$store, this.object);
-		},
-		label(): string {
-			return this.charData.label ?? '';
-		},
-		parts(): DeepReadonly<string[]> {
-			return getParts(this.charData, this.object);
-		},
-		hasMultipleStyles(): boolean {
-			return (
-				this.charData.styleGroups[this.object.styleGroupId].styles.length > 1 ||
-				this.charData.styleGroups.length > 1
-			);
-		},
-		hasMultiplePoses(): boolean {
-			const styleGroup = this.charData.styleGroups[this.object.styleGroupId];
-			const style = styleGroup.styles[this.object.styleId];
-			return style.poses.length > 1;
-		},
-	},
-	methods: {
-		reuploadHead() {
-			const missingHeadUpload = this.$refs
-				.missingHeadUpload as HTMLInputElement;
-			missingHeadUpload.click();
-		},
-		async onMissingHeadFileUpload(_e: Event) {
-			const uploadInput = this.$refs.missingHeadUpload as HTMLInputElement;
-			if (!uploadInput.files) return;
-			if (uploadInput.files.length !== 1) {
-				console.error('More than one file uploaded!');
-				return;
-			}
+const panelForParts = ref(null as string | null);
 
-			const file = uploadInput.files[0];
-			await transaction(async () => {
-				const url = URL.createObjectURL(file);
-				await this.$store.dispatch('uploadUrls/add', {
-					name: this.missingHead,
-					url,
-				});
-			});
-		},
-		seekPose(delta: number): void {
-			transaction(async () => {
-				await this.$store.dispatch('panels/seekPose', {
-					id: this.object.id,
-					panelId: this.object.panelId,
-					delta,
-				} as ISeekPoseAction);
-			});
-		},
-		seekStyle(delta: number): void {
-			transaction(async () => {
-				await this.$store.dispatch('panels/seekStyle', {
-					id: this.object.id,
-					panelId: this.object.panelId,
-					delta,
-				} as ISeekStyleAction);
-			});
-		},
-		seekPart(part: string, delta: number): void {
-			transaction(async () => {
-				await this.$store.dispatch('panels/seekPart', {
-					id: this.object.id,
-					panelId: this.object.panelId,
-					delta,
-					part,
-				} as ISeekPosePartAction);
-			});
-		},
-		captialize(str: string) {
-			return str.charAt(0).toUpperCase() + str.substring(1);
-		},
-	},
-	watch: {
-		selection() {
-			this.panelForParts = null;
-		},
-	},
+const currentPanel = computed(
+	() => store.state.panels.panels[store.state.panels.currentPanel]
+);
+const selection = computed(() => store.state.ui.selection!);
+const object = computed(() => {
+	const obj = currentPanel.value.objects[selection.value];
+	if (obj.type !== 'character') return undefined!;
+	return obj as ICharacter;
 });
+const closeUp = genericSetterMerged(
+	store,
+	object,
+	'panels/setClose',
+	false,
+	'close'
+);
+const missingHead = computed(() => {
+	const obj = object.value;
+
+	const heads = getHeads(charData.value, obj);
+	if (!heads) return null;
+	for (const asset of heads.variants) {
+		const url = getAAssetUrl(asset[0], false);
+		console.log(url);
+		if (url.startsWith('uploads:')) return url.substring(8);
+	}
+	return null;
+});
+const charData = computed(() => getData(store, object.value));
+const label = computed(() => charData.value.label ?? '');
+const parts = computed(() => getParts(charData.value, object.value));
+const hasMultipleStyles = computed(
+	() =>
+		charData.value.styleGroups[object.value.styleGroupId].styles.length > 1 ||
+		charData.value.styleGroups.length > 1
+);
+const hasMultiplePoses = computed(() => {
+	const styleGroup = charData.value.styleGroups[object.value.styleGroupId];
+	const style = styleGroup.styles[object.value.styleId];
+	return style.poses.length > 1;
+});
+
+function reuploadHead() {
+	missingHeadUpload.value.click();
+}
+
+async function onMissingHeadFileUpload(_e: Event) {
+	const uploadInput = missingHeadUpload.value;
+	if (!uploadInput.files) return;
+	if (uploadInput.files.length !== 1) {
+		console.error('More than one file uploaded!');
+		return;
+	}
+
+	const file = uploadInput.files[0];
+	await transaction(async () => {
+		const url = URL.createObjectURL(file);
+		await store.dispatch('uploadUrls/add', {
+			name: missingHead.value,
+			url,
+		});
+	});
+}
+
+function seekPose(delta: number): void {
+	transaction(async () => {
+		await store.dispatch('panels/seekPose', {
+			id: object.value.id,
+			panelId: object.value.panelId,
+			delta,
+		} as ISeekPoseAction);
+	});
+}
+
+function seekStyle(delta: number): void {
+	transaction(async () => {
+		await store.dispatch('panels/seekStyle', {
+			id: object.value.id,
+			panelId: object.value.panelId,
+			delta,
+		} as ISeekStyleAction);
+	});
+}
+
+function seekPart(part: string, delta: number): void {
+	transaction(async () => {
+		await store.dispatch('panels/seekPart', {
+			id: object.value.id,
+			panelId: object.value.panelId,
+			delta,
+			part,
+		} as ISeekPosePartAction);
+	});
+}
+
+function captialize(str: string) {
+	return str.charAt(0).toUpperCase() + str.substring(1);
+}
+
+watch(
+	() => selection.value,
+	() => {
+		panelForParts.value = null;
+	}
+);
 </script>
 
 <style lang="scss" scoped>
-fieldset {
-	table {
-		width: 100%;
-	}
-}
-
 .panel:not(.vertical) {
 	.pose-list {
 		height: 100%;
