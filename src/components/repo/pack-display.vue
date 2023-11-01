@@ -75,15 +75,15 @@
 	</div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { sanitize } from '@/components/toolbox/tools/character-pack-sanitizer';
 import L from '@/components/ui/link.vue';
 import environment from '@/environments/environment';
-import { Pack, Repo } from '@/models/repo';
-import { IRemovePacksAction } from '@/store';
+import { Repo } from '@/models/repo';
+import { IRemovePacksAction, useStore } from '@/store';
 import { IAuthor, IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import { DeepReadonly } from 'ts-essentials';
-import { defineComponent, PropType } from 'vue';
+import { computed, defineComponent, PropType } from 'vue';
 import Toggle from '../toggle.vue';
 
 const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
@@ -97,129 +97,116 @@ const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 	['website', '%1', 'website.svg'],
 ];
 
-export default defineComponent({
-	components: { L, Toggle },
-	props: {
-		selected: {
-			type: String,
-			required: true,
-		},
-		repo: {
-			type: Object as PropType<DeepReadonly<Repo> | null>,
-			require: true,
-		},
-		showBack: {
-			type: Boolean,
-			require: false,
-		},
+const store = useStore();
+const props = defineProps({
+	selected: {
+		type: String,
+		required: true,
 	},
-	computed: {
-		pack(): DeepReadonly<Pack> {
-			return this.repo!.getPack(this.selected)!;
-		},
-		backgroundImage(): string {
-			return this.pack.preview.map((preview) => `url('${preview}')`).join(',');
-		},
-		installable(): boolean {
-			if (!environment.supports.localRepo) return false;
-			return !this.pack.installed;
-		},
-		uninstallable(): boolean {
-			if (!environment.supports.localRepo) return false;
-			return this.pack.installed;
-		},
-		removable(): boolean {
-			return this.pack.loaded;
-		},
-		addable(): boolean {
-			return !this.pack.loaded;
-		},
-		autoloadEnabled(): boolean {
-			return environment.supports.autoLoading;
-		},
-		autoload: {
-			get(): boolean {
-				return environment.state.autoAdd.includes(this.selected);
-			},
-			set(val: boolean): void {
-				let loadId = this.selected;
-				const pack = this.pack;
-				if (pack.repoUrl != null) loadId += `;${pack.repoUrl}`;
-				if (val) {
-					environment.autoLoadAdd(loadId);
-				} else {
-					environment.autoLoadRemove(loadId);
-				}
-			},
-		},
+	repo: {
+		type: Object as PropType<DeepReadonly<Repo> | null>,
+		require: true,
 	},
-	methods: {
-		focus() {
-			(this.$refs.toFocus as HTMLElement).focus();
-		},
-		authorName(authorId: string) {
-			const author = this.repo!.getAuthor(authorId);
-			if (author && author.currentName != null) return author.currentName;
-			return authorId;
-		},
-		authorsLinks(authorId: string): AuthorLink[] {
-			const author = this.repo!.getAuthor(authorId);
-			if (!author) return [];
-			return linkablePlatforms
-				.filter((platform) => author[platform[0]])
-				.map((platform) => {
-					const value = author[platform[0]]!;
-					const target = platform[1].replace('%1', value);
-					return {
-						target,
-						platform: platform[0][0].toUpperCase() + platform[0].slice(1),
-						icon: 'icons/' + platform[2],
-					};
-				});
-		},
-		sanitize(credits: string) {
-			return sanitize(credits);
-		},
-		install(): void {
-			if (this.pack.installed) return;
-			const authors: IAuthors = {};
-			for (const key of this.pack.authors) {
-				authors[key] = { ...this.repo!.getAuthor(key) };
-			}
-
-			const pack: any = JSON.parse(JSON.stringify(this.pack));
-			delete pack.autoloading;
-			delete pack.online;
-			delete pack.loaded;
-			delete pack.installed;
-
-			environment.localRepoInstall(
-				this.pack.dddg2Path || this.pack.dddg1Path,
-				pack,
-				authors
-			);
-		},
-		async uninstall(): Promise<void> {
-			const pack = this.pack;
-			if (!pack.installed) return;
-			if ((pack as any).repoUrl && !this.repo?.hasPack(pack.id, true)) {
-				await this.repo!.loadTempPack((pack as any).repoUrl);
-			}
-			environment.localRepoUninstall(this.pack.id);
-		},
-		async remove(): Promise<void> {
-			await this.$store.dispatch('removePacks', {
-				packs: new Set([this.pack.id]),
-			} as IRemovePacksAction);
-		},
-		async add(): Promise<void> {
-			await this.$store.dispatch(
-				'content/loadContentPacks',
-				this.pack.dddg2Path || this.pack.dddg1Path
-			);
-		},
+	showBack: {
+		type: Boolean,
+		require: false,
 	},
 });
+
+const pack = computed(() => props.repo!.getPack(props.selected)!);
+const backgroundImage = computed(() =>
+	pack.value.preview.map((preview) => `url('${preview}')`).join(',')
+);
+const removable = computed(() => pack.value.loaded);
+const addable = computed(() => !pack.value.loaded);
+const autoloadEnabled = computed(() => environment.supports.autoLoading);
+const installable = computed(() => {
+	if (!environment.supports.localRepo) return false;
+	return !pack.value.installed;
+});
+const uninstallable = computed(() => {
+	if (!environment.supports.localRepo) return false;
+	return pack.value.installed;
+});
+const autoload = computed({
+	get(): boolean {
+		return environment.state.autoAdd.includes(props.selected);
+	},
+	set(val: boolean): void {
+		let loadId = props.selected;
+		const pack_ = pack.value;
+		if (pack_.repoUrl != null) loadId += `;${pack_.repoUrl}`;
+		if (val) {
+			environment.autoLoadAdd(loadId);
+		} else {
+			environment.autoLoadRemove(loadId);
+		}
+	},
+});
+
+function authorName(authorId: string) {
+	const author = props.repo!.getAuthor(authorId);
+	if (author && author.currentName != null) return author.currentName;
+	return authorId;
+}
+
+function authorsLinks(authorId: string): AuthorLink[] {
+	const author = props.repo!.getAuthor(authorId);
+	if (!author) return [];
+	return linkablePlatforms
+		.filter((platform) => author[platform[0]])
+		.map((platform) => {
+			const value = author[platform[0]]!;
+			const target = platform[1].replace('%1', value);
+			return {
+				target,
+				platform: platform[0][0].toUpperCase() + platform[0].slice(1),
+				icon: 'icons/' + platform[2],
+			};
+		});
+}
+
+function install(): void {
+	if (pack.value.installed) return;
+	const authors: IAuthors = {};
+	for (const key of pack.value.authors) {
+		authors[key] = { ...props.repo!.getAuthor(key) };
+	}
+
+	const pack_: any = JSON.parse(JSON.stringify(pack.value));
+	delete pack_.autoloading;
+	delete pack_.online;
+	delete pack_.loaded;
+	delete pack_.installed;
+
+	environment.localRepoInstall(
+		pack.value.dddg2Path || pack.value.dddg1Path,
+		pack_,
+		authors
+	);
+}
+
+async function uninstall(): Promise<void> {
+	const pack_ = pack.value;
+	if (!pack_.installed) return;
+	if (pack_.repoUrl && !props.repo?.hasPack(pack_.id, true)) {
+		await props.repo!.loadTempPack(pack_.repoUrl);
+	}
+	environment.localRepoUninstall(pack_.id);
+}
+
+async function remove(): Promise<void> {
+	await store.dispatch('removePacks', {
+		packs: new Set([pack.value.id]),
+	} as IRemovePacksAction);
+}
+
+async function add(): Promise<void> {
+	await store.dispatch(
+		'content/loadContentPacks',
+		pack.value.dddg2Path || pack.value.dddg1Path
+	);
+}
 
 interface AuthorLink {
 	readonly target: string;
