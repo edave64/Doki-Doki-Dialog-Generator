@@ -1,3 +1,4 @@
+import { getBuildInAsset } from '@/asset-manager';
 import getConstants from '@/constants';
 import {
 	ControlsTextDisabledStyle,
@@ -6,11 +7,14 @@ import {
 	TextBoxHeight,
 	TextBoxWidth,
 } from '@/constants/game_modes/ddlc_plus/text-box';
-import { RenderContext } from '@/renderer/renderer-context';
+import { IAsset } from '@/render-utils/assets/asset';
+import { ImageAsset } from '@/render-utils/assets/image-asset';
+import { applyStyle } from '@/renderer/canvas-tools';
+import { ITextStyle } from '@/renderer/text-renderer/text-renderer';
 import { DeepReadonly } from 'vue';
-import { TextBox } from '../textbox';
+import { ITextboxRenderer, TextBox } from '../textbox';
 
-export abstract class DdlcPlusBase {
+export abstract class DdlcPlusBase implements ITextboxRenderer {
 	public abstract readonly width: number;
 	public abstract readonly height: number;
 
@@ -21,7 +25,7 @@ export abstract class DdlcPlusBase {
 		return TextBoxWidth;
 	}
 	public static get defaultHeight() {
-		return TextBoxHeight;
+		return TextBoxHeight + NameboxHeight;
 	}
 	public static get defaultX() {
 		return getConstants().Base.screenWidth / 2;
@@ -30,7 +34,6 @@ export abstract class DdlcPlusBase {
 		return (
 			getConstants().Base.screenHeight -
 			this.defaultHeight -
-			NameboxHeight -
 			getConstants().TextBox.TextBoxBottomSpacing
 		);
 	}
@@ -44,6 +47,7 @@ export abstract class DdlcPlusBase {
 	}
 
 	public constructor(protected base: DeepReadonly<TextBox>) {}
+	abstract render(rx: CanvasRenderingContext2D): void;
 
 	protected getControlsStyle() {
 		return ControlsTextStyle;
@@ -53,7 +57,7 @@ export abstract class DdlcPlusBase {
 		return ControlsTextDisabledStyle;
 	}
 
-	public renderControls(rx: RenderContext, y: number) {
+	public renderControls(rx: CanvasRenderingContext2D, y: number) {
 		const constants = getConstants();
 		const w = this.width;
 		const w2 = w / 2;
@@ -84,21 +88,35 @@ export abstract class DdlcPlusBase {
 				text === 'Skip' && !this.base.obj.skip
 					? this.getControlsDisabledStyle()
 					: controlsStyle;
-			rx.drawText({
-				text,
-				x: controlX,
-				y,
-				...style,
-			});
+			applyStyle(rx, style);
+			rx.fillText(text, controlX, y);
 			controlX += textWidth + spacing;
 		}
 	}
 
 	private static widthCache: { [text: string]: number } = {};
-	private static controlWidth(rx: RenderContext, text: string) {
+	private static controlWidth(rx: CanvasRenderingContext2D, text: string) {
 		if (this.widthCache[text]) return this.widthCache[text];
-		const width = rx.measureText({ text, ...ControlsTextStyle }).width;
+		applyStyle(rx, ControlsTextStyle);
+		const width = rx.measureText(text).width;
 		this.widthCache[text] = width;
 		return width;
+	}
+
+	public abstract nameboxWidth: number;
+	public abstract nameboxHeight: number;
+	public abstract nameboxOffsetX: number;
+	public abstract nameboxOffsetY: number;
+	public abstract nameboxStyle: ITextStyle;
+	public abstract textOffsetX: number;
+	public abstract textOffsetY: number;
+	public abstract textboxStyle: ITextStyle;
+
+	public nextArrow: null | IAsset = null;
+	public prepare(): Promise<void> | void {
+		if (this.nextArrow instanceof ImageAsset) return;
+		return (async () => {
+			this.nextArrow = await getBuildInAsset('next_plus');
+		})();
 	}
 }

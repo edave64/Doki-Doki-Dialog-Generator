@@ -18,6 +18,14 @@ export class Notification extends ScalingRenderable<INotification> {
 		return true;
 	}
 
+	public getRotationAnchor(): DOMPointReadOnly {
+		return new DOMPointReadOnly(0, 0);
+	}
+
+	public getZoomAnchor(): DOMPointReadOnly {
+		return new DOMPointReadOnly(0, 0);
+	}
+
 	public get id() {
 		return this.obj.id;
 	}

@@ -1,22 +1,19 @@
 import getConstants from '@/constants';
 import environment from '@/environments/environment';
-import { RenderContext } from '@/renderer/renderer-context';
 import {
 	ITextStyle,
 	TextRenderer,
 } from '@/renderer/text-renderer/text-renderer';
-import { IRootState } from '@/store';
 import { ITextBox } from '@/store/object-types/textbox';
 import { IObject } from '@/store/objects';
 import { IPanel } from '@/store/panels';
 import { DeepReadonly } from 'ts-essentials';
-import { Store } from 'vuex';
-import { ScalingRenderable } from './scaling-renderable';
-import { Corrupted } from './textboxRenderers/corrupt';
-import { Custom } from './textboxRenderers/custom';
-import { CustomPlus } from './textboxRenderers/custom-plus';
-import { Default } from './textboxRenderers/default';
-import { None } from './textboxRenderers/none';
+import { Corrupted } from '../textboxRenderers/corrupt';
+import { Custom } from '../textboxRenderers/custom';
+import { CustomPlus } from '../textboxRenderers/custom-plus';
+import { Default } from '../textboxRenderers/default';
+import { None } from '../textboxRenderers/none';
+import { Renderable } from './renderable';
 
 export const styleRenderers: ReadonlyArray<ITextboxRendererClass> = [
 	Default,
@@ -52,29 +49,119 @@ export function getStyles(): DeepReadonly<ITextboxRendererClass>[] {
 	return ret;
 }
 
-export class TextBox extends ScalingRenderable<ITextBox> {
+export class TextBox extends Renderable<ITextBox> {
+	private nbTextRenderer: TextRenderer = null!;
+	private textRenderer: TextRenderer = null!;
+	protected transformIsLocal = false;
+	public prepareRender(
+		panel: DeepReadonly<IPanel>,
+		renderables: Map<IObject['id'], DeepReadonly<Renderable<never>>>,
+		lq: boolean
+	): void | Promise<unknown> {
+		const ret = super.prepareRender(panel, renderables, lq);
+		const prepareRet = this.textboxRenderer.prepare();
+
+		const name =
+			this.obj.talkingObjId === '$other$'
+				? this.obj.talkingOther
+				: this.refObject?.label ?? 'Missing name';
+		this.nbTextRenderer = new TextRenderer(
+			name,
+			this.textboxRenderer.nameboxStyle
+		);
+		this.textRenderer = new TextRenderer(
+			this.obj.text,
+			this.textboxRenderer.textboxStyle
+		);
+		const nameFontLoad = this.nbTextRenderer.loadFonts();
+		const textFontLoad = this.textRenderer.loadFonts();
+
+		if (!ret && !prepareRet && !nameFontLoad && !textFontLoad) return;
+		return Promise.all([ret, prepareRet, nameFontLoad, textFontLoad]);
+	}
+
+	protected renderLocal(ctx: CanvasRenderingContext2D, hq: boolean): void {
+		const constants = getConstants();
+		const styleRenderer = this.textboxRenderer;
+		const w = styleRenderer.width;
+		const w2 = w / 2;
+		const baseX = this.obj.flip
+			? constants.Base.screenWidth - this.obj.x
+			: this.obj.x;
+		const x = baseX - w2;
+		const y = this.obj.y;
+		/*
+		ctx.fillStyle = '#0f0';
+		ctx.fillRect(0, 0, this.obj.width, this.obj.height);
+*/
+		styleRenderer.render(ctx);
+
+		if (this.obj.talkingObjId !== null) {
+			const name =
+				this.obj.talkingObjId === '$other$'
+					? this.obj.talkingOther
+					: this.refObject?.label ?? 'Missing name';
+			this.renderName(ctx, styleRenderer.nameboxOffsetX, 0, name);
+		}
+
+		this.renderText(ctx, 0, 0, this.obj.autoWrap ? w : 0);
+	}
+
+	private renderName(
+		rx: CanvasRenderingContext2D,
+		x: number,
+		y: number,
+		name: string
+	) {
+		const styleRenderer = this.textboxRenderer;
+		const w = styleRenderer.nameboxWidth;
+
+		this.nbTextRenderer.fixAlignment(
+			'center',
+			x,
+			x + w,
+			y + styleRenderer.nameboxOffsetY,
+			0
+		);
+
+		this.nbTextRenderer.render(rx);
+	}
+
+	private renderText(
+		rx: CanvasRenderingContext2D,
+		baseX: number,
+		baseY: number,
+		maxLineWidth: number
+	) {
+		const textboxRenderer = this.textboxRenderer;
+		const render = this.textRenderer;
+		if (this.obj.autoQuoting && this.obj.talkingObjId !== null) {
+			render.quote();
+		}
+
+		render.fixAlignment(
+			'left',
+			baseX + textboxRenderer.textOffsetX,
+			0,
+			baseY + textboxRenderer.nameboxHeight + textboxRenderer.textOffsetY,
+			maxLineWidth - textboxRenderer.textOffsetX * 2
+		);
+
+		render.render(rx);
+	}
+
+	public get forcedStyle(): ITextBox['style'] {
+		const refObject = this.refObject;
+		if (
+			(this.obj.style === 'normal' || this.obj.style === 'normal_plus') &&
+			refObject &&
+			(refObject.textboxColor != null || refObject.nameboxWidth != null)
+		)
+			return 'custom';
+		return this.obj.style;
+	}
+
 	public refObject: IObject | null = null;
-	public get refVars(): string {
-		const refObj = this.refObject;
-		if (!refObj) return '';
-		return JSON.stringify([
-			refObj.label,
-			refObj.textboxColor,
-			refObj.nameboxWidth,
-		]);
-	}
-
-	public get y(): number {
-		return this.obj.y;
-	}
-
-	public get width(): number {
-		return this.textboxRenderer.width;
-	}
-
-	public get height(): number {
-		return this.textboxRenderer.height;
-	}
 
 	private _lastRenderer: ITextboxRenderer | null = null;
 	public get textboxRenderer() {
@@ -92,131 +179,6 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		this._lastRenderer = newRenderer;
 		return newRenderer!;
 	}
-
-	private lastForcedStyle: ITextBox['style'] | undefined;
-	private lastRefVars: string | undefined;
-	private lastRefVersion: IObject['version'] | undefined;
-	public needsRedraw(): boolean {
-		if (super.needsRedraw()) return true;
-		if (this.lastForcedStyle !== this.forcedStyle) return true;
-		const refObj = this.refObject;
-		if (refObj?.version !== this.lastRefVersion) {
-			const needsRedraw = this.lastRefVars !== this.refVars;
-			if (!needsRedraw) {
-				// An updated version doesn't mean that the textbox must redraw. If it's not the case, update the version
-				// so we don't need to recompute refVars every time.
-				this.lastRefVersion = refObj?.version;
-			}
-			return needsRedraw;
-		}
-		return false;
-	}
-
-	public get forcedStyle(): ITextBox['style'] {
-		const refObject = this.refObject;
-		if (
-			(this.obj.style === 'normal' || this.obj.style === 'normal_plus') &&
-			refObject &&
-			(refObject.textboxColor != null || refObject.nameboxWidth != null)
-		)
-			return 'custom';
-		return this.obj.style;
-	}
-
-	public updatedContent(
-		_current: Store<DeepReadonly<IRootState>>,
-		panelId: IPanel['id']
-	): void {
-		super.updatedContent(_current, panelId);
-
-		const talkingObj = this.obj.talkingObjId;
-		if (talkingObj !== null && talkingObj !== '$other$') {
-			const obj = _current.state.panels.panels[panelId].objects[talkingObj] as
-				| IObject
-				| undefined;
-			this.refObject = obj ?? null;
-			return;
-		}
-		this.refObject = null;
-	}
-
-	protected async draw(rx: RenderContext): Promise<void> {
-		const constants = getConstants();
-		const styleRenderer = this.textboxRenderer;
-		const w = styleRenderer.width;
-		const w2 = w / 2;
-		const baseX = this.flip
-			? constants.Base.screenWidth - this.obj.x
-			: this.obj.x;
-		const x = baseX - w2;
-		const y = this.obj.y;
-		this.lastRefVars = this.refVars;
-		this.lastRefVersion = this.refObject?.version;
-		this.lastForcedStyle = this.forcedStyle;
-
-		await styleRenderer.render(rx);
-
-		if (this.obj.talkingObjId !== null) {
-			const name =
-				this.obj.talkingObjId === '$other$'
-					? this.obj.talkingOther
-					: this.refObject?.label ?? 'Missing name';
-			await this.renderName(rx, x + styleRenderer.nameboxOffsetX, y, name);
-		}
-
-		await this.renderText(rx, x, y, this.obj.autoWrap ? w : 0);
-	}
-
-	private async renderName(
-		rx: RenderContext,
-		x: number,
-		y: number,
-		name: string
-	): Promise<void> {
-		const styleRenderer = this.textboxRenderer;
-		const w = styleRenderer.nameboxWidth;
-		const style: ITextStyle = styleRenderer.nameboxStyle;
-
-		const render = new TextRenderer(name, style);
-		await render.loadFonts();
-
-		render.fixAlignment(
-			'center',
-			x,
-			x + w,
-			y + styleRenderer.nameboxOffsetY,
-			0
-		);
-
-		render.render(rx.fsCtx);
-	}
-
-	private async renderText(
-		rx: RenderContext,
-		baseX: number,
-		baseY: number,
-		maxLineWidth: number
-	): Promise<void> {
-		const textboxRenderer = this.textboxRenderer;
-		const render = new TextRenderer(
-			this.obj.text,
-			textboxRenderer.textboxStyle
-		);
-		if (this.obj.autoQuoting && this.obj.talkingObjId !== null) {
-			render.quote();
-		}
-		await render.loadFonts();
-
-		render.fixAlignment(
-			'left',
-			baseX + textboxRenderer.textOffsetX,
-			0,
-			baseY + textboxRenderer.nameboxHeight + textboxRenderer.textOffsetY,
-			maxLineWidth - textboxRenderer.textOffsetX * 2
-		);
-
-		render.render(rx.fsCtx);
-	}
 }
 
 export interface ITextboxRenderer {
@@ -233,7 +195,8 @@ export interface ITextboxRenderer {
 	readonly textOffsetY: number;
 	readonly textboxStyle: ITextStyle;
 
-	render(rx: RenderContext): Promise<void>;
+	prepare(): void | Promise<any>;
+	render(rx: CanvasRenderingContext2D): void;
 }
 
 export interface ITextboxRendererClass {

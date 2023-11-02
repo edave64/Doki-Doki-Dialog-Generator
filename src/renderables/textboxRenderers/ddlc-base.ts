@@ -1,3 +1,4 @@
+import { getBuildInAsset } from '@/asset-manager';
 import getConstants from '@/constants';
 import {
 	ControlsTextDisabledStyle,
@@ -10,22 +11,22 @@ import {
 	TextBoxStyle,
 	TextBoxWidth,
 } from '@/constants/game_modes/ddlc/text-box';
-import { RenderContext } from '@/renderer/renderer-context';
+import { IAsset } from '@/render-utils/assets/asset';
+import { ImageAsset } from '@/render-utils/assets/image-asset';
+import { applyStyle } from '@/renderer/canvas-tools';
+import { ITextStyle } from '@/renderer/text-renderer/text-renderer';
 import { DeepReadonly } from 'vue';
-import { TextBox } from '../textbox';
+import { ITextboxRenderer, TextBox } from '../textbox';
 
-export abstract class DdlcBase {
+export abstract class DdlcBase implements ITextboxRenderer {
 	public abstract readonly width: number;
 	public abstract readonly height: number;
 
-	public static get resizable() {
-		return false;
-	}
 	public static get defaultWidth() {
 		return TextBoxWidth;
 	}
 	public static get defaultHeight() {
-		return TextBoxHeight;
+		return TextBoxHeight + NameboxHeight;
 	}
 	public static get defaultX() {
 		return getConstants().Base.screenWidth / 2;
@@ -34,7 +35,6 @@ export abstract class DdlcBase {
 		return (
 			getConstants().Base.screenHeight -
 			this.defaultHeight -
-			NameboxHeight -
 			getConstants().TextBox.TextBoxBottomSpacing
 		);
 	}
@@ -48,6 +48,7 @@ export abstract class DdlcBase {
 	}
 
 	public constructor(protected base: DeepReadonly<TextBox>) {}
+	abstract render(rx: CanvasRenderingContext2D): void;
 
 	protected getControlsStyle() {
 		return ControlsTextStyle;
@@ -60,36 +61,41 @@ export abstract class DdlcBase {
 		return TextBoxStyle;
 	}
 
-	public renderControls(rx: RenderContext, y: number) {
+	public renderControls(rx: CanvasRenderingContext2D, y: number) {
 		const constants = getConstants();
 		const w = this.width;
-		const w2 = w / 2;
-		const baseX = this.base.obj.flip
-			? constants.Base.screenWidth - this.base.obj.x
-			: this.base.obj.x;
-		const x = baseX - w2;
 
-		const controlsCenter = x + w / 2;
+		const controlsCenter = w / 2;
 
 		const controlsStyle = this.getControlsStyle();
+		applyStyle(rx, controlsStyle);
+		rx.fillText('History', controlsCenter + ControlsXHistoryOffset, y);
+		applyStyle(
+			rx,
+			this.base.obj.skip ? controlsStyle : this.getControlsDisabledStyle()
+		);
+		rx.fillText('Skip', controlsCenter + ControlsXSkipOffset, y);
+		applyStyle(rx, controlsStyle);
+		rx.fillText(
+			'Auto   Save   Load   Settings',
+			controlsCenter + ControlsXStuffOffset,
+			y
+		);
+	}
 
-		rx.drawText({
-			text: 'History',
-			x: controlsCenter + ControlsXHistoryOffset,
-			y,
-			...controlsStyle,
-		});
-		rx.drawText({
-			text: 'Skip',
-			x: controlsCenter + ControlsXSkipOffset,
-			y,
-			...(this.base.obj.skip ? controlsStyle : this.getControlsDisabledStyle()),
-		});
-		rx.drawText({
-			text: 'Auto   Save   Load   Settings',
-			x: controlsCenter + ControlsXStuffOffset,
-			y,
-			...controlsStyle,
-		});
+	public abstract nameboxWidth: number;
+	public abstract nameboxHeight: number;
+	public abstract nameboxOffsetX: number;
+	public abstract nameboxOffsetY: number;
+	public abstract nameboxStyle: ITextStyle;
+	public abstract textOffsetX: number;
+	public abstract textOffsetY: number;
+
+	public nextArrow: IAsset | null = null;
+	public prepare(): Promise<void> | void {
+		if (this.nextArrow instanceof ImageAsset) return;
+		return (async () => {
+			this.nextArrow = await getBuildInAsset('next');
+		})();
 	}
 }

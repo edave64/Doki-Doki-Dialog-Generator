@@ -1,5 +1,4 @@
 import * as TBConstants from '@/constants/game_modes/ddlc/text-box';
-import { RenderContext } from '@/renderer/renderer-context';
 import { ITextboxRenderer } from '../textbox';
 import { DdlcBase } from './ddlc-base';
 
@@ -8,6 +7,10 @@ export class None extends DdlcBase implements ITextboxRenderer {
 	static readonly label: string = 'None';
 	static readonly priority: number = 0;
 	static readonly gameMode: string = 'ddlc';
+
+	public static get resizable() {
+		return true;
+	}
 
 	public get height() {
 		return TBConstants.TextBoxHeight + TBConstants.NameboxHeight;
@@ -40,5 +43,5 @@ export class None extends DdlcBase implements ITextboxRenderer {
 		return TBConstants.TextBoxStyle;
 	}
 
-	public async render(_rx: RenderContext): Promise<void> {}
+	public async render(_rx: CanvasRenderingContext2D): Promise<void> {}
 }

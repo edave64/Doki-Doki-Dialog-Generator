@@ -13,6 +13,14 @@ export class Choice extends ScalingRenderable<IChoices> {
 		return true;
 	}
 
+	public getRotationAnchor(): DOMPointReadOnly {
+		return new DOMPointReadOnly(0, 0);
+	}
+
+	public getZoomAnchor(): DOMPointReadOnly {
+		return new DOMPointReadOnly(0, 0);
+	}
+
 	private choiceRenderers: TextRenderer[] = [];
 
 	protected async draw(rx: RenderContext): Promise<void> {

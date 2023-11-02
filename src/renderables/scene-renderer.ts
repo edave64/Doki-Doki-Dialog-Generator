@@ -1,25 +1,16 @@
 import { getBuildInAsset } from '@/asset-manager';
-import { Notification } from '@/renderables/notification';
 import { Renderer } from '@/renderer/renderer';
 import { RenderContext } from '@/renderer/renderer-context';
 import { IRootState } from '@/store';
 import { BackgroundLookup } from '@/store/content';
-import { getData, ICharacter } from '@/store/object-types/characters';
-import { IChoices } from '@/store/object-types/choices';
-import { INotification } from '@/store/object-types/notification';
-import { IPoem } from '@/store/object-types/poem';
-import { ISprite } from '@/store/object-types/sprite';
 import { ITextBox } from '@/store/object-types/textbox';
 import { IObject } from '@/store/objects';
 import { IPanel } from '@/store/panels';
 import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
 import { Store } from 'vuex';
 import { Background, color, IBackgroundRenderer } from './background';
-import { Character } from './character';
-import { Choice } from './choices';
-import { OffscreenRenderable, SelectedState } from './offscreen-renderable';
-import { Poem } from './poem';
-import { Sprite } from './sprite';
+import { SelectedState } from './offscreen-renderable';
+import { Renderable } from './renderable';
 import { TextBox } from './textbox';
 
 export class SceneRenderer {
@@ -29,10 +20,7 @@ export class SceneRenderer {
 			? ':focus-visible'
 			: ':focus';
 
-	private renderObjectCache = new Map<
-		IObject['id'],
-		OffscreenRenderable<IObject>
-	>();
+	private renderObjectCache = new Map<IObject['id'], Renderable<IObject>>();
 	private renderer: Renderer;
 	private _disposed: boolean = false;
 
@@ -98,8 +86,9 @@ export class SceneRenderer {
 	}
 
 	public objectsAt(x: number, y: number): IObject['id'][] {
+		const point = new DOMPointReadOnly(x, y);
 		return this.getRenderObjects()
-			.filter((renderObject) => renderObject.hitTest(x, y))
+			.filter((renderObject) => renderObject.hitTest(point))
 			.map((renderObject) => renderObject.id);
 	}
 
@@ -113,17 +102,29 @@ export class SceneRenderer {
 
 		await this.getBackgroundRenderer()?.render(rx);
 
+		const renderables = this.getRenderObjects();
+		const map = new Map(
+			renderables.map((x) => [x.id, x as DeepReadonly<Renderable<never>>])
+		);
+		const promises = renderables
+			.map((x) => x.prepareRender(this.panel!, map, !rx.hq))
+			.filter((x) => x !== undefined);
+		if (promises.length > 0) {
+			await Promise.all(promises);
+		}
+
 		const selection = this.store.state.ui.selection;
 		for (const object of this.getRenderObjects()) {
-			object.updatedContent(this.store, this.panelId);
 			const selected = selection === object.id;
 			const focusedObj = document.querySelector(SceneRenderer.FocusProp);
 			const focused =
 				focusedObj?.getAttribute('data-obj-id') === '' + object.id;
-			await object.render(
+			object.render(
+				rx.fsCtx,
 				(selected ? SelectedState.Selected : SelectedState.None) +
 					(focused ? SelectedState.Focused : SelectedState.None),
-				rx,
+				rx.preview,
+				rx.hq,
 				skipLocalCanvases
 			);
 		}
@@ -140,7 +141,7 @@ export class SceneRenderer {
 		}
 	}
 
-	private getRenderObjects(): OffscreenRenderable<IObject>[] {
+	private getRenderObjects(): Renderable<IObject>[] {
 		const objectsState = this.store.state.panels.panels[this.panelId];
 		const order = [...objectsState.order, ...objectsState.onTopOrder];
 		const objects = objectsState.objects;
@@ -159,6 +160,7 @@ export class SceneRenderer {
 				const obj = objects[id];
 				const type = obj.type;
 				switch (type) {
+					/*
 					case 'sprite':
 						renderObject = new Sprite(obj as DeepReadonly<ISprite>);
 						break;
@@ -167,9 +169,11 @@ export class SceneRenderer {
 						renderObject = new Character(char, getData(this.store, char));
 						break;
 					}
+					*/
 					case 'textBox':
 						renderObject = new TextBox(obj as DeepReadonly<ITextBox>);
 						break;
+					/*
 					case 'choice':
 						renderObject = new Choice(obj as DeepReadonly<IChoices>);
 						break;
@@ -179,6 +183,7 @@ export class SceneRenderer {
 					case 'poem':
 						renderObject = new Poem(obj as DeepReadonly<IPoem>);
 						break;
+					*/
 					default:
 						throw new UnreachableCaseError(type);
 				}

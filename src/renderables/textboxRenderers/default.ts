@@ -1,7 +1,8 @@
 import { getBuildInAsset } from '@/asset-manager';
 import getConstants from '@/constants';
 import * as TBConstants from '@/constants/game_modes/ddlc/text-box';
-import { RenderContext } from '@/renderer/renderer-context';
+import { IAsset } from '@/render-utils/assets/asset';
+import { ImageAsset } from '@/render-utils/assets/image-asset';
 import { ITextBox } from '@/store/object-types/textbox';
 import { ITextboxRenderer } from '../textbox';
 import { DdlcBase } from './ddlc-base';
@@ -11,6 +12,10 @@ export class Default extends DdlcBase implements ITextboxRenderer {
 	static readonly label: string = 'Normal';
 	static readonly priority: number = 0;
 	static readonly gameMode: string = 'ddlc';
+
+	public static get resizable() {
+		return false;
+	}
 
 	public get height() {
 		return TBConstants.TextBoxHeight + TBConstants.NameboxHeight;
@@ -43,55 +48,57 @@ export class Default extends DdlcBase implements ITextboxRenderer {
 	protected backgroundImage = 'textbox';
 	protected xOffset = 0;
 
-	protected async renderNamebox(
-		rx: RenderContext,
-		x: number,
-		y: number
-	): Promise<void> {
-		rx.drawImage({
-			image: await getBuildInAsset('namebox'),
-			x,
-			y,
-		});
+	protected renderNamebox(rx: CanvasRenderingContext2D, x: number, y: number) {
+		this.nameBoxAsset?.paintOnto(rx, { x, y });
 	}
-	protected async renderBackdrop(
-		rx: RenderContext,
-		x: number,
-		y: number
-	): Promise<void> {
+	protected renderBackdrop(rx: CanvasRenderingContext2D, x: number, y: number) {
 		x += this.xOffset;
-		const image = await getBuildInAsset(this.backgroundImage);
-		rx.drawImage({ image, x, y });
+		this.backdropAsset?.paintOnto(rx, { x, y });
 	}
 
-	public async render(rx: RenderContext): Promise<void> {
+	public render(rx: CanvasRenderingContext2D): void {
 		const constants = getConstants();
 		const w = this.width;
 		const h = this.height;
 		const w2 = w / 2;
-		const baseX = this.obj.flip
-			? constants.Base.screenWidth - this.obj.x
-			: this.obj.x;
-		const x = baseX - w2;
-		const y = this.obj.y;
 
-		await this.renderBackdrop(rx, x, y + this.nameboxHeight);
+		this.renderBackdrop(rx, 0, 0 + this.nameboxHeight);
 
 		if (this.obj.talkingObjId !== null) {
-			await this.renderNamebox(rx, x + this.nameboxOffsetX, y);
+			this.renderNamebox(rx, 0 + this.nameboxOffsetX, 0);
 		}
 
-		const bottom = y + h;
+		const bottom = h;
 		const controlsY = bottom - TBConstants.ControlsYBottomOffset;
 
 		if (this.obj.controls) this.renderControls(rx, controlsY);
 
 		if (this.obj.continue) {
-			rx.drawImage({
-				image: await getBuildInAsset('next'),
-				x: x + w - TBConstants.ArrowXRightOffset,
+			this.nextArrow?.paintOnto(rx, {
+				x: w - TBConstants.ArrowXRightOffset,
 				y: bottom - TBConstants.ArrowYBottomOffset,
 			});
 		}
+	}
+
+	private nameBoxAsset: null | IAsset = null;
+	private backdropAsset: null | IAsset = null;
+	public prepare(): Promise<any> | void {
+		const prep = super.prepare();
+		if (!prep && this.backdropAsset && this.nameBoxAsset) return;
+		return Promise.all([
+			prep,
+			this.backdropAsset instanceof ImageAsset
+				? undefined
+				: (async () => {
+						this.backdropAsset = await getBuildInAsset(this.backgroundImage);
+				  })(),
+			,
+			this.nameBoxAsset instanceof ImageAsset
+				? undefined
+				: (async () => {
+						this.nameBoxAsset = await getBuildInAsset('namebox');
+				  })(),
+		]);
 	}
 }

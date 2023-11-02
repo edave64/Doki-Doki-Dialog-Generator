@@ -25,6 +25,7 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 	private hitDetectionFallback = false;
 	protected renderable: boolean = false;
 	private _disposed: boolean = false;
+	protected isTalking: boolean = false;
 
 	public constructor(public obj: DeepReadonly<Obj>) {}
 
@@ -37,6 +38,22 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 	protected abstract readonly canvasDrawPosX: number;
 	protected abstract readonly canvasDrawPosY: number;
 	protected abstract renderLocal(rx: RenderContext): Promise<void>;
+
+	public getAnchor(): DOMPointReadOnly {
+		return new DOMPointReadOnly(this.x, this.y);
+	}
+
+	public getRotationAnchor(): DOMPointReadOnly {
+		return new DOMPointReadOnly(0, this.height / 2);
+	}
+
+	public getZoomAnchor(): DOMPointReadOnly {
+		return new DOMPointReadOnly(0, this.height);
+	}
+
+	public getLocalSize(): DOMPointReadOnly {
+		return new DOMPointReadOnly(this.obj.width, this.obj.height);
+	}
 
 	protected lastHq: boolean = false;
 
@@ -209,6 +226,43 @@ export abstract class OffscreenRenderable<Obj extends IObject> {
 				filters: this.filters,
 			});
 		}
+
+		let point = this.getAnchor();
+		rx.fsCtx.fillStyle = '#ff0';
+		rx.fsCtx.fillRect(point.x - 2, point.y - 2, 5, 5);
+		rx.fsCtx.fillText(this.obj.type + '_pos', point.x, point.y);
+
+		await rx.customTransform(
+			(rx) => {
+				rx.translate(point.x, point.y);
+			},
+			(rx) => {
+				const rotPoint = this.getRotationAnchor();
+				rx.fsCtx.fillStyle = '#f0f';
+				rx.fsCtx.fillRect(rotPoint.x - 2, rotPoint.y - 2, 5, 5);
+				rx.fsCtx.fillText(this.obj.type + '_rot', rotPoint.x, rotPoint.y);
+
+				rx.customTransform(
+					(rx) => {
+						rx.translate(rotPoint.x, rotPoint.y);
+						rx.rotate(this.rotation);
+						rx.translate(-rotPoint.x, -rotPoint.y);
+					},
+					(rx) => {
+						const zoomPoint = this.getZoomAnchor();
+						rx.fsCtx.fillStyle = '#0ff';
+						rx.fsCtx.fillRect(zoomPoint.x - 2, zoomPoint.y - 2, 5, 5);
+						rx.fsCtx.fillText(
+							this.obj.type + '_zoom',
+							zoomPoint.x,
+							zoomPoint.y
+						);
+					}
+				);
+			}
+		);
+
+		rx.fsCtx.resetTransform();
 	}
 
 	protected canSkipLocal(): boolean {

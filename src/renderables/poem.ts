@@ -24,6 +24,14 @@ export class Poem extends ScalingRenderable<IPoem> {
 		return true;
 	}
 
+	public getRotationAnchor(): DOMPointReadOnly {
+		return new DOMPointReadOnly(0, 0);
+	}
+
+	public getZoomAnchor(): DOMPointReadOnly {
+		return new DOMPointReadOnly(0, 0);
+	}
+
 	protected async draw(rx: RenderContext): Promise<void> {
 		const constants = getConstants();
 		const paper = constants.Poem.poemBackgrounds[this.obj.background];

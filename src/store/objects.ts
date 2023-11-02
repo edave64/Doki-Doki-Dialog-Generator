@@ -96,8 +96,8 @@ export const mutations: MutationTree<IPanels> = {
 	setPosition(state, command: ISetObjectPositionMutation) {
 		const panel = state.panels[command.panelId];
 		const obj = panel.objects[command.id];
-		obj.x = command.x;
-		obj.y = command.y;
+		obj.x = Math.round(command.x * 100) / 100;
+		obj.y = Math.round(command.y * 100) / 100;
 	},
 	setFlip(state, command: ISetObjectFlipMutation) {
 		const panel = state.panels[command.panelId];
@@ -107,8 +107,8 @@ export const mutations: MutationTree<IPanels> = {
 	setSize(state, command: ISetSpriteSizeMutation) {
 		const panel = state.panels[command.panelId];
 		const obj = panel.objects[command.id];
-		obj.width = command.width;
-		obj.height = command.height;
+		obj.width = Math.round(command.width * 100) / 100;
+		obj.height = Math.round(command.height * 100) / 100;
 	},
 	setRatio(state, command: ISetSpriteRatioMutation) {
 		const panel = state.panels[command.panelId];
