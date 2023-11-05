@@ -1,4 +1,3 @@
-import getConstants from '@/constants';
 import { IRootState } from '@/store';
 import { IAssetSwitch } from '@/store/content';
 import {
@@ -88,16 +87,8 @@ export class Character extends AssetListRenderable<ICharacter> {
 		return drawAssetsUnloaded;
 	}
 
-	protected getLocalSize(): DOMPointReadOnly {
+	protected getLocalSizeOverride(): DOMPointReadOnly {
 		const pose = getPose(this.data, this.obj) as Pose<IAssetSwitch>;
-		if (this.transformIsLocal) {
-			const constants = getConstants();
-			return new DOMPointReadOnly(
-				constants.Base.screenWidth,
-				constants.Base.screenHeight
-			);
-		} else {
-			return new DOMPointReadOnly(pose.size[0], pose.size[1]);
-		}
+		return new DOMPointReadOnly(pose.size[0], pose.size[1]);
 	}
 }

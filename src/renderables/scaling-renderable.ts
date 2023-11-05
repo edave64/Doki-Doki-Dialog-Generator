@@ -1,114 +1,31 @@
-import getConstants from '@/constants';
-import { RenderContext } from '@/renderer/renderer-context';
+import envX from '@/environments/environment';
 import { IObject } from '@/store/objects';
-import { DeepReadonly } from 'ts-essentials';
-import { OffscreenRenderable } from './offscreen-renderable';
-import { IHitbox } from './renderable';
+import { Renderable } from './renderable';
 
 /**
  * A scaling renderable is a component drawn from pure code, that can be scaled to any size without pixelation.
  * Because of text overflow, this components can paint over it's border, requireing us to allocate a local canvas
  * of the same size as the main canvas.
- * 
- * TODO: Find a more efficient way to do that. Overflow is an edge case in most components and this wastes a lot of
- * memory.
  */
 export abstract class ScalingRenderable<
 	Obj extends IObject
-> extends OffscreenRenderable<Obj> {
-	protected lastWidth = -1;
-	protected lastHeight = -1;
-	protected lastX = -1;
-	protected lastY = -1;
-	protected lastFlip: boolean | null = null;
-	protected lastRotation: number | null = null;
-
-	protected readonly canvasHeight: number;
-	protected readonly canvasWidth: number;
-	protected readonly canvasDrawHeight: number;
-	protected readonly canvasDrawWidth: number;
-	protected readonly canvasDrawPosX = 0;
-	protected readonly canvasDrawPosY = 0;
-
-	public constructor(obj: DeepReadonly<Obj>) {
-		super(obj);
-		const constants = getConstants().Base;
-		this.canvasHeight = constants.screenHeight;
-		this.canvasWidth = constants.screenWidth;
-		this.canvasDrawHeight = constants.screenHeight;
-		this.canvasDrawWidth = constants.screenWidth;
-	}
-
-	public getRenderRotation(): [number, { x: number; y: number } | undefined] {
-		return [0, undefined];
-	}
-
-	public getHitboxRotation(): [number, { x: number; y: number } | undefined] {
-		const hitbox = this.getHitbox();
-		return [
-			this.flip ? -this.rotation : this.rotation,
-			{
-				x: hitbox.x0 + (hitbox.x1 - hitbox.x0) / 2,
-				y: hitbox.y0 + (hitbox.y1 - hitbox.y0) / 2,
-			},
-		];
-	}
-
-	public needsRedraw(): boolean {
-		if (super.needsRedraw()) return true;
+> extends Renderable<Obj> {
+	protected get canSkipLocal(): boolean {
 		return (
-			this.width !== this.lastWidth ||
-			this.height !== this.lastHeight ||
-			this.rotation !== this.lastRotation ||
-			this.x !== this.lastX ||
-			this.y !== this.lastY ||
-			this.flip !== this.lastFlip
+			this.obj.composite === 'source-over' && this.obj.filters.length === 0
 		);
 	}
-
-	public async updateLocalCanvas(hq: boolean, skipLocal: boolean) {
-		this.lastWidth = this.width;
-		this.lastHeight = this.height;
-		this.lastX = this.x;
-		this.lastY = this.y;
-		this.lastFlip = this.flip;
-		this.lastRotation = this.rotation;
-		await super.updateLocalCanvas(hq, skipLocal);
-	}
-
-	protected async renderLocal(rx: RenderContext): Promise<void> {
-		const constants = getConstants().Base;
-		if (this.rotation === 0) return await this.draw(rx);
-		await rx.customTransform((trx) => {
-			const hitbox = this.getHitbox();
-			const centerX = hitbox.x0 + (hitbox.x1 - hitbox.x0) / 2;
-			const centerY = hitbox.y0 + (hitbox.y1 - hitbox.y0) / 2;
-
-			const flipNormalizedCenterX = this.flip
-				? constants.screenWidth - centerX
-				: centerX;
-
-			trx.translate(flipNormalizedCenterX, centerY);
-			trx.rotate(this.rotation);
-			trx.translate(-flipNormalizedCenterX, -centerY);
-		}, this.draw.bind(this));
-	}
-
-	public getHitbox(): IHitbox {
-		const vCentered = this.centeredVertically;
-		const w2 = this.width / 2;
-		const h2 = this.height / 2;
-		return {
-			x0: this.x - w2,
-			x1: this.x + w2,
-			y0: vCentered ? this.y - h2 : this.y,
-			y1: vCentered ? this.y + h2 : this.y + this.height,
-		};
-	}
-
-	protected abstract draw(rx: RenderContext): Promise<void>;
-
-	protected get centeredVertically(): boolean {
-		return false;
+	protected get transformIsLocal(): boolean {
+		const transform = this.getTransfrom();
+		if (this.obj.overflow) return true;
+		if (envX.supports.limitedCanvasSpace) return false;
+		// Test if the transform one does translation. Anything else looks blury when you first render and then
+		// transform
+		return (
+			transform.a === 1 &&
+			transform.b === 0 &&
+			transform.c === 0 &&
+			transform.d === 1
+		);
 	}
 }

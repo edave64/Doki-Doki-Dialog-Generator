@@ -28,13 +28,17 @@ export abstract class Renderable<ObjectType extends IObject> {
 	 * Some objects can be rendered without needing a local canvas. This is handy for running on memory constrained
 	 * platforms. (iPhones)
 	 */
-	protected canSkipLocal = true;
+	protected get canSkipLocal(): boolean {
+		return false;
+	}
 	/**
 	 * The transform of a renderable object can either be global, where a smaller local canvas is placed on the larger
 	 * global canvas, or local, where the local canvas has the same size as the global canvas and the local render
 	 * function is translated onto the local canvas.
 	 */
-	protected transformIsLocal = false;
+	protected get transformIsLocal(): boolean {
+		return false;
+	}
 	/**
 	 * A transform that transforms the global or local canvas (depending on transformIsLocal) to the center of the
 	 * object.
@@ -42,34 +46,46 @@ export abstract class Renderable<ObjectType extends IObject> {
 	 */
 	protected getTransfrom(): DOMMatrixReadOnly {
 		let transform = new DOMMatrix();
-		const localSize = this.getLocalSize();
+		const localSizeOverride = this.getLocalSizeOverride();
 		const obj = this.obj;
 		transform = transform.translate(obj.x - obj.width / 2, obj.y);
 		if (this.isTalking && obj.enlargeWhenTalking) {
 			transform = transform.scale(1.05, 1.05);
 		}
 		if (
-			true ||
 			obj.flip ||
 			obj.rotation !== 0 ||
-			obj.zoom !== 1 /* || this.obj.skewX !== 0 || this.obj.skewX !== 0 */
+			obj.scaleX !== 1 ||
+			obj.scaleY !== 1 ||
+			this.obj.skewX !== 0 ||
+			this.obj.skewX !== 0
 		) {
 			transform = transform.translate(+obj.width / 2, +obj.height / 2);
-			if (obj.flip) {
-				transform = transform.flipX();
-			}
 			if (obj.rotation !== 0) {
 				transform = transform.rotate(0, 0, obj.rotation);
 			}
-			if (obj.zoom !== 1) {
-				transform = transform.scale(obj.zoom, obj.zoom);
+			if (obj.skewX !== 1) {
+				transform = transform.skewX(obj.skewX);
+			}
+			if (obj.skewY !== 1) {
+				transform = transform.skewY(obj.skewY);
+			}
+			if (obj.flip) {
+				transform = transform.flipX();
+			}
+			if (obj.scaleX !== 1 || obj.scaleY !== 1) {
+				transform = transform.scale(obj.scaleX, obj.scaleY);
 			}
 			transform = transform.translate(-obj.width / 2, -obj.height / 2);
 		}
-		if (localSize.x !== this.obj.width || localSize.y !== this.obj.height) {
+		if (
+			localSizeOverride &&
+			(localSizeOverride.x !== this.obj.width ||
+				localSizeOverride.y !== this.obj.height)
+		) {
 			transform = transform.scale(
-				this.obj.width / localSize.x,
-				this.obj.height / localSize.y
+				this.obj.width / localSizeOverride.x,
+				this.obj.height / localSizeOverride.y
 			);
 		}
 		return transform;
@@ -79,6 +95,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 	 * The size of the local canvas
 	 */
 	protected getLocalSize(): DOMPointReadOnly {
+		console.log(this.obj.type, this.transformIsLocal);
 		if (this.transformIsLocal) {
 			const constants = getConstants();
 			return new DOMPointReadOnly(
@@ -86,8 +103,15 @@ export abstract class Renderable<ObjectType extends IObject> {
 				constants.Base.screenHeight
 			);
 		} else {
-			return new DOMPointReadOnly(this.obj.width, this.obj.height);
+			return (
+				this.getLocalSizeOverride() ??
+				new DOMPointReadOnly(this.obj.width, this.obj.height)
+			);
 		}
+	}
+
+	protected getLocalSizeOverride(): DOMPointReadOnly | null {
+		return null;
 	}
 
 	/**
@@ -144,6 +168,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 		hq: boolean,
 		skipLocal: boolean
 	) {
+		if (!preview) selection = SelectedState.None;
 		if (!this.canSkipLocal || selection !== SelectedState.None) {
 			skipLocal = false;
 		}
@@ -181,7 +206,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 			}
 
 			if (skipLocal) {
-				ctx.translate(-this.obj.width / 2, -this.obj.height);
+				//ctx.translate(-this.obj.width / 2, -this.obj.height);
 				this.renderLocal(ctx, hq);
 			} else {
 				ctx.drawImage(this.localCanvas!, 0, 0);

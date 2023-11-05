@@ -69,8 +69,8 @@
 							/>
 						</td>
 					</tr>
-					<tr v-if="object.type === 'character' || object.type === 'sprite'">
-						<td><label for="zoom" class="v-w100">Zoom: </label></td>
+					<tr>
+						<td><label for="zoom" class="v-w100">Scale X: </label></td>
 						<td>
 							<input
 								id="zoom"
@@ -78,7 +78,47 @@
 								class="smol v-w100"
 								step="1"
 								min="0"
-								v-model="zoom"
+								v-model="scaleX"
+								@keydown.stop
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td><label for="zoom" class="v-w100">Scale Y: </label></td>
+						<td>
+							<input
+								id="zoom"
+								type="number"
+								class="smol v-w100"
+								step="1"
+								min="0"
+								v-model="scaleY"
+								@keydown.stop
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td><label for="zoom" class="v-w100">Skew X: </label></td>
+						<td>
+							<input
+								id="zoom"
+								type="number"
+								class="smol v-w100"
+								step="1"
+								v-model="skewX"
+								@keydown.stop
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td><label for="zoom" class="v-w100">Skew Y: </label></td>
+						<td>
+							<input
+								id="zoom"
+								type="number"
+								class="smol v-w100"
+								step="1"
+								v-model="skewY"
 								@keydown.stop
 							/>
 						</td>
@@ -148,7 +188,8 @@ import {
 	IObject,
 	ISetLabelMutation,
 	ISetNameboxWidthMutation,
-	ISetObjectZoomMutation,
+	ISetObjectScaleMutation,
+	ISetObjectSkewMutation,
 	ISetTextBoxColor,
 } from '@/store/objects';
 import { IPanel } from '@/store/panels';
@@ -221,17 +262,66 @@ const nameboxWidth = computed({
 	},
 });
 
-const zoom = computed({
+const scaleX = computed({
 	get(): number {
-		return props.object.zoom * 100;
+		return props.object.scaleX * 100;
 	},
 	set(zoom: number): void {
 		transaction(() => {
-			store.commit('panels/setObjectZoom', {
+			store.commit('panels/setObjectScale', {
 				id: props.object.id,
 				panelId: props.object.panelId,
-				zoom: zoom / 100,
-			} as ISetObjectZoomMutation);
+				scaleX: zoom / 100,
+				scaleY: props.object.scaleY,
+			} as ISetObjectScaleMutation);
+		});
+	},
+});
+
+const scaleY = computed({
+	get(): number {
+		return props.object.scaleY * 100;
+	},
+	set(zoom: number): void {
+		transaction(() => {
+			store.commit('panels/setObjectScale', {
+				id: props.object.id,
+				panelId: props.object.panelId,
+				scaleX: props.object.scaleX,
+				scaleY: zoom / 100,
+			} as ISetObjectScaleMutation);
+		});
+	},
+});
+
+const skewX = computed({
+	get(): number {
+		return props.object.skewX;
+	},
+	set(skew: number): void {
+		transaction(() => {
+			store.commit('panels/setObjectSkew', {
+				id: props.object.id,
+				panelId: props.object.panelId,
+				skewX: skew,
+				skewY: props.object.skewY,
+			} as ISetObjectSkewMutation);
+		});
+	},
+});
+
+const skewY = computed({
+	get(): number {
+		return props.object.skewY;
+	},
+	set(skew: number): void {
+		transaction(() => {
+			store.commit('panels/setObjectSkew', {
+				id: props.object.id,
+				panelId: props.object.panelId,
+				skewX: props.object.skewX,
+				skewY: skew,
+			} as ISetObjectSkewMutation);
 		});
 	},
 });

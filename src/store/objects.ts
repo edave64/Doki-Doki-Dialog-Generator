@@ -49,7 +49,6 @@ export interface IObject extends IHasSpriteFilters {
 	width: number;
 	height: number;
 	rotation: number;
-	preserveRatio: boolean;
 	ratio: number;
 	version: number;
 	flip: boolean;
@@ -58,7 +57,11 @@ export interface IObject extends IHasSpriteFilters {
 	textboxColor: string | null;
 	enlargeWhenTalking: boolean;
 	nameboxWidth: null | number;
-	zoom: number;
+	scaleX: number;
+	scaleY: number;
+	skewX: number;
+	skewY: number;
+	preserveRatio: boolean;
 }
 
 export type ObjectTypes =
@@ -162,10 +165,18 @@ export const mutations: MutationTree<IPanels> = {
 		obj.nameboxWidth = command.nameboxWidth;
 		++obj.version;
 	},
-	setObjectZoom(state, command: ISetObjectZoomMutation) {
+	setObjectScale(state, command: ISetObjectScaleMutation) {
 		const panel = state.panels[command.panelId];
 		const obj = panel.objects[command.id] as ITextBox;
-		obj.zoom = command.zoom;
+		obj.scaleX = command.scaleX;
+		obj.scaleY = command.scaleY;
+		++obj.version;
+	},
+	setObjectSkew(state, command: ISetObjectSkewMutation) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id] as ITextBox;
+		obj.skewX = command.skewX;
+		obj.skewY = command.skewY;
 		++obj.version;
 	},
 	...spriteMutations,
@@ -467,8 +478,14 @@ export interface ISetNameboxWidthMutation extends IObjectMutation {
 	readonly nameboxWidth: null | number;
 }
 
-export interface ISetObjectZoomMutation extends IObjectMutation {
-	readonly zoom: number;
+export interface ISetObjectScaleMutation extends IObjectMutation {
+	readonly scaleX: number;
+	readonly scaleY: number;
+}
+
+export interface ISetObjectSkewMutation extends IObjectMutation {
+	readonly skewX: number;
+	readonly skewY: number;
 }
 
 export interface ISetCompositionMutation extends IObjectMutation {

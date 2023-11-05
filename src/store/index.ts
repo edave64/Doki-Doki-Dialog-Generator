@@ -144,6 +144,14 @@ export default createStore({
 				combinedPack = mergeContentPacks(combinedPack, contentPack);
 			}
 			data.content.current = combinedPack;
+			for (const panelId of data.panels.panelOrder) {
+				const panel = data.panels.panels[panelId];
+				for (const objKey in panel.objects) {
+					const obj = panel.objects[objKey];
+					obj.scaleX ??= 1;
+					obj.scaleY ??= 1;
+				}
+			}
 
 			this.replaceState(data);
 

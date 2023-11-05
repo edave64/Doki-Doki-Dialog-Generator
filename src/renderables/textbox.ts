@@ -11,6 +11,7 @@ import { IPanel } from '@/store/panels';
 import { DeepReadonly } from 'ts-essentials';
 import { Store } from 'vuex';
 import { Renderable } from './renderable';
+import { ScalingRenderable } from './scaling-renderable';
 import { Corrupted } from './textboxRenderers/corrupt';
 import { Custom } from './textboxRenderers/custom';
 import { CustomPlus } from './textboxRenderers/custom-plus';
@@ -51,10 +52,9 @@ export function getStyles(): DeepReadonly<ITextboxRendererClass>[] {
 	return ret;
 }
 
-export class TextBox extends Renderable<ITextBox> {
+export class TextBox extends ScalingRenderable<ITextBox> {
 	private nbTextRenderer: TextRenderer = null!;
 	private textRenderer: TextRenderer = null!;
-	protected transformIsLocal = false;
 	public prepareRender(
 		panel: DeepReadonly<IPanel>,
 		store: Store<IRootState>,

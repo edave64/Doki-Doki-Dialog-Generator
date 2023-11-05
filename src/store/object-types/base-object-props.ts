@@ -13,6 +13,9 @@ export function baseProps() {
 		textboxColor: null,
 		enlargeWhenTalking: false,
 		nameboxWidth: null,
-		zoom: 1,
+		scaleX: 1,
+		scaleY: 1,
+		skewX: 0,
+		skewY: 0,
 	};
 }
