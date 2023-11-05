@@ -3,14 +3,18 @@ import { Renderer } from '@/renderer/renderer';
 import { RenderContext } from '@/renderer/renderer-context';
 import { IRootState } from '@/store';
 import { BackgroundLookup } from '@/store/content';
+import { getData, ICharacter } from '@/store/object-types/characters';
+import { ISprite } from '@/store/object-types/sprite';
 import { ITextBox } from '@/store/object-types/textbox';
 import { IObject } from '@/store/objects';
 import { IPanel } from '@/store/panels';
 import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
 import { Store } from 'vuex';
 import { Background, color, IBackgroundRenderer } from './background';
+import { Character } from './character';
 import { SelectedState } from './offscreen-renderable';
 import { Renderable } from './renderable';
+import { Sprite } from './sprite';
 import { TextBox } from './textbox';
 
 export class SceneRenderer {
@@ -107,7 +111,7 @@ export class SceneRenderer {
 			renderables.map((x) => [x.id, x as DeepReadonly<Renderable<never>>])
 		);
 		const promises = renderables
-			.map((x) => x.prepareRender(this.panel!, map, !rx.hq))
+			.map((x) => x.prepareRender(this.panel!, this.store, map, !rx.hq))
 			.filter((x) => x !== undefined);
 		if (promises.length > 0) {
 			await Promise.all(promises);
@@ -160,7 +164,6 @@ export class SceneRenderer {
 				const obj = objects[id];
 				const type = obj.type;
 				switch (type) {
-					/*
 					case 'sprite':
 						renderObject = new Sprite(obj as DeepReadonly<ISprite>);
 						break;
@@ -169,7 +172,6 @@ export class SceneRenderer {
 						renderObject = new Character(char, getData(this.store, char));
 						break;
 					}
-					*/
 					case 'textBox':
 						renderObject = new TextBox(obj as DeepReadonly<ITextBox>);
 						break;

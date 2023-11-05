@@ -11,7 +11,6 @@ import { SpriteFilter } from '@/store/sprite-options';
 import { rotateAround } from '@/util/rotation';
 import { DeepReadonly } from 'ts-essentials';
 import { Store } from 'vuex';
-import { IHitbox } from './renderable';
 
 /**
  * An offscreen renderable is the baseclass for all renderable objects in DDDG. It (generally) first renders the object

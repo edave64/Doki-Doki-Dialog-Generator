@@ -1,3 +1,4 @@
+import getConstants from '@/constants';
 import { IRootState } from '@/store';
 import { IAssetSwitch } from '@/store/content';
 import {
@@ -6,6 +7,7 @@ import {
 	getPose,
 	ICharacter,
 } from '@/store/object-types/characters';
+import { IObject } from '@/store/objects';
 import { IPanel } from '@/store/panels';
 import {
 	Character as CharacterModel,
@@ -17,9 +19,9 @@ import {
 	AssetListRenderable,
 	IDrawAssetsUnloaded,
 } from './asset-list-renderable';
+import { Renderable } from './renderable';
 
 export class Character extends AssetListRenderable<ICharacter> {
-	protected reloadAssets(): void {}
 	public constructor(
 		obj: DeepReadonly<ICharacter>,
 		private data: DeepReadonly<CharacterModel<IAssetSwitch>>
@@ -27,12 +29,18 @@ export class Character extends AssetListRenderable<ICharacter> {
 		super(obj);
 	}
 
-	public updatedContent(
-		store: Store<DeepReadonly<IRootState>>,
-		panelId: IPanel['id']
-	): void {
-		super.updatedContent(store, panelId);
+	public prepareRender(
+		panel: DeepReadonly<IPanel>,
+		store: Store<IRootState>,
+		renderables: Map<IObject['id'], DeepReadonly<Renderable<never>>>,
+		lq: boolean
+	): void | Promise<unknown> {
 		this.data = getData(store, this.obj);
+		return super.prepareRender(panel, store, renderables, lq);
+	}
+
+	protected isAssetListOutdated(): boolean {
+		return true;
 	}
 
 	protected getAssetList(): IDrawAssetsUnloaded[] {
@@ -80,26 +88,16 @@ export class Character extends AssetListRenderable<ICharacter> {
 		return drawAssetsUnloaded;
 	}
 
-	protected get canvasHeight(): number {
+	protected getLocalSize(): DOMPointReadOnly {
 		const pose = getPose(this.data, this.obj) as Pose<IAssetSwitch>;
-		return pose.size[1];
-	}
-	protected get canvasWidth(): number {
-		const pose = getPose(this.data, this.obj) as Pose<IAssetSwitch>;
-		return pose.size[0];
-	}
-
-	public get closeZoom(): number {
-		let zoom = 1;
-		if (this.obj.close) zoom *= 2;
-		return zoom;
-	}
-
-	public get width() {
-		return this.obj.width * this.closeZoom;
-	}
-
-	public get height() {
-		return this.obj.height * this.closeZoom;
+		if (this.transformIsLocal) {
+			const constants = getConstants();
+			return new DOMPointReadOnly(
+				constants.Base.screenWidth,
+				constants.Base.screenHeight
+			);
+		} else {
+			return new DOMPointReadOnly(pose.size[0], pose.size[1]);
+		}
 	}
 }

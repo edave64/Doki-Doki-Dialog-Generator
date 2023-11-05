@@ -1,9 +1,12 @@
 import getConstants from '@/constants';
 import { ctxScope } from '@/renderer/canvas-tools';
+import { IRootState } from '@/store';
+import { ITextBox } from '@/store/object-types/textbox';
 import { IObject } from '@/store/objects';
 import { IPanel } from '@/store/panels';
 import { makeCanvas } from '@/util/canvas';
 import { DeepReadonly } from 'vue';
+import { Store } from 'vuex';
 import { SelectedState } from './offscreen-renderable';
 
 /**
@@ -39,6 +42,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 	 */
 	protected getTransfrom(): DOMMatrixReadOnly {
 		let transform = new DOMMatrix();
+		const localSize = this.getLocalSize();
 		const obj = this.obj;
 		transform = transform.translate(obj.x - obj.width / 2, obj.y);
 		if (this.isTalking && obj.enlargeWhenTalking) {
@@ -61,6 +65,12 @@ export abstract class Renderable<ObjectType extends IObject> {
 				transform = transform.scale(obj.zoom, obj.zoom);
 			}
 			transform = transform.translate(-obj.width / 2, -obj.height / 2);
+		}
+		if (localSize.x !== this.obj.width || localSize.y !== this.obj.height) {
+			transform = transform.scale(
+				this.obj.width / localSize.x,
+				this.obj.height / localSize.y
+			);
 		}
 		return transform;
 	}
@@ -85,10 +95,14 @@ export abstract class Renderable<ObjectType extends IObject> {
 	 */
 	protected lastVersion: IObject['version'] = null!;
 	protected localCanvasInvalid = true;
+	protected lastHit: DOMPointReadOnly | null = null;
 	/**
 	 * Indicates if the object is currently talking, since talking objects receive a zoom of 1.05.
 	 */
-	protected isTalking = false;
+	protected get isTalking() {
+		return this.refTextbox !== null;
+	}
+	protected refTextbox: ITextBox | null = null;
 
 	/**
 	 * An optionally async method that prepares the object to be rendered by resolving assets, processing the transform
@@ -101,11 +115,22 @@ export abstract class Renderable<ObjectType extends IObject> {
 	 */
 	public prepareRender(
 		panel: DeepReadonly<IPanel>,
+		store: Store<IRootState>,
 		renderables: Map<IObject['id'], DeepReadonly<Renderable<never>>>,
 		lq: boolean
 	): void | Promise<unknown> {
 		if (this.lastVersion != this.obj.version) {
 			this.localCanvasInvalid = true;
+		}
+
+		this.refTextbox = null;
+		const inPanel = [...panel.order, ...panel.onTopOrder];
+		for (const key of inPanel) {
+			const obj = panel.objects[key] as ITextBox;
+			if (obj.type === 'textBox' && obj.talkingObjId === this.obj.id) {
+				this.refTextbox = obj;
+				return;
+			}
 		}
 	}
 
@@ -186,16 +211,17 @@ export abstract class Renderable<ObjectType extends IObject> {
 	 * work and skip it the next time.
 	 */
 	private hitDetectionFallback = false;
-	private lastHit: DOMPointReadOnly | null = null;
 	public hitTest(point: DOMPointReadOnly) {
 		const transposed = point.matrixTransform(this.getTransfrom().inverse());
 		// Step 1: Simple hitbox test;
+		const localSize = this.getLocalSize();
 		if (
 			transposed.x < 0 ||
 			transposed.y < 0 ||
-			transposed.x > this.obj.width ||
-			transposed.y > this.obj.height
+			transposed.x > localSize.x ||
+			transposed.y > localSize.y
 		) {
+			console.log('Hitbox text', transposed);
 			return false;
 		}
 		if (
@@ -208,6 +234,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 		// Pixel perfect hit test
 		try {
 			const target = this.transformIsLocal ? point : transposed;
+			this.lastHit = target;
 			const ctx = this.localCanvas.getContext('2d')!;
 			const data = ctx.getImageData(target.x | 0, target.y | 0, 1, 1).data;
 			// Return if the image isn't completely transparent

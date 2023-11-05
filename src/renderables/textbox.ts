@@ -4,16 +4,18 @@ import {
 	ITextStyle,
 	TextRenderer,
 } from '@/renderer/text-renderer/text-renderer';
+import { IRootState } from '@/store';
 import { ITextBox } from '@/store/object-types/textbox';
 import { IObject } from '@/store/objects';
 import { IPanel } from '@/store/panels';
 import { DeepReadonly } from 'ts-essentials';
-import { Corrupted } from '../textboxRenderers/corrupt';
-import { Custom } from '../textboxRenderers/custom';
-import { CustomPlus } from '../textboxRenderers/custom-plus';
-import { Default } from '../textboxRenderers/default';
-import { None } from '../textboxRenderers/none';
+import { Store } from 'vuex';
 import { Renderable } from './renderable';
+import { Corrupted } from './textboxRenderers/corrupt';
+import { Custom } from './textboxRenderers/custom';
+import { CustomPlus } from './textboxRenderers/custom-plus';
+import { Default } from './textboxRenderers/default';
+import { None } from './textboxRenderers/none';
 
 export const styleRenderers: ReadonlyArray<ITextboxRendererClass> = [
 	Default,
@@ -55,10 +57,11 @@ export class TextBox extends Renderable<ITextBox> {
 	protected transformIsLocal = false;
 	public prepareRender(
 		panel: DeepReadonly<IPanel>,
+		store: Store<IRootState>,
 		renderables: Map<IObject['id'], DeepReadonly<Renderable<never>>>,
 		lq: boolean
 	): void | Promise<unknown> {
-		const ret = super.prepareRender(panel, renderables, lq);
+		const ret = super.prepareRender(panel, store, renderables, lq);
 		const prepareRet = this.textboxRenderer.prepare();
 
 		const name =
