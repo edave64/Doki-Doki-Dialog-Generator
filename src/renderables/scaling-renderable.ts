@@ -21,7 +21,7 @@ export abstract class ScalingRenderable<
 		if (envX.supports.limitedCanvasSpace) return false;
 		// Test if the transform one does translation. Anything else looks blury when you first render and then
 		// transform
-		return (
+		return !(
 			transform.a === 1 &&
 			transform.b === 0 &&
 			transform.c === 0 &&

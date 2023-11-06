@@ -5,6 +5,7 @@ import { ITextBox } from '@/store/object-types/textbox';
 import { IObject } from '@/store/objects';
 import { IPanel } from '@/store/panels';
 import { makeCanvas } from '@/util/canvas';
+import { matrixEquals } from '@/util/math';
 import { DeepReadonly } from 'vue';
 import { Store } from 'vuex';
 import { SelectedState } from './offscreen-renderable';
@@ -120,6 +121,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 	protected lastVersion: IObject['version'] = null!;
 	protected localCanvasInvalid = true;
 	protected lastHit: DOMPointReadOnly | null = null;
+	protected lastLocalTransform: DOMMatrixReadOnly | null = null;
 	/**
 	 * Indicates if the object is currently talking, since talking objects receive a zoom of 1.05.
 	 */
@@ -143,8 +145,18 @@ export abstract class Renderable<ObjectType extends IObject> {
 		renderables: Map<IObject['id'], DeepReadonly<Renderable<never>>>,
 		lq: boolean
 	): void | Promise<unknown> {
-		if (this.lastVersion != this.obj.version) {
+		if (this.lastVersion !== this.obj.version) {
 			this.localCanvasInvalid = true;
+			this.lastVersion = this.obj.version;
+		}
+		if (this.transformIsLocal) {
+			const newTransform = this.getTransfrom();
+			if (!matrixEquals(newTransform, this.lastLocalTransform)) {
+				this.localCanvasInvalid = true;
+				this.lastLocalTransform = newTransform;
+			}
+		} else {
+			this.lastLocalTransform = null;
 		}
 
 		this.refTextbox = null;
@@ -173,6 +185,13 @@ export abstract class Renderable<ObjectType extends IObject> {
 			skipLocal = false;
 		}
 		const localCanvasSize = this.getLocalSize();
+		if (
+			this.localCanvas &&
+			(this.localCanvas.width !== localCanvasSize.x ||
+				this.localCanvas.height !== localCanvasSize.y)
+		) {
+			this.localCanvasInvalid = true;
+		}
 		if (this.localCanvasInvalid && !skipLocal) {
 			if (!this.localCanvas) {
 				this.localCanvas = makeCanvas();
