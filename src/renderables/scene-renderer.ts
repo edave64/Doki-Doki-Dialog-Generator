@@ -4,6 +4,7 @@ import { RenderContext } from '@/renderer/renderer-context';
 import { IRootState } from '@/store';
 import { BackgroundLookup } from '@/store/content';
 import { getData, ICharacter } from '@/store/object-types/characters';
+import { IChoices } from '@/store/object-types/choices';
 import { ISprite } from '@/store/object-types/sprite';
 import { ITextBox } from '@/store/object-types/textbox';
 import { IObject } from '@/store/objects';
@@ -12,6 +13,7 @@ import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
 import { Store } from 'vuex';
 import { Background, color, IBackgroundRenderer } from './background';
 import { Character } from './character';
+import { Choice } from './choices';
 import { SelectedState } from './offscreen-renderable';
 import { Renderable } from './renderable';
 import { Sprite } from './sprite';
@@ -175,10 +177,10 @@ export class SceneRenderer {
 					case 'textBox':
 						renderObject = new TextBox(obj as DeepReadonly<ITextBox>);
 						break;
-					/*
 					case 'choice':
 						renderObject = new Choice(obj as DeepReadonly<IChoices>);
 						break;
+					/*
 					case 'notification':
 						renderObject = new Notification(obj as DeepReadonly<INotification>);
 						break;

@@ -123,6 +123,11 @@
 							/>
 						</td>
 					</tr>
+					<tr>
+						<td colspan="2">
+							<toggle v-model="preserveRatio" label="Lock ratio?" />
+						</td>
+					</tr>
 				</table>
 				<slot name="transform" />
 			</d-fieldset>
@@ -183,6 +188,7 @@ import ImageOptions from '@/components/toolbox/subtools/image-options/image-opti
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import getConstants from '@/constants';
 import { transaction } from '@/plugins/vuex-history';
+import { useStore } from '@/store';
 import {
 	ICopyObjectToClipboardAction,
 	IObject,
@@ -190,14 +196,12 @@ import {
 	ISetNameboxWidthMutation,
 	ISetObjectScaleMutation,
 	ISetObjectSkewMutation,
+	ISetRatioAction,
 	ISetTextBoxColor,
 } from '@/store/objects';
-import { IPanel } from '@/store/panels';
 import { genericSetterMerged } from '@/util/simple-settable';
-import { DeepReadonly } from 'ts-essentials';
 import { computed, PropType, ref } from 'vue';
 import TextEditor from '../subtools/text/text.vue';
-import { useStore } from '@/store';
 
 const store = useStore();
 const root = ref(null! as HTMLElement);
@@ -237,8 +241,19 @@ const enlargeWhenTalking = setable(
 	'panels/setEnlargeWhenTalking'
 );
 
-const currentPanel = computed((): DeepReadonly<IPanel> => {
-	return store.state.panels.panels[store.state.panels.currentPanel];
+const preserveRatio = computed({
+	get(): boolean {
+		return props.object.preserveRatio;
+	},
+	set(preserveRatio: boolean) {
+		transaction(async () => {
+			await store.dispatch('panels/setPreserveRatio', {
+				id: props.object.id,
+				panelId: props.object.panelId,
+				preserveRatio,
+			} as ISetRatioAction);
+		});
+	},
 });
 
 const nameboxWidth = computed({
@@ -272,7 +287,7 @@ const scaleX = computed({
 				id: props.object.id,
 				panelId: props.object.panelId,
 				scaleX: zoom / 100,
-				scaleY: props.object.scaleY,
+				scaleY: (zoom / 100) * props.object.ratio,
 			} as ISetObjectScaleMutation);
 		});
 	},
@@ -287,7 +302,7 @@ const scaleY = computed({
 			store.commit('panels/setObjectScale', {
 				id: props.object.id,
 				panelId: props.object.panelId,
-				scaleX: props.object.scaleX,
+				scaleX: zoom / 100 / props.object.ratio,
 				scaleY: zoom / 100,
 			} as ISetObjectScaleMutation);
 		});

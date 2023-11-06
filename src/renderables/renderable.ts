@@ -40,6 +40,18 @@ export abstract class Renderable<ObjectType extends IObject> {
 	protected get transformIsLocal(): boolean {
 		return false;
 	}
+	protected get height(): number {
+		return this.obj.height;
+	}
+	protected get width(): number {
+		return this.obj.width;
+	}
+	protected get x(): number {
+		return this.obj.x;
+	}
+	protected get y(): number {
+		return this.obj.y;
+	}
 	/**
 	 * A transform that transforms the global or local canvas (depending on transformIsLocal) to the center of the
 	 * object.
@@ -49,9 +61,14 @@ export abstract class Renderable<ObjectType extends IObject> {
 		let transform = new DOMMatrix();
 		const localSizeOverride = this.getLocalSizeOverride();
 		const obj = this.obj;
-		transform = transform.translate(obj.x - obj.width / 2, obj.y);
+		transform = transform.translate(
+			this.x - this.width / 2,
+			this.y - this.height / 2
+		);
 		if (this.isTalking && obj.enlargeWhenTalking) {
+			transform = transform.translate(+this.width / 2, +this.height);
 			transform = transform.scale(1.05, 1.05);
+			transform = transform.translate(-this.width / 2, -this.height);
 		}
 		if (
 			obj.flip ||
@@ -61,7 +78,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 			this.obj.skewX !== 0 ||
 			this.obj.skewX !== 0
 		) {
-			transform = transform.translate(+obj.width / 2, +obj.height / 2);
+			transform = transform.translate(+this.width / 2, +this.height / 2);
 			if (obj.rotation !== 0) {
 				transform = transform.rotate(0, 0, obj.rotation);
 			}
@@ -77,16 +94,16 @@ export abstract class Renderable<ObjectType extends IObject> {
 			if (obj.scaleX !== 1 || obj.scaleY !== 1) {
 				transform = transform.scale(obj.scaleX, obj.scaleY);
 			}
-			transform = transform.translate(-obj.width / 2, -obj.height / 2);
+			transform = transform.translate(-this.width / 2, -this.height / 2);
 		}
 		if (
 			localSizeOverride &&
-			(localSizeOverride.x !== this.obj.width ||
-				localSizeOverride.y !== this.obj.height)
+			(localSizeOverride.x !== this.width ||
+				localSizeOverride.y !== this.height)
 		) {
 			transform = transform.scale(
-				this.obj.width / localSizeOverride.x,
-				this.obj.height / localSizeOverride.y
+				this.width / localSizeOverride.x,
+				this.height / localSizeOverride.y
 			);
 		}
 		return transform;
@@ -96,7 +113,6 @@ export abstract class Renderable<ObjectType extends IObject> {
 	 * The size of the local canvas
 	 */
 	protected getLocalSize(): DOMPointReadOnly {
-		console.log(this.obj.type, this.transformIsLocal);
 		if (this.transformIsLocal) {
 			const constants = getConstants();
 			return new DOMPointReadOnly(
@@ -106,7 +122,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 		} else {
 			return (
 				this.getLocalSizeOverride() ??
-				new DOMPointReadOnly(this.obj.width, this.obj.height)
+				new DOMPointReadOnly(this.width, this.height)
 			);
 		}
 	}
@@ -141,9 +157,9 @@ export abstract class Renderable<ObjectType extends IObject> {
 	 */
 	public prepareRender(
 		panel: DeepReadonly<IPanel>,
-		store: Store<IRootState>,
-		renderables: Map<IObject['id'], DeepReadonly<Renderable<never>>>,
-		lq: boolean
+		_store: Store<IRootState>,
+		_renderables: Map<IObject['id'], DeepReadonly<Renderable<never>>>,
+		_lq: boolean
 	): void | Promise<unknown> {
 		if (this.lastVersion !== this.obj.version) {
 			this.localCanvasInvalid = true;
@@ -209,7 +225,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 			localCtx.resetTransform();
 		}
 
-		let shadow: string | undefined = {
+		const shadow: string | undefined = {
 			[SelectedState.None]: undefined,
 			[SelectedState.Selected]: 'red',
 			[SelectedState.Focused]: 'blue',
@@ -225,7 +241,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 			}
 
 			if (skipLocal) {
-				//ctx.translate(-this.obj.width / 2, -this.obj.height);
+				//ctx.translate(-this.width / 2, -this.height);
 				this.renderLocal(ctx, hq);
 			} else {
 				ctx.drawImage(this.localCanvas!, 0, 0);

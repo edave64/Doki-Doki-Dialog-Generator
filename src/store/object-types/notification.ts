@@ -48,8 +48,6 @@ export const notificationActions: ActionTree<IPanels, IRootState> = {
 				id,
 				onTop: true,
 				type: 'notification',
-				preserveRatio: false,
-				ratio: constants.TextBox.TextBoxWidth / constants.TextBox.TextBoxHeight,
 				customColor: constants.Choices.ChoiceButtonColor,
 				text: 'Click here to edit notification',
 				backdrop: true,

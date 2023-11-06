@@ -1,4 +1,3 @@
-import getConstants from '@/constants';
 import environment from '@/environments/environment';
 import {
 	ITextStyle,
@@ -84,15 +83,8 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 	}
 
 	protected renderLocal(ctx: CanvasRenderingContext2D, hq: boolean): void {
-		const constants = getConstants();
 		const styleRenderer = this.textboxRenderer;
 		const w = styleRenderer.width;
-		const w2 = w / 2;
-		const baseX = this.obj.flip
-			? constants.Base.screenWidth - this.obj.x
-			: this.obj.x;
-		const x = baseX - w2;
-		const y = this.obj.y;
 		/*
 		ctx.fillStyle = '#0f0';
 		ctx.fillRect(0, 0, this.obj.width, this.obj.height);

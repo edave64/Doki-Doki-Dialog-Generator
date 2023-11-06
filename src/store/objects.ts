@@ -282,28 +282,6 @@ export const actions: ActionTree<IPanels, IRootState> = {
 			ratio,
 		} as ISetSpriteRatioMutation);
 	},
-	setWidth({ commit, state }, command: ISetWidthAction) {
-		const panel = state.panels[command.panelId];
-		const obj = panel.objects[command.id];
-		const height = !obj.preserveRatio ? obj.height : command.width / obj.ratio;
-		commit('setSize', {
-			panelId: command.panelId,
-			id: command.id,
-			height,
-			width: command.width,
-		} as ISetSpriteSizeMutation);
-	},
-	setHeight({ commit, state }, command: ISetHeightAction) {
-		const panel = state.panels[command.panelId];
-		const obj = panel.objects[command.id];
-		const width = !obj.preserveRatio ? obj.width : command.height * obj.ratio;
-		commit('setSize', {
-			panelId: command.panelId,
-			id: command.id,
-			height: command.height,
-			width,
-		} as ISetSpriteSizeMutation);
-	},
 	copyObjects(
 		{ commit, state },
 		{ sourcePanelId, targetPanelId }: ICopyObjectsAction

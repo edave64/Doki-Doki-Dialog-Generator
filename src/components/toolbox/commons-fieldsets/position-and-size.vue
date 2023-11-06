@@ -104,11 +104,6 @@
 						/>
 					</td>
 				</tr>
-				<tr>
-					<td colspan="2">
-						<toggle v-model="preserveRatio" label="Lock ratio?" />
-					</td>
-				</tr>
 			</template>
 		</table>
 	</d-fieldset>
@@ -129,11 +124,9 @@ import {
 import { ITextBox } from '@/store/object-types/textbox';
 import {
 	IObject,
-	ISetHeightAction,
 	ISetObjectPositionMutation,
 	ISetPositionAction,
-	ISetRatioAction,
-	ISetWidthAction,
+	ISetSpriteSizeMutation,
 } from '@/store/objects';
 import { computed, PropType } from 'vue';
 
@@ -146,31 +139,18 @@ const props = defineProps({
 });
 
 //#region Size
-const preserveRatio = computed({
-	get(): boolean {
-		return props.obj.preserveRatio;
-	},
-	set(preserveRatio: boolean) {
-		transaction(async () => {
-			await store.dispatch('panels/setPreserveRatio', {
-				id: props.obj.id,
-				panelId: props.obj.panelId,
-				preserveRatio,
-			} as ISetRatioAction);
-		});
-	},
-});
 const height = computed({
 	get(): number {
 		return props.obj.height;
 	},
 	set(height: number) {
 		transaction(async () => {
-			await store.dispatch('panels/setHeight', {
+			await store.commit('panels/setSize', {
 				id: props.obj.id,
 				panelId: props.obj.panelId,
 				height,
-			} as ISetHeightAction);
+				width: props.obj.width,
+			} as ISetSpriteSizeMutation);
 		});
 	},
 });
@@ -180,11 +160,12 @@ const width = computed({
 	},
 	set(width: number) {
 		transaction(async () => {
-			await store.dispatch('panels/setWidth', {
+			await store.commit('panels/setSize', {
 				id: props.obj.id,
 				panelId: props.obj.panelId,
+				height: props.obj.height,
 				width,
-			} as ISetWidthAction);
+			} as ISetSpriteSizeMutation);
 		});
 	},
 });
@@ -194,10 +175,7 @@ const allowSize = computed(() => {
 		const renderer = rendererLookup[(obj as ITextBox).style];
 		return renderer.resizable;
 	}
-	if (obj.type === 'character' && !(obj as ICharacter).freeMove) {
-		return false;
-	}
-	return true;
+	return false;
 });
 //#endregion Size
 //#region Step Position

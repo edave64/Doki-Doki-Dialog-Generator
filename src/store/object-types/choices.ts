@@ -64,8 +64,6 @@ export const choiceActions: ActionTree<IPanels, IRootState> = {
 				onTop: true,
 				autoWrap: true,
 				type: 'choice',
-				preserveRatio: false,
-				ratio: constants.TextBox.TextBoxWidth / constants.TextBox.TextBoxHeight,
 				choiceDistance: constants.Choices.ChoiceSpacing,
 				choices: [
 					{

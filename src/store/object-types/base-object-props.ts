@@ -15,6 +15,8 @@ export function baseProps() {
 		nameboxWidth: null,
 		scaleX: 1,
 		scaleY: 1,
+		ratio: 1,
+		preserveRatio: true,
 		skewX: 0,
 		skewY: 0,
 	};

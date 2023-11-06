@@ -109,8 +109,6 @@ export const textBoxActions: ActionTree<IPanels, IRootState> = {
 				id,
 				onTop: true,
 				type: 'textBox',
-				preserveRatio: false,
-				ratio: constants.TextBox.TextBoxWidth / constants.TextBox.TextBoxHeight,
 				continue: true,
 				controls: true,
 				skip: true,
