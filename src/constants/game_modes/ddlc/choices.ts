@@ -18,6 +18,7 @@ export const ChoiceX = 640;
 export const ChoiceYOffset = 270;
 export const ChoicePadding = 7;
 export const Outline = 3;
+export const ChoiceOuterPadding = Math.ceil(Outline / 2);
 
 export const ChoiceY = (screenHeight - ChoiceYOffset) / 2;
 

@@ -144,8 +144,8 @@ const height = computed({
 		return props.obj.height;
 	},
 	set(height: number) {
-		transaction(async () => {
-			await store.commit('panels/setSize', {
+		transaction(() => {
+			store.commit('panels/setSize', {
 				id: props.obj.id,
 				panelId: props.obj.panelId,
 				height,
@@ -159,8 +159,8 @@ const width = computed({
 		return props.obj.width;
 	},
 	set(width: number) {
-		transaction(async () => {
-			await store.commit('panels/setSize', {
+		transaction(() => {
+			store.commit('panels/setSize', {
 				id: props.obj.id,
 				panelId: props.obj.panelId,
 				height: props.obj.height,

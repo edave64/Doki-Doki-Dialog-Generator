@@ -62,7 +62,6 @@ export abstract class DdlcBase implements ITextboxRenderer {
 	}
 
 	public renderControls(rx: CanvasRenderingContext2D, y: number) {
-		const constants = getConstants();
 		const w = this.width;
 
 		const controlsCenter = w / 2;

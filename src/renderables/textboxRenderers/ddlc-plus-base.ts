@@ -33,7 +33,7 @@ export abstract class DdlcPlusBase implements ITextboxRenderer {
 	public static get defaultY() {
 		return (
 			getConstants().Base.screenHeight -
-			this.defaultHeight -
+			this.defaultHeight / 2 -
 			getConstants().TextBox.TextBoxBottomSpacing
 		);
 	}

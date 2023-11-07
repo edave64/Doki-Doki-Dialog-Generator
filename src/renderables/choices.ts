@@ -13,39 +13,40 @@ export class Choice extends ScalingRenderable<IChoices> {
 	private _height: number = 0;
 
 	protected get height(): number {
-		return this._height;
+		const constants = getConstants().Choices;
+		return this._height + constants.ChoiceOuterPadding * 2;
+	}
+
+	protected get width(): number {
+		const constants = getConstants().Choices;
+		return this.obj.width + constants.ChoiceOuterPadding * 2;
 	}
 
 	private choiceRenderers: TextRenderer[] = [];
 
 	protected renderLocal(ctx: CanvasRenderingContext2D, _hq: boolean): void {
-		const constants = getConstants();
+		const constants = getConstants().Choices;
 		const w = this.obj.width;
-		const x = 0;
-		let y = 0;
+		const x = constants.ChoiceOuterPadding;
+		let y = constants.ChoiceOuterPadding;
 
 		for (const choiceRenderer of this.choiceRenderers) {
-			const height = choiceRenderer.getHeight(
-				this.obj.autoWrap ? this.obj.width : 0
-			);
-			ctx.strokeStyle = constants.Choices.ChoiceButtonBorderColor;
-			ctx.lineWidth = constants.Choices.Outline;
-			ctx.fillStyle = constants.Choices.ChoiceButtonColor;
+			const height = choiceRenderer.getHeight(this.obj.autoWrap ? w : 0);
+			ctx.strokeStyle = constants.ChoiceButtonBorderColor;
+			ctx.lineWidth = constants.Outline;
+			ctx.fillStyle = constants.ChoiceButtonColor;
 
-			ctx.fillRect(x, y, w, height + constants.Choices.ChoicePadding * 2);
-			ctx.strokeRect(x, y, w, height + constants.Choices.ChoicePadding * 2);
+			ctx.fillRect(x, y, w, height + constants.ChoicePadding * 2);
+			ctx.strokeRect(x, y, w, height + constants.ChoicePadding * 2);
 			choiceRenderer.fixAlignment(
 				'center',
-				0,
+				x,
 				w,
-				y + constants.Choices.ChoiceSpacing * 1.25,
+				y + constants.ChoiceSpacing * 1.25,
 				this.obj.autoWrap ? w : 0
 			);
 			choiceRenderer.render(ctx);
-			y +=
-				height +
-				constants.Choices.ChoicePadding * 2 +
-				constants.Choices.ChoiceSpacing;
+			y += height + constants.ChoicePadding * 2 + constants.ChoiceSpacing;
 		}
 	}
 

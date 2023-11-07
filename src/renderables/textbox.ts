@@ -63,6 +63,10 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		const ret = super.prepareRender(panel, store, renderables, lq);
 		const prepareRet = this.textboxRenderer.prepare();
 
+		if (typeof this.obj.talkingObjId === 'number') {
+			this.refObject = panel.objects[this.obj.talkingObjId] ?? null;
+		}
+
 		const name =
 			this.obj.talkingObjId === '$other$'
 				? this.obj.talkingOther
@@ -82,7 +86,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		return Promise.all([ret, prepareRet, nameFontLoad, textFontLoad]);
 	}
 
-	protected renderLocal(ctx: CanvasRenderingContext2D, hq: boolean): void {
+	protected renderLocal(ctx: CanvasRenderingContext2D, _hq: boolean): void {
 		const styleRenderer = this.textboxRenderer;
 		const w = styleRenderer.width;
 		/*
@@ -92,22 +96,13 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		styleRenderer.render(ctx);
 
 		if (this.obj.talkingObjId !== null) {
-			const name =
-				this.obj.talkingObjId === '$other$'
-					? this.obj.talkingOther
-					: this.refObject?.label ?? 'Missing name';
-			this.renderName(ctx, styleRenderer.nameboxOffsetX, 0, name);
+			this.renderName(ctx, styleRenderer.nameboxOffsetX, 0);
 		}
 
 		this.renderText(ctx, 0, 0, this.obj.autoWrap ? w : 0);
 	}
 
-	private renderName(
-		rx: CanvasRenderingContext2D,
-		x: number,
-		y: number,
-		name: string
-	) {
+	private renderName(rx: CanvasRenderingContext2D, x: number, y: number) {
 		const styleRenderer = this.textboxRenderer;
 		const w = styleRenderer.nameboxWidth;
 
@@ -156,7 +151,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		return this.obj.style;
 	}
 
-	public refObject: IObject | null = null;
+	public refObject: DeepReadonly<IObject> | null = null;
 
 	private _lastRenderer: ITextboxRenderer | null = null;
 	public get textboxRenderer() {

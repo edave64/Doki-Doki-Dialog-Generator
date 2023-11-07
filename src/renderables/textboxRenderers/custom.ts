@@ -1,4 +1,3 @@
-import getConstants from '@/constants';
 import * as TBConstants from '@/constants/game_modes/ddlc/text-box';
 import * as CustomTBConstants from '@/constants/game_modes/ddlc/text-box-custom';
 import {
@@ -131,7 +130,6 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 	protected renderBackdrop(rx: CanvasRenderingContext2D, x: number, y: number) {
 		const customColor = RGBAColor.fromCss(this.customColor);
 		const hslColor = customColor.toHSL();
-		const textboxHeight = this.height;
 
 		ctxScope(rx, () => {
 			rx.beginPath();
@@ -156,6 +154,7 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 			rx.strokeStyle = '#ffdfee';
 			rx.lineWidth = 6;
 			rx.fillRect(x, y, w, h);
+
 			rx.strokeRect(x, y, w, h);
 
 			ctxScope(rx, () => {
@@ -187,31 +186,29 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 			);
 			rx.closePath();
 			rx.fill();
-
-			const outlineColor = hslColor
-				.shift(textboxOutlineColorDelta)
-				.toRgb()
-				.toCss();
-			rx.strokeStyle = outlineColor;
-			rx.lineWidth = textboxOutlineWidth;
-			rx.beginPath();
-			roundedRectangle(
-				rx,
-				x + textboxRoundingBuffer,
-				y + textboxRoundingBuffer,
-				this.width - textboxRoundingBuffer * 2,
-				this.height - TBConstants.NameboxHeight - textboxRoundingBuffer * 2,
-				textboxRounding
-			);
-			rx.stroke();
 		});
+
+		const outlineColor = hslColor
+			.shift(textboxOutlineColorDelta)
+			.toRgb()
+			.toCss();
+		rx.strokeStyle = outlineColor;
+		rx.lineWidth = textboxOutlineWidth;
+		rx.beginPath();
+		roundedRectangle(
+			rx,
+			x + textboxRoundingBuffer,
+			y + textboxRoundingBuffer,
+			this.width - textboxRoundingBuffer * 2,
+			this.height - TBConstants.NameboxHeight - textboxRoundingBuffer * 2,
+			textboxRounding
+		);
+		rx.stroke();
 	}
 
 	public render(rx: CanvasRenderingContext2D) {
-		const constants = getConstants();
 		const w = this.width;
 		const h = this.height;
-		const w2 = w / 2;
 		const x = 0;
 		const y = 0;
 
@@ -249,17 +246,17 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 		const dotPattern = makeCanvas();
 		dotPattern.height = dotPatternSize;
 		dotPattern.width = dotPatternSize;
-		const dotRx = dotPattern.getContext('2d')!;
+		const dotRx = dotPattern.getContext('2d');
 		if (!dotRx)
 			throw new Error(
 				'Failed to create canvas for textbox dot-pattern. Out of memory?'
 			);
 		dotRx.fillStyle = hslColor.shift(dotColorDelta).toRgb().toCss();
 		function drawDot(dotX: number, dotY: number) {
-			dotRx.beginPath();
-			dotRx.ellipse(dotX, dotY, dotRadius, dotRadius, 0, 0, 2 * Math.PI);
-			dotRx.closePath();
-			dotRx.fill();
+			dotRx!.beginPath();
+			dotRx!.ellipse(dotX, dotY, dotRadius, dotRadius, 0, 0, 2 * Math.PI);
+			dotRx!.closePath();
+			dotRx!.fill();
 		}
 
 		drawDot(0, 0);

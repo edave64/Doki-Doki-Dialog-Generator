@@ -246,13 +246,13 @@ export abstract class Renderable<ObjectType extends IObject> {
 			} else {
 				ctx.drawImage(this.localCanvas!, 0, 0);
 			}
-			if (this.lastHit) {
-				ctx.fillStyle = '#00f';
-				ctx.lineWidth = 1;
-				ctx.strokeStyle = '#fff';
-				ctx.fillRect(this.lastHit.x - 2, this.lastHit.y - 2, 5, 5);
-				ctx.strokeRect(this.lastHit.x - 2, this.lastHit.y - 2, 5, 5);
-			}
+			// if (this.lastHit) {
+			// 	ctx.fillStyle = '#00f';
+			// 	ctx.lineWidth = 1;
+			// 	ctx.strokeStyle = '#fff';
+			// 	ctx.fillRect(this.lastHit.x - 2, this.lastHit.y - 2, 5, 5);
+			// 	ctx.strokeRect(this.lastHit.x - 2, this.lastHit.y - 2, 5, 5);
+			// }
 		});
 	}
 

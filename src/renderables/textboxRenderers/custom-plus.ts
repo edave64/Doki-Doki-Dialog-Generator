@@ -1,4 +1,3 @@
-import getConstants from '@/constants';
 import * as TBConstants from '@/constants/game_modes/ddlc_plus/text-box';
 import * as CustomTBConstants from '@/constants/game_modes/ddlc_plus/text-box-custom';
 import {
@@ -205,10 +204,8 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 	}
 
 	public render(rx: CanvasRenderingContext2D) {
-		const constants = getConstants();
 		const w = this.width;
 		const h = this.height;
-		const w2 = w / 2;
 		const x = 0;
 		const y = 0;
 

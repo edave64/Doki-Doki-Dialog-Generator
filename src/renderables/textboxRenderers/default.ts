@@ -1,5 +1,4 @@
 import { getBuildInAsset } from '@/asset-manager';
-import getConstants from '@/constants';
 import * as TBConstants from '@/constants/game_modes/ddlc/text-box';
 import { IAsset } from '@/render-utils/assets/asset';
 import { ImageAsset } from '@/render-utils/assets/image-asset';
@@ -57,10 +56,8 @@ export class Default extends DdlcBase implements ITextboxRenderer {
 	}
 
 	public render(rx: CanvasRenderingContext2D): void {
-		const constants = getConstants();
 		const w = this.width;
 		const h = this.height;
-		const w2 = w / 2;
 
 		this.renderBackdrop(rx, 0, 0 + this.nameboxHeight);
 
@@ -93,7 +90,6 @@ export class Default extends DdlcBase implements ITextboxRenderer {
 				: (async () => {
 						this.backdropAsset = await getBuildInAsset(this.backgroundImage);
 				  })(),
-			,
 			this.nameBoxAsset instanceof ImageAsset
 				? undefined
 				: (async () => {
