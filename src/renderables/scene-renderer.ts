@@ -5,6 +5,7 @@ import { IRootState } from '@/store';
 import { BackgroundLookup } from '@/store/content';
 import { getData, ICharacter } from '@/store/object-types/characters';
 import { IChoices } from '@/store/object-types/choices';
+import { IPoem } from '@/store/object-types/poem';
 import { ISprite } from '@/store/object-types/sprite';
 import { ITextBox } from '@/store/object-types/textbox';
 import { IObject } from '@/store/objects';
@@ -15,6 +16,7 @@ import { Background, color, IBackgroundRenderer } from './background';
 import { Character } from './character';
 import { Choice } from './choices';
 import { SelectedState } from './offscreen-renderable';
+import { Poem } from './poem';
 import { Renderable } from './renderable';
 import { Sprite } from './sprite';
 import { TextBox } from './textbox';
@@ -184,10 +186,10 @@ export class SceneRenderer {
 					case 'notification':
 						renderObject = new Notification(obj as DeepReadonly<INotification>);
 						break;
+					*/
 					case 'poem':
 						renderObject = new Poem(obj as DeepReadonly<IPoem>);
 						break;
-					*/
 					default:
 						throw new UnreachableCaseError(type);
 				}

@@ -1,8 +1,14 @@
 import { getAssetByUrl } from '@/asset-manager';
 import getConstants from '@/constants';
-import { RenderContext } from '@/renderer/renderer-context';
+import { IAsset } from '@/render-utils/assets/asset';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
+import { IRootState } from '@/store';
 import { IPoem } from '@/store/object-types/poem';
+import { IObject } from '@/store/objects';
+import { IPanel } from '@/store/panels';
+import { DeepReadonly } from 'ts-essentials';
+import { Store } from 'vuex';
+import { Renderable } from './renderable';
 import { ScalingRenderable } from './scaling-renderable';
 
 const consolePadding = -2;
@@ -11,87 +17,92 @@ const consoleLineWrapPadding = 10;
 const poemTopMargin = 10;
 
 export class Poem extends ScalingRenderable<IPoem> {
-	private _height: number = 0;
+	private _paperHeight: number | null = null;
 	public get height(): number {
-		return this._height;
+		return this._paperHeight ?? this.obj.height;
 	}
 
-	private _width: number = 0;
+	private _paperWidth: number | null = null;
 	public get width(): number {
-		return this._width;
-	}
-	protected get centeredVertically(): boolean {
-		return true;
+		return this._paperWidth ?? this.obj.width;
 	}
 
-	public getRotationAnchor(): DOMPointReadOnly {
-		return new DOMPointReadOnly(0, 0);
+	private _paper: IAsset | null = null;
+	private _lastPaperUrl: string | null = null;
+	public prepareRender(
+		panel: DeepReadonly<IPanel>,
+		store: Store<IRootState>,
+		renderables: Map<IObject['id'], DeepReadonly<Renderable<never>>>,
+		lq: boolean
+	): void | Promise<unknown> {
+		const superRet: void | Promise<unknown> = super.prepareRender(
+			panel,
+			store,
+			renderables,
+			lq
+		);
+		const constants = getConstants().Poem;
+		const bg = constants.poemBackgrounds[this.obj.background];
+		const style = constants.poemTextStyles[this.obj.font];
+		const render = new TextRenderer(this.obj.text, style);
+		const fontLoading = render.loadFonts();
+		let imageLoading: Promise<unknown> | undefined = undefined;
+		if (!bg.file.startsWith('internal:')) {
+			if (this._lastPaperUrl !== bg.file) {
+				imageLoading = (async () => {
+					this._paper = await getAssetByUrl(
+						`assets/poemBackgrounds/${bg.file}`
+					);
+					this._lastPaperUrl = bg.file;
+					this._paperHeight = this._paper.height * constants.backgroundScale;
+					this._paperWidth = this._paper.width * constants.backgroundScale;
+				})();
+			}
+		} else {
+			this._lastPaperUrl = null;
+			this._paper = null;
+			this._paperHeight = null;
+			this._paperWidth = null;
+		}
+		if (superRet || fontLoading || imageLoading) {
+			return Promise.all([superRet, fontLoading, imageLoading]);
+		}
+		return;
 	}
 
-	public getZoomAnchor(): DOMPointReadOnly {
-		return new DOMPointReadOnly(0, 0);
-	}
-
-	protected async draw(rx: RenderContext): Promise<void> {
-		const constants = getConstants();
-		const paper = constants.Poem.poemBackgrounds[this.obj.background];
-		const flippedX = this.flip
-			? constants.Base.screenWidth - this.obj.x
-			: this.obj.x;
-		let y = this.obj.y;
-		let x = flippedX + poemTopMargin;
-		let padding = constants.Poem.poemPadding;
-		let topPadding = constants.Poem.poemTopPadding;
+	protected renderLocal(ctx: CanvasRenderingContext2D, _hq: boolean): void {
+		const constants = getConstants().Poem;
+		const paper = constants.poemBackgrounds[this.obj.background];
+		const w = this.width;
+		const h = this.height;
+		let padding = constants.poemPadding;
+		let topPadding = constants.poemTopPadding;
 		let lineWrapPadding = padding * 2;
 
 		if (paper.file === 'internal:console') {
-			const h = (this._height = this.obj.height);
-			const w = (this._width = this.obj.width);
-
-			rx.drawRect({
-				x: flippedX - w / 2,
-				y: this.obj.y - h / 2,
-				h,
-				w,
-				fill: {
-					style: this.obj.consoleColor || constants.Poem.consoleBackgroundColor,
-				},
-			});
+			ctx.fillStyle = this.obj.consoleColor || constants.consoleBackgroundColor;
+			ctx.fillRect(0, 0, w, h);
 			padding = consolePadding;
 			topPadding = consoleTopPadding;
 			lineWrapPadding = consoleLineWrapPadding;
-		} else if (paper.file === 'internal:transparent') {
-			this._height = this.obj.height;
-			this._width = this.obj.width;
-		} else {
-			const asset = await getAssetByUrl(`assets/poemBackgrounds/${paper.file}`);
-			const h = asset.height * constants.Poem.backgroundScale;
-			const w = asset.width * constants.Poem.backgroundScale;
-			rx.drawImage({
-				image: asset,
-				x: flippedX - w / 2,
-				y: this.obj.y - h / 2,
-				h,
+		} else if (this._paper) {
+			this._paper.paintOnto(ctx, {
+				x: 0,
+				y: 0,
 				w,
+				h,
 			});
-			this._height = h;
-			this._width = w;
 		}
-		y -= this.height / 2;
-		x -= this.width / 2;
 
-		const style = constants.Poem.poemTextStyles[this.obj.font];
+		const style = constants.poemTextStyles[this.obj.font];
 		const render = new TextRenderer(this.obj.text, style);
-		await render.loadFonts();
-
 		render.fixAlignment(
 			'left',
-			x + padding,
-			x + padding,
-			y + topPadding + padding,
+			poemTopMargin + padding,
+			padding,
+			topPadding + padding,
 			this.obj.autoWrap ? this.width - lineWrapPadding : 0
 		);
-
-		render.render(rx.fsCtx);
+		render.render(ctx);
 	}
 }

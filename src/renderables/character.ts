@@ -86,9 +86,4 @@ export class Character extends AssetListRenderable<ICharacter> {
 		}
 		return drawAssetsUnloaded;
 	}
-
-	protected getLocalSizeOverride(): DOMPointReadOnly {
-		const pose = getPose(this.data, this.obj) as Pose<IAssetSwitch>;
-		return new DOMPointReadOnly(pose.size[0], pose.size[1]);
-	}
 }

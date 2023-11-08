@@ -59,7 +59,6 @@ export abstract class Renderable<ObjectType extends IObject> {
 	 */
 	protected getTransfrom(): DOMMatrixReadOnly {
 		let transform = new DOMMatrix();
-		const localSizeOverride = this.getLocalSizeOverride();
 		const obj = this.obj;
 		transform = transform.translate(
 			this.x - this.width / 2,
@@ -96,16 +95,6 @@ export abstract class Renderable<ObjectType extends IObject> {
 			}
 			transform = transform.translate(-this.width / 2, -this.height / 2);
 		}
-		if (
-			localSizeOverride &&
-			(localSizeOverride.x !== this.width ||
-				localSizeOverride.y !== this.height)
-		) {
-			transform = transform.scale(
-				this.width / localSizeOverride.x,
-				this.height / localSizeOverride.y
-			);
-		}
 		return transform;
 	}
 
@@ -120,15 +109,8 @@ export abstract class Renderable<ObjectType extends IObject> {
 				constants.Base.screenHeight
 			);
 		} else {
-			return (
-				this.getLocalSizeOverride() ??
-				new DOMPointReadOnly(this.width, this.height)
-			);
+			return new DOMPointReadOnly(this.width, this.height);
 		}
-	}
-
-	protected getLocalSizeOverride(): DOMPointReadOnly | null {
-		return null;
 	}
 
 	/**
