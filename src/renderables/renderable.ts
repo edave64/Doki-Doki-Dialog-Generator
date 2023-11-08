@@ -222,6 +222,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 				ctx.setTransform(this.getTransfrom());
 			}
 
+			ctx.globalCompositeOperation = this.obj.composite ?? 'source-over';
 			if (skipLocal) {
 				//ctx.translate(-this.width / 2, -this.height);
 				this.renderLocal(ctx, hq);

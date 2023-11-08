@@ -91,7 +91,9 @@ export abstract class AssetListRenderable<
 		for (const loadedDraw of this.assetList) {
 			if (!('loadedAssets' in loadedDraw)) continue;
 			for (const asset of loadedDraw.loadedAssets) {
-				ctx.globalCompositeOperation = loadedDraw.composite ?? 'source-over';
+				if (!this.canSkipLocal) {
+					ctx.globalCompositeOperation = loadedDraw.composite ?? 'source-over';
+				}
 				asset.paintOnto(ctx, {
 					x: loadedDraw.offset[0],
 					y: loadedDraw.offset[1],
