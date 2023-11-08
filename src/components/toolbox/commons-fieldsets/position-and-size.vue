@@ -121,6 +121,7 @@ import {
 	ICharacter,
 	ISetFreeMoveMutation,
 } from '@/store/object-types/characters';
+import { IPoem } from '@/store/object-types/poem';
 import { ITextBox } from '@/store/object-types/textbox';
 import {
 	IObject,
@@ -174,6 +175,11 @@ const allowSize = computed(() => {
 	if (obj.type === 'textBox') {
 		const renderer = rendererLookup[(obj as ITextBox).style];
 		return renderer.resizable;
+	}
+	const constants = getConstants().Poem;
+	if (obj.type === 'poem') {
+		const bg = constants.poemBackgrounds[(obj as IPoem).background];
+		return bg.file.startsWith('internal:');
 	}
 	return false;
 });

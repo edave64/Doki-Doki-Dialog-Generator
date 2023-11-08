@@ -1,124 +1,138 @@
 import getConstants from '@/constants';
-import { SelectedState } from '@/renderables/offscreen-renderable';
-import { RenderContext } from '@/renderer/renderer-context';
+import { ctxScope } from '@/renderer/canvas-tools';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
+import { IRootState } from '@/store';
 import { INotification } from '@/store/object-types/notification';
+import { IObject } from '@/store/objects';
+import { IPanel } from '@/store/panels';
+import { DeepReadonly } from 'ts-essentials';
+import { Store } from 'vuex';
+import { SelectedState } from './offscreen-renderable';
+import { Renderable } from './renderable';
 import { ScalingRenderable } from './scaling-renderable';
 
 export class Notification extends ScalingRenderable<INotification> {
 	private _height: number = 0;
 	public get height(): number {
-		return this._height;
+		const constants = getConstants().Choices;
+		return this._height + constants.ChoiceOuterPadding * 2;
 	}
 	private _width: number = 0;
 	public get width(): number {
-		return this._width;
-	}
-	protected get centeredVertically(): boolean {
-		return true;
+		const constants = getConstants().Choices;
+		return this._width + constants.ChoiceOuterPadding * 2;
 	}
 
-	public getRotationAnchor(): DOMPointReadOnly {
-		return new DOMPointReadOnly(0, 0);
+	private _textRenderer: TextRenderer | null = null;
+	private _buttonRenderer: TextRenderer | null = null;
+	public prepareRender(
+		panel: DeepReadonly<IPanel>,
+		store: Store<IRootState>,
+		renderables: Map<IObject['id'], DeepReadonly<Renderable<never>>>,
+		lq: boolean
+	): void | Promise<unknown> {
+		const superRet: void | Promise<unknown> = super.prepareRender(
+			panel,
+			store,
+			renderables,
+			lq
+		);
+		const constants = getConstants().Notification;
+		const textRenderer = (this._textRenderer = new TextRenderer(
+			this.obj.text,
+			constants.NotificationTextStyle
+		));
+		const buttonRenderer = (this._buttonRenderer = new TextRenderer(
+			'OK',
+			constants.NotificationOkTextStyle
+		));
+		const loadTextFonts = textRenderer.loadFonts();
+		const loadButtonFonts = buttonRenderer.loadFonts();
+
+		const fixSize = () => {
+			const lineWrap = this.obj.autoWrap
+				? this.obj.width - constants.NotificationPadding * 2
+				: 0;
+			const textWidth = this.obj.autoWrap ? lineWrap : textRenderer.getWidth();
+			const textHeight = textRenderer.getHeight(lineWrap);
+			const buttonWidth = this.obj.autoWrap
+				? lineWrap
+				: buttonRenderer.getWidth();
+			const buttonHeight = buttonRenderer.getHeight(lineWrap);
+
+			this._width =
+				Math.max(textWidth, buttonWidth) + constants.NotificationPadding * 2;
+			this._height =
+				textHeight +
+				constants.NotificationPadding * 2 +
+				constants.NotificationSpacing +
+				buttonHeight;
+		};
+
+		if (superRet || loadTextFonts || loadButtonFonts)
+			return Promise.all([superRet, loadTextFonts, loadButtonFonts]).then(
+				fixSize
+			);
+
+		fixSize();
+		return;
 	}
 
-	public getZoomAnchor(): DOMPointReadOnly {
-		return new DOMPointReadOnly(0, 0);
-	}
-
-	public get id() {
-		return this.obj.id;
-	}
-
-	public async render(
-		selected: SelectedState,
-		rx: RenderContext,
+	public render(
+		ctx: CanvasRenderingContext2D,
+		selection: SelectedState,
+		preview: boolean,
+		hq: boolean,
 		skipLocal: boolean
 	) {
-		const constants = getConstants();
-
 		if (this.obj.backdrop) {
-			rx.drawRect({
-				x: 0,
-				y: 0,
-				w: constants.Base.screenWidth,
-				h: constants.Base.screenHeight,
-				fill: {
-					style: getConstants().Notification.NotificationBackdropColor,
-				},
+			ctxScope(ctx, () => {
+				const constants = getConstants();
+				ctx.resetTransform();
+				ctx.fillStyle = constants.Notification.NotificationBackdropColor;
+				ctx.fillRect(
+					0,
+					0,
+					constants.Base.screenWidth,
+					constants.Base.screenHeight
+				);
 			});
 		}
-		await super.render(selected, rx, skipLocal);
+		return super.render(ctx, selection, preview, hq, skipLocal);
 	}
 
-	protected async draw(rx: RenderContext): Promise<void> {
+	protected renderLocal(ctx: CanvasRenderingContext2D, _hq: boolean): void {
 		const constants = getConstants();
-		const textRenderer = new TextRenderer(
-			this.obj.text,
-			constants.Notification.NotificationTextStyle
-		);
-		const buttonRenderer = new TextRenderer(
-			'OK',
-			constants.Notification.NotificationOkTextStyle
-		);
-		await textRenderer.loadFonts();
-		await buttonRenderer.loadFonts();
-
 		const lineWrap = this.obj.autoWrap
 			? this.obj.width - constants.Notification.NotificationPadding * 2
 			: 0;
 
-		const textWidth = this.obj.autoWrap ? lineWrap : textRenderer.getWidth();
-		const textHeight = textRenderer.getHeight(lineWrap);
-		const buttonWidth = this.obj.autoWrap
-			? lineWrap
-			: buttonRenderer.getWidth();
-		const buttonHeight = buttonRenderer.getHeight(lineWrap);
+		const textRenderer = this._textRenderer!;
+		const buttonRenderer = this._buttonRenderer!;
+		const w = this._width;
+		const h = this._height;
+		const p = constants.Choices.ChoiceOuterPadding;
 
-		const w = (this._width =
-			Math.max(textWidth, buttonWidth) +
-			constants.Notification.NotificationPadding * 2);
-		const h = (this._height =
-			textHeight +
-			constants.Notification.NotificationPadding * 2 +
-			constants.Notification.NotificationSpacing +
-			buttonHeight);
-
-		const w2 = w / 2;
-		const baseX = this.flip
-			? constants.Base.screenWidth - this.obj.x
-			: this.obj.x;
-		const x = baseX - w2;
-		const y = this.obj.y - h / 2;
-
-		rx.drawRect({
-			x,
-			y,
-			w,
-			h,
-			outline: {
-				style: constants.Choices.ChoiceButtonBorderColor,
-				width: 3,
-			},
-			fill: {
-				style: constants.Choices.ChoiceButtonColor,
-			},
-		});
+		(ctx.fillStyle = constants.Choices.ChoiceButtonColor),
+			(ctx.strokeStyle = constants.Choices.ChoiceButtonBorderColor);
+		ctx.lineWidth = constants.Choices.Outline;
+		ctx.fillRect(p, p, w, h);
+		ctx.strokeRect(p, p, w, h);
 		textRenderer.fixAlignment(
 			'center',
-			x,
-			x + w,
-			y + constants.Notification.NotificationPadding * 1.5,
+			p,
+			w + p,
+			p + constants.Notification.NotificationPadding * 1.5,
 			lineWrap
 		);
-		textRenderer.render(rx.fsCtx);
+		textRenderer.render(ctx);
 		buttonRenderer.fixAlignment(
 			'center',
-			x,
-			x + w,
-			y + h - constants.Notification.NotificationPadding,
+			p,
+			w + p,
+			p + h - constants.Notification.NotificationPadding,
 			lineWrap
 		);
-		buttonRenderer.render(rx.fsCtx);
+		buttonRenderer.render(ctx);
 	}
 }

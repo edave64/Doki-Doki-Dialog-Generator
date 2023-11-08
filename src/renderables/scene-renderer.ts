@@ -5,6 +5,7 @@ import { IRootState } from '@/store';
 import { BackgroundLookup } from '@/store/content';
 import { getData, ICharacter } from '@/store/object-types/characters';
 import { IChoices } from '@/store/object-types/choices';
+import { INotification } from '@/store/object-types/notification';
 import { IPoem } from '@/store/object-types/poem';
 import { ISprite } from '@/store/object-types/sprite';
 import { ITextBox } from '@/store/object-types/textbox';
@@ -15,6 +16,7 @@ import { Store } from 'vuex';
 import { Background, color, IBackgroundRenderer } from './background';
 import { Character } from './character';
 import { Choice } from './choices';
+import { Notification } from './notification';
 import { SelectedState } from './offscreen-renderable';
 import { Poem } from './poem';
 import { Renderable } from './renderable';
@@ -182,11 +184,9 @@ export class SceneRenderer {
 					case 'choice':
 						renderObject = new Choice(obj as DeepReadonly<IChoices>);
 						break;
-					/*
 					case 'notification':
 						renderObject = new Notification(obj as DeepReadonly<INotification>);
 						break;
-					*/
 					case 'poem':
 						renderObject = new Poem(obj as DeepReadonly<IPoem>);
 						break;

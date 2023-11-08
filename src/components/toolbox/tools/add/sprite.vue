@@ -31,7 +31,11 @@
 		</div>
 	</template>
 
-	<d-button class="custom-sprite" icon="publish" @click="spriteUpload.click()">
+	<d-button
+		class="custom-sprite v-w100"
+		icon="publish"
+		@click="spriteUpload.click()"
+	>
 		Upload new sprite
 		<input type="file" ref="spriteUpload" @change="onSpriteFileUpload" />
 	</d-button>
@@ -53,8 +57,11 @@
 
 <script lang="ts" setup>
 import { getAAssetUrl } from '@/asset-manager';
+import MissingImage from '@/assets/missing_image.svg';
 import DButton from '@/components/ui/d-button.vue';
 import environment, { Folder } from '@/environments/environment';
+import { transaction, TransactionLayer } from '@/plugins/vuex-history';
+import { useStore } from '@/store';
 import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
 import { ICreateSpriteAction } from '@/store/object-types/sprite';
 import {
@@ -64,9 +71,6 @@ import {
 import { DeepReadonly } from 'ts-essentials';
 import { computed, ref } from 'vue';
 import DropTarget from '../../drop-target.vue';
-import MissingImage from '@/assets/missing_image.svg';
-import { transaction, TransactionLayer } from '@/plugins/vuex-history';
-import { useStore } from '@/store';
 
 const store = useStore();
 const emit = defineEmits(['show-dialog']);

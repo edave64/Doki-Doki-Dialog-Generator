@@ -78,7 +78,7 @@ export class TextRenderer {
 		);
 	}
 
-	public async loadFonts() {
+	public loadFonts(): void | Promise<void> {
 		if (!('fonts' in document)) return;
 		const fonts = new Set<string>();
 		let currentStyle: ITextStyle | null = null;
@@ -92,24 +92,24 @@ export class TextRenderer {
 			}
 		}
 
-		let neededToLoad = false;
+		const promises: Promise<FontFace[]>[] = [];
 		for (const font of fonts) {
-			const doc = document as any;
+			const doc = document;
 			const fontString = `8px ${font}`;
 			if (!doc.fonts.check(fontString)) {
-				neededToLoad = true;
-				await doc.fonts.load(fontString);
+				promises.push(doc.fonts.load(fontString));
 			}
 		}
 
-		if (neededToLoad) {
+		if (promises.length === 0) return;
+		return Promise.all(promises).then(() => {
 			const tokens = tokenize(this.str);
 			this.renderParts = TextRenderer.getRenderParts(
 				tokens,
 				this.baseStyle,
 				this.loose
 			);
-		}
+		});
 	}
 
 	public render(ctx: CanvasRenderingContext2D): void {
