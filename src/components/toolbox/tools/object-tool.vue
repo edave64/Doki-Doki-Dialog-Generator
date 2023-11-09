@@ -287,7 +287,9 @@ const scaleX = computed({
 				id: props.object.id,
 				panelId: props.object.panelId,
 				scaleX: zoom / 100,
-				scaleY: (zoom / 100) * props.object.ratio,
+				scaleY: props.object.preserveRatio
+					? (zoom / 100) * props.object.ratio
+					: props.object.scaleY,
 			} as ISetObjectScaleMutation);
 		});
 	},
@@ -302,7 +304,9 @@ const scaleY = computed({
 			store.commit('panels/setObjectScale', {
 				id: props.object.id,
 				panelId: props.object.panelId,
-				scaleX: zoom / 100 / props.object.ratio,
+				scaleX: props.object.preserveRatio
+					? zoom / 100 / props.object.ratio
+					: props.object.scaleX,
 				scaleY: zoom / 100,
 			} as ISetObjectScaleMutation);
 		});
