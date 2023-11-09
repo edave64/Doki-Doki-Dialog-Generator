@@ -175,8 +175,14 @@ export const mutations: MutationTree<IPanels> = {
 	setObjectSkew(state, command: ISetObjectSkewMutation) {
 		const panel = state.panels[command.panelId];
 		const obj = panel.objects[command.id] as ITextBox;
-		obj.skewX = command.skewX;
-		obj.skewY = command.skewY;
+		obj.skewX =
+			command.skewX < 0
+				? 180 - (Math.abs(command.skewX) % 180)
+				: command.skewX % 180;
+		obj.skewY =
+			command.skewY < 0
+				? 180 - (Math.abs(command.skewY) % 180)
+				: command.skewY % 180;
 		++obj.version;
 	},
 	...spriteMutations,
