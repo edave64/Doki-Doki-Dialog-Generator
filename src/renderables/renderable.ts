@@ -74,8 +74,8 @@ export abstract class Renderable<ObjectType extends IObject> {
 			obj.rotation !== 0 ||
 			obj.scaleX !== 1 ||
 			obj.scaleY !== 1 ||
-			this.obj.skewX !== 0 ||
-			this.obj.skewY !== 0
+			obj.skewX !== 0 ||
+			obj.skewY !== 0
 		) {
 			transform = transform.translate(+this.width / 2, +this.height / 2);
 			if (obj.rotation !== 0) {
