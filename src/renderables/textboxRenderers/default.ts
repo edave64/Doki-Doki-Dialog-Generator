@@ -22,6 +22,12 @@ export class Default extends DdlcBase implements ITextboxRenderer {
 	public get width() {
 		return TBConstants.TextBoxWidth;
 	}
+	public get innerHeight() {
+		return this.height;
+	}
+	public get innerWidth() {
+		return this.width;
+	}
 	public get nameboxWidth() {
 		return TBConstants.NameboxWidth;
 	}

@@ -114,7 +114,7 @@ export const textBoxActions: ActionTree<IPanels, IRootState> = {
 				skip: true,
 				autoQuoting: true,
 				autoWrap: true,
-				style,
+				style: 'custom',
 				overrideColor: false,
 				customColor: constants.TextBoxCustom.textboxDefaultColor,
 				deriveCustomColors: true,

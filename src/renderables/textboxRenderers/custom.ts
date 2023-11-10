@@ -44,6 +44,14 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 		return this.obj.width;
 	}
 
+	public get innerHeight() {
+		return this.obj.height - textboxRoundingBuffer * 2;
+	}
+
+	public get innerWidth() {
+		return this.obj.width - textboxRoundingBuffer * 2;
+	}
+
 	public get nameboxWidth() {
 		if (this.refObject && this.refObject.nameboxWidth !== null) {
 			return this.refObject.nameboxWidth;
@@ -127,24 +135,17 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 		});
 	}
 
-	protected renderBackdrop(rx: CanvasRenderingContext2D, x: number, y: number) {
+	protected renderBackdrop(rx: CanvasRenderingContext2D, y: number) {
 		const customColor = RGBAColor.fromCss(this.customColor);
 		const hslColor = customColor.toHSL();
+		const h = this.obj.height - textboxRoundingBuffer * 2 - y;
+		const w = this.obj.width - textboxRoundingBuffer * 2;
 
 		ctxScope(rx, () => {
 			rx.beginPath();
-			roundedRectangle(
-				rx,
-				x + textboxRoundingBuffer,
-				y + textboxRoundingBuffer,
-				this.width - textboxRoundingBuffer * 2,
-				this.height - TBConstants.NameboxHeight - textboxRoundingBuffer * 2,
-				textboxRounding
-			);
+			roundedRectangle(rx, 0, y, w, h, textboxRounding);
 			rx.clip();
-			const h = this.obj.height;
-			const w = this.obj.width;
-			const gradient = rx.createLinearGradient(x, y, x, y + h);
+			const gradient = rx.createLinearGradient(0, y, 0, h);
 			gradient.addColorStop(0, customColor.toCss());
 			gradient.addColorStop(
 				1,
@@ -153,20 +154,18 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 			rx.fillStyle = gradient;
 			rx.strokeStyle = '#ffdfee';
 			rx.lineWidth = 6;
-			rx.fillRect(x, y, w, h);
-
-			rx.strokeRect(x, y, w, h);
+			rx.fillRect(0, y, w, h);
 
 			ctxScope(rx, () => {
-				rx.translate(x, y);
+				rx.translate(0, y);
 				rx.fillStyle = this.getDotPattern();
 				rx.globalCompositeOperation = 'source-atop';
-				rx.fillRect(0, 0, w, h);
+				rx.fillRect(-textboxRoundingBuffer, -textboxRoundingBuffer, w, h);
 			});
 			const glowGradient = rx.createLinearGradient(
-				x,
+				0,
 				y + h - TBConstants.GlowRY,
-				x,
+				0,
 				y + h
 			);
 			glowGradient.addColorStop(0, 'rgba(255,255,255,0.3137)');
@@ -176,7 +175,7 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 
 			rx.beginPath();
 			rx.ellipse(
-				x + w / 2,
+				w / 2,
 				y + h,
 				TBConstants.GlowRX,
 				TBConstants.GlowRY,
@@ -195,37 +194,30 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 		rx.strokeStyle = outlineColor;
 		rx.lineWidth = textboxOutlineWidth;
 		rx.beginPath();
-		roundedRectangle(
-			rx,
-			x + textboxRoundingBuffer,
-			y + textboxRoundingBuffer,
-			this.width - textboxRoundingBuffer * 2,
-			this.height - TBConstants.NameboxHeight - textboxRoundingBuffer * 2,
-			textboxRounding
-		);
+		roundedRectangle(rx, 0, y, w, h, textboxRounding);
 		rx.stroke();
 	}
 
 	public render(rx: CanvasRenderingContext2D) {
-		const w = this.width;
-		const h = this.height;
-		const x = 0;
-		const y = 0;
+		const h = this.obj.height - textboxRoundingBuffer * 2;
+		const w = this.obj.width - textboxRoundingBuffer * 2;
+
+		rx.translate(textboxRoundingBuffer, textboxRoundingBuffer);
 
 		if (this.obj.talkingObjId !== null) {
-			this.renderNamebox(rx, x + this.nameboxOffsetX, y);
+			this.renderNamebox(rx, this.nameboxOffsetX, 0);
 		}
 
-		this.renderBackdrop(rx, x, y + this.nameboxHeight);
+		this.renderBackdrop(rx, this.nameboxHeight);
 
-		const bottom = y + h;
+		const bottom = h;
 		const controlsY = bottom - TBConstants.ControlsYBottomOffset;
 
 		if (this.obj.controls) this.renderControls(rx, controlsY);
 
 		if (this.obj.continue && this.nextArrow) {
 			this.nextArrow.paintOnto(rx, {
-				x: x + w - TBConstants.ArrowXRightOffset,
+				x: w - TBConstants.ArrowXRightOffset,
 				y: bottom - TBConstants.ArrowYBottomOffset,
 			});
 		}

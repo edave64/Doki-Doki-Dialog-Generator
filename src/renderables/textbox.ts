@@ -174,6 +174,8 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 export interface ITextboxRenderer {
 	readonly height: number;
 	readonly width: number;
+	readonly innerHeight: number;
+	readonly innerWidth: number;
 	readonly nameboxWidth: number;
 	readonly nameboxHeight: number;
 
