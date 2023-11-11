@@ -12699,7 +12699,8 @@ const poemActions = {
         skewY: 0,
         ratio: 1,
         preserveRatio: true,
-        consoleColor: constants.Poem.consoleBackgroundColor
+        consoleColor: constants.Poem.consoleBackgroundColor,
+        overflow: false
       }
     });
     return id;
@@ -15360,21 +15361,24 @@ class TextBox extends ScalingRenderable {
       refObj.nameboxWidth
     ]);
   }
+  getName() {
+    var _a, _b;
+    return this.obj.talkingObjId === "$other$" ? this.obj.talkingOther : (_b = (_a = this.refObject) == null ? void 0 : _a.label) != null ? _b : "Missing name";
+  }
   prepareRender(panel, store2, renderables, lq) {
-    var _a, _b, _c;
+    var _a;
     const ret = super.prepareRender(panel, store2, renderables, lq);
     const prepareRet = this.textboxRenderer.prepare();
     if (typeof this.obj.talkingObjId === "number") {
       this.refObject = (_a = panel.objects[this.obj.talkingObjId]) != null ? _a : null;
     }
-    const currentRefVars = this.getRefVars;
+    const currentRefVars = this.getRefVars();
     if (currentRefVars !== this._lastRefVars) {
       this.localCanvasInvalid = true;
       this._lastRefVars = currentRefVars;
     }
-    const name = this.obj.talkingObjId === "$other$" ? this.obj.talkingOther : (_c = (_b = this.refObject) == null ? void 0 : _b.label) != null ? _c : "Missing name";
     this.nbTextRenderer = new TextRenderer(
-      name,
+      this.getName(),
       this.textboxRenderer.nameboxStyle
     );
     this.textRenderer = new TextRenderer(
@@ -15544,7 +15548,8 @@ const textBoxActions = {
         talkingObjId: null,
         talkingOther: "",
         text: (_a = command.text) != null ? _a : "Click here to edit the textbox",
-        resetBounds
+        resetBounds,
+        overflow: false
       })
     });
     return id;
@@ -15946,6 +15951,14 @@ const mutations = __spreadValues$8(__spreadValues$8(__spreadValues$8(__spreadVal
     const obj = panel.objects[command.id];
     obj.skewX = command.skewX < 0 ? 180 - Math.abs(command.skewX) % 180 : command.skewX % 180;
     obj.skewY = command.skewY < 0 ? 180 - Math.abs(command.skewY) % 180 : command.skewY % 180;
+    ++obj.version;
+  },
+  setOverflow(state, command) {
+    const panel = state.panels[command.panelId];
+    const obj = panel.objects[command.id];
+    if (!("overflow" in obj))
+      return;
+    obj.overflow = command.overflow;
     ++obj.version;
   }
 }, spriteMutations), characterMutations), textBoxMutations), choiceMutations), notificationMutations), poemMutations);
@@ -22087,7 +22100,7 @@ var __async$7 = (__this, __arguments, generator) => {
     step((generator = generator.apply(__this, __arguments)).next());
   });
 };
-const _withScopeId$7 = (n) => (pushScopeId("data-v-e1c4f155"), n = n(), popScopeId(), n);
+const _withScopeId$7 = (n) => (pushScopeId("data-v-231ea05c"), n = n(), popScopeId(), n);
 const _hoisted_1$b = /* @__PURE__ */ _withScopeId$7(() => /* @__PURE__ */ createBaseVNode("span", { class: "icon material-icons" }, "edit", -1));
 const _hoisted_2$b = /* @__PURE__ */ _withScopeId$7(() => /* @__PURE__ */ createBaseVNode("p", { class: "modal-text" }, "Enter the new name", -1));
 const _hoisted_3$7 = { class: "modal-text" };
@@ -22169,6 +22182,24 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
       "enlargeWhenTalking",
       "panels/setEnlargeWhenTalking"
     );
+    const canOverflow = computed(() => {
+      return "overflow" in props.object;
+    });
+    const overflow = computed({
+      get() {
+        var _a;
+        return (_a = props.object.overflow) != null ? _a : false;
+      },
+      set(overflow2) {
+        transaction(() => __async$7(this, null, function* () {
+          yield store2.commit("panels/setOverflow", {
+            id: props.object.id,
+            panelId: props.object.panelId,
+            overflow: overflow2
+          });
+        }));
+      }
+    });
     const preserveRatio = computed({
       get() {
         return props.object.preserveRatio;
@@ -22384,13 +22415,20 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
           onLeave: _cache[7] || (_cache[7] = ($event) => imageOptionsOpen.value = false)
         }, null, 8, ["panel-id", "id"])) : __props.showAltPanel ? renderSlot(_ctx.$slots, "alt-panel", { key: 3 }, void 0, true) : (openBlock(), createElementBlock(Fragment, { key: 4 }, [
           renderSlot(_ctx.$slots, "default", {}, void 0, true),
+          canOverflow.value ? (openBlock(), createBlock(_sfc_main$k, {
+            key: 0,
+            modelValue: overflow.value,
+            "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => overflow.value = $event),
+            label: "Overflow",
+            title: "Allow the text to move outside of the textbox"
+          }, null, 8, ["modelValue"])) : createCommentVNode("", true),
           createVNode(PositionAndSize, { obj: __props.object }, null, 8, ["obj"]),
           createVNode(Layers, { object: __props.object }, null, 8, ["object"]),
           createVNode(DFieldset, { title: "Transform" }, {
             default: withCtx(() => [
               createVNode(_sfc_main$k, {
                 modelValue: unref(flip),
-                "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => isRef(flip) ? flip.value = $event : null),
+                "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => isRef(flip) ? flip.value = $event : null),
                 label: "Flip?"
               }, null, 8, ["modelValue"]),
               createBaseVNode("table", _hoisted_4$7, [
@@ -22401,8 +22439,8 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                       id: "rotation",
                       class: "smol v-w100",
                       type: "number",
-                      "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => isRef(rotation) ? rotation.value = $event : null),
-                      onKeydown: _cache[10] || (_cache[10] = withModifiers(() => {
+                      "onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => isRef(rotation) ? rotation.value = $event : null),
+                      onKeydown: _cache[11] || (_cache[11] = withModifiers(() => {
                       }, ["stop"]))
                     }, null, 544), [
                       [vModelText, unref(rotation)]
@@ -22418,8 +22456,8 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                       class: "smol v-w100",
                       step: "1",
                       min: "0",
-                      "onUpdate:modelValue": _cache[11] || (_cache[11] = ($event) => scaleX.value = $event),
-                      onKeydown: _cache[12] || (_cache[12] = withModifiers(() => {
+                      "onUpdate:modelValue": _cache[12] || (_cache[12] = ($event) => scaleX.value = $event),
+                      onKeydown: _cache[13] || (_cache[13] = withModifiers(() => {
                       }, ["stop"]))
                     }, null, 544), [
                       [vModelText, scaleX.value]
@@ -22435,8 +22473,8 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                       class: "smol v-w100",
                       step: "1",
                       min: "0",
-                      "onUpdate:modelValue": _cache[13] || (_cache[13] = ($event) => scaleY.value = $event),
-                      onKeydown: _cache[14] || (_cache[14] = withModifiers(() => {
+                      "onUpdate:modelValue": _cache[14] || (_cache[14] = ($event) => scaleY.value = $event),
+                      onKeydown: _cache[15] || (_cache[15] = withModifiers(() => {
                       }, ["stop"]))
                     }, null, 544), [
                       [vModelText, scaleY.value]
@@ -22451,8 +22489,8 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                       type: "number",
                       class: "smol v-w100",
                       step: "1",
-                      "onUpdate:modelValue": _cache[15] || (_cache[15] = ($event) => skewX.value = $event),
-                      onKeydown: _cache[16] || (_cache[16] = withModifiers(() => {
+                      "onUpdate:modelValue": _cache[16] || (_cache[16] = ($event) => skewX.value = $event),
+                      onKeydown: _cache[17] || (_cache[17] = withModifiers(() => {
                       }, ["stop"]))
                     }, null, 544), [
                       [vModelText, skewX.value]
@@ -22467,8 +22505,8 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                       type: "number",
                       class: "smol v-w100",
                       step: "1",
-                      "onUpdate:modelValue": _cache[17] || (_cache[17] = ($event) => skewY.value = $event),
-                      onKeydown: _cache[18] || (_cache[18] = withModifiers(() => {
+                      "onUpdate:modelValue": _cache[18] || (_cache[18] = ($event) => skewY.value = $event),
+                      onKeydown: _cache[19] || (_cache[19] = withModifiers(() => {
                       }, ["stop"]))
                     }, null, 544), [
                       [vModelText, skewY.value]
@@ -22479,7 +22517,7 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                   createBaseVNode("td", _hoisted_10$4, [
                     createVNode(_sfc_main$k, {
                       modelValue: preserveRatio.value,
-                      "onUpdate:modelValue": _cache[19] || (_cache[19] = ($event) => preserveRatio.value = $event),
+                      "onUpdate:modelValue": _cache[20] || (_cache[20] = ($event) => preserveRatio.value = $event),
                       label: "Lock ratio?"
                     }, null, 8, ["modelValue"])
                   ])
@@ -22491,7 +22529,7 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
           }),
           renderSlot(_ctx.$slots, "options", {}, void 0, true),
           hasLabel.value ? (openBlock(), createBlock(DFieldset, {
-            key: 0,
+            key: 1,
             title: "Textbox settings"
           }, {
             default: withCtx(() => {
@@ -22501,12 +22539,12 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                   key: 0,
                   label: "Enlarge when talking",
                   modelValue: unref(enlargeWhenTalking),
-                  "onUpdate:modelValue": _cache[20] || (_cache[20] = ($event) => isRef(enlargeWhenTalking) ? enlargeWhenTalking.value = $event : null)
+                  "onUpdate:modelValue": _cache[21] || (_cache[21] = ($event) => isRef(enlargeWhenTalking) ? enlargeWhenTalking.value = $event : null)
                 }, null, 8, ["modelValue"])) : createCommentVNode("", true),
                 createVNode(_sfc_main$k, {
                   label: "Own textbox color",
                   modelValue: useCustomTextboxColor.value,
-                  "onUpdate:modelValue": _cache[21] || (_cache[21] = ($event) => useCustomTextboxColor.value = $event)
+                  "onUpdate:modelValue": _cache[22] || (_cache[22] = ($event) => useCustomTextboxColor.value = $event)
                 }, null, 8, ["modelValue"]),
                 createBaseVNode("table", null, [
                   useCustomTextboxColor.value ? (openBlock(), createElementBlock("tr", _hoisted_11$4, [
@@ -22527,7 +22565,7 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                         id: "namebox_width",
                         type: "number",
                         placeholder: defaultNameboxWidth.value + "",
-                        "onUpdate:modelValue": _cache[22] || (_cache[22] = ($event) => nameboxWidth.value = $event)
+                        "onUpdate:modelValue": _cache[23] || (_cache[23] = ($event) => nameboxWidth.value = $event)
                       }, null, 8, _hoisted_14$4), [
                         [
                           vModelText,
@@ -22544,7 +22582,7 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
             _: 1
           })) : createCommentVNode("", true),
           createBaseVNode("button", {
-            onClick: _cache[23] || (_cache[23] = ($event) => imageOptionsOpen.value = true)
+            onClick: _cache[24] || (_cache[24] = ($event) => imageOptionsOpen.value = true)
           }, "Image options"),
           createBaseVNode("button", {
             class: "v-bt0",
@@ -22559,8 +22597,8 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const objectTool_vue_vue_type_style_index_0_scoped_e1c4f155_lang = "";
-const ObjectTool = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["__scopeId", "data-v-e1c4f155"]]);
+const objectTool_vue_vue_type_style_index_0_scoped_231ea05c_lang = "";
+const ObjectTool = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["__scopeId", "data-v-231ea05c"]]);
 var __async$6 = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -25369,10 +25407,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box.949863f4.js"), true ? ["./single-box.949863f4.js","./single-box.60b91cb2.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box.c4cc9a56.js"), true ? ["./single-box.c4cc9a56.js","./single-box.60b91cb2.css"] : void 0, import.meta.url)
     );
     const ExpressionBuilder = defineAsyncComponent(
-      () => __vitePreload(() => import("./index.25701d51.js"), true ? ["./index.25701d51.js","./index.79dcf75d.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.b15e484b.js"), true ? ["./index.b15e484b.js","./index.79dcf75d.css"] : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);
