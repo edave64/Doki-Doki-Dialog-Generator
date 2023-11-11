@@ -54,6 +54,22 @@ export function getStyles(): DeepReadonly<ITextboxRendererClass>[] {
 export class TextBox extends ScalingRenderable<ITextBox> {
 	private nbTextRenderer: TextRenderer = null!;
 	private textRenderer: TextRenderer = null!;
+
+	/**
+	 * RefVars are some of the properties of the object set as "Person talking", that can change the rendering of the
+	 * textbox. So the textbox must be re-rendered if they change.
+	 */
+	public getRefVars(): string | null {
+		const refObj = this.refObject;
+		if (!refObj) return null;
+		return JSON.stringify([
+			refObj.label,
+			refObj.textboxColor,
+			refObj.nameboxWidth,
+		]);
+	}
+	private _lastRefVars: string | null = null;
+
 	public prepareRender(
 		panel: DeepReadonly<IPanel>,
 		store: Store<IRootState>,
@@ -65,6 +81,11 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 
 		if (typeof this.obj.talkingObjId === 'number') {
 			this.refObject = panel.objects[this.obj.talkingObjId] ?? null;
+		}
+		const currentRefVars = this.getRefVars;
+		if (currentRefVars !== this._lastRefVars) {
+			this.localCanvasInvalid = true;
+			this._lastRefVars = currentRefVars;
 		}
 
 		const name =
@@ -89,10 +110,6 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 	protected renderLocal(ctx: CanvasRenderingContext2D, _hq: boolean): void {
 		const styleRenderer = this.textboxRenderer;
 		const w = styleRenderer.width;
-		/*
-		ctx.fillStyle = '#0f0';
-		ctx.fillRect(0, 0, this.obj.width, this.obj.height);
-*/
 		styleRenderer.render(ctx);
 
 		if (this.obj.talkingObjId !== null) {
