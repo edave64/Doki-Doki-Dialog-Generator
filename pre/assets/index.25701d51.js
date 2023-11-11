@@ -1,4 +1,4 @@
-import { J as reactive, d as defineComponent, c as computed, o as openBlock, a as createElementBlock, b as createBaseVNode, t as toDisplayString, s as normalizeStyle, u as unref, v as withModifiers, _ as _export_sfc, K as renderSlot, j as useStore, r as ref, w as watch, m as createBlock, h as withCtx, F as Fragment, e as renderList, k as createTextVNode, l as _sfc_main$3, f as createCommentVNode, g as createVNode, L as DropTarget, M as verticalScrollRedirect, n as normalizeClass, C as withDirectives, N as vModelSelect, D as vModelText, O as DFieldset, q as _sfc_main$4, P as getAssetByUrl, Q as Renderer, S as transaction, x as envX, y as pushScopeId, z as popScopeId, U as getAAssetUrl, W as Character, i as nextTick, X as SelectedState } from "./index.b3569706.js";
+import { I as reactive, d as defineComponent, c as computed, o as openBlock, a as createElementBlock, b as createBaseVNode, t as toDisplayString, q as normalizeStyle, s as withModifiers, _ as _export_sfc, J as renderSlot, u as useStore, r as ref, w as watch, m as createBlock, h as withCtx, F as Fragment, e as renderList, j as createTextVNode, l as _sfc_main$3, f as createCommentVNode, g as createVNode, K as DropTarget, k as unref, L as verticalScrollRedirect, n as normalizeClass, B as withDirectives, M as vModelSelect, C as vModelText, N as DFieldset, p as _sfc_main$4, O as getAssetByUrl, P as Renderer, Q as transaction, v as envX, x as pushScopeId, y as popScopeId, S as getAAssetUrl, U as Character, i as nextTick, W as SelectedState } from "./index.3beb6a69.js";
 var __defProp$1 = Object.defineProperty;
 var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => {
@@ -181,7 +181,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
         class: "selection",
-        style: normalizeStyle({ background: unref(background) }),
+        style: normalizeStyle({ background: background.value }),
         onClick: _cache[0] || (_cache[0] = withModifiers(($event) => _ctx.$emit("selected"), ["stop"]))
       }, [
         createBaseVNode("div", _hoisted_1$2, toDisplayString(__props.icon), 1),
@@ -257,6 +257,7 @@ const _hoisted_10 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createBas
 const _hoisted_11 = { key: 0 };
 const _hoisted_12 = ["disabled"];
 const _hoisted_13 = { key: 1 };
+const baseUrl = "https://github.com/edave64/Doki-Doki-Dialog-Generator/tree/master/public/assets/";
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "index",
   props: {
@@ -267,8 +268,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     initHeadGroup: String
   },
   emits: ["leave"],
-  setup(__props, { emit }) {
-    const props = __props;
+  setup(__props, { emit: __emit }) {
     const uploadedExpressionsPackDefaults = {
       packId: "dddg.uploads.expressions",
       dependencies: [],
@@ -282,8 +282,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       colors: []
     };
     const partFiles = {};
+    const props = __props;
     const store = useStore();
     const target = ref(null);
+    const emit = __emit;
     const headGroup = ref(null);
     const uploadedExpressions = ref([]);
     const currentUploadedExpression = ref(null);
@@ -721,7 +723,6 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const adds = {
       "dddg.buildin.base.natsuki:straight": "assets/mask/natsuki-a-add.png"
     };
-    const baseUrl = "https://github.com/edave64/Doki-Doki-Dialog-Generator/tree/master/public/assets/";
     const listPaths = {
       "dddg.buildin.base.monika:ddlc.monika": `${baseUrl}monika`,
       "dddg.buildin.base.natsuki:ddlc.natsuki": `${baseUrl}natsuki`,
@@ -787,7 +788,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           label: "What kind of expression would you like to add?"
         }, {
           default: withCtx(() => [
-            (openBlock(true), createElementBlock(Fragment, null, renderList(unref(availableHeadGroups), (headgroup) => {
+            (openBlock(true), createElementBlock(Fragment, null, renderList(availableHeadGroups.value, (headgroup) => {
               return openBlock(), createBlock(Selection, {
                 key: headgroup.name,
                 label: normalizeName(headgroup.name),
@@ -801,18 +802,18 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           !uploadsFinished.value ? (openBlock(), createElementBlock("div", _hoisted_2, [
             createBaseVNode("h2", null, [
               createTextVNode(" Upload new '" + toDisplayString(normalizeName(headGroup.value.name)) + "' expressions ", 1),
-              unref(downloadLink) ? (openBlock(), createBlock(_sfc_main$3, {
+              downloadLink.value ? (openBlock(), createBlock(_sfc_main$3, {
                 key: 0,
-                to: unref(downloadLink)
+                to: downloadLink.value
               }, {
                 default: withCtx(() => [
                   createTextVNode("(Template)")
                 ]),
                 _: 1
               }, 8, ["to"])) : createCommentVNode("", true),
-              unref(listLink) ? (openBlock(), createBlock(_sfc_main$3, {
+              listLink.value ? (openBlock(), createBlock(_sfc_main$3, {
                 key: 1,
-                to: unref(listLink)
+                to: listLink.value
               }, {
                 default: withCtx(() => [
                   createTextVNode("(List)")
@@ -866,8 +867,8 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                   createBaseVNode("canvas", {
                     ref_key: "target",
                     ref: target,
-                    width: unref(previewPoses)[previewPoseIdx.value].width,
-                    height: unref(previewPoses)[previewPoseIdx.value].height
+                    width: previewPoses.value[previewPoseIdx.value].width,
+                    height: previewPoses.value[previewPoseIdx.value].height
                   }, null, 8, _hoisted_7)
                 ]),
                 createBaseVNode("div", null, [
@@ -875,7 +876,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                   withDirectives(createBaseVNode("select", {
                     "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => previewPoseIdx.value = $event)
                   }, [
-                    (openBlock(true), createElementBlock(Fragment, null, renderList(unref(previewPoses), (pose, idx) => {
+                    (openBlock(true), createElementBlock(Fragment, null, renderList(previewPoses.value, (pose, idx) => {
                       return openBlock(), createElementBlock("option", {
                         key: idx,
                         value: idx

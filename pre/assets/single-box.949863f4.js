@@ -1,4 +1,4 @@
-import { d as defineComponent, r as ref, c as computed, w as watch, o as openBlock, a as createElementBlock, b as createBaseVNode, F as Fragment, e as renderList, t as toDisplayString, f as createCommentVNode, g as createVNode, h as withCtx, n as normalizeClass, u as unref, T as TransitionGroup, i as nextTick, _ as _export_sfc, j as useStore, k as createTextVNode, l as _sfc_main$4, m as createBlock, p as isRef, q as _sfc_main$5, s as normalizeStyle, v as withModifiers, x as envX, y as pushScopeId, z as popScopeId, A as onMounted, B as onUnmounted, C as withDirectives, D as vModelText, E as createStaticVNode, G as onActivated, H as safeAsync, R as Repo, I as eventBus, V as VueErrorEvent } from "./index.b3569706.js";
+import { d as defineComponent, r as ref, c as computed, w as watch, o as openBlock, a as createElementBlock, b as createBaseVNode, F as Fragment, e as renderList, t as toDisplayString, f as createCommentVNode, g as createVNode, h as withCtx, n as normalizeClass, T as TransitionGroup, i as nextTick, _ as _export_sfc, u as useStore, j as createTextVNode, k as unref, l as _sfc_main$4, m as createBlock, p as _sfc_main$5, q as normalizeStyle, s as withModifiers, v as envX, x as pushScopeId, y as popScopeId, z as onMounted, A as onUnmounted, B as withDirectives, C as vModelText, D as createStaticVNode, E as onActivated, G as safeAsync, R as Repo, H as eventBus, V as VueErrorEvent } from "./index.3beb6a69.js";
 const availablePrefixes = ["author", "character", "type", "pack", "engine"];
 const prefixLookup = /* @__PURE__ */ new Map();
 for (const prefix of availablePrefixes) {
@@ -284,6 +284,7 @@ function filter(search, authors, list) {
 const _hoisted_1$3 = ["tabindex", "onClick", "onKeydown"];
 const _hoisted_2$3 = { key: 0 };
 const _hoisted_3$2 = ["onMousedown", "onClick"];
+const pageKeyMoveBy = 10;
 const _sfc_main$3 = /* @__PURE__ */ defineComponent({
   __name: "list",
   props: {
@@ -297,9 +298,9 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
     }
   },
   emits: ["selected", "select-search-bar"],
-  setup(__props, { emit }) {
+  setup(__props, { emit: __emit }) {
     const props = __props;
-    const pageKeyMoveBy = 10;
+    const emit = __emit;
     const root = ref(null);
     const tbody = ref(null);
     const header = ref(null);
@@ -498,7 +499,7 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
             onFocus: updateFocusedItem
           }, {
             default: withCtx(() => [
-              (openBlock(true), createElementBlock(Fragment, null, renderList(unref(list), (pack) => {
+              (openBlock(true), createElementBlock(Fragment, null, renderList(list.value, (pack) => {
                 return openBlock(), createElementBlock("tr", {
                   key: pack.id,
                   class: normalizeClass({
@@ -694,7 +695,6 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     }
   },
   setup(__props) {
-    const props = __props;
     const linkablePlatforms = [
       ["reddit", "https://reddit.com/u/%1", "reddit.png"],
       ["deviantart", "https://www.deviantart.com/%1", "deviantart.png"],
@@ -706,6 +706,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
       ["website", "%1", "website.svg"]
     ];
     const store = useStore();
+    const props = __props;
     const pack = computed(() => props.repo.getPack(props.selected));
     const backgroundImage = computed(
       () => pack.value.preview.map((preview) => `url('${preview}')`).join(",")
@@ -807,7 +808,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
         class: "pack-display",
-        style: normalizeStyle({ backgroundImage: unref(backgroundImage) }),
+        style: normalizeStyle({ backgroundImage: backgroundImage.value }),
         onClick: _cache[2] || (_cache[2] = withModifiers(() => {
         }, ["stop"]))
       }, [
@@ -818,18 +819,18 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
               class: "exit-button",
               onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("leave", true))
             }, _hoisted_2$2)) : createCommentVNode("", true),
-            createTextVNode(" " + toDisplayString(unref(pack).name), 1)
+            createTextVNode(" " + toDisplayString(pack.value.name), 1)
           ]),
-          createBaseVNode("h2", null, toDisplayString(unref(pack).id), 1)
+          createBaseVNode("h2", null, toDisplayString(pack.value.id), 1)
         ]),
-        unref(pack).disclaimer ? (openBlock(), createElementBlock("section", {
+        pack.value.disclaimer ? (openBlock(), createElementBlock("section", {
           key: 0,
           class: "disclaimer",
-          innerHTML: unref(sanitize)(unref(pack).disclaimer)
+          innerHTML: unref(sanitize)(pack.value.disclaimer)
         }, null, 8, _hoisted_3$1)) : createCommentVNode("", true),
-        unref(pack).source ? (openBlock(), createElementBlock("section", _hoisted_4$1, [
+        pack.value.source ? (openBlock(), createElementBlock("section", _hoisted_4$1, [
           createVNode(_sfc_main$4, {
-            to: unref(pack).source
+            to: pack.value.source
           }, {
             default: withCtx(() => [
               createTextVNode("Source")
@@ -838,46 +839,46 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
           }, 8, ["to"])
         ])) : createCommentVNode("", true),
         createBaseVNode("section", null, [
-          unref(addable) ? (openBlock(), createElementBlock("button", {
+          addable.value ? (openBlock(), createElementBlock("button", {
             key: 0,
             onClick: add
           }, [
             _hoisted_5$1,
             createTextVNode(" Activate ")
           ])) : createCommentVNode("", true),
-          unref(removable) ? (openBlock(), createElementBlock("button", {
+          removable.value ? (openBlock(), createElementBlock("button", {
             key: 1,
             onClick: remove
           }, [
             _hoisted_6$1,
             createTextVNode(" Deactivate ")
           ])) : createCommentVNode("", true),
-          unref(installable) ? (openBlock(), createElementBlock("button", {
+          installable.value ? (openBlock(), createElementBlock("button", {
             key: 2,
             onClick: install
           }, [
             _hoisted_7$1,
             createTextVNode(" Store locally ")
           ])) : createCommentVNode("", true),
-          unref(uninstallable) ? (openBlock(), createElementBlock("button", {
+          uninstallable.value ? (openBlock(), createElementBlock("button", {
             key: 3,
             onClick: uninstall
           }, [
             _hoisted_8$1,
             createTextVNode(" Remove locally ")
           ])) : createCommentVNode("", true),
-          unref(autoloadEnabled) ? (openBlock(), createBlock(_sfc_main$5, {
+          autoloadEnabled.value ? (openBlock(), createBlock(_sfc_main$5, {
             key: 4,
             label: "Load on startup",
-            modelValue: unref(autoload),
-            "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => isRef(autoload) ? autoload.value = $event : null)
+            modelValue: autoload.value,
+            "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => autoload.value = $event)
           }, null, 8, ["modelValue"])) : createCommentVNode("", true)
         ]),
         createBaseVNode("section", null, [
           _hoisted_9$1,
           createBaseVNode("table", null, [
             createBaseVNode("tbody", null, [
-              (openBlock(true), createElementBlock(Fragment, null, renderList(unref(pack).authors, (authorId) => {
+              (openBlock(true), createElementBlock(Fragment, null, renderList(pack.value.authors, (authorId) => {
                 return openBlock(), createElementBlock("tr", { key: authorId }, [
                   createBaseVNode("td", null, toDisplayString(authorName(authorId)), 1),
                   createBaseVNode("td", null, [
@@ -905,10 +906,10 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
             ])
           ])
         ]),
-        unref(pack).description ? (openBlock(), createElementBlock("section", _hoisted_11, [
+        pack.value.description ? (openBlock(), createElementBlock("section", _hoisted_11, [
           _hoisted_12,
           createBaseVNode("p", {
-            innerHTML: unref(sanitize)(unref(pack).description)
+            innerHTML: unref(sanitize)(pack.value.description)
           }, null, 8, _hoisted_13)
         ])) : createCommentVNode("", true)
       ], 4);
@@ -935,6 +936,7 @@ const _hoisted_9 = /* @__PURE__ */ createStaticVNode("<p data-v-a63c61d7>Enter t
 const _hoisted_15 = [
   _hoisted_9
 ];
+const debounce = 250;
 const _sfc_main$1 = /* @__PURE__ */ defineComponent({
   __name: "search-bar",
   props: {
@@ -948,9 +950,9 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     }
   },
   emits: ["leave", "focus-list", "update:modelValue"],
-  setup(__props, { expose, emit }) {
+  setup(__props, { expose: __expose, emit: __emit }) {
     const props = __props;
-    const debounce = 250;
+    const emit = __emit;
     const input = ref(null);
     const message = ref("");
     const debounceTimeout = ref(null);
@@ -961,7 +963,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
         ele.focus();
       }
     }
-    expose({ focus });
+    __expose({ focus });
     function keydownHandler(event) {
       if (event.key === "ArrowDown") {
         emit("focus-list");
@@ -1071,7 +1073,8 @@ const _hoisted_2 = {
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "single-box",
   emits: ["leave"],
-  setup(__props, { expose, emit }) {
+  setup(__props, { expose: __expose, emit: __emit }) {
+    const emit = __emit;
     const searchBar = ref(null);
     const list = ref(null);
     const dialog = ref(null);
@@ -1087,7 +1090,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       selected.value = null;
       search.value = str;
     }
-    expose({ setSearch });
+    __expose({ setSearch });
     function leavePackDisplay(moveFocus) {
       selected.value = null;
       if (moveFocus) {
@@ -1168,7 +1171,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
             onFocusList: focusListHandler,
             onLeave: _cache[1] || (_cache[1] = ($event) => emit("leave"))
           }, null, 8, ["modelValue", "disabled"]),
-          !unref(isRepoUrl) ? (openBlock(), createBlock(List, {
+          !isRepoUrl.value ? (openBlock(), createBlock(List, {
             key: 0,
             class: "list",
             ref_key: "list",

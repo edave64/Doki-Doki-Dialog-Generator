@@ -67,6 +67,92 @@ function makeMap(str, expectsLowerCase) {
   }
   return expectsLowerCase ? (val) => !!map[val.toLowerCase()] : (val) => !!map[val];
 }
+const EMPTY_OBJ = {};
+const EMPTY_ARR = [];
+const NOOP = () => {
+};
+const NO = () => false;
+const onRE = /^on[^a-z]/;
+const isOn = (key) => onRE.test(key);
+const isModelListener = (key) => key.startsWith("onUpdate:");
+const extend = Object.assign;
+const remove = (arr, el) => {
+  const i = arr.indexOf(el);
+  if (i > -1) {
+    arr.splice(i, 1);
+  }
+};
+const hasOwnProperty$1 = Object.prototype.hasOwnProperty;
+const hasOwn = (val, key) => hasOwnProperty$1.call(val, key);
+const isArray = Array.isArray;
+const isMap = (val) => toTypeString(val) === "[object Map]";
+const isSet = (val) => toTypeString(val) === "[object Set]";
+const isDate = (val) => toTypeString(val) === "[object Date]";
+const isRegExp = (val) => toTypeString(val) === "[object RegExp]";
+const isFunction = (val) => typeof val === "function";
+const isString = (val) => typeof val === "string";
+const isSymbol = (val) => typeof val === "symbol";
+const isObject$1 = (val) => val !== null && typeof val === "object";
+const isPromise$1 = (val) => {
+  return (isObject$1(val) || isFunction(val)) && isFunction(val.then) && isFunction(val.catch);
+};
+const objectToString = Object.prototype.toString;
+const toTypeString = (value) => objectToString.call(value);
+const toRawType = (value) => {
+  return toTypeString(value).slice(8, -1);
+};
+const isPlainObject = (val) => toTypeString(val) === "[object Object]";
+const isIntegerKey = (key) => isString(key) && key !== "NaN" && key[0] !== "-" && "" + parseInt(key, 10) === key;
+const isReservedProp = /* @__PURE__ */ makeMap(
+  ",key,ref,ref_for,ref_key,onVnodeBeforeMount,onVnodeMounted,onVnodeBeforeUpdate,onVnodeUpdated,onVnodeBeforeUnmount,onVnodeUnmounted"
+);
+const cacheStringFunction = (fn) => {
+  const cache = /* @__PURE__ */ Object.create(null);
+  return (str) => {
+    const hit = cache[str];
+    return hit || (cache[str] = fn(str));
+  };
+};
+const camelizeRE = /-(\w)/g;
+const camelize = cacheStringFunction((str) => {
+  return str.replace(camelizeRE, (_, c) => c ? c.toUpperCase() : "");
+});
+const hyphenateRE = /\B([A-Z])/g;
+const hyphenate = cacheStringFunction(
+  (str) => str.replace(hyphenateRE, "-$1").toLowerCase()
+);
+const capitalize = cacheStringFunction((str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+});
+const toHandlerKey = cacheStringFunction((str) => {
+  const s = str ? `on${capitalize(str)}` : ``;
+  return s;
+});
+const hasChanged = (value, oldValue) => !Object.is(value, oldValue);
+const invokeArrayFns = (fns, arg) => {
+  for (let i = 0; i < fns.length; i++) {
+    fns[i](arg);
+  }
+};
+const def = (obj, key, value) => {
+  Object.defineProperty(obj, key, {
+    configurable: true,
+    enumerable: false,
+    value
+  });
+};
+const looseToNumber = (val) => {
+  const n = parseFloat(val);
+  return isNaN(n) ? val : n;
+};
+const toNumber = (val) => {
+  const n = isString(val) ? Number(val) : NaN;
+  return isNaN(n) ? val : n;
+};
+let _globalThis;
+const getGlobalThis = () => {
+  return _globalThis || (_globalThis = typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {});
+};
 function normalizeStyle$1(value) {
   if (isArray(value)) {
     const res = {};
@@ -80,15 +166,13 @@ function normalizeStyle$1(value) {
       }
     }
     return res;
-  } else if (isString(value)) {
-    return value;
-  } else if (isObject$1(value)) {
+  } else if (isString(value) || isObject$1(value)) {
     return value;
   }
 }
 const listDelimiterRE = /;(?![^(]*\))/g;
 const propertyDelimiterRE = /:([^]+)/;
-const styleCommentRE = new RegExp("\\/\\*.*?\\*\\/", "gs");
+const styleCommentRE = /\/\*[^]*?\*\//g;
 function parseStringStyle(cssText) {
   const ret = {};
   cssText.replace(styleCommentRE, "").split(listDelimiterRE).forEach((item) => {
@@ -197,85 +281,6 @@ const replacer = (_key, val) => {
   }
   return val;
 };
-const EMPTY_OBJ = {};
-const EMPTY_ARR = [];
-const NOOP = () => {
-};
-const NO = () => false;
-const onRE = /^on[^a-z]/;
-const isOn = (key) => onRE.test(key);
-const isModelListener = (key) => key.startsWith("onUpdate:");
-const extend = Object.assign;
-const remove = (arr, el) => {
-  const i = arr.indexOf(el);
-  if (i > -1) {
-    arr.splice(i, 1);
-  }
-};
-const hasOwnProperty$1 = Object.prototype.hasOwnProperty;
-const hasOwn = (val, key) => hasOwnProperty$1.call(val, key);
-const isArray = Array.isArray;
-const isMap = (val) => toTypeString(val) === "[object Map]";
-const isSet = (val) => toTypeString(val) === "[object Set]";
-const isDate = (val) => toTypeString(val) === "[object Date]";
-const isRegExp = (val) => toTypeString(val) === "[object RegExp]";
-const isFunction = (val) => typeof val === "function";
-const isString = (val) => typeof val === "string";
-const isSymbol = (val) => typeof val === "symbol";
-const isObject$1 = (val) => val !== null && typeof val === "object";
-const isPromise$1 = (val) => {
-  return isObject$1(val) && isFunction(val.then) && isFunction(val.catch);
-};
-const objectToString = Object.prototype.toString;
-const toTypeString = (value) => objectToString.call(value);
-const toRawType = (value) => {
-  return toTypeString(value).slice(8, -1);
-};
-const isPlainObject = (val) => toTypeString(val) === "[object Object]";
-const isIntegerKey = (key) => isString(key) && key !== "NaN" && key[0] !== "-" && "" + parseInt(key, 10) === key;
-const isReservedProp = /* @__PURE__ */ makeMap(
-  ",key,ref,ref_for,ref_key,onVnodeBeforeMount,onVnodeMounted,onVnodeBeforeUpdate,onVnodeUpdated,onVnodeBeforeUnmount,onVnodeUnmounted"
-);
-const cacheStringFunction = (fn) => {
-  const cache = /* @__PURE__ */ Object.create(null);
-  return (str) => {
-    const hit = cache[str];
-    return hit || (cache[str] = fn(str));
-  };
-};
-const camelizeRE = /-(\w)/g;
-const camelize = cacheStringFunction((str) => {
-  return str.replace(camelizeRE, (_, c) => c ? c.toUpperCase() : "");
-});
-const hyphenateRE = /\B([A-Z])/g;
-const hyphenate = cacheStringFunction((str) => str.replace(hyphenateRE, "-$1").toLowerCase());
-const capitalize = cacheStringFunction((str) => str.charAt(0).toUpperCase() + str.slice(1));
-const toHandlerKey = cacheStringFunction((str) => str ? `on${capitalize(str)}` : ``);
-const hasChanged = (value, oldValue) => !Object.is(value, oldValue);
-const invokeArrayFns = (fns, arg) => {
-  for (let i = 0; i < fns.length; i++) {
-    fns[i](arg);
-  }
-};
-const def = (obj, key, value) => {
-  Object.defineProperty(obj, key, {
-    configurable: true,
-    enumerable: false,
-    value
-  });
-};
-const looseToNumber = (val) => {
-  const n = parseFloat(val);
-  return isNaN(n) ? val : n;
-};
-const toNumber = (val) => {
-  const n = isString(val) ? Number(val) : NaN;
-  return isNaN(n) ? val : n;
-};
-let _globalThis;
-const getGlobalThis = () => {
-  return _globalThis || (_globalThis = typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {});
-};
 let activeEffectScope;
 class EffectScope {
   constructor(detached = false) {
@@ -285,7 +290,9 @@ class EffectScope {
     this.cleanups = [];
     this.parent = activeEffectScope;
     if (!detached && activeEffectScope) {
-      this.index = (activeEffectScope.scopes || (activeEffectScope.scopes = [])).push(this) - 1;
+      this.index = (activeEffectScope.scopes || (activeEffectScope.scopes = [])).push(
+        this
+      ) - 1;
     }
   }
   get active() {
@@ -441,11 +448,11 @@ class ReactiveEffect {
     }
   }
 }
-function cleanupEffect(effect) {
-  const { deps } = effect;
+function cleanupEffect(effect2) {
+  const { deps } = effect2;
   if (deps.length) {
     for (let i = 0; i < deps.length; i++) {
-      deps[i].delete(effect);
+      deps[i].delete(effect2);
     }
     deps.length = 0;
   }
@@ -499,7 +506,7 @@ function trigger(target, type, key, newValue, oldValue, oldTarget) {
   } else if (key === "length" && isArray(target)) {
     const newLength = Number(newValue);
     depsMap.forEach((dep, key2) => {
-      if (key2 === "length" || key2 >= newLength) {
+      if (key2 === "length" || !isSymbol(key2) && key2 >= newLength) {
         deps.push(dep);
       }
     });
@@ -553,23 +560,23 @@ function trigger(target, type, key, newValue, oldValue, oldTarget) {
 }
 function triggerEffects(dep, debuggerEventExtraInfo) {
   const effects = isArray(dep) ? dep : [...dep];
-  for (const effect of effects) {
-    if (effect.computed) {
-      triggerEffect(effect);
+  for (const effect2 of effects) {
+    if (effect2.computed) {
+      triggerEffect(effect2);
     }
   }
-  for (const effect of effects) {
-    if (!effect.computed) {
-      triggerEffect(effect);
+  for (const effect2 of effects) {
+    if (!effect2.computed) {
+      triggerEffect(effect2);
     }
   }
 }
-function triggerEffect(effect, debuggerEventExtraInfo) {
-  if (effect !== activeEffect || effect.allowRecurse) {
-    if (effect.scheduler) {
-      effect.scheduler();
+function triggerEffect(effect2, debuggerEventExtraInfo) {
+  if (effect2 !== activeEffect || effect2.allowRecurse) {
+    if (effect2.scheduler) {
+      effect2.scheduler();
     } else {
-      effect.run();
+      effect2.run();
     }
   }
 }
@@ -577,9 +584,6 @@ const isNonTrackableKeys = /* @__PURE__ */ makeMap(`__proto__,__v_isRef,__isVue`
 const builtInSymbols = new Set(
   /* @__PURE__ */ Object.getOwnPropertyNames(Symbol).filter((key) => key !== "arguments" && key !== "caller").map((key) => Symbol[key]).filter(isSymbol)
 );
-const get$1 = /* @__PURE__ */ createGetter();
-const shallowGet = /* @__PURE__ */ createGetter(false, true);
-const readonlyGet = /* @__PURE__ */ createGetter(true);
 const arrayInstrumentations = /* @__PURE__ */ createArrayInstrumentations();
 function createArrayInstrumentations() {
   const instrumentations = {};
@@ -612,8 +616,13 @@ function hasOwnProperty(key) {
   track(obj, "has", key);
   return obj.hasOwnProperty(key);
 }
-function createGetter(isReadonly2 = false, shallow = false) {
-  return function get3(target, key, receiver) {
+class BaseReactiveHandler {
+  constructor(_isReadonly = false, _shallow = false) {
+    this._isReadonly = _isReadonly;
+    this._shallow = _shallow;
+  }
+  get(target, key, receiver) {
+    const isReadonly2 = this._isReadonly, shallow = this._shallow;
     if (key === "__v_isReactive") {
       return !isReadonly2;
     } else if (key === "__v_isReadonly") {
@@ -649,17 +658,18 @@ function createGetter(isReadonly2 = false, shallow = false) {
       return isReadonly2 ? readonly(res) : reactive(res);
     }
     return res;
-  };
+  }
 }
-const set$1 = /* @__PURE__ */ createSetter();
-const shallowSet = /* @__PURE__ */ createSetter(true);
-function createSetter(shallow = false) {
-  return function set2(target, key, value, receiver) {
+class MutableReactiveHandler extends BaseReactiveHandler {
+  constructor(shallow = false) {
+    super(false, shallow);
+  }
+  set(target, key, value, receiver) {
     let oldValue = target[key];
     if (isReadonly(oldValue) && isRef(oldValue) && !isRef(value)) {
       return false;
     }
-    if (!shallow) {
+    if (!this._shallow) {
       if (!isShallow(value) && !isReadonly(value)) {
         oldValue = toRaw(oldValue);
         value = toRaw(value);
@@ -679,48 +689,48 @@ function createSetter(shallow = false) {
       }
     }
     return result;
-  };
-}
-function deleteProperty(target, key) {
-  const hadKey = hasOwn(target, key);
-  target[key];
-  const result = Reflect.deleteProperty(target, key);
-  if (result && hadKey) {
-    trigger(target, "delete", key, void 0);
   }
-  return result;
-}
-function has$1(target, key) {
-  const result = Reflect.has(target, key);
-  if (!isSymbol(key) || !builtInSymbols.has(key)) {
-    track(target, "has", key);
+  deleteProperty(target, key) {
+    const hadKey = hasOwn(target, key);
+    target[key];
+    const result = Reflect.deleteProperty(target, key);
+    if (result && hadKey) {
+      trigger(target, "delete", key, void 0);
+    }
+    return result;
   }
-  return result;
+  has(target, key) {
+    const result = Reflect.has(target, key);
+    if (!isSymbol(key) || !builtInSymbols.has(key)) {
+      track(target, "has", key);
+    }
+    return result;
+  }
+  ownKeys(target) {
+    track(
+      target,
+      "iterate",
+      isArray(target) ? "length" : ITERATE_KEY
+    );
+    return Reflect.ownKeys(target);
+  }
 }
-function ownKeys(target) {
-  track(target, "iterate", isArray(target) ? "length" : ITERATE_KEY);
-  return Reflect.ownKeys(target);
-}
-const mutableHandlers = {
-  get: get$1,
-  set: set$1,
-  deleteProperty,
-  has: has$1,
-  ownKeys
-};
-const readonlyHandlers = {
-  get: readonlyGet,
+class ReadonlyReactiveHandler extends BaseReactiveHandler {
+  constructor(shallow = false) {
+    super(true, shallow);
+  }
   set(target, key) {
     return true;
-  },
+  }
   deleteProperty(target, key) {
     return true;
   }
-};
-const shallowReactiveHandlers = /* @__PURE__ */ extend({}, mutableHandlers, {
-  get: shallowGet,
-  set: shallowSet
-});
+}
+const mutableHandlers = /* @__PURE__ */ new MutableReactiveHandler();
+const readonlyHandlers = /* @__PURE__ */ new ReadonlyReactiveHandler();
+const shallowReactiveHandlers = /* @__PURE__ */ new MutableReactiveHandler(
+  true
+);
 const toShallow = (value) => value;
 const getProto = (v) => Reflect.getPrototypeOf(v);
 function get(target, key, isReadonly2 = false, isShallow2 = false) {
@@ -728,7 +738,7 @@ function get(target, key, isReadonly2 = false, isShallow2 = false) {
   const rawTarget = toRaw(target);
   const rawKey = toRaw(key);
   if (!isReadonly2) {
-    if (key !== rawKey) {
+    if (hasChanged(key, rawKey)) {
       track(rawTarget, "get", key);
     }
     track(rawTarget, "get", rawKey);
@@ -748,7 +758,7 @@ function has(key, isReadonly2 = false) {
   const rawTarget = toRaw(target);
   const rawKey = toRaw(key);
   if (!isReadonly2) {
-    if (key !== rawKey) {
+    if (hasChanged(key, rawKey)) {
       track(rawTarget, "has", key);
     }
     track(rawTarget, "has", rawKey);
@@ -774,13 +784,13 @@ function add(value) {
 function set(key, value) {
   value = toRaw(value);
   const target = toRaw(this);
-  const { has: has2, get: get3 } = getProto(target);
+  const { has: has2, get: get22 } = getProto(target);
   let hadKey = has2.call(target, key);
   if (!hadKey) {
     key = toRaw(key);
     hadKey = has2.call(target, key);
   }
-  const oldValue = get3.call(target, key);
+  const oldValue = get22.call(target, key);
   target.set(key, value);
   if (!hadKey) {
     trigger(target, "add", key, value);
@@ -791,13 +801,13 @@ function set(key, value) {
 }
 function deleteEntry(key) {
   const target = toRaw(this);
-  const { has: has2, get: get3 } = getProto(target);
+  const { has: has2, get: get22 } = getProto(target);
   let hadKey = has2.call(target, key);
   if (!hadKey) {
     key = toRaw(key);
     hadKey = has2.call(target, key);
   }
-  get3 ? get3.call(target, key) : void 0;
+  get22 ? get22.call(target, key) : void 0;
   const result = target.delete(key);
   if (hadKey) {
     trigger(target, "delete", key, void 0);
@@ -834,7 +844,11 @@ function createIterableMethod(method, isReadonly2, isShallow2) {
     const isKeyOnly = method === "keys" && targetIsMap;
     const innerIterator = target[method](...args);
     const wrap = isShallow2 ? toShallow : isReadonly2 ? toReadonly : toReactive;
-    !isReadonly2 && track(rawTarget, "iterate", isKeyOnly ? MAP_KEY_ITERATE_KEY : ITERATE_KEY);
+    !isReadonly2 && track(
+      rawTarget,
+      "iterate",
+      isKeyOnly ? MAP_KEY_ITERATE_KEY : ITERATE_KEY
+    );
     return {
       next() {
         const { value, done } = innerIterator.next();
@@ -917,10 +931,26 @@ function createInstrumentations() {
   };
   const iteratorMethods = ["keys", "values", "entries", Symbol.iterator];
   iteratorMethods.forEach((method) => {
-    mutableInstrumentations2[method] = createIterableMethod(method, false, false);
-    readonlyInstrumentations2[method] = createIterableMethod(method, true, false);
-    shallowInstrumentations2[method] = createIterableMethod(method, false, true);
-    shallowReadonlyInstrumentations2[method] = createIterableMethod(method, true, true);
+    mutableInstrumentations2[method] = createIterableMethod(
+      method,
+      false,
+      false
+    );
+    readonlyInstrumentations2[method] = createIterableMethod(
+      method,
+      true,
+      false
+    );
+    shallowInstrumentations2[method] = createIterableMethod(
+      method,
+      false,
+      true
+    );
+    shallowReadonlyInstrumentations2[method] = createIterableMethod(
+      method,
+      true,
+      true
+    );
   });
   return [
     mutableInstrumentations2,
@@ -929,7 +959,12 @@ function createInstrumentations() {
     shallowReadonlyInstrumentations2
   ];
 }
-const [mutableInstrumentations, readonlyInstrumentations, shallowInstrumentations, shallowReadonlyInstrumentations] = /* @__PURE__ */ createInstrumentations();
+const [
+  mutableInstrumentations,
+  readonlyInstrumentations,
+  shallowInstrumentations,
+  shallowReadonlyInstrumentations
+] = /* @__PURE__ */ createInstrumentations();
 function createInstrumentationGetter(isReadonly2, shallow) {
   const instrumentations = shallow ? isReadonly2 ? shallowReadonlyInstrumentations : shallowInstrumentations : isReadonly2 ? readonlyInstrumentations : mutableInstrumentations;
   return (target, key, receiver) => {
@@ -940,7 +975,11 @@ function createInstrumentationGetter(isReadonly2, shallow) {
     } else if (key === "__v_raw") {
       return target;
     }
-    return Reflect.get(hasOwn(instrumentations, key) && key in target ? instrumentations : target, key, receiver);
+    return Reflect.get(
+      hasOwn(instrumentations, key) && key in target ? instrumentations : target,
+      key,
+      receiver
+    );
   };
 }
 const mutableCollectionHandlers = {
@@ -977,13 +1016,31 @@ function reactive(target) {
   if (isReadonly(target)) {
     return target;
   }
-  return createReactiveObject(target, false, mutableHandlers, mutableCollectionHandlers, reactiveMap);
+  return createReactiveObject(
+    target,
+    false,
+    mutableHandlers,
+    mutableCollectionHandlers,
+    reactiveMap
+  );
 }
 function shallowReactive(target) {
-  return createReactiveObject(target, false, shallowReactiveHandlers, shallowCollectionHandlers, shallowReactiveMap);
+  return createReactiveObject(
+    target,
+    false,
+    shallowReactiveHandlers,
+    shallowCollectionHandlers,
+    shallowReactiveMap
+  );
 }
 function readonly(target) {
-  return createReactiveObject(target, true, readonlyHandlers, readonlyCollectionHandlers, readonlyMap);
+  return createReactiveObject(
+    target,
+    true,
+    readonlyHandlers,
+    readonlyCollectionHandlers,
+    readonlyMap
+  );
 }
 function createReactiveObject(target, isReadonly2, baseHandlers, collectionHandlers, proxyMap) {
   if (!isObject$1(target)) {
@@ -1000,7 +1057,10 @@ function createReactiveObject(target, isReadonly2, baseHandlers, collectionHandl
   if (targetType === 0) {
     return target;
   }
-  const proxy = new Proxy(target, targetType === 2 ? collectionHandlers : baseHandlers);
+  const proxy = new Proxy(
+    target,
+    targetType === 2 ? collectionHandlers : baseHandlers
+  );
   proxyMap.set(target, proxy);
   return proxy;
 }
@@ -1098,13 +1158,12 @@ const shallowUnwrapHandlers = {
 function proxyRefs(objectWithRefs) {
   return isReactive(objectWithRefs) ? objectWithRefs : new Proxy(objectWithRefs, shallowUnwrapHandlers);
 }
-var _a$1;
 class ComputedRefImpl {
   constructor(getter, _setter, isReadonly2, isSSR) {
     this._setter = _setter;
     this.dep = void 0;
     this.__v_isRef = true;
-    this[_a$1] = false;
+    this["__v_isReadonly"] = false;
     this._dirty = true;
     this.effect = new ReactiveEffect(getter, () => {
       if (!this._dirty) {
@@ -1129,7 +1188,6 @@ class ComputedRefImpl {
     this._setter(newValue);
   }
 }
-_a$1 = "__v_isReadonly";
 function computed$1(getterOrOptions, debugOptions, isSSR = false) {
   let getter;
   let setter;
@@ -1191,7 +1249,12 @@ function handleError(err, instance, type, throwInDev = true) {
     }
     const appErrorHandler = instance.appContext.config.errorHandler;
     if (appErrorHandler) {
-      callWithErrorHandling(appErrorHandler, null, 10, [err, exposedInstance, errorInfo]);
+      callWithErrorHandling(
+        appErrorHandler,
+        null,
+        10,
+        [err, exposedInstance, errorInfo]
+      );
       return;
     }
   }
@@ -1220,13 +1283,21 @@ function findInsertionIndex(id) {
   let end = queue.length;
   while (start < end) {
     const middle = start + end >>> 1;
-    const middleJobId = getId(queue[middle]);
-    middleJobId < id ? start = middle + 1 : end = middle;
+    const middleJob = queue[middle];
+    const middleJobId = getId(middleJob);
+    if (middleJobId < id || middleJobId === id && middleJob.pre) {
+      start = middle + 1;
+    } else {
+      end = middle;
+    }
   }
   return start;
 }
 function queueJob(job) {
-  if (!queue.length || !queue.includes(job, isFlushing && job.allowRecurse ? flushIndex + 1 : flushIndex)) {
+  if (!queue.length || !queue.includes(
+    job,
+    isFlushing && job.allowRecurse ? flushIndex + 1 : flushIndex
+  )) {
     if (job.id == null) {
       queue.push(job);
     } else {
@@ -1249,7 +1320,10 @@ function invalidateJob(job) {
 }
 function queuePostFlushCb(cb) {
   if (!isArray(cb)) {
-    if (!activePostFlushCbs || !activePostFlushCbs.includes(cb, cb.allowRecurse ? postFlushIndex + 1 : postFlushIndex)) {
+    if (!activePostFlushCbs || !activePostFlushCbs.includes(
+      cb,
+      cb.allowRecurse ? postFlushIndex + 1 : postFlushIndex
+    )) {
       pendingPostFlushCbs.push(cb);
     }
   } else {
@@ -1343,7 +1417,12 @@ function emit(instance, event, ...rawArgs) {
     handler = props[handlerName = toHandlerKey(hyphenate(event))];
   }
   if (handler) {
-    callWithAsyncErrorHandling(handler, instance, 6, args);
+    callWithAsyncErrorHandling(
+      handler,
+      instance,
+      6,
+      args
+    );
   }
   const onceHandler = props[handlerName + `Once`];
   if (onceHandler) {
@@ -1353,7 +1432,12 @@ function emit(instance, event, ...rawArgs) {
       return;
     }
     instance.emitted[handlerName] = true;
-    callWithAsyncErrorHandling(onceHandler, instance, 6, args);
+    callWithAsyncErrorHandling(
+      onceHandler,
+      instance,
+      6,
+      args
+    );
   }
 }
 function normalizeEmitsOptions(comp, appContext, asMixin = false) {
@@ -1450,27 +1534,61 @@ function withCtx(fn, ctx = currentRenderingInstance, isNonScopedSlot) {
 function markAttrsAccessed() {
 }
 function renderComponentRoot(instance) {
-  const { type: Component, vnode, proxy, withProxy, props, propsOptions: [propsOptions], slots, attrs, emit: emit2, render, renderCache, data, setupState, ctx, inheritAttrs } = instance;
+  const {
+    type: Component,
+    vnode,
+    proxy,
+    withProxy,
+    props,
+    propsOptions: [propsOptions],
+    slots,
+    attrs,
+    emit: emit2,
+    render,
+    renderCache,
+    data,
+    setupState,
+    ctx,
+    inheritAttrs
+  } = instance;
   let result;
   let fallthroughAttrs;
   const prev = setCurrentRenderingInstance(instance);
   try {
     if (vnode.shapeFlag & 4) {
       const proxyToUse = withProxy || proxy;
-      result = normalizeVNode(render.call(proxyToUse, proxyToUse, renderCache, props, setupState, data, ctx));
+      result = normalizeVNode(
+        render.call(
+          proxyToUse,
+          proxyToUse,
+          renderCache,
+          props,
+          setupState,
+          data,
+          ctx
+        )
+      );
       fallthroughAttrs = attrs;
     } else {
       const render2 = Component;
       if (false)
         ;
-      result = normalizeVNode(render2.length > 1 ? render2(props, false ? {
-        get attrs() {
-          markAttrsAccessed();
-          return attrs;
-        },
-        slots,
-        emit: emit2
-      } : { attrs, slots, emit: emit2 }) : render2(props, null));
+      result = normalizeVNode(
+        render2.length > 1 ? render2(
+          props,
+          false ? {
+            get attrs() {
+              markAttrsAccessed();
+              return attrs;
+            },
+            slots,
+            emit: emit2
+          } : { attrs, slots, emit: emit2 }
+        ) : render2(
+          props,
+          null
+        )
+      );
       fallthroughAttrs = Component.props ? attrs : getFunctionalFallthrough(attrs);
     }
   } catch (err) {
@@ -1485,7 +1603,10 @@ function renderComponentRoot(instance) {
     if (keys.length) {
       if (shapeFlag & (1 | 6)) {
         if (propsOptions && keys.some(isModelListener)) {
-          fallthroughAttrs = filterModelListeners(fallthroughAttrs, propsOptions);
+          fallthroughAttrs = filterModelListeners(
+            fallthroughAttrs,
+            propsOptions
+          );
         }
         root = cloneVNode(root, fallthroughAttrs);
       }
@@ -1585,6 +1706,7 @@ function updateHOCHostEl({ vnode, parent }, el) {
     parent = parent.parent;
   }
 }
+const NULL_DYNAMIC_COMPONENT = Symbol.for("v-ndc");
 const isSuspense = (type) => type.__isSuspense;
 function queueEffectWithSuspense(fn, suspense) {
   if (suspense && suspense.pendingBranch) {
@@ -1597,36 +1719,13 @@ function queueEffectWithSuspense(fn, suspense) {
     queuePostFlushCb(fn);
   }
 }
-function provide(key, value) {
-  if (!currentInstance)
-    ;
-  else {
-    let provides = currentInstance.provides;
-    const parentProvides = currentInstance.parent && currentInstance.parent.provides;
-    if (parentProvides === provides) {
-      provides = currentInstance.provides = Object.create(parentProvides);
-    }
-    provides[key] = value;
-  }
-}
-function inject(key, defaultValue, treatDefaultAsFactory = false) {
-  const instance = currentInstance || currentRenderingInstance;
-  if (instance) {
-    const provides = instance.parent == null ? instance.vnode.appContext && instance.vnode.appContext.provides : instance.parent.provides;
-    if (provides && key in provides) {
-      return provides[key];
-    } else if (arguments.length > 1) {
-      return treatDefaultAsFactory && isFunction(defaultValue) ? defaultValue.call(instance.proxy) : defaultValue;
-    } else
-      ;
-  }
-}
 const INITIAL_WATCHER_VALUE = {};
 function watch(source, cb, options) {
   return doWatch(source, cb, options);
 }
 function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = EMPTY_OBJ) {
-  const instance = getCurrentScope() === (currentInstance === null || currentInstance === void 0 ? void 0 : currentInstance.scope) ? currentInstance : null;
+  var _a;
+  const instance = getCurrentScope() === ((_a = currentInstance) == null ? void 0 : _a.scope) ? currentInstance : null;
   let getter;
   let forceTrigger = false;
   let isMultiSource = false;
@@ -1660,7 +1759,12 @@ function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = EM
         if (cleanup) {
           cleanup();
         }
-        return callWithAsyncErrorHandling(source, instance, 3, [onCleanup]);
+        return callWithAsyncErrorHandling(
+          source,
+          instance,
+          3,
+          [onCleanup]
+        );
       };
     }
   } else {
@@ -1737,7 +1841,10 @@ function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = EM
       oldValue = effect.run();
     }
   } else if (flush === "post") {
-    queuePostRenderEffect(effect.run.bind(effect), instance && instance.suspense);
+    queuePostRenderEffect(
+      effect.run.bind(effect),
+      instance && instance.suspense
+    );
   } else {
     effect.run();
   }
@@ -1807,6 +1914,60 @@ function traverse(value, seen2) {
   }
   return value;
 }
+function withDirectives(vnode, directives) {
+  const internalInstance = currentRenderingInstance;
+  if (internalInstance === null) {
+    return vnode;
+  }
+  const instance = getExposeProxy(internalInstance) || internalInstance.proxy;
+  const bindings = vnode.dirs || (vnode.dirs = []);
+  for (let i = 0; i < directives.length; i++) {
+    let [dir, value, arg, modifiers = EMPTY_OBJ] = directives[i];
+    if (dir) {
+      if (isFunction(dir)) {
+        dir = {
+          mounted: dir,
+          updated: dir
+        };
+      }
+      if (dir.deep) {
+        traverse(value);
+      }
+      bindings.push({
+        dir,
+        instance,
+        value,
+        oldValue: void 0,
+        arg,
+        modifiers
+      });
+    }
+  }
+  return vnode;
+}
+function invokeDirectiveHook(vnode, prevVNode, instance, name) {
+  const bindings = vnode.dirs;
+  const oldBindings = prevVNode && prevVNode.dirs;
+  for (let i = 0; i < bindings.length; i++) {
+    const binding = bindings[i];
+    if (oldBindings) {
+      binding.oldValue = oldBindings[i].value;
+    }
+    let hook = binding.dir[name];
+    if (hook) {
+      pauseTracking();
+      callWithAsyncErrorHandling(hook, instance, 8, [
+        vnode.el,
+        binding,
+        vnode,
+        prevVNode
+      ]);
+      resetTracking();
+    }
+  }
+}
+const leaveCbKey = Symbol("_leaveCb");
+const enterCbKey$1 = Symbol("_enterCb");
 function useTransitionState() {
   const state = {
     isMounted: false,
@@ -1823,97 +1984,23 @@ function useTransitionState() {
   return state;
 }
 const TransitionHookValidator = [Function, Array];
-const BaseTransitionImpl = {
-  name: `BaseTransition`,
-  props: {
-    mode: String,
-    appear: Boolean,
-    persisted: Boolean,
-    onBeforeEnter: TransitionHookValidator,
-    onEnter: TransitionHookValidator,
-    onAfterEnter: TransitionHookValidator,
-    onEnterCancelled: TransitionHookValidator,
-    onBeforeLeave: TransitionHookValidator,
-    onLeave: TransitionHookValidator,
-    onAfterLeave: TransitionHookValidator,
-    onLeaveCancelled: TransitionHookValidator,
-    onBeforeAppear: TransitionHookValidator,
-    onAppear: TransitionHookValidator,
-    onAfterAppear: TransitionHookValidator,
-    onAppearCancelled: TransitionHookValidator
-  },
-  setup(props, { slots }) {
-    const instance = getCurrentInstance();
-    const state = useTransitionState();
-    let prevTransitionKey;
-    return () => {
-      const children = slots.default && getTransitionRawChildren(slots.default(), true);
-      if (!children || !children.length) {
-        return;
-      }
-      let child = children[0];
-      if (children.length > 1) {
-        for (const c of children) {
-          if (c.type !== Comment) {
-            child = c;
-            break;
-          }
-        }
-      }
-      const rawProps = toRaw(props);
-      const { mode } = rawProps;
-      if (state.isLeaving) {
-        return emptyPlaceholder(child);
-      }
-      const innerChild = getKeepAliveChild(child);
-      if (!innerChild) {
-        return emptyPlaceholder(child);
-      }
-      const enterHooks = resolveTransitionHooks(innerChild, rawProps, state, instance);
-      setTransitionHooks(innerChild, enterHooks);
-      const oldChild = instance.subTree;
-      const oldInnerChild = oldChild && getKeepAliveChild(oldChild);
-      let transitionKeyChanged = false;
-      const { getTransitionKey } = innerChild.type;
-      if (getTransitionKey) {
-        const key = getTransitionKey();
-        if (prevTransitionKey === void 0) {
-          prevTransitionKey = key;
-        } else if (key !== prevTransitionKey) {
-          prevTransitionKey = key;
-          transitionKeyChanged = true;
-        }
-      }
-      if (oldInnerChild && oldInnerChild.type !== Comment && (!isSameVNodeType(innerChild, oldInnerChild) || transitionKeyChanged)) {
-        const leavingHooks = resolveTransitionHooks(oldInnerChild, rawProps, state, instance);
-        setTransitionHooks(oldInnerChild, leavingHooks);
-        if (mode === "out-in") {
-          state.isLeaving = true;
-          leavingHooks.afterLeave = () => {
-            state.isLeaving = false;
-            if (instance.update.active !== false) {
-              instance.update();
-            }
-          };
-          return emptyPlaceholder(child);
-        } else if (mode === "in-out" && innerChild.type !== Comment) {
-          leavingHooks.delayLeave = (el, earlyRemove, delayedLeave) => {
-            const leavingVNodesCache = getLeavingNodesForType(state, oldInnerChild);
-            leavingVNodesCache[String(oldInnerChild.key)] = oldInnerChild;
-            el._leaveCb = () => {
-              earlyRemove();
-              el._leaveCb = void 0;
-              delete enterHooks.delayedLeave;
-            };
-            enterHooks.delayedLeave = delayedLeave;
-          };
-        }
-      }
-      return child;
-    };
-  }
+const BaseTransitionPropsValidators = {
+  mode: String,
+  appear: Boolean,
+  persisted: Boolean,
+  onBeforeEnter: TransitionHookValidator,
+  onEnter: TransitionHookValidator,
+  onAfterEnter: TransitionHookValidator,
+  onEnterCancelled: TransitionHookValidator,
+  onBeforeLeave: TransitionHookValidator,
+  onLeave: TransitionHookValidator,
+  onAfterLeave: TransitionHookValidator,
+  onLeaveCancelled: TransitionHookValidator,
+  onBeforeAppear: TransitionHookValidator,
+  onAppear: TransitionHookValidator,
+  onAfterAppear: TransitionHookValidator,
+  onAppearCancelled: TransitionHookValidator
 };
-const BaseTransition = BaseTransitionImpl;
 function getLeavingNodesForType(state, vnode) {
   const { leavingVNodes } = state;
   let leavingVNodesCache = leavingVNodes.get(vnode.type);
@@ -1924,11 +2011,32 @@ function getLeavingNodesForType(state, vnode) {
   return leavingVNodesCache;
 }
 function resolveTransitionHooks(vnode, props, state, instance) {
-  const { appear, mode, persisted = false, onBeforeEnter, onEnter, onAfterEnter, onEnterCancelled, onBeforeLeave, onLeave, onAfterLeave, onLeaveCancelled, onBeforeAppear, onAppear, onAfterAppear, onAppearCancelled } = props;
+  const {
+    appear,
+    mode,
+    persisted = false,
+    onBeforeEnter,
+    onEnter,
+    onAfterEnter,
+    onEnterCancelled,
+    onBeforeLeave,
+    onLeave,
+    onAfterLeave,
+    onLeaveCancelled,
+    onBeforeAppear,
+    onAppear,
+    onAfterAppear,
+    onAppearCancelled
+  } = props;
   const key = String(vnode.key);
   const leavingVNodesCache = getLeavingNodesForType(state, vnode);
   const callHook2 = (hook, args) => {
-    hook && callWithAsyncErrorHandling(hook, instance, 9, args);
+    hook && callWithAsyncErrorHandling(
+      hook,
+      instance,
+      9,
+      args
+    );
   };
   const callAsyncHook = (hook, args) => {
     const done = args[1];
@@ -1952,12 +2060,14 @@ function resolveTransitionHooks(vnode, props, state, instance) {
           return;
         }
       }
-      if (el._leaveCb) {
-        el._leaveCb(true);
+      if (el[leaveCbKey]) {
+        el[leaveCbKey](
+          true
+        );
       }
       const leavingVNode = leavingVNodesCache[key];
-      if (leavingVNode && isSameVNodeType(vnode, leavingVNode) && leavingVNode.el._leaveCb) {
-        leavingVNode.el._leaveCb();
+      if (leavingVNode && isSameVNodeType(vnode, leavingVNode) && leavingVNode.el[leaveCbKey]) {
+        leavingVNode.el[leaveCbKey]();
       }
       callHook2(hook, [el]);
     },
@@ -1975,7 +2085,7 @@ function resolveTransitionHooks(vnode, props, state, instance) {
         }
       }
       let called = false;
-      const done = el._enterCb = (cancelled) => {
+      const done = el[enterCbKey$1] = (cancelled) => {
         if (called)
           return;
         called = true;
@@ -1987,7 +2097,7 @@ function resolveTransitionHooks(vnode, props, state, instance) {
         if (hooks.delayedLeave) {
           hooks.delayedLeave();
         }
-        el._enterCb = void 0;
+        el[enterCbKey$1] = void 0;
       };
       if (hook) {
         callAsyncHook(hook, [el, done]);
@@ -1997,15 +2107,17 @@ function resolveTransitionHooks(vnode, props, state, instance) {
     },
     leave(el, remove2) {
       const key2 = String(vnode.key);
-      if (el._enterCb) {
-        el._enterCb(true);
+      if (el[enterCbKey$1]) {
+        el[enterCbKey$1](
+          true
+        );
       }
       if (state.isUnmounting) {
         return remove2();
       }
       callHook2(onBeforeLeave, [el]);
       let called = false;
-      const done = el._leaveCb = (cancelled) => {
+      const done = el[leaveCbKey] = (cancelled) => {
         if (called)
           return;
         called = true;
@@ -2015,7 +2127,7 @@ function resolveTransitionHooks(vnode, props, state, instance) {
         } else {
           callHook2(onAfterLeave, [el]);
         }
-        el._leaveCb = void 0;
+        el[leaveCbKey] = void 0;
         if (leavingVNodesCache[key2] === vnode) {
           delete leavingVNodesCache[key2];
         }
@@ -2032,16 +2144,6 @@ function resolveTransitionHooks(vnode, props, state, instance) {
     }
   };
   return hooks;
-}
-function emptyPlaceholder(vnode) {
-  if (isKeepAlive(vnode)) {
-    vnode = cloneVNode(vnode);
-    vnode.children = null;
-    return vnode;
-  }
-}
-function getKeepAliveChild(vnode) {
-  return isKeepAlive(vnode) ? vnode.children ? vnode.children[0] : void 0 : vnode;
 }
 function setTransitionHooks(vnode, hooks) {
   if (vnode.shapeFlag & 6 && vnode.component) {
@@ -2062,7 +2164,9 @@ function getTransitionRawChildren(children, keepComment = false, parentKey) {
     if (child.type === Fragment) {
       if (child.patchFlag & 128)
         keyedFragmentCount++;
-      ret = ret.concat(getTransitionRawChildren(child.children, keepComment, key));
+      ret = ret.concat(
+        getTransitionRawChildren(child.children, keepComment, key)
+      );
     } else if (keepComment || child.type !== Comment) {
       ret.push(key != null ? cloneVNode(child, { key }) : child);
     }
@@ -2074,10 +2178,12 @@ function getTransitionRawChildren(children, keepComment = false, parentKey) {
   }
   return ret;
 }
-function defineComponent(options) {
-  return isFunction(options) ? { setup: options, name: options.name } : options;
+/*! #__NO_SIDE_EFFECTS__ */
+function defineComponent(options, extraOptions) {
+  return isFunction(options) ? /* @__PURE__ */ (() => extend({ name: options.name }, extraOptions, { setup: options }))() : options;
 }
 const isAsyncWrapper = (i) => !!i.type.__asyncLoader;
+/*! #__NO_SIDE_EFFECTS__ */
 function defineAsyncComponent(source) {
   if (isFunction(source)) {
     source = { loader: source };
@@ -2136,7 +2242,12 @@ function defineAsyncComponent(source) {
       }
       const onError = (err) => {
         pendingRequest = null;
-        handleError(err, instance, 13, !errorComponent);
+        handleError(
+          err,
+          instance,
+          13,
+          !errorComponent
+        );
       };
       if (suspensible && instance.suspense || isInSSRComponentSetup) {
         return load().then((comp) => {
@@ -2159,7 +2270,9 @@ function defineAsyncComponent(source) {
       if (timeout != null) {
         setTimeout(() => {
           if (!loaded.value && !error2.value) {
-            const err = new Error(`Async component timed out after ${timeout}ms.`);
+            const err = new Error(
+              `Async component timed out after ${timeout}ms.`
+            );
             onError(err);
             error2.value = err;
           }
@@ -2218,12 +2331,29 @@ const KeepAliveImpl = {
     const keys = /* @__PURE__ */ new Set();
     let current = null;
     const parentSuspense = instance.suspense;
-    const { renderer: { p: patch, m: move, um: _unmount, o: { createElement } } } = sharedContext;
+    const {
+      renderer: {
+        p: patch,
+        m: move,
+        um: _unmount,
+        o: { createElement }
+      }
+    } = sharedContext;
     const storageContainer = createElement("div");
     sharedContext.activate = (vnode, container, anchor, isSVG, optimized) => {
       const instance2 = vnode.component;
       move(vnode, container, anchor, 0, parentSuspense);
-      patch(instance2.vnode, vnode, container, anchor, instance2, parentSuspense, isSVG, vnode.slotScopeIds, optimized);
+      patch(
+        instance2.vnode,
+        vnode,
+        container,
+        anchor,
+        instance2,
+        parentSuspense,
+        isSVG,
+        vnode.slotScopeIds,
+        optimized
+      );
       queuePostRenderEffect(() => {
         instance2.isDeactivated = false;
         if (instance2.a) {
@@ -2316,7 +2446,9 @@ const KeepAliveImpl = {
       }
       let vnode = getInnerChild(rawVNode);
       const comp = vnode.type;
-      const name = getComponentName(isAsyncWrapper(vnode) ? vnode.type.__asyncResolved || {} : comp);
+      const name = getComponentName(
+        isAsyncWrapper(vnode) ? vnode.type.__asyncResolved || {} : comp
+      );
       const { include, exclude, max } = props;
       if (include && (!name || !matches(include, name)) || exclude && name && matches(exclude, name)) {
         current = vnode;
@@ -2392,7 +2524,12 @@ function registerKeepAliveHook(hook, type, target = currentInstance) {
   }
 }
 function injectToKeepAliveRoot(hook, type, target, keepAliveRoot) {
-  const injected = injectHook(type, hook, keepAliveRoot, true);
+  const injected = injectHook(
+    type,
+    hook,
+    keepAliveRoot,
+    true
+  );
   onUnmounted(() => {
     remove(keepAliveRoot[type], injected);
   }, target);
@@ -2434,64 +2571,15 @@ const onUpdated = createHook("u");
 const onBeforeUnmount = createHook("bum");
 const onUnmounted = createHook("um");
 const onServerPrefetch = createHook("sp");
-const onRenderTriggered = createHook("rtg");
-const onRenderTracked = createHook("rtc");
+const onRenderTriggered = createHook(
+  "rtg"
+);
+const onRenderTracked = createHook(
+  "rtc"
+);
 function onErrorCaptured(hook, target = currentInstance) {
   injectHook("ec", hook, target);
 }
-function withDirectives(vnode, directives) {
-  const internalInstance = currentRenderingInstance;
-  if (internalInstance === null) {
-    return vnode;
-  }
-  const instance = getExposeProxy(internalInstance) || internalInstance.proxy;
-  const bindings = vnode.dirs || (vnode.dirs = []);
-  for (let i = 0; i < directives.length; i++) {
-    let [dir, value, arg, modifiers = EMPTY_OBJ] = directives[i];
-    if (dir) {
-      if (isFunction(dir)) {
-        dir = {
-          mounted: dir,
-          updated: dir
-        };
-      }
-      if (dir.deep) {
-        traverse(value);
-      }
-      bindings.push({
-        dir,
-        instance,
-        value,
-        oldValue: void 0,
-        arg,
-        modifiers
-      });
-    }
-  }
-  return vnode;
-}
-function invokeDirectiveHook(vnode, prevVNode, instance, name) {
-  const bindings = vnode.dirs;
-  const oldBindings = prevVNode && prevVNode.dirs;
-  for (let i = 0; i < bindings.length; i++) {
-    const binding = bindings[i];
-    if (oldBindings) {
-      binding.oldValue = oldBindings[i].value;
-    }
-    let hook = binding.dir[name];
-    if (hook) {
-      pauseTracking();
-      callWithAsyncErrorHandling(hook, instance, 8, [
-        vnode.el,
-        binding,
-        vnode,
-        prevVNode
-      ]);
-      resetTracking();
-    }
-  }
-}
-const NULL_DYNAMIC_COMPONENT = Symbol();
 function renderList(source, renderItem, cache, index) {
   let ret;
   const cached = cache && cache[index];
@@ -2507,7 +2595,10 @@ function renderList(source, renderItem, cache, index) {
     }
   } else if (isObject$1(source)) {
     if (source[Symbol.iterator]) {
-      ret = Array.from(source, (item, i) => renderItem(item, i, void 0, cached && cached[i]));
+      ret = Array.from(
+        source,
+        (item, i) => renderItem(item, i, void 0, cached && cached[i])
+      );
     } else {
       const keys = Object.keys(source);
       ret = new Array(keys.length);
@@ -2536,9 +2627,14 @@ function renderSlot(slots, name, props = {}, fallback, noSlotted) {
   }
   openBlock();
   const validSlotContent = slot && ensureValidVNode(slot(props));
-  const rendered = createBlock(Fragment, {
-    key: props.key || validSlotContent && validSlotContent.key || `_${name}`
-  }, validSlotContent || (fallback ? fallback() : []), validSlotContent && slots._ === 1 ? 64 : -2);
+  const rendered = createBlock(
+    Fragment,
+    {
+      key: props.key || validSlotContent && validSlotContent.key || `_${name}`
+    },
+    validSlotContent || (fallback ? fallback() : []),
+    validSlotContent && slots._ === 1 ? 64 : -2
+  );
   if (!noSlotted && rendered.scopeId) {
     rendered.slotScopeIds = [rendered.scopeId + "-s"];
   }
@@ -2654,7 +2750,9 @@ const PublicInstanceProxyHandlers = {
     }
     return true;
   },
-  has({ _: { data, setupState, accessCache, ctx, appContext, propsOptions } }, key) {
+  has({
+    _: { data, setupState, accessCache, ctx, appContext, propsOptions }
+  }, key) {
     let normalizedProps;
     return !!accessCache[key] || data !== EMPTY_OBJ && hasOwn(data, key) || hasSetupBinding(setupState, key) || (normalizedProps = propsOptions[0]) && hasOwn(normalizedProps, key) || hasOwn(ctx, key) || hasOwn(publicPropertiesMap, key) || hasOwn(appContext.config.globalProperties, key);
   },
@@ -2667,6 +2765,12 @@ const PublicInstanceProxyHandlers = {
     return Reflect.defineProperty(target, key, descriptor);
   }
 };
+function normalizePropsOrEmits(props) {
+  return isArray(props) ? props.reduce(
+    (normalized, p2) => (normalized[p2] = null, normalized),
+    {}
+  ) : props;
+}
 let shouldCacheAccess = true;
 function applyOptions(instance) {
   const options = resolveMergedOptions(instance);
@@ -2707,7 +2811,7 @@ function applyOptions(instance) {
   } = options;
   const checkDuplicateProperties = null;
   if (injectOptions) {
-    resolveInjections(injectOptions, ctx, checkDuplicateProperties, instance.appContext.config.unwrapInjectedRef);
+    resolveInjections(injectOptions, ctx, checkDuplicateProperties);
   }
   if (methods) {
     for (const key in methods) {
@@ -2802,7 +2906,7 @@ function applyOptions(instance) {
   if (directives)
     instance.directives = directives;
 }
-function resolveInjections(injectOptions, ctx, checkDuplicateProperties = NOOP, unwrapRef = false) {
+function resolveInjections(injectOptions, ctx, checkDuplicateProperties = NOOP) {
   if (isArray(injectOptions)) {
     injectOptions = normalizeInject(injectOptions);
   }
@@ -2811,7 +2915,11 @@ function resolveInjections(injectOptions, ctx, checkDuplicateProperties = NOOP, 
     let injected;
     if (isObject$1(opt)) {
       if ("default" in opt) {
-        injected = inject(opt.from || key, opt.default, true);
+        injected = inject(
+          opt.from || key,
+          opt.default,
+          true
+        );
       } else {
         injected = inject(opt.from || key);
       }
@@ -2819,23 +2927,23 @@ function resolveInjections(injectOptions, ctx, checkDuplicateProperties = NOOP, 
       injected = inject(opt);
     }
     if (isRef(injected)) {
-      if (unwrapRef) {
-        Object.defineProperty(ctx, key, {
-          enumerable: true,
-          configurable: true,
-          get: () => injected.value,
-          set: (v) => injected.value = v
-        });
-      } else {
-        ctx[key] = injected;
-      }
+      Object.defineProperty(ctx, key, {
+        enumerable: true,
+        configurable: true,
+        get: () => injected.value,
+        set: (v) => injected.value = v
+      });
     } else {
       ctx[key] = injected;
     }
   }
 }
 function callHook$1(hook, instance, type) {
-  callWithAsyncErrorHandling(isArray(hook) ? hook.map((h2) => h2.bind(instance.proxy)) : hook.bind(instance.proxy), instance, type);
+  callWithAsyncErrorHandling(
+    isArray(hook) ? hook.map((h2) => h2.bind(instance.proxy)) : hook.bind(instance.proxy),
+    instance,
+    type
+  );
 }
 function createWatcher(raw, ctx, publicThis, key) {
   const getter = key.includes(".") ? createPathGetter(publicThis, key) : () => publicThis[key];
@@ -2861,7 +2969,11 @@ function createWatcher(raw, ctx, publicThis, key) {
 function resolveMergedOptions(instance) {
   const base = instance.type;
   const { mixins, extends: extendsOptions } = base;
-  const { mixins: globalMixins, optionsCache: cache, config: { optionMergeStrategies } } = instance.appContext;
+  const {
+    mixins: globalMixins,
+    optionsCache: cache,
+    config: { optionMergeStrategies }
+  } = instance.appContext;
   const cached = cache.get(base);
   let resolved;
   if (cached) {
@@ -2873,7 +2985,9 @@ function resolveMergedOptions(instance) {
   } else {
     resolved = {};
     if (globalMixins.length) {
-      globalMixins.forEach((m) => mergeOptions(resolved, m, optionMergeStrategies, true));
+      globalMixins.forEach(
+        (m) => mergeOptions(resolved, m, optionMergeStrategies, true)
+      );
     }
     mergeOptions(resolved, base, optionMergeStrategies);
   }
@@ -2888,7 +3002,9 @@ function mergeOptions(to, from, strats, asMixin = false) {
     mergeOptions(to, extendsOptions, strats, true);
   }
   if (mixins) {
-    mixins.forEach((m) => mergeOptions(to, m, strats, true));
+    mixins.forEach(
+      (m) => mergeOptions(to, m, strats, true)
+    );
   }
   for (const key in from) {
     if (asMixin && key === "expose")
@@ -2902,8 +3018,8 @@ function mergeOptions(to, from, strats, asMixin = false) {
 }
 const internalOptionMergeStrats = {
   data: mergeDataFn,
-  props: mergeObjectOptions,
-  emits: mergeObjectOptions,
+  props: mergeEmitsOrPropsOptions,
+  emits: mergeEmitsOrPropsOptions,
   methods: mergeObjectOptions,
   computed: mergeObjectOptions,
   beforeCreate: mergeAsArray,
@@ -2934,7 +3050,10 @@ function mergeDataFn(to, from) {
     return from;
   }
   return function mergedDataFn() {
-    return extend(isFunction(to) ? to.call(this, this) : to, isFunction(from) ? from.call(this, this) : from);
+    return extend(
+      isFunction(to) ? to.call(this, this) : to,
+      isFunction(from) ? from.call(this, this) : from
+    );
   };
 }
 function mergeInject(to, from) {
@@ -2954,7 +3073,21 @@ function mergeAsArray(to, from) {
   return to ? [...new Set([].concat(to, from))] : from;
 }
 function mergeObjectOptions(to, from) {
-  return to ? extend(extend(/* @__PURE__ */ Object.create(null), to), from) : from;
+  return to ? extend(/* @__PURE__ */ Object.create(null), to, from) : from;
+}
+function mergeEmitsOrPropsOptions(to, from) {
+  if (to) {
+    if (isArray(to) && isArray(from)) {
+      return [.../* @__PURE__ */ new Set([...to, ...from])];
+    }
+    return extend(
+      /* @__PURE__ */ Object.create(null),
+      normalizePropsOrEmits(to),
+      normalizePropsOrEmits(from != null ? from : {})
+    );
+  } else {
+    return from;
+  }
 }
 function mergeWatchOptions(to, from) {
   if (!to)
@@ -2966,6 +3099,149 @@ function mergeWatchOptions(to, from) {
     merged[key] = mergeAsArray(to[key], from[key]);
   }
   return merged;
+}
+function createAppContext() {
+  return {
+    app: null,
+    config: {
+      isNativeTag: NO,
+      performance: false,
+      globalProperties: {},
+      optionMergeStrategies: {},
+      errorHandler: void 0,
+      warnHandler: void 0,
+      compilerOptions: {}
+    },
+    mixins: [],
+    components: {},
+    directives: {},
+    provides: /* @__PURE__ */ Object.create(null),
+    optionsCache: /* @__PURE__ */ new WeakMap(),
+    propsCache: /* @__PURE__ */ new WeakMap(),
+    emitsCache: /* @__PURE__ */ new WeakMap()
+  };
+}
+let uid$1 = 0;
+function createAppAPI(render, hydrate) {
+  return function createApp2(rootComponent, rootProps = null) {
+    if (!isFunction(rootComponent)) {
+      rootComponent = extend({}, rootComponent);
+    }
+    if (rootProps != null && !isObject$1(rootProps)) {
+      rootProps = null;
+    }
+    const context = createAppContext();
+    const installedPlugins = /* @__PURE__ */ new WeakSet();
+    let isMounted = false;
+    const app = context.app = {
+      _uid: uid$1++,
+      _component: rootComponent,
+      _props: rootProps,
+      _container: null,
+      _context: context,
+      _instance: null,
+      version,
+      get config() {
+        return context.config;
+      },
+      set config(v) {
+      },
+      use(plugin, ...options) {
+        if (installedPlugins.has(plugin))
+          ;
+        else if (plugin && isFunction(plugin.install)) {
+          installedPlugins.add(plugin);
+          plugin.install(app, ...options);
+        } else if (isFunction(plugin)) {
+          installedPlugins.add(plugin);
+          plugin(app, ...options);
+        } else
+          ;
+        return app;
+      },
+      mixin(mixin) {
+        {
+          if (!context.mixins.includes(mixin)) {
+            context.mixins.push(mixin);
+          }
+        }
+        return app;
+      },
+      component(name, component) {
+        if (!component) {
+          return context.components[name];
+        }
+        context.components[name] = component;
+        return app;
+      },
+      directive(name, directive) {
+        if (!directive) {
+          return context.directives[name];
+        }
+        context.directives[name] = directive;
+        return app;
+      },
+      mount(rootContainer, isHydrate, isSVG) {
+        if (!isMounted) {
+          const vnode = createVNode(rootComponent, rootProps);
+          vnode.appContext = context;
+          if (isHydrate && hydrate) {
+            hydrate(vnode, rootContainer);
+          } else {
+            render(vnode, rootContainer, isSVG);
+          }
+          isMounted = true;
+          app._container = rootContainer;
+          rootContainer.__vue_app__ = app;
+          return getExposeProxy(vnode.component) || vnode.component.proxy;
+        }
+      },
+      unmount() {
+        if (isMounted) {
+          render(null, app._container);
+          delete app._container.__vue_app__;
+        }
+      },
+      provide(key, value) {
+        context.provides[key] = value;
+        return app;
+      },
+      runWithContext(fn) {
+        currentApp = app;
+        try {
+          return fn();
+        } finally {
+          currentApp = null;
+        }
+      }
+    };
+    return app;
+  };
+}
+let currentApp = null;
+function provide(key, value) {
+  if (!currentInstance)
+    ;
+  else {
+    let provides = currentInstance.provides;
+    const parentProvides = currentInstance.parent && currentInstance.parent.provides;
+    if (parentProvides === provides) {
+      provides = currentInstance.provides = Object.create(parentProvides);
+    }
+    provides[key] = value;
+  }
+}
+function inject(key, defaultValue, treatDefaultAsFactory = false) {
+  const instance = currentInstance || currentRenderingInstance;
+  if (instance || currentApp) {
+    const provides = instance ? instance.parent == null ? instance.vnode.appContext && instance.vnode.appContext.provides : instance.parent.provides : currentApp._context.provides;
+    if (provides && key in provides) {
+      return provides[key];
+    } else if (arguments.length > 1) {
+      return treatDefaultAsFactory && isFunction(defaultValue) ? defaultValue.call(instance && instance.proxy) : defaultValue;
+    } else
+      ;
+  }
 }
 function initProps(instance, rawProps, isStateful, isSSR = false) {
   const props = {};
@@ -2990,7 +3266,11 @@ function initProps(instance, rawProps, isStateful, isSSR = false) {
   instance.attrs = attrs;
 }
 function updateProps(instance, rawProps, rawPrevProps, optimized) {
-  const { props, attrs, vnode: { patchFlag } } = instance;
+  const {
+    props,
+    attrs,
+    vnode: { patchFlag }
+  } = instance;
   const rawCurrentProps = toRaw(props);
   const [options] = instance.propsOptions;
   let hasAttrsChanged = false;
@@ -3011,7 +3291,14 @@ function updateProps(instance, rawProps, rawPrevProps, optimized) {
             }
           } else {
             const camelizedKey = camelize(key);
-            props[camelizedKey] = resolvePropValue(options, rawCurrentProps, camelizedKey, value, instance, false);
+            props[camelizedKey] = resolvePropValue(
+              options,
+              rawCurrentProps,
+              camelizedKey,
+              value,
+              instance,
+              false
+            );
           }
         } else {
           if (value !== attrs[key]) {
@@ -3030,7 +3317,14 @@ function updateProps(instance, rawProps, rawPrevProps, optimized) {
       if (!rawProps || !hasOwn(rawProps, key) && ((kebabKey = hyphenate(key)) === key || !hasOwn(rawProps, kebabKey))) {
         if (options) {
           if (rawPrevProps && (rawPrevProps[key] !== void 0 || rawPrevProps[kebabKey] !== void 0)) {
-            props[key] = resolvePropValue(options, rawCurrentProps, key, void 0, instance, true);
+            props[key] = resolvePropValue(
+              options,
+              rawCurrentProps,
+              key,
+              void 0,
+              instance,
+              true
+            );
           }
         } else {
           delete props[key];
@@ -3080,7 +3374,14 @@ function setFullProps(instance, rawProps, props, attrs) {
     const castValues = rawCastValues || EMPTY_OBJ;
     for (let i = 0; i < needCastKeys.length; i++) {
       const key = needCastKeys[i];
-      props[key] = resolvePropValue(options, rawCurrentProps, key, castValues[key], instance, !hasOwn(castValues, key));
+      props[key] = resolvePropValue(
+        options,
+        rawCurrentProps,
+        key,
+        castValues[key],
+        instance,
+        !hasOwn(castValues, key)
+      );
     }
   }
   return hasAttrsChanged;
@@ -3091,13 +3392,16 @@ function resolvePropValue(options, props, key, value, instance, isAbsent) {
     const hasDefault = hasOwn(opt, "default");
     if (hasDefault && value === void 0) {
       const defaultValue = opt.default;
-      if (opt.type !== Function && isFunction(defaultValue)) {
+      if (opt.type !== Function && !opt.skipFactory && isFunction(defaultValue)) {
         const { propsDefaults } = instance;
         if (key in propsDefaults) {
           value = propsDefaults[key];
         } else {
           setCurrentInstance(instance);
-          value = propsDefaults[key] = defaultValue.call(null, props);
+          value = propsDefaults[key] = defaultValue.call(
+            null,
+            props
+          );
           unsetCurrentInstance();
         }
       } else {
@@ -3160,7 +3464,7 @@ function normalizePropsOptions(comp, appContext, asMixin = false) {
       const normalizedKey = camelize(key);
       if (validatePropName(normalizedKey)) {
         const opt = raw[key];
-        const prop = normalized[normalizedKey] = isArray(opt) || isFunction(opt) ? { type: opt } : Object.assign({}, opt);
+        const prop = normalized[normalizedKey] = isArray(opt) || isFunction(opt) ? { type: opt } : extend({}, opt);
         if (prop) {
           const booleanIndex = getTypeIndex(Boolean, prop.type);
           const stringIndex = getTypeIndex(String, prop.type);
@@ -3239,7 +3543,10 @@ const initSlots = (instance, children) => {
       instance.slots = toRaw(children);
       def(children, "_", type);
     } else {
-      normalizeObjectSlots(children, instance.slots = {});
+      normalizeObjectSlots(
+        children,
+        instance.slots = {}
+      );
     }
   } else {
     instance.slots = {};
@@ -3275,125 +3582,23 @@ const updateSlots = (instance, children, optimized) => {
   }
   if (needDeletionCheck) {
     for (const key in slots) {
-      if (!isInternalKey(key) && !(key in deletionComparisonTarget)) {
+      if (!isInternalKey(key) && deletionComparisonTarget[key] == null) {
         delete slots[key];
       }
     }
   }
 };
-function createAppContext() {
-  return {
-    app: null,
-    config: {
-      isNativeTag: NO,
-      performance: false,
-      globalProperties: {},
-      optionMergeStrategies: {},
-      errorHandler: void 0,
-      warnHandler: void 0,
-      compilerOptions: {}
-    },
-    mixins: [],
-    components: {},
-    directives: {},
-    provides: /* @__PURE__ */ Object.create(null),
-    optionsCache: /* @__PURE__ */ new WeakMap(),
-    propsCache: /* @__PURE__ */ new WeakMap(),
-    emitsCache: /* @__PURE__ */ new WeakMap()
-  };
-}
-let uid$1 = 0;
-function createAppAPI(render, hydrate) {
-  return function createApp2(rootComponent, rootProps = null) {
-    if (!isFunction(rootComponent)) {
-      rootComponent = Object.assign({}, rootComponent);
-    }
-    if (rootProps != null && !isObject$1(rootProps)) {
-      rootProps = null;
-    }
-    const context = createAppContext();
-    const installedPlugins = /* @__PURE__ */ new Set();
-    let isMounted = false;
-    const app = context.app = {
-      _uid: uid$1++,
-      _component: rootComponent,
-      _props: rootProps,
-      _container: null,
-      _context: context,
-      _instance: null,
-      version,
-      get config() {
-        return context.config;
-      },
-      set config(v) {
-      },
-      use(plugin, ...options) {
-        if (installedPlugins.has(plugin))
-          ;
-        else if (plugin && isFunction(plugin.install)) {
-          installedPlugins.add(plugin);
-          plugin.install(app, ...options);
-        } else if (isFunction(plugin)) {
-          installedPlugins.add(plugin);
-          plugin(app, ...options);
-        } else
-          ;
-        return app;
-      },
-      mixin(mixin) {
-        {
-          if (!context.mixins.includes(mixin)) {
-            context.mixins.push(mixin);
-          }
-        }
-        return app;
-      },
-      component(name, component) {
-        if (!component) {
-          return context.components[name];
-        }
-        context.components[name] = component;
-        return app;
-      },
-      directive(name, directive) {
-        if (!directive) {
-          return context.directives[name];
-        }
-        context.directives[name] = directive;
-        return app;
-      },
-      mount(rootContainer, isHydrate, isSVG) {
-        if (!isMounted) {
-          const vnode = createVNode(rootComponent, rootProps);
-          vnode.appContext = context;
-          if (isHydrate && hydrate) {
-            hydrate(vnode, rootContainer);
-          } else {
-            render(vnode, rootContainer, isSVG);
-          }
-          isMounted = true;
-          app._container = rootContainer;
-          rootContainer.__vue_app__ = app;
-          return getExposeProxy(vnode.component) || vnode.component.proxy;
-        }
-      },
-      unmount() {
-        if (isMounted) {
-          render(null, app._container);
-          delete app._container.__vue_app__;
-        }
-      },
-      provide(key, value) {
-        context.provides[key] = value;
-        return app;
-      }
-    };
-    return app;
-  };
-}
 function setRef(rawRef, oldRawRef, parentSuspense, vnode, isUnmount = false) {
   if (isArray(rawRef)) {
-    rawRef.forEach((r, i) => setRef(r, oldRawRef && (isArray(oldRawRef) ? oldRawRef[i] : oldRawRef), parentSuspense, vnode, isUnmount));
+    rawRef.forEach(
+      (r, i) => setRef(
+        r,
+        oldRawRef && (isArray(oldRawRef) ? oldRawRef[i] : oldRawRef),
+        parentSuspense,
+        vnode,
+        isUnmount
+      )
+    );
     return;
   }
   if (isAsyncWrapper(vnode) && !isUnmount) {
@@ -3470,7 +3675,20 @@ function createRenderer(options) {
 function baseCreateRenderer(options, createHydrationFns) {
   const target = getGlobalThis();
   target.__VUE__ = true;
-  const { insert: hostInsert, remove: hostRemove, patchProp: hostPatchProp, createElement: hostCreateElement, createText: hostCreateText, createComment: hostCreateComment, setText: hostSetText, setElementText: hostSetElementText, parentNode: hostParentNode, nextSibling: hostNextSibling, setScopeId: hostSetScopeId = NOOP, insertStaticContent: hostInsertStaticContent } = options;
+  const {
+    insert: hostInsert,
+    remove: hostRemove,
+    patchProp: hostPatchProp,
+    createElement: hostCreateElement,
+    createText: hostCreateText,
+    createComment: hostCreateComment,
+    setText: hostSetText,
+    setElementText: hostSetElementText,
+    parentNode: hostParentNode,
+    nextSibling: hostNextSibling,
+    setScopeId: hostSetScopeId = NOOP,
+    insertStaticContent: hostInsertStaticContent
+  } = options;
   const patch = (n1, n2, container, anchor = null, parentComponent = null, parentSuspense = null, isSVG = false, slotScopeIds = null, optimized = !!n2.dynamicChildren) => {
     if (n1 === n2) {
       return;
@@ -3498,17 +3716,69 @@ function baseCreateRenderer(options, createHydrationFns) {
         }
         break;
       case Fragment:
-        processFragment(n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+        processFragment(
+          n1,
+          n2,
+          container,
+          anchor,
+          parentComponent,
+          parentSuspense,
+          isSVG,
+          slotScopeIds,
+          optimized
+        );
         break;
       default:
         if (shapeFlag & 1) {
-          processElement(n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+          processElement(
+            n1,
+            n2,
+            container,
+            anchor,
+            parentComponent,
+            parentSuspense,
+            isSVG,
+            slotScopeIds,
+            optimized
+          );
         } else if (shapeFlag & 6) {
-          processComponent(n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+          processComponent(
+            n1,
+            n2,
+            container,
+            anchor,
+            parentComponent,
+            parentSuspense,
+            isSVG,
+            slotScopeIds,
+            optimized
+          );
         } else if (shapeFlag & 64) {
-          type.process(n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized, internals);
+          type.process(
+            n1,
+            n2,
+            container,
+            anchor,
+            parentComponent,
+            parentSuspense,
+            isSVG,
+            slotScopeIds,
+            optimized,
+            internals
+          );
         } else if (shapeFlag & 128) {
-          type.process(n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized, internals);
+          type.process(
+            n1,
+            n2,
+            container,
+            anchor,
+            parentComponent,
+            parentSuspense,
+            isSVG,
+            slotScopeIds,
+            optimized,
+            internals
+          );
         } else
           ;
     }
@@ -3518,7 +3788,11 @@ function baseCreateRenderer(options, createHydrationFns) {
   };
   const processText = (n1, n2, container, anchor) => {
     if (n1 == null) {
-      hostInsert(n2.el = hostCreateText(n2.children), container, anchor);
+      hostInsert(
+        n2.el = hostCreateText(n2.children),
+        container,
+        anchor
+      );
     } else {
       const el = n2.el = n1.el;
       if (n2.children !== n1.children) {
@@ -3528,13 +3802,24 @@ function baseCreateRenderer(options, createHydrationFns) {
   };
   const processCommentNode = (n1, n2, container, anchor) => {
     if (n1 == null) {
-      hostInsert(n2.el = hostCreateComment(n2.children || ""), container, anchor);
+      hostInsert(
+        n2.el = hostCreateComment(n2.children || ""),
+        container,
+        anchor
+      );
     } else {
       n2.el = n1.el;
     }
   };
   const mountStaticNode = (n2, container, anchor, isSVG) => {
-    [n2.el, n2.anchor] = hostInsertStaticContent(n2.children, container, anchor, isSVG, n2.el, n2.anchor);
+    [n2.el, n2.anchor] = hostInsertStaticContent(
+      n2.children,
+      container,
+      anchor,
+      isSVG,
+      n2.el,
+      n2.anchor
+    );
   };
   const moveStaticNode = ({ el, anchor }, container, nextSibling) => {
     let next;
@@ -3557,20 +3842,51 @@ function baseCreateRenderer(options, createHydrationFns) {
   const processElement = (n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized) => {
     isSVG = isSVG || n2.type === "svg";
     if (n1 == null) {
-      mountElement(n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+      mountElement(
+        n2,
+        container,
+        anchor,
+        parentComponent,
+        parentSuspense,
+        isSVG,
+        slotScopeIds,
+        optimized
+      );
     } else {
-      patchElement(n1, n2, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+      patchElement(
+        n1,
+        n2,
+        parentComponent,
+        parentSuspense,
+        isSVG,
+        slotScopeIds,
+        optimized
+      );
     }
   };
   const mountElement = (vnode, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized) => {
     let el;
     let vnodeHook;
     const { type, props, shapeFlag, transition, dirs } = vnode;
-    el = vnode.el = hostCreateElement(vnode.type, isSVG, props && props.is, props);
+    el = vnode.el = hostCreateElement(
+      vnode.type,
+      isSVG,
+      props && props.is,
+      props
+    );
     if (shapeFlag & 8) {
       hostSetElementText(el, vnode.children);
     } else if (shapeFlag & 16) {
-      mountChildren(vnode.children, el, null, parentComponent, parentSuspense, isSVG && type !== "foreignObject", slotScopeIds, optimized);
+      mountChildren(
+        vnode.children,
+        el,
+        null,
+        parentComponent,
+        parentSuspense,
+        isSVG && type !== "foreignObject",
+        slotScopeIds,
+        optimized
+      );
     }
     if (dirs) {
       invokeDirectiveHook(vnode, null, parentComponent, "created");
@@ -3579,7 +3895,17 @@ function baseCreateRenderer(options, createHydrationFns) {
     if (props) {
       for (const key in props) {
         if (key !== "value" && !isReservedProp(key)) {
-          hostPatchProp(el, key, null, props[key], isSVG, vnode.children, parentComponent, parentSuspense, unmountChildren);
+          hostPatchProp(
+            el,
+            key,
+            null,
+            props[key],
+            isSVG,
+            vnode.children,
+            parentComponent,
+            parentSuspense,
+            unmountChildren
+          );
         }
       }
       if ("value" in props) {
@@ -3592,7 +3918,7 @@ function baseCreateRenderer(options, createHydrationFns) {
     if (dirs) {
       invokeDirectiveHook(vnode, null, parentComponent, "beforeMount");
     }
-    const needCallTransitionHooks = (!parentSuspense || parentSuspense && !parentSuspense.pendingBranch) && transition && !transition.persisted;
+    const needCallTransitionHooks = needTransition(parentSuspense, transition);
     if (needCallTransitionHooks) {
       transition.beforeEnter(el);
     }
@@ -3618,14 +3944,30 @@ function baseCreateRenderer(options, createHydrationFns) {
       let subTree = parentComponent.subTree;
       if (vnode === subTree) {
         const parentVNode = parentComponent.vnode;
-        setScopeId(el, parentVNode, parentVNode.scopeId, parentVNode.slotScopeIds, parentComponent.parent);
+        setScopeId(
+          el,
+          parentVNode,
+          parentVNode.scopeId,
+          parentVNode.slotScopeIds,
+          parentComponent.parent
+        );
       }
     }
   };
   const mountChildren = (children, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized, start = 0) => {
     for (let i = start; i < children.length; i++) {
       const child = children[i] = optimized ? cloneIfMounted(children[i]) : normalizeVNode(children[i]);
-      patch(null, child, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+      patch(
+        null,
+        child,
+        container,
+        anchor,
+        parentComponent,
+        parentSuspense,
+        isSVG,
+        slotScopeIds,
+        optimized
+      );
     }
   };
   const patchElement = (n1, n2, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized) => {
@@ -3645,13 +3987,39 @@ function baseCreateRenderer(options, createHydrationFns) {
     parentComponent && toggleRecurse(parentComponent, true);
     const areChildrenSVG = isSVG && n2.type !== "foreignObject";
     if (dynamicChildren) {
-      patchBlockChildren(n1.dynamicChildren, dynamicChildren, el, parentComponent, parentSuspense, areChildrenSVG, slotScopeIds);
+      patchBlockChildren(
+        n1.dynamicChildren,
+        dynamicChildren,
+        el,
+        parentComponent,
+        parentSuspense,
+        areChildrenSVG,
+        slotScopeIds
+      );
     } else if (!optimized) {
-      patchChildren(n1, n2, el, null, parentComponent, parentSuspense, areChildrenSVG, slotScopeIds, false);
+      patchChildren(
+        n1,
+        n2,
+        el,
+        null,
+        parentComponent,
+        parentSuspense,
+        areChildrenSVG,
+        slotScopeIds,
+        false
+      );
     }
     if (patchFlag > 0) {
       if (patchFlag & 16) {
-        patchProps(el, n2, oldProps, newProps, parentComponent, parentSuspense, isSVG);
+        patchProps(
+          el,
+          n2,
+          oldProps,
+          newProps,
+          parentComponent,
+          parentSuspense,
+          isSVG
+        );
       } else {
         if (patchFlag & 2) {
           if (oldProps.class !== newProps.class) {
@@ -3668,7 +4036,17 @@ function baseCreateRenderer(options, createHydrationFns) {
             const prev = oldProps[key];
             const next = newProps[key];
             if (next !== prev || key === "value") {
-              hostPatchProp(el, key, prev, next, isSVG, n1.children, parentComponent, parentSuspense, unmountChildren);
+              hostPatchProp(
+                el,
+                key,
+                prev,
+                next,
+                isSVG,
+                n1.children,
+                parentComponent,
+                parentSuspense,
+                unmountChildren
+              );
             }
           }
         }
@@ -3679,7 +4057,15 @@ function baseCreateRenderer(options, createHydrationFns) {
         }
       }
     } else if (!optimized && dynamicChildren == null) {
-      patchProps(el, n2, oldProps, newProps, parentComponent, parentSuspense, isSVG);
+      patchProps(
+        el,
+        n2,
+        oldProps,
+        newProps,
+        parentComponent,
+        parentSuspense,
+        isSVG
+      );
     }
     if ((vnodeHook = newProps.onVnodeUpdated) || dirs) {
       queuePostRenderEffect(() => {
@@ -3693,7 +4079,17 @@ function baseCreateRenderer(options, createHydrationFns) {
       const oldVNode = oldChildren[i];
       const newVNode = newChildren[i];
       const container = oldVNode.el && (oldVNode.type === Fragment || !isSameVNodeType(oldVNode, newVNode) || oldVNode.shapeFlag & (6 | 64)) ? hostParentNode(oldVNode.el) : fallbackContainer;
-      patch(oldVNode, newVNode, container, null, parentComponent, parentSuspense, isSVG, slotScopeIds, true);
+      patch(
+        oldVNode,
+        newVNode,
+        container,
+        null,
+        parentComponent,
+        parentSuspense,
+        isSVG,
+        slotScopeIds,
+        true
+      );
     }
   };
   const patchProps = (el, vnode, oldProps, newProps, parentComponent, parentSuspense, isSVG) => {
@@ -3701,7 +4097,17 @@ function baseCreateRenderer(options, createHydrationFns) {
       if (oldProps !== EMPTY_OBJ) {
         for (const key in oldProps) {
           if (!isReservedProp(key) && !(key in newProps)) {
-            hostPatchProp(el, key, oldProps[key], null, isSVG, vnode.children, parentComponent, parentSuspense, unmountChildren);
+            hostPatchProp(
+              el,
+              key,
+              oldProps[key],
+              null,
+              isSVG,
+              vnode.children,
+              parentComponent,
+              parentSuspense,
+              unmountChildren
+            );
           }
         }
       }
@@ -3711,7 +4117,17 @@ function baseCreateRenderer(options, createHydrationFns) {
         const next = newProps[key];
         const prev = oldProps[key];
         if (next !== prev && key !== "value") {
-          hostPatchProp(el, key, prev, next, isSVG, vnode.children, parentComponent, parentSuspense, unmountChildren);
+          hostPatchProp(
+            el,
+            key,
+            prev,
+            next,
+            isSVG,
+            vnode.children,
+            parentComponent,
+            parentSuspense,
+            unmountChildren
+          );
         }
       }
       if ("value" in newProps) {
@@ -3729,15 +4145,46 @@ function baseCreateRenderer(options, createHydrationFns) {
     if (n1 == null) {
       hostInsert(fragmentStartAnchor, container, anchor);
       hostInsert(fragmentEndAnchor, container, anchor);
-      mountChildren(n2.children, container, fragmentEndAnchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+      mountChildren(
+        n2.children,
+        container,
+        fragmentEndAnchor,
+        parentComponent,
+        parentSuspense,
+        isSVG,
+        slotScopeIds,
+        optimized
+      );
     } else {
       if (patchFlag > 0 && patchFlag & 64 && dynamicChildren && n1.dynamicChildren) {
-        patchBlockChildren(n1.dynamicChildren, dynamicChildren, container, parentComponent, parentSuspense, isSVG, slotScopeIds);
+        patchBlockChildren(
+          n1.dynamicChildren,
+          dynamicChildren,
+          container,
+          parentComponent,
+          parentSuspense,
+          isSVG,
+          slotScopeIds
+        );
         if (n2.key != null || parentComponent && n2 === parentComponent.subTree) {
-          traverseStaticChildren(n1, n2, true);
+          traverseStaticChildren(
+            n1,
+            n2,
+            true
+          );
         }
       } else {
-        patchChildren(n1, n2, container, fragmentEndAnchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+        patchChildren(
+          n1,
+          n2,
+          container,
+          fragmentEndAnchor,
+          parentComponent,
+          parentSuspense,
+          isSVG,
+          slotScopeIds,
+          optimized
+        );
       }
     }
   };
@@ -3745,16 +4192,34 @@ function baseCreateRenderer(options, createHydrationFns) {
     n2.slotScopeIds = slotScopeIds;
     if (n1 == null) {
       if (n2.shapeFlag & 512) {
-        parentComponent.ctx.activate(n2, container, anchor, isSVG, optimized);
+        parentComponent.ctx.activate(
+          n2,
+          container,
+          anchor,
+          isSVG,
+          optimized
+        );
       } else {
-        mountComponent(n2, container, anchor, parentComponent, parentSuspense, isSVG, optimized);
+        mountComponent(
+          n2,
+          container,
+          anchor,
+          parentComponent,
+          parentSuspense,
+          isSVG,
+          optimized
+        );
       }
     } else {
       updateComponent(n1, n2, optimized);
     }
   };
   const mountComponent = (initialVNode, container, anchor, parentComponent, parentSuspense, isSVG, optimized) => {
-    const instance = initialVNode.component = createComponentInstance(initialVNode, parentComponent, parentSuspense);
+    const instance = initialVNode.component = createComponentInstance(
+      initialVNode,
+      parentComponent,
+      parentSuspense
+    );
     if (isKeepAlive(initialVNode)) {
       instance.ctx.renderer = internals;
     }
@@ -3769,7 +4234,15 @@ function baseCreateRenderer(options, createHydrationFns) {
       }
       return;
     }
-    setupRenderEffect(instance, initialVNode, container, anchor, parentSuspense, isSVG, optimized);
+    setupRenderEffect(
+      instance,
+      initialVNode,
+      container,
+      anchor,
+      parentSuspense,
+      isSVG,
+      optimized
+    );
   };
   const updateComponent = (n1, n2, optimized) => {
     const instance = n2.component = n1.component;
@@ -3805,7 +4278,13 @@ function baseCreateRenderer(options, createHydrationFns) {
         if (el && hydrateNode) {
           const hydrateSubTree = () => {
             instance.subTree = renderComponentRoot(instance);
-            hydrateNode(el, instance.subTree, instance, parentSuspense, null);
+            hydrateNode(
+              el,
+              instance.subTree,
+              instance,
+              parentSuspense,
+              null
+            );
           };
           if (isAsyncWrapperVNode) {
             initialVNode.type.__asyncLoader().then(
@@ -3816,7 +4295,15 @@ function baseCreateRenderer(options, createHydrationFns) {
           }
         } else {
           const subTree = instance.subTree = renderComponentRoot(instance);
-          patch(null, subTree, container, anchor, instance, parentSuspense, isSVG);
+          patch(
+            null,
+            subTree,
+            container,
+            anchor,
+            instance,
+            parentSuspense,
+            isSVG
+          );
           initialVNode.el = subTree.el;
         }
         if (m) {
@@ -3824,7 +4311,10 @@ function baseCreateRenderer(options, createHydrationFns) {
         }
         if (!isAsyncWrapperVNode && (vnodeHook = props && props.onVnodeMounted)) {
           const scopedInitialVNode = initialVNode;
-          queuePostRenderEffect(() => invokeVNodeHook(vnodeHook, parent, scopedInitialVNode), parentSuspense);
+          queuePostRenderEffect(
+            () => invokeVNodeHook(vnodeHook, parent, scopedInitialVNode),
+            parentSuspense
+          );
         }
         if (initialVNode.shapeFlag & 256 || parent && isAsyncWrapper(parent.vnode) && parent.vnode.shapeFlag & 256) {
           instance.a && queuePostRenderEffect(instance.a, parentSuspense);
@@ -3869,7 +4359,10 @@ function baseCreateRenderer(options, createHydrationFns) {
           queuePostRenderEffect(u, parentSuspense);
         }
         if (vnodeHook = next.props && next.props.onVnodeUpdated) {
-          queuePostRenderEffect(() => invokeVNodeHook(vnodeHook, parent, next, vnode), parentSuspense);
+          queuePostRenderEffect(
+            () => invokeVNodeHook(vnodeHook, parent, next, vnode),
+            parentSuspense
+          );
         }
       }
     };
@@ -3901,10 +4394,30 @@ function baseCreateRenderer(options, createHydrationFns) {
     const { patchFlag, shapeFlag } = n2;
     if (patchFlag > 0) {
       if (patchFlag & 128) {
-        patchKeyedChildren(c1, c2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+        patchKeyedChildren(
+          c1,
+          c2,
+          container,
+          anchor,
+          parentComponent,
+          parentSuspense,
+          isSVG,
+          slotScopeIds,
+          optimized
+        );
         return;
       } else if (patchFlag & 256) {
-        patchUnkeyedChildren(c1, c2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+        patchUnkeyedChildren(
+          c1,
+          c2,
+          container,
+          anchor,
+          parentComponent,
+          parentSuspense,
+          isSVG,
+          slotScopeIds,
+          optimized
+        );
         return;
       }
     }
@@ -3918,7 +4431,17 @@ function baseCreateRenderer(options, createHydrationFns) {
     } else {
       if (prevShapeFlag & 16) {
         if (shapeFlag & 16) {
-          patchKeyedChildren(c1, c2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+          patchKeyedChildren(
+            c1,
+            c2,
+            container,
+            anchor,
+            parentComponent,
+            parentSuspense,
+            isSVG,
+            slotScopeIds,
+            optimized
+          );
         } else {
           unmountChildren(c1, parentComponent, parentSuspense, true);
         }
@@ -3927,7 +4450,16 @@ function baseCreateRenderer(options, createHydrationFns) {
           hostSetElementText(container, "");
         }
         if (shapeFlag & 16) {
-          mountChildren(c2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+          mountChildren(
+            c2,
+            container,
+            anchor,
+            parentComponent,
+            parentSuspense,
+            isSVG,
+            slotScopeIds,
+            optimized
+          );
         }
       }
     }
@@ -3941,12 +4473,39 @@ function baseCreateRenderer(options, createHydrationFns) {
     let i;
     for (i = 0; i < commonLength; i++) {
       const nextChild = c2[i] = optimized ? cloneIfMounted(c2[i]) : normalizeVNode(c2[i]);
-      patch(c1[i], nextChild, container, null, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+      patch(
+        c1[i],
+        nextChild,
+        container,
+        null,
+        parentComponent,
+        parentSuspense,
+        isSVG,
+        slotScopeIds,
+        optimized
+      );
     }
     if (oldLength > newLength) {
-      unmountChildren(c1, parentComponent, parentSuspense, true, false, commonLength);
+      unmountChildren(
+        c1,
+        parentComponent,
+        parentSuspense,
+        true,
+        false,
+        commonLength
+      );
     } else {
-      mountChildren(c2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized, commonLength);
+      mountChildren(
+        c2,
+        container,
+        anchor,
+        parentComponent,
+        parentSuspense,
+        isSVG,
+        slotScopeIds,
+        optimized,
+        commonLength
+      );
     }
   };
   const patchKeyedChildren = (c1, c2, container, parentAnchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized) => {
@@ -3958,7 +4517,17 @@ function baseCreateRenderer(options, createHydrationFns) {
       const n1 = c1[i];
       const n2 = c2[i] = optimized ? cloneIfMounted(c2[i]) : normalizeVNode(c2[i]);
       if (isSameVNodeType(n1, n2)) {
-        patch(n1, n2, container, null, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+        patch(
+          n1,
+          n2,
+          container,
+          null,
+          parentComponent,
+          parentSuspense,
+          isSVG,
+          slotScopeIds,
+          optimized
+        );
       } else {
         break;
       }
@@ -3968,7 +4537,17 @@ function baseCreateRenderer(options, createHydrationFns) {
       const n1 = c1[e1];
       const n2 = c2[e2] = optimized ? cloneIfMounted(c2[e2]) : normalizeVNode(c2[e2]);
       if (isSameVNodeType(n1, n2)) {
-        patch(n1, n2, container, null, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+        patch(
+          n1,
+          n2,
+          container,
+          null,
+          parentComponent,
+          parentSuspense,
+          isSVG,
+          slotScopeIds,
+          optimized
+        );
       } else {
         break;
       }
@@ -3980,7 +4559,17 @@ function baseCreateRenderer(options, createHydrationFns) {
         const nextPos = e2 + 1;
         const anchor = nextPos < l2 ? c2[nextPos].el : parentAnchor;
         while (i <= e2) {
-          patch(null, c2[i] = optimized ? cloneIfMounted(c2[i]) : normalizeVNode(c2[i]), container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+          patch(
+            null,
+            c2[i] = optimized ? cloneIfMounted(c2[i]) : normalizeVNode(c2[i]),
+            container,
+            anchor,
+            parentComponent,
+            parentSuspense,
+            isSVG,
+            slotScopeIds,
+            optimized
+          );
           i++;
         }
       }
@@ -4033,7 +4622,17 @@ function baseCreateRenderer(options, createHydrationFns) {
           } else {
             moved = true;
           }
-          patch(prevChild, c2[newIndex], container, null, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+          patch(
+            prevChild,
+            c2[newIndex],
+            container,
+            null,
+            parentComponent,
+            parentSuspense,
+            isSVG,
+            slotScopeIds,
+            optimized
+          );
           patched++;
         }
       }
@@ -4044,7 +4643,17 @@ function baseCreateRenderer(options, createHydrationFns) {
         const nextChild = c2[nextIndex];
         const anchor = nextIndex + 1 < l2 ? c2[nextIndex + 1].el : parentAnchor;
         if (newIndexToOldIndexMap[i] === 0) {
-          patch(null, nextChild, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+          patch(
+            null,
+            nextChild,
+            container,
+            anchor,
+            parentComponent,
+            parentSuspense,
+            isSVG,
+            slotScopeIds,
+            optimized
+          );
         } else if (moved) {
           if (j < 0 || i !== increasingNewIndexSequence[j]) {
             move(nextChild, container, anchor, 2);
@@ -4081,23 +4690,23 @@ function baseCreateRenderer(options, createHydrationFns) {
       moveStaticNode(vnode, container, anchor);
       return;
     }
-    const needTransition = moveType !== 2 && shapeFlag & 1 && transition;
-    if (needTransition) {
+    const needTransition2 = moveType !== 2 && shapeFlag & 1 && transition;
+    if (needTransition2) {
       if (moveType === 0) {
         transition.beforeEnter(el);
         hostInsert(el, container, anchor);
         queuePostRenderEffect(() => transition.enter(el), parentSuspense);
       } else {
         const { leave, delayLeave, afterLeave } = transition;
-        const remove3 = () => hostInsert(el, container, anchor);
+        const remove22 = () => hostInsert(el, container, anchor);
         const performLeave = () => {
           leave(el, () => {
-            remove3();
+            remove22();
             afterLeave && afterLeave();
           });
         };
         if (delayLeave) {
-          delayLeave(el, remove3, performLeave);
+          delayLeave(el, remove22, performLeave);
         } else {
           performLeave();
         }
@@ -4107,7 +4716,16 @@ function baseCreateRenderer(options, createHydrationFns) {
     }
   };
   const unmount = (vnode, parentComponent, parentSuspense, doRemove = false, optimized = false) => {
-    const { type, props, ref: ref2, children, dynamicChildren, shapeFlag, patchFlag, dirs } = vnode;
+    const {
+      type,
+      props,
+      ref: ref2,
+      children,
+      dynamicChildren,
+      shapeFlag,
+      patchFlag,
+      dirs
+    } = vnode;
     if (ref2 != null) {
       setRef(ref2, null, parentSuspense, vnode, true);
     }
@@ -4132,9 +4750,22 @@ function baseCreateRenderer(options, createHydrationFns) {
         invokeDirectiveHook(vnode, null, parentComponent, "beforeUnmount");
       }
       if (shapeFlag & 64) {
-        vnode.type.remove(vnode, parentComponent, parentSuspense, optimized, internals, doRemove);
+        vnode.type.remove(
+          vnode,
+          parentComponent,
+          parentSuspense,
+          optimized,
+          internals,
+          doRemove
+        );
       } else if (dynamicChildren && (type !== Fragment || patchFlag > 0 && patchFlag & 64)) {
-        unmountChildren(dynamicChildren, parentComponent, parentSuspense, false, true);
+        unmountChildren(
+          dynamicChildren,
+          parentComponent,
+          parentSuspense,
+          false,
+          true
+        );
       } else if (type === Fragment && patchFlag & (128 | 256) || !optimized && shapeFlag & 16) {
         unmountChildren(children, parentComponent, parentSuspense);
       }
@@ -4252,7 +4883,9 @@ function baseCreateRenderer(options, createHydrationFns) {
   let hydrate;
   let hydrateNode;
   if (createHydrationFns) {
-    [hydrate, hydrateNode] = createHydrationFns(internals);
+    [hydrate, hydrateNode] = createHydrationFns(
+      internals
+    );
   }
   return {
     render,
@@ -4262,6 +4895,9 @@ function baseCreateRenderer(options, createHydrationFns) {
 }
 function toggleRecurse({ effect, update: update3 }, allowed) {
   effect.allowRecurse = update3.allowRecurse = allowed;
+}
+function needTransition(parentSuspense, transition) {
+  return (!parentSuspense || parentSuspense && !parentSuspense.pendingBranch) && transition && !transition.persisted;
 }
 function traverseStaticChildren(n1, n2, shallow = false) {
   const ch1 = n1.children;
@@ -4343,7 +4979,12 @@ const resolveTarget = (props, select) => {
 const TeleportImpl = {
   __isTeleport: true,
   process(n1, n2, container, anchor, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized, internals) {
-    const { mc: mountChildren, pc: patchChildren, pbc: patchBlockChildren, o: { insert, querySelector, createText, createComment } } = internals;
+    const {
+      mc: mountChildren,
+      pc: patchChildren,
+      pbc: patchBlockChildren,
+      o: { insert, querySelector, createText, createComment }
+    } = internals;
     const disabled = isTeleportDisabled(n2.props);
     let { shapeFlag, children, dynamicChildren } = n2;
     if (n1 == null) {
@@ -4359,7 +5000,16 @@ const TeleportImpl = {
       }
       const mount = (container2, anchor2) => {
         if (shapeFlag & 16) {
-          mountChildren(children, container2, anchor2, parentComponent, parentSuspense, isSVG, slotScopeIds, optimized);
+          mountChildren(
+            children,
+            container2,
+            anchor2,
+            parentComponent,
+            parentSuspense,
+            isSVG,
+            slotScopeIds,
+            optimized
+          );
         }
       };
       if (disabled) {
@@ -4377,23 +5027,66 @@ const TeleportImpl = {
       const currentAnchor = wasDisabled ? mainAnchor : targetAnchor;
       isSVG = isSVG || isTargetSVG(target);
       if (dynamicChildren) {
-        patchBlockChildren(n1.dynamicChildren, dynamicChildren, currentContainer, parentComponent, parentSuspense, isSVG, slotScopeIds);
+        patchBlockChildren(
+          n1.dynamicChildren,
+          dynamicChildren,
+          currentContainer,
+          parentComponent,
+          parentSuspense,
+          isSVG,
+          slotScopeIds
+        );
         traverseStaticChildren(n1, n2, true);
       } else if (!optimized) {
-        patchChildren(n1, n2, currentContainer, currentAnchor, parentComponent, parentSuspense, isSVG, slotScopeIds, false);
+        patchChildren(
+          n1,
+          n2,
+          currentContainer,
+          currentAnchor,
+          parentComponent,
+          parentSuspense,
+          isSVG,
+          slotScopeIds,
+          false
+        );
       }
       if (disabled) {
         if (!wasDisabled) {
-          moveTeleport(n2, container, mainAnchor, internals, 1);
+          moveTeleport(
+            n2,
+            container,
+            mainAnchor,
+            internals,
+            1
+          );
+        } else {
+          if (n2.props && n1.props && n2.props.to !== n1.props.to) {
+            n2.props.to = n1.props.to;
+          }
         }
       } else {
         if ((n2.props && n2.props.to) !== (n1.props && n1.props.to)) {
-          const nextTarget = n2.target = resolveTarget(n2.props, querySelector);
+          const nextTarget = n2.target = resolveTarget(
+            n2.props,
+            querySelector
+          );
           if (nextTarget) {
-            moveTeleport(n2, nextTarget, null, internals, 0);
+            moveTeleport(
+              n2,
+              nextTarget,
+              null,
+              internals,
+              0
+            );
           }
         } else if (wasDisabled) {
-          moveTeleport(n2, target, targetAnchor, internals, 1);
+          moveTeleport(
+            n2,
+            target,
+            targetAnchor,
+            internals,
+            1
+          );
         }
       }
     }
@@ -4404,13 +5097,18 @@ const TeleportImpl = {
     if (target) {
       hostRemove(targetAnchor);
     }
-    if (doRemove || !isTeleportDisabled(props)) {
-      hostRemove(anchor);
-      if (shapeFlag & 16) {
-        for (let i = 0; i < children.length; i++) {
-          const child = children[i];
-          unmount(child, parentComponent, parentSuspense, true, !!child.dynamicChildren);
-        }
+    doRemove && hostRemove(anchor);
+    if (shapeFlag & 16) {
+      const shouldRemove = doRemove || !isTeleportDisabled(props);
+      for (let i = 0; i < children.length; i++) {
+        const child = children[i];
+        unmount(
+          child,
+          parentComponent,
+          parentSuspense,
+          shouldRemove,
+          !!child.dynamicChildren
+        );
       }
     }
   },
@@ -4429,7 +5127,12 @@ function moveTeleport(vnode, container, parentAnchor, { o: { insert }, m: move }
   if (!isReorder || isTeleportDisabled(props)) {
     if (shapeFlag & 16) {
       for (let i = 0; i < children.length; i++) {
-        move(children[i], container, parentAnchor, 2);
+        move(
+          children[i],
+          container,
+          parentAnchor,
+          2
+        );
       }
     }
   }
@@ -4437,13 +5140,26 @@ function moveTeleport(vnode, container, parentAnchor, { o: { insert }, m: move }
     insert(anchor, container, parentAnchor);
   }
 }
-function hydrateTeleport(node, vnode, parentComponent, parentSuspense, slotScopeIds, optimized, { o: { nextSibling, parentNode, querySelector } }, hydrateChildren) {
-  const target = vnode.target = resolveTarget(vnode.props, querySelector);
+function hydrateTeleport(node, vnode, parentComponent, parentSuspense, slotScopeIds, optimized, {
+  o: { nextSibling, parentNode, querySelector }
+}, hydrateChildren) {
+  const target = vnode.target = resolveTarget(
+    vnode.props,
+    querySelector
+  );
   if (target) {
     const targetNode = target._lpa || target.firstChild;
     if (vnode.shapeFlag & 16) {
       if (isTeleportDisabled(vnode.props)) {
-        vnode.anchor = hydrateChildren(nextSibling(node), vnode, parentNode(node), parentComponent, parentSuspense, slotScopeIds, optimized);
+        vnode.anchor = hydrateChildren(
+          nextSibling(node),
+          vnode,
+          parentNode(node),
+          parentComponent,
+          parentSuspense,
+          slotScopeIds,
+          optimized
+        );
         vnode.targetAnchor = targetNode;
       } else {
         vnode.anchor = nextSibling(node);
@@ -4456,7 +5172,15 @@ function hydrateTeleport(node, vnode, parentComponent, parentSuspense, slotScope
             break;
           }
         }
-        hydrateChildren(targetNode, vnode, target, parentComponent, parentSuspense, slotScopeIds, optimized);
+        hydrateChildren(
+          targetNode,
+          vnode,
+          target,
+          parentComponent,
+          parentSuspense,
+          slotScopeIds,
+          optimized
+        );
       }
     }
     updateCssVars(vnode);
@@ -4468,7 +5192,7 @@ function updateCssVars(vnode) {
   const ctx = vnode.ctx;
   if (ctx && ctx.ut) {
     let node = vnode.children[0].el;
-    while (node !== vnode.targetAnchor) {
+    while (node && node !== vnode.targetAnchor) {
       if (node.nodeType === 1)
         node.setAttribute("data-v-owner", ctx.uid);
       node = node.nextSibling;
@@ -4476,10 +5200,10 @@ function updateCssVars(vnode) {
     ctx.ut();
   }
 }
-const Fragment = Symbol(void 0);
-const Text = Symbol(void 0);
-const Comment = Symbol(void 0);
-const Static = Symbol(void 0);
+const Fragment = Symbol.for("v-fgt");
+const Text = Symbol.for("v-txt");
+const Comment = Symbol.for("v-cmt");
+const Static = Symbol.for("v-stc");
 const blockStack = [];
 let currentBlock = null;
 function openBlock(disableTracking = false) {
@@ -4502,10 +5226,29 @@ function setupBlock(vnode) {
   return vnode;
 }
 function createElementBlock(type, props, children, patchFlag, dynamicProps, shapeFlag) {
-  return setupBlock(createBaseVNode(type, props, children, patchFlag, dynamicProps, shapeFlag, true));
+  return setupBlock(
+    createBaseVNode(
+      type,
+      props,
+      children,
+      patchFlag,
+      dynamicProps,
+      shapeFlag,
+      true
+    )
+  );
 }
 function createBlock(type, props, children, patchFlag, dynamicProps) {
-  return setupBlock(createVNode(type, props, children, patchFlag, dynamicProps, true));
+  return setupBlock(
+    createVNode(
+      type,
+      props,
+      children,
+      patchFlag,
+      dynamicProps,
+      true
+    )
+  );
 }
 function isVNode(value) {
   return value ? value.__v_isVNode === true : false;
@@ -4515,7 +5258,14 @@ function isSameVNodeType(n1, n2) {
 }
 const InternalObjectKey = `__vInternal`;
 const normalizeKey = ({ key }) => key != null ? key : null;
-const normalizeRef = ({ ref: ref2, ref_key, ref_for }) => {
+const normalizeRef = ({
+  ref: ref2,
+  ref_key,
+  ref_for
+}) => {
+  if (typeof ref2 === "number") {
+    ref2 = "" + ref2;
+  }
   return ref2 != null ? isString(ref2) || isRef(ref2) || isFunction(ref2) ? { i: currentRenderingInstance, r: ref2, k: ref_key, f: !!ref_for } : ref2 : null;
 };
 function createBaseVNode(type, props = null, children = null, patchFlag = 0, dynamicProps = null, shapeFlag = type === Fragment ? 0 : 1, isBlockNode = false, needFullChildrenNormalization = false) {
@@ -4566,7 +5316,11 @@ function _createVNode(type, props = null, children = null, patchFlag = 0, dynami
     type = Comment;
   }
   if (isVNode(type)) {
-    const cloned = cloneVNode(type, props, true);
+    const cloned = cloneVNode(
+      type,
+      props,
+      true
+    );
     if (children) {
       normalizeChildren(cloned, children);
     }
@@ -4597,7 +5351,16 @@ function _createVNode(type, props = null, children = null, patchFlag = 0, dynami
     }
   }
   const shapeFlag = isString(type) ? 1 : isSuspense(type) ? 128 : isTeleport(type) ? 64 : isObject$1(type) ? 4 : isFunction(type) ? 2 : 0;
-  return createBaseVNode(type, props, children, patchFlag, dynamicProps, shapeFlag, isBlockNode, true);
+  return createBaseVNode(
+    type,
+    props,
+    children,
+    patchFlag,
+    dynamicProps,
+    shapeFlag,
+    isBlockNode,
+    true
+  );
 }
 function guardReactiveProps(props) {
   if (!props)
@@ -4758,7 +5521,9 @@ function createComponentInstance(vnode, parent, suspense) {
     subTree: null,
     effect: null,
     update: null,
-    scope: new EffectScope(true),
+    scope: new EffectScope(
+      true
+    ),
     render: null,
     proxy: null,
     exposed: null,
@@ -4783,6 +5548,8 @@ function createComponentInstance(vnode, parent, suspense) {
     refs: EMPTY_OBJ,
     setupState: EMPTY_OBJ,
     setupContext: null,
+    attrsProxy: null,
+    slotsProxy: null,
     suspense,
     suspenseId: suspense ? suspense.pendingId : 0,
     asyncDep: null,
@@ -4817,13 +5584,29 @@ function createComponentInstance(vnode, parent, suspense) {
 }
 let currentInstance = null;
 const getCurrentInstance = () => currentInstance || currentRenderingInstance;
+let internalSetCurrentInstance;
+let globalCurrentInstanceSetters;
+let settersKey = "__VUE_INSTANCE_SETTERS__";
+{
+  if (!(globalCurrentInstanceSetters = getGlobalThis()[settersKey])) {
+    globalCurrentInstanceSetters = getGlobalThis()[settersKey] = [];
+  }
+  globalCurrentInstanceSetters.push((i) => currentInstance = i);
+  internalSetCurrentInstance = (instance) => {
+    if (globalCurrentInstanceSetters.length > 1) {
+      globalCurrentInstanceSetters.forEach((s) => s(instance));
+    } else {
+      globalCurrentInstanceSetters[0](instance);
+    }
+  };
+}
 const setCurrentInstance = (instance) => {
-  currentInstance = instance;
+  internalSetCurrentInstance(instance);
   instance.scope.on();
 };
 const unsetCurrentInstance = () => {
   currentInstance && currentInstance.scope.off();
-  currentInstance = null;
+  internalSetCurrentInstance(null);
 };
 function isStatefulComponent(instance) {
   return instance.vnode.shapeFlag & 4;
@@ -4848,7 +5631,12 @@ function setupStatefulComponent(instance, isSSR) {
     const setupContext = instance.setupContext = setup.length > 1 ? createSetupContext(instance) : null;
     setCurrentInstance(instance);
     pauseTracking();
-    const setupResult = callWithErrorHandling(setup, instance, 0, [instance.props, setupContext]);
+    const setupResult = callWithErrorHandling(
+      setup,
+      instance,
+      0,
+      [instance.props, setupContext]
+    );
     resetTracking();
     unsetCurrentInstance();
     if (isPromise$1(setupResult)) {
@@ -4891,10 +5679,16 @@ function finishComponentSetup(instance, isSSR, skipOptions) {
       if (template) {
         const { isCustomElement, compilerOptions } = instance.appContext.config;
         const { delimiters, compilerOptions: componentCompilerOptions } = Component;
-        const finalCompilerOptions = extend(extend({
-          isCustomElement,
-          delimiters
-        }, compilerOptions), componentCompilerOptions);
+        const finalCompilerOptions = extend(
+          extend(
+            {
+              isCustomElement,
+              delimiters
+            },
+            compilerOptions
+          ),
+          componentCompilerOptions
+        );
         Component.render = compile(template, finalCompilerOptions);
       }
     }
@@ -4903,28 +5697,33 @@ function finishComponentSetup(instance, isSSR, skipOptions) {
   {
     setCurrentInstance(instance);
     pauseTracking();
-    applyOptions(instance);
-    resetTracking();
-    unsetCurrentInstance();
+    try {
+      applyOptions(instance);
+    } finally {
+      resetTracking();
+      unsetCurrentInstance();
+    }
   }
 }
-function createAttrsProxy(instance) {
-  return new Proxy(instance.attrs, {
-    get(target, key) {
-      track(instance, "get", "$attrs");
-      return target[key];
+function getAttrsProxy(instance) {
+  return instance.attrsProxy || (instance.attrsProxy = new Proxy(
+    instance.attrs,
+    {
+      get(target, key) {
+        track(instance, "get", "$attrs");
+        return target[key];
+      }
     }
-  });
+  ));
 }
 function createSetupContext(instance) {
   const expose = (exposed) => {
     instance.exposed = exposed || {};
   };
-  let attrs;
   {
     return {
       get attrs() {
-        return attrs || (attrs = createAttrsProxy(instance));
+        return getAttrsProxy(instance);
       },
       slots: instance.slots,
       emit: instance.emit,
@@ -4977,14 +5776,14 @@ function h(type, propsOrChildren, children) {
     return createVNode(type, propsOrChildren, children);
   }
 }
-const ssrContextKey = Symbol(``);
+const ssrContextKey = Symbol.for("v-scx");
 const useSSRContext = () => {
   {
     const ctx = inject(ssrContextKey);
     return ctx;
   }
 };
-const version = "3.2.47";
+const version = "3.3.8";
 const svgNS = "http://www.w3.org/2000/svg";
 const doc = typeof document !== "undefined" ? document : null;
 const templateContainer = doc && /* @__PURE__ */ doc.createElement("template");
@@ -5045,255 +5844,9 @@ const nodeOps = {
     ];
   }
 };
-function patchClass(el, value, isSVG) {
-  const transitionClasses = el._vtc;
-  if (transitionClasses) {
-    value = (value ? [value, ...transitionClasses] : [...transitionClasses]).join(" ");
-  }
-  if (value == null) {
-    el.removeAttribute("class");
-  } else if (isSVG) {
-    el.setAttribute("class", value);
-  } else {
-    el.className = value;
-  }
-}
-function patchStyle(el, prev, next) {
-  const style = el.style;
-  const isCssString = isString(next);
-  if (next && !isCssString) {
-    if (prev && !isString(prev)) {
-      for (const key in prev) {
-        if (next[key] == null) {
-          setStyle(style, key, "");
-        }
-      }
-    }
-    for (const key in next) {
-      setStyle(style, key, next[key]);
-    }
-  } else {
-    const currentDisplay = style.display;
-    if (isCssString) {
-      if (prev !== next) {
-        style.cssText = next;
-      }
-    } else if (prev) {
-      el.removeAttribute("style");
-    }
-    if ("_vod" in el) {
-      style.display = currentDisplay;
-    }
-  }
-}
-const importantRE = /\s*!important$/;
-function setStyle(style, name, val) {
-  if (isArray(val)) {
-    val.forEach((v) => setStyle(style, name, v));
-  } else {
-    if (val == null)
-      val = "";
-    if (name.startsWith("--")) {
-      style.setProperty(name, val);
-    } else {
-      const prefixed = autoPrefix(style, name);
-      if (importantRE.test(val)) {
-        style.setProperty(hyphenate(prefixed), val.replace(importantRE, ""), "important");
-      } else {
-        style[prefixed] = val;
-      }
-    }
-  }
-}
-const prefixes = ["Webkit", "Moz", "ms"];
-const prefixCache = {};
-function autoPrefix(style, rawName) {
-  const cached = prefixCache[rawName];
-  if (cached) {
-    return cached;
-  }
-  let name = camelize(rawName);
-  if (name !== "filter" && name in style) {
-    return prefixCache[rawName] = name;
-  }
-  name = capitalize(name);
-  for (let i = 0; i < prefixes.length; i++) {
-    const prefixed = prefixes[i] + name;
-    if (prefixed in style) {
-      return prefixCache[rawName] = prefixed;
-    }
-  }
-  return rawName;
-}
-const xlinkNS = "http://www.w3.org/1999/xlink";
-function patchAttr(el, key, value, isSVG, instance) {
-  if (isSVG && key.startsWith("xlink:")) {
-    if (value == null) {
-      el.removeAttributeNS(xlinkNS, key.slice(6, key.length));
-    } else {
-      el.setAttributeNS(xlinkNS, key, value);
-    }
-  } else {
-    const isBoolean = isSpecialBooleanAttr(key);
-    if (value == null || isBoolean && !includeBooleanAttr(value)) {
-      el.removeAttribute(key);
-    } else {
-      el.setAttribute(key, isBoolean ? "" : value);
-    }
-  }
-}
-function patchDOMProp(el, key, value, prevChildren, parentComponent, parentSuspense, unmountChildren) {
-  if (key === "innerHTML" || key === "textContent") {
-    if (prevChildren) {
-      unmountChildren(prevChildren, parentComponent, parentSuspense);
-    }
-    el[key] = value == null ? "" : value;
-    return;
-  }
-  if (key === "value" && el.tagName !== "PROGRESS" && !el.tagName.includes("-")) {
-    el._value = value;
-    const newValue = value == null ? "" : value;
-    if (el.value !== newValue || el.tagName === "OPTION") {
-      el.value = newValue;
-    }
-    if (value == null) {
-      el.removeAttribute(key);
-    }
-    return;
-  }
-  let needRemove = false;
-  if (value === "" || value == null) {
-    const type = typeof el[key];
-    if (type === "boolean") {
-      value = includeBooleanAttr(value);
-    } else if (value == null && type === "string") {
-      value = "";
-      needRemove = true;
-    } else if (type === "number") {
-      value = 0;
-      needRemove = true;
-    }
-  }
-  try {
-    el[key] = value;
-  } catch (e) {
-  }
-  needRemove && el.removeAttribute(key);
-}
-function addEventListener(el, event, handler, options) {
-  el.addEventListener(event, handler, options);
-}
-function removeEventListener(el, event, handler, options) {
-  el.removeEventListener(event, handler, options);
-}
-function patchEvent(el, rawName, prevValue, nextValue, instance = null) {
-  const invokers = el._vei || (el._vei = {});
-  const existingInvoker = invokers[rawName];
-  if (nextValue && existingInvoker) {
-    existingInvoker.value = nextValue;
-  } else {
-    const [name, options] = parseName(rawName);
-    if (nextValue) {
-      const invoker = invokers[rawName] = createInvoker(nextValue, instance);
-      addEventListener(el, name, invoker, options);
-    } else if (existingInvoker) {
-      removeEventListener(el, name, existingInvoker, options);
-      invokers[rawName] = void 0;
-    }
-  }
-}
-const optionsModifierRE = /(?:Once|Passive|Capture)$/;
-function parseName(name) {
-  let options;
-  if (optionsModifierRE.test(name)) {
-    options = {};
-    let m;
-    while (m = name.match(optionsModifierRE)) {
-      name = name.slice(0, name.length - m[0].length);
-      options[m[0].toLowerCase()] = true;
-    }
-  }
-  const event = name[2] === ":" ? name.slice(3) : hyphenate(name.slice(2));
-  return [event, options];
-}
-let cachedNow = 0;
-const p = /* @__PURE__ */ Promise.resolve();
-const getNow = () => cachedNow || (p.then(() => cachedNow = 0), cachedNow = Date.now());
-function createInvoker(initialValue, instance) {
-  const invoker = (e) => {
-    if (!e._vts) {
-      e._vts = Date.now();
-    } else if (e._vts <= invoker.attached) {
-      return;
-    }
-    callWithAsyncErrorHandling(patchStopImmediatePropagation(e, invoker.value), instance, 5, [e]);
-  };
-  invoker.value = initialValue;
-  invoker.attached = getNow();
-  return invoker;
-}
-function patchStopImmediatePropagation(e, value) {
-  if (isArray(value)) {
-    const originalStop = e.stopImmediatePropagation;
-    e.stopImmediatePropagation = () => {
-      originalStop.call(e);
-      e._stopped = true;
-    };
-    return value.map((fn) => (e2) => !e2._stopped && fn && fn(e2));
-  } else {
-    return value;
-  }
-}
-const nativeOnRE = /^on[a-z]/;
-const patchProp = (el, key, prevValue, nextValue, isSVG = false, prevChildren, parentComponent, parentSuspense, unmountChildren) => {
-  if (key === "class") {
-    patchClass(el, nextValue, isSVG);
-  } else if (key === "style") {
-    patchStyle(el, prevValue, nextValue);
-  } else if (isOn(key)) {
-    if (!isModelListener(key)) {
-      patchEvent(el, key, prevValue, nextValue, parentComponent);
-    }
-  } else if (key[0] === "." ? (key = key.slice(1), true) : key[0] === "^" ? (key = key.slice(1), false) : shouldSetAsProp(el, key, nextValue, isSVG)) {
-    patchDOMProp(el, key, nextValue, prevChildren, parentComponent, parentSuspense, unmountChildren);
-  } else {
-    if (key === "true-value") {
-      el._trueValue = nextValue;
-    } else if (key === "false-value") {
-      el._falseValue = nextValue;
-    }
-    patchAttr(el, key, nextValue, isSVG);
-  }
-};
-function shouldSetAsProp(el, key, value, isSVG) {
-  if (isSVG) {
-    if (key === "innerHTML" || key === "textContent") {
-      return true;
-    }
-    if (key in el && nativeOnRE.test(key) && isFunction(value)) {
-      return true;
-    }
-    return false;
-  }
-  if (key === "spellcheck" || key === "draggable" || key === "translate") {
-    return false;
-  }
-  if (key === "form") {
-    return false;
-  }
-  if (key === "list" && el.tagName === "INPUT") {
-    return false;
-  }
-  if (key === "type" && el.tagName === "TEXTAREA") {
-    return false;
-  }
-  if (nativeOnRE.test(key) && isString(value)) {
-    return false;
-  }
-  return key in el;
-}
 const TRANSITION = "transition";
 const ANIMATION = "animation";
+const vtcKey = Symbol("_vtc");
 const DOMTransitionPropsValidators = {
   name: String,
   type: String,
@@ -5312,7 +5865,11 @@ const DOMTransitionPropsValidators = {
   leaveActiveClass: String,
   leaveToClass: String
 };
-const TransitionPropsValidators = /* @__PURE__ */ extend({}, BaseTransition.props, DOMTransitionPropsValidators);
+const TransitionPropsValidators = /* @__PURE__ */ extend(
+  {},
+  BaseTransitionPropsValidators,
+  DOMTransitionPropsValidators
+);
 const callHook = (hook, args = []) => {
   if (isArray(hook)) {
     hook.forEach((h2) => h2(...args));
@@ -5333,11 +5890,33 @@ function resolveTransitionProps(rawProps) {
   if (rawProps.css === false) {
     return baseProps2;
   }
-  const { name = "v", type, duration, enterFromClass = `${name}-enter-from`, enterActiveClass = `${name}-enter-active`, enterToClass = `${name}-enter-to`, appearFromClass = enterFromClass, appearActiveClass = enterActiveClass, appearToClass = enterToClass, leaveFromClass = `${name}-leave-from`, leaveActiveClass = `${name}-leave-active`, leaveToClass = `${name}-leave-to` } = rawProps;
+  const {
+    name = "v",
+    type,
+    duration,
+    enterFromClass = `${name}-enter-from`,
+    enterActiveClass = `${name}-enter-active`,
+    enterToClass = `${name}-enter-to`,
+    appearFromClass = enterFromClass,
+    appearActiveClass = enterActiveClass,
+    appearToClass = enterToClass,
+    leaveFromClass = `${name}-leave-from`,
+    leaveActiveClass = `${name}-leave-active`,
+    leaveToClass = `${name}-leave-to`
+  } = rawProps;
   const durations = normalizeDuration(duration);
   const enterDuration = durations && durations[0];
   const leaveDuration = durations && durations[1];
-  const { onBeforeEnter, onEnter, onEnterCancelled, onLeave, onLeaveCancelled, onBeforeAppear = onBeforeEnter, onAppear = onEnter, onAppearCancelled = onEnterCancelled } = baseProps2;
+  const {
+    onBeforeEnter,
+    onEnter,
+    onEnterCancelled,
+    onLeave,
+    onLeaveCancelled,
+    onBeforeAppear = onBeforeEnter,
+    onAppear = onEnter,
+    onAppearCancelled = onEnterCancelled
+  } = baseProps2;
   const finishEnter = (el, isAppear, done) => {
     removeTransitionClass(el, isAppear ? appearToClass : enterToClass);
     removeTransitionClass(el, isAppear ? appearActiveClass : enterActiveClass);
@@ -5425,15 +6004,15 @@ function NumberOf(val) {
 }
 function addTransitionClass(el, cls) {
   cls.split(/\s+/).forEach((c) => c && el.classList.add(c));
-  (el._vtc || (el._vtc = /* @__PURE__ */ new Set())).add(cls);
+  (el[vtcKey] || (el[vtcKey] = /* @__PURE__ */ new Set())).add(cls);
 }
 function removeTransitionClass(el, cls) {
   cls.split(/\s+/).forEach((c) => c && el.classList.remove(c));
-  const { _vtc } = el;
+  const _vtc = el[vtcKey];
   if (_vtc) {
     _vtc.delete(cls);
     if (!_vtc.size) {
-      el._vtc = void 0;
+      el[vtcKey] = void 0;
     }
   }
 }
@@ -5504,7 +6083,9 @@ function getTransitionInfo(el, expectedType) {
     type = timeout > 0 ? transitionTimeout > animationTimeout ? TRANSITION : ANIMATION : null;
     propCount = type ? type === TRANSITION ? transitionDurations.length : animationDurations.length : 0;
   }
-  const hasTransform = type === TRANSITION && /\b(transform|all)(,|$)/.test(getStyleProperties(`${TRANSITION}Property`).toString());
+  const hasTransform = type === TRANSITION && /\b(transform|all)(,|$)/.test(
+    getStyleProperties(`${TRANSITION}Property`).toString()
+  );
   return {
     type,
     timeout,
@@ -5519,13 +6100,285 @@ function getTimeout(delays, durations) {
   return Math.max(...durations.map((d, i) => toMs(d) + toMs(delays[i])));
 }
 function toMs(s) {
+  if (s === "auto")
+    return 0;
   return Number(s.slice(0, -1).replace(",", ".")) * 1e3;
 }
 function forceReflow() {
   return document.body.offsetHeight;
 }
+function patchClass(el, value, isSVG) {
+  const transitionClasses = el[vtcKey];
+  if (transitionClasses) {
+    value = (value ? [value, ...transitionClasses] : [...transitionClasses]).join(" ");
+  }
+  if (value == null) {
+    el.removeAttribute("class");
+  } else if (isSVG) {
+    el.setAttribute("class", value);
+  } else {
+    el.className = value;
+  }
+}
+const vShowOldKey = Symbol("_vod");
+function patchStyle(el, prev, next) {
+  const style = el.style;
+  const isCssString = isString(next);
+  if (next && !isCssString) {
+    if (prev && !isString(prev)) {
+      for (const key in prev) {
+        if (next[key] == null) {
+          setStyle(style, key, "");
+        }
+      }
+    }
+    for (const key in next) {
+      setStyle(style, key, next[key]);
+    }
+  } else {
+    const currentDisplay = style.display;
+    if (isCssString) {
+      if (prev !== next) {
+        style.cssText = next;
+      }
+    } else if (prev) {
+      el.removeAttribute("style");
+    }
+    if (vShowOldKey in el) {
+      style.display = currentDisplay;
+    }
+  }
+}
+const importantRE = /\s*!important$/;
+function setStyle(style, name, val) {
+  if (isArray(val)) {
+    val.forEach((v) => setStyle(style, name, v));
+  } else {
+    if (val == null)
+      val = "";
+    if (name.startsWith("--")) {
+      style.setProperty(name, val);
+    } else {
+      const prefixed = autoPrefix(style, name);
+      if (importantRE.test(val)) {
+        style.setProperty(
+          hyphenate(prefixed),
+          val.replace(importantRE, ""),
+          "important"
+        );
+      } else {
+        style[prefixed] = val;
+      }
+    }
+  }
+}
+const prefixes = ["Webkit", "Moz", "ms"];
+const prefixCache = {};
+function autoPrefix(style, rawName) {
+  const cached = prefixCache[rawName];
+  if (cached) {
+    return cached;
+  }
+  let name = camelize(rawName);
+  if (name !== "filter" && name in style) {
+    return prefixCache[rawName] = name;
+  }
+  name = capitalize(name);
+  for (let i = 0; i < prefixes.length; i++) {
+    const prefixed = prefixes[i] + name;
+    if (prefixed in style) {
+      return prefixCache[rawName] = prefixed;
+    }
+  }
+  return rawName;
+}
+const xlinkNS = "http://www.w3.org/1999/xlink";
+function patchAttr(el, key, value, isSVG, instance) {
+  if (isSVG && key.startsWith("xlink:")) {
+    if (value == null) {
+      el.removeAttributeNS(xlinkNS, key.slice(6, key.length));
+    } else {
+      el.setAttributeNS(xlinkNS, key, value);
+    }
+  } else {
+    const isBoolean = isSpecialBooleanAttr(key);
+    if (value == null || isBoolean && !includeBooleanAttr(value)) {
+      el.removeAttribute(key);
+    } else {
+      el.setAttribute(key, isBoolean ? "" : value);
+    }
+  }
+}
+function patchDOMProp(el, key, value, prevChildren, parentComponent, parentSuspense, unmountChildren) {
+  if (key === "innerHTML" || key === "textContent") {
+    if (prevChildren) {
+      unmountChildren(prevChildren, parentComponent, parentSuspense);
+    }
+    el[key] = value == null ? "" : value;
+    return;
+  }
+  const tag = el.tagName;
+  if (key === "value" && tag !== "PROGRESS" && !tag.includes("-")) {
+    el._value = value;
+    const oldValue = tag === "OPTION" ? el.getAttribute("value") : el.value;
+    const newValue = value == null ? "" : value;
+    if (oldValue !== newValue) {
+      el.value = newValue;
+    }
+    if (value == null) {
+      el.removeAttribute(key);
+    }
+    return;
+  }
+  let needRemove = false;
+  if (value === "" || value == null) {
+    const type = typeof el[key];
+    if (type === "boolean") {
+      value = includeBooleanAttr(value);
+    } else if (value == null && type === "string") {
+      value = "";
+      needRemove = true;
+    } else if (type === "number") {
+      value = 0;
+      needRemove = true;
+    }
+  }
+  try {
+    el[key] = value;
+  } catch (e) {
+  }
+  needRemove && el.removeAttribute(key);
+}
+function addEventListener(el, event, handler, options) {
+  el.addEventListener(event, handler, options);
+}
+function removeEventListener(el, event, handler, options) {
+  el.removeEventListener(event, handler, options);
+}
+const veiKey = Symbol("_vei");
+function patchEvent(el, rawName, prevValue, nextValue, instance = null) {
+  const invokers = el[veiKey] || (el[veiKey] = {});
+  const existingInvoker = invokers[rawName];
+  if (nextValue && existingInvoker) {
+    existingInvoker.value = nextValue;
+  } else {
+    const [name, options] = parseName(rawName);
+    if (nextValue) {
+      const invoker = invokers[rawName] = createInvoker(nextValue, instance);
+      addEventListener(el, name, invoker, options);
+    } else if (existingInvoker) {
+      removeEventListener(el, name, existingInvoker, options);
+      invokers[rawName] = void 0;
+    }
+  }
+}
+const optionsModifierRE = /(?:Once|Passive|Capture)$/;
+function parseName(name) {
+  let options;
+  if (optionsModifierRE.test(name)) {
+    options = {};
+    let m;
+    while (m = name.match(optionsModifierRE)) {
+      name = name.slice(0, name.length - m[0].length);
+      options[m[0].toLowerCase()] = true;
+    }
+  }
+  const event = name[2] === ":" ? name.slice(3) : hyphenate(name.slice(2));
+  return [event, options];
+}
+let cachedNow = 0;
+const p = /* @__PURE__ */ Promise.resolve();
+const getNow = () => cachedNow || (p.then(() => cachedNow = 0), cachedNow = Date.now());
+function createInvoker(initialValue, instance) {
+  const invoker = (e) => {
+    if (!e._vts) {
+      e._vts = Date.now();
+    } else if (e._vts <= invoker.attached) {
+      return;
+    }
+    callWithAsyncErrorHandling(
+      patchStopImmediatePropagation(e, invoker.value),
+      instance,
+      5,
+      [e]
+    );
+  };
+  invoker.value = initialValue;
+  invoker.attached = getNow();
+  return invoker;
+}
+function patchStopImmediatePropagation(e, value) {
+  if (isArray(value)) {
+    const originalStop = e.stopImmediatePropagation;
+    e.stopImmediatePropagation = () => {
+      originalStop.call(e);
+      e._stopped = true;
+    };
+    return value.map((fn) => (e2) => !e2._stopped && fn && fn(e2));
+  } else {
+    return value;
+  }
+}
+const nativeOnRE = /^on[a-z]/;
+const patchProp = (el, key, prevValue, nextValue, isSVG = false, prevChildren, parentComponent, parentSuspense, unmountChildren) => {
+  if (key === "class") {
+    patchClass(el, nextValue, isSVG);
+  } else if (key === "style") {
+    patchStyle(el, prevValue, nextValue);
+  } else if (isOn(key)) {
+    if (!isModelListener(key)) {
+      patchEvent(el, key, prevValue, nextValue, parentComponent);
+    }
+  } else if (key[0] === "." ? (key = key.slice(1), true) : key[0] === "^" ? (key = key.slice(1), false) : shouldSetAsProp(el, key, nextValue, isSVG)) {
+    patchDOMProp(
+      el,
+      key,
+      nextValue,
+      prevChildren,
+      parentComponent,
+      parentSuspense,
+      unmountChildren
+    );
+  } else {
+    if (key === "true-value") {
+      el._trueValue = nextValue;
+    } else if (key === "false-value") {
+      el._falseValue = nextValue;
+    }
+    patchAttr(el, key, nextValue, isSVG);
+  }
+};
+function shouldSetAsProp(el, key, value, isSVG) {
+  if (isSVG) {
+    if (key === "innerHTML" || key === "textContent") {
+      return true;
+    }
+    if (key in el && nativeOnRE.test(key) && isFunction(value)) {
+      return true;
+    }
+    return false;
+  }
+  if (key === "spellcheck" || key === "draggable" || key === "translate") {
+    return false;
+  }
+  if (key === "form") {
+    return false;
+  }
+  if (key === "list" && el.tagName === "INPUT") {
+    return false;
+  }
+  if (key === "type" && el.tagName === "TEXTAREA") {
+    return false;
+  }
+  if (nativeOnRE.test(key) && isString(value)) {
+    return false;
+  }
+  return key in el;
+}
 const positionMap = /* @__PURE__ */ new WeakMap();
 const newPositionMap = /* @__PURE__ */ new WeakMap();
+const moveCbKey = Symbol("_moveCb");
+const enterCbKey = Symbol("_enterCb");
 const TransitionGroupImpl = {
   name: "TransitionGroup",
   props: /* @__PURE__ */ extend({}, TransitionPropsValidators, {
@@ -5542,7 +6395,11 @@ const TransitionGroupImpl = {
         return;
       }
       const moveClass = props.moveClass || `${props.name || "v"}-move`;
-      if (!hasCSSTransform(prevChildren[0].el, instance.vnode.el, moveClass)) {
+      if (!hasCSSTransform(
+        prevChildren[0].el,
+        instance.vnode.el,
+        moveClass
+      )) {
         return;
       }
       prevChildren.forEach(callPendingCbs);
@@ -5554,13 +6411,13 @@ const TransitionGroupImpl = {
         const style = el.style;
         addTransitionClass(el, moveClass);
         style.transform = style.webkitTransform = style.transitionDuration = "";
-        const cb = el._moveCb = (e) => {
+        const cb = el[moveCbKey] = (e) => {
           if (e && e.target !== el) {
             return;
           }
           if (!e || /transform$/.test(e.propertyName)) {
             el.removeEventListener("transitionend", cb);
-            el._moveCb = null;
+            el[moveCbKey] = null;
             removeTransitionClass(el, moveClass);
           }
         };
@@ -5576,13 +6433,19 @@ const TransitionGroupImpl = {
       for (let i = 0; i < children.length; i++) {
         const child = children[i];
         if (child.key != null) {
-          setTransitionHooks(child, resolveTransitionHooks(child, cssTransitionProps, state, instance));
+          setTransitionHooks(
+            child,
+            resolveTransitionHooks(child, cssTransitionProps, state, instance)
+          );
         }
       }
       if (prevChildren) {
         for (let i = 0; i < prevChildren.length; i++) {
           const child = prevChildren[i];
-          setTransitionHooks(child, resolveTransitionHooks(child, cssTransitionProps, state, instance));
+          setTransitionHooks(
+            child,
+            resolveTransitionHooks(child, cssTransitionProps, state, instance)
+          );
           positionMap.set(child, child.el.getBoundingClientRect());
         }
       }
@@ -5595,11 +6458,11 @@ const removeMode = (props) => delete props.mode;
 const TransitionGroup = TransitionGroupImpl;
 function callPendingCbs(c) {
   const el = c.el;
-  if (el._moveCb) {
-    el._moveCb();
+  if (el[moveCbKey]) {
+    el[moveCbKey]();
   }
-  if (el._enterCb) {
-    el._enterCb();
+  if (el[enterCbKey]) {
+    el[enterCbKey]();
   }
 }
 function recordPosition(c) {
@@ -5619,8 +6482,9 @@ function applyTranslation(c) {
 }
 function hasCSSTransform(el, root, moveClass) {
   const clone = el.cloneNode();
-  if (el._vtc) {
-    el._vtc.forEach((cls) => {
+  const _vtc = el[vtcKey];
+  if (_vtc) {
+    _vtc.forEach((cls) => {
       cls.split(/\s+/).forEach((c) => c && clone.classList.remove(c));
     });
   }
@@ -5646,9 +6510,10 @@ function onCompositionEnd(e) {
     target.dispatchEvent(new Event("input"));
   }
 }
+const assignKey = Symbol("_assign");
 const vModelText = {
   created(el, { modifiers: { lazy, trim, number } }, vnode) {
-    el._assign = getModelAssigner(vnode);
+    el[assignKey] = getModelAssigner(vnode);
     const castToNumber = number || vnode.props && vnode.props.type === "number";
     addEventListener(el, lazy ? "change" : "input", (e) => {
       if (e.target.composing)
@@ -5660,7 +6525,7 @@ const vModelText = {
       if (castToNumber) {
         domValue = looseToNumber(domValue);
       }
-      el._assign(domValue);
+      el[assignKey](domValue);
     });
     if (trim) {
       addEventListener(el, "change", () => {
@@ -5677,7 +6542,7 @@ const vModelText = {
     el.value = value == null ? "" : value;
   },
   beforeUpdate(el, { value, modifiers: { lazy, trim, number } }, vnode) {
-    el._assign = getModelAssigner(vnode);
+    el[assignKey] = getModelAssigner(vnode);
     if (el.composing)
       return;
     if (document.activeElement === el && el.type !== "range") {
@@ -5700,12 +6565,12 @@ const vModelText = {
 const vModelCheckbox = {
   deep: true,
   created(el, _, vnode) {
-    el._assign = getModelAssigner(vnode);
+    el[assignKey] = getModelAssigner(vnode);
     addEventListener(el, "change", () => {
       const modelValue = el._modelValue;
       const elementValue = getValue(el);
       const checked = el.checked;
-      const assign = el._assign;
+      const assign = el[assignKey];
       if (isArray(modelValue)) {
         const index = looseIndexOf(modelValue, elementValue);
         const found = index !== -1;
@@ -5731,7 +6596,7 @@ const vModelCheckbox = {
   },
   mounted: setChecked,
   beforeUpdate(el, binding, vnode) {
-    el._assign = getModelAssigner(vnode);
+    el[assignKey] = getModelAssigner(vnode);
     setChecked(el, binding, vnode);
   }
 };
@@ -5750,16 +6615,20 @@ const vModelSelect = {
   created(el, { value, modifiers: { number } }, vnode) {
     const isSetModel = isSet(value);
     addEventListener(el, "change", () => {
-      const selectedVal = Array.prototype.filter.call(el.options, (o) => o.selected).map((o) => number ? looseToNumber(getValue(o)) : getValue(o));
-      el._assign(el.multiple ? isSetModel ? new Set(selectedVal) : selectedVal : selectedVal[0]);
+      const selectedVal = Array.prototype.filter.call(el.options, (o) => o.selected).map(
+        (o) => number ? looseToNumber(getValue(o)) : getValue(o)
+      );
+      el[assignKey](
+        el.multiple ? isSetModel ? new Set(selectedVal) : selectedVal : selectedVal[0]
+      );
     });
-    el._assign = getModelAssigner(vnode);
+    el[assignKey] = getModelAssigner(vnode);
   },
   mounted(el, { value }) {
     setSelected(el, value);
   },
   beforeUpdate(el, _binding, vnode) {
-    el._assign = getModelAssigner(vnode);
+    el[assignKey] = getModelAssigner(vnode);
   },
   updated(el, { value }) {
     setSelected(el, value);
@@ -5935,10 +6804,10 @@ function mitt(n) {
     });
   } };
 }
-var __defProp$M = Object.defineProperty;
-var __defNormalProp$M = (obj, key, value) => key in obj ? __defProp$M(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$N = Object.defineProperty;
+var __defNormalProp$N = (obj, key, value) => key in obj ? __defProp$N(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$p = (obj, key, value) => {
-  __defNormalProp$M(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$N(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 const eventBus = mitt();
@@ -6024,27 +6893,27 @@ class VueErrorEvent {
   }
 }
 __publicField$p(VueErrorEvent, "kind", "VueErrorEvent");
-var __defProp$L = Object.defineProperty;
-var __defProps$n = Object.defineProperties;
-var __getOwnPropDescs$n = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$s = Object.getOwnPropertySymbols;
-var __hasOwnProp$s = Object.prototype.hasOwnProperty;
-var __propIsEnum$s = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$L = (obj, key, value) => key in obj ? __defProp$L(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$s = (a, b) => {
+var __defProp$M = Object.defineProperty;
+var __defProps$o = Object.defineProperties;
+var __getOwnPropDescs$o = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$t = Object.getOwnPropertySymbols;
+var __hasOwnProp$t = Object.prototype.hasOwnProperty;
+var __propIsEnum$t = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$M = (obj, key, value) => key in obj ? __defProp$M(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$t = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$s.call(b, prop))
-      __defNormalProp$L(a, prop, b[prop]);
-  if (__getOwnPropSymbols$s)
-    for (var prop of __getOwnPropSymbols$s(b)) {
-      if (__propIsEnum$s.call(b, prop))
-        __defNormalProp$L(a, prop, b[prop]);
+    if (__hasOwnProp$t.call(b, prop))
+      __defNormalProp$M(a, prop, b[prop]);
+  if (__getOwnPropSymbols$t)
+    for (var prop of __getOwnPropSymbols$t(b)) {
+      if (__propIsEnum$t.call(b, prop))
+        __defNormalProp$M(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$n = (a, b) => __defProps$n(a, __getOwnPropDescs$n(b));
+var __spreadProps$o = (a, b) => __defProps$o(a, __getOwnPropDescs$o(b));
 var __publicField$o = (obj, key, value) => {
-  __defNormalProp$L(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$M(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$H = (__this, __arguments, generator) => {
@@ -6125,7 +6994,7 @@ const _Repo = class {
         return true;
       }).map((packId) => {
         var _a2, _b2, _c;
-        return __spreadProps$n(__spreadValues$s(__spreadValues$s(__spreadValues$s({}, (_a2 = onlineRepoLookup.get(packId)) != null ? _a2 : {
+        return __spreadProps$o(__spreadValues$t(__spreadValues$t(__spreadValues$t({}, (_a2 = onlineRepoLookup.get(packId)) != null ? _a2 : {
           characters: [],
           kind: [],
           authors: []
@@ -6143,7 +7012,7 @@ const _Repo = class {
       const onlineAuthors = (_a = onlineRepo2 == null ? void 0 : onlineRepo2.authors) != null ? _a : {};
       const localRepo2 = this.localRepo.value;
       const localAuthors = (_b = localRepo2 == null ? void 0 : localRepo2.authors) != null ? _b : {};
-      return __spreadValues$s(__spreadValues$s({}, onlineAuthors), localAuthors);
+      return __spreadValues$t(__spreadValues$t({}, onlineAuthors), localAuthors);
     });
     Object.freeze(this);
   }
@@ -6305,24 +7174,24 @@ function transactionLayer() {
     });
   };
 }
-var __defProp$K = Object.defineProperty;
-var __getOwnPropSymbols$r = Object.getOwnPropertySymbols;
-var __hasOwnProp$r = Object.prototype.hasOwnProperty;
-var __propIsEnum$r = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$K = (obj, key, value) => key in obj ? __defProp$K(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$r = (a, b) => {
+var __defProp$L = Object.defineProperty;
+var __getOwnPropSymbols$s = Object.getOwnPropertySymbols;
+var __hasOwnProp$s = Object.prototype.hasOwnProperty;
+var __propIsEnum$s = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$L = (obj, key, value) => key in obj ? __defProp$L(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$s = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$r.call(b, prop))
-      __defNormalProp$K(a, prop, b[prop]);
-  if (__getOwnPropSymbols$r)
-    for (var prop of __getOwnPropSymbols$r(b)) {
-      if (__propIsEnum$r.call(b, prop))
-        __defNormalProp$K(a, prop, b[prop]);
+    if (__hasOwnProp$s.call(b, prop))
+      __defNormalProp$L(a, prop, b[prop]);
+  if (__getOwnPropSymbols$s)
+    for (var prop of __getOwnPropSymbols$s(b)) {
+      if (__propIsEnum$s.call(b, prop))
+        __defNormalProp$L(a, prop, b[prop]);
     }
   return a;
 };
 var __publicField$n = (obj, key, value) => {
-  __defNormalProp$K(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$L(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$F = (__this, __arguments, generator) => {
@@ -6553,7 +7422,7 @@ class Browser {
       };
       if (!this.isSavingEnabled.value)
         return base;
-      return __spreadValues$r(__spreadValues$r({}, base), yield IndexedDBHandler.loadSettings());
+      return __spreadValues$s(__spreadValues$s({}, base), yield IndexedDBHandler.loadSettings());
     });
   }
   saveSettings(settings) {
@@ -6703,7 +7572,7 @@ const IndexedDBHandler = {
   },
   saveSettings(settings) {
     return this.objectStorePromise("readwrite", (store2) => __async$F(this, null, function* () {
-      yield this.reqPromise(store2.put(__spreadValues$r({}, settings), "settings"));
+      yield this.reqPromise(store2.put(__spreadValues$s({}, settings), "settings"));
     }));
   },
   loadSettings() {
@@ -6746,10 +7615,10 @@ class OldEdge extends Browser {
     return Promise.resolve(url);
   }
 }
-var __defProp$J = Object.defineProperty;
-var __defNormalProp$J = (obj, key, value) => key in obj ? __defProp$J(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$K = Object.defineProperty;
+var __defNormalProp$K = (obj, key, value) => key in obj ? __defProp$K(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$m = (obj, key, value) => {
-  __defNormalProp$J(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$K(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$E = (__this, __arguments, generator) => {
@@ -7114,24 +7983,24 @@ function chooseEnv() {
 const envX = chooseEnv();
 window.toast = envX;
 const MissingImage = "" + new URL("missing_image.81acc086.svg", import.meta.url).href;
-var __defProp$I = Object.defineProperty;
-var __getOwnPropSymbols$q = Object.getOwnPropertySymbols;
-var __hasOwnProp$q = Object.prototype.hasOwnProperty;
-var __propIsEnum$q = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$I = (obj, key, value) => key in obj ? __defProp$I(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$q = (a, b) => {
+var __defProp$J = Object.defineProperty;
+var __getOwnPropSymbols$r = Object.getOwnPropertySymbols;
+var __hasOwnProp$r = Object.prototype.hasOwnProperty;
+var __propIsEnum$r = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$J = (obj, key, value) => key in obj ? __defProp$J(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$r = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$q.call(b, prop))
-      __defNormalProp$I(a, prop, b[prop]);
-  if (__getOwnPropSymbols$q)
-    for (var prop of __getOwnPropSymbols$q(b)) {
-      if (__propIsEnum$q.call(b, prop))
-        __defNormalProp$I(a, prop, b[prop]);
+    if (__hasOwnProp$r.call(b, prop))
+      __defNormalProp$J(a, prop, b[prop]);
+  if (__getOwnPropSymbols$r)
+    for (var prop of __getOwnPropSymbols$r(b)) {
+      if (__propIsEnum$r.call(b, prop))
+        __defNormalProp$J(a, prop, b[prop]);
     }
   return a;
 };
 var __publicField$l = (obj, key, value) => {
-  __defNormalProp$I(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$J(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 class ImageAsset {
@@ -7143,21 +8012,21 @@ class ImageAsset {
     this.height = html.height;
   }
   paintOnto(fsCtx, opts = {}) {
-    const { w, h: h2 } = __spreadValues$q({
+    const { w, h: h2 } = __spreadValues$r({
       w: this.width,
       h: this.height
     }, opts);
-    const { x, y } = __spreadValues$q({
+    const { x, y } = __spreadValues$r({
       x: -w / 2,
       y: -h2 / 2
     }, opts);
     fsCtx.drawImage(this.html, x, y, w, h2);
   }
 }
-var __defProp$H = Object.defineProperty;
-var __defNormalProp$H = (obj, key, value) => key in obj ? __defProp$H(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$I = Object.defineProperty;
+var __defNormalProp$I = (obj, key, value) => key in obj ? __defProp$I(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$k = (obj, key, value) => {
-  __defNormalProp$H(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$I(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 let missing_image = null;
@@ -7179,10 +8048,10 @@ class ErrorAsset {
     }
   }
 }
-var __defProp$G = Object.defineProperty;
-var __defNormalProp$G = (obj, key, value) => key in obj ? __defProp$G(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$H = Object.defineProperty;
+var __defNormalProp$H = (obj, key, value) => key in obj ? __defProp$H(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$j = (obj, key, value) => {
-  __defNormalProp$G(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$H(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$D = (__this, __arguments, generator) => {
@@ -7367,25 +8236,25 @@ const NsfwPacks = {
 };
 const NsfwNames = new Set(Object.keys(NsfwPacks));
 const NsfwPaths = Object.values(NsfwPacks);
-var __defProp$F = Object.defineProperty;
-var __defProps$m = Object.defineProperties;
-var __getOwnPropDescs$m = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$p = Object.getOwnPropertySymbols;
-var __hasOwnProp$p = Object.prototype.hasOwnProperty;
-var __propIsEnum$p = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$F = (obj, key, value) => key in obj ? __defProp$F(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$p = (a, b) => {
+var __defProp$G = Object.defineProperty;
+var __defProps$n = Object.defineProperties;
+var __getOwnPropDescs$n = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$q = Object.getOwnPropertySymbols;
+var __hasOwnProp$q = Object.prototype.hasOwnProperty;
+var __propIsEnum$q = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$G = (obj, key, value) => key in obj ? __defProp$G(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$q = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$p.call(b, prop))
-      __defNormalProp$F(a, prop, b[prop]);
-  if (__getOwnPropSymbols$p)
-    for (var prop of __getOwnPropSymbols$p(b)) {
-      if (__propIsEnum$p.call(b, prop))
-        __defNormalProp$F(a, prop, b[prop]);
+    if (__hasOwnProp$q.call(b, prop))
+      __defNormalProp$G(a, prop, b[prop]);
+  if (__getOwnPropSymbols$q)
+    for (var prop of __getOwnPropSymbols$q(b)) {
+      if (__propIsEnum$q.call(b, prop))
+        __defNormalProp$G(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$m = (a, b) => __defProps$m(a, __getOwnPropDescs$m(b));
+var __spreadProps$n = (a, b) => __defProps$n(a, __getOwnPropDescs$n(b));
 function mergeContentPacks(x, y) {
   return {
     backgrounds: mergeBackgrounds(x.backgrounds, y.backgrounds),
@@ -7395,7 +8264,7 @@ function mergeContentPacks(x, y) {
       x.fonts,
       y.fonts,
       (obj) => obj.id,
-      (xObj, yObj) => __spreadProps$m(__spreadValues$p({}, xObj), {
+      (xObj, yObj) => __spreadProps$n(__spreadValues$q({}, xObj), {
         files: mergeArrayUnique(xObj.files, yObj.files)
       })
     ),
@@ -7500,7 +8369,7 @@ function mergeCharacter(x, y) {
   };
 }
 function mergeStyleClasses(x, y) {
-  const ret = __spreadValues$p({}, x);
+  const ret = __spreadValues$q({}, x);
   for (const classKey in y) {
     if (!Object.prototype.hasOwnProperty.call(y, classKey))
       continue;
@@ -7511,7 +8380,7 @@ function mergeStyleClasses(x, y) {
   return ret;
 }
 function mergePose(x, y) {
-  const positions2 = __spreadValues$p({}, x.positions);
+  const positions2 = __spreadValues$q({}, x.positions);
   for (const key in y.positions) {
     if (positions2[key]) {
       positions2[key] = [...positions2[key], ...y.positions[key]];
@@ -7531,7 +8400,7 @@ function mergePose(x, y) {
   };
 }
 function mergeHeadCollections(x, y) {
-  const ret = __spreadValues$p({}, x);
+  const ret = __spreadValues$q({}, x);
   for (const headGroupKey in y) {
     if (!Object.prototype.hasOwnProperty.call(y, headGroupKey))
       continue;
@@ -7558,7 +8427,7 @@ function mergeArrayUnique(x, y) {
   }
   return ret;
 }
-function mergeIdArrays(x, y, getId2, merge) {
+function mergeIdArrays(x, y, getId2, merge2) {
   const ret = [...x];
   const definedIds = new Map(
     x.map((xObj, idx) => [getId2(xObj), idx])
@@ -7568,7 +8437,7 @@ function mergeIdArrays(x, y, getId2, merge) {
     if (definedIds.has(yId)) {
       const existingIdx = definedIds.get(yId);
       const existing = ret[existingIdx];
-      ret.splice(existingIdx, 1, merge(existing, yObj));
+      ret.splice(existingIdx, 1, merge2(existing, yObj));
     } else {
       definedIds.set(yId, ret.length);
       ret.push(yObj);
@@ -9030,8 +9899,8 @@ function normalizePose(pose, baseFolder, ctx) {
   var _a, _b;
   var poseFolder = joinNormalize$1(baseFolder, pose.folder, ctx);
   return {
-    compatibleHeads: ((_a = pose.compatibleHeads) === null || _a === void 0 ? void 0 : _a.map(function(head) {
-      return expandId(ctx.packId, head);
+    compatibleHeads: ((_a = pose.compatibleHeads) === null || _a === void 0 ? void 0 : _a.map(function(head2) {
+      return expandId(ctx.packId, head2);
     })) || [],
     id: expandId(ctx.packId, pose.id),
     previewOffset: pose.previewOffset || [0, 0],
@@ -9910,7 +10779,7 @@ function sortByDependencies(packs) {
 }
 function convertContentPack(pack) {
   return __async$C(this, null, function* () {
-    const types2 = new Set(
+    const types = new Set(
       (yield isWebPSupported()) ? ["webp", ...baseTypes] : baseTypes
     );
     const replacementMap = /* @__PURE__ */ new Map([
@@ -9920,8 +10789,8 @@ function convertContentPack(pack) {
       pack,
       (path, _type) => {
         var _a;
-        const hq = normalizePath_1(path, replacementMap, types2, false);
-        const lq = normalizePath_1(path, replacementMap, types2, true);
+        const hq = normalizePath_1(path, replacementMap, types, false);
+        const lq = normalizePath_1(path, replacementMap, types, true);
         return {
           hq,
           lq,
@@ -9981,10 +10850,10 @@ const Base$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   BaseCharacterYPos: BaseCharacterYPos$1,
   characterPositions: characterPositions$1
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$E = Object.defineProperty;
-var __defNormalProp$E = (obj, key, value) => key in obj ? __defProp$E(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$F = Object.defineProperty;
+var __defNormalProp$F = (obj, key, value) => key in obj ? __defProp$F(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$i = (obj, key, value) => {
-  __defNormalProp$E(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$F(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 const _RGBAColor = class {
@@ -10324,25 +11193,25 @@ const CustomTBConstants$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object
   textboxOutlineColorDelta: textboxOutlineColorDelta$1,
   textboxOutlineWidth: textboxOutlineWidth$1
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$D = Object.defineProperty;
-var __defProps$l = Object.defineProperties;
-var __getOwnPropDescs$l = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$o = Object.getOwnPropertySymbols;
-var __hasOwnProp$o = Object.prototype.hasOwnProperty;
-var __propIsEnum$o = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$D = (obj, key, value) => key in obj ? __defProp$D(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$o = (a, b) => {
+var __defProp$E = Object.defineProperty;
+var __defProps$m = Object.defineProperties;
+var __getOwnPropDescs$m = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$p = Object.getOwnPropertySymbols;
+var __hasOwnProp$p = Object.prototype.hasOwnProperty;
+var __propIsEnum$p = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$E = (obj, key, value) => key in obj ? __defProp$E(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$p = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$o.call(b, prop))
-      __defNormalProp$D(a, prop, b[prop]);
-  if (__getOwnPropSymbols$o)
-    for (var prop of __getOwnPropSymbols$o(b)) {
-      if (__propIsEnum$o.call(b, prop))
-        __defNormalProp$D(a, prop, b[prop]);
+    if (__hasOwnProp$p.call(b, prop))
+      __defNormalProp$E(a, prop, b[prop]);
+  if (__getOwnPropSymbols$p)
+    for (var prop of __getOwnPropSymbols$p(b)) {
+      if (__propIsEnum$p.call(b, prop))
+        __defNormalProp$E(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$l = (a, b) => __defProps$l(a, __getOwnPropDescs$l(b));
+var __spreadProps$m = (a, b) => __defProps$m(a, __getOwnPropDescs$m(b));
 const TextBoxWidth$1 = 816;
 const TextBoxCorruptedWidth$1 = 900;
 const TextBoxHeight$1 = 146;
@@ -10382,7 +11251,7 @@ const BaseTextStyle$1 = {
   strokeColor: "",
   strokeWidth: 0
 };
-const NameboxTextStyle$1 = __spreadProps$l(__spreadValues$o({}, BaseTextStyle$1), {
+const NameboxTextStyle$1 = __spreadProps$m(__spreadValues$p({}, BaseTextStyle$1), {
   fontName: "riffic",
   fontSize: 24,
   strokeColor: nameboxStrokeDefaultColor$1,
@@ -10397,7 +11266,7 @@ const ControlsTextStyle$1 = {
     style: "#522"
   }
 };
-const ControlsTextDisabledStyle$1 = __spreadProps$l(__spreadValues$o({}, ControlsTextStyle$1), {
+const ControlsTextDisabledStyle$1 = __spreadProps$m(__spreadValues$p({}, ControlsTextStyle$1), {
   fill: {
     style: "#a66"
   }
@@ -10479,31 +11348,31 @@ const TextBox$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePro
   ControlsXStuff: ControlsXStuff$1,
   DefaultTextboxStyle: DefaultTextboxStyle$1
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$C = Object.defineProperty;
-var __defProps$k = Object.defineProperties;
-var __getOwnPropDescs$k = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$n = Object.getOwnPropertySymbols;
-var __hasOwnProp$n = Object.prototype.hasOwnProperty;
-var __propIsEnum$n = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$C = (obj, key, value) => key in obj ? __defProp$C(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$n = (a, b) => {
+var __defProp$D = Object.defineProperty;
+var __defProps$l = Object.defineProperties;
+var __getOwnPropDescs$l = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$o = Object.getOwnPropertySymbols;
+var __hasOwnProp$o = Object.prototype.hasOwnProperty;
+var __propIsEnum$o = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$D = (obj, key, value) => key in obj ? __defProp$D(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$o = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$n.call(b, prop))
-      __defNormalProp$C(a, prop, b[prop]);
-  if (__getOwnPropSymbols$n)
-    for (var prop of __getOwnPropSymbols$n(b)) {
-      if (__propIsEnum$n.call(b, prop))
-        __defNormalProp$C(a, prop, b[prop]);
+    if (__hasOwnProp$o.call(b, prop))
+      __defNormalProp$D(a, prop, b[prop]);
+  if (__getOwnPropSymbols$o)
+    for (var prop of __getOwnPropSymbols$o(b)) {
+      if (__propIsEnum$o.call(b, prop))
+        __defNormalProp$D(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$k = (a, b) => __defProps$k(a, __getOwnPropDescs$k(b));
+var __spreadProps$l = (a, b) => __defProps$l(a, __getOwnPropDescs$l(b));
 const NotificationBackgroundColor$1 = "#ffe6f4";
 const NotificationBorderColor$1 = "#ffbde1";
 const NotificationBackdropColor$1 = "rgba(255,255,255,0.6)";
 const NotificationPadding$1 = 40;
 const NotificationSpacing$1 = 30;
-const NotificationOkTextStyle$1 = __spreadProps$k(__spreadValues$n({}, BaseTextStyle$1), {
+const NotificationOkTextStyle$1 = __spreadProps$l(__spreadValues$o({}, BaseTextStyle$1), {
   fontName: "riffic",
   fontSize: 24,
   strokeColor: nameboxStrokeDefaultColor$1,
@@ -10535,25 +11404,25 @@ const Notification$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defi
   NotificationOkTextStyle: NotificationOkTextStyle$1,
   NotificationTextStyle: NotificationTextStyle$1
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$B = Object.defineProperty;
-var __defProps$j = Object.defineProperties;
-var __getOwnPropDescs$j = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$m = Object.getOwnPropertySymbols;
-var __hasOwnProp$m = Object.prototype.hasOwnProperty;
-var __propIsEnum$m = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$B = (obj, key, value) => key in obj ? __defProp$B(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$m = (a, b) => {
+var __defProp$C = Object.defineProperty;
+var __defProps$k = Object.defineProperties;
+var __getOwnPropDescs$k = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$n = Object.getOwnPropertySymbols;
+var __hasOwnProp$n = Object.prototype.hasOwnProperty;
+var __propIsEnum$n = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$C = (obj, key, value) => key in obj ? __defProp$C(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$n = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$m.call(b, prop))
-      __defNormalProp$B(a, prop, b[prop]);
-  if (__getOwnPropSymbols$m)
-    for (var prop of __getOwnPropSymbols$m(b)) {
-      if (__propIsEnum$m.call(b, prop))
-        __defNormalProp$B(a, prop, b[prop]);
+    if (__hasOwnProp$n.call(b, prop))
+      __defNormalProp$C(a, prop, b[prop]);
+  if (__getOwnPropSymbols$n)
+    for (var prop of __getOwnPropSymbols$n(b)) {
+      if (__propIsEnum$n.call(b, prop))
+        __defNormalProp$C(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$j = (a, b) => __defProps$j(a, __getOwnPropDescs$j(b));
+var __spreadProps$k = (a, b) => __defProps$k(a, __getOwnPropDescs$k(b));
 const poemBackgrounds$1 = [
   { name: "Normal paper", file: "poem.jpg" },
   { name: "Lightly soiled paper", file: "poem_y1.jpg" },
@@ -10591,47 +11460,47 @@ const BasePoemStyle$1 = {
   fontSize: 12
 };
 const poemTextStyles$1 = [
-  __spreadProps$j(__spreadValues$m({}, BasePoemStyle$1), {
+  __spreadProps$k(__spreadValues$n({}, BasePoemStyle$1), {
     name: "Sayori",
     fontName: "hashtag",
     fontSize: 34,
     lineSpacing: 1.05,
     letterSpacing: 0
   }),
-  __spreadProps$j(__spreadValues$m({}, BasePoemStyle$1), {
+  __spreadProps$k(__spreadValues$n({}, BasePoemStyle$1), {
     name: "Natsuki",
     fontName: "ammy_handwriting",
     fontSize: 28
   }),
-  __spreadProps$j(__spreadValues$m({}, BasePoemStyle$1), {
+  __spreadProps$k(__spreadValues$n({}, BasePoemStyle$1), {
     name: "Monika",
     fontName: "journal",
     fontSize: 34
   }),
-  __spreadProps$j(__spreadValues$m({}, BasePoemStyle$1), {
+  __spreadProps$k(__spreadValues$n({}, BasePoemStyle$1), {
     name: "Yuri",
     fontName: "jp_hand_slanted",
     lineSpacing: 1.5,
     fontSize: 32
   }),
-  __spreadProps$j(__spreadValues$m({}, BasePoemStyle$1), {
+  __spreadProps$k(__spreadValues$n({}, BasePoemStyle$1), {
     name: "Yuri Act 2",
     fontName: "damagrafik_script",
     fontSize: 18,
     letterSpacing: -8
   }),
-  __spreadProps$j(__spreadValues$m({}, BasePoemStyle$1), {
+  __spreadProps$k(__spreadValues$n({}, BasePoemStyle$1), {
     name: "Yuri Unused",
     fontName: "as_i_lay_dying",
     fontSize: 40
   }),
-  __spreadProps$j(__spreadValues$m({}, BasePoemStyle$1), {
+  __spreadProps$k(__spreadValues$n({}, BasePoemStyle$1), {
     name: "MC",
     fontName: "halogen",
     fontSize: 30,
     lineSpacing: 1.53
   }),
-  __spreadProps$j(__spreadValues$m({}, BasePoemStyle$1), {
+  __spreadProps$k(__spreadValues$n({}, BasePoemStyle$1), {
     name: "Console",
     fontName: "f25_bank_printer",
     fontSize: 18,
@@ -10829,25 +11698,25 @@ const CustomTBConstants = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.d
   textboxOutlineColorDelta,
   textboxOutlineWidth
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$A = Object.defineProperty;
-var __defProps$i = Object.defineProperties;
-var __getOwnPropDescs$i = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$l = Object.getOwnPropertySymbols;
-var __hasOwnProp$l = Object.prototype.hasOwnProperty;
-var __propIsEnum$l = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$A = (obj, key, value) => key in obj ? __defProp$A(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$l = (a, b) => {
+var __defProp$B = Object.defineProperty;
+var __defProps$j = Object.defineProperties;
+var __getOwnPropDescs$j = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$m = Object.getOwnPropertySymbols;
+var __hasOwnProp$m = Object.prototype.hasOwnProperty;
+var __propIsEnum$m = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$B = (obj, key, value) => key in obj ? __defProp$B(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$m = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$l.call(b, prop))
-      __defNormalProp$A(a, prop, b[prop]);
-  if (__getOwnPropSymbols$l)
-    for (var prop of __getOwnPropSymbols$l(b)) {
-      if (__propIsEnum$l.call(b, prop))
-        __defNormalProp$A(a, prop, b[prop]);
+    if (__hasOwnProp$m.call(b, prop))
+      __defNormalProp$B(a, prop, b[prop]);
+  if (__getOwnPropSymbols$m)
+    for (var prop of __getOwnPropSymbols$m(b)) {
+      if (__propIsEnum$m.call(b, prop))
+        __defNormalProp$B(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$i = (a, b) => __defProps$i(a, __getOwnPropDescs$i(b));
+var __spreadProps$j = (a, b) => __defProps$j(a, __getOwnPropDescs$j(b));
 const TextBoxWidth = 1220;
 const TextBoxCorruptedWidth = 900;
 const TextBoxHeight = 219;
@@ -10885,7 +11754,7 @@ const BaseTextStyle = {
   strokeColor: "",
   strokeWidth: 0
 };
-const NameboxTextStyle = __spreadProps$i(__spreadValues$l({}, BaseTextStyle), {
+const NameboxTextStyle = __spreadProps$j(__spreadValues$m({}, BaseTextStyle), {
   fontName: "riffic",
   fontSize: 36,
   strokeColor: nameboxStrokeDefaultColor,
@@ -10900,7 +11769,7 @@ const ControlsTextStyle = {
     style: "#522"
   }
 };
-const ControlsTextDisabledStyle = __spreadProps$i(__spreadValues$l({}, ControlsTextStyle), {
+const ControlsTextDisabledStyle = __spreadProps$j(__spreadValues$m({}, ControlsTextStyle), {
   fill: {
     style: "#a66"
   }
@@ -10980,31 +11849,31 @@ const TextBox$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePro
   ControlsXStuff,
   DefaultTextboxStyle
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$z = Object.defineProperty;
-var __defProps$h = Object.defineProperties;
-var __getOwnPropDescs$h = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$k = Object.getOwnPropertySymbols;
-var __hasOwnProp$k = Object.prototype.hasOwnProperty;
-var __propIsEnum$k = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$z = (obj, key, value) => key in obj ? __defProp$z(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$k = (a, b) => {
+var __defProp$A = Object.defineProperty;
+var __defProps$i = Object.defineProperties;
+var __getOwnPropDescs$i = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$l = Object.getOwnPropertySymbols;
+var __hasOwnProp$l = Object.prototype.hasOwnProperty;
+var __propIsEnum$l = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$A = (obj, key, value) => key in obj ? __defProp$A(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$l = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$k.call(b, prop))
-      __defNormalProp$z(a, prop, b[prop]);
-  if (__getOwnPropSymbols$k)
-    for (var prop of __getOwnPropSymbols$k(b)) {
-      if (__propIsEnum$k.call(b, prop))
-        __defNormalProp$z(a, prop, b[prop]);
+    if (__hasOwnProp$l.call(b, prop))
+      __defNormalProp$A(a, prop, b[prop]);
+  if (__getOwnPropSymbols$l)
+    for (var prop of __getOwnPropSymbols$l(b)) {
+      if (__propIsEnum$l.call(b, prop))
+        __defNormalProp$A(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$h = (a, b) => __defProps$h(a, __getOwnPropDescs$h(b));
+var __spreadProps$i = (a, b) => __defProps$i(a, __getOwnPropDescs$i(b));
 const NotificationBackgroundColor = "#ffe6f4";
 const NotificationBorderColor = "#ffbde1";
 const NotificationBackdropColor = "rgba(255,255,255,0.6)";
 const NotificationPadding = 60;
 const NotificationSpacing = 45;
-const NotificationOkTextStyle = __spreadProps$h(__spreadValues$k({}, BaseTextStyle), {
+const NotificationOkTextStyle = __spreadProps$i(__spreadValues$l({}, BaseTextStyle), {
   fontName: "riffic",
   fontSize: 36,
   strokeColor: nameboxStrokeDefaultColor,
@@ -11036,25 +11905,25 @@ const Notification$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defi
   NotificationOkTextStyle,
   NotificationTextStyle
 }, Symbol.toStringTag, { value: "Module" }));
-var __defProp$y = Object.defineProperty;
-var __defProps$g = Object.defineProperties;
-var __getOwnPropDescs$g = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$j = Object.getOwnPropertySymbols;
-var __hasOwnProp$j = Object.prototype.hasOwnProperty;
-var __propIsEnum$j = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$y = (obj, key, value) => key in obj ? __defProp$y(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$j = (a, b) => {
+var __defProp$z = Object.defineProperty;
+var __defProps$h = Object.defineProperties;
+var __getOwnPropDescs$h = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$k = Object.getOwnPropertySymbols;
+var __hasOwnProp$k = Object.prototype.hasOwnProperty;
+var __propIsEnum$k = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$z = (obj, key, value) => key in obj ? __defProp$z(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$k = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$j.call(b, prop))
-      __defNormalProp$y(a, prop, b[prop]);
-  if (__getOwnPropSymbols$j)
-    for (var prop of __getOwnPropSymbols$j(b)) {
-      if (__propIsEnum$j.call(b, prop))
-        __defNormalProp$y(a, prop, b[prop]);
+    if (__hasOwnProp$k.call(b, prop))
+      __defNormalProp$z(a, prop, b[prop]);
+  if (__getOwnPropSymbols$k)
+    for (var prop of __getOwnPropSymbols$k(b)) {
+      if (__propIsEnum$k.call(b, prop))
+        __defNormalProp$z(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$g = (a, b) => __defProps$g(a, __getOwnPropDescs$g(b));
+var __spreadProps$h = (a, b) => __defProps$h(a, __getOwnPropDescs$h(b));
 const poemBackgrounds = [
   { name: "Normal paper", file: "poem.jpg" },
   { name: "Lightly soiled paper", file: "poem_y1.jpg" },
@@ -11092,50 +11961,50 @@ const BasePoemStyle = {
   fontSize: 18
 };
 const poemTextStyles = [
-  __spreadProps$g(__spreadValues$j({}, BasePoemStyle), {
+  __spreadProps$h(__spreadValues$k({}, BasePoemStyle), {
     name: "Sayori",
     fontName: "hashtag",
     fontSize: 45,
     lineSpacing: 0.95,
     letterSpacing: 1
   }),
-  __spreadProps$g(__spreadValues$j({}, BasePoemStyle), {
+  __spreadProps$h(__spreadValues$k({}, BasePoemStyle), {
     name: "Natsuki",
     fontName: "ammy_handwriting",
     fontSize: 41,
     letterSpacing: -0.5
   }),
-  __spreadProps$g(__spreadValues$j({}, BasePoemStyle), {
+  __spreadProps$h(__spreadValues$k({}, BasePoemStyle), {
     name: "Monika",
     fontName: "journal",
     fontSize: 36,
     lineSpacing: 1.4,
     letterSpacing: 0.5
   }),
-  __spreadProps$g(__spreadValues$j({}, BasePoemStyle), {
+  __spreadProps$h(__spreadValues$k({}, BasePoemStyle), {
     name: "Yuri",
     fontName: "jp_hand_slanted",
     lineSpacing: 1.55,
     fontSize: 48
   }),
-  __spreadProps$g(__spreadValues$j({}, BasePoemStyle), {
+  __spreadProps$h(__spreadValues$k({}, BasePoemStyle), {
     name: "Yuri Act 2",
     fontName: "damagrafik_script",
     fontSize: 27,
     letterSpacing: -12
   }),
-  __spreadProps$g(__spreadValues$j({}, BasePoemStyle), {
+  __spreadProps$h(__spreadValues$k({}, BasePoemStyle), {
     name: "Yuri Unused",
     fontName: "as_i_lay_dying",
     fontSize: 60
   }),
-  __spreadProps$g(__spreadValues$j({}, BasePoemStyle), {
+  __spreadProps$h(__spreadValues$k({}, BasePoemStyle), {
     name: "MC",
     fontName: "halogen",
     fontSize: 45,
     lineSpacing: 1.53
   }),
-  __spreadProps$g(__spreadValues$j({}, BasePoemStyle), {
+  __spreadProps$h(__spreadValues$k({}, BasePoemStyle), {
     name: "Console",
     fontName: "f25_bank_printer",
     fontSize: 27,
@@ -11197,25 +12066,25 @@ function baseProps() {
     skewY: 0
   };
 }
-var __defProp$x = Object.defineProperty;
-var __defProps$f = Object.defineProperties;
-var __getOwnPropDescs$f = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$i = Object.getOwnPropertySymbols;
-var __hasOwnProp$i = Object.prototype.hasOwnProperty;
-var __propIsEnum$i = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$x = (obj, key, value) => key in obj ? __defProp$x(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$i = (a, b) => {
+var __defProp$y = Object.defineProperty;
+var __defProps$g = Object.defineProperties;
+var __getOwnPropDescs$g = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$j = Object.getOwnPropertySymbols;
+var __hasOwnProp$j = Object.prototype.hasOwnProperty;
+var __propIsEnum$j = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$y = (obj, key, value) => key in obj ? __defProp$y(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$j = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$i.call(b, prop))
-      __defNormalProp$x(a, prop, b[prop]);
-  if (__getOwnPropSymbols$i)
-    for (var prop of __getOwnPropSymbols$i(b)) {
-      if (__propIsEnum$i.call(b, prop))
-        __defNormalProp$x(a, prop, b[prop]);
+    if (__hasOwnProp$j.call(b, prop))
+      __defNormalProp$y(a, prop, b[prop]);
+  if (__getOwnPropSymbols$j)
+    for (var prop of __getOwnPropSymbols$j(b)) {
+      if (__propIsEnum$j.call(b, prop))
+        __defNormalProp$y(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$f = (a, b) => __defProps$f(a, __getOwnPropDescs$f(b));
+var __spreadProps$g = (a, b) => __defProps$g(a, __getOwnPropDescs$g(b));
 var __async$B = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -11259,7 +12128,7 @@ const characterMutations = {
   },
   setPosePosition(state, command) {
     const obj = state.panels[command.panelId].objects[command.id];
-    obj.posePositions = __spreadValues$i(__spreadValues$i({}, obj.posePositions), command.posePositions);
+    obj.posePositions = __spreadValues$j(__spreadValues$j({}, obj.posePositions), command.posePositions);
     ++obj.version;
   },
   setFreeMove(state, command) {
@@ -11314,7 +12183,7 @@ const characterActions = {
     const char = getDataG(rootGetters, command.characterType);
     const charScale = char.hd ? constants.Base.hdCharacterScaleFactor : constants.Base.sdCharacterScaleFactor;
     commit2("create", {
-      object: __spreadProps$f(__spreadValues$i({}, baseProps()), {
+      object: __spreadProps$g(__spreadValues$j({}, baseProps()), {
         id,
         panelId: rootState.panels.currentPanel,
         onTop: false,
@@ -11397,22 +12266,22 @@ const characterActions = {
     let currentHeads = getHeads(data, obj);
     if (!currentHeads)
       return;
-    let head = (obj.posePositions.head || 0) + delta;
+    let head2 = (obj.posePositions.head || 0) + delta;
     let headType = obj.posePositions.headType || 0;
-    if (head < 0 || head >= currentHeads.variants.length) {
+    if (head2 < 0 || head2 >= currentHeads.variants.length) {
       headType = arraySeeker(
         pose.compatibleHeads.map((headKey) => data.heads[headKey]),
         headType,
         delta
       );
       currentHeads = getHeads(data, obj, headType);
-      head = delta === 1 ? 0 : currentHeads.variants.length - 1;
+      head2 = delta === 1 ? 0 : currentHeads.variants.length - 1;
     }
     commit2("setPosePosition", {
       id,
       panelId,
       posePositions: {
-        head,
+        head: head2,
         headType
       }
     });
@@ -11559,7 +12428,7 @@ function buildPoseAndPositionData(character) {
     styleGroupId: character.styleGroupId,
     styleId: character.styleId,
     poseId: character.poseId,
-    posePositions: __spreadValues$i({}, character.posePositions)
+    posePositions: __spreadValues$j({}, character.posePositions)
   };
 }
 function commitPoseAndPositionChanges(commit2, character, poseAndPosition) {
@@ -11628,25 +12497,25 @@ function mutatePoseAndPositions(commit2, character, data, callback) {
   }
   commitPoseAndPositionChanges(commit2, character, poseAndPosition);
 }
-var __defProp$w = Object.defineProperty;
-var __defProps$e = Object.defineProperties;
-var __getOwnPropDescs$e = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$h = Object.getOwnPropertySymbols;
-var __hasOwnProp$h = Object.prototype.hasOwnProperty;
-var __propIsEnum$h = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$w = (obj, key, value) => key in obj ? __defProp$w(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$h = (a, b) => {
+var __defProp$x = Object.defineProperty;
+var __defProps$f = Object.defineProperties;
+var __getOwnPropDescs$f = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$i = Object.getOwnPropertySymbols;
+var __hasOwnProp$i = Object.prototype.hasOwnProperty;
+var __propIsEnum$i = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$x = (obj, key, value) => key in obj ? __defProp$x(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$i = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$h.call(b, prop))
-      __defNormalProp$w(a, prop, b[prop]);
-  if (__getOwnPropSymbols$h)
-    for (var prop of __getOwnPropSymbols$h(b)) {
-      if (__propIsEnum$h.call(b, prop))
-        __defNormalProp$w(a, prop, b[prop]);
+    if (__hasOwnProp$i.call(b, prop))
+      __defNormalProp$x(a, prop, b[prop]);
+  if (__getOwnPropSymbols$i)
+    for (var prop of __getOwnPropSymbols$i(b)) {
+      if (__propIsEnum$i.call(b, prop))
+        __defNormalProp$x(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$e = (a, b) => __defProps$e(a, __getOwnPropDescs$e(b));
+var __spreadProps$f = (a, b) => __defProps$f(a, __getOwnPropDescs$f(b));
 const choiceMutations = {
   setChoicesProperty(state, command) {
     const obj = state.panels[command.panelId].objects[command.id];
@@ -11669,7 +12538,7 @@ const choiceActions = {
     const constants = getConstants();
     const id = state.panels[command.panelId].lastObjId + 1;
     commit2("create", {
-      object: __spreadProps$e(__spreadValues$h({}, baseProps()), {
+      object: __spreadProps$f(__spreadValues$i({}, baseProps()), {
         y: constants.Choices.ChoiceY,
         width: constants.Choices.ChoiceButtonWidth,
         height: 0,
@@ -11721,6 +12590,54 @@ const choiceActions = {
     });
   }
 };
+var __defProp$w = Object.defineProperty;
+var __defProps$e = Object.defineProperties;
+var __getOwnPropDescs$e = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$h = Object.getOwnPropertySymbols;
+var __hasOwnProp$h = Object.prototype.hasOwnProperty;
+var __propIsEnum$h = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$w = (obj, key, value) => key in obj ? __defProp$w(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$h = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$h.call(b, prop))
+      __defNormalProp$w(a, prop, b[prop]);
+  if (__getOwnPropSymbols$h)
+    for (var prop of __getOwnPropSymbols$h(b)) {
+      if (__propIsEnum$h.call(b, prop))
+        __defNormalProp$w(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$e = (a, b) => __defProps$e(a, __getOwnPropDescs$e(b));
+const notificationMutations = {
+  setNotificationProperty(state, command) {
+    const obj = state.panels[command.panelId].objects[command.id];
+    obj[command.key] = command.value;
+    ++obj.version;
+  }
+};
+const notificationActions = {
+  createNotification({ commit: commit2, rootState, state }, command) {
+    const constants = getConstants();
+    const id = state.panels[command.panelId].lastObjId + 1;
+    commit2("create", {
+      object: __spreadProps$e(__spreadValues$h({}, baseProps()), {
+        y: constants.Base.screenHeight / 2,
+        width: constants.Choices.ChoiceButtonWidth,
+        height: 0,
+        panelId: rootState.panels.currentPanel,
+        autoWrap: false,
+        id,
+        onTop: true,
+        type: "notification",
+        customColor: constants.Choices.ChoiceButtonColor,
+        text: "Click here to edit notification",
+        backdrop: true
+      })
+    });
+    return id;
+  }
+};
 var __defProp$v = Object.defineProperty;
 var __defProps$d = Object.defineProperties;
 var __getOwnPropDescs$d = Object.getOwnPropertyDescriptors;
@@ -11740,54 +12657,6 @@ var __spreadValues$g = (a, b) => {
   return a;
 };
 var __spreadProps$d = (a, b) => __defProps$d(a, __getOwnPropDescs$d(b));
-const notificationMutations = {
-  setNotificationProperty(state, command) {
-    const obj = state.panels[command.panelId].objects[command.id];
-    obj[command.key] = command.value;
-    ++obj.version;
-  }
-};
-const notificationActions = {
-  createNotification({ commit: commit2, rootState, state }, command) {
-    const constants = getConstants();
-    const id = state.panels[command.panelId].lastObjId + 1;
-    commit2("create", {
-      object: __spreadProps$d(__spreadValues$g({}, baseProps()), {
-        y: constants.Base.screenHeight / 2,
-        width: constants.Choices.ChoiceButtonWidth,
-        height: 0,
-        panelId: rootState.panels.currentPanel,
-        autoWrap: false,
-        id,
-        onTop: true,
-        type: "notification",
-        customColor: constants.Choices.ChoiceButtonColor,
-        text: "Click here to edit notification",
-        backdrop: true
-      })
-    });
-    return id;
-  }
-};
-var __defProp$u = Object.defineProperty;
-var __defProps$c = Object.defineProperties;
-var __getOwnPropDescs$c = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$f = Object.getOwnPropertySymbols;
-var __hasOwnProp$f = Object.prototype.hasOwnProperty;
-var __propIsEnum$f = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$u = (obj, key, value) => key in obj ? __defProp$u(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$f = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$f.call(b, prop))
-      __defNormalProp$u(a, prop, b[prop]);
-  if (__getOwnPropSymbols$f)
-    for (var prop of __getOwnPropSymbols$f(b)) {
-      if (__propIsEnum$f.call(b, prop))
-        __defNormalProp$u(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$c = (a, b) => __defProps$c(a, __getOwnPropDescs$c(b));
 const poemMutations = {
   setPoemProperty(state, command) {
     const obj = state.panels[command.panelId].objects[command.id];
@@ -11839,7 +12708,7 @@ const poemActions = {
     const constants = getConstants();
     const id = state.panels[_command.panelId].lastObjId + 1;
     commit2("create", {
-      object: __spreadProps$c(__spreadValues$f({}, baseProps()), {
+      object: __spreadProps$d(__spreadValues$g({}, baseProps()), {
         subType: "console",
         x: constants.Poem.consoleWidth / 2,
         y: constants.Poem.consoleHeight / 2,
@@ -11859,25 +12728,25 @@ const poemActions = {
     return id;
   }
 };
-var __defProp$t = Object.defineProperty;
-var __defProps$b = Object.defineProperties;
-var __getOwnPropDescs$b = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$e = Object.getOwnPropertySymbols;
-var __hasOwnProp$e = Object.prototype.hasOwnProperty;
-var __propIsEnum$e = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$t = (obj, key, value) => key in obj ? __defProp$t(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$e = (a, b) => {
+var __defProp$u = Object.defineProperty;
+var __defProps$c = Object.defineProperties;
+var __getOwnPropDescs$c = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$f = Object.getOwnPropertySymbols;
+var __hasOwnProp$f = Object.prototype.hasOwnProperty;
+var __propIsEnum$f = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$u = (obj, key, value) => key in obj ? __defProp$u(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$f = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$e.call(b, prop))
-      __defNormalProp$t(a, prop, b[prop]);
-  if (__getOwnPropSymbols$e)
-    for (var prop of __getOwnPropSymbols$e(b)) {
-      if (__propIsEnum$e.call(b, prop))
-        __defNormalProp$t(a, prop, b[prop]);
+    if (__hasOwnProp$f.call(b, prop))
+      __defNormalProp$u(a, prop, b[prop]);
+  if (__getOwnPropSymbols$f)
+    for (var prop of __getOwnPropSymbols$f(b)) {
+      if (__propIsEnum$f.call(b, prop))
+        __defNormalProp$u(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$b = (a, b) => __defProps$b(a, __getOwnPropDescs$b(b));
+var __spreadProps$c = (a, b) => __defProps$c(a, __getOwnPropDescs$c(b));
 var __async$A = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -11907,7 +12776,7 @@ const spriteActions = {
         return;
       const id = state.panels[command.panelId].lastObjId + 1;
       commit2("create", {
-        object: __spreadProps$b(__spreadValues$e({}, baseProps()), {
+        object: __spreadProps$c(__spreadValues$f({}, baseProps()), {
           assets: command.assets,
           height: asset.height,
           width: asset.width,
@@ -11923,10 +12792,10 @@ const spriteActions = {
     });
   }
 };
-var __defProp$s = Object.defineProperty;
-var __defNormalProp$s = (obj, key, value) => key in obj ? __defProp$s(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$t = Object.defineProperty;
+var __defNormalProp$t = (obj, key, value) => key in obj ? __defProp$t(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$h = (obj, key, value) => {
-  __defNormalProp$s(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$t(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 const aroundContextSize = 5;
@@ -12109,34 +12978,164 @@ window.addEventListener("unload", () => {
   });
 });
 var dist = {};
-var types = {};
-Object.defineProperty(types, "__esModule", { value: true });
-var functions = {};
-Object.defineProperty(functions, "__esModule", { value: true });
-functions.createFactoryWithConstraint = functions.isExact = functions.noop = functions.assert = functions.UnreachableCaseError = void 0;
+var primitive = {};
+Object.defineProperty(primitive, "__esModule", { value: true });
+var builtIn = {};
+Object.defineProperty(builtIn, "__esModule", { value: true });
+var keyOfBase = {};
+Object.defineProperty(keyOfBase, "__esModule", { value: true });
+var strictExclude = {};
+Object.defineProperty(strictExclude, "__esModule", { value: true });
+var strictExtract = {};
+Object.defineProperty(strictExtract, "__esModule", { value: true });
+var strictOmit = {};
+Object.defineProperty(strictOmit, "__esModule", { value: true });
+var writable = {};
+Object.defineProperty(writable, "__esModule", { value: true });
+var asyncOrSync = {};
+Object.defineProperty(asyncOrSync, "__esModule", { value: true });
+var asyncOrSyncType = {};
+Object.defineProperty(asyncOrSyncType, "__esModule", { value: true });
+var dictionary = {};
+Object.defineProperty(dictionary, "__esModule", { value: true });
+var dictionaryValues = {};
+Object.defineProperty(dictionaryValues, "__esModule", { value: true });
+var merge = {};
+Object.defineProperty(merge, "__esModule", { value: true });
+var mergeN = {};
+Object.defineProperty(mergeN, "__esModule", { value: true });
+var newable = {};
+Object.defineProperty(newable, "__esModule", { value: true });
+var nonNever = {};
+Object.defineProperty(nonNever, "__esModule", { value: true });
+var omitProperties = {};
+Object.defineProperty(omitProperties, "__esModule", { value: true });
+var opaque = {};
+Object.defineProperty(opaque, "__esModule", { value: true });
+var pickProperties = {};
+Object.defineProperty(pickProperties, "__esModule", { value: true });
+var safeDictionary = {};
+Object.defineProperty(safeDictionary, "__esModule", { value: true });
+var unionToIntersection = {};
+Object.defineProperty(unionToIntersection, "__esModule", { value: true });
+var valueOf = {};
+Object.defineProperty(valueOf, "__esModule", { value: true });
+var xor = {};
+Object.defineProperty(xor, "__esModule", { value: true });
+var markOptional = {};
+Object.defineProperty(markOptional, "__esModule", { value: true });
+var markReadonly = {};
+Object.defineProperty(markReadonly, "__esModule", { value: true });
+var markRequired = {};
+Object.defineProperty(markRequired, "__esModule", { value: true });
+var markWritable = {};
+Object.defineProperty(markWritable, "__esModule", { value: true });
+var buildable = {};
+Object.defineProperty(buildable, "__esModule", { value: true });
+var deepNonNullable = {};
+Object.defineProperty(deepNonNullable, "__esModule", { value: true });
+var deepNullable = {};
+Object.defineProperty(deepNullable, "__esModule", { value: true });
+var deepOmit = {};
+Object.defineProperty(deepOmit, "__esModule", { value: true });
+var deepPartial = {};
+Object.defineProperty(deepPartial, "__esModule", { value: true });
+var deepPick = {};
+Object.defineProperty(deepPick, "__esModule", { value: true });
+var deepReadonly = {};
+Object.defineProperty(deepReadonly, "__esModule", { value: true });
+var deepRequired = {};
+Object.defineProperty(deepRequired, "__esModule", { value: true });
+var deepUndefinable = {};
+Object.defineProperty(deepUndefinable, "__esModule", { value: true });
+var deepWritable = {};
+Object.defineProperty(deepWritable, "__esModule", { value: true });
+var optionalKeys = {};
+Object.defineProperty(optionalKeys, "__esModule", { value: true });
+var pickKeys = {};
+Object.defineProperty(pickKeys, "__esModule", { value: true });
+var readonlyKeys = {};
+Object.defineProperty(readonlyKeys, "__esModule", { value: true });
+var requiredKeys = {};
+Object.defineProperty(requiredKeys, "__esModule", { value: true });
+var writableKeys = {};
+Object.defineProperty(writableKeys, "__esModule", { value: true });
+var exact = {};
+Object.defineProperty(exact, "__esModule", { value: true });
+var isAny = {};
+Object.defineProperty(isAny, "__esModule", { value: true });
+var isNever = {};
+Object.defineProperty(isNever, "__esModule", { value: true });
+var isUnknown = {};
+Object.defineProperty(isUnknown, "__esModule", { value: true });
+var isTuple = {};
+Object.defineProperty(isTuple, "__esModule", { value: true });
+var nonEmptyObject = {};
+Object.defineProperty(nonEmptyObject, "__esModule", { value: true });
+var anyArray = {};
+Object.defineProperty(anyArray, "__esModule", { value: true });
+var arrayOrSingle = {};
+Object.defineProperty(arrayOrSingle, "__esModule", { value: true });
+var elementOf = {};
+Object.defineProperty(elementOf, "__esModule", { value: true });
+var head = {};
+Object.defineProperty(head, "__esModule", { value: true });
+var nonEmptyArray = {};
+Object.defineProperty(nonEmptyArray, "__esModule", { value: true });
+var readonlyArrayOrSingle = {};
+Object.defineProperty(readonlyArrayOrSingle, "__esModule", { value: true });
+var tail = {};
+Object.defineProperty(tail, "__esModule", { value: true });
+var tuple = {};
+Object.defineProperty(tuple, "__esModule", { value: true });
+var camelCase = {};
+Object.defineProperty(camelCase, "__esModule", { value: true });
+var deepCamelCaseProperties = {};
+Object.defineProperty(deepCamelCaseProperties, "__esModule", { value: true });
+var anyFunction = {};
+Object.defineProperty(anyFunction, "__esModule", { value: true });
+var predicateFunction = {};
+Object.defineProperty(predicateFunction, "__esModule", { value: true });
+var predicateType = {};
+Object.defineProperty(predicateType, "__esModule", { value: true });
+var unreachableCaseError = {};
+Object.defineProperty(unreachableCaseError, "__esModule", { value: true });
+unreachableCaseError.UnreachableCaseError = void 0;
 class UnreachableCaseError extends Error {
   constructor(value) {
     super(`Unreachable case: ${value}`);
   }
 }
-functions.UnreachableCaseError = UnreachableCaseError;
-function assert(condition, msg = "no additional info provided") {
+unreachableCaseError.UnreachableCaseError = UnreachableCaseError;
+var assert$1 = {};
+Object.defineProperty(assert$1, "__esModule", { value: true });
+assert$1.assert = void 0;
+function assert(condition, message = "no additional info provided") {
   if (!condition) {
-    throw new Error("Assertion Error: " + msg);
+    throw new Error("Assertion Error: " + message);
   }
 }
-functions.assert = assert;
+assert$1.assert = assert;
+var createFactoryWithConstraint$1 = {};
+Object.defineProperty(createFactoryWithConstraint$1, "__esModule", { value: true });
+createFactoryWithConstraint$1.createFactoryWithConstraint = void 0;
+const createFactoryWithConstraint = () => (value) => value;
+createFactoryWithConstraint$1.createFactoryWithConstraint = createFactoryWithConstraint;
+var isExact$1 = {};
+Object.defineProperty(isExact$1, "__esModule", { value: true });
+isExact$1.isExact = void 0;
+const isExact = () => (actual) => {
+  return actual;
+};
+isExact$1.isExact = isExact;
+var noop$1 = {};
+Object.defineProperty(noop$1, "__esModule", { value: true });
+noop$1.noop = void 0;
 function noop(..._args) {
 }
-functions.noop = noop;
-const isExact = () => (x) => {
-  return x;
-};
-functions.isExact = isExact;
-const createFactoryWithConstraint = () => (value) => value;
-functions.createFactoryWithConstraint = createFactoryWithConstraint;
-var literalTypes = {};
-Object.defineProperty(literalTypes, "__esModule", { value: true });
+noop$1.noop = noop;
+var awaited = {};
+Object.defineProperty(awaited, "__esModule", { value: true });
 (function(exports) {
   var __createBinding = commonjsGlobal && commonjsGlobal.__createBinding || (Object.create ? function(o, m, k, k2) {
     if (k2 === void 0)
@@ -12159,76 +13158,139 @@ Object.defineProperty(literalTypes, "__esModule", { value: true });
         __createBinding(exports2, m, p2);
   };
   Object.defineProperty(exports, "__esModule", { value: true });
-  __exportStar(types, exports);
-  __exportStar(functions, exports);
-  __exportStar(literalTypes, exports);
+  __exportStar(primitive, exports);
+  __exportStar(builtIn, exports);
+  __exportStar(keyOfBase, exports);
+  __exportStar(strictExclude, exports);
+  __exportStar(strictExtract, exports);
+  __exportStar(strictOmit, exports);
+  __exportStar(writable, exports);
+  __exportStar(asyncOrSync, exports);
+  __exportStar(asyncOrSyncType, exports);
+  __exportStar(dictionary, exports);
+  __exportStar(dictionaryValues, exports);
+  __exportStar(merge, exports);
+  __exportStar(mergeN, exports);
+  __exportStar(newable, exports);
+  __exportStar(nonNever, exports);
+  __exportStar(omitProperties, exports);
+  __exportStar(opaque, exports);
+  __exportStar(pickProperties, exports);
+  __exportStar(safeDictionary, exports);
+  __exportStar(unionToIntersection, exports);
+  __exportStar(valueOf, exports);
+  __exportStar(xor, exports);
+  __exportStar(markOptional, exports);
+  __exportStar(markReadonly, exports);
+  __exportStar(markRequired, exports);
+  __exportStar(markWritable, exports);
+  __exportStar(buildable, exports);
+  __exportStar(deepNonNullable, exports);
+  __exportStar(deepNullable, exports);
+  __exportStar(deepOmit, exports);
+  __exportStar(deepPartial, exports);
+  __exportStar(deepPick, exports);
+  __exportStar(deepReadonly, exports);
+  __exportStar(deepRequired, exports);
+  __exportStar(deepUndefinable, exports);
+  __exportStar(deepWritable, exports);
+  __exportStar(optionalKeys, exports);
+  __exportStar(pickKeys, exports);
+  __exportStar(readonlyKeys, exports);
+  __exportStar(requiredKeys, exports);
+  __exportStar(writableKeys, exports);
+  __exportStar(exact, exports);
+  __exportStar(isAny, exports);
+  __exportStar(isNever, exports);
+  __exportStar(isUnknown, exports);
+  __exportStar(isTuple, exports);
+  __exportStar(nonEmptyObject, exports);
+  __exportStar(anyArray, exports);
+  __exportStar(arrayOrSingle, exports);
+  __exportStar(elementOf, exports);
+  __exportStar(head, exports);
+  __exportStar(nonEmptyArray, exports);
+  __exportStar(readonlyArrayOrSingle, exports);
+  __exportStar(tail, exports);
+  __exportStar(tuple, exports);
+  __exportStar(camelCase, exports);
+  __exportStar(deepCamelCaseProperties, exports);
+  __exportStar(anyFunction, exports);
+  __exportStar(predicateFunction, exports);
+  __exportStar(predicateType, exports);
+  __exportStar(unreachableCaseError, exports);
+  __exportStar(assert$1, exports);
+  __exportStar(createFactoryWithConstraint$1, exports);
+  __exportStar(isExact$1, exports);
+  __exportStar(noop$1, exports);
+  __exportStar(awaited, exports);
 })(dist);
-var __defProp$r = Object.defineProperty;
-var __defProps$a = Object.defineProperties;
-var __getOwnPropDescs$a = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$d = Object.getOwnPropertySymbols;
-var __hasOwnProp$d = Object.prototype.hasOwnProperty;
-var __propIsEnum$d = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$r = (obj, key, value) => key in obj ? __defProp$r(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$d = (a, b) => {
+var __defProp$s = Object.defineProperty;
+var __defProps$b = Object.defineProperties;
+var __getOwnPropDescs$b = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$e = Object.getOwnPropertySymbols;
+var __hasOwnProp$e = Object.prototype.hasOwnProperty;
+var __propIsEnum$e = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$s = (obj, key, value) => key in obj ? __defProp$s(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$e = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$d.call(b, prop))
-      __defNormalProp$r(a, prop, b[prop]);
-  if (__getOwnPropSymbols$d)
-    for (var prop of __getOwnPropSymbols$d(b)) {
-      if (__propIsEnum$d.call(b, prop))
-        __defNormalProp$r(a, prop, b[prop]);
+    if (__hasOwnProp$e.call(b, prop))
+      __defNormalProp$s(a, prop, b[prop]);
+  if (__getOwnPropSymbols$e)
+    for (var prop of __getOwnPropSymbols$e(b)) {
+      if (__propIsEnum$e.call(b, prop))
+        __defNormalProp$s(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$a = (a, b) => __defProps$a(a, __getOwnPropDescs$a(b));
+var __spreadProps$b = (a, b) => __defProps$b(a, __getOwnPropDescs$b(b));
 const textCommands = new Map([
-  paramlessOp("i", (style) => __spreadProps$a(__spreadValues$d({}, style), { isItalic: true })),
-  paramlessOp("b", (style) => __spreadProps$a(__spreadValues$d({}, style), { isBold: true })),
-  paramlessOp("u", (style) => __spreadProps$a(__spreadValues$d({}, style), { isUnderlined: true })),
-  paramlessOp("s", (style) => __spreadProps$a(__spreadValues$d({}, style), {
+  paramlessOp("i", (style) => __spreadProps$b(__spreadValues$e({}, style), { isItalic: true })),
+  paramlessOp("b", (style) => __spreadProps$b(__spreadValues$e({}, style), { isBold: true })),
+  paramlessOp("u", (style) => __spreadProps$b(__spreadValues$e({}, style), { isUnderlined: true })),
+  paramlessOp("s", (style) => __spreadProps$b(__spreadValues$e({}, style), {
     isStrikethrough: true
   })),
-  paramlessOp("plain", (style) => __spreadProps$a(__spreadValues$d({}, style), {
+  paramlessOp("plain", (style) => __spreadProps$b(__spreadValues$e({}, style), {
     isStrikethrough: false,
     isUnderlined: false,
     isBold: false,
     isItalic: false
   })),
-  paramlessOp("edited", (style) => __spreadProps$a(__spreadValues$d({}, style), {
+  paramlessOp("edited", (style) => __spreadProps$b(__spreadValues$e({}, style), {
     fontName: "verily",
     strokeColor: "#000000",
     strokeWidth: 20,
     letterSpacing: 8
   })),
-  relativeNumberOp("k", (style, relative, parameter) => __spreadProps$a(__spreadValues$d({}, style), {
+  relativeNumberOp("k", (style, relative, parameter) => __spreadProps$b(__spreadValues$e({}, style), {
     letterSpacing: relative ? style.letterSpacing + parameter : parameter
   })),
-  relativeNumberOp("size", (style, relative, parameter) => __spreadProps$a(__spreadValues$d({}, style), {
+  relativeNumberOp("size", (style, relative, parameter) => __spreadProps$b(__spreadValues$e({}, style), {
     fontSize: relative ? style.fontSize + parameter : parameter
   })),
-  relativeNumberOp("alpha", (style, relative, parameter) => __spreadProps$a(__spreadValues$d({}, style), {
+  relativeNumberOp("alpha", (style, relative, parameter) => __spreadProps$b(__spreadValues$e({}, style), {
     alpha: relative ? style.alpha + parameter : parameter
   })),
-  relativeNumberOp("stroke", (style, relative, parameter) => __spreadProps$a(__spreadValues$d({}, style), {
+  relativeNumberOp("stroke", (style, relative, parameter) => __spreadProps$b(__spreadValues$e({}, style), {
     strokeWidth: relative ? style.strokeWidth + parameter : parameter
   })),
   [
     "font",
     (style, parameter) => {
-      return __spreadProps$a(__spreadValues$d({}, style), { fontName: parameter });
+      return __spreadProps$b(__spreadValues$e({}, style), { fontName: parameter });
     }
   ],
   [
     "color",
     (style, parameter) => {
-      return __spreadProps$a(__spreadValues$d({}, style), { color: parameter });
+      return __spreadProps$b(__spreadValues$e({}, style), { color: parameter });
     }
   ],
   [
     "outlinecolor",
     (style, parameter) => {
-      return __spreadProps$a(__spreadValues$d({}, style), { strokeColor: parameter });
+      return __spreadProps$b(__spreadValues$e({}, style), { strokeColor: parameter });
     }
   ]
 ]);
@@ -12258,10 +13320,10 @@ function relativeNumberOp(name, op) {
     }
   ];
 }
-var __defProp$q = Object.defineProperty;
-var __defNormalProp$q = (obj, key, value) => key in obj ? __defProp$q(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$r = Object.defineProperty;
+var __defNormalProp$r = (obj, key, value) => key in obj ? __defProp$r(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$g = (obj, key, value) => {
-  __defNormalProp$q(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$r(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 class TextRenderer {
@@ -12810,24 +13872,24 @@ function matrixEquals(a, b) {
 }
 class RenderAbortedException {
 }
-var __defProp$p = Object.defineProperty;
-var __getOwnPropSymbols$c = Object.getOwnPropertySymbols;
-var __hasOwnProp$c = Object.prototype.hasOwnProperty;
-var __propIsEnum$c = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$p = (obj, key, value) => key in obj ? __defProp$p(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$c = (a, b) => {
+var __defProp$q = Object.defineProperty;
+var __getOwnPropSymbols$d = Object.getOwnPropertySymbols;
+var __hasOwnProp$d = Object.prototype.hasOwnProperty;
+var __propIsEnum$d = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$q = (obj, key, value) => key in obj ? __defProp$q(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$d = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$c.call(b, prop))
-      __defNormalProp$p(a, prop, b[prop]);
-  if (__getOwnPropSymbols$c)
-    for (var prop of __getOwnPropSymbols$c(b)) {
-      if (__propIsEnum$c.call(b, prop))
-        __defNormalProp$p(a, prop, b[prop]);
+    if (__hasOwnProp$d.call(b, prop))
+      __defNormalProp$q(a, prop, b[prop]);
+  if (__getOwnPropSymbols$d)
+    for (var prop of __getOwnPropSymbols$d(b)) {
+      if (__propIsEnum$d.call(b, prop))
+        __defNormalProp$q(a, prop, b[prop]);
     }
   return a;
 };
 var __publicField$f = (obj, key, value) => {
-  __defNormalProp$p(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$q(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$z = (__this, __arguments, generator) => {
@@ -12874,7 +13936,7 @@ class RenderContext {
       x = 0,
       y = 0,
       text = ""
-    } = __spreadValues$c(__spreadValues$c({}, {
+    } = __spreadValues$d(__spreadValues$d({}, {
       font: "20px aller",
       align: "left"
     }), params);
@@ -12900,7 +13962,7 @@ class RenderContext {
       font,
       align,
       text = ""
-    } = __spreadValues$c(__spreadValues$c({}, {
+    } = __spreadValues$d(__spreadValues$d({}, {
       font: "20px aller",
       align: "left"
     }), params);
@@ -12921,7 +13983,7 @@ class RenderContext {
   drawImage(params) {
     if (this.aborted)
       throw new RenderAbortedException();
-    const { image, flip, x, y, w, h: h2, filters, composite } = __spreadValues$c({
+    const { image, flip, x, y, w, h: h2, filters, composite } = __spreadValues$d({
       flip: false,
       w: params.image.width,
       h: params.image.height,
@@ -13115,10 +14177,10 @@ class RenderContext {
     this.aborted = true;
   }
 }
-var __defProp$o = Object.defineProperty;
-var __defNormalProp$o = (obj, key, value) => key in obj ? __defProp$o(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$p = Object.defineProperty;
+var __defNormalProp$p = (obj, key, value) => key in obj ? __defProp$p(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$e = (obj, key, value) => {
-  __defNormalProp$o(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$p(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$y = (__this, __arguments, generator) => {
@@ -13256,10 +14318,10 @@ var SelectedState = /* @__PURE__ */ ((SelectedState2) => {
   return SelectedState2;
 })(SelectedState || {});
 window.dddg_dbg_paint_hitboxes = "none";
-var __defProp$n = Object.defineProperty;
-var __defNormalProp$n = (obj, key, value) => key in obj ? __defProp$n(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$o = Object.defineProperty;
+var __defNormalProp$o = (obj, key, value) => key in obj ? __defProp$o(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$d = (obj, key, value) => {
-  __defNormalProp$n(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$o(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 class Renderable {
@@ -13450,10 +14512,10 @@ class ScalingRenderable extends Renderable {
     return !(transform.a === 1 && transform.b === 0 && transform.c === 0 && transform.d === 1);
   }
 }
-var __defProp$m = Object.defineProperty;
-var __defNormalProp$m = (obj, key, value) => key in obj ? __defProp$m(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$n = Object.defineProperty;
+var __defNormalProp$n = (obj, key, value) => key in obj ? __defProp$n(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$c = (obj, key, value) => {
-  __defNormalProp$m(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$n(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$x = (__this, __arguments, generator) => {
@@ -13534,10 +14596,10 @@ class DdlcBase {
     }))();
   }
 }
-var __defProp$l = Object.defineProperty;
-var __defNormalProp$l = (obj, key, value) => key in obj ? __defProp$l(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$m = Object.defineProperty;
+var __defNormalProp$m = (obj, key, value) => key in obj ? __defProp$m(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$b = (obj, key, value) => {
-  __defNormalProp$l(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$m(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$w = (__this, __arguments, generator) => {
@@ -13651,10 +14713,10 @@ __publicField$b(Default, "id", "normal");
 __publicField$b(Default, "label", "Normal");
 __publicField$b(Default, "priority", 0);
 __publicField$b(Default, "gameMode", "ddlc");
-var __defProp$k = Object.defineProperty;
-var __defNormalProp$k = (obj, key, value) => key in obj ? __defProp$k(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$l = Object.defineProperty;
+var __defNormalProp$l = (obj, key, value) => key in obj ? __defProp$l(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$a = (obj, key, value) => {
-  __defNormalProp$k(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$l(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 class Corrupted extends Default {
@@ -13668,27 +14730,27 @@ __publicField$a(Corrupted, "id", "corrupt");
 __publicField$a(Corrupted, "label", "Corrupted");
 __publicField$a(Corrupted, "priority", 1);
 __publicField$a(Corrupted, "gameMode", "ddlc");
-var __defProp$j = Object.defineProperty;
-var __defProps$9 = Object.defineProperties;
-var __getOwnPropDescs$9 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$b = Object.getOwnPropertySymbols;
-var __hasOwnProp$b = Object.prototype.hasOwnProperty;
-var __propIsEnum$b = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$j = (obj, key, value) => key in obj ? __defProp$j(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$b = (a, b) => {
+var __defProp$k = Object.defineProperty;
+var __defProps$a = Object.defineProperties;
+var __getOwnPropDescs$a = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$c = Object.getOwnPropertySymbols;
+var __hasOwnProp$c = Object.prototype.hasOwnProperty;
+var __propIsEnum$c = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$k = (obj, key, value) => key in obj ? __defProp$k(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$c = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$b.call(b, prop))
-      __defNormalProp$j(a, prop, b[prop]);
-  if (__getOwnPropSymbols$b)
-    for (var prop of __getOwnPropSymbols$b(b)) {
-      if (__propIsEnum$b.call(b, prop))
-        __defNormalProp$j(a, prop, b[prop]);
+    if (__hasOwnProp$c.call(b, prop))
+      __defNormalProp$k(a, prop, b[prop]);
+  if (__getOwnPropSymbols$c)
+    for (var prop of __getOwnPropSymbols$c(b)) {
+      if (__propIsEnum$c.call(b, prop))
+        __defNormalProp$k(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$9 = (a, b) => __defProps$9(a, __getOwnPropDescs$9(b));
+var __spreadProps$a = (a, b) => __defProps$a(a, __getOwnPropDescs$a(b));
 var __publicField$9 = (obj, key, value) => {
-  __defNormalProp$j(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$k(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 class Custom extends DdlcBase {
@@ -13732,7 +14794,7 @@ class Custom extends DdlcBase {
     return NameboxTextYOffset$1;
   }
   get nameboxStyle() {
-    return __spreadProps$9(__spreadValues$b({}, NameboxTextStyle$1), {
+    return __spreadProps$a(__spreadValues$c({}, NameboxTextStyle$1), {
       strokeColor: this.nameboxOutlineColor,
       color: "#FFFFFF"
     });
@@ -13893,10 +14955,10 @@ __publicField$9(Custom, "id", "custom");
 __publicField$9(Custom, "label", "Custom");
 __publicField$9(Custom, "priority", 0);
 __publicField$9(Custom, "gameMode", "ddlc");
-var __defProp$i = Object.defineProperty;
-var __defNormalProp$i = (obj, key, value) => key in obj ? __defProp$i(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$j = Object.defineProperty;
+var __defNormalProp$j = (obj, key, value) => key in obj ? __defProp$j(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$8 = (obj, key, value) => {
-  __defNormalProp$i(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$j(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$v = (__this, __arguments, generator) => {
@@ -13995,27 +15057,27 @@ const _DdlcPlusBase = class {
 };
 let DdlcPlusBase = _DdlcPlusBase;
 __publicField$8(DdlcPlusBase, "widthCache", {});
-var __defProp$h = Object.defineProperty;
-var __defProps$8 = Object.defineProperties;
-var __getOwnPropDescs$8 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$a = Object.getOwnPropertySymbols;
-var __hasOwnProp$a = Object.prototype.hasOwnProperty;
-var __propIsEnum$a = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$h = (obj, key, value) => key in obj ? __defProp$h(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$a = (a, b) => {
+var __defProp$i = Object.defineProperty;
+var __defProps$9 = Object.defineProperties;
+var __getOwnPropDescs$9 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$b = Object.getOwnPropertySymbols;
+var __hasOwnProp$b = Object.prototype.hasOwnProperty;
+var __propIsEnum$b = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$i = (obj, key, value) => key in obj ? __defProp$i(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$b = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$a.call(b, prop))
-      __defNormalProp$h(a, prop, b[prop]);
-  if (__getOwnPropSymbols$a)
-    for (var prop of __getOwnPropSymbols$a(b)) {
-      if (__propIsEnum$a.call(b, prop))
-        __defNormalProp$h(a, prop, b[prop]);
+    if (__hasOwnProp$b.call(b, prop))
+      __defNormalProp$i(a, prop, b[prop]);
+  if (__getOwnPropSymbols$b)
+    for (var prop of __getOwnPropSymbols$b(b)) {
+      if (__propIsEnum$b.call(b, prop))
+        __defNormalProp$i(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$8 = (a, b) => __defProps$8(a, __getOwnPropDescs$8(b));
+var __spreadProps$9 = (a, b) => __defProps$9(a, __getOwnPropDescs$9(b));
 var __publicField$7 = (obj, key, value) => {
-  __defNormalProp$h(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$i(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 class CustomPlus extends DdlcPlusBase {
@@ -14059,7 +15121,7 @@ class CustomPlus extends DdlcPlusBase {
     return NameboxTextYOffset;
   }
   get nameboxStyle() {
-    return __spreadProps$8(__spreadValues$a({}, NameboxTextStyle), {
+    return __spreadProps$9(__spreadValues$b({}, NameboxTextStyle), {
       strokeColor: this.nameboxOutlineColor,
       color: "#FFFFFF"
     });
@@ -14190,10 +15252,10 @@ __publicField$7(CustomPlus, "id", "custom_plus");
 __publicField$7(CustomPlus, "label", "Custom (Plus)");
 __publicField$7(CustomPlus, "priority", 0);
 __publicField$7(CustomPlus, "gameMode", "ddlc_plus");
-var __defProp$g = Object.defineProperty;
-var __defNormalProp$g = (obj, key, value) => key in obj ? __defProp$g(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$h = Object.defineProperty;
+var __defNormalProp$h = (obj, key, value) => key in obj ? __defProp$h(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$6 = (obj, key, value) => {
-  __defNormalProp$g(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$h(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$u = (__this, __arguments, generator) => {
@@ -14259,10 +15321,10 @@ __publicField$6(None, "id", "none");
 __publicField$6(None, "label", "None");
 __publicField$6(None, "priority", 0);
 __publicField$6(None, "gameMode", "ddlc");
-var __defProp$f = Object.defineProperty;
-var __defNormalProp$f = (obj, key, value) => key in obj ? __defProp$f(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$g = Object.defineProperty;
+var __defNormalProp$g = (obj, key, value) => key in obj ? __defProp$g(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$5 = (obj, key, value) => {
-  __defNormalProp$f(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$g(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 const styleRenderers = [
@@ -14284,8 +15346,19 @@ class TextBox extends ScalingRenderable {
     super(...arguments);
     __publicField$5(this, "nbTextRenderer", null);
     __publicField$5(this, "textRenderer", null);
+    __publicField$5(this, "_lastRefVars", null);
     __publicField$5(this, "refObject", null);
     __publicField$5(this, "_lastRenderer", null);
+  }
+  getRefVars() {
+    const refObj = this.refObject;
+    if (!refObj)
+      return null;
+    return JSON.stringify([
+      refObj.label,
+      refObj.textboxColor,
+      refObj.nameboxWidth
+    ]);
   }
   prepareRender(panel, store2, renderables, lq) {
     var _a, _b, _c;
@@ -14293,6 +15366,11 @@ class TextBox extends ScalingRenderable {
     const prepareRet = this.textboxRenderer.prepare();
     if (typeof this.obj.talkingObjId === "number") {
       this.refObject = (_a = panel.objects[this.obj.talkingObjId]) != null ? _a : null;
+    }
+    const currentRefVars = this.getRefVars;
+    if (currentRefVars !== this._lastRefVars) {
+      this.localCanvasInvalid = true;
+      this._lastRefVars = currentRefVars;
     }
     const name = this.obj.talkingObjId === "$other$" ? this.obj.talkingOther : (_c = (_b = this.refObject) == null ? void 0 : _b.label) != null ? _c : "Missing name";
     this.nbTextRenderer = new TextRenderer(
@@ -14362,25 +15440,25 @@ class TextBox extends ScalingRenderable {
     return newRenderer;
   }
 }
-var __defProp$e = Object.defineProperty;
-var __defProps$7 = Object.defineProperties;
-var __getOwnPropDescs$7 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$9 = Object.getOwnPropertySymbols;
-var __hasOwnProp$9 = Object.prototype.hasOwnProperty;
-var __propIsEnum$9 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$e = (obj, key, value) => key in obj ? __defProp$e(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$9 = (a, b) => {
+var __defProp$f = Object.defineProperty;
+var __defProps$8 = Object.defineProperties;
+var __getOwnPropDescs$8 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$a = Object.getOwnPropertySymbols;
+var __hasOwnProp$a = Object.prototype.hasOwnProperty;
+var __propIsEnum$a = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$f = (obj, key, value) => key in obj ? __defProp$f(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$a = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$9.call(b, prop))
-      __defNormalProp$e(a, prop, b[prop]);
-  if (__getOwnPropSymbols$9)
-    for (var prop of __getOwnPropSymbols$9(b)) {
-      if (__propIsEnum$9.call(b, prop))
-        __defNormalProp$e(a, prop, b[prop]);
+    if (__hasOwnProp$a.call(b, prop))
+      __defNormalProp$f(a, prop, b[prop]);
+  if (__getOwnPropSymbols$a)
+    for (var prop of __getOwnPropSymbols$a(b)) {
+      if (__propIsEnum$a.call(b, prop))
+        __defNormalProp$f(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$7 = (a, b) => __defProps$7(a, __getOwnPropDescs$7(b));
+var __spreadProps$8 = (a, b) => __defProps$8(a, __getOwnPropDescs$8(b));
 var __async$t = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -14445,7 +15523,7 @@ const textBoxActions = {
       rotation: 0
     };
     commit2("create", {
-      object: __spreadProps$7(__spreadValues$9(__spreadValues$9({}, baseProps()), resetBounds), {
+      object: __spreadProps$8(__spreadValues$a(__spreadValues$a({}, baseProps()), resetBounds), {
         panelId: rootState.panels.currentPanel,
         id,
         onTop: true,
@@ -14597,7 +15675,7 @@ const textBoxActions = {
       });
       const newStyle = obj.style === "custom_plus" ? "custom_plus" : "custom";
       if (obj.style !== newStyle) {
-        yield dispatch2("setStyle", __spreadProps$7(__spreadValues$9({}, command), {
+        yield dispatch2("setStyle", __spreadProps$8(__spreadValues$a({}, command), {
           style: newStyle
         }));
       }
@@ -14629,19 +15707,19 @@ const textBoxActions = {
 function textboxProperty(panelId, id, key, value) {
   return { id, panelId, key, value };
 }
-var __defProp$d = Object.defineProperty;
-var __getOwnPropSymbols$8 = Object.getOwnPropertySymbols;
-var __hasOwnProp$8 = Object.prototype.hasOwnProperty;
-var __propIsEnum$8 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$d = (obj, key, value) => key in obj ? __defProp$d(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$8 = (a, b) => {
+var __defProp$e = Object.defineProperty;
+var __getOwnPropSymbols$9 = Object.getOwnPropertySymbols;
+var __hasOwnProp$9 = Object.prototype.hasOwnProperty;
+var __propIsEnum$9 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$e = (obj, key, value) => key in obj ? __defProp$e(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$9 = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$8.call(b, prop))
-      __defNormalProp$d(a, prop, b[prop]);
-  if (__getOwnPropSymbols$8)
-    for (var prop of __getOwnPropSymbols$8(b)) {
-      if (__propIsEnum$8.call(b, prop))
-        __defNormalProp$d(a, prop, b[prop]);
+    if (__hasOwnProp$9.call(b, prop))
+      __defNormalProp$e(a, prop, b[prop]);
+  if (__getOwnPropSymbols$9)
+    for (var prop of __getOwnPropSymbols$9(b)) {
+      if (__propIsEnum$9.call(b, prop))
+        __defNormalProp$e(a, prop, b[prop]);
     }
   return a;
 };
@@ -14722,7 +15800,7 @@ function moveFilter(action, objLookup, setMutation) {
 function setFilter(action, objLookup, setMutation) {
   const obj = objLookup();
   const filters = [...obj.filters];
-  const filter = __spreadValues$8({}, filters[action.idx]);
+  const filter = __spreadValues$9({}, filters[action.idx]);
   filters[action.idx] = filter;
   if (filter.type === "drop-shadow") {
     if (action.blurRadius !== void 0) {
@@ -14746,26 +15824,26 @@ function setFilter(action, objLookup, setMutation) {
     filters
   });
 }
-var __defProp$c = Object.defineProperty;
-var __defProps$6 = Object.defineProperties;
-var __getOwnPropDescs$6 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$7 = Object.getOwnPropertySymbols;
-var __hasOwnProp$7 = Object.prototype.hasOwnProperty;
-var __propIsEnum$7 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$c = (obj, key, value) => key in obj ? __defProp$c(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$7 = (a, b) => {
+var __defProp$d = Object.defineProperty;
+var __defProps$7 = Object.defineProperties;
+var __getOwnPropDescs$7 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$8 = Object.getOwnPropertySymbols;
+var __hasOwnProp$8 = Object.prototype.hasOwnProperty;
+var __propIsEnum$8 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$d = (obj, key, value) => key in obj ? __defProp$d(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$8 = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$7.call(b, prop))
-      __defNormalProp$c(a, prop, b[prop]);
-  if (__getOwnPropSymbols$7)
-    for (var prop of __getOwnPropSymbols$7(b)) {
-      if (__propIsEnum$7.call(b, prop))
-        __defNormalProp$c(a, prop, b[prop]);
+    if (__hasOwnProp$8.call(b, prop))
+      __defNormalProp$d(a, prop, b[prop]);
+  if (__getOwnPropSymbols$8)
+    for (var prop of __getOwnPropSymbols$8(b)) {
+      if (__propIsEnum$8.call(b, prop))
+        __defNormalProp$d(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$6 = (a, b) => __defProps$6(a, __getOwnPropDescs$6(b));
-const mutations = __spreadValues$7(__spreadValues$7(__spreadValues$7(__spreadValues$7(__spreadValues$7(__spreadValues$7({
+var __spreadProps$7 = (a, b) => __defProps$7(a, __getOwnPropDescs$7(b));
+const mutations = __spreadValues$8(__spreadValues$8(__spreadValues$8(__spreadValues$8(__spreadValues$8(__spreadValues$8({
   create(state, { object }) {
     const panel = state.panels[object.panelId];
     if (object.id > panel.lastObjId)
@@ -14871,7 +15949,7 @@ const mutations = __spreadValues$7(__spreadValues$7(__spreadValues$7(__spreadVal
     ++obj.version;
   }
 }, spriteMutations), characterMutations), textBoxMutations), choiceMutations), notificationMutations), poemMutations);
-const actions = __spreadValues$7(__spreadValues$7(__spreadValues$7(__spreadValues$7(__spreadValues$7(__spreadValues$7({
+const actions = __spreadValues$8(__spreadValues$8(__spreadValues$8(__spreadValues$8(__spreadValues$8(__spreadValues$8({
   removeObject({ state, commit: commit2, rootState }, command) {
     var _a;
     const panel = state.panels[command.panelId];
@@ -14989,7 +16067,7 @@ const actions = __spreadValues$7(__spreadValues$7(__spreadValues$7(__spreadValue
         }
       }
       commit2("create", {
-        object: __spreadProps$6(__spreadValues$7({}, newObject), {
+        object: __spreadProps$7(__spreadValues$8({}, newObject), {
           id: transationTable.get(sourceId),
           panelId: targetPanelId
         })
@@ -15005,7 +16083,7 @@ const actions = __spreadValues$7(__spreadValues$7(__spreadValues$7(__spreadValue
       return;
     const oldObject = JSON.parse(rootState.ui.clipboard);
     commit2("create", {
-      object: __spreadProps$6(__spreadValues$7({}, oldObject), {
+      object: __spreadProps$7(__spreadValues$8({}, oldObject), {
         id: state.panels[state.currentPanel].lastObjId + 1,
         panelId: state.currentPanel
       })
@@ -15058,25 +16136,25 @@ function fixContentPackRemoval(context, oldContent) {
     }
   }
 }
-var __defProp$b = Object.defineProperty;
-var __defProps$5 = Object.defineProperties;
-var __getOwnPropDescs$5 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$6 = Object.getOwnPropertySymbols;
-var __hasOwnProp$6 = Object.prototype.hasOwnProperty;
-var __propIsEnum$6 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$b = (obj, key, value) => key in obj ? __defProp$b(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$6 = (a, b) => {
+var __defProp$c = Object.defineProperty;
+var __defProps$6 = Object.defineProperties;
+var __getOwnPropDescs$6 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$7 = Object.getOwnPropertySymbols;
+var __hasOwnProp$7 = Object.prototype.hasOwnProperty;
+var __propIsEnum$7 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$c = (obj, key, value) => key in obj ? __defProp$c(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$7 = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$6.call(b, prop))
-      __defNormalProp$b(a, prop, b[prop]);
-  if (__getOwnPropSymbols$6)
-    for (var prop of __getOwnPropSymbols$6(b)) {
-      if (__propIsEnum$6.call(b, prop))
-        __defNormalProp$b(a, prop, b[prop]);
+    if (__hasOwnProp$7.call(b, prop))
+      __defNormalProp$c(a, prop, b[prop]);
+  if (__getOwnPropSymbols$7)
+    for (var prop of __getOwnPropSymbols$7(b)) {
+      if (__propIsEnum$7.call(b, prop))
+        __defNormalProp$c(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$5 = (a, b) => __defProps$5(a, __getOwnPropDescs$5(b));
+var __spreadProps$6 = (a, b) => __defProps$6(a, __getOwnPropDescs$6(b));
 var ScalingModes = /* @__PURE__ */ ((ScalingModes2) => {
   ScalingModes2[ScalingModes2["None"] = 0] = "None";
   ScalingModes2[ScalingModes2["Stretch"] = 1] = "Stretch";
@@ -15120,7 +16198,7 @@ const panels = {
     panelOrder: [],
     currentPanel: null
   },
-  mutations: __spreadValues$6({
+  mutations: __spreadValues$7({
     setCurrentPanel(state, { panelId }) {
       state.currentPanel = panelId;
     },
@@ -15180,7 +16258,7 @@ const panels = {
       obj.background.filters = command.filters;
     }
   }, mutations),
-  actions: __spreadValues$6({
+  actions: __spreadValues$7({
     createPanel({ state, commit: commit2 }) {
       const id = state.lastPanelId + 1;
       commit2("createPanel", {
@@ -15239,7 +16317,7 @@ const panels = {
         }
       }
       commit2("createPanel", {
-        panel: __spreadProps$5(__spreadValues$6({}, newPanel), {
+        panel: __spreadProps$6(__spreadValues$7({}, newPanel), {
           id,
           lastObjId,
           objects: newObjects,
@@ -15469,25 +16547,25 @@ const uploadUrls = {
     }
   }
 };
-var __defProp$a = Object.defineProperty;
-var __defProps$4 = Object.defineProperties;
-var __getOwnPropDescs$4 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$5 = Object.getOwnPropertySymbols;
-var __hasOwnProp$5 = Object.prototype.hasOwnProperty;
-var __propIsEnum$5 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$a = (obj, key, value) => key in obj ? __defProp$a(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$5 = (a, b) => {
+var __defProp$b = Object.defineProperty;
+var __defProps$5 = Object.defineProperties;
+var __getOwnPropDescs$5 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$6 = Object.getOwnPropertySymbols;
+var __hasOwnProp$6 = Object.prototype.hasOwnProperty;
+var __propIsEnum$6 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$b = (obj, key, value) => key in obj ? __defProp$b(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$6 = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$5.call(b, prop))
-      __defNormalProp$a(a, prop, b[prop]);
-  if (__getOwnPropSymbols$5)
-    for (var prop of __getOwnPropSymbols$5(b)) {
-      if (__propIsEnum$5.call(b, prop))
-        __defNormalProp$a(a, prop, b[prop]);
+    if (__hasOwnProp$6.call(b, prop))
+      __defNormalProp$b(a, prop, b[prop]);
+  if (__getOwnPropSymbols$6)
+    for (var prop of __getOwnPropSymbols$6(b)) {
+      if (__propIsEnum$6.call(b, prop))
+        __defNormalProp$b(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$4 = (a, b) => __defProps$4(a, __getOwnPropDescs$4(b));
+var __spreadProps$5 = (a, b) => __defProps$5(a, __getOwnPropDescs$5(b));
 var __async$s = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -15567,7 +16645,7 @@ const store = createStore({
         var _a, _b;
         const data = JSON.parse(str);
         const contentData = data.content;
-        data.ui = __spreadProps$4(__spreadValues$5({}, getDefaultUiState()), {
+        data.ui = __spreadProps$5(__spreadValues$6({}, getDefaultUiState()), {
           vertical: state.ui.vertical,
           lqRendering: state.ui.lqRendering,
           nsfw: contentData.find(
@@ -15667,6 +16745,9 @@ var __async$r = (__this, __arguments, generator) => {
 const _hoisted_1$u = { key: 0 };
 const _hoisted_2$p = ["onClick"];
 const _hoisted_3$j = ["onClick"];
+const shortHidingTime = 5e3;
+const longHidingTime = 2e4;
+const hideShowTimeouts = 100;
 const _sfc_main$B = /* @__PURE__ */ defineComponent({
   __name: "message-console",
   props: {
@@ -15676,11 +16757,8 @@ const _sfc_main$B = /* @__PURE__ */ defineComponent({
     }
   },
   setup(__props) {
-    const props = __props;
-    const shortHidingTime = 5e3;
-    const longHidingTime = 2e4;
-    const hideShowTimeouts = 100;
     const store2 = useStore();
+    const props = __props;
     const messages = ref([]);
     const errors = ref([]);
     const resolvableErrors = ref([]);
@@ -15770,7 +16848,7 @@ const _sfc_main$B = /* @__PURE__ */ defineComponent({
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
         id: "messageConsole",
-        class: normalizeClass({ vertical: unref(vertical) })
+        class: normalizeClass({ vertical: vertical.value })
       }, [
         showLoading.value ? (openBlock(), createElementBlock("p", _hoisted_1$u, "Loading...")) : createCommentVNode("", true),
         (openBlock(true), createElementBlock(Fragment, null, renderList(messages.value, (message, i) => {
@@ -15838,10 +16916,11 @@ const _sfc_main$A = /* @__PURE__ */ defineComponent({
     }
   },
   emits: ["leave", "option"],
-  setup(__props, { emit: emit2 }) {
-    const props = __props;
+  setup(__props, { emit: __emit }) {
     const isDialogSupported = window.HTMLDialogElement != null;
+    const props = __props;
     const dialog = ref(null);
+    const emit2 = __emit;
     function open() {
       if (isDialogSupported) {
         const ele = dialog.value;
@@ -16022,10 +17101,10 @@ const color = {
     return Promise.resolve();
   }
 };
-var __defProp$9 = Object.defineProperty;
-var __defNormalProp$9 = (obj, key, value) => key in obj ? __defProp$9(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$a = Object.defineProperty;
+var __defNormalProp$a = (obj, key, value) => key in obj ? __defProp$a(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$4 = (obj, key, value) => {
-  __defNormalProp$9(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$a(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$p = (__this, __arguments, generator) => {
@@ -16183,10 +17262,10 @@ class Character extends AssetListRenderable {
     return drawAssetsUnloaded;
   }
 }
-var __defProp$8 = Object.defineProperty;
-var __defNormalProp$8 = (obj, key, value) => key in obj ? __defProp$8(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$9 = Object.defineProperty;
+var __defNormalProp$9 = (obj, key, value) => key in obj ? __defProp$9(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$3 = (obj, key, value) => {
-  __defNormalProp$8(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$9(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 class Choice extends ScalingRenderable {
@@ -16246,10 +17325,10 @@ class Choice extends ScalingRenderable {
     }
   }
 }
-var __defProp$7 = Object.defineProperty;
-var __defNormalProp$7 = (obj, key, value) => key in obj ? __defProp$7(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$8 = Object.defineProperty;
+var __defNormalProp$8 = (obj, key, value) => key in obj ? __defProp$8(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$2 = (obj, key, value) => {
-  __defNormalProp$7(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$8(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 class Notification extends ScalingRenderable {
@@ -16348,10 +17427,10 @@ class Notification extends ScalingRenderable {
     buttonRenderer.render(ctx);
   }
 }
-var __defProp$6 = Object.defineProperty;
-var __defNormalProp$6 = (obj, key, value) => key in obj ? __defProp$6(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$7 = Object.defineProperty;
+var __defNormalProp$7 = (obj, key, value) => key in obj ? __defProp$7(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$1 = (obj, key, value) => {
-  __defNormalProp$6(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$7(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$o = (__this, __arguments, generator) => {
@@ -16476,10 +17555,10 @@ class Sprite extends AssetListRenderable {
     ];
   }
 }
-var __defProp$5 = Object.defineProperty;
-var __defNormalProp$5 = (obj, key, value) => key in obj ? __defProp$5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$6 = Object.defineProperty;
+var __defNormalProp$6 = (obj, key, value) => key in obj ? __defProp$6(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => {
-  __defNormalProp$5(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$6(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$n = (__this, __arguments, generator) => {
@@ -16713,9 +17792,9 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
     canvasHeight: { default: 0 },
     preLoading: { type: Boolean }
   },
-  setup(__props, { expose }) {
-    const props = __props;
+  setup(__props, { expose: __expose }) {
     const store2 = useStore();
+    const props = __props;
     const sd = ref(null);
     const sdCtx = ref(null);
     const queuedRender = ref(null);
@@ -17040,15 +18119,15 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
         draggedObject.value = null;
       }
     }
-    expose({ download, blendOver });
+    __expose({ download, blendOver });
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("canvas", {
         id: "scaled_display",
         ref_key: "sd",
         ref: sd,
-        height: unref(bitmapHeight),
-        width: unref(bitmapWidth),
-        style: normalizeStyle$1({ width: __props.canvasWidth + "px", height: __props.canvasHeight + "px", cursor: unref(cursor) }),
+        height: bitmapHeight.value,
+        width: bitmapWidth.value,
+        style: normalizeStyle$1({ width: __props.canvasWidth + "px", height: __props.canvasHeight + "px", cursor: cursor.value }),
         draggable: "true",
         onClick: onUiClick,
         onTouchstart: onTouchStart,
@@ -17149,7 +18228,7 @@ const _sfc_main$y = /* @__PURE__ */ defineComponent({
         createBaseVNode("div", _hoisted_3$h, [
           renderSlot(_ctx.$slots, "default", {}, void 0, true)
         ]),
-        unref(showPopup) ? (openBlock(), createElementBlock("div", _hoisted_4$f, toDisplayString(unref(popupText)), 1)) : createCommentVNode("", true)
+        showPopup.value ? (openBlock(), createElementBlock("div", _hoisted_4$f, toDisplayString(popupText.value), 1)) : createCommentVNode("", true)
       ], 14, _hoisted_1$r);
     };
   }
@@ -17247,8 +18326,9 @@ const _hoisted_2$m = ["src", "alt"];
 const _sfc_main$x = /* @__PURE__ */ defineComponent({
   __name: "character",
   emits: ["show-dialog"],
-  setup(__props, { emit: emit2 }) {
+  setup(__props, { emit: __emit }) {
     const store2 = useStore();
+    const emit2 = __emit;
     const characters = computed(() => {
       return store2.state.content.current.characters;
     });
@@ -17265,7 +18345,7 @@ const _sfc_main$x = /* @__PURE__ */ defineComponent({
     }
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock(Fragment, null, [
-        (openBlock(true), createElementBlock(Fragment, null, renderList(unref(characters), (character) => {
+        (openBlock(true), createElementBlock(Fragment, null, renderList(characters.value, (character) => {
           return openBlock(), createElementBlock("div", {
             class: "character",
             tabindex: "0",
@@ -17302,7 +18382,8 @@ const Characters = /* @__PURE__ */ _export_sfc(_sfc_main$x, [["__scopeId", "data
 const _sfc_main$w = /* @__PURE__ */ defineComponent({
   __name: "drop-target",
   emits: ["drop"],
-  setup(__props, { expose, emit: emit2 }) {
+  setup(__props, { expose: __expose, emit: __emit }) {
+    const emit2 = __emit;
     const store2 = useStore();
     const visible = ref(false);
     const vertical = computed(() => store2.state.ui.vertical);
@@ -17324,13 +18405,13 @@ const _sfc_main$w = /* @__PURE__ */ defineComponent({
         }
       }
     }
-    expose({ show, hide });
+    __expose({ show, hide });
     return (_ctx, _cache) => {
       return visible.value ? (openBlock(), createElementBlock("div", {
         key: 0,
         onDragleave: _cache[0] || (_cache[0] = ($event) => visible.value = false),
         onDrop: drop,
-        class: normalizeClass({ vertical: unref(vertical) })
+        class: normalizeClass({ vertical: vertical.value })
       }, [
         renderSlot(_ctx.$slots, "default", {}, void 0, true)
       ], 34)) : createCommentVNode("", true);
@@ -17339,25 +18420,25 @@ const _sfc_main$w = /* @__PURE__ */ defineComponent({
 });
 const dropTarget_vue_vue_type_style_index_0_scoped_ce5557dd_lang = "";
 const DropTarget = /* @__PURE__ */ _export_sfc(_sfc_main$w, [["__scopeId", "data-v-ce5557dd"]]);
-var __defProp$4 = Object.defineProperty;
-var __defProps$3 = Object.defineProperties;
-var __getOwnPropDescs$3 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$4 = Object.getOwnPropertySymbols;
-var __hasOwnProp$4 = Object.prototype.hasOwnProperty;
-var __propIsEnum$4 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$4 = (obj, key, value) => key in obj ? __defProp$4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$4 = (a, b) => {
+var __defProp$5 = Object.defineProperty;
+var __defProps$4 = Object.defineProperties;
+var __getOwnPropDescs$4 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$5 = Object.getOwnPropertySymbols;
+var __hasOwnProp$5 = Object.prototype.hasOwnProperty;
+var __propIsEnum$5 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$5 = (obj, key, value) => key in obj ? __defProp$5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$5 = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$4.call(b, prop))
-      __defNormalProp$4(a, prop, b[prop]);
-  if (__getOwnPropSymbols$4)
-    for (var prop of __getOwnPropSymbols$4(b)) {
-      if (__propIsEnum$4.call(b, prop))
-        __defNormalProp$4(a, prop, b[prop]);
+    if (__hasOwnProp$5.call(b, prop))
+      __defNormalProp$5(a, prop, b[prop]);
+  if (__getOwnPropSymbols$5)
+    for (var prop of __getOwnPropSymbols$5(b)) {
+      if (__propIsEnum$5.call(b, prop))
+        __defNormalProp$5(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$3 = (a, b) => __defProps$3(a, __getOwnPropDescs$3(b));
+var __spreadProps$4 = (a, b) => __defProps$4(a, __getOwnPropDescs$4(b));
 var __async$k = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -17383,8 +18464,9 @@ const _hoisted_2$l = ["title", "onClick", "onKeypress"];
 const _sfc_main$v = /* @__PURE__ */ defineComponent({
   __name: "sprite",
   emits: ["show-dialog"],
-  setup(__props, { expose, emit: emit2 }) {
+  setup(__props, { expose: __expose, emit: __emit }) {
     const store2 = useStore();
+    const emit2 = __emit;
     const sprites = computed(() => {
       return store2.state.content.current.sprites.map((x) => {
         let missing = null;
@@ -17398,7 +18480,7 @@ const _sfc_main$v = /* @__PURE__ */ defineComponent({
             return url;
           }
         });
-        return __spreadProps$3(__spreadValues$4({}, x), {
+        return __spreadProps$4(__spreadValues$5({}, x), {
           missing,
           urls
         });
@@ -17500,7 +18582,7 @@ const _sfc_main$v = /* @__PURE__ */ defineComponent({
         const old = store2.state.content.contentPacks.find(
           (x) => x.packId === uploadedSpritesPackDefault.packId
         ) || uploadedSpritesPackDefault;
-        const newPackVersion = __spreadProps$3(__spreadValues$4({}, old), {
+        const newPackVersion = __spreadProps$4(__spreadValues$5({}, old), {
           sprites: [
             ...old.sprites,
             {
@@ -17536,7 +18618,7 @@ const _sfc_main$v = /* @__PURE__ */ defineComponent({
     function hideDropTarget() {
       spriteDt.value.hide();
     }
-    expose({ showDropTarget, hideDropTarget });
+    __expose({ showDropTarget, hideDropTarget });
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock(Fragment, null, [
         createVNode(DropTarget, {
@@ -17550,7 +18632,7 @@ const _sfc_main$v = /* @__PURE__ */ defineComponent({
           ]),
           _: 1
         }, 512),
-        (openBlock(true), createElementBlock(Fragment, null, renderList(unref(sprites), (sprite) => {
+        (openBlock(true), createElementBlock(Fragment, null, renderList(sprites.value, (sprite) => {
           return openBlock(), createElementBlock(Fragment, null, [
             sprite.missing !== null ? (openBlock(), createElementBlock("div", {
               class: "sprite",
@@ -17611,7 +18693,7 @@ const _sfc_main$v = /* @__PURE__ */ defineComponent({
           ]),
           _: 1
         }),
-        unref(showSpritesFolder) ? (openBlock(), createBlock(DButton, {
+        showSpritesFolder.value ? (openBlock(), createBlock(DButton, {
           key: 0,
           icon: "folder",
           onClick: openSpritesFolder
@@ -17797,8 +18879,8 @@ const _sfc_main$t = /* @__PURE__ */ defineComponent({
         createBaseVNode("div", {
           class: normalizeClass({ "group-selector": true, vertical: unref(vertical) })
         }, [
-          (openBlock(true), createElementBlock(Fragment, null, renderList(unref(groups), (obj, key) => {
-            return openBlock(), createBlock(DButton, {
+          (openBlock(), createElementBlock(Fragment, null, renderList(groups, (obj, key) => {
+            return createVNode(DButton, {
               key,
               class: normalizeClass({
                 active: group.value === key,
@@ -17817,7 +18899,7 @@ const _sfc_main$t = /* @__PURE__ */ defineComponent({
               ]),
               _: 2
             }, 1032, ["class", "icon", "shortcut", "onClick"]);
-          }), 128))
+          }), 64))
         ], 2),
         createBaseVNode("div", {
           class: normalizeClass({ "item-grid": true, vertical: unref(vertical) })
@@ -17834,7 +18916,7 @@ const _sfc_main$t = /* @__PURE__ */ defineComponent({
           createBaseVNode("button", {
             class: "v-w100",
             onClick: paste,
-            disabled: !unref(hasClipboardContent)
+            disabled: !hasClipboardContent.value
           }, " Paste ", 8, _hoisted_3$g)
         ], 2)
       ], 544);
@@ -17843,25 +18925,25 @@ const _sfc_main$t = /* @__PURE__ */ defineComponent({
 });
 const add_vue_vue_type_style_index_0_scoped_3787cba0_lang = "";
 const AddPanel = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["__scopeId", "data-v-3787cba0"]]);
-var __defProp$3 = Object.defineProperty;
-var __defProps$2 = Object.defineProperties;
-var __getOwnPropDescs$2 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$3 = Object.getOwnPropertySymbols;
-var __hasOwnProp$3 = Object.prototype.hasOwnProperty;
-var __propIsEnum$3 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$3 = (a, b) => {
+var __defProp$4 = Object.defineProperty;
+var __defProps$3 = Object.defineProperties;
+var __getOwnPropDescs$3 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$4 = Object.getOwnPropertySymbols;
+var __hasOwnProp$4 = Object.prototype.hasOwnProperty;
+var __propIsEnum$4 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$4 = (obj, key, value) => key in obj ? __defProp$4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$4 = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$3.call(b, prop))
-      __defNormalProp$3(a, prop, b[prop]);
-  if (__getOwnPropSymbols$3)
-    for (var prop of __getOwnPropSymbols$3(b)) {
-      if (__propIsEnum$3.call(b, prop))
-        __defNormalProp$3(a, prop, b[prop]);
+    if (__hasOwnProp$4.call(b, prop))
+      __defNormalProp$4(a, prop, b[prop]);
+  if (__getOwnPropSymbols$4)
+    for (var prop of __getOwnPropSymbols$4(b)) {
+      if (__propIsEnum$4.call(b, prop))
+        __defNormalProp$4(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$2 = (a, b) => __defProps$2(a, __getOwnPropDescs$2(b));
+var __spreadProps$3 = (a, b) => __defProps$3(a, __getOwnPropDescs$3(b));
 const _sfc_main$s = defineComponent({
   mixins: [VerticalScrollRedirect],
   props: {
@@ -17895,7 +18977,7 @@ const _sfc_main$s = defineComponent({
     const attrs = {};
     const flowContainer = h(
       "div",
-      __spreadProps$2(__spreadValues$3({}, attrs), {
+      __spreadProps$3(__spreadValues$4({}, attrs), {
         class: ["d-flow", this.finalDirection, wrapingClass],
         style: {
           gap: this.gap
@@ -17945,6 +19027,8 @@ const _hoisted_3$f = ["offset"];
 const _hoisted_4$e = ["fill"];
 const _hoisted_5$c = ["d"];
 const _hoisted_6$b = ["id", "max", "value"];
+const sliderLength = 255;
+const sliderOffset = 8;
 const _sfc_main$r = /* @__PURE__ */ defineComponent({
   __name: "slider",
   props: {
@@ -17972,12 +19056,11 @@ const _sfc_main$r = /* @__PURE__ */ defineComponent({
     }
   },
   emits: ["update:modelValue"],
-  setup(__props, { emit: emit2 }) {
-    const props = __props;
-    const sliderLength = 255;
-    const sliderOffset = 8;
+  setup(__props, { emit: __emit }) {
     const id = uniqId();
+    const props = __props;
     const store2 = useStore();
+    const emit2 = __emit;
     const vertical = computed(() => store2.state.ui.vertical);
     const svg = ref(null);
     const pointerPath = computed(() => {
@@ -18031,7 +19114,7 @@ const _sfc_main$r = /* @__PURE__ */ defineComponent({
     }
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
-        class: normalizeClass({ slider: true, vertical: unref(vertical) }),
+        class: normalizeClass({ slider: true, vertical: vertical.value }),
         onKeydown: _cache[1] || (_cache[1] = withModifiers(() => {
         }, ["stop"]))
       }, [
@@ -18053,9 +19136,9 @@ const _sfc_main$r = /* @__PURE__ */ defineComponent({
             createBaseVNode("defs", null, [
               createBaseVNode("linearGradient", {
                 id: `gradient${unref(id)}`,
-                x1: unref(gradientOffset) * 100 + "%",
+                x1: gradientOffset.value * 100 + "%",
                 y1: "0%",
-                x2: (unref(gradientOffset) + 1) * 100 + "%",
+                x2: (gradientOffset.value + 1) * 100 + "%",
                 y2: "0%",
                 spreadMethod: "repeat"
               }, [
@@ -18076,7 +19159,7 @@ const _sfc_main$r = /* @__PURE__ */ defineComponent({
                 fill: `url(#gradient${unref(id)})`
               }, null, 8, _hoisted_4$e),
               createBaseVNode("path", {
-                d: unref(pointerPath),
+                d: pointerPath.value,
                 "stroke-width": "2",
                 class: "slider-pointer"
               }, null, 8, _hoisted_5$c)
@@ -18114,7 +19197,8 @@ const _sfc_main$q = /* @__PURE__ */ defineComponent({
     relative: Boolean
   },
   emits: ["update:modelValue"],
-  setup(__props, { emit: emit2 }) {
+  setup(__props, { emit: __emit }) {
+    const emit2 = __emit;
     const props = __props;
     const lastRGBEmit = ref(null);
     const v1 = ref(0);
@@ -18278,7 +19362,7 @@ const _sfc_main$q = /* @__PURE__ */ defineComponent({
           modelValue: a.value,
           "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => a.value = $event),
           "max-value": 255,
-          "gradient-stops": unref(stopsAlpha)
+          "gradient-stops": stopsAlpha.value
         }, null, 8, ["modelValue", "gradient-stops"])
       ]);
     };
@@ -18286,25 +19370,25 @@ const _sfc_main$q = /* @__PURE__ */ defineComponent({
 });
 const sliderGroup_vue_vue_type_style_index_0_scoped_62add962_lang = "";
 const SliderGroup = /* @__PURE__ */ _export_sfc(_sfc_main$q, [["__scopeId", "data-v-62add962"]]);
-var __defProp$2 = Object.defineProperty;
-var __defProps$1 = Object.defineProperties;
-var __getOwnPropDescs$1 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$2 = Object.getOwnPropertySymbols;
-var __hasOwnProp$2 = Object.prototype.hasOwnProperty;
-var __propIsEnum$2 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$2 = (a, b) => {
+var __defProp$3 = Object.defineProperty;
+var __defProps$2 = Object.defineProperties;
+var __getOwnPropDescs$2 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$3 = Object.getOwnPropertySymbols;
+var __hasOwnProp$3 = Object.prototype.hasOwnProperty;
+var __propIsEnum$3 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$3 = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$2.call(b, prop))
-      __defNormalProp$2(a, prop, b[prop]);
-  if (__getOwnPropSymbols$2)
-    for (var prop of __getOwnPropSymbols$2(b)) {
-      if (__propIsEnum$2.call(b, prop))
-        __defNormalProp$2(a, prop, b[prop]);
+    if (__hasOwnProp$3.call(b, prop))
+      __defNormalProp$3(a, prop, b[prop]);
+  if (__getOwnPropSymbols$3)
+    for (var prop of __getOwnPropSymbols$3(b)) {
+      if (__propIsEnum$3.call(b, prop))
+        __defNormalProp$3(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$1 = (a, b) => __defProps$1(a, __getOwnPropDescs$1(b));
+var __spreadProps$2 = (a, b) => __defProps$2(a, __getOwnPropDescs$2(b));
 var __async$h = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -18330,7 +19414,8 @@ const _hoisted_2$i = { class: "hex-selector" };
 const _hoisted_3$e = ["for"];
 const _hoisted_4$d = ["id", "value"];
 const _hoisted_5$b = ["title", "onClick"];
-const _sfc_main$p = /* @__PURE__ */ defineComponent({
+const generatedPackId = "dddg.generated.colors";
+const _sfc_main$p = /* @__PURE__ */ defineComponent(__spreadProps$2(__spreadValues$3({}, { inheritAttrs: false }), {
   __name: "color",
   props: {
     modelValue: {
@@ -18344,12 +19429,11 @@ const _sfc_main$p = /* @__PURE__ */ defineComponent({
     }
   },
   emits: ["leave", "update:modelValue"],
-  setup(__props, { emit: emit2 }) {
-    const props = __props;
-    const generatedPackId = "dddg.generated.colors";
+  setup(__props, { emit: __emit }) {
     const id = uniqId();
     const store2 = useStore();
-    defineOptions({ inheritAttrs: false });
+    const emit2 = __emit;
+    const props = __props;
     const mode = ref("hsla");
     const vertical = computed(() => store2.state.ui.vertical);
     const color2 = computed({
@@ -18394,7 +19478,7 @@ const _sfc_main$p = /* @__PURE__ */ defineComponent({
         poemBackgrounds: [],
         colors: []
       };
-      const newPack = __spreadProps$1(__spreadValues$2({}, existingPack), {
+      const newPack = __spreadProps$2(__spreadValues$3({}, existingPack), {
         colors: [
           ...existingPack.colors,
           {
@@ -18426,7 +19510,7 @@ const _sfc_main$p = /* @__PURE__ */ defineComponent({
     });
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
-        class: normalizeClass([{ color: true, vertical: unref(vertical) }, "v-w100 h-h100"])
+        class: normalizeClass([{ color: true, vertical: vertical.value }, "v-w100 h-h100"])
       }, [
         createBaseVNode("h2", null, toDisplayString(__props.title), 1),
         createBaseVNode("button", {
@@ -18449,8 +19533,8 @@ const _sfc_main$p = /* @__PURE__ */ defineComponent({
         createBaseVNode("div", _hoisted_1$m, [
           createVNode(SliderGroup, {
             mode: mode.value,
-            modelValue: unref(color2),
-            "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => isRef(color2) ? color2.value = $event : null),
+            modelValue: color2.value,
+            "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => color2.value = $event),
             relative: true
           }, null, 8, ["mode", "modelValue"]),
           createBaseVNode("div", _hoisted_2$i, [
@@ -18460,7 +19544,7 @@ const _sfc_main$p = /* @__PURE__ */ defineComponent({
             }, "Hex", 8, _hoisted_3$e),
             createBaseVNode("input", {
               id: `hex_${unref(id)}`,
-              value: unref(color2),
+              value: color2.value,
               onInput: updateHex,
               onKeydown: _cache[4] || (_cache[4] = withModifiers(() => {
               }, ["stop"]))
@@ -18488,9 +19572,9 @@ const _sfc_main$p = /* @__PURE__ */ defineComponent({
         ]),
         createBaseVNode("div", {
           id: "color-swatches",
-          class: normalizeClass({ vertical: unref(vertical) })
+          class: normalizeClass({ vertical: vertical.value })
         }, [
-          (openBlock(true), createElementBlock(Fragment, null, renderList(unref(swatches), (swatch) => {
+          (openBlock(true), createElementBlock(Fragment, null, renderList(swatches.value, (swatch) => {
             return openBlock(), createElementBlock("button", {
               class: "swatch",
               key: swatch.color,
@@ -18506,7 +19590,7 @@ const _sfc_main$p = /* @__PURE__ */ defineComponent({
       ], 2);
     };
   }
-});
+}));
 const color_vue_vue_type_style_index_0_scoped_6cf74efe_lang = "";
 const Color = /* @__PURE__ */ _export_sfc(_sfc_main$p, [["__scopeId", "data-v-6cf74efe"]]);
 const _hoisted_1$l = { class: "fieldset_wrapper" };
@@ -18546,8 +19630,8 @@ const _sfc_main$n = /* @__PURE__ */ defineComponent({
     }
   },
   setup(__props) {
-    const props = __props;
     const root = ref(null);
+    const props = __props;
     const href = computed(() => {
       let to = props.to;
       to = to.replace(
@@ -18565,26 +19649,26 @@ const _sfc_main$n = /* @__PURE__ */ defineComponent({
         rel: "noopener noreferrer",
         ref_key: "root",
         ref: root,
-        href: unref(href)
+        href: href.value
       }, [
         renderSlot(_ctx.$slots, "default")
       ], 8, _hoisted_1$k);
     };
   }
 });
-var __defProp$1 = Object.defineProperty;
-var __getOwnPropSymbols$1 = Object.getOwnPropertySymbols;
-var __hasOwnProp$1 = Object.prototype.hasOwnProperty;
-var __propIsEnum$1 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$1 = (a, b) => {
+var __defProp$2 = Object.defineProperty;
+var __getOwnPropSymbols$2 = Object.getOwnPropertySymbols;
+var __hasOwnProp$2 = Object.prototype.hasOwnProperty;
+var __propIsEnum$2 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$2 = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$1.call(b, prop))
-      __defNormalProp$1(a, prop, b[prop]);
-  if (__getOwnPropSymbols$1)
-    for (var prop of __getOwnPropSymbols$1(b)) {
-      if (__propIsEnum$1.call(b, prop))
-        __defNormalProp$1(a, prop, b[prop]);
+    if (__hasOwnProp$2.call(b, prop))
+      __defNormalProp$2(a, prop, b[prop]);
+  if (__getOwnPropSymbols$2)
+    for (var prop of __getOwnPropSymbols$2(b)) {
+      if (__propIsEnum$2.call(b, prop))
+        __defNormalProp$2(a, prop, b[prop]);
     }
   return a;
 };
@@ -18719,8 +19803,7 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
     }
   },
   emits: ["leave"],
-  setup(__props, { emit: emit2 }) {
-    const props = __props;
+  setup(__props, { emit: __emit }) {
     const filterText = /* @__PURE__ */ new Map([
       ["blur", "Blur"],
       ["brightness", "Brightness"],
@@ -18748,6 +19831,7 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
       }
       return ["opacity"];
     })();
+    const props = __props;
     const store2 = useStore();
     const addEffectSelection = ref("");
     const currentFilterIdx = ref(0);
@@ -18901,7 +19985,7 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
     }
     function setFilterProperty(value) {
       transaction(() => __async$g(this, null, function* () {
-        yield store2.dispatch(objectTypeScope("setFilter"), __spreadValues$1({
+        yield store2.dispatch(objectTypeScope("setFilter"), __spreadValues$2({
           id: props.id,
           panelId: props.panelId,
           idx: currentFilterIdx.value
@@ -18966,11 +20050,11 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
             }),
             withDirectives(createBaseVNode("select", {
               id: "compositionSelect",
-              "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => isRef(compositionMode) ? compositionMode.value = $event : null),
+              "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => compositionMode.value = $event),
               onKeydown: _cache[4] || (_cache[4] = withModifiers(() => {
               }, ["stop"]))
             }, _hoisted_28$1, 544), [
-              [vModelSelect, unref(compositionMode)]
+              [vModelSelect, compositionMode.value]
             ])
           ])) : createCommentVNode("", true),
           createVNode(DFieldset, {
@@ -19013,7 +20097,7 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
                         }, ["stop"]))
                       }, " Add ", 40, _hoisted_31),
                       createBaseVNode("button", {
-                        disabled: !unref(currentFilter),
+                        disabled: !currentFilter.value,
                         onClick: removeFilter2,
                         onKeydown: _cache[8] || (_cache[8] = withModifiers(() => {
                         }, ["stop"]))
@@ -19025,7 +20109,7 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
                         }, ["stop"]))
                       }, " Move up ", 40, _hoisted_33),
                       createBaseVNode("button", {
-                        disabled: currentFilterIdx.value === unref(filters).length - 1 || unref(filters).length === 0,
+                        disabled: currentFilterIdx.value === filters.value.length - 1 || filters.value.length === 0,
                         onClick: _cache[11] || (_cache[11] = ($event) => moveFilter2(1)),
                         onKeydown: _cache[12] || (_cache[12] = withModifiers(() => {
                         }, ["stop"]))
@@ -19039,7 +20123,7 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
                     "no-wraping": ""
                   }, {
                     default: withCtx(() => [
-                      (openBlock(true), createElementBlock(Fragment, null, renderList(unref(filters), (filter, filterIdx) => {
+                      (openBlock(true), createElementBlock(Fragment, null, renderList(filters.value, (filter, filterIdx) => {
                         return openBlock(), createElementBlock("div", {
                           key: filterIdx,
                           class: normalizeClass({ choiceBtn: true, active: filterIdx === currentFilterIdx.value }),
@@ -19054,8 +20138,8 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
                     ]),
                     _: 1
                   }),
-                  unref(currentFilter) ? (openBlock(), createElementBlock("table", _hoisted_36, [
-                    unref(currentFilter).type === "drop-shadow" ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
+                  currentFilter.value ? (openBlock(), createElementBlock("table", _hoisted_36, [
+                    currentFilter.value.type === "drop-shadow" ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
                       createBaseVNode("tr", null, [
                         _hoisted_37,
                         createBaseVNode("td", null, [
@@ -19124,16 +20208,16 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
                           ])
                         ])
                       ])
-                    ], 64)) : unref(isPercentFilter) ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
+                    ], 64)) : isPercentFilter.value ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
                       createBaseVNode("tr", null, [
                         _hoisted_41,
                         createBaseVNode("td", null, [
                           createBaseVNode("input", {
                             id: "filter_value",
-                            value: (unref(currentFilter).value * 100).toFixed(),
+                            value: (currentFilter.value.value * 100).toFixed(),
                             type: "number",
-                            max: unref(maxValue),
-                            min: unref(minValue),
+                            max: maxValue.value,
+                            min: minValue.value,
                             onInput: updateValue,
                             onKeydown: _cache[20] || (_cache[20] = withModifiers(() => {
                             }, ["stop"]))
@@ -19141,13 +20225,13 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
                           createTextVNode("% ")
                         ])
                       ]),
-                      unref(minValue) === 0 && unref(maxValue) !== void 0 ? (openBlock(), createElementBlock("tr", _hoisted_43, [
+                      minValue.value === 0 && maxValue.value !== void 0 ? (openBlock(), createElementBlock("tr", _hoisted_43, [
                         createBaseVNode("td", _hoisted_44, [
                           createVNode(Slider, {
                             gradientStops: ["#000000", "#ffffff"],
                             label: "",
-                            maxValue: unref(maxValue),
-                            modelValue: unref(currentFilter).value * 100,
+                            maxValue: maxValue.value,
+                            modelValue: currentFilter.value.value * 100,
                             "no-input": "",
                             "onUpdate:modelValue": _cache[21] || (_cache[21] = ($event) => setFilterProperty({ value: Math.round($event) / 100 }))
                           }, null, 8, ["maxValue", "modelValue"])
@@ -19159,31 +20243,31 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
                         createBaseVNode("td", null, [
                           createBaseVNode("input", {
                             id: "filter_value",
-                            value: unref(currentFilter).value,
+                            value: currentFilter.value.value,
                             type: "number",
-                            max: unref(maxValue),
-                            min: unref(minValue),
+                            max: maxValue.value,
+                            min: minValue.value,
                             onInput: updateValue,
                             onKeydown: _cache[22] || (_cache[22] = withModifiers(() => {
                             }, ["stop"]))
                           }, null, 40, _hoisted_46)
                         ])
                       ]),
-                      unref(minValue) === 0 && unref(maxValue) !== void 0 ? (openBlock(), createElementBlock("tr", _hoisted_47, [
+                      minValue.value === 0 && maxValue.value !== void 0 ? (openBlock(), createElementBlock("tr", _hoisted_47, [
                         createBaseVNode("td", _hoisted_48, [
                           createVNode(Slider, {
-                            gradientStops: unref(hueStops),
+                            gradientStops: hueStops.value,
                             label: "",
-                            maxValue: unref(maxValue),
-                            modelValue: unref(currentFilter).value,
+                            maxValue: maxValue.value,
+                            modelValue: currentFilter.value.value,
                             "no-input": "",
                             "onUpdate:modelValue": _cache[23] || (_cache[23] = ($event) => setFilterProperty({ value: Math.round($event) }))
                           }, null, 8, ["gradientStops", "maxValue", "modelValue"]),
                           createVNode(Slider, {
-                            gradientStops: unref(hueStops),
+                            gradientStops: hueStops.value,
                             label: "",
-                            maxValue: unref(maxValue),
-                            modelValue: unref(currentFilter).value,
+                            maxValue: maxValue.value,
+                            modelValue: currentFilter.value.value,
                             "shift-gradient": "",
                             "no-input": "",
                             disabled: ""
@@ -19216,8 +20300,8 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
     }
   },
   setup(__props) {
-    const props = __props;
     const store2 = useStore();
+    const props = __props;
     const background = computed(() => {
       const currentPanel = store2.state.panels.currentPanel;
       return store2.state.panels.panels[currentPanel].background;
@@ -19256,16 +20340,16 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
     });
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
-        class: normalizeClass({ background: true, active: unref(isActive) }),
-        title: unref(title),
-        style: normalizeStyle$1(unref(style)),
+        class: normalizeClass({ background: true, active: isActive.value }),
+        title: title.value,
+        style: normalizeStyle$1(style.value),
         tabindex: "0",
         onClick: _cache[0] || (_cache[0] = ($event) => _ctx.$emit("input", __props.backgroundId)),
         onKeydown: [
           _cache[1] || (_cache[1] = withKeys(($event) => _ctx.$emit("input", __props.backgroundId), ["enter"])),
           _cache[2] || (_cache[2] = withKeys(withModifiers(($event) => _ctx.$emit("input", __props.backgroundId), ["prevent"]), ["space"]))
         ]
-      }, toDisplayString(unref(title)), 47, _hoisted_1$i);
+      }, toDisplayString(title.value), 47, _hoisted_1$i);
     };
   }
 });
@@ -19282,9 +20366,10 @@ const _sfc_main$k = /* @__PURE__ */ defineComponent({
     modelValue: { type: Boolean, default: false }
   },
   emits: ["update:modelValue"],
-  setup(__props, { emit: emit2 }) {
+  setup(__props, { emit: __emit }) {
     const props = __props;
     const id = uniqId();
+    const emit2 = __emit;
     const value = computed({
       get() {
         return props.modelValue;
@@ -19301,9 +20386,9 @@ const _sfc_main$k = /* @__PURE__ */ defineComponent({
           type: "checkbox",
           ref_key: "checkbox",
           ref: checkbox,
-          "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => isRef(value) ? value.value = $event : null)
+          "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => value.value = $event)
         }, null, 8, _hoisted_2$f), [
-          [vModelCheckbox, unref(value)]
+          [vModelCheckbox, value.value]
         ]),
         createBaseVNode("label", {
           for: unref(id),
@@ -19359,8 +20444,9 @@ const _hoisted_13$6 = { colspan: "3" };
 const _sfc_main$j = /* @__PURE__ */ defineComponent({
   __name: "settings",
   emits: ["open-image-options", "change-color"],
-  setup(__props, { emit: emit2 }) {
+  setup(__props, { emit: __emit }) {
     const store2 = useStore();
+    const emit2 = __emit;
     const vertical = computed(() => store2.state.ui.vertical);
     const background = computed(() => {
       const currentPanel = store2.state.panels.currentPanel;
@@ -19428,30 +20514,30 @@ const _sfc_main$j = /* @__PURE__ */ defineComponent({
     }
     return (_ctx, _cache) => {
       return openBlock(), createBlock(DFieldset, {
-        class: normalizeClass({ "bg-settings": true, vertical: unref(vertical) }),
+        class: normalizeClass({ "bg-settings": true, vertical: vertical.value }),
         title: "Settings:"
       }, {
         default: withCtx(() => [
-          unref(isColor) ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
+          isColor.value ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
             _hoisted_1$g,
             createBaseVNode("button", {
               id: "bg_color",
               class: "color-button",
-              style: normalizeStyle$1({ background: unref(color2) }),
+              style: normalizeStyle$1({ background: color2.value }),
               onClick: _cache[0] || (_cache[0] = ($event) => emit2("change-color"))
             }, null, 4)
           ], 64)) : createCommentVNode("", true),
-          unref(isVariant) ? (openBlock(), createElementBlock("table", _hoisted_2$e, [
+          isVariant.value ? (openBlock(), createElementBlock("table", _hoisted_2$e, [
             createBaseVNode("tr", null, [
               createBaseVNode("td", _hoisted_3$a, [
                 createVNode(_sfc_main$k, {
-                  modelValue: unref(flipped),
-                  "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => isRef(flipped) ? flipped.value = $event : null),
+                  modelValue: flipped.value,
+                  "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => flipped.value = $event),
                   label: "Flipped?"
                 }, null, 8, ["modelValue"])
               ])
             ]),
-            unref(hasVariants) ? (openBlock(), createElementBlock("tr", _hoisted_4$a, [
+            hasVariants.value ? (openBlock(), createElementBlock("tr", _hoisted_4$a, [
               createBaseVNode("td", _hoisted_5$9, [
                 createBaseVNode("button", {
                   class: "small-button",
@@ -19469,11 +20555,11 @@ const _sfc_main$j = /* @__PURE__ */ defineComponent({
             createBaseVNode("tr", null, [
               createBaseVNode("td", _hoisted_8$8, [
                 withDirectives(createBaseVNode("select", {
-                  "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => isRef(scaling) ? scaling.value = $event : null),
+                  "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => scaling.value = $event),
                   onKeydown: _cache[5] || (_cache[5] = withModifiers(() => {
                   }, ["stop"]))
                 }, _hoisted_12$6, 544), [
-                  [vModelSelect, unref(scaling)]
+                  [vModelSelect, scaling.value]
                 ])
               ])
             ]),
@@ -19495,25 +20581,25 @@ const _sfc_main$j = /* @__PURE__ */ defineComponent({
 });
 const settings_vue_vue_type_style_index_0_scoped_41e8fed1_lang = "";
 const BackgroundSettings = /* @__PURE__ */ _export_sfc(_sfc_main$j, [["__scopeId", "data-v-41e8fed1"]]);
-var __defProp = Object.defineProperty;
-var __defProps = Object.defineProperties;
-var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues = (a, b) => {
+var __defProp$1 = Object.defineProperty;
+var __defProps$1 = Object.defineProperties;
+var __getOwnPropDescs$1 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$1 = Object.getOwnPropertySymbols;
+var __hasOwnProp$1 = Object.prototype.hasOwnProperty;
+var __propIsEnum$1 = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$1 = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp.call(b, prop))
-      __defNormalProp(a, prop, b[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b)) {
-      if (__propIsEnum.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
+    if (__hasOwnProp$1.call(b, prop))
+      __defNormalProp$1(a, prop, b[prop]);
+  if (__getOwnPropSymbols$1)
+    for (var prop of __getOwnPropSymbols$1(b)) {
+      if (__propIsEnum$1.call(b, prop))
+        __defNormalProp$1(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+var __spreadProps$1 = (a, b) => __defProps$1(a, __getOwnPropDescs$1(b));
 var __async$e = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -19625,7 +20711,7 @@ const _sfc_main$i = /* @__PURE__ */ defineComponent({
         const old = store2.state.content.contentPacks.find(
           (x) => x.packId === uploadedBackgroundsPackDefaults.packId
         ) || uploadedBackgroundsPackDefaults;
-        const newPackVersion = __spreadProps(__spreadValues({}, old), {
+        const newPackVersion = __spreadProps$1(__spreadValues$1({}, old), {
           backgrounds: [
             ...old.backgrounds,
             {
@@ -19688,8 +20774,8 @@ const _sfc_main$i = /* @__PURE__ */ defineComponent({
         _hoisted_1$f,
         colorSelect.value ? (openBlock(), createBlock(Color, {
           key: 0,
-          modelValue: unref(bgColor),
-          "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => isRef(bgColor) ? bgColor.value = $event : null),
+          modelValue: bgColor.value,
+          "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => bgColor.value = $event),
           onLeave: _cache[1] || (_cache[1] = ($event) => colorSelect.value = false)
         }, null, 8, ["modelValue"])) : imageOptions.value ? (openBlock(), createBlock(ImageOptions, {
           key: 1,
@@ -19739,7 +20825,7 @@ const _sfc_main$i = /* @__PURE__ */ defineComponent({
             ]),
             _: 1
           }),
-          unref(showBackgroundsFolder) ? (openBlock(), createBlock(DButton, {
+          showBackgroundsFolder.value ? (openBlock(), createBlock(DButton, {
             key: 0,
             icon: "folder",
             class: "upload-background",
@@ -19750,7 +20836,7 @@ const _sfc_main$i = /* @__PURE__ */ defineComponent({
             ]),
             _: 1
           })) : createCommentVNode("", true),
-          (openBlock(true), createElementBlock(Fragment, null, renderList(unref(backgrounds), (background) => {
+          (openBlock(true), createElementBlock(Fragment, null, renderList(backgrounds.value, (background) => {
             return openBlock(), createBlock(BackgroundButton, {
               key: background,
               backgroundId: background,
@@ -19869,6 +20955,7 @@ var __async$c = (__this, __arguments, generator) => {
   });
 };
 const _hoisted_1$e = ["onKeydown"];
+const spriteSize = 960;
 const _sfc_main$h = /* @__PURE__ */ defineComponent({
   __name: "part-button",
   props: {
@@ -19885,9 +20972,9 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
     }
   },
   emits: ["quick-click", "click"],
-  setup(__props, { emit: emit2 }) {
+  setup(__props, { emit: __emit }) {
     const props = __props;
-    const spriteSize = 960;
+    const emit2 = __emit;
     const lookups = ref([]);
     const scaleX = computed(() => {
       return props.size / props.part.size[0];
@@ -19948,7 +21035,7 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
       var _a;
       return openBlock(), createElementBlock("div", {
         class: normalizeClass({ part: true, active: (_a = __props.part) == null ? void 0 : _a.active }),
-        style: normalizeStyle$1(unref(style)),
+        style: normalizeStyle$1(style.value),
         tabindex: "0",
         onClick: _cache[0] || (_cache[0] = ($event) => emit2("click")),
         onContextmenu: quickClick,
@@ -19995,9 +21082,10 @@ const _sfc_main$g = /* @__PURE__ */ defineComponent({
     }
   },
   emits: ["leave", "show-dialog", "show-expression-dialog"],
-  setup(__props, { emit: emit2 }) {
+  setup(__props, { emit: __emit }) {
     const props = __props;
     const store2 = useStore();
+    const emit2 = __emit;
     const isWebPSupported$1 = ref(null);
     const stylePriorities = ref([]);
     const packSearchType = computed(() => {
@@ -20118,9 +21206,9 @@ const _sfc_main$g = /* @__PURE__ */ defineComponent({
             const heads = data.heads[pose.compatibleHeads[0]];
             if (pose.compatibleHeads.length === 0)
               break;
-            const head = heads.variants[0];
+            const head2 = heads.variants[0];
             images = images.concat(
-              head.map((x) => ({
+              head2.map((x) => ({
                 asset: x,
                 offset: command.offset
               }))
@@ -20234,7 +21322,7 @@ const _sfc_main$g = /* @__PURE__ */ defineComponent({
             icon: "extension",
             onClick: _cache[2] || (_cache[2] = ($event) => emit2(
               "show-dialog",
-              `type: ${unref(packSearchType)} character: ${unref(charData).label}`
+              `type: ${packSearchType.value} character: ${charData.value.label}`
             ))
           }, {
             default: withCtx(() => [
@@ -20242,7 +21330,7 @@ const _sfc_main$g = /* @__PURE__ */ defineComponent({
             ]),
             _: 1
           }),
-          (openBlock(true), createElementBlock(Fragment, null, renderList(unref(parts), (part, index) => {
+          (openBlock(true), createElementBlock(Fragment, null, renderList(parts.value, (part, index) => {
             return openBlock(), createBlock(PartButton, {
               key: index,
               value: index,
@@ -20254,7 +21342,7 @@ const _sfc_main$g = /* @__PURE__ */ defineComponent({
               onQuickClick: ($event) => choose(index)
             }, null, 8, ["value", "part", "onClick", "onQuickClick"]);
           }), 128)),
-          (openBlock(true), createElementBlock(Fragment, null, renderList(unref(styleComponents), (styleComponent) => {
+          (openBlock(true), createElementBlock(Fragment, null, renderList(styleComponents.value, (styleComponent) => {
             return openBlock(), createBlock(DFieldset, {
               key: styleComponent.name,
               title: styleComponent.label
@@ -20315,8 +21403,8 @@ const _sfc_main$f = /* @__PURE__ */ defineComponent({
     }
   },
   setup(__props) {
-    const props = __props;
     const store2 = useStore();
+    const props = __props;
     function onClick() {
       transaction(() => __async$a(this, null, function* () {
         yield store2.dispatch("panels/removeObject", {
@@ -20359,8 +21447,8 @@ const _sfc_main$e = /* @__PURE__ */ defineComponent({
     }
   },
   setup(__props) {
-    const props = __props;
     const store2 = useStore();
+    const props = __props;
     const onTop = genericSetterMerged(
       store2,
       computed(() => props.object),
@@ -20484,8 +21572,8 @@ const _sfc_main$d = /* @__PURE__ */ defineComponent({
     }
   },
   setup(__props) {
-    const props = __props;
     const store2 = useStore();
+    const props = __props;
     const height = computed({
       get() {
         return props.obj.height;
@@ -20596,28 +21684,28 @@ const _sfc_main$d = /* @__PURE__ */ defineComponent({
     });
     return (_ctx, _cache) => {
       return openBlock(), createBlock(DFieldset, {
-        title: "Position" + (unref(allowSize) ? "/Size" : "")
+        title: "Position" + (allowSize.value ? "/Size" : "")
       }, {
         default: withCtx(() => [
           createBaseVNode("table", _hoisted_1$d, [
             createBaseVNode("tr", null, [
               createBaseVNode("td", _hoisted_2$d, [
-                unref(allowStepMove) ? (openBlock(), createBlock(_sfc_main$k, {
+                allowStepMove.value ? (openBlock(), createBlock(_sfc_main$k, {
                   key: 0,
-                  modelValue: unref(freeMove),
-                  "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => isRef(freeMove) ? freeMove.value = $event : null),
+                  modelValue: freeMove.value,
+                  "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => freeMove.value = $event),
                   label: "Move freely?"
                 }, null, 8, ["modelValue"])) : createCommentVNode("", true)
               ])
             ]),
-            unref(allowStepMove) && !unref(freeMove) ? (openBlock(), createElementBlock("tr", _hoisted_3$9, [
+            allowStepMove.value && !freeMove.value ? (openBlock(), createElementBlock("tr", _hoisted_3$9, [
               createBaseVNode("td", _hoisted_4$9, [
                 createBaseVNode("table", _hoisted_5$8, [
                   createBaseVNode("tr", null, [
                     createBaseVNode("td", _hoisted_6$8, [
                       createBaseVNode("button", {
                         onClick: _cache[1] || (_cache[1] = ($event) => --pos.value),
-                        disabled: unref(isFirstPos)
+                        disabled: isFirstPos.value
                       }, "<", 8, _hoisted_7$8)
                     ]),
                     createBaseVNode("td", null, [
@@ -20625,9 +21713,9 @@ const _sfc_main$d = /* @__PURE__ */ defineComponent({
                         id: "current_talking",
                         class: "v-w100",
                         style: { "text-align": "center" },
-                        "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => isRef(pos) ? pos.value = $event : null)
+                        "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => pos.value = $event)
                       }, [
-                        (openBlock(true), createElementBlock(Fragment, null, renderList(unref(positionNames), (val, key) => {
+                        (openBlock(true), createElementBlock(Fragment, null, renderList(positionNames.value, (val, key) => {
                           return openBlock(), createElementBlock("option", {
                             key,
                             value: key
@@ -20636,7 +21724,7 @@ const _sfc_main$d = /* @__PURE__ */ defineComponent({
                       ], 512), [
                         [
                           vModelSelect,
-                          unref(pos),
+                          pos.value,
                           void 0,
                           { number: true }
                         ]
@@ -20645,7 +21733,7 @@ const _sfc_main$d = /* @__PURE__ */ defineComponent({
                     createBaseVNode("td", _hoisted_9$7, [
                       createBaseVNode("button", {
                         onClick: _cache[3] || (_cache[3] = ($event) => ++pos.value),
-                        disabled: unref(isLastPos)
+                        disabled: isLastPos.value
                       }, ">", 8, _hoisted_10$6)
                     ])
                   ])
@@ -20659,13 +21747,13 @@ const _sfc_main$d = /* @__PURE__ */ defineComponent({
                     id: "sprite_x",
                     class: "w100",
                     type: "number",
-                    "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => isRef(x) ? x.value = $event : null),
+                    "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => x.value = $event),
                     onKeydown: _cache[5] || (_cache[5] = withModifiers(() => {
                     }, ["stop"]))
                   }, null, 544), [
                     [
                       vModelText,
-                      unref(x),
+                      x.value,
                       void 0,
                       { number: true }
                     ]
@@ -20679,13 +21767,13 @@ const _sfc_main$d = /* @__PURE__ */ defineComponent({
                     class: "w100",
                     id: "sprite_y",
                     type: "number",
-                    "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => isRef(y) ? y.value = $event : null),
+                    "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => y.value = $event),
                     onKeydown: _cache[7] || (_cache[7] = withModifiers(() => {
                     }, ["stop"]))
                   }, null, 544), [
                     [
                       vModelText,
-                      unref(y),
+                      y.value,
                       void 0,
                       { number: true }
                     ]
@@ -20693,7 +21781,7 @@ const _sfc_main$d = /* @__PURE__ */ defineComponent({
                 ])
               ])
             ], 64)),
-            unref(allowSize) ? (openBlock(), createElementBlock(Fragment, { key: 2 }, [
+            allowSize.value ? (openBlock(), createElementBlock(Fragment, { key: 2 }, [
               createBaseVNode("tr", null, [
                 _hoisted_15$3,
                 createBaseVNode("td", _hoisted_16$3, [
@@ -20701,13 +21789,13 @@ const _sfc_main$d = /* @__PURE__ */ defineComponent({
                     id: "sprite_w",
                     min: "0",
                     type: "number",
-                    "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => isRef(width) ? width.value = $event : null),
+                    "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => width.value = $event),
                     onKeydown: _cache[9] || (_cache[9] = withModifiers(() => {
                     }, ["stop"]))
                   }, null, 544), [
                     [
                       vModelText,
-                      unref(width),
+                      width.value,
                       void 0,
                       { number: true }
                     ]
@@ -20721,13 +21809,13 @@ const _sfc_main$d = /* @__PURE__ */ defineComponent({
                     id: "sprite_h",
                     min: "0",
                     type: "number",
-                    "onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => isRef(height) ? height.value = $event : null),
+                    "onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => height.value = $event),
                     onKeydown: _cache[11] || (_cache[11] = withModifiers(() => {
                     }, ["stop"]))
                   }, null, 544), [
                     [
                       vModelText,
-                      unref(height),
+                      height.value,
                       void 0,
                       { number: true }
                     ]
@@ -20744,6 +21832,25 @@ const _sfc_main$d = /* @__PURE__ */ defineComponent({
 });
 const positionAndSize_vue_vue_type_style_index_0_scoped_5e17ce32_lang = "";
 const PositionAndSize = /* @__PURE__ */ _export_sfc(_sfc_main$d, [["__scopeId", "data-v-5e17ce32"]]);
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 const _withScopeId$8 = (n) => (pushScopeId("data-v-316a62fb"), n = n(), popScopeId(), n);
 const _hoisted_1$c = { class: "column ok-col" };
 const _hoisted_2$c = { class: "column" };
@@ -20761,7 +21868,9 @@ const _hoisted_10$5 = /* @__PURE__ */ createStaticVNode('<option value data-v-31
 const _hoisted_20$2 = [
   _hoisted_10$5
 ];
-const _sfc_main$c = /* @__PURE__ */ defineComponent({
+const _sfc_main$c = /* @__PURE__ */ defineComponent(__spreadProps(__spreadValues({}, {
+  inheritAttrs: false
+}), {
   __name: "text",
   props: {
     modelValue: {
@@ -20774,11 +21883,9 @@ const _sfc_main$c = /* @__PURE__ */ defineComponent({
     }
   },
   emits: ["update:modelValue", "leave"],
-  setup(__props, { emit: emit2 }) {
-    defineOptions({
-      inheritAttrs: false
-    });
+  setup(__props, { emit: __emit }) {
     const store2 = useStore();
+    const emit2 = __emit;
     const textArea = ref(null);
     const colorSelector = ref("");
     const selectedFont = ref("");
@@ -20866,7 +21973,7 @@ const _sfc_main$c = /* @__PURE__ */ defineComponent({
         onLeave: applyColor
       }, null, 8, ["modelValue"])) : (openBlock(), createElementBlock("div", {
         key: 1,
-        class: normalizeClass({ "text-subpanel": true, vertical: unref(vertical) })
+        class: normalizeClass({ "text-subpanel": true, vertical: vertical.value })
       }, [
         createBaseVNode("h2", null, toDisplayString(__props.title), 1),
         createBaseVNode("div", _hoisted_1$c, [
@@ -20957,7 +22064,7 @@ const _sfc_main$c = /* @__PURE__ */ defineComponent({
       ], 2));
     };
   }
-});
+}));
 const text_vue_vue_type_style_index_0_scoped_316a62fb_lang = "";
 const TextEditor = /* @__PURE__ */ _export_sfc(_sfc_main$c, [["__scopeId", "data-v-316a62fb"]]);
 var __async$7 = (__this, __arguments, generator) => {
@@ -21041,9 +22148,9 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
     showAltPanel: Boolean
   },
   setup(__props) {
-    const props = __props;
     const store2 = useStore();
     const root = ref(null);
+    const props = __props;
     const setable = (prop, message) => genericSetterMerged(
       store2,
       computed(() => props.object),
@@ -21227,10 +22334,10 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
         ref: root
       }, [
         createBaseVNode("h1", {
-          style: normalizeStyle$1({ fontStyle: unref(hasLabel) ? "italic" : "normal" }),
+          style: normalizeStyle$1({ fontStyle: hasLabel.value ? "italic" : "normal" }),
           onClick: enableNameEdit
         }, [
-          createTextVNode(toDisplayString(unref(heading)) + " ", 1),
+          createTextVNode(toDisplayString(heading.value) + " ", 1),
           _hoisted_1$b
         ], 4),
         (openBlock(), createBlock(Teleport, { to: "#modal-messages" }, [
@@ -21263,12 +22370,12 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
           modelValue: __props.textHandler.get(),
           "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => __props.textHandler.set($event)),
           onLeave: _cache[4] || (_cache[4] = ($event) => __props.textHandler.leave())
-        }, null, 8, ["title", "modelValue"])) : unref(finalColorHandler) ? (openBlock(), createBlock(Color, {
+        }, null, 8, ["title", "modelValue"])) : finalColorHandler.value ? (openBlock(), createBlock(Color, {
           key: 1,
-          title: unref(finalColorHandler).title,
-          modelValue: unref(finalColorHandler).get(),
-          "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => unref(finalColorHandler).set($event)),
-          onLeave: _cache[6] || (_cache[6] = ($event) => unref(finalColorHandler).leave())
+          title: finalColorHandler.value.title,
+          modelValue: finalColorHandler.value.get(),
+          "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => finalColorHandler.value.set($event)),
+          onLeave: _cache[6] || (_cache[6] = ($event) => finalColorHandler.value.leave())
         }, null, 8, ["title", "modelValue"])) : imageOptionsOpen.value ? (openBlock(), createBlock(ImageOptions, {
           key: 2,
           type: "object",
@@ -21311,11 +22418,11 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                       class: "smol v-w100",
                       step: "1",
                       min: "0",
-                      "onUpdate:modelValue": _cache[11] || (_cache[11] = ($event) => isRef(scaleX) ? scaleX.value = $event : null),
+                      "onUpdate:modelValue": _cache[11] || (_cache[11] = ($event) => scaleX.value = $event),
                       onKeydown: _cache[12] || (_cache[12] = withModifiers(() => {
                       }, ["stop"]))
                     }, null, 544), [
-                      [vModelText, unref(scaleX)]
+                      [vModelText, scaleX.value]
                     ])
                   ])
                 ]),
@@ -21328,11 +22435,11 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                       class: "smol v-w100",
                       step: "1",
                       min: "0",
-                      "onUpdate:modelValue": _cache[13] || (_cache[13] = ($event) => isRef(scaleY) ? scaleY.value = $event : null),
+                      "onUpdate:modelValue": _cache[13] || (_cache[13] = ($event) => scaleY.value = $event),
                       onKeydown: _cache[14] || (_cache[14] = withModifiers(() => {
                       }, ["stop"]))
                     }, null, 544), [
-                      [vModelText, unref(scaleY)]
+                      [vModelText, scaleY.value]
                     ])
                   ])
                 ]),
@@ -21344,11 +22451,11 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                       type: "number",
                       class: "smol v-w100",
                       step: "1",
-                      "onUpdate:modelValue": _cache[15] || (_cache[15] = ($event) => isRef(skewX) ? skewX.value = $event : null),
+                      "onUpdate:modelValue": _cache[15] || (_cache[15] = ($event) => skewX.value = $event),
                       onKeydown: _cache[16] || (_cache[16] = withModifiers(() => {
                       }, ["stop"]))
                     }, null, 544), [
-                      [vModelText, unref(skewX)]
+                      [vModelText, skewX.value]
                     ])
                   ])
                 ]),
@@ -21360,19 +22467,19 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                       type: "number",
                       class: "smol v-w100",
                       step: "1",
-                      "onUpdate:modelValue": _cache[17] || (_cache[17] = ($event) => isRef(skewY) ? skewY.value = $event : null),
+                      "onUpdate:modelValue": _cache[17] || (_cache[17] = ($event) => skewY.value = $event),
                       onKeydown: _cache[18] || (_cache[18] = withModifiers(() => {
                       }, ["stop"]))
                     }, null, 544), [
-                      [vModelText, unref(skewY)]
+                      [vModelText, skewY.value]
                     ])
                   ])
                 ]),
                 createBaseVNode("tr", null, [
                   createBaseVNode("td", _hoisted_10$4, [
                     createVNode(_sfc_main$k, {
-                      modelValue: unref(preserveRatio),
-                      "onUpdate:modelValue": _cache[19] || (_cache[19] = ($event) => isRef(preserveRatio) ? preserveRatio.value = $event : null),
+                      modelValue: preserveRatio.value,
+                      "onUpdate:modelValue": _cache[19] || (_cache[19] = ($event) => preserveRatio.value = $event),
                       label: "Lock ratio?"
                     }, null, 8, ["modelValue"])
                   ])
@@ -21383,7 +22490,7 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
             _: 3
           }),
           renderSlot(_ctx.$slots, "options", {}, void 0, true),
-          unref(hasLabel) ? (openBlock(), createBlock(DFieldset, {
+          hasLabel.value ? (openBlock(), createBlock(DFieldset, {
             key: 0,
             title: "Textbox settings"
           }, {
@@ -21398,11 +22505,11 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                 }, null, 8, ["modelValue"])) : createCommentVNode("", true),
                 createVNode(_sfc_main$k, {
                   label: "Own textbox color",
-                  modelValue: unref(useCustomTextboxColor),
-                  "onUpdate:modelValue": _cache[21] || (_cache[21] = ($event) => isRef(useCustomTextboxColor) ? useCustomTextboxColor.value = $event : null)
+                  modelValue: useCustomTextboxColor.value,
+                  "onUpdate:modelValue": _cache[21] || (_cache[21] = ($event) => useCustomTextboxColor.value = $event)
                 }, null, 8, ["modelValue"]),
                 createBaseVNode("table", null, [
-                  unref(useCustomTextboxColor) ? (openBlock(), createElementBlock("tr", _hoisted_11$4, [
+                  useCustomTextboxColor.value ? (openBlock(), createElementBlock("tr", _hoisted_11$4, [
                     _hoisted_12$4,
                     createBaseVNode("td", null, [
                       createBaseVNode("button", {
@@ -21419,12 +22526,12 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                       withDirectives(createBaseVNode("input", {
                         id: "namebox_width",
                         type: "number",
-                        placeholder: unref(defaultNameboxWidth) + "",
-                        "onUpdate:modelValue": _cache[22] || (_cache[22] = ($event) => isRef(nameboxWidth) ? nameboxWidth.value = $event : null)
+                        placeholder: defaultNameboxWidth.value + "",
+                        "onUpdate:modelValue": _cache[22] || (_cache[22] = ($event) => nameboxWidth.value = $event)
                       }, null, 8, _hoisted_14$4), [
                         [
                           vModelText,
-                          unref(nameboxWidth),
+                          nameboxWidth.value,
                           void 0,
                           { lazy: true }
                         ]
@@ -21603,14 +22710,14 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
       return openBlock(), createBlock(ObjectTool, {
         ref_key: "root",
         ref: root,
-        object: unref(object),
-        title: unref(label),
+        object: object.value,
+        title: label.value,
         showAltPanel: !!panelForParts.value
       }, {
         "alt-panel": withCtx(() => [
           panelForParts.value ? (openBlock(), createBlock(Parts, {
             key: 0,
-            character: unref(object),
+            character: object.value,
             part: panelForParts.value,
             onLeave: _cache[0] || (_cache[0] = ($event) => panelForParts.value = null),
             onShowDialog: _cache[1] || (_cache[1] = ($event) => _ctx.$emit("show-dialog", $event)),
@@ -21618,10 +22725,10 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
           }, null, 8, ["character", "part"])) : createCommentVNode("", true)
         ]),
         default: withCtx(() => [
-          unref(missingHead) ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
+          missingHead.value ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
             createBaseVNode("p", _hoisted_1$a, [
               createTextVNode(" MISSING Head sprite! Click below to re-upload "),
-              createBaseVNode("span", _hoisted_2$a, '"' + toDisplayString(unref(missingHead)) + '"', 1),
+              createBaseVNode("span", _hoisted_2$a, '"' + toDisplayString(missingHead.value) + '"', 1),
               createTextVNode(". ")
             ]),
             createBaseVNode("button", {
@@ -21634,7 +22741,7 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
               onChange: onMissingHeadFileUpload
             }, null, 544)
           ], 64)) : createCommentVNode("", true),
-          unref(hasMultiplePoses) || unref(parts).length > 0 || unref(hasMultipleStyles) ? (openBlock(), createBlock(DFieldset, {
+          hasMultiplePoses.value || parts.value.length > 0 || hasMultipleStyles.value ? (openBlock(), createBlock(DFieldset, {
             key: 1,
             class: "pose-list",
             title: "Pose:"
@@ -21642,7 +22749,7 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
             default: withCtx(() => [
               createBaseVNode("table", _hoisted_3$6, [
                 createBaseVNode("tbody", null, [
-                  unref(hasMultipleStyles) ? (openBlock(), createElementBlock("tr", _hoisted_4$6, [
+                  hasMultipleStyles.value ? (openBlock(), createElementBlock("tr", _hoisted_4$6, [
                     createBaseVNode("td", _hoisted_5$5, [
                       createBaseVNode("button", {
                         onClick: _cache[4] || (_cache[4] = ($event) => seekStyle(-1))
@@ -21660,7 +22767,7 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
                       }, ">")
                     ])
                   ])) : createCommentVNode("", true),
-                  unref(hasMultiplePoses) ? (openBlock(), createElementBlock("tr", _hoisted_7$5, [
+                  hasMultiplePoses.value ? (openBlock(), createElementBlock("tr", _hoisted_7$5, [
                     createBaseVNode("td", _hoisted_8$4, [
                       createBaseVNode("button", {
                         onClick: _cache[7] || (_cache[7] = ($event) => seekPose(-1))
@@ -21678,7 +22785,7 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
                       }, ">")
                     ])
                   ])) : createCommentVNode("", true),
-                  (openBlock(true), createElementBlock(Fragment, null, renderList(unref(parts), (part) => {
+                  (openBlock(true), createElementBlock(Fragment, null, renderList(parts.value, (part) => {
                     return openBlock(), createElementBlock("tr", { key: part }, [
                       createBaseVNode("td", _hoisted_10$3, [
                         createBaseVNode("button", {
@@ -21830,9 +22937,9 @@ const _sfc_main$9 = /* @__PURE__ */ defineComponent({
       return openBlock(), createBlock(ObjectTool, {
         ref_key: "root",
         ref: root,
-        object: unref(object),
+        object: object.value,
         title: "Choice",
-        textHandler: unref(textHandler)
+        textHandler: textHandler.value
       }, {
         default: withCtx(() => [
           createVNode(DFieldset, {
@@ -21846,7 +22953,7 @@ const _sfc_main$9 = /* @__PURE__ */ defineComponent({
                 noWraping: ""
               }, {
                 default: withCtx(() => [
-                  (openBlock(true), createElementBlock(Fragment, null, renderList(unref(buttons), (button, btnIdx) => {
+                  (openBlock(true), createElementBlock(Fragment, null, renderList(buttons.value, (button, btnIdx) => {
                     return openBlock(), createElementBlock("div", {
                       class: normalizeClass({ choiceBtn: true, active: btnIdx === currentIdx.value }),
                       key: btnIdx,
@@ -22187,9 +23294,9 @@ const _sfc_main$7 = /* @__PURE__ */ defineComponent({
       return openBlock(), createBlock(ObjectTool, {
         ref_key: "root",
         ref: root,
-        object: unref(object),
+        object: object.value,
         title: "Notification",
-        textHandler: unref(textHandler)
+        textHandler: textHandler.value
       }, {
         default: withCtx(() => [
           createBaseVNode("div", _hoisted_1$7, [
@@ -22273,12 +23380,14 @@ const _hoisted_18$2 = { key: 0 };
 const _hoisted_19$1 = /* @__PURE__ */ _withScopeId$3(() => /* @__PURE__ */ createBaseVNode("br", null, null, -1));
 const _hoisted_20$1 = { colspan: "2" };
 const _hoisted_21$1 = { class: "column" };
+const qualityFactor = 100;
+const defaultQuality = 90;
+const qualityWarningThreshold = 70;
+const thumbnailFactor = 1 / 4;
+const thumbnailQuality = 0.5;
 const _sfc_main$6 = /* @__PURE__ */ defineComponent({
   __name: "panels",
   setup(__props) {
-    const qualityFactor = 100;
-    const defaultQuality = 90;
-    const qualityWarningThreshold = 70;
     const store2 = useStore();
     const root = ref(null);
     const { vertical, getRoot } = setupPanelMixin(root);
@@ -22537,8 +23646,6 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
         });
       }));
     }
-    const thumbnailFactor = 1 / 4;
-    const thumbnailQuality = 0.5;
     const targetCanvas = makeCanvas();
     targetCanvas.width = baseConst.screenWidth * thumbnailFactor;
     targetCanvas.height = baseConst.screenHeight * thumbnailFactor;
@@ -22725,7 +23832,7 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
           key: 0,
           type: "panel",
           title: "",
-          "panel-id": unref(currentPanel).id,
+          "panel-id": currentPanel.value.id,
           "no-composition": "",
           onLeave: _cache[0] || (_cache[0] = ($event) => {
             imageOptions.value = false;
@@ -22742,12 +23849,12 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
                 maxSize: "350px"
               }, {
                 default: withCtx(() => [
-                  (openBlock(true), createElementBlock(Fragment, null, renderList(unref(panelButtons), (panel, idx) => {
+                  (openBlock(true), createElementBlock(Fragment, null, renderList(panelButtons.value, (panel, idx) => {
                     return openBlock(), createElementBlock("div", {
                       key: panel.id,
                       class: normalizeClass({
                         panel_button: true,
-                        active: panel.id === unref(currentPanel).id
+                        active: panel.id === currentPanel.value.id
                       }),
                       style: normalizeStyle$1(`background-image: url('${panel.image}')`),
                       tabindex: "0",
@@ -22783,7 +23890,7 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
               icon: "remove_from_queue",
               class: "bt0",
               onClick: deletePanel,
-              disabled: !unref(canDeletePanel)
+              disabled: !canDeletePanel.value
             }, {
               default: withCtx(() => [
                 createTextVNode(" Delete panel ")
@@ -22794,7 +23901,7 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
               icon: "arrow_upward",
               class: "bt0",
               onClick: moveAhead,
-              disabled: !unref(canMoveAhead)
+              disabled: !canMoveAhead.value
             }, {
               default: withCtx(() => [
                 createTextVNode(" Move ahead ")
@@ -22805,7 +23912,7 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
               icon: "arrow_downward",
               class: "bt0",
               onClick: moveBehind,
-              disabled: !unref(canMoveBehind)
+              disabled: !canMoveBehind.value
             }, {
               default: withCtx(() => [
                 createTextVNode(" Move behind ")
@@ -22845,7 +23952,7 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
                     ])
                   ])
                 ]),
-                unref(isLossy) ? (openBlock(), createElementBlock("tr", _hoisted_12$2, [
+                isLossy.value ? (openBlock(), createElementBlock("tr", _hoisted_12$2, [
                   _hoisted_13$2,
                   createBaseVNode("td", null, [
                     withDirectives(createBaseVNode("input", {
@@ -22870,7 +23977,7 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
                   createBaseVNode("td", null, [
                     createBaseVNode("label", _hoisted_14$2, [
                       createTextVNode(" Panels per image: "),
-                      !unref(isLossy) || unref(vertical) ? (openBlock(), createElementBlock("small", _hoisted_15$2, [
+                      !isLossy.value || unref(vertical) ? (openBlock(), createElementBlock("small", _hoisted_15$2, [
                         _hoisted_16$2,
                         createTextVNode("(0 for one single image)")
                       ])) : createCommentVNode("", true)
@@ -22902,7 +24009,7 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
                   createBaseVNode("td", null, [
                     createBaseVNode("label", _hoisted_17$2, [
                       createTextVNode(" Panels to export: "),
-                      !unref(isLossy) || unref(vertical) ? (openBlock(), createElementBlock("small", _hoisted_18$2, [
+                      !isLossy.value || unref(vertical) ? (openBlock(), createElementBlock("small", _hoisted_18$2, [
                         _hoisted_19$1,
                         createTextVNode("(Leave empty for all)")
                       ])) : createCommentVNode("", true)
@@ -23071,10 +24178,10 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
       return openBlock(), createBlock(ObjectTool, {
         ref_key: "root",
         ref: root,
-        object: unref(object),
-        title: unref(object).subType === "poem" ? "Poem" : "Console",
-        textHandler: unref(textHandler),
-        colorHandler: unref(colorHandler)
+        object: object.value,
+        title: object.value.subType === "poem" ? "Poem" : "Console",
+        textHandler: textHandler.value,
+        colorHandler: colorHandler.value
       }, {
         default: withCtx(() => [
           createBaseVNode("div", _hoisted_1$5, [
@@ -23099,7 +24206,7 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
             modelValue: unref(autoWrap),
             "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => isRef(autoWrap) ? autoWrap.value = $event : null)
           }, null, 8, ["modelValue"]),
-          unref(object).subType === "poem" ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
+          object.value.subType === "poem" ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
             withDirectives(createBaseVNode("select", {
               "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => isRef(poemBackground) ? poemBackground.value = $event : null),
               onKeydown: _cache[5] || (_cache[5] = withModifiers(() => {
@@ -23135,7 +24242,7 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
                 createBaseVNode("button", {
                   id: "console_color",
                   class: "w100",
-                  style: normalizeStyle$1([{ background: unref(object).consoleColor }, { "min-width": "64px" }]),
+                  style: normalizeStyle$1([{ background: object.value.consoleColor }, { "min-width": "64px" }]),
                   onClick: _cache[8] || (_cache[8] = ($event) => colorSelect.value = "base")
                 }, null, 4)
               ])
@@ -23391,7 +24498,7 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
           showModeDialog.value ? (openBlock(), createBlock(ModalDialog, {
             key: 2,
             options: [
-              unref(inPlusMode) ? "Enter Classic Mode" : "Enter Plus mode",
+              inPlusMode.value ? "Enter Classic Mode" : "Enter Plus mode",
               "Stay"
             ],
             onLeave: _cache[2] || (_cache[2] = ($event) => showModeDialog.value = false),
@@ -23404,62 +24511,62 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
             _: 1
           }, 8, ["options"])) : createCommentVNode("", true)
         ])),
-        waitOnSaveChange.value ? (openBlock(), createElementBlock("button", _hoisted_10$1, "Applying...")) : !unref(savesAllowed) && unref(savesEnabledInEnv) ? (openBlock(), createElementBlock("button", {
+        waitOnSaveChange.value ? (openBlock(), createElementBlock("button", _hoisted_10$1, "Applying...")) : !savesAllowed.value && savesEnabledInEnv.value ? (openBlock(), createElementBlock("button", {
           key: 1,
           onClick: _cache[3] || (_cache[3] = ($event) => allowSavesModal.value = true)
-        }, " Allow saving options ")) : unref(savesAllowed) && unref(savesEnabledInEnv) ? (openBlock(), createElementBlock("button", {
+        }, " Allow saving options ")) : savesAllowed.value && savesEnabledInEnv.value ? (openBlock(), createElementBlock("button", {
           key: 2,
           onClick: _cache[4] || (_cache[4] = ($event) => denySavesModal.value = true)
         }, " Deny saving options ")) : createCommentVNode("", true),
         createBaseVNode("button", {
           onClick: _cache[5] || (_cache[5] = ($event) => showModeDialog.value = true)
         }, [
-          unref(inPlusMode) ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
+          inPlusMode.value ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
             createTextVNode(" Enter Classic Mode ")
           ], 64)) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [
             createTextVNode(" Enter DDLC Plus Mode ")
           ], 64))
         ]),
-        unref(lqAllowed) ? (openBlock(), createBlock(_sfc_main$k, {
+        lqAllowed.value ? (openBlock(), createBlock(_sfc_main$k, {
           key: 3,
           label: "Low quality preview?",
           title: "Reduces the quality of the preview images to speed up the user experience and consume less data. Does not effect final render.",
-          modelValue: unref(lqRendering),
-          "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => isRef(lqRendering) ? lqRendering.value = $event : null)
+          modelValue: lqRendering.value,
+          "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => lqRendering.value = $event)
         }, null, 8, ["modelValue"])) : createCommentVNode("", true),
         createVNode(_sfc_main$k, {
           label: "NSFW Mode?",
-          modelValue: unref(nsfw),
-          "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => isRef(nsfw) ? nsfw.value = $event : null)
+          modelValue: nsfw.value,
+          "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => nsfw.value = $event)
         }, null, 8, ["modelValue"]),
         createVNode(_sfc_main$k, {
           label: "Enlarge talking objects? (Default value)",
-          modelValue: unref(defaultCharacterTalkingZoom),
-          "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => isRef(defaultCharacterTalkingZoom) ? defaultCharacterTalkingZoom.value = $event : null)
+          modelValue: defaultCharacterTalkingZoom.value,
+          "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => defaultCharacterTalkingZoom.value = $event)
         }, null, 8, ["modelValue"]),
         createVNode(_sfc_main$k, {
           label: "Fault tolerant text parsing",
           title: "Silently ignore parse errors in texts. (Like unexpected '{' characters) Prevents beginners from getting stuck working with textboxes, but also makes it harder to understand what you are doing wrong.",
-          modelValue: unref(looseTextParsing),
-          "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => isRef(looseTextParsing) ? looseTextParsing.value = $event : null)
+          modelValue: looseTextParsing.value,
+          "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => looseTextParsing.value = $event)
         }, null, 8, ["modelValue"]),
         createBaseVNode("table", _hoisted_11$1, [
           createBaseVNode("tr", null, [
             _hoisted_12$1,
             createBaseVNode("td", null, [
               withDirectives(createBaseVNode("select", {
-                "onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => isRef(theme) ? theme.value = $event : null),
+                "onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => theme.value = $event),
                 class: "v-w100"
               }, _hoisted_16$1, 512), [
-                [vModelSelect, unref(theme)]
+                [vModelSelect, theme.value]
               ])
             ])
           ])
         ]),
-        unref(showDownloadFolder) ? (openBlock(), createElementBlock("table", _hoisted_17$1, [
+        showDownloadFolder.value ? (openBlock(), createElementBlock("table", _hoisted_17$1, [
           createBaseVNode("tr", null, [
             _hoisted_18$1,
-            createBaseVNode("td", null, toDisplayString(unref(downloadFolder)), 1),
+            createBaseVNode("td", null, toDisplayString(downloadFolder.value), 1),
             createBaseVNode("td", null, [
               createBaseVNode("button", { onClick: setDownloadFolder }, "Set"),
               createBaseVNode("button", { onClick: openDownloadFolder }, "Open")
@@ -23545,14 +24652,14 @@ const _sfc_main$3 = /* @__PURE__ */ defineComponent({
       return openBlock(), createBlock(ObjectTool, {
         ref_key: "root",
         ref: root,
-        object: unref(object),
+        object: object.value,
         title: "Custom Sprite"
       }, {
         default: withCtx(() => [
-          unref(missing) ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
+          missing.value ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
             createBaseVNode("p", _hoisted_1$3, [
               createTextVNode(" MISSING SPRITE! Click below to re-upload "),
-              createBaseVNode("span", _hoisted_2$3, '"' + toDisplayString(unref(missing)) + '"', 1),
+              createBaseVNode("span", _hoisted_2$3, '"' + toDisplayString(missing.value) + '"', 1),
               createTextVNode(". ")
             ]),
             createBaseVNode("button", {
@@ -23848,10 +24955,10 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
       return openBlock(), createBlock(ObjectTool, {
         ref_key: "root",
         ref: root,
-        object: unref(object),
+        object: object.value,
         title: "Textbox",
-        textHandler: unref(textHandler),
-        colorHandler: unref(colorHandler)
+        textHandler: textHandler.value,
+        colorHandler: colorHandler.value
       }, {
         default: withCtx(() => [
           createBaseVNode("table", _hoisted_1$2, [
@@ -23873,12 +24980,12 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
               createBaseVNode("td", null, [
                 withDirectives(createBaseVNode("select", {
                   id: "current_talking",
-                  "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => isRef(talkingObjId) ? talkingObjId.value = $event : null),
+                  "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => talkingObjId.value = $event),
                   onKeydown: _cache[3] || (_cache[3] = withModifiers(() => {
                   }, ["stop"]))
                 }, [
                   _hoisted_11,
-                  (openBlock(true), createElementBlock(Fragment, null, renderList(unref(nameList), ([id, label]) => {
+                  (openBlock(true), createElementBlock(Fragment, null, renderList(nameList.value, ([id, label]) => {
                     return openBlock(), createElementBlock("option", {
                       key: id,
                       value: id
@@ -23886,14 +24993,14 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                   }), 128)),
                   _hoisted_13
                 ], 544), [
-                  [vModelSelect, unref(talkingObjId)]
+                  [vModelSelect, talkingObjId.value]
                 ])
               ]),
               createBaseVNode("td", null, [
                 createBaseVNode("button", {
                   title: "Jump to talking character",
                   onClick: jumpToCharacter,
-                  disabled: unref(talkingObjId) === "$null$" || unref(talkingObjId) === "$other$"
+                  disabled: talkingObjId.value === "$null$" || talkingObjId.value === "$other$"
                 }, " > ", 8, _hoisted_14)
               ])
             ]),
@@ -23950,7 +25057,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
         options: withCtx(() => [
           createVNode(DFieldset, {
             title: "Customization:",
-            class: normalizeClass(unref(customizable) ? "customization-set" : "")
+            class: normalizeClass(customizable.value ? "customization-set" : "")
           }, {
             default: withCtx(() => [
               createVNode(DFlow, {
@@ -23974,7 +25081,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                     modelValue: unref(showContinueArrow),
                     "onUpdate:modelValue": _cache[14] || (_cache[14] = ($event) => isRef(showContinueArrow) ? showContinueArrow.value = $event : null)
                   }, null, 8, ["modelValue"]),
-                  unref(customizable) ? (openBlock(), createElementBlock("table", _hoisted_18, [
+                  customizable.value ? (openBlock(), createElementBlock("table", _hoisted_18, [
                     createBaseVNode("tr", null, [
                       _hoisted_19,
                       createBaseVNode("td", null, [
@@ -23982,7 +25089,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                           id: "custom_namebox_width",
                           type: "number",
                           style: { "width": "48px" },
-                          placeholder: unref(nameboxWidthDefault) + "",
+                          placeholder: nameboxWidthDefault.value + "",
                           "onUpdate:modelValue": _cache[15] || (_cache[15] = ($event) => isRef(customNameboxWidth) ? customNameboxWidth.value = $event : null),
                           onKeydown: _cache[16] || (_cache[16] = withModifiers(() => {
                           }, ["stop"]))
@@ -24011,7 +25118,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                         createBaseVNode("button", {
                           id: "textbox_color",
                           class: "color-button",
-                          style: normalizeStyle$1({ background: unref(object).customColor }),
+                          style: normalizeStyle$1({ background: object.value.customColor }),
                           onClick: _cache[18] || (_cache[18] = ($event) => colorSelect.value = "base")
                         }, null, 4)
                       ])
@@ -24033,7 +25140,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                           createBaseVNode("button", {
                             id: "custom_controls_color",
                             class: "color-button",
-                            style: normalizeStyle$1({ background: unref(object).customControlsColor }),
+                            style: normalizeStyle$1({ background: object.value.customControlsColor }),
                             onClick: _cache[20] || (_cache[20] = ($event) => colorSelect.value = "controls")
                           }, null, 4)
                         ])
@@ -24044,7 +25151,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                           createBaseVNode("button", {
                             id: "custom_namebox_color",
                             class: "color-button",
-                            style: normalizeStyle$1({ background: unref(object).customNameboxColor }),
+                            style: normalizeStyle$1({ background: object.value.customNameboxColor }),
                             onClick: _cache[21] || (_cache[21] = ($event) => colorSelect.value = "namebox")
                           }, null, 4)
                         ])
@@ -24055,7 +25162,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                           createBaseVNode("button", {
                             id: "custom_namebox_stroke",
                             class: "color-button",
-                            style: normalizeStyle$1({ background: unref(object).customNameboxStroke }),
+                            style: normalizeStyle$1({ background: object.value.customNameboxStroke }),
                             onClick: _cache[22] || (_cache[22] = ($event) => colorSelect.value = "nameboxStroke")
                           }, null, 4)
                         ])
@@ -24091,8 +25198,9 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     "download",
     "show-expression-dialog"
   ],
-  setup(__props, { emit: emit2 }) {
+  setup(__props, { emit: __emit }) {
     const store2 = useStore();
+    const emit2 = __emit;
     const panels2 = ref(null);
     const panelSelection = ref("add");
     const currentPanel = computed(() => {
@@ -24143,7 +25251,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
         id: "panels",
-        class: normalizeClass({ vertical: unref(vertical) }),
+        class: normalizeClass({ vertical: vertical.value }),
         onScroll: resetScroll,
         ref_key: "panels",
         ref: panels2
@@ -24152,7 +25260,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
           createVNode(DButton, {
             icon: "add_box",
             "icon-pos": "top",
-            class: normalizeClass({ active: unref(panel) === "add" }),
+            class: normalizeClass({ active: panel.value === "add" }),
             title: "Add new objects to the scene",
             shortcut: "a",
             onClick: _cache[0] || (_cache[0] = ($event) => setPanel("add"))
@@ -24160,7 +25268,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
           createVNode(DButton, {
             icon: "panorama",
             "icon-pos": "top",
-            class: normalizeClass({ active: unref(panel) === "backgrounds" }),
+            class: normalizeClass({ active: panel.value === "backgrounds" }),
             title: "Change the current background",
             shortcut: "s",
             onClick: _cache[1] || (_cache[1] = ($event) => setPanel("backgrounds"))
@@ -24168,7 +25276,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
           createVNode(DButton, {
             icon: "view_module",
             "icon-pos": "top",
-            class: normalizeClass({ active: unref(panel) === "panels" }),
+            class: normalizeClass({ active: panel.value === "panels" }),
             title: "Panels",
             shortcut: "d",
             onClick: _cache[2] || (_cache[2] = ($event) => setPanel("panels"))
@@ -24176,20 +25284,20 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
           createVNode(DButton, {
             icon: "settings_applications",
             "icon-pos": "top",
-            class: normalizeClass({ active: unref(panel) === "settings" }),
+            class: normalizeClass({ active: panel.value === "settings" }),
             title: "Settings",
             shortcut: "f",
             onClick: _cache[3] || (_cache[3] = ($event) => setPanel("settings"))
           }, null, 8, ["class"])
         ]),
-        unref(panel) === "settings" ? (openBlock(), createBlock(SettingsPanel, { key: 0 })) : unref(panel) === "backgrounds" ? (openBlock(), createBlock(BackgroundsPanel, {
+        panel.value === "settings" ? (openBlock(), createBlock(SettingsPanel, { key: 0 })) : panel.value === "backgrounds" ? (openBlock(), createBlock(BackgroundsPanel, {
           key: 1,
           onShowDialog: _cache[4] || (_cache[4] = ($event) => emit2("show-dialog", $event))
-        })) : unref(panel) === "help_credits" ? (openBlock(), createBlock(CreditsPanel, { key: 2 })) : unref(panel) === "character" ? (openBlock(), createBlock(CharacterPanel, {
+        })) : panel.value === "help_credits" ? (openBlock(), createBlock(CreditsPanel, { key: 2 })) : panel.value === "character" ? (openBlock(), createBlock(CharacterPanel, {
           key: 3,
           onShowDialog: _cache[5] || (_cache[5] = ($event) => emit2("show-dialog", $event)),
           onShowExpressionDialog: _cache[6] || (_cache[6] = ($event) => emit2("show-expression-dialog", $event))
-        })) : unref(panel) === "sprite" ? (openBlock(), createBlock(SpritePanel, { key: 4 })) : unref(panel) === "textBox" ? (openBlock(), createBlock(TextBoxPanel, { key: 5 })) : unref(panel) === "choice" ? (openBlock(), createBlock(ChoicePanel, { key: 6 })) : unref(panel) === "panels" ? (openBlock(), createBlock(PanelsPanel, { key: 7 })) : unref(panel) === "notification" ? (openBlock(), createBlock(NotificationPanel, { key: 8 })) : unref(panel) === "poem" ? (openBlock(), createBlock(PoemPanel, { key: 9 })) : (openBlock(), createBlock(AddPanel, {
+        })) : panel.value === "sprite" ? (openBlock(), createBlock(SpritePanel, { key: 4 })) : panel.value === "textBox" ? (openBlock(), createBlock(TextBoxPanel, { key: 5 })) : panel.value === "choice" ? (openBlock(), createBlock(ChoicePanel, { key: 6 })) : panel.value === "panels" ? (openBlock(), createBlock(PanelsPanel, { key: 7 })) : panel.value === "notification" ? (openBlock(), createBlock(NotificationPanel, { key: 8 })) : panel.value === "poem" ? (openBlock(), createBlock(PoemPanel, { key: 9 })) : (openBlock(), createBlock(AddPanel, {
           key: 10,
           onShowDialog: _cache[7] || (_cache[7] = ($event) => emit2("show-dialog", $event))
         })),
@@ -24197,7 +25305,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
           createVNode(DButton, {
             icon: "help",
             "icon-pos": "top",
-            class: normalizeClass({ active: unref(panel) === "help_credits" }),
+            class: normalizeClass({ active: panel.value === "help_credits" }),
             title: "Help & Credits",
             shortcut: "h",
             onClick: _cache[8] || (_cache[8] = ($event) => setPanel("help_credits"))
@@ -24215,7 +25323,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
             title: "Show last downloaded panel",
             shortcut: "l",
             onClick: _cache[10] || (_cache[10] = ($event) => emit2("show-prev-render")),
-            disabled: !unref(hasPrevRender)
+            disabled: !hasPrevRender.value
           }, null, 8, ["disabled"]),
           createVNode(DButton, {
             icon: "photo_camera",
@@ -24254,16 +25362,18 @@ const _hoisted_1 = { id: "app" };
 const _hoisted_2 = { class: "hidden-selectors" };
 const _hoisted_3 = ["data-obj-id", "onKeydown"];
 const _hoisted_4 = /* @__PURE__ */ createBaseVNode("div", { id: "modal-messages" }, null, -1);
+const arrowMoveStepSize = 20;
+const aspectRatio = 16 / 9;
+const packDialogWaitMs = 50;
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box.5217c607.js"), true ? ["./single-box.5217c607.js","./single-box.60b91cb2.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box.949863f4.js"), true ? ["./single-box.949863f4.js","./single-box.60b91cb2.css"] : void 0, import.meta.url)
     );
     const ExpressionBuilder = defineAsyncComponent(
-      () => __vitePreload(() => import("./index.e5f58042.js"), true ? ["./index.e5f58042.js","./index.79dcf75d.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.25701d51.js"), true ? ["./index.25701d51.js","./index.79dcf75d.css"] : void 0, import.meta.url)
     );
-    const arrowMoveStepSize = 20;
     const store2 = useStore();
     const preLoading = ref(true);
     const renderer2 = ref(null);
@@ -24291,7 +25401,6 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       document.body.removeEventListener("drop", cancleEvent, true);
       document.body.removeEventListener("dragover", cancleEvent, true);
     });
-    const aspectRatio = 16 / 9;
     const canvasWidth = ref(0);
     const canvasHeight = ref(0);
     const uiSize = ref(192);
@@ -24365,7 +25474,6 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       expressionBuilderCharacter.value = e.character;
       expressionBuilderHeadGroup.value = e.headGroup;
     }
-    const packDialogWaitMs = 50;
     const packDialog = ref(null);
     const dialogVisable = ref(false);
     function showDialog(search) {
@@ -24624,7 +25732,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       return openBlock(), createElementBlock(Fragment, null, [
         createBaseVNode("div", _hoisted_1, [
           createBaseVNode("div", _hoisted_2, [
-            (openBlock(true), createElementBlock(Fragment, null, renderList(unref(objects), (obj) => {
+            (openBlock(true), createElementBlock(Fragment, null, renderList(objects.value, (obj) => {
               return openBlock(), createElementBlock("div", {
                 key: obj,
                 tabindex: "0",
@@ -24691,30 +25799,29 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
 const app_vue_vue_type_style_index_0_lang = "";
 createApp(_sfc_main).use(store).mount("#main_wrapper");
 export {
-  onMounted as A,
-  onUnmounted as B,
-  withDirectives as C,
-  vModelText as D,
-  createStaticVNode as E,
+  onUnmounted as A,
+  withDirectives as B,
+  vModelText as C,
+  createStaticVNode as D,
+  onActivated as E,
   Fragment as F,
-  onActivated as G,
-  safeAsync as H,
-  eventBus$1 as I,
-  reactive as J,
-  renderSlot as K,
-  DropTarget as L,
-  verticalScrollRedirect as M,
-  vModelSelect as N,
-  DFieldset as O,
-  getAssetByUrl as P,
-  Renderer as Q,
+  safeAsync as G,
+  eventBus$1 as H,
+  reactive as I,
+  renderSlot as J,
+  DropTarget as K,
+  verticalScrollRedirect as L,
+  vModelSelect as M,
+  DFieldset as N,
+  getAssetByUrl as O,
+  Renderer as P,
+  transaction as Q,
   Repo as R,
-  transaction as S,
+  getAAssetUrl as S,
   TransitionGroup as T,
-  getAAssetUrl as U,
+  Character as U,
   VueErrorEvent as V,
-  Character as W,
-  SelectedState as X,
+  SelectedState as W,
   _export_sfc as _,
   createElementBlock as a,
   createBaseVNode as b,
@@ -24725,21 +25832,21 @@ export {
   createVNode as g,
   withCtx as h,
   nextTick as i,
-  useStore as j,
-  createTextVNode as k,
+  createTextVNode as j,
+  unref as k,
   _sfc_main$n as l,
   createBlock as m,
   normalizeClass as n,
   openBlock as o,
-  isRef as p,
-  _sfc_main$k as q,
+  _sfc_main$k as p,
+  normalizeStyle$1 as q,
   ref as r,
-  normalizeStyle$1 as s,
+  withModifiers as s,
   toDisplayString as t,
-  unref as u,
-  withModifiers as v,
+  useStore as u,
+  envX as v,
   watch as w,
-  envX as x,
-  pushScopeId as y,
-  popScopeId as z
+  pushScopeId as x,
+  popScopeId as y,
+  onMounted as z
 };
