@@ -69,6 +69,7 @@ export const poemActions: ActionTree<IPanels, IRootState> = {
 				ratio: 1,
 				preserveRatio: true,
 				consoleColor: constants.Poem.consoleBackgroundColor,
+				overflow: false,
 			} as IPoem,
 		} as ICreateObjectMutation);
 		return id;

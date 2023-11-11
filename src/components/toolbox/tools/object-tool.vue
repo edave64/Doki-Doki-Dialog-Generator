@@ -50,6 +50,12 @@
 		<slot v-else-if="showAltPanel" name="alt-panel" />
 		<template v-else>
 			<slot />
+			<toggle
+				v-if="canOverflow"
+				v-model="overflow"
+				label="Overflow"
+				title="Allow the text to move outside of the textbox"
+			/>
 			<position-and-size :obj="object" />
 			<layers :object="object" />
 			<d-fieldset title="Transform">
@@ -196,6 +202,7 @@ import {
 	ISetNameboxWidthMutation,
 	ISetObjectScaleMutation,
 	ISetObjectSkewMutation,
+	ISetOverflowMutation,
 	ISetRatioAction,
 	ISetTextBoxColor,
 } from '@/store/objects';
@@ -240,6 +247,25 @@ const enlargeWhenTalking = setable(
 	'enlargeWhenTalking',
 	'panels/setEnlargeWhenTalking'
 );
+
+const canOverflow = computed(() => {
+	return 'overflow' in props.object;
+});
+
+const overflow = computed({
+	get(): boolean {
+		return props.object.overflow ?? false;
+	},
+	set(overflow: boolean) {
+		transaction(async () => {
+			await store.commit('panels/setOverflow', {
+				id: props.object.id,
+				panelId: props.object.panelId,
+				overflow,
+			} as ISetOverflowMutation);
+		});
+	},
+});
 
 const preserveRatio = computed({
 	get(): boolean {

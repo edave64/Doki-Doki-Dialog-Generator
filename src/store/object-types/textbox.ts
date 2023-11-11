@@ -126,6 +126,7 @@ export const textBoxActions: ActionTree<IPanels, IRootState> = {
 				talkingOther: '',
 				text: command.text ?? 'Click here to edit the textbox',
 				resetBounds,
+				overflow: false,
 			} as ITextBox,
 		} as ICreateObjectMutation);
 		return id;

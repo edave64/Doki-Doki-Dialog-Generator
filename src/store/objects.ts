@@ -43,6 +43,7 @@ export interface IObjectsState {
 export interface IObject extends IHasSpriteFilters {
 	type: ObjectTypes;
 	panelId: IPanel['id'];
+	overflow?: boolean;
 	id: number;
 	x: number;
 	y: number;
@@ -71,6 +72,10 @@ export type ObjectTypes =
 	| 'choice'
 	| 'notification'
 	| 'poem';
+
+export interface IHasOverflow {
+	overflow?: boolean;
+}
 
 export const mutations: MutationTree<IPanels> = {
 	create(state, { object }: ICreateObjectMutation) {
@@ -183,6 +188,13 @@ export const mutations: MutationTree<IPanels> = {
 			command.skewY < 0
 				? 180 - (Math.abs(command.skewY) % 180)
 				: command.skewY % 180;
+		++obj.version;
+	},
+	setOverflow(state, command: ISetOverflowMutation) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id] as ITextBox;
+		if (!('overflow' in obj)) return;
+		obj.overflow = command.overflow;
 		++obj.version;
 	},
 	...spriteMutations,
@@ -478,6 +490,10 @@ export interface ISetCompositionMutation extends IObjectMutation {
 
 export interface ISetFiltersMutation extends IObjectMutation {
 	readonly filters: SpriteFilter[];
+}
+
+export interface ISetOverflowMutation extends IObjectMutation {
+	readonly overflow: boolean;
 }
 
 export interface IObjectShiftLayerAction extends IObjectMutation {

@@ -70,6 +70,12 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 	}
 	private _lastRefVars: string | null = null;
 
+	public getName(): string {
+		return this.obj.talkingObjId === '$other$'
+			? this.obj.talkingOther
+			: this.refObject?.label ?? 'Missing name';
+	}
+
 	public prepareRender(
 		panel: DeepReadonly<IPanel>,
 		store: Store<IRootState>,
@@ -82,18 +88,14 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		if (typeof this.obj.talkingObjId === 'number') {
 			this.refObject = panel.objects[this.obj.talkingObjId] ?? null;
 		}
-		const currentRefVars = this.getRefVars;
+		const currentRefVars = this.getRefVars();
 		if (currentRefVars !== this._lastRefVars) {
 			this.localCanvasInvalid = true;
 			this._lastRefVars = currentRefVars;
 		}
 
-		const name =
-			this.obj.talkingObjId === '$other$'
-				? this.obj.talkingOther
-				: this.refObject?.label ?? 'Missing name';
 		this.nbTextRenderer = new TextRenderer(
-			name,
+			this.getName(),
 			this.textboxRenderer.nameboxStyle
 		);
 		this.textRenderer = new TextRenderer(
