@@ -142,14 +142,16 @@ const props = defineProps({
 //#region Size
 const height = computed({
 	get(): number {
-		return props.obj.height;
+		const constants = getConstants().TextBox;
+		return props.obj.height - (easterEgg.value ? constants.NameboxHeight : 0);
 	},
 	set(height: number) {
+		const constants = getConstants().TextBox;
 		transaction(() => {
 			store.commit('panels/setSize', {
 				id: props.obj.id,
 				panelId: props.obj.panelId,
-				height,
+				height: height + (easterEgg.value ? constants.NameboxHeight : 0),
 				width: props.obj.width,
 			} as ISetSpriteSizeMutation);
 		});
@@ -182,6 +184,11 @@ const allowSize = computed(() => {
 		return bg.file.startsWith('internal:');
 	}
 	return false;
+});
+
+// Nothing to see here. Move along.
+const easterEgg = computed(() => {
+	return props.obj.type === 'textBox' && location.search.includes('alex');
 });
 //#endregion Size
 //#region Step Position

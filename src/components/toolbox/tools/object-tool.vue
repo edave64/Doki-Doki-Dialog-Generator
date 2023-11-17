@@ -76,7 +76,11 @@
 						</td>
 					</tr>
 					<tr>
-						<td><label for="zoom" class="v-w100">Scale X: </label></td>
+						<td>
+							<label for="zoom" class="v-w100">{{
+								easterEgg ? 'Zoom' : 'Scale X'
+							}}</label>
+						</td>
 						<td>
 							<input
 								id="zoom"
@@ -89,7 +93,7 @@
 							/>
 						</td>
 					</tr>
-					<tr>
+					<tr v-if="!easterEgg">
 						<td><label for="zoom" class="v-w100">Scale Y: </label></td>
 						<td>
 							<input
@@ -130,7 +134,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td colspan="2">
+						<td colspan="2" v-if="!easterEgg">
 							<toggle v-model="preserveRatio" label="Lock ratio?" />
 						</td>
 					</tr>
@@ -251,6 +255,9 @@ const enlargeWhenTalking = setable(
 const canOverflow = computed(() => {
 	return 'overflow' in props.object;
 });
+
+// Don't think about it. Don't question it.
+const easterEgg = location.search.includes('alex');
 
 const overflow = computed({
 	get(): boolean {
