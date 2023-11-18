@@ -3,12 +3,10 @@ import { ctxScope } from '@/renderer/canvas-tools';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
 import { IRootState } from '@/store';
 import { INotification } from '@/store/object-types/notification';
-import { IObject } from '@/store/objects';
 import { IPanel } from '@/store/panels';
 import { DeepReadonly } from 'ts-essentials';
 import { Store } from 'vuex';
 import { SelectedState } from './offscreen-renderable';
-import { Renderable } from './renderable';
 import { ScalingRenderable } from './scaling-renderable';
 
 export class Notification extends ScalingRenderable<INotification> {
@@ -28,13 +26,11 @@ export class Notification extends ScalingRenderable<INotification> {
 	public prepareRender(
 		panel: DeepReadonly<IPanel>,
 		store: Store<IRootState>,
-		renderables: Map<IObject['id'], DeepReadonly<Renderable<never>>>,
 		lq: boolean
 	): void | Promise<unknown> {
 		const superRet: void | Promise<unknown> = super.prepareRender(
 			panel,
 			store,
-			renderables,
 			lq
 		);
 		const constants = getConstants().Notification;

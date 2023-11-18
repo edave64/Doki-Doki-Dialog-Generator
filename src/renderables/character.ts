@@ -6,7 +6,6 @@ import {
 	getPose,
 	ICharacter,
 } from '@/store/object-types/characters';
-import { IObject } from '@/store/objects';
 import { IPanel } from '@/store/panels';
 import {
 	Character as CharacterModel,
@@ -18,7 +17,6 @@ import {
 	AssetListRenderable,
 	IDrawAssetsUnloaded,
 } from './asset-list-renderable';
-import { Renderable } from './renderable';
 
 export class Character extends AssetListRenderable<ICharacter> {
 	public constructor(
@@ -31,11 +29,10 @@ export class Character extends AssetListRenderable<ICharacter> {
 	public prepareRender(
 		panel: DeepReadonly<IPanel>,
 		store: Store<IRootState>,
-		renderables: Map<IObject['id'], DeepReadonly<Renderable<never>>>,
 		lq: boolean
 	): void | Promise<unknown> {
 		this.data = getData(store, this.obj);
-		return super.prepareRender(panel, store, renderables, lq);
+		return super.prepareRender(panel, store, lq);
 	}
 
 	protected isAssetListOutdated(): boolean {

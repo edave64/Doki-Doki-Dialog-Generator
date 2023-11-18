@@ -102,6 +102,10 @@ export class SceneRenderer {
 			.map((renderObject) => renderObject.id);
 	}
 
+	public getLastRenderObject(id: IObject['id']): Renderable<IObject> | null {
+		return this.renderObjectCache.get(id) ?? null;
+	}
+
 	private async renderCallback(
 		skipLocalCanvases: boolean,
 		rx: RenderContext
@@ -113,18 +117,57 @@ export class SceneRenderer {
 		await this.getBackgroundRenderer()?.render(rx);
 
 		const renderables = this.getRenderObjects();
-		const map = new Map(
-			renderables.map((x) => [x.id, x as DeepReadonly<Renderable<never>>])
-		);
+		const waiting: Map<IObject['id'], Array<Renderable<IObject>>> = new Map();
+		const processed: Map<IObject['id'], DOMMatrixReadOnly> = new Map();
+
+		for (const renderable of renderables) {
+			const linked = renderable.linkedTo;
+			let linkTransform = new DOMMatrixReadOnly();
+			if (linked != null) {
+				const lookupTransform = processed.get(linked);
+				if (lookupTransform) {
+					linkTransform = lookupTransform;
+				} else {
+					const waitList = waiting.get(linked);
+					if (waitList) {
+						waitList.push(renderable);
+					} else {
+						waiting.set(linked, [renderable]);
+					}
+					continue;
+				}
+			}
+			prepareTransform(renderable, linkTransform);
+		}
+
+		if (waiting.size > 0) {
+			console.warn('Not all renderables processed. Infinite loop?');
+		}
+
+		function prepareTransform(
+			renderable: Renderable<IObject>,
+			linkTransform: DOMMatrixReadOnly
+		) {
+			const newTransform = renderable.prepareTransform(linkTransform);
+			processed.set(renderable.id, newTransform);
+			const waitList = waiting.get(renderable.id);
+			if (waitList) {
+				for (const sub of waitList) {
+					prepareTransform(sub, newTransform);
+				}
+				waiting.delete(renderable.id);
+			}
+		}
+
 		const promises = renderables
-			.map((x) => x.prepareRender(this.panel!, this.store, map, !rx.hq))
+			.map((x) => x.prepareRender(this.panel!, this.store, !rx.hq))
 			.filter((x) => x !== undefined);
 		if (promises.length > 0) {
 			await Promise.all(promises);
 		}
 
 		const selection = this.store.state.ui.selection;
-		for (const object of this.getRenderObjects()) {
+		for (const object of renderables) {
 			const selected = selection === object.id;
 			const focusedObj = document.querySelector(SceneRenderer.FocusProp);
 			const focused =

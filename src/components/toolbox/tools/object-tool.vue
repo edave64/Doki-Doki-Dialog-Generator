@@ -60,6 +60,18 @@
 			<layers :object="object" />
 			<d-fieldset title="Transform">
 				<toggle v-model="flip" label="Flip?" />
+				<label for="linked_to" class="v-w100">Linked with:</label>
+				<select
+					id="linked_to"
+					class="v-w100"
+					v-model="transformLink"
+					@keydown.stop
+				>
+					<option value="">None</option>
+					<option v-for="[id, label] in linkObjectList" :key="id" :value="id">
+						{{ label }}
+					</option>
+				</select>
 				<table class="input-table v-w100">
 					<tr>
 						<td>
@@ -203,6 +215,7 @@ import {
 	ICopyObjectToClipboardAction,
 	IObject,
 	ISetLabelMutation,
+	ISetLinkMutation,
 	ISetNameboxWidthMutation,
 	ISetObjectScaleMutation,
 	ISetObjectSkewMutation,
@@ -240,6 +253,26 @@ const setable = <K extends keyof IObject>(prop: K, message: string) =>
 	);
 setupPanelMixin(root);
 
+const transformLink = computed({
+	get(): IObject['id'] | null {
+		return props.object.linkedTo;
+	},
+	set(value: IObject['id'] | null) {
+		const obj = props.object;
+		store.commit('panels/setLink', {
+			panelId: currentPanel.value.id,
+			id: obj.id,
+			link: value,
+			x: obj.x,
+			y: obj.y,
+			scaleX: obj.scaleX,
+			scaleY: obj.scaleY,
+			skewX: obj.skewX,
+			skewY: obj.skewY,
+			rotation: obj.rotation,
+		} as ISetLinkMutation);
+	},
+});
 const imageOptionsOpen = ref(false);
 const modalNameInput = ref('');
 const showRename = ref(false);
@@ -254,6 +287,23 @@ const enlargeWhenTalking = setable(
 
 const canOverflow = computed(() => {
 	return 'overflow' in props.object;
+});
+
+const currentPanel = computed(() => {
+	return store.state['panels'].panels[props.object.panelId];
+});
+
+const linkObjectList = computed((): [IObject['id'], string][] => {
+	const panel = currentPanel.value;
+
+	const ret: [IObject['id'], string][] = [];
+
+	for (const id of [...panel.order, ...panel.onTopOrder]) {
+		const obj = panel.objects[id];
+		if (obj.label === null) continue;
+		ret.push([id, obj.label!]);
+	}
+	return ret;
 });
 
 // Don't think about it. Don't question it.

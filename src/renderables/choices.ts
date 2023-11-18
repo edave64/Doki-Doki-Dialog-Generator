@@ -2,11 +2,9 @@ import getConstants from '@/constants';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
 import { IRootState } from '@/store';
 import { IChoices } from '@/store/object-types/choices';
-import { IObject } from '@/store/objects';
 import { IPanel } from '@/store/panels';
 import { DeepReadonly } from 'vue';
 import { Store } from 'vuex';
-import { Renderable } from './renderable';
 import { ScalingRenderable } from './scaling-renderable';
 
 export class Choice extends ScalingRenderable<IChoices> {
@@ -53,7 +51,6 @@ export class Choice extends ScalingRenderable<IChoices> {
 	public prepareRender(
 		panel: DeepReadonly<IPanel>,
 		store: Store<IRootState>,
-		renderables: Map<IObject['id'], DeepReadonly<Renderable<never>>>,
 		lq: boolean
 	): void | Promise<unknown> {
 		const constants = getConstants();
@@ -72,7 +69,7 @@ export class Choice extends ScalingRenderable<IChoices> {
 					0
 				) +
 				this.obj.choiceDistance * (this.obj.choices.length - 1);
-			return super.prepareRender(panel, store, renderables, lq);
+			return super.prepareRender(panel, store, lq);
 		};
 
 		const fontLoaders = this.choiceRenderers

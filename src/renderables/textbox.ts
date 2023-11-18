@@ -9,7 +9,6 @@ import { IObject } from '@/store/objects';
 import { IPanel } from '@/store/panels';
 import { DeepReadonly } from 'ts-essentials';
 import { Store } from 'vuex';
-import { Renderable } from './renderable';
 import { ScalingRenderable } from './scaling-renderable';
 import { Corrupted } from './textboxRenderers/corrupt';
 import { Custom } from './textboxRenderers/custom';
@@ -79,10 +78,9 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 	public prepareRender(
 		panel: DeepReadonly<IPanel>,
 		store: Store<IRootState>,
-		renderables: Map<IObject['id'], DeepReadonly<Renderable<never>>>,
 		lq: boolean
 	): void | Promise<unknown> {
-		const ret = super.prepareRender(panel, store, renderables, lq);
+		const ret = super.prepareRender(panel, store, lq);
 		const prepareRet = this.textboxRenderer.prepare();
 
 		if (typeof this.obj.talkingObjId === 'number') {

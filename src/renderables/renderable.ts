@@ -21,7 +21,7 @@ import { SelectedState } from './offscreen-renderable';
 export abstract class Renderable<ObjectType extends IObject> {
 	public constructor(public obj: DeepReadonly<ObjectType>) {}
 
-	public get id() {
+	public get id(): ObjectType['id'] {
 		return this.obj.id;
 	}
 
@@ -128,6 +128,16 @@ export abstract class Renderable<ObjectType extends IObject> {
 	}
 	protected refTextbox: ITextBox | null = null;
 
+	public get linkedTo(): ObjectType['id'] | null {
+		return this.obj.linkedTo;
+	}
+
+	public preparedTransform!: DOMMatrixReadOnly;
+	public prepareTransform(relative: DOMMatrixReadOnly): DOMMatrixReadOnly {
+		this.preparedTransform = relative.multiply(this.getTransfrom());
+		return this.preparedTransform;
+	}
+
 	/**
 	 * An optionally async method that prepares the object to be rendered by resolving assets, processing the transform
 	 * of linked objects, check if the object is talking, etc.
@@ -140,7 +150,6 @@ export abstract class Renderable<ObjectType extends IObject> {
 	public prepareRender(
 		panel: DeepReadonly<IPanel>,
 		_store: Store<IRootState>,
-		_renderables: Map<IObject['id'], DeepReadonly<Renderable<never>>>,
 		_lq: boolean
 	): void | Promise<unknown> {
 		if (this.lastVersion !== this.obj.version) {
@@ -148,7 +157,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 			this.lastVersion = this.obj.version;
 		}
 		if (this.transformIsLocal) {
-			const newTransform = this.getTransfrom();
+			const newTransform = this.preparedTransform;
 			if (!matrixEquals(newTransform, this.lastLocalTransform)) {
 				this.localCanvasInvalid = true;
 				this.lastLocalTransform = newTransform;
@@ -200,7 +209,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 			if (!localCtx)
 				throw new Error('No canvas context received. Possibly out of memory?');
 			if (this.transformIsLocal) {
-				localCtx.setTransform(this.getTransfrom());
+				localCtx.setTransform(this.preparedTransform);
 			}
 			this.renderLocal(localCtx, hq);
 			this.localCanvasInvalid = false;
@@ -219,7 +228,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 				ctx.shadowBlur = 20;
 			}
 			if (!this.transformIsLocal || skipLocal) {
-				ctx.setTransform(this.getTransfrom());
+				ctx.setTransform(this.preparedTransform);
 			}
 
 			ctx.globalCompositeOperation = this.obj.composite ?? 'source-over';
@@ -255,7 +264,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 	 */
 	private hitDetectionFallback = false;
 	public hitTest(point: DOMPointReadOnly) {
-		const transposed = point.matrixTransform(this.getTransfrom().inverse());
+		const transposed = point.matrixTransform(this.preparedTransform.inverse());
 		// Step 1: Simple hitbox test;
 		const localSize = this.getLocalSize();
 		if (

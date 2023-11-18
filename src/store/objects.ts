@@ -45,6 +45,7 @@ export interface IObject extends IHasSpriteFilters {
 	panelId: IPanel['id'];
 	overflow?: boolean;
 	id: number;
+	linkedTo: number | null;
 	x: number;
 	y: number;
 	width: number;
@@ -106,6 +107,11 @@ export const mutations: MutationTree<IPanels> = {
 		const obj = panel.objects[command.id];
 		obj.x = Math.round(command.x * 100) / 100;
 		obj.y = Math.round(command.y * 100) / 100;
+	},
+	setLink(state, command: ISetLinkMutation) {
+		const panel = state.panels[command.panelId];
+		const obj = panel.objects[command.id];
+		obj.linkedTo = command.link;
 	},
 	setFlip(state, command: ISetObjectFlipMutation) {
 		const panel = state.panels[command.panelId];
@@ -439,6 +445,17 @@ export interface ISetSpriteRotationMutation extends IObjectMutation {
 export interface ISetObjectPositionMutation extends IObjectMutation {
 	readonly x: number;
 	readonly y: number;
+}
+
+export interface ISetLinkMutation extends IObjectMutation {
+	readonly link: IObject['id'];
+	readonly x: IObject['x'];
+	readonly y: IObject['y'];
+	readonly scaleX: IObject['id'];
+	readonly scaleY: IObject['id'];
+	readonly skewX: IObject['id'];
+	readonly skewY: IObject['id'];
+	readonly rotation: IObject['id'];
 }
 
 export interface ISetOnTopMutation extends IObjectMutation {

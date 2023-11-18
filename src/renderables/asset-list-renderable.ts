@@ -26,10 +26,9 @@ export abstract class AssetListRenderable<
 	public prepareRender(
 		panel: DeepReadonly<IPanel>,
 		store: Store<IRootState>,
-		renderables: Map<IObject['id'], DeepReadonly<Renderable<never>>>,
 		lq: boolean
 	): void | Promise<unknown> {
-		super.prepareRender(panel, store, renderables, lq);
+		super.prepareRender(panel, store, lq);
 		let reloadAssets = !lq === this.lastHq;
 		if (this.missingAsset) {
 			const uploadCount = Object.keys(store.state.uploadUrls).length;

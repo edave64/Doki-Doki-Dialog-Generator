@@ -16,7 +16,7 @@ export abstract class ScalingRenderable<
 		);
 	}
 	protected get transformIsLocal(): boolean {
-		const transform = this.getTransfrom();
+		const transform = this.preparedTransform;
 		if (this.obj.overflow) return true;
 		if (envX.supports.limitedCanvasSpace) return false;
 		// Test if the transform one does translation. Anything else looks blury when you first render and then
