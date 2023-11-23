@@ -226,6 +226,9 @@ import {
 import { genericSetterMerged } from '@/util/simple-settable';
 import { computed, PropType, ref } from 'vue';
 import TextEditor from '../subtools/text/text.vue';
+import eventBus, { FailureEvent } from '@/eventbus/event-bus';
+import { SceneRenderer } from '@/renderables/scene-renderer';
+import { decomposeMatrix } from '@/util/math';
 
 const store = useStore();
 const root = ref(null! as HTMLElement);
@@ -254,23 +257,57 @@ const setable = <K extends keyof IObject>(prop: K, message: string) =>
 setupPanelMixin(root);
 
 const transformLink = computed({
-	get(): IObject['id'] | null {
-		return props.object.linkedTo;
+	get(): IObject['id'] | '' {
+		return props.object.linkedTo ?? '';
 	},
-	set(value: IObject['id'] | null) {
+	set(value: IObject['id'] | '') {
 		const obj = props.object;
-		store.commit('panels/setLink', {
-			panelId: currentPanel.value.id,
-			id: obj.id,
-			link: value,
-			x: obj.x,
-			y: obj.y,
-			scaleX: obj.scaleX,
-			scaleY: obj.scaleY,
-			skewX: obj.skewX,
-			skewY: obj.skewY,
-			rotation: obj.rotation,
-		} as ISetLinkMutation);
+		const link = value === '' ? null : value;
+		const currentSceneRenderer: SceneRenderer | null = (
+			window as any
+		).getMainSceneRenderer();
+		const objRender = currentSceneRenderer?.getLastRenderObject(obj.id);
+		const linkRender =
+			link === null
+				? currentSceneRenderer?.getLastRenderObject(obj.linkedTo!)
+				: currentSceneRenderer?.getLastRenderObject(link);
+		try {
+			if (!currentSceneRenderer || !objRender || !linkRender) {
+				store.commit('panels/setLink', {
+					panelId: currentPanel.value.id,
+					id: obj.id,
+					link,
+					x: obj.x,
+					y: obj.y,
+					scaleX: obj.scaleX,
+					scaleY: obj.scaleY,
+					skewX: obj.skewX,
+					skewY: obj.skewY,
+					rotation: obj.rotation,
+				} as ISetLinkMutation);
+			} else if (link == null) {
+				store.commit('panels/setLink', {
+					panelId: currentPanel.value.id,
+					id: obj.id,
+					link,
+					...decomposeMatrix(objRender.preparedTransform),
+				} as ISetLinkMutation);
+			} else {
+				const inverse = linkRender.preparedTransform.inverse();
+				const newTransform = inverse.multiply(objRender.preparedTransform);
+				console.log(objRender.preparedTransform);
+				console.log(linkRender.preparedTransform.multiply(newTransform));
+				console.log(newTransform);
+				store.commit('panels/setLink', {
+					panelId: currentPanel.value.id,
+					id: obj.id,
+					link,
+					...decomposeMatrix(newTransform!),
+				} as ISetLinkMutation);
+			}
+		} catch (e: Error) {
+			eventBus.fire(new FailureEvent(e.message));
+		}
 	},
 });
 const imageOptionsOpen = ref(false);
@@ -300,7 +337,7 @@ const linkObjectList = computed((): [IObject['id'], string][] => {
 
 	for (const id of [...panel.order, ...panel.onTopOrder]) {
 		const obj = panel.objects[id];
-		if (obj.label === null) continue;
+		if (obj.label === null || obj === props.object) continue;
 		ret.push([id, obj.label!]);
 	}
 	return ret;

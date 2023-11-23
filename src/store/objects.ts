@@ -1,4 +1,6 @@
+import { SceneRenderer } from '@/renderables/scene-renderer';
 import { CompositeModes } from '@/renderer/renderer-context';
+import { decomposeMatrix } from '@/util/math';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { ActionContext, ActionTree, MutationTree } from 'vuex';
 import { IRootState } from '.';
@@ -105,13 +107,31 @@ export const mutations: MutationTree<IPanels> = {
 	setPosition(state, command: ISetObjectPositionMutation) {
 		const panel = state.panels[command.panelId];
 		const obj = panel.objects[command.id];
-		obj.x = Math.round(command.x * 100) / 100;
-		obj.y = Math.round(command.y * 100) / 100;
+		obj.x = roundTo2Dec(command.x);
+		obj.y = roundTo2Dec(command.y);
 	},
 	setLink(state, command: ISetLinkMutation) {
 		const panel = state.panels[command.panelId];
 		const obj = panel.objects[command.id];
+
+		let check = panel.objects[command.link!] as IObject | undefined;
+		if (!check && command.link!)
+			throw new Error('Linked object does not exist.');
+		if (check === obj) throw new Error('Object cannot link to itself.');
+		while (check) {
+			check = panel.objects[check.linkedTo!] as IObject | undefined;
+			if (check === obj)
+				throw new Error('Objects cannot be linked recursively.');
+		}
+
 		obj.linkedTo = command.link;
+		obj.x = roundTo2Dec(command.x);
+		obj.y = roundTo2Dec(command.y);
+		obj.rotation = roundTo2Dec(command.rotation);
+		obj.scaleX = roundTo2Dec(command.scaleX);
+		obj.scaleY = roundTo2Dec(command.scaleY);
+		obj.skewX = roundTo2Dec(command.skewX);
+		obj.skewY = roundTo2Dec(command.skewY);
 	},
 	setFlip(state, command: ISetObjectFlipMutation) {
 		const panel = state.panels[command.panelId];
@@ -219,16 +239,47 @@ export const actions: ActionTree<IPanels, IRootState> = {
 			commit('ui/setSelection', null, { root: true });
 		}
 		for (const key of [...panel.onTopOrder, ...panel.order]) {
+			if (obj.id === key) continue;
 			const otherObject = panel.objects[key] as ITextBox;
-			if (obj.id === key || otherObject.type !== 'textBox') continue;
-
-			if (otherObject.talkingObjId !== obj.id) continue;
-
-			commit('setTalkingOther', {
-				id: otherObject.id,
-				talkingOther: obj.label ?? '',
-				panelId: command.panelId,
-			} as ISetTextBoxTalkingOtherMutation);
+			if (otherObject.linkedTo === obj.id) {
+				const currentSceneRenderer: SceneRenderer | null = (
+					window as any
+				).getMainSceneRenderer();
+				const otherObjRender = currentSceneRenderer?.getLastRenderObject(
+					otherObject.id
+				);
+				if (otherObjRender) {
+					commit('setLink', {
+						panelId: command.panelId,
+						id: otherObject.id,
+						link: null,
+						...decomposeMatrix(otherObjRender.preparedTransform),
+					} as ISetLinkMutation);
+				} else {
+					commit('setLink', {
+						panelId: command.panelId,
+						id: otherObject.id,
+						link: null,
+						rotation: otherObject.rotation,
+						scaleX: otherObject.scaleX,
+						scaleY: otherObject.scaleY,
+						skewX: otherObject.skewX,
+						skewY: otherObject.skewY,
+						x: otherObject.x,
+						y: otherObject.y,
+					} as ISetLinkMutation);
+				}
+			}
+			if (
+				otherObject.type === 'textBox' &&
+				otherObject.talkingObjId === obj.id
+			) {
+				commit('setTalkingOther', {
+					id: otherObject.id,
+					talkingOther: obj.label ?? '',
+					panelId: command.panelId,
+				} as ISetTextBoxTalkingOtherMutation);
+			}
 		}
 		commit('removeFromList', {
 			id: command.id,
@@ -419,6 +470,10 @@ export function fixContentPackRemoval(
 	}
 }
 
+function roundTo2Dec(val: number): number {
+	return Math.round(val * 100) / 100;
+}
+
 export interface ICreateObjectMutation {
 	readonly object: IObject;
 }
@@ -448,7 +503,7 @@ export interface ISetObjectPositionMutation extends IObjectMutation {
 }
 
 export interface ISetLinkMutation extends IObjectMutation {
-	readonly link: IObject['id'];
+	readonly link: IObject['id'] | null;
 	readonly x: IObject['x'];
 	readonly y: IObject['y'];
 	readonly scaleX: IObject['id'];

@@ -60,14 +60,11 @@ export abstract class Renderable<ObjectType extends IObject> {
 	protected getTransfrom(): DOMMatrixReadOnly {
 		let transform = new DOMMatrix();
 		const obj = this.obj;
-		transform = transform.translate(
-			this.x - this.width / 2,
-			this.y - this.height / 2
-		);
+		transform = transform.translate(this.x, this.y);
 		if (this.isTalking && obj.enlargeWhenTalking) {
-			transform = transform.translate(+this.width / 2, +this.height);
+			transform = transform.translate(0, +this.height / 2);
 			transform = transform.scale(1.05, 1.05);
-			transform = transform.translate(-this.width / 2, -this.height);
+			transform = transform.translate(0, -this.height / 2);
 		}
 		if (
 			obj.flip ||
@@ -77,7 +74,6 @@ export abstract class Renderable<ObjectType extends IObject> {
 			obj.skewX !== 0 ||
 			obj.skewY !== 0
 		) {
-			transform = transform.translate(+this.width / 2, +this.height / 2);
 			if (obj.rotation !== 0) {
 				transform = transform.rotate(0, 0, obj.rotation);
 			}
@@ -93,7 +89,6 @@ export abstract class Renderable<ObjectType extends IObject> {
 			if (obj.scaleX !== 1 || obj.scaleY !== 1) {
 				transform = transform.scale(obj.scaleX, obj.scaleY);
 			}
-			transform = transform.translate(-this.width / 2, -this.height / 2);
 		}
 		return transform;
 	}
@@ -192,6 +187,10 @@ export abstract class Renderable<ObjectType extends IObject> {
 			skipLocal = false;
 		}
 		const localCanvasSize = this.getLocalSize();
+		const transform = this.preparedTransform.translate(
+			-this.width / 2,
+			-this.height / 2
+		);
 		if (
 			this.localCanvas &&
 			(this.localCanvas.width !== localCanvasSize.x ||
@@ -209,7 +208,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 			if (!localCtx)
 				throw new Error('No canvas context received. Possibly out of memory?');
 			if (this.transformIsLocal) {
-				localCtx.setTransform(this.preparedTransform);
+				localCtx.setTransform(transform);
 			}
 			this.renderLocal(localCtx, hq);
 			this.localCanvasInvalid = false;
@@ -228,7 +227,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 				ctx.shadowBlur = 20;
 			}
 			if (!this.transformIsLocal || skipLocal) {
-				ctx.setTransform(this.preparedTransform);
+				ctx.setTransform(transform);
 			}
 
 			ctx.globalCompositeOperation = this.obj.composite ?? 'source-over';
@@ -264,7 +263,11 @@ export abstract class Renderable<ObjectType extends IObject> {
 	 */
 	private hitDetectionFallback = false;
 	public hitTest(point: DOMPointReadOnly) {
-		const transposed = point.matrixTransform(this.preparedTransform.inverse());
+		const transposed = point.matrixTransform(
+			this.preparedTransform
+				.translate(-this.width / 2, -this.height / 2)
+				.inverse()
+		);
 		// Step 1: Simple hitbox test;
 		const localSize = this.getLocalSize();
 		if (
