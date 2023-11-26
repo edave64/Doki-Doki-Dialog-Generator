@@ -229,6 +229,7 @@ import TextEditor from '../subtools/text/text.vue';
 import eventBus, { FailureEvent } from '@/eventbus/event-bus';
 import { SceneRenderer } from '@/renderables/scene-renderer';
 import { decomposeMatrix } from '@/util/math';
+import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
 
 const store = useStore();
 const root = ref(null! as HTMLElement);
@@ -263,16 +264,14 @@ const transformLink = computed({
 	set(value: IObject['id'] | '') {
 		const obj = props.object;
 		const link = value === '' ? null : value;
-		const currentSceneRenderer: SceneRenderer | null = (
-			window as any
-		).getMainSceneRenderer();
+		const currentSceneRenderer: SceneRenderer = getMainSceneRenderer(store);
 		const objRender = currentSceneRenderer?.getLastRenderObject(obj.id);
 		const linkRender =
 			link === null
 				? currentSceneRenderer?.getLastRenderObject(obj.linkedTo!)
 				: currentSceneRenderer?.getLastRenderObject(link);
 		try {
-			if (!currentSceneRenderer || !objRender || !linkRender) {
+			if (!objRender || !linkRender) {
 				store.commit('panels/setLink', {
 					panelId: currentPanel.value.id,
 					id: obj.id,

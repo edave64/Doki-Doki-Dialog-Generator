@@ -489,6 +489,7 @@ function moveBehind() {
 //#endregion Actions
 //#region Thumbnails
 import { disposeCanvas, makeCanvas } from '@/util/canvas';
+import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
 
 const thumbnailFactor = 1 / 4;
 const thumbnailQuality = 0.5;
@@ -507,19 +508,9 @@ const missingThumbnails = computed((): IPanel['id'][] => {
 });
 
 async function renderCurrentThumbnail() {
-	// Warning, ugly hack incoming:
-	// getMainSceneRenderer is a bridge set up by renderer.vue, that allows us to
-	// borrow its renderer. It already contains the fully rendered scene, so
-	// we just need to stick it in a thumbnail.
 	// FIXME: This sadly makes it so the selection halo is visible in the thumbnails.
 	//        The renderer will lose that once the panels tab is selected, so maybe delay this?
-	const getMainSceneRenderer: undefined | (() => SceneRenderer | null) = (
-		window as any
-	).getMainSceneRenderer;
-	const sceneRenderer = getMainSceneRenderer && getMainSceneRenderer();
-
-	// Suboptimal. But whatever, it's just a thumbnail...
-	if (!sceneRenderer) return;
+	const sceneRenderer = getMainSceneRenderer(store);
 
 	await renderPanelThumbnail(sceneRenderer);
 }

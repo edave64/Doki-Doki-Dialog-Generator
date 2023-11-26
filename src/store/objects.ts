@@ -1,4 +1,4 @@
-import { SceneRenderer } from '@/renderables/scene-renderer';
+import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
 import { CompositeModes } from '@/renderer/renderer-context';
 import { decomposeMatrix } from '@/util/math';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
@@ -242,9 +242,8 @@ export const actions: ActionTree<IPanels, IRootState> = {
 			if (obj.id === key) continue;
 			const otherObject = panel.objects[key] as ITextBox;
 			if (otherObject.linkedTo === obj.id) {
-				const currentSceneRenderer: SceneRenderer | null = (
-					window as any
-				).getMainSceneRenderer();
+				// Begging that no linked objects will get removed before the render.vue initializes the main renderer.
+				const currentSceneRenderer = getMainSceneRenderer(null!);
 				const otherObjRender = currentSceneRenderer?.getLastRenderObject(
 					otherObject.id
 				);

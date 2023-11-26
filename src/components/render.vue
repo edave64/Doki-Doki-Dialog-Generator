@@ -35,14 +35,14 @@ import eventBus, {
 	StateLoadingEvent,
 } from '@/eventbus/event-bus';
 import { transaction } from '@/plugins/vuex-history';
-import { SceneRenderer } from '@/renderables/scene-renderer';
+import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
 import { RenderContext } from '@/renderer/renderer-context';
 import { useStore } from '@/store';
 import { ICreateSpriteAction } from '@/store/object-types/sprite';
 import { IObject, ISetObjectPositionMutation } from '@/store/objects';
 import { disposeCanvas } from '@/util/canvas';
 import { DeepReadonly } from 'ts-essentials';
-import { computed, markRaw, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { MutationPayload } from 'vuex';
 
 const store = useStore();
@@ -58,26 +58,17 @@ const queuedRender = ref(null as null | number);
 const showingLast = ref(false);
 const dropPreventClick = ref(false);
 
-const sceneRendererCache = ref(null as SceneRenderer | null);
 const selection = computed(() => store.state.ui.selection ?? null);
 const currentPanel = computed(
 	() => store.state.panels.panels[store.state.panels.currentPanel]
 );
 const lqRendering = computed(() => store.state.ui.lqRendering);
-const sceneRender = computed(() => {
+function getSceneRender() {
 	if (props.preLoading) return null!;
-	const panelId = store.state.panels.currentPanel;
-	if (!sceneRendererCache.value) {
-		console.log('New scene renderer!');
-		// eslint-disable-next-line vue/no-side-effects-in-computed-properties
-		sceneRendererCache.value = markRaw(
-			new SceneRenderer(store, panelId, bitmapWidth.value, bitmapHeight.value)
-		);
-	} else {
-		sceneRendererCache.value.setPanelId(panelId);
-	}
-	return sceneRendererCache.value as SceneRenderer;
-});
+	const renderer = getMainSceneRenderer(store);
+	renderer?.setPanelId(store.state.panels.currentPanel);
+	return renderer;
+}
 const bitmapHeight = computed(() => {
 	// Stupid hack to make vue reevaluate this property when loading is done.
 	props.preLoading;
@@ -102,7 +93,7 @@ async function render_(): Promise<void> {
 	if (store.state.unsafe) return;
 
 	try {
-		await sceneRender.value.render(!lqRendering.value, true, false);
+		await getSceneRender()?.render(!lqRendering.value, true, false);
 	} catch (e) {
 		console.log(e);
 	}
@@ -140,7 +131,7 @@ function renderLoadingScreen() {
 }
 function display(): void {
 	showingLast.value = false;
-	sceneRender.value.paintOnto(sdCtx.value, {
+	getSceneRender()?.paintOnto(sdCtx.value, {
 		x: 0,
 		y: 0,
 		w: bitmapWidth.value,
@@ -166,7 +157,7 @@ function onUiClick(e: MouseEvent): void {
 		return;
 	}
 
-	const objects = sceneRender.value.objectsAt(sx, sy);
+	const objects = getSceneRender()!.objectsAt(sx, sy);
 
 	const currentObjectIdx = objects.findIndex((id) => id === selection.value);
 	let selectedObject: IObject['id'] | null;
@@ -193,7 +184,7 @@ watch(
 
 eventBus.subscribe(InvalidateRenderEvent, invalidateRender);
 eventBus.subscribe(StateLoadingEvent, () => {
-	const cache = sceneRendererCache.value;
+	const cache = getSceneRender();
 	if (cache) {
 		cache.setPanelId(-1);
 	}
@@ -212,7 +203,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-	sceneRendererCache.value?.dispose();
+	getSceneRender()!.dispose();
 });
 //#region Blend over
 const inBlendOver = ref(false);
@@ -253,25 +244,9 @@ function handleColorPickerClick(sx: number, sy: number) {
 	return false;
 }
 //#endregion picker
-//#region expose renderer
-// This is a shortcutting trick to speed up thumbnail rendering.
-// Instead of creating a new scene renderer for the thumbnails, we use the one already used for the preview.
-// Since the currently viewed panel is the one that is most commonly re-rendered, this saves a lot of rendering
-// time.
-if (typeof WeakRef !== 'undefined') {
-	const self = new WeakRef(sceneRender);
-	(window as any).getMainSceneRenderer = function () {
-		return self.deref()?.value;
-	};
-} else {
-	(window as any).getMainSceneRenderer = () => {
-		return sceneRender.value;
-	};
-}
-//#endregion expose renderer
 //#region download
 async function download(): Promise<void> {
-	const url = await sceneRender.value.download();
+	const url = await getSceneRender()!.download();
 
 	await transaction(() => {
 		const oldUrl = store.state.ui.lastDownload;
