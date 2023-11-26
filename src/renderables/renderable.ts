@@ -290,7 +290,9 @@ export abstract class Renderable<ObjectType extends IObject> {
 		try {
 			const target = this.transformIsLocal ? point : transposed;
 			this.lastHit = target;
-			const ctx = this.localCanvas.getContext('2d')!;
+			const ctx = this.localCanvas.getContext('2d', {
+				willReadFrequently: true,
+			})!;
 			const data = ctx.getImageData(target.x | 0, target.y | 0, 1, 1).data;
 			// Return if the image isn't completely transparent
 			return data[3] !== 0;

@@ -95,7 +95,7 @@ export class TextRenderer {
 		const promises: Promise<FontFace[]>[] = [];
 		for (const font of fonts) {
 			const doc = document;
-			const fontString = `8px ${font}`;
+			const fontString = `8px '${font.replaceAll("'", "\\'")}'`;
 			if (!doc.fonts.check(fontString)) {
 				promises.push(doc.fonts.load(fontString));
 			}
