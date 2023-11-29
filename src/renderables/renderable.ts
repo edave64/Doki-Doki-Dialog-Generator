@@ -1,4 +1,5 @@
 import getConstants from '@/constants';
+import { SelectedState, selectionColors } from '@/constants/shared';
 import { ctxScope } from '@/renderer/canvas-tools';
 import { IRootState } from '@/store';
 import { ITextBox } from '@/store/object-types/textbox';
@@ -8,7 +9,6 @@ import { makeCanvas } from '@/util/canvas';
 import { matrixEquals } from '@/util/math';
 import { DeepReadonly } from 'vue';
 import { Store } from 'vuex';
-import { SelectedState } from './offscreen-renderable';
 
 /**
  * An object that can be rendered onto the image. Every object type has it's own class that inherits from here.
@@ -144,7 +144,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 	 */
 	public prepareRender(
 		panel: DeepReadonly<IPanel>,
-		_store: Store<IRootState>,
+		_store: Store<DeepReadonly<IRootState>>,
 		_lq: boolean
 	): void | Promise<unknown> {
 		if (this.lastVersion !== this.obj.version) {
@@ -215,12 +215,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 			localCtx.resetTransform();
 		}
 
-		const shadow: string | undefined = {
-			[SelectedState.None]: undefined,
-			[SelectedState.Selected]: 'red',
-			[SelectedState.Focused]: 'blue',
-			[SelectedState.Both]: 'purple',
-		}[selection];
+		const shadow: string | undefined = selectionColors[selection];
 		ctxScope(ctx, () => {
 			if (shadow != null) {
 				ctx.shadowColor = shadow;
@@ -232,18 +227,10 @@ export abstract class Renderable<ObjectType extends IObject> {
 
 			ctx.globalCompositeOperation = this.obj.composite ?? 'source-over';
 			if (skipLocal) {
-				//ctx.translate(-this.width / 2, -this.height);
 				this.renderLocal(ctx, hq);
 			} else {
 				ctx.drawImage(this.localCanvas!, 0, 0);
 			}
-			// if (this.lastHit) {
-			// 	ctx.fillStyle = '#00f';
-			// 	ctx.lineWidth = 1;
-			// 	ctx.strokeStyle = '#fff';
-			// 	ctx.fillRect(this.lastHit.x - 2, this.lastHit.y - 2, 5, 5);
-			// 	ctx.strokeRect(this.lastHit.x - 2, this.lastHit.y - 2, 5, 5);
-			// }
 		});
 	}
 

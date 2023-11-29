@@ -1,4 +1,5 @@
 import { getBuildInAsset } from '@/asset-manager';
+import { SelectedState } from '@/constants/shared';
 import { Renderer } from '@/renderer/renderer';
 import { RenderContext } from '@/renderer/renderer-context';
 import { IRootState } from '@/store';
@@ -17,7 +18,6 @@ import { Background, color, IBackgroundRenderer } from './background';
 import { Character } from './character';
 import { Choice } from './choices';
 import { Notification } from './notification';
-import { SelectedState } from './offscreen-renderable';
 import { Poem } from './poem';
 import { Renderable } from './renderable';
 import { Sprite } from './sprite';
@@ -144,21 +144,6 @@ export class SceneRenderer {
 			console.warn('Not all renderables processed. Infinite loop?');
 		}
 
-		function prepareTransform(
-			renderable: Renderable<IObject>,
-			linkTransform: DOMMatrixReadOnly
-		) {
-			const newTransform = renderable.prepareTransform(linkTransform);
-			processed.set(renderable.id, newTransform);
-			const waitList = waiting.get(renderable.id);
-			if (waitList) {
-				for (const sub of waitList) {
-					prepareTransform(sub, newTransform);
-				}
-				waiting.delete(renderable.id);
-			}
-		}
-
 		const promises = renderables
 			.map((x) => x.prepareRender(this.panel!, this.store, !rx.hq))
 			.filter((x) => x !== undefined);
@@ -167,14 +152,21 @@ export class SceneRenderer {
 		}
 
 		const selection = this.store.state.ui.selection;
+		const links = new Set<IObject['id']>();
+		if (selection !== null) fetchLinks(selection, links);
+		const focusedObjId = document
+			.querySelector(SceneRenderer.FocusProp)
+			?.getAttribute('data-obj-id');
 		for (const object of renderables) {
 			const selected = selection === object.id;
-			const focusedObj = document.querySelector(SceneRenderer.FocusProp);
-			const focused =
-				focusedObj?.getAttribute('data-obj-id') === '' + object.id;
+			const focused = focusedObjId === '' + object.id;
 			object.render(
 				rx.fsCtx,
-				(selected ? SelectedState.Selected : SelectedState.None) +
+				(selected
+					? SelectedState.Selected
+					: links.has(object.id)
+					? SelectedState.Indirectly
+					: SelectedState.None) +
 					(focused ? SelectedState.Focused : SelectedState.None),
 				rx.preview,
 				rx.hq,
@@ -191,6 +183,29 @@ export class SceneRenderer {
 				composite: 'destination-over',
 				image: await getBuildInAsset('backgrounds/transparent'),
 			});
+		}
+
+		function fetchLinks(objId: IObject['id'], links: Set<IObject['id']>): void {
+			links.add(objId);
+
+			for (const obj of renderables.filter((x) => x.linkedTo === objId)) {
+				fetchLinks(obj.id, links);
+			}
+		}
+
+		function prepareTransform(
+			renderable: Renderable<IObject>,
+			linkTransform: DOMMatrixReadOnly
+		) {
+			const newTransform = renderable.prepareTransform(linkTransform);
+			processed.set(renderable.id, newTransform);
+			const waitList = waiting.get(renderable.id);
+			if (waitList) {
+				for (const sub of waitList) {
+					prepareTransform(sub, newTransform);
+				}
+				waiting.delete(renderable.id);
+			}
 		}
 	}
 
