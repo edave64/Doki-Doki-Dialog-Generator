@@ -10811,50 +10811,6 @@ function arraySeeker(array, pos, delta) {
   }
   return val;
 }
-function between(min, val, max) {
-  if (min > val)
-    return min;
-  if (val > max)
-    return max;
-  return val;
-}
-function matrixEquals(a, b) {
-  if (a === null && b === null)
-    return true;
-  if (a === null || b === null)
-    return false;
-  return a.a === b.a && a.b === b.b && a.c === b.c && a.d === b.d && a.e === b.e && a.f === b.f;
-}
-function decomposeMatrix(mat) {
-  const { a, b, c, d, e, f } = mat;
-  const delta = a * d - b * c;
-  const result = {
-    x: e,
-    y: f,
-    rotation: 0,
-    scaleX: 0,
-    scaleY: 0,
-    skewX: 0,
-    skewY: 0
-  };
-  if (a != 0 || b != 0) {
-    const r = Math.sqrt(a * a + b * b);
-    result.rotation = (b > 0 ? Math.acos(a / r) : -Math.acos(a / r)) / Math.PI * 180;
-    result.scaleX = r;
-    result.scaleY = delta / r;
-    result.skewX = Math.atan((a * c + b * d) / (r * r)) / Math.PI * 180;
-    result.skewY = 0;
-  } else if (c != 0 || d != 0) {
-    const s = Math.sqrt(c * c + d * d);
-    result.rotation = (Math.PI / 2 - (d > 0 ? Math.acos(-c / s) : -Math.acos(c / s))) / Math.PI * 180;
-    result.scaleX = delta / s;
-    result.scaleY = s;
-    result.skewX = 0;
-    result.skewY = Math.atan((a * c + b * d) / (s * s)) / Math.PI * 180;
-  } else
-    ;
-  return result;
-}
 const screenWidth$1 = 1280;
 const screenHeight$1 = 720;
 const positions$1 = [
@@ -12089,6 +12045,481 @@ function getConstants() {
     return DdlcPlus;
   return Ddlc;
 }
+var SelectedState = /* @__PURE__ */ ((SelectedState2) => {
+  SelectedState2[SelectedState2["None"] = 0] = "None";
+  SelectedState2[SelectedState2["Selected"] = 1] = "Selected";
+  SelectedState2[SelectedState2["Focused"] = 2] = "Focused";
+  SelectedState2[SelectedState2["Indirectly"] = 4] = "Indirectly";
+  return SelectedState2;
+})(SelectedState || {});
+const selectionColors = {
+  [0]: void 0,
+  [1]: "#f00",
+  [2]: "#00f",
+  [1 + 2]: "#f0f",
+  [4]: "#f66",
+  [4 + 2]: "#f6f"
+};
+function disposeCanvas(canvas) {
+  canvas.width = 0;
+  canvas.height = 0;
+  disposables.delete(canvas.disposalId || 0);
+}
+function makeCanvas() {
+  const ret = document.createElement("canvas");
+  markForDisposal(ret);
+  return ret;
+}
+const disposables = /* @__PURE__ */ new Map();
+let nextDisposalId = 0;
+function markForDisposal(canvas) {
+  canvas.disposalId = nextDisposalId++;
+  if (typeof WeakRef === "undefined")
+    return;
+  disposables.set(
+    canvas.disposalId,
+    new WeakRef(canvas)
+  );
+}
+window.addEventListener("unload", () => {
+  disposables.forEach((x) => {
+    const disposable = x.deref();
+    if (!disposable)
+      return;
+    disposeCanvas(disposable);
+  });
+});
+class RenderAbortedException {
+}
+var __defProp$z = Object.defineProperty;
+var __getOwnPropSymbols$k = Object.getOwnPropertySymbols;
+var __hasOwnProp$k = Object.prototype.hasOwnProperty;
+var __propIsEnum$k = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$z = (obj, key, value) => key in obj ? __defProp$z(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$k = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$k.call(b, prop))
+      __defNormalProp$z(a, prop, b[prop]);
+  if (__getOwnPropSymbols$k)
+    for (var prop of __getOwnPropSymbols$k(b)) {
+      if (__propIsEnum$k.call(b, prop))
+        __defNormalProp$z(a, prop, b[prop]);
+    }
+  return a;
+};
+var __publicField$h = (obj, key, value) => {
+  __defNormalProp$z(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$B = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
+class RenderContext {
+  constructor(canvas, fsCtx, hq, preview) {
+    this.canvas = canvas;
+    this.fsCtx = fsCtx;
+    this.hq = hq;
+    this.preview = preview;
+    __publicField$h(this, "aborted", false);
+  }
+  static make(canvas, hq, preview) {
+    return new RenderContext(canvas, canvas.getContext("2d"), hq, preview);
+  }
+  static makeWithContext(canvas, context, hq, preview) {
+    return new RenderContext(canvas, context, hq, preview);
+  }
+  drawText(params) {
+    if (this.aborted)
+      throw new RenderAbortedException();
+    this.fsCtx.save();
+    const {
+      font,
+      align,
+      x = 0,
+      y = 0,
+      text = ""
+    } = __spreadValues$k(__spreadValues$k({}, {
+      font: "20px aller",
+      align: "left"
+    }), params);
+    this.fsCtx.lineJoin = "round";
+    this.fsCtx.textAlign = align;
+    this.fsCtx.font = font;
+    if (params.outline) {
+      this.fsCtx.strokeStyle = params.outline.style;
+      this.fsCtx.lineWidth = params.outline.width;
+      this.fsCtx.strokeText(text, x, y);
+    }
+    if (params.fill) {
+      this.fsCtx.fillStyle = params.fill.style;
+      this.fsCtx.fillText(text, x, y);
+    }
+    this.fsCtx.restore();
+  }
+  measureText(params) {
+    if (this.aborted)
+      throw new RenderAbortedException();
+    this.fsCtx.save();
+    const {
+      font,
+      align,
+      text = ""
+    } = __spreadValues$k(__spreadValues$k({}, {
+      font: "20px aller",
+      align: "left"
+    }), params);
+    this.fsCtx.lineJoin = "round";
+    this.fsCtx.textAlign = align;
+    this.fsCtx.font = font;
+    if (params.outline) {
+      this.fsCtx.strokeStyle = params.outline.style;
+      this.fsCtx.lineWidth = params.outline.width;
+    }
+    if (params.fill) {
+      this.fsCtx.fillStyle = params.fill.style;
+    }
+    const ret = this.fsCtx.measureText(text);
+    this.fsCtx.restore();
+    return ret;
+  }
+  drawImage(params) {
+    if (this.aborted)
+      throw new RenderAbortedException();
+    const { image, flip, x, y, w, h: h2, filters, composite } = __spreadValues$k({
+      flip: false,
+      w: params.image.width,
+      h: params.image.height,
+      composite: "source-over"
+    }, params);
+    this.fsCtx.save();
+    this.fsCtx.globalCompositeOperation = composite;
+    if (filters) {
+      if (!("filter" in this.fsCtx)) {
+        let opacityCombined = 1;
+        for (const filter of filters) {
+          if (filter.type === "opacity") {
+            opacityCombined *= filter.value;
+          }
+        }
+        this.fsCtx.globalAlpha = opacityCombined;
+      } else {
+        const filterList = [];
+        for (const filter of filters) {
+          if (filter.type === "drop-shadow") {
+            filterList.push(
+              `drop-shadow(${filter.offsetX}px ${filter.offsetY}px ${filter.blurRadius}px ${filter.color})`
+            );
+          } else if (filter.type === "hue-rotate") {
+            filterList.push(`hue-rotate(${filter.value}deg)`);
+          } else if (filter.type === "blur") {
+            filterList.push(`blur(${filter.value}px)`);
+          } else {
+            filterList.push(`${filter.type}(${filter.value * 100}%)`);
+          }
+        }
+        this.fsCtx.filter = filterList.join(" ");
+      }
+    }
+    if (params.shadow) {
+      const shadow = params.shadow;
+      if (shadow.color != null) {
+        this.fsCtx.shadowColor = shadow.color;
+      }
+      if (shadow.blur != null) {
+        this.fsCtx.shadowBlur = shadow.blur;
+      }
+      if (shadow.offsetX != null) {
+        this.fsCtx.shadowOffsetX = shadow.offsetX;
+      }
+      if (shadow.offsetY != null) {
+        this.fsCtx.shadowOffsetY = shadow.offsetY;
+      }
+    }
+    if (params.rotation != null && params.rotation !== 0) {
+      const rotX = params.rotationAnchor ? params.rotationAnchor.x : 0;
+      const rotY = params.rotationAnchor ? params.rotationAnchor.y : 0;
+      if (params.rotationAnchor) {
+        this.fsCtx.translate(rotX, rotY);
+      }
+      this.fsCtx.rotate(params.rotation);
+      if (params.rotationAnchor) {
+        this.fsCtx.translate(-rotX, -rotY);
+      }
+    }
+    this.fsCtx.translate(x + w / 2, y + h2 / 2);
+    this.fsCtx.scale(flip ? -1 : 1, 1);
+    image.paintOnto(this.fsCtx, { x: -w / 2, y: -h2 / 2, w, h: h2 });
+    this.fsCtx.restore();
+    this.fsCtx.globalCompositeOperation = "source-over";
+  }
+  drawRect({
+    x,
+    y,
+    w,
+    h: h2,
+    outline,
+    fill,
+    composition,
+    rotation,
+    rotationAnchor
+  }) {
+    if (this.aborted)
+      throw new RenderAbortedException();
+    this.fsCtx.save();
+    if (rotation != null && rotation !== 0) {
+      const rotX = rotationAnchor ? rotationAnchor.x : 0;
+      const rotY = rotationAnchor ? rotationAnchor.y : 0;
+      if (rotationAnchor) {
+        this.fsCtx.translate(rotX, rotY);
+      }
+      this.fsCtx.rotate(rotation);
+      if (rotationAnchor) {
+        this.fsCtx.translate(-rotX, -rotY);
+      }
+    }
+    this.fsCtx.beginPath();
+    this.fsCtx.rect(x, y, w, h2);
+    if (composition) {
+      this.fsCtx.globalCompositeOperation = composition;
+    }
+    if (fill) {
+      this.fsCtx.fillStyle = fill.style;
+      this.fsCtx.fill();
+    }
+    if (outline) {
+      this.fsCtx.strokeStyle = outline.style;
+      this.fsCtx.lineWidth = outline.width;
+      this.fsCtx.stroke();
+    }
+    this.fsCtx.restore();
+  }
+  drawPath({
+    outline,
+    fill,
+    path
+  }) {
+    if (this.aborted)
+      throw new RenderAbortedException();
+    this.fsCtx.save();
+    this.fsCtx.beginPath();
+    path(this.fsCtx);
+    if (fill) {
+      this.fsCtx.fillStyle = fill.style;
+      this.fsCtx.fill();
+    }
+    if (outline) {
+      this.fsCtx.strokeStyle = outline.style;
+      this.fsCtx.lineWidth = outline.width;
+      this.fsCtx.stroke();
+    }
+    this.fsCtx.restore();
+  }
+  patternFrom(image, repetition = "repeat") {
+    if (image instanceof Renderer) {
+      image = image.previewCanvas;
+    }
+    return this.fsCtx.createPattern(
+      image,
+      repetition
+    );
+  }
+  customTransform(transform, render) {
+    return __async$B(this, null, function* () {
+      this.fsCtx.save();
+      yield transform(this.fsCtx);
+      yield render(this);
+      this.fsCtx.restore();
+    });
+  }
+  linearGradient(x0, y0, x1, y1) {
+    return this.fsCtx.createLinearGradient(x0, y0, x1, y1);
+  }
+  applyFilters(filters) {
+    if (filters.length === 0)
+      return;
+    this.fsCtx.save();
+    let opacityCombined = 1;
+    for (const filter of filters) {
+      if (filter.type === "opacity") {
+        opacityCombined *= filter.value;
+      }
+    }
+    if ("filter" in this.fsCtx) {
+      const filterList = [];
+      for (const filter of filters) {
+        if (filter.type === "opacity")
+          continue;
+        if (filter.type === "drop-shadow") {
+          filterList.push(
+            `drop-shadow(${filter.offsetX}px ${filter.offsetY}px ${filter.blurRadius}px ${filter.color})`
+          );
+        } else if (filter.type === "hue-rotate") {
+          filterList.push(`hue-rotate(${filter.value}deg)`);
+        } else if (filter.type === "blur") {
+          filterList.push(`blur(${filter.value}px)`);
+        } else {
+          filterList.push(`${filter.type}(${filter.value * 100}%)`);
+        }
+      }
+      this.fsCtx.filter = filterList.join(" ");
+    }
+    this.fsCtx.drawImage(this.canvas, 0, 0);
+    if (opacityCombined !== 1) {
+      this.fsCtx.globalCompositeOperation = "destination-atop";
+      this.fsCtx.fillStyle = `rgba(0,0,0,${opacityCombined})`;
+      this.fsCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      this.fsCtx.globalCompositeOperation = "source-over";
+    }
+    if ("filter" in this.fsCtx) {
+      this.fsCtx.filter = "none";
+    }
+    this.fsCtx.restore();
+  }
+  abort() {
+    this.aborted = true;
+  }
+}
+var __defProp$y = Object.defineProperty;
+var __defNormalProp$y = (obj, key, value) => key in obj ? __defProp$y(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$g = (obj, key, value) => {
+  __defNormalProp$y(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$A = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
+class Renderer {
+  constructor(w, h2) {
+    __publicField$g(this, "previewCanvas");
+    __publicField$g(this, "runningContext", null);
+    __publicField$g(this, "_disposed", false);
+    const constants = getConstants();
+    this.previewCanvas = makeCanvas();
+    this.previewCanvas.width = w != null ? w : constants.Base.screenWidth;
+    this.previewCanvas.height = h2 != null ? h2 : constants.Base.screenHeight;
+  }
+  get disposed() {
+    return this._disposed;
+  }
+  render(renderCallback, hq = true, preview = true) {
+    return __async$A(this, null, function* () {
+      if (this.runningContext) {
+        this.runningContext.abort();
+      }
+      const ctx = this.previewCanvas.getContext("2d");
+      ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
+      const context = this.runningContext = RenderContext.makeWithContext(
+        this.previewCanvas,
+        ctx,
+        hq,
+        preview
+      );
+      try {
+        yield renderCallback(this.runningContext);
+      } catch (e) {
+        if (e instanceof RenderAbortedException) {
+          return false;
+        }
+        throw e;
+      } finally {
+        if (context === this.runningContext) {
+          this.runningContext = null;
+        }
+      }
+      return true;
+    });
+  }
+  get width() {
+    return this.previewCanvas.width;
+  }
+  get height() {
+    return this.previewCanvas.height;
+  }
+  paintOnto(c, opts) {
+    if (opts.w != null && opts.h != null) {
+      c.drawImage(this.previewCanvas, opts.x, opts.y, opts.w, opts.h);
+    } else {
+      c.drawImage(this.previewCanvas, opts.x, opts.y);
+    }
+  }
+  download(renderCallback, filename) {
+    return __async$A(this, null, function* () {
+      const downloadCanvas = yield this.drawToCanvas(renderCallback);
+      return yield envX.saveToFile(downloadCanvas, filename);
+    });
+  }
+  renderToBlob(renderCallback) {
+    return __async$A(this, null, function* () {
+      const downloadCanvas = yield this.drawToCanvas(renderCallback);
+      return yield new Promise((resolve, reject) => {
+        downloadCanvas.toBlob((blob) => {
+          if (blob)
+            resolve(blob);
+          else
+            reject();
+        });
+      });
+    });
+  }
+  drawToCanvas(renderCallback) {
+    return __async$A(this, null, function* () {
+      const downloadCanvas = makeCanvas();
+      downloadCanvas.width = this.previewCanvas.width;
+      downloadCanvas.height = this.previewCanvas.height;
+      const ctx = downloadCanvas.getContext("2d");
+      ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
+      yield renderCallback(
+        RenderContext.makeWithContext(downloadCanvas, ctx, true, false)
+      );
+      return downloadCanvas;
+    });
+  }
+  dispose() {
+    if (this.runningContext) {
+      this.runningContext.abort();
+    }
+    disposeCanvas(this.previewCanvas);
+    this._disposed = true;
+  }
+  getDataAt(x, y) {
+    const ctx = this.previewCanvas.getContext("2d");
+    return ctx.getImageData(x, y, 1, 1).data;
+  }
+}
 function baseProps() {
   return {
     flip: false,
@@ -12110,26 +12541,26 @@ function baseProps() {
     skewY: 0
   };
 }
-var __defProp$z = Object.defineProperty;
+var __defProp$x = Object.defineProperty;
 var __defProps$g = Object.defineProperties;
 var __getOwnPropDescs$g = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$k = Object.getOwnPropertySymbols;
-var __hasOwnProp$k = Object.prototype.hasOwnProperty;
-var __propIsEnum$k = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$z = (obj, key, value) => key in obj ? __defProp$z(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$k = (a, b) => {
+var __getOwnPropSymbols$j = Object.getOwnPropertySymbols;
+var __hasOwnProp$j = Object.prototype.hasOwnProperty;
+var __propIsEnum$j = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$x = (obj, key, value) => key in obj ? __defProp$x(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$j = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$k.call(b, prop))
-      __defNormalProp$z(a, prop, b[prop]);
-  if (__getOwnPropSymbols$k)
-    for (var prop of __getOwnPropSymbols$k(b)) {
-      if (__propIsEnum$k.call(b, prop))
-        __defNormalProp$z(a, prop, b[prop]);
+    if (__hasOwnProp$j.call(b, prop))
+      __defNormalProp$x(a, prop, b[prop]);
+  if (__getOwnPropSymbols$j)
+    for (var prop of __getOwnPropSymbols$j(b)) {
+      if (__propIsEnum$j.call(b, prop))
+        __defNormalProp$x(a, prop, b[prop]);
     }
   return a;
 };
 var __spreadProps$g = (a, b) => __defProps$g(a, __getOwnPropDescs$g(b));
-var __async$B = (__this, __arguments, generator) => {
+var __async$z = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -12172,7 +12603,7 @@ const characterMutations = {
   },
   setPosePosition(state, command) {
     const obj = state.panels[command.panelId].objects[command.id];
-    obj.posePositions = __spreadValues$k(__spreadValues$k({}, obj.posePositions), command.posePositions);
+    obj.posePositions = __spreadValues$j(__spreadValues$j({}, obj.posePositions), command.posePositions);
     ++obj.version;
   },
   setFreeMove(state, command) {
@@ -12227,7 +12658,7 @@ const characterActions = {
     const char = getDataG(rootGetters, command.characterType);
     const charScale = char.hd ? constants.Base.hdCharacterScaleFactor : constants.Base.sdCharacterScaleFactor;
     commit2("create", {
-      object: __spreadProps$g(__spreadValues$k({}, baseProps()), {
+      object: __spreadProps$g(__spreadValues$j({}, baseProps()), {
         id,
         panelId: rootState.panels.currentPanel,
         onTop: false,
@@ -12391,7 +12822,7 @@ const characterActions = {
   }
 };
 function fixContentPackRemovalFromCharacter(context, panelId, id, oldPack) {
-  return __async$B(this, null, function* () {
+  return __async$z(this, null, function* () {
     const obj = context.state.panels[panelId].objects[id];
     const oldCharData = oldPack.characters.find(
       (char) => char.id === obj.characterType
@@ -12472,7 +12903,7 @@ function buildPoseAndPositionData(character) {
     styleGroupId: character.styleGroupId,
     styleId: character.styleId,
     poseId: character.poseId,
-    posePositions: __spreadValues$k({}, character.posePositions)
+    posePositions: __spreadValues$j({}, character.posePositions)
   };
 }
 function commitPoseAndPositionChanges(commit2, character, poseAndPosition) {
@@ -12541,487 +12972,6 @@ function mutatePoseAndPositions(commit2, character, data, callback) {
   }
   commitPoseAndPositionChanges(commit2, character, poseAndPosition);
 }
-var __defProp$y = Object.defineProperty;
-var __defProps$f = Object.defineProperties;
-var __getOwnPropDescs$f = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$j = Object.getOwnPropertySymbols;
-var __hasOwnProp$j = Object.prototype.hasOwnProperty;
-var __propIsEnum$j = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$y = (obj, key, value) => key in obj ? __defProp$y(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$j = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$j.call(b, prop))
-      __defNormalProp$y(a, prop, b[prop]);
-  if (__getOwnPropSymbols$j)
-    for (var prop of __getOwnPropSymbols$j(b)) {
-      if (__propIsEnum$j.call(b, prop))
-        __defNormalProp$y(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$f = (a, b) => __defProps$f(a, __getOwnPropDescs$f(b));
-const choiceMutations = {
-  setChoicesProperty(state, command) {
-    const obj = state.panels[command.panelId].objects[command.id];
-    obj[command.key] = command.value;
-    ++obj.version;
-  },
-  setChoiceProperty(state, command) {
-    const obj = state.panels[command.panelId].objects[command.id];
-    obj.choices[command.choiceIdx][command.key] = command.value;
-    ++obj.version;
-  },
-  setChoices(state, command) {
-    const obj = state.panels[command.panelId].objects[command.id];
-    obj.choices = command.choices;
-    ++obj.version;
-  }
-};
-const choiceActions = {
-  createChoice({ commit: commit2, rootState, state }, command) {
-    const constants = getConstants();
-    const id = state.panels[command.panelId].lastObjId + 1;
-    commit2("create", {
-      object: __spreadProps$f(__spreadValues$j({}, baseProps()), {
-        y: constants.Choices.ChoiceY,
-        width: constants.Choices.ChoiceButtonWidth,
-        height: 0,
-        panelId: rootState.panels.currentPanel,
-        id,
-        onTop: true,
-        autoWrap: true,
-        type: "choice",
-        choiceDistance: constants.Choices.ChoiceSpacing,
-        choices: [
-          {
-            selected: false,
-            text: "Click here to edit choice"
-          }
-        ],
-        customColor: constants.Choices.ChoiceButtonColor
-      })
-    });
-    return id;
-  },
-  addChoice({ state, commit: commit2 }, command) {
-    const obj = state.panels[command.panelId].objects[command.id];
-    commit2("setChoices", {
-      id: command.id,
-      panelId: command.panelId,
-      choices: [
-        ...obj.choices,
-        {
-          selected: false,
-          text: command.text
-        }
-      ]
-    });
-  },
-  removeChoice({ state, commit: commit2 }, command) {
-    const obj = state.panels[command.panelId].objects[command.id];
-    const choices = [...obj.choices];
-    choices.splice(command.choiceIdx, 1);
-    if (choices.length === 0) {
-      choices.push({
-        selected: false,
-        text: ""
-      });
-    }
-    commit2("setChoices", {
-      id: command.id,
-      panelId: command.panelId,
-      choices
-    });
-  }
-};
-var __defProp$x = Object.defineProperty;
-var __defProps$e = Object.defineProperties;
-var __getOwnPropDescs$e = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$i = Object.getOwnPropertySymbols;
-var __hasOwnProp$i = Object.prototype.hasOwnProperty;
-var __propIsEnum$i = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$x = (obj, key, value) => key in obj ? __defProp$x(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$i = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$i.call(b, prop))
-      __defNormalProp$x(a, prop, b[prop]);
-  if (__getOwnPropSymbols$i)
-    for (var prop of __getOwnPropSymbols$i(b)) {
-      if (__propIsEnum$i.call(b, prop))
-        __defNormalProp$x(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$e = (a, b) => __defProps$e(a, __getOwnPropDescs$e(b));
-const notificationMutations = {
-  setNotificationProperty(state, command) {
-    const obj = state.panels[command.panelId].objects[command.id];
-    obj[command.key] = command.value;
-    ++obj.version;
-  }
-};
-const notificationActions = {
-  createNotification({ commit: commit2, rootState, state }, command) {
-    const constants = getConstants();
-    const id = state.panels[command.panelId].lastObjId + 1;
-    commit2("create", {
-      object: __spreadProps$e(__spreadValues$i({}, baseProps()), {
-        y: constants.Base.screenHeight / 2,
-        width: constants.Choices.ChoiceButtonWidth,
-        height: 0,
-        panelId: rootState.panels.currentPanel,
-        autoWrap: false,
-        id,
-        onTop: true,
-        type: "notification",
-        customColor: constants.Choices.ChoiceButtonColor,
-        text: "Click here to edit notification",
-        backdrop: true
-      })
-    });
-    return id;
-  }
-};
-var __defProp$w = Object.defineProperty;
-var __defProps$d = Object.defineProperties;
-var __getOwnPropDescs$d = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$h = Object.getOwnPropertySymbols;
-var __hasOwnProp$h = Object.prototype.hasOwnProperty;
-var __propIsEnum$h = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$w = (obj, key, value) => key in obj ? __defProp$w(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$h = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$h.call(b, prop))
-      __defNormalProp$w(a, prop, b[prop]);
-  if (__getOwnPropSymbols$h)
-    for (var prop of __getOwnPropSymbols$h(b)) {
-      if (__propIsEnum$h.call(b, prop))
-        __defNormalProp$w(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$d = (a, b) => __defProps$d(a, __getOwnPropDescs$d(b));
-const poemMutations = {
-  setPoemProperty(state, command) {
-    const obj = state.panels[command.panelId].objects[command.id];
-    obj[command.key] = command.value;
-    ++obj.version;
-  }
-};
-const poemActions = {
-  createPoem({ commit: commit2, rootState, state }, command) {
-    const constants = getConstants();
-    const id = state.panels[command.panelId].lastObjId + 1;
-    commit2("create", {
-      object: {
-        subType: "poem",
-        x: constants.Poem.defaultX,
-        y: constants.Poem.defaultY,
-        width: constants.Poem.defaultPoemWidth,
-        height: constants.Poem.defaultPoemHeight,
-        panelId: rootState.panels.currentPanel,
-        flip: false,
-        rotation: 0,
-        id,
-        onTop: true,
-        opacity: 100,
-        type: "poem",
-        version: 0,
-        autoWrap: true,
-        background: constants.Poem.defaultPoemBackground,
-        font: constants.Poem.defaultPoemStyle,
-        text: "New poem\n\nClick here to edit poem",
-        composite: "source-over",
-        filters: [],
-        label: null,
-        textboxColor: null,
-        enlargeWhenTalking: true,
-        nameboxWidth: null,
-        scaleX: 1,
-        scaleY: 1,
-        skewX: 0,
-        skewY: 0,
-        ratio: 1,
-        preserveRatio: true,
-        consoleColor: constants.Poem.consoleBackgroundColor,
-        overflow: false
-      }
-    });
-    return id;
-  },
-  createConsole({ commit: commit2, rootState, state }, _command) {
-    const constants = getConstants();
-    const id = state.panels[_command.panelId].lastObjId + 1;
-    commit2("create", {
-      object: __spreadProps$d(__spreadValues$h({}, baseProps()), {
-        subType: "console",
-        x: constants.Poem.consoleWidth / 2,
-        y: constants.Poem.consoleHeight / 2,
-        width: constants.Poem.consoleWidth,
-        height: constants.Poem.consoleHeight,
-        panelId: rootState.panels.currentPanel,
-        id,
-        onTop: true,
-        type: "poem",
-        background: constants.Poem.defaultConsoleBackground,
-        font: constants.Poem.defaultConsoleStyle,
-        text: "> _\n  \n  Console command\n  Click here to edit",
-        autoWrap: true,
-        consoleColor: constants.Poem.consoleBackgroundColor
-      })
-    });
-    return id;
-  }
-};
-var __defProp$v = Object.defineProperty;
-var __defProps$c = Object.defineProperties;
-var __getOwnPropDescs$c = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$g = Object.getOwnPropertySymbols;
-var __hasOwnProp$g = Object.prototype.hasOwnProperty;
-var __propIsEnum$g = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$v = (obj, key, value) => key in obj ? __defProp$v(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$g = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$g.call(b, prop))
-      __defNormalProp$v(a, prop, b[prop]);
-  if (__getOwnPropSymbols$g)
-    for (var prop of __getOwnPropSymbols$g(b)) {
-      if (__propIsEnum$g.call(b, prop))
-        __defNormalProp$v(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$c = (a, b) => __defProps$c(a, __getOwnPropDescs$c(b));
-var __async$A = (__this, __arguments, generator) => {
-  return new Promise((resolve, reject) => {
-    var fulfilled = (value) => {
-      try {
-        step(generator.next(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var rejected = (value) => {
-      try {
-        step(generator.throw(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
-    step((generator = generator.apply(__this, __arguments)).next());
-  });
-};
-const spriteMutations = {};
-const spriteActions = {
-  createSprite(_0, _1) {
-    return __async$A(this, arguments, function* ({ commit: commit2, rootState, state }, command) {
-      const asset = yield getAAsset(command.assets[0], false);
-      if (!(asset instanceof ImageAsset))
-        return;
-      const id = state.panels[command.panelId].lastObjId + 1;
-      commit2("create", {
-        object: __spreadProps$c(__spreadValues$g({}, baseProps()), {
-          assets: command.assets,
-          height: asset.height,
-          width: asset.width,
-          id,
-          panelId: rootState.panels.currentPanel,
-          onTop: false,
-          type: "sprite",
-          y: 0,
-          enlargeWhenTalking: rootState.ui.defaultCharacterTalkingZoom
-        })
-      });
-      return id;
-    });
-  }
-};
-var __defProp$u = Object.defineProperty;
-var __defNormalProp$u = (obj, key, value) => key in obj ? __defProp$u(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$h = (obj, key, value) => {
-  __defNormalProp$u(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-const aroundContextSize = 5;
-class StringWalker {
-  constructor(str) {
-    this.str = str;
-    __publicField$h(this, "pos", 0);
-  }
-  current() {
-    return this.str[this.pos];
-  }
-  get around() {
-    return this.str.slice(
-      Math.max(0, this.pos - aroundContextSize),
-      this.pos + aroundContextSize
-    );
-  }
-  get ahead() {
-    return this.str[this.pos + 1];
-  }
-  get behind() {
-    return this.str[this.pos + 1];
-  }
-  next() {
-    ++this.pos;
-    return this.current();
-  }
-}
-function tokenize(str, loose = true) {
-  const tokens = [];
-  const stringWalker = new StringWalker(str);
-  let currentTokenState = tokenStateNormal;
-  while (currentTokenState !== tokenStateEnd) {
-    const startPos = stringWalker.pos;
-    try {
-      currentTokenState = currentTokenState(tokens, stringWalker);
-    } catch (e) {
-      if (loose && currentTokenState !== tokenText) {
-        stringWalker.pos = startPos;
-        currentTokenState = (contents, walker) => tokenText(contents, walker, true);
-      } else {
-        throw e;
-      }
-    }
-  }
-  return tokens;
-}
-function tokenStateNormal(contents, walker) {
-  if (walker.current() === void 0)
-    return tokenStateEnd;
-  if (walker.current() === "{")
-    return tokenStateCommand;
-  if (walker.current() === "\n")
-    return tokenStateNewLine;
-  return tokenText;
-}
-function tokenStateEnd() {
-  return tokenStateEnd;
-}
-function tokenText(contents, walker, initEscape = false) {
-  const { pos } = walker;
-  let textContent = "";
-  let escape = initEscape;
-  let nextState;
-  while (true) {
-    if (walker.current() === void 0) {
-      nextState = tokenStateEnd;
-      break;
-    } else if (escape) {
-      textContent += walker.current();
-      escape = false;
-    } else if (walker.current() === "\\") {
-      escape = true;
-    } else if (walker.current() === "{" || walker.current() === "\n") {
-      nextState = tokenStateNormal;
-      break;
-    } else {
-      textContent += walker.current();
-    }
-    walker.next();
-  }
-  contents.push({
-    type: "text",
-    pos,
-    content: textContent
-  });
-  return nextState;
-}
-function error(walker, msg) {
-  throw new Error(
-    `Error when parsing text at position ${walker.pos}: (around: "${walker.around}") ${msg}`
-  );
-}
-function tokenStateCommand(contents, walker) {
-  const { pos } = walker;
-  if (walker.current() !== "{") {
-    throw new Error("Parser error: Command does not start with {");
-  }
-  const closing = walker.next() === "/";
-  if (closing) {
-    walker.next();
-  }
-  let commandName = "";
-  let argument = "";
-  let argumentsState = false;
-  while (true) {
-    if (walker.current() === void 0) {
-      error(walker, "Unexpected end of text inside a command");
-    }
-    if (walker.current() === "}") {
-      break;
-    } else if (!argumentsState) {
-      if (walker.current().match(/[a-z]/i)) {
-        commandName += walker.current();
-      } else if (walker.current() === "=") {
-        if (closing) {
-          error(walker, "Closing commands may not contain arguments");
-        }
-        argumentsState = true;
-      } else {
-        error(
-          walker,
-          `Unexpected character '${walker.current()}' in command name.`
-        );
-      }
-    } else {
-      argument += walker.current();
-    }
-    walker.next();
-  }
-  walker.next();
-  if (closing) {
-    contents.push({
-      type: "commandClose",
-      commandName,
-      pos
-    });
-  } else {
-    contents.push({
-      type: "command",
-      pos,
-      argument,
-      commandName
-    });
-  }
-  return tokenStateNormal;
-}
-function tokenStateNewLine(contents, walker) {
-  contents.push({ type: "newline", pos: walker.pos });
-  walker.next();
-  return tokenStateNormal;
-}
-function disposeCanvas(canvas) {
-  canvas.width = 0;
-  canvas.height = 0;
-  disposables.delete(canvas.disposalId || 0);
-}
-function makeCanvas() {
-  const ret = document.createElement("canvas");
-  markForDisposal(ret);
-  return ret;
-}
-const disposables = /* @__PURE__ */ new Map();
-let nextDisposalId = 0;
-function markForDisposal(canvas) {
-  canvas.disposalId = nextDisposalId++;
-  if (typeof WeakRef === "undefined")
-    return;
-  disposables.set(
-    canvas.disposalId,
-    new WeakRef(canvas)
-  );
-}
-window.addEventListener("unload", () => {
-  disposables.forEach((x) => {
-    const disposable = x.deref();
-    if (!disposable)
-      return;
-    disposeCanvas(disposable);
-  });
-});
 var dist = {};
 var primitive = {};
 Object.defineProperty(primitive, "__esModule", { value: true });
@@ -13270,72 +13220,772 @@ Object.defineProperty(awaited, "__esModule", { value: true });
   __exportStar(noop$1, exports);
   __exportStar(awaited, exports);
 })(dist);
+var __async$y = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
+class Background {
+  constructor(id, assets, flip, scale, compositeMode, filters) {
+    this.id = id;
+    this.assets = assets;
+    this.flip = flip;
+    this.scale = scale;
+    this.compositeMode = compositeMode;
+    this.filters = filters;
+  }
+  render(rx) {
+    return __async$y(this, null, function* () {
+      const { screenWidth: screenWidth2, screenHeight: screenHeight2 } = getConstants().Base;
+      const images = yield Promise.all(
+        this.assets.map((asset) => getAAsset(asset, rx.hq))
+      );
+      for (const image of images) {
+        let x = 0;
+        let y = 0;
+        let w = image.width;
+        let h2 = image.height;
+        const scale = this.scale;
+        switch (scale) {
+          case ScalingModes.None:
+            x = screenWidth2 / 2 - w / 2;
+            y = screenHeight2 / 2 - h2 / 2;
+            break;
+          case ScalingModes.Stretch:
+            w = screenWidth2;
+            h2 = screenHeight2;
+            break;
+          case ScalingModes.Cover: {
+            const ratio = w / h2;
+            const screenRatio = screenWidth2 / screenHeight2;
+            if (ratio > screenRatio) {
+              h2 = screenHeight2;
+              w = h2 * ratio;
+            } else {
+              w = screenWidth2;
+              h2 = w / ratio;
+            }
+            x = screenWidth2 / 2 - w / 2;
+            y = screenHeight2 / 2 - h2 / 2;
+            break;
+          }
+          default:
+            throw new dist.UnreachableCaseError(scale);
+        }
+        rx.drawImage({
+          image,
+          x,
+          y,
+          w,
+          h: h2,
+          flip: this.flip,
+          composite: this.compositeMode,
+          filters: this.filters
+        });
+      }
+    });
+  }
+}
+const color = {
+  id: "buildin.static-color",
+  name: "Static color",
+  color: "#000000",
+  render(rx) {
+    const { screenWidth: screenWidth2, screenHeight: screenHeight2 } = getConstants().Base;
+    rx.drawRect({
+      x: 0,
+      y: 0,
+      w: screenWidth2,
+      h: screenHeight2,
+      fill: { style: this.color }
+    });
+    return Promise.resolve();
+  }
+};
+function roundedRectangle(ctx, x, y, w, h2, r) {
+  if (w < 0)
+    w = 0;
+  if (h2 < 0)
+    h2 = 0;
+  if (w < 2 * r)
+    r = w / 2;
+  if (h2 < 2 * r)
+    r = h2 / 2;
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h2, r);
+  ctx.arcTo(x + w, y + h2, x, y + h2, r);
+  ctx.arcTo(x, y + h2, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+function roundedTopRectangle(ctx, x, y, w, h2, r) {
+  if (w < 0)
+    w = 0;
+  if (h2 < 0)
+    h2 = 0;
+  if (w < 2 * r)
+    r = w / 2;
+  if (h2 < 2 * r)
+    r = h2 / 2;
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h2, r);
+  ctx.lineTo(x + w, y + h2);
+  ctx.lineTo(x, y + h2);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+function ctxScope(ctx, callback) {
+  ctx.save();
+  try {
+    callback();
+  } finally {
+    ctx.restore();
+  }
+}
+function applyStyle(ctx, params) {
+  if (params.align) {
+    ctx.textAlign = params.align;
+  }
+  if (params.font) {
+    ctx.font = params.font;
+  }
+  if (params.fill) {
+    ctx.fillStyle = params.fill.style;
+  }
+  if (params.outline) {
+    ctx.strokeStyle = params.outline.style;
+    ctx.lineWidth = params.outline.width;
+  }
+}
+function between(min, val, max) {
+  if (min > val)
+    return min;
+  if (val > max)
+    return max;
+  return val;
+}
+function matrixEquals(a, b) {
+  if (a === null && b === null)
+    return true;
+  if (a === null || b === null)
+    return false;
+  return a.a === b.a && a.b === b.b && a.c === b.c && a.d === b.d && a.e === b.e && a.f === b.f;
+}
+function decomposeMatrix(mat) {
+  const { a, b, c, d, e, f } = mat;
+  const delta = a * d - b * c;
+  const result = {
+    x: e,
+    y: f,
+    rotation: 0,
+    scaleX: 0,
+    scaleY: 0,
+    skewX: 0,
+    skewY: 0
+  };
+  if (a != 0 || b != 0) {
+    const r = Math.sqrt(a * a + b * b);
+    result.rotation = (b > 0 ? Math.acos(a / r) : -Math.acos(a / r)) / Math.PI * 180;
+    result.scaleX = r;
+    result.scaleY = delta / r;
+    result.skewX = Math.atan((a * c + b * d) / (r * r)) / Math.PI * 180;
+    result.skewY = 0;
+  } else if (c != 0 || d != 0) {
+    const s = Math.sqrt(c * c + d * d);
+    result.rotation = (Math.PI / 2 - (d > 0 ? Math.acos(-c / s) : -Math.acos(c / s))) / Math.PI * 180;
+    result.scaleX = delta / s;
+    result.scaleY = s;
+    result.skewX = 0;
+    result.skewY = Math.atan((a * c + b * d) / (s * s)) / Math.PI * 180;
+  } else
+    ;
+  return result;
+}
+var __defProp$w = Object.defineProperty;
+var __defNormalProp$w = (obj, key, value) => key in obj ? __defProp$w(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$f = (obj, key, value) => {
+  __defNormalProp$w(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+class Renderable {
+  constructor(obj) {
+    this.obj = obj;
+    __publicField$f(this, "lastVersion", null);
+    __publicField$f(this, "localCanvasInvalid", true);
+    __publicField$f(this, "lastHit", null);
+    __publicField$f(this, "lastLocalTransform", null);
+    __publicField$f(this, "refTextbox", null);
+    __publicField$f(this, "preparedTransform");
+    __publicField$f(this, "hitDetectionFallback", false);
+    __publicField$f(this, "localCanvas", null);
+  }
+  get id() {
+    return this.obj.id;
+  }
+  get canSkipLocal() {
+    return false;
+  }
+  get transformIsLocal() {
+    return false;
+  }
+  get height() {
+    return this.obj.height;
+  }
+  get width() {
+    return this.obj.width;
+  }
+  get x() {
+    return this.obj.x;
+  }
+  get y() {
+    return this.obj.y;
+  }
+  getTransfrom() {
+    let transform = new DOMMatrix();
+    const obj = this.obj;
+    transform = transform.translate(this.x, this.y);
+    if (this.isTalking && obj.enlargeWhenTalking) {
+      transform = transform.translate(0, +this.height / 2);
+      transform = transform.scale(1.05, 1.05);
+      transform = transform.translate(0, -this.height / 2);
+    }
+    if (obj.flip || obj.rotation !== 0 || obj.scaleX !== 1 || obj.scaleY !== 1 || obj.skewX !== 0 || obj.skewY !== 0) {
+      if (obj.rotation !== 0) {
+        transform = transform.rotate(0, 0, obj.rotation);
+      }
+      if (obj.skewX !== 1) {
+        transform = transform.skewX(obj.skewX);
+      }
+      if (obj.skewY !== 1) {
+        transform = transform.skewY(obj.skewY);
+      }
+      if (obj.flip) {
+        transform = transform.flipX();
+      }
+      if (obj.scaleX !== 1 || obj.scaleY !== 1) {
+        transform = transform.scale(obj.scaleX, obj.scaleY);
+      }
+    }
+    return transform;
+  }
+  getLocalSize() {
+    if (this.transformIsLocal) {
+      const constants = getConstants();
+      return new DOMPointReadOnly(
+        constants.Base.screenWidth,
+        constants.Base.screenHeight
+      );
+    } else {
+      return new DOMPointReadOnly(this.width, this.height);
+    }
+  }
+  get isTalking() {
+    return this.refTextbox !== null;
+  }
+  get linkedTo() {
+    return this.obj.linkedTo;
+  }
+  prepareTransform(relative) {
+    this.preparedTransform = relative.multiply(this.getTransfrom());
+    return this.preparedTransform;
+  }
+  prepareRender(panel, _store, _lq) {
+    if (this.lastVersion !== this.obj.version) {
+      this.localCanvasInvalid = true;
+      this.lastVersion = this.obj.version;
+    }
+    if (this.transformIsLocal) {
+      const newTransform = this.preparedTransform;
+      if (!matrixEquals(newTransform, this.lastLocalTransform)) {
+        this.localCanvasInvalid = true;
+        this.lastLocalTransform = newTransform;
+      }
+    } else {
+      this.lastLocalTransform = null;
+    }
+    this.refTextbox = null;
+    const inPanel = [...panel.order, ...panel.onTopOrder];
+    for (const key of inPanel) {
+      const obj = panel.objects[key];
+      if (obj.type === "textBox" && obj.talkingObjId === this.obj.id) {
+        this.refTextbox = obj;
+        return;
+      }
+    }
+  }
+  render(ctx, selection, preview, hq, skipLocal) {
+    if (!preview)
+      selection = SelectedState.None;
+    if (!this.canSkipLocal || selection !== SelectedState.None) {
+      skipLocal = false;
+    }
+    const localCanvasSize = this.getLocalSize();
+    const transform = this.preparedTransform.translate(
+      -this.width / 2,
+      -this.height / 2
+    );
+    if (this.localCanvas && (this.localCanvas.width !== localCanvasSize.x || this.localCanvas.height !== localCanvasSize.y)) {
+      this.localCanvasInvalid = true;
+    }
+    if (this.localCanvasInvalid && !skipLocal) {
+      if (!this.localCanvas) {
+        this.localCanvas = makeCanvas();
+      }
+      this.localCanvas.width = localCanvasSize.x;
+      this.localCanvas.height = localCanvasSize.y;
+      const localCtx = this.localCanvas.getContext("2d");
+      if (!localCtx)
+        throw new Error("No canvas context received. Possibly out of memory?");
+      if (this.transformIsLocal) {
+        localCtx.setTransform(transform);
+      }
+      this.renderLocal(localCtx, hq);
+      this.localCanvasInvalid = false;
+      localCtx.resetTransform();
+    }
+    const shadow = selectionColors[selection];
+    ctxScope(ctx, () => {
+      var _a;
+      if (shadow != null) {
+        ctx.shadowColor = shadow;
+        ctx.shadowBlur = 20;
+      }
+      if (!this.transformIsLocal || skipLocal) {
+        ctx.setTransform(transform);
+      }
+      ctx.globalCompositeOperation = (_a = this.obj.composite) != null ? _a : "source-over";
+      if (skipLocal) {
+        this.renderLocal(ctx, hq);
+      } else {
+        ctx.drawImage(this.localCanvas, 0, 0);
+      }
+    });
+  }
+  dispose() {
+  }
+  hitTest(point) {
+    const transposed = point.matrixTransform(
+      this.preparedTransform.translate(-this.width / 2, -this.height / 2).inverse()
+    );
+    const localSize = this.getLocalSize();
+    if (transposed.x < 0 || transposed.y < 0 || transposed.x > localSize.x || transposed.y > localSize.y) {
+      console.log("Hitbox text", transposed);
+      return false;
+    }
+    if (this.hitDetectionFallback || !this.localCanvas || this.localCanvasInvalid)
+      return true;
+    try {
+      const target = this.transformIsLocal ? point : transposed;
+      this.lastHit = target;
+      const ctx = this.localCanvas.getContext("2d", {
+        willReadFrequently: true
+      });
+      const data = ctx.getImageData(target.x | 0, target.y | 0, 1, 1).data;
+      return data[3] !== 0;
+    } catch (e) {
+      this.hitDetectionFallback = true;
+      throw e;
+    }
+  }
+}
+var __defProp$v = Object.defineProperty;
+var __defNormalProp$v = (obj, key, value) => key in obj ? __defProp$v(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$e = (obj, key, value) => {
+  __defNormalProp$v(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$x = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
+class AssetListRenderable extends Renderable {
+  constructor() {
+    super(...arguments);
+    __publicField$e(this, "refTextbox", null);
+    __publicField$e(this, "lastUploadCount", 0);
+    __publicField$e(this, "lastHq", false);
+    __publicField$e(this, "missingAsset", false);
+    __publicField$e(this, "canSkipLocal", false);
+    __publicField$e(this, "transformIsLocal", false);
+    __publicField$e(this, "assetList", []);
+  }
+  prepareRender(panel, store2, lq) {
+    super.prepareRender(panel, store2, lq);
+    let reloadAssets = !lq === this.lastHq;
+    if (this.missingAsset) {
+      const uploadCount = Object.keys(store2.state.uploadUrls).length;
+      reloadAssets = uploadCount !== this.lastUploadCount;
+      this.lastUploadCount = uploadCount;
+    }
+    if (this.isAssetListOutdated()) {
+      this.assetList = this.getAssetList();
+      reloadAssets = true;
+    }
+    if (!reloadAssets)
+      return;
+    this.lastHq = !lq;
+    this.canSkipLocal = this.assetList.length <= 1;
+    return this.loadAssets(!lq);
+  }
+  getAssetsSize() {
+    let width = 0;
+    let height = 0;
+    for (const assets of this.assetList) {
+      if (!("loadedAssets" in assets))
+        continue;
+      for (const asset of assets.loadedAssets) {
+        width = Math.max(width, assets.offset[0] + asset.width);
+        height = Math.max(height, assets.offset[1] + asset.height);
+      }
+    }
+    return new DOMPointReadOnly(width, height);
+  }
+  loadAssets(hq) {
+    const promises = [];
+    this.missingAsset = false;
+    for (const assetEntry of this.assetList) {
+      if ("loadedAssets" in assetEntry && !assetEntry.hasMissing)
+        continue;
+      promises.push(
+        ((assetEntry2) => __async$x(this, null, function* () {
+          const assets = yield Promise.all(
+            assetEntry2.assets.map((asset) => getAAsset(asset, hq))
+          );
+          const out = assetEntry2;
+          out.loadedAssets = assets;
+          out.hasMissing = assets.some((x) => x instanceof ErrorAsset);
+          this.missingAsset || (this.missingAsset = out.hasMissing);
+          return;
+        }))(assetEntry)
+      );
+    }
+    if (promises.length === 0)
+      return;
+    return Promise.all(promises);
+  }
+  renderLocal(ctx, hq) {
+    var _a;
+    console.log("rerendering local");
+    for (const loadedDraw of this.assetList) {
+      if (!("loadedAssets" in loadedDraw))
+        continue;
+      for (const asset of loadedDraw.loadedAssets) {
+        if (!this.canSkipLocal) {
+          ctx.globalCompositeOperation = (_a = loadedDraw.composite) != null ? _a : "source-over";
+        }
+        asset.paintOnto(ctx, {
+          x: loadedDraw.offset[0],
+          y: loadedDraw.offset[1]
+        });
+      }
+    }
+  }
+}
+class Character extends AssetListRenderable {
+  constructor(obj, data) {
+    super(obj);
+    this.data = data;
+  }
+  prepareRender(panel, store2, lq) {
+    this.data = getData(store2, this.obj);
+    return super.prepareRender(panel, store2, lq);
+  }
+  isAssetListOutdated() {
+    return true;
+  }
+  getAssetList() {
+    const pose = getPose(this.data, this.obj);
+    const currentHeads = getHeads(this.data, this.obj);
+    const drawAssetsUnloaded = [];
+    for (const renderCommand of pose.renderCommands) {
+      switch (renderCommand.type) {
+        case "head":
+          drawAssetsUnloaded.push({
+            offset: renderCommand.offset,
+            composite: renderCommand.composite,
+            assets: currentHeads ? currentHeads.variants[this.obj.posePositions.head || 0] : []
+          });
+          break;
+        case "image":
+          drawAssetsUnloaded.push({
+            offset: renderCommand.offset,
+            composite: renderCommand.composite,
+            assets: renderCommand.images
+          });
+          break;
+        case "pose-part": {
+          const posePosition = pose.positions[renderCommand.part];
+          if (!posePosition || posePosition.length === 0) {
+            break;
+          }
+          const partAssets = posePosition[this.obj.posePositions[renderCommand.part] || 0];
+          if (!partAssets)
+            break;
+          drawAssetsUnloaded.push({
+            offset: renderCommand.offset,
+            composite: renderCommand.composite,
+            assets: partAssets
+          });
+          break;
+        }
+      }
+    }
+    return drawAssetsUnloaded;
+  }
+}
+var __defProp$u = Object.defineProperty;
+var __defNormalProp$u = (obj, key, value) => key in obj ? __defProp$u(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$d = (obj, key, value) => {
+  __defNormalProp$u(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+const aroundContextSize = 5;
+class StringWalker {
+  constructor(str) {
+    this.str = str;
+    __publicField$d(this, "pos", 0);
+  }
+  current() {
+    return this.str[this.pos];
+  }
+  get around() {
+    return this.str.slice(
+      Math.max(0, this.pos - aroundContextSize),
+      this.pos + aroundContextSize
+    );
+  }
+  get ahead() {
+    return this.str[this.pos + 1];
+  }
+  get behind() {
+    return this.str[this.pos + 1];
+  }
+  next() {
+    ++this.pos;
+    return this.current();
+  }
+}
+function tokenize(str, loose = true) {
+  const tokens = [];
+  const stringWalker = new StringWalker(str);
+  let currentTokenState = tokenStateNormal;
+  while (currentTokenState !== tokenStateEnd) {
+    const startPos = stringWalker.pos;
+    try {
+      currentTokenState = currentTokenState(tokens, stringWalker);
+    } catch (e) {
+      if (loose && currentTokenState !== tokenText) {
+        stringWalker.pos = startPos;
+        currentTokenState = (contents, walker) => tokenText(contents, walker, true);
+      } else {
+        throw e;
+      }
+    }
+  }
+  return tokens;
+}
+function tokenStateNormal(contents, walker) {
+  if (walker.current() === void 0)
+    return tokenStateEnd;
+  if (walker.current() === "{")
+    return tokenStateCommand;
+  if (walker.current() === "\n")
+    return tokenStateNewLine;
+  return tokenText;
+}
+function tokenStateEnd() {
+  return tokenStateEnd;
+}
+function tokenText(contents, walker, initEscape = false) {
+  const { pos } = walker;
+  let textContent = "";
+  let escape = initEscape;
+  let nextState;
+  while (true) {
+    if (walker.current() === void 0) {
+      nextState = tokenStateEnd;
+      break;
+    } else if (escape) {
+      textContent += walker.current();
+      escape = false;
+    } else if (walker.current() === "\\") {
+      escape = true;
+    } else if (walker.current() === "{" || walker.current() === "\n") {
+      nextState = tokenStateNormal;
+      break;
+    } else {
+      textContent += walker.current();
+    }
+    walker.next();
+  }
+  contents.push({
+    type: "text",
+    pos,
+    content: textContent
+  });
+  return nextState;
+}
+function error(walker, msg) {
+  throw new Error(
+    `Error when parsing text at position ${walker.pos}: (around: "${walker.around}") ${msg}`
+  );
+}
+function tokenStateCommand(contents, walker) {
+  const { pos } = walker;
+  if (walker.current() !== "{") {
+    throw new Error("Parser error: Command does not start with {");
+  }
+  const closing = walker.next() === "/";
+  if (closing) {
+    walker.next();
+  }
+  let commandName = "";
+  let argument = "";
+  let argumentsState = false;
+  while (true) {
+    if (walker.current() === void 0) {
+      error(walker, "Unexpected end of text inside a command");
+    }
+    if (walker.current() === "}") {
+      break;
+    } else if (!argumentsState) {
+      if (walker.current().match(/[a-z]/i)) {
+        commandName += walker.current();
+      } else if (walker.current() === "=") {
+        if (closing) {
+          error(walker, "Closing commands may not contain arguments");
+        }
+        argumentsState = true;
+      } else {
+        error(
+          walker,
+          `Unexpected character '${walker.current()}' in command name.`
+        );
+      }
+    } else {
+      argument += walker.current();
+    }
+    walker.next();
+  }
+  walker.next();
+  if (closing) {
+    contents.push({
+      type: "commandClose",
+      commandName,
+      pos
+    });
+  } else {
+    contents.push({
+      type: "command",
+      pos,
+      argument,
+      commandName
+    });
+  }
+  return tokenStateNormal;
+}
+function tokenStateNewLine(contents, walker) {
+  contents.push({ type: "newline", pos: walker.pos });
+  walker.next();
+  return tokenStateNormal;
+}
 var __defProp$t = Object.defineProperty;
-var __defProps$b = Object.defineProperties;
-var __getOwnPropDescs$b = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$f = Object.getOwnPropertySymbols;
-var __hasOwnProp$f = Object.prototype.hasOwnProperty;
-var __propIsEnum$f = Object.prototype.propertyIsEnumerable;
+var __defProps$f = Object.defineProperties;
+var __getOwnPropDescs$f = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$i = Object.getOwnPropertySymbols;
+var __hasOwnProp$i = Object.prototype.hasOwnProperty;
+var __propIsEnum$i = Object.prototype.propertyIsEnumerable;
 var __defNormalProp$t = (obj, key, value) => key in obj ? __defProp$t(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$f = (a, b) => {
+var __spreadValues$i = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$f.call(b, prop))
+    if (__hasOwnProp$i.call(b, prop))
       __defNormalProp$t(a, prop, b[prop]);
-  if (__getOwnPropSymbols$f)
-    for (var prop of __getOwnPropSymbols$f(b)) {
-      if (__propIsEnum$f.call(b, prop))
+  if (__getOwnPropSymbols$i)
+    for (var prop of __getOwnPropSymbols$i(b)) {
+      if (__propIsEnum$i.call(b, prop))
         __defNormalProp$t(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$b = (a, b) => __defProps$b(a, __getOwnPropDescs$b(b));
+var __spreadProps$f = (a, b) => __defProps$f(a, __getOwnPropDescs$f(b));
 const textCommands = new Map([
-  paramlessOp("i", (style) => __spreadProps$b(__spreadValues$f({}, style), { isItalic: true })),
-  paramlessOp("b", (style) => __spreadProps$b(__spreadValues$f({}, style), { isBold: true })),
-  paramlessOp("u", (style) => __spreadProps$b(__spreadValues$f({}, style), { isUnderlined: true })),
-  paramlessOp("s", (style) => __spreadProps$b(__spreadValues$f({}, style), {
+  paramlessOp("i", (style) => __spreadProps$f(__spreadValues$i({}, style), { isItalic: true })),
+  paramlessOp("b", (style) => __spreadProps$f(__spreadValues$i({}, style), { isBold: true })),
+  paramlessOp("u", (style) => __spreadProps$f(__spreadValues$i({}, style), { isUnderlined: true })),
+  paramlessOp("s", (style) => __spreadProps$f(__spreadValues$i({}, style), {
     isStrikethrough: true
   })),
-  paramlessOp("plain", (style) => __spreadProps$b(__spreadValues$f({}, style), {
+  paramlessOp("plain", (style) => __spreadProps$f(__spreadValues$i({}, style), {
     isStrikethrough: false,
     isUnderlined: false,
     isBold: false,
     isItalic: false
   })),
-  paramlessOp("edited", (style) => __spreadProps$b(__spreadValues$f({}, style), {
+  paramlessOp("edited", (style) => __spreadProps$f(__spreadValues$i({}, style), {
     fontName: "verily",
     strokeColor: "#000000",
     strokeWidth: 20,
     letterSpacing: 8
   })),
-  relativeNumberOp("k", (style, relative, parameter) => __spreadProps$b(__spreadValues$f({}, style), {
+  relativeNumberOp("k", (style, relative, parameter) => __spreadProps$f(__spreadValues$i({}, style), {
     letterSpacing: relative ? style.letterSpacing + parameter : parameter
   })),
-  relativeNumberOp("size", (style, relative, parameter) => __spreadProps$b(__spreadValues$f({}, style), {
+  relativeNumberOp("size", (style, relative, parameter) => __spreadProps$f(__spreadValues$i({}, style), {
     fontSize: relative ? style.fontSize + parameter : parameter
   })),
-  relativeNumberOp("alpha", (style, relative, parameter) => __spreadProps$b(__spreadValues$f({}, style), {
+  relativeNumberOp("alpha", (style, relative, parameter) => __spreadProps$f(__spreadValues$i({}, style), {
     alpha: relative ? style.alpha + parameter : parameter
   })),
-  relativeNumberOp("stroke", (style, relative, parameter) => __spreadProps$b(__spreadValues$f({}, style), {
+  relativeNumberOp("stroke", (style, relative, parameter) => __spreadProps$f(__spreadValues$i({}, style), {
     strokeWidth: relative ? style.strokeWidth + parameter : parameter
   })),
   [
     "font",
     (style, parameter) => {
-      return __spreadProps$b(__spreadValues$f({}, style), { fontName: parameter });
+      return __spreadProps$f(__spreadValues$i({}, style), { fontName: parameter });
     }
   ],
   [
     "color",
     (style, parameter) => {
-      return __spreadProps$b(__spreadValues$f({}, style), { color: parameter });
+      return __spreadProps$f(__spreadValues$i({}, style), { color: parameter });
     }
   ],
   [
     "outlinecolor",
     (style, parameter) => {
-      return __spreadProps$b(__spreadValues$f({}, style), { strokeColor: parameter });
+      return __spreadProps$f(__spreadValues$i({}, style), { strokeColor: parameter });
     }
   ]
 ]);
@@ -13367,7 +14017,7 @@ function relativeNumberOp(name, op) {
 }
 var __defProp$s = Object.defineProperty;
 var __defNormalProp$s = (obj, key, value) => key in obj ? __defProp$s(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$g = (obj, key, value) => {
+var __publicField$c = (obj, key, value) => {
   __defNormalProp$s(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
@@ -13375,9 +14025,9 @@ class TextRenderer {
   constructor(str, baseStyle) {
     this.str = str;
     this.baseStyle = baseStyle;
-    __publicField$g(this, "renderParts");
-    __publicField$g(this, "tokens");
-    __publicField$g(this, "loose");
+    __publicField$c(this, "renderParts");
+    __publicField$c(this, "tokens");
+    __publicField$c(this, "loose");
     this.loose = envX.state.looseTextParsing;
     try {
       this.tokens = tokenize(str, this.loose);
@@ -13421,7 +14071,7 @@ class TextRenderer {
     const promises = [];
     for (const font of fonts) {
       const doc2 = document;
-      const fontString = `8px ${font}`;
+      const fontString = `8px '${font.replaceAll("'", "\\'")}'`;
       if (!doc2.fonts.check(fontString)) {
         promises.push(doc2.fonts.load(fontString));
       }
@@ -13846,699 +14496,6 @@ function applyTextStyleToCanvas(style, ctx) {
   ctx.globalAlpha = style.alpha || 0;
   ctx.fillStyle = style.color;
 }
-function roundedRectangle(ctx, x, y, w, h2, r) {
-  if (w < 0)
-    w = 0;
-  if (h2 < 0)
-    h2 = 0;
-  if (w < 2 * r)
-    r = w / 2;
-  if (h2 < 2 * r)
-    r = h2 / 2;
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h2, r);
-  ctx.arcTo(x + w, y + h2, x, y + h2, r);
-  ctx.arcTo(x, y + h2, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
-}
-function roundedTopRectangle(ctx, x, y, w, h2, r) {
-  if (w < 0)
-    w = 0;
-  if (h2 < 0)
-    h2 = 0;
-  if (w < 2 * r)
-    r = w / 2;
-  if (h2 < 2 * r)
-    r = h2 / 2;
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h2, r);
-  ctx.lineTo(x + w, y + h2);
-  ctx.lineTo(x, y + h2);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
-}
-function ctxScope(ctx, callback) {
-  ctx.save();
-  try {
-    callback();
-  } finally {
-    ctx.restore();
-  }
-}
-function applyStyle(ctx, params) {
-  if (params.align) {
-    ctx.textAlign = params.align;
-  }
-  if (params.font) {
-    ctx.font = params.font;
-  }
-  if (params.fill) {
-    ctx.fillStyle = params.fill.style;
-  }
-  if (params.outline) {
-    ctx.strokeStyle = params.outline.style;
-    ctx.lineWidth = params.outline.width;
-  }
-}
-class RenderAbortedException {
-}
-var __defProp$r = Object.defineProperty;
-var __getOwnPropSymbols$e = Object.getOwnPropertySymbols;
-var __hasOwnProp$e = Object.prototype.hasOwnProperty;
-var __propIsEnum$e = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$r = (obj, key, value) => key in obj ? __defProp$r(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$e = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$e.call(b, prop))
-      __defNormalProp$r(a, prop, b[prop]);
-  if (__getOwnPropSymbols$e)
-    for (var prop of __getOwnPropSymbols$e(b)) {
-      if (__propIsEnum$e.call(b, prop))
-        __defNormalProp$r(a, prop, b[prop]);
-    }
-  return a;
-};
-var __publicField$f = (obj, key, value) => {
-  __defNormalProp$r(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-var __async$z = (__this, __arguments, generator) => {
-  return new Promise((resolve, reject) => {
-    var fulfilled = (value) => {
-      try {
-        step(generator.next(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var rejected = (value) => {
-      try {
-        step(generator.throw(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
-    step((generator = generator.apply(__this, __arguments)).next());
-  });
-};
-class RenderContext {
-  constructor(canvas, fsCtx, hq, preview) {
-    this.canvas = canvas;
-    this.fsCtx = fsCtx;
-    this.hq = hq;
-    this.preview = preview;
-    __publicField$f(this, "aborted", false);
-  }
-  static make(canvas, hq, preview) {
-    return new RenderContext(canvas, canvas.getContext("2d"), hq, preview);
-  }
-  static makeWithContext(canvas, context, hq, preview) {
-    return new RenderContext(canvas, context, hq, preview);
-  }
-  drawText(params) {
-    if (this.aborted)
-      throw new RenderAbortedException();
-    this.fsCtx.save();
-    const {
-      font,
-      align,
-      x = 0,
-      y = 0,
-      text = ""
-    } = __spreadValues$e(__spreadValues$e({}, {
-      font: "20px aller",
-      align: "left"
-    }), params);
-    this.fsCtx.lineJoin = "round";
-    this.fsCtx.textAlign = align;
-    this.fsCtx.font = font;
-    if (params.outline) {
-      this.fsCtx.strokeStyle = params.outline.style;
-      this.fsCtx.lineWidth = params.outline.width;
-      this.fsCtx.strokeText(text, x, y);
-    }
-    if (params.fill) {
-      this.fsCtx.fillStyle = params.fill.style;
-      this.fsCtx.fillText(text, x, y);
-    }
-    this.fsCtx.restore();
-  }
-  measureText(params) {
-    if (this.aborted)
-      throw new RenderAbortedException();
-    this.fsCtx.save();
-    const {
-      font,
-      align,
-      text = ""
-    } = __spreadValues$e(__spreadValues$e({}, {
-      font: "20px aller",
-      align: "left"
-    }), params);
-    this.fsCtx.lineJoin = "round";
-    this.fsCtx.textAlign = align;
-    this.fsCtx.font = font;
-    if (params.outline) {
-      this.fsCtx.strokeStyle = params.outline.style;
-      this.fsCtx.lineWidth = params.outline.width;
-    }
-    if (params.fill) {
-      this.fsCtx.fillStyle = params.fill.style;
-    }
-    const ret = this.fsCtx.measureText(text);
-    this.fsCtx.restore();
-    return ret;
-  }
-  drawImage(params) {
-    if (this.aborted)
-      throw new RenderAbortedException();
-    const { image, flip, x, y, w, h: h2, filters, composite } = __spreadValues$e({
-      flip: false,
-      w: params.image.width,
-      h: params.image.height,
-      composite: "source-over"
-    }, params);
-    this.fsCtx.save();
-    this.fsCtx.globalCompositeOperation = composite;
-    if (filters) {
-      if (!("filter" in this.fsCtx)) {
-        let opacityCombined = 1;
-        for (const filter of filters) {
-          if (filter.type === "opacity") {
-            opacityCombined *= filter.value;
-          }
-        }
-        this.fsCtx.globalAlpha = opacityCombined;
-      } else {
-        const filterList = [];
-        for (const filter of filters) {
-          if (filter.type === "drop-shadow") {
-            filterList.push(
-              `drop-shadow(${filter.offsetX}px ${filter.offsetY}px ${filter.blurRadius}px ${filter.color})`
-            );
-          } else if (filter.type === "hue-rotate") {
-            filterList.push(`hue-rotate(${filter.value}deg)`);
-          } else if (filter.type === "blur") {
-            filterList.push(`blur(${filter.value}px)`);
-          } else {
-            filterList.push(`${filter.type}(${filter.value * 100}%)`);
-          }
-        }
-        this.fsCtx.filter = filterList.join(" ");
-      }
-    }
-    if (params.shadow) {
-      const shadow = params.shadow;
-      if (shadow.color != null) {
-        this.fsCtx.shadowColor = shadow.color;
-      }
-      if (shadow.blur != null) {
-        this.fsCtx.shadowBlur = shadow.blur;
-      }
-      if (shadow.offsetX != null) {
-        this.fsCtx.shadowOffsetX = shadow.offsetX;
-      }
-      if (shadow.offsetY != null) {
-        this.fsCtx.shadowOffsetY = shadow.offsetY;
-      }
-    }
-    if (params.rotation != null && params.rotation !== 0) {
-      const rotX = params.rotationAnchor ? params.rotationAnchor.x : 0;
-      const rotY = params.rotationAnchor ? params.rotationAnchor.y : 0;
-      if (params.rotationAnchor) {
-        this.fsCtx.translate(rotX, rotY);
-      }
-      this.fsCtx.rotate(params.rotation);
-      if (params.rotationAnchor) {
-        this.fsCtx.translate(-rotX, -rotY);
-      }
-    }
-    this.fsCtx.translate(x + w / 2, y + h2 / 2);
-    this.fsCtx.scale(flip ? -1 : 1, 1);
-    image.paintOnto(this.fsCtx, { x: -w / 2, y: -h2 / 2, w, h: h2 });
-    this.fsCtx.restore();
-    this.fsCtx.globalCompositeOperation = "source-over";
-  }
-  drawRect({
-    x,
-    y,
-    w,
-    h: h2,
-    outline,
-    fill,
-    composition,
-    rotation,
-    rotationAnchor
-  }) {
-    if (this.aborted)
-      throw new RenderAbortedException();
-    this.fsCtx.save();
-    if (rotation != null && rotation !== 0) {
-      const rotX = rotationAnchor ? rotationAnchor.x : 0;
-      const rotY = rotationAnchor ? rotationAnchor.y : 0;
-      if (rotationAnchor) {
-        this.fsCtx.translate(rotX, rotY);
-      }
-      this.fsCtx.rotate(rotation);
-      if (rotationAnchor) {
-        this.fsCtx.translate(-rotX, -rotY);
-      }
-    }
-    this.fsCtx.beginPath();
-    this.fsCtx.rect(x, y, w, h2);
-    if (composition) {
-      this.fsCtx.globalCompositeOperation = composition;
-    }
-    if (fill) {
-      this.fsCtx.fillStyle = fill.style;
-      this.fsCtx.fill();
-    }
-    if (outline) {
-      this.fsCtx.strokeStyle = outline.style;
-      this.fsCtx.lineWidth = outline.width;
-      this.fsCtx.stroke();
-    }
-    this.fsCtx.restore();
-  }
-  drawPath({
-    outline,
-    fill,
-    path
-  }) {
-    if (this.aborted)
-      throw new RenderAbortedException();
-    this.fsCtx.save();
-    this.fsCtx.beginPath();
-    path(this.fsCtx);
-    if (fill) {
-      this.fsCtx.fillStyle = fill.style;
-      this.fsCtx.fill();
-    }
-    if (outline) {
-      this.fsCtx.strokeStyle = outline.style;
-      this.fsCtx.lineWidth = outline.width;
-      this.fsCtx.stroke();
-    }
-    this.fsCtx.restore();
-  }
-  patternFrom(image, repetition = "repeat") {
-    if (image instanceof Renderer) {
-      image = image.previewCanvas;
-    }
-    return this.fsCtx.createPattern(
-      image,
-      repetition
-    );
-  }
-  customTransform(transform, render) {
-    return __async$z(this, null, function* () {
-      this.fsCtx.save();
-      yield transform(this.fsCtx);
-      yield render(this);
-      this.fsCtx.restore();
-    });
-  }
-  linearGradient(x0, y0, x1, y1) {
-    return this.fsCtx.createLinearGradient(x0, y0, x1, y1);
-  }
-  applyFilters(filters) {
-    if (filters.length === 0)
-      return;
-    this.fsCtx.save();
-    let opacityCombined = 1;
-    for (const filter of filters) {
-      if (filter.type === "opacity") {
-        opacityCombined *= filter.value;
-      }
-    }
-    if ("filter" in this.fsCtx) {
-      const filterList = [];
-      for (const filter of filters) {
-        if (filter.type === "opacity")
-          continue;
-        if (filter.type === "drop-shadow") {
-          filterList.push(
-            `drop-shadow(${filter.offsetX}px ${filter.offsetY}px ${filter.blurRadius}px ${filter.color})`
-          );
-        } else if (filter.type === "hue-rotate") {
-          filterList.push(`hue-rotate(${filter.value}deg)`);
-        } else if (filter.type === "blur") {
-          filterList.push(`blur(${filter.value}px)`);
-        } else {
-          filterList.push(`${filter.type}(${filter.value * 100}%)`);
-        }
-      }
-      this.fsCtx.filter = filterList.join(" ");
-    }
-    this.fsCtx.drawImage(this.canvas, 0, 0);
-    if (opacityCombined !== 1) {
-      this.fsCtx.globalCompositeOperation = "destination-atop";
-      this.fsCtx.fillStyle = `rgba(0,0,0,${opacityCombined})`;
-      this.fsCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-      this.fsCtx.globalCompositeOperation = "source-over";
-    }
-    if ("filter" in this.fsCtx) {
-      this.fsCtx.filter = "none";
-    }
-    this.fsCtx.restore();
-  }
-  abort() {
-    this.aborted = true;
-  }
-}
-var __defProp$q = Object.defineProperty;
-var __defNormalProp$q = (obj, key, value) => key in obj ? __defProp$q(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$e = (obj, key, value) => {
-  __defNormalProp$q(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-var __async$y = (__this, __arguments, generator) => {
-  return new Promise((resolve, reject) => {
-    var fulfilled = (value) => {
-      try {
-        step(generator.next(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var rejected = (value) => {
-      try {
-        step(generator.throw(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
-    step((generator = generator.apply(__this, __arguments)).next());
-  });
-};
-class Renderer {
-  constructor(w, h2) {
-    __publicField$e(this, "previewCanvas");
-    __publicField$e(this, "runningContext", null);
-    __publicField$e(this, "_disposed", false);
-    const constants = getConstants();
-    this.previewCanvas = makeCanvas();
-    this.previewCanvas.width = w != null ? w : constants.Base.screenWidth;
-    this.previewCanvas.height = h2 != null ? h2 : constants.Base.screenHeight;
-  }
-  get disposed() {
-    return this._disposed;
-  }
-  render(renderCallback, hq = true, preview = true) {
-    return __async$y(this, null, function* () {
-      if (this.runningContext) {
-        this.runningContext.abort();
-      }
-      const ctx = this.previewCanvas.getContext("2d");
-      ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
-      const context = this.runningContext = RenderContext.makeWithContext(
-        this.previewCanvas,
-        ctx,
-        hq,
-        preview
-      );
-      try {
-        yield renderCallback(this.runningContext);
-      } catch (e) {
-        if (e instanceof RenderAbortedException) {
-          return false;
-        }
-        throw e;
-      } finally {
-        if (context === this.runningContext) {
-          this.runningContext = null;
-        }
-      }
-      return true;
-    });
-  }
-  get width() {
-    return this.previewCanvas.width;
-  }
-  get height() {
-    return this.previewCanvas.height;
-  }
-  paintOnto(c, opts) {
-    if (opts.w != null && opts.h != null) {
-      c.drawImage(this.previewCanvas, opts.x, opts.y, opts.w, opts.h);
-    } else {
-      c.drawImage(this.previewCanvas, opts.x, opts.y);
-    }
-  }
-  download(renderCallback, filename) {
-    return __async$y(this, null, function* () {
-      const downloadCanvas = yield this.drawToCanvas(renderCallback);
-      return yield envX.saveToFile(downloadCanvas, filename);
-    });
-  }
-  renderToBlob(renderCallback) {
-    return __async$y(this, null, function* () {
-      const downloadCanvas = yield this.drawToCanvas(renderCallback);
-      return yield new Promise((resolve, reject) => {
-        downloadCanvas.toBlob((blob) => {
-          if (blob)
-            resolve(blob);
-          else
-            reject();
-        });
-      });
-    });
-  }
-  drawToCanvas(renderCallback) {
-    return __async$y(this, null, function* () {
-      const downloadCanvas = makeCanvas();
-      downloadCanvas.width = this.previewCanvas.width;
-      downloadCanvas.height = this.previewCanvas.height;
-      const ctx = downloadCanvas.getContext("2d");
-      ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
-      yield renderCallback(
-        RenderContext.makeWithContext(downloadCanvas, ctx, true, false)
-      );
-      return downloadCanvas;
-    });
-  }
-  dispose() {
-    if (this.runningContext) {
-      this.runningContext.abort();
-    }
-    disposeCanvas(this.previewCanvas);
-    this._disposed = true;
-  }
-  getDataAt(x, y) {
-    const ctx = this.previewCanvas.getContext("2d");
-    return ctx.getImageData(x, y, 1, 1).data;
-  }
-}
-function rotateAround(x, y, relX, relY, angle) {
-  const angleCos = Math.cos(angle);
-  const angleSin = Math.sin(angle);
-  const translatedX = x - relX;
-  const translatedY = y - relY;
-  const rotatedX = angleCos * translatedX - angleSin * translatedY + relX;
-  const rotatedY = angleSin * translatedX + angleCos * translatedY + relY;
-  return [rotatedX, rotatedY];
-}
-var SelectedState = /* @__PURE__ */ ((SelectedState2) => {
-  SelectedState2[SelectedState2["None"] = 0] = "None";
-  SelectedState2[SelectedState2["Selected"] = 1] = "Selected";
-  SelectedState2[SelectedState2["Focused"] = 2] = "Focused";
-  SelectedState2[SelectedState2["Both"] = 3] = "Both";
-  return SelectedState2;
-})(SelectedState || {});
-window.dddg_dbg_paint_hitboxes = "none";
-var __defProp$p = Object.defineProperty;
-var __defNormalProp$p = (obj, key, value) => key in obj ? __defProp$p(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$d = (obj, key, value) => {
-  __defNormalProp$p(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-class Renderable {
-  constructor(obj) {
-    this.obj = obj;
-    __publicField$d(this, "lastVersion", null);
-    __publicField$d(this, "localCanvasInvalid", true);
-    __publicField$d(this, "lastHit", null);
-    __publicField$d(this, "lastLocalTransform", null);
-    __publicField$d(this, "refTextbox", null);
-    __publicField$d(this, "preparedTransform");
-    __publicField$d(this, "hitDetectionFallback", false);
-    __publicField$d(this, "localCanvas", null);
-  }
-  get id() {
-    return this.obj.id;
-  }
-  get canSkipLocal() {
-    return false;
-  }
-  get transformIsLocal() {
-    return false;
-  }
-  get height() {
-    return this.obj.height;
-  }
-  get width() {
-    return this.obj.width;
-  }
-  get x() {
-    return this.obj.x;
-  }
-  get y() {
-    return this.obj.y;
-  }
-  getTransfrom() {
-    let transform = new DOMMatrix();
-    const obj = this.obj;
-    transform = transform.translate(this.x, this.y);
-    if (this.isTalking && obj.enlargeWhenTalking) {
-      transform = transform.translate(0, +this.height / 2);
-      transform = transform.scale(1.05, 1.05);
-      transform = transform.translate(0, -this.height / 2);
-    }
-    if (obj.flip || obj.rotation !== 0 || obj.scaleX !== 1 || obj.scaleY !== 1 || obj.skewX !== 0 || obj.skewY !== 0) {
-      if (obj.rotation !== 0) {
-        transform = transform.rotate(0, 0, obj.rotation);
-      }
-      if (obj.skewX !== 1) {
-        transform = transform.skewX(obj.skewX);
-      }
-      if (obj.skewY !== 1) {
-        transform = transform.skewY(obj.skewY);
-      }
-      if (obj.flip) {
-        transform = transform.flipX();
-      }
-      if (obj.scaleX !== 1 || obj.scaleY !== 1) {
-        transform = transform.scale(obj.scaleX, obj.scaleY);
-      }
-    }
-    return transform;
-  }
-  getLocalSize() {
-    if (this.transformIsLocal) {
-      const constants = getConstants();
-      return new DOMPointReadOnly(
-        constants.Base.screenWidth,
-        constants.Base.screenHeight
-      );
-    } else {
-      return new DOMPointReadOnly(this.width, this.height);
-    }
-  }
-  get isTalking() {
-    return this.refTextbox !== null;
-  }
-  get linkedTo() {
-    return this.obj.linkedTo;
-  }
-  prepareTransform(relative) {
-    this.preparedTransform = relative.multiply(this.getTransfrom());
-    return this.preparedTransform;
-  }
-  prepareRender(panel, _store, _lq) {
-    if (this.lastVersion !== this.obj.version) {
-      this.localCanvasInvalid = true;
-      this.lastVersion = this.obj.version;
-    }
-    if (this.transformIsLocal) {
-      const newTransform = this.preparedTransform;
-      if (!matrixEquals(newTransform, this.lastLocalTransform)) {
-        this.localCanvasInvalid = true;
-        this.lastLocalTransform = newTransform;
-      }
-    } else {
-      this.lastLocalTransform = null;
-    }
-    this.refTextbox = null;
-    const inPanel = [...panel.order, ...panel.onTopOrder];
-    for (const key of inPanel) {
-      const obj = panel.objects[key];
-      if (obj.type === "textBox" && obj.talkingObjId === this.obj.id) {
-        this.refTextbox = obj;
-        return;
-      }
-    }
-  }
-  render(ctx, selection, preview, hq, skipLocal) {
-    if (!preview)
-      selection = SelectedState.None;
-    if (!this.canSkipLocal || selection !== SelectedState.None) {
-      skipLocal = false;
-    }
-    const localCanvasSize = this.getLocalSize();
-    const transform = this.preparedTransform.translate(
-      -this.width / 2,
-      -this.height / 2
-    );
-    if (this.localCanvas && (this.localCanvas.width !== localCanvasSize.x || this.localCanvas.height !== localCanvasSize.y)) {
-      this.localCanvasInvalid = true;
-    }
-    if (this.localCanvasInvalid && !skipLocal) {
-      if (!this.localCanvas) {
-        this.localCanvas = makeCanvas();
-      }
-      this.localCanvas.width = localCanvasSize.x;
-      this.localCanvas.height = localCanvasSize.y;
-      const localCtx = this.localCanvas.getContext("2d");
-      if (!localCtx)
-        throw new Error("No canvas context received. Possibly out of memory?");
-      if (this.transformIsLocal) {
-        localCtx.setTransform(transform);
-      }
-      this.renderLocal(localCtx, hq);
-      this.localCanvasInvalid = false;
-      localCtx.resetTransform();
-    }
-    const shadow = {
-      [SelectedState.None]: void 0,
-      [SelectedState.Selected]: "red",
-      [SelectedState.Focused]: "blue",
-      [SelectedState.Both]: "purple"
-    }[selection];
-    ctxScope(ctx, () => {
-      var _a;
-      if (shadow != null) {
-        ctx.shadowColor = shadow;
-        ctx.shadowBlur = 20;
-      }
-      if (!this.transformIsLocal || skipLocal) {
-        ctx.setTransform(transform);
-      }
-      ctx.globalCompositeOperation = (_a = this.obj.composite) != null ? _a : "source-over";
-      if (skipLocal) {
-        this.renderLocal(ctx, hq);
-      } else {
-        ctx.drawImage(this.localCanvas, 0, 0);
-      }
-    });
-  }
-  dispose() {
-  }
-  hitTest(point) {
-    const transposed = point.matrixTransform(
-      this.preparedTransform.translate(-this.width / 2, -this.height / 2).inverse()
-    );
-    const localSize = this.getLocalSize();
-    if (transposed.x < 0 || transposed.y < 0 || transposed.x > localSize.x || transposed.y > localSize.y) {
-      console.log("Hitbox text", transposed);
-      return false;
-    }
-    if (this.hitDetectionFallback || !this.localCanvas || this.localCanvasInvalid)
-      return true;
-    try {
-      const target = this.transformIsLocal ? point : transposed;
-      this.lastHit = target;
-      const ctx = this.localCanvas.getContext("2d");
-      const data = ctx.getImageData(target.x | 0, target.y | 0, 1, 1).data;
-      return data[3] !== 0;
-    } catch (e) {
-      this.hitDetectionFallback = true;
-      throw e;
-    }
-  }
-}
 class ScalingRenderable extends Renderable {
   get canSkipLocal() {
     return this.obj.composite === "source-over" && this.obj.filters.length === 0;
@@ -14552,13 +14509,304 @@ class ScalingRenderable extends Renderable {
     return !(transform.a === 1 && transform.b === 0 && transform.c === 0 && transform.d === 1);
   }
 }
+var __defProp$r = Object.defineProperty;
+var __defNormalProp$r = (obj, key, value) => key in obj ? __defProp$r(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$b = (obj, key, value) => {
+  __defNormalProp$r(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+class Choice extends ScalingRenderable {
+  constructor() {
+    super(...arguments);
+    __publicField$b(this, "_height", 0);
+    __publicField$b(this, "choiceRenderers", []);
+  }
+  get height() {
+    const constants = getConstants().Choices;
+    return this._height + constants.ChoiceOuterPadding * 2;
+  }
+  get width() {
+    const constants = getConstants().Choices;
+    return this.obj.width + constants.ChoiceOuterPadding * 2;
+  }
+  renderLocal(ctx, _hq) {
+    const constants = getConstants().Choices;
+    const w = this.obj.width;
+    const x = constants.ChoiceOuterPadding;
+    let y = constants.ChoiceOuterPadding;
+    for (const choiceRenderer of this.choiceRenderers) {
+      const height = choiceRenderer.getHeight(this.obj.autoWrap ? w : 0);
+      ctx.strokeStyle = constants.ChoiceButtonBorderColor;
+      ctx.lineWidth = constants.Outline;
+      ctx.fillStyle = constants.ChoiceButtonColor;
+      ctx.fillRect(x, y, w, height + constants.ChoicePadding * 2);
+      ctx.strokeRect(x, y, w, height + constants.ChoicePadding * 2);
+      choiceRenderer.fixAlignment(
+        "center",
+        x,
+        w,
+        y + constants.ChoiceSpacing * 1.25,
+        this.obj.autoWrap ? w : 0
+      );
+      choiceRenderer.render(ctx);
+      y += height + constants.ChoicePadding * 2 + constants.ChoiceSpacing;
+    }
+  }
+  prepareRender(panel, store2, lq) {
+    const constants = getConstants();
+    this.choiceRenderers = this.obj.choices.map(
+      (choice) => new TextRenderer(choice.text || " ", constants.Choices.ChoiceTextStyle)
+    );
+    const computeHeight = () => {
+      this._height = this.choiceRenderers.reduce(
+        (acc, renderer2) => acc + renderer2.getHeight(this.obj.autoWrap ? this.obj.width : 0) + constants.Choices.ChoicePadding * 2,
+        0
+      ) + this.obj.choiceDistance * (this.obj.choices.length - 1);
+      return super.prepareRender(panel, store2, lq);
+    };
+    const fontLoaders = this.choiceRenderers.map((x) => x.loadFonts()).filter((x) => x !== void 0);
+    if (fontLoaders.length === 0) {
+      computeHeight();
+    } else {
+      return Promise.all(fontLoaders).then(computeHeight);
+    }
+  }
+}
+var __defProp$q = Object.defineProperty;
+var __defNormalProp$q = (obj, key, value) => key in obj ? __defProp$q(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$a = (obj, key, value) => {
+  __defNormalProp$q(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+class Notification extends ScalingRenderable {
+  constructor() {
+    super(...arguments);
+    __publicField$a(this, "_height", 0);
+    __publicField$a(this, "_width", 0);
+    __publicField$a(this, "_textRenderer", null);
+    __publicField$a(this, "_buttonRenderer", null);
+  }
+  get height() {
+    const constants = getConstants().Choices;
+    return this._height + constants.ChoiceOuterPadding * 2;
+  }
+  get width() {
+    const constants = getConstants().Choices;
+    return this._width + constants.ChoiceOuterPadding * 2;
+  }
+  prepareRender(panel, store2, lq) {
+    const superRet = super.prepareRender(
+      panel,
+      store2,
+      lq
+    );
+    const constants = getConstants().Notification;
+    const textRenderer = this._textRenderer = new TextRenderer(
+      this.obj.text,
+      constants.NotificationTextStyle
+    );
+    const buttonRenderer = this._buttonRenderer = new TextRenderer(
+      "OK",
+      constants.NotificationOkTextStyle
+    );
+    const loadTextFonts = textRenderer.loadFonts();
+    const loadButtonFonts = buttonRenderer.loadFonts();
+    const fixSize = () => {
+      const lineWrap = this.obj.autoWrap ? this.obj.width - constants.NotificationPadding * 2 : 0;
+      const textWidth = this.obj.autoWrap ? lineWrap : textRenderer.getWidth();
+      const textHeight = textRenderer.getHeight(lineWrap);
+      const buttonWidth = this.obj.autoWrap ? lineWrap : buttonRenderer.getWidth();
+      const buttonHeight = buttonRenderer.getHeight(lineWrap);
+      this._width = Math.max(textWidth, buttonWidth) + constants.NotificationPadding * 2;
+      this._height = textHeight + constants.NotificationPadding * 2 + constants.NotificationSpacing + buttonHeight;
+    };
+    if (superRet || loadTextFonts || loadButtonFonts)
+      return Promise.all([superRet, loadTextFonts, loadButtonFonts]).then(
+        fixSize
+      );
+    fixSize();
+    return;
+  }
+  render(ctx, selection, preview, hq, skipLocal) {
+    if (this.obj.backdrop) {
+      ctxScope(ctx, () => {
+        const constants = getConstants();
+        ctx.resetTransform();
+        ctx.fillStyle = constants.Notification.NotificationBackdropColor;
+        ctx.fillRect(
+          0,
+          0,
+          constants.Base.screenWidth,
+          constants.Base.screenHeight
+        );
+      });
+    }
+    return super.render(ctx, selection, preview, hq, skipLocal);
+  }
+  renderLocal(ctx, _hq) {
+    const constants = getConstants();
+    const lineWrap = this.obj.autoWrap ? this.obj.width - constants.Notification.NotificationPadding * 2 : 0;
+    const textRenderer = this._textRenderer;
+    const buttonRenderer = this._buttonRenderer;
+    const w = this._width;
+    const h2 = this._height;
+    const p2 = constants.Choices.ChoiceOuterPadding;
+    ctx.fillStyle = constants.Choices.ChoiceButtonColor, ctx.strokeStyle = constants.Choices.ChoiceButtonBorderColor;
+    ctx.lineWidth = constants.Choices.Outline;
+    ctx.fillRect(p2, p2, w, h2);
+    ctx.strokeRect(p2, p2, w, h2);
+    textRenderer.fixAlignment(
+      "center",
+      p2,
+      w + p2,
+      p2 + constants.Notification.NotificationPadding * 1.5,
+      lineWrap
+    );
+    textRenderer.render(ctx);
+    buttonRenderer.fixAlignment(
+      "center",
+      p2,
+      w + p2,
+      p2 + h2 - constants.Notification.NotificationPadding,
+      lineWrap
+    );
+    buttonRenderer.render(ctx);
+  }
+}
+var __defProp$p = Object.defineProperty;
+var __defNormalProp$p = (obj, key, value) => key in obj ? __defProp$p(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$9 = (obj, key, value) => {
+  __defNormalProp$p(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$w = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
+const consolePadding = -2;
+const consoleTopPadding = 26;
+const consoleLineWrapPadding = 10;
+const poemTopMargin = 10;
+class Poem extends ScalingRenderable {
+  constructor() {
+    super(...arguments);
+    __publicField$9(this, "_paperHeight", null);
+    __publicField$9(this, "_paperWidth", null);
+    __publicField$9(this, "_paper", null);
+    __publicField$9(this, "_lastPaperUrl", null);
+  }
+  get height() {
+    var _a;
+    return (_a = this._paperHeight) != null ? _a : this.obj.height;
+  }
+  get width() {
+    var _a;
+    return (_a = this._paperWidth) != null ? _a : this.obj.width;
+  }
+  prepareRender(panel, store2, lq) {
+    const superRet = super.prepareRender(
+      panel,
+      store2,
+      lq
+    );
+    const constants = getConstants().Poem;
+    const bg = constants.poemBackgrounds[this.obj.background];
+    const style = constants.poemTextStyles[this.obj.font];
+    const render = new TextRenderer(this.obj.text, style);
+    const fontLoading = render.loadFonts();
+    let imageLoading = void 0;
+    if (!bg.file.startsWith("internal:")) {
+      if (this._lastPaperUrl !== bg.file) {
+        imageLoading = (() => __async$w(this, null, function* () {
+          this._paper = yield getAssetByUrl(
+            `assets/poemBackgrounds/${bg.file}`
+          );
+          this._lastPaperUrl = bg.file;
+          this._paperHeight = this._paper.height * constants.backgroundScale;
+          this._paperWidth = this._paper.width * constants.backgroundScale;
+        }))();
+      }
+    } else {
+      this._lastPaperUrl = null;
+      this._paper = null;
+      this._paperHeight = null;
+      this._paperWidth = null;
+    }
+    if (superRet || fontLoading || imageLoading) {
+      return Promise.all([superRet, fontLoading, imageLoading]);
+    }
+    return;
+  }
+  renderLocal(ctx, _hq) {
+    const constants = getConstants().Poem;
+    const paper = constants.poemBackgrounds[this.obj.background];
+    const w = this.width;
+    const h2 = this.height;
+    let padding = constants.poemPadding;
+    let topPadding = constants.poemTopPadding;
+    let lineWrapPadding = padding * 2;
+    if (paper.file === "internal:console") {
+      ctx.fillStyle = this.obj.consoleColor || constants.consoleBackgroundColor;
+      ctx.fillRect(0, 0, w, h2);
+      padding = consolePadding;
+      topPadding = consoleTopPadding;
+      lineWrapPadding = consoleLineWrapPadding;
+    } else if (this._paper) {
+      this._paper.paintOnto(ctx, {
+        x: 0,
+        y: 0,
+        w,
+        h: h2
+      });
+    }
+    const style = constants.poemTextStyles[this.obj.font];
+    const render = new TextRenderer(this.obj.text, style);
+    render.fixAlignment(
+      "left",
+      poemTopMargin + padding,
+      padding,
+      topPadding + padding,
+      this.obj.autoWrap ? this.width - lineWrapPadding : 0
+    );
+    render.render(ctx);
+  }
+}
+class Sprite extends AssetListRenderable {
+  isAssetListOutdated() {
+    return true;
+  }
+  getAssetList() {
+    return [
+      {
+        assets: this.obj.assets,
+        offset: [0, 0]
+      }
+    ];
+  }
+}
 var __defProp$o = Object.defineProperty;
 var __defNormalProp$o = (obj, key, value) => key in obj ? __defProp$o(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$c = (obj, key, value) => {
+var __publicField$8 = (obj, key, value) => {
   __defNormalProp$o(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$x = (__this, __arguments, generator) => {
+var __async$v = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -14581,7 +14829,7 @@ var __async$x = (__this, __arguments, generator) => {
 class DdlcBase {
   constructor(base) {
     this.base = base;
-    __publicField$c(this, "nextArrow", null);
+    __publicField$8(this, "nextArrow", null);
   }
   static get defaultWidth() {
     return TextBoxWidth$1;
@@ -14631,18 +14879,18 @@ class DdlcBase {
   prepare() {
     if (this.nextArrow instanceof ImageAsset)
       return;
-    return (() => __async$x(this, null, function* () {
+    return (() => __async$v(this, null, function* () {
       this.nextArrow = yield getBuildInAsset("next");
     }))();
   }
 }
 var __defProp$n = Object.defineProperty;
 var __defNormalProp$n = (obj, key, value) => key in obj ? __defProp$n(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$b = (obj, key, value) => {
+var __publicField$7 = (obj, key, value) => {
   __defNormalProp$n(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$w = (__this, __arguments, generator) => {
+var __async$u = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -14665,10 +14913,10 @@ var __async$w = (__this, __arguments, generator) => {
 class Default extends DdlcBase {
   constructor() {
     super(...arguments);
-    __publicField$b(this, "backgroundImage", "textbox");
-    __publicField$b(this, "xOffset", 0);
-    __publicField$b(this, "nameBoxAsset", null);
-    __publicField$b(this, "backdropAsset", null);
+    __publicField$7(this, "backgroundImage", "textbox");
+    __publicField$7(this, "xOffset", 0);
+    __publicField$7(this, "nameBoxAsset", null);
+    __publicField$7(this, "backdropAsset", null);
   }
   static get resizable() {
     return false;
@@ -14740,66 +14988,66 @@ class Default extends DdlcBase {
       return;
     return Promise.all([
       prep,
-      this.backdropAsset instanceof ImageAsset ? void 0 : (() => __async$w(this, null, function* () {
+      this.backdropAsset instanceof ImageAsset ? void 0 : (() => __async$u(this, null, function* () {
         this.backdropAsset = yield getBuildInAsset(this.backgroundImage);
       }))(),
-      this.nameBoxAsset instanceof ImageAsset ? void 0 : (() => __async$w(this, null, function* () {
+      this.nameBoxAsset instanceof ImageAsset ? void 0 : (() => __async$u(this, null, function* () {
         this.nameBoxAsset = yield getBuildInAsset("namebox");
       }))()
     ]);
   }
 }
-__publicField$b(Default, "id", "normal");
-__publicField$b(Default, "label", "Normal");
-__publicField$b(Default, "priority", 0);
-__publicField$b(Default, "gameMode", "ddlc");
+__publicField$7(Default, "id", "normal");
+__publicField$7(Default, "label", "Normal");
+__publicField$7(Default, "priority", 0);
+__publicField$7(Default, "gameMode", "ddlc");
 var __defProp$m = Object.defineProperty;
 var __defNormalProp$m = (obj, key, value) => key in obj ? __defProp$m(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$a = (obj, key, value) => {
+var __publicField$6 = (obj, key, value) => {
   __defNormalProp$m(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 class Corrupted extends Default {
   constructor() {
     super(...arguments);
-    __publicField$a(this, "backgroundImage", "textbox_monika");
-    __publicField$a(this, "xOffset", (TextBoxWidth$1 - TextBoxCorruptedWidth$1) / 2);
+    __publicField$6(this, "backgroundImage", "textbox_monika");
+    __publicField$6(this, "xOffset", (TextBoxWidth$1 - TextBoxCorruptedWidth$1) / 2);
   }
 }
-__publicField$a(Corrupted, "id", "corrupt");
-__publicField$a(Corrupted, "label", "Corrupted");
-__publicField$a(Corrupted, "priority", 1);
-__publicField$a(Corrupted, "gameMode", "ddlc");
+__publicField$6(Corrupted, "id", "corrupt");
+__publicField$6(Corrupted, "label", "Corrupted");
+__publicField$6(Corrupted, "priority", 1);
+__publicField$6(Corrupted, "gameMode", "ddlc");
 var __defProp$l = Object.defineProperty;
-var __defProps$a = Object.defineProperties;
-var __getOwnPropDescs$a = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$d = Object.getOwnPropertySymbols;
-var __hasOwnProp$d = Object.prototype.hasOwnProperty;
-var __propIsEnum$d = Object.prototype.propertyIsEnumerable;
+var __defProps$e = Object.defineProperties;
+var __getOwnPropDescs$e = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$h = Object.getOwnPropertySymbols;
+var __hasOwnProp$h = Object.prototype.hasOwnProperty;
+var __propIsEnum$h = Object.prototype.propertyIsEnumerable;
 var __defNormalProp$l = (obj, key, value) => key in obj ? __defProp$l(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$d = (a, b) => {
+var __spreadValues$h = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$d.call(b, prop))
+    if (__hasOwnProp$h.call(b, prop))
       __defNormalProp$l(a, prop, b[prop]);
-  if (__getOwnPropSymbols$d)
-    for (var prop of __getOwnPropSymbols$d(b)) {
-      if (__propIsEnum$d.call(b, prop))
+  if (__getOwnPropSymbols$h)
+    for (var prop of __getOwnPropSymbols$h(b)) {
+      if (__propIsEnum$h.call(b, prop))
         __defNormalProp$l(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$a = (a, b) => __defProps$a(a, __getOwnPropDescs$a(b));
-var __publicField$9 = (obj, key, value) => {
+var __spreadProps$e = (a, b) => __defProps$e(a, __getOwnPropDescs$e(b));
+var __publicField$5 = (obj, key, value) => {
   __defNormalProp$l(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 class Custom extends DdlcBase {
   constructor() {
     super(...arguments);
-    __publicField$9(this, "_dotPattern", null);
-    __publicField$9(this, "_lastColor", null);
-    __publicField$9(this, "backgroundImage", "textbox");
-    __publicField$9(this, "xOffset", 0);
+    __publicField$5(this, "_dotPattern", null);
+    __publicField$5(this, "_lastColor", null);
+    __publicField$5(this, "backgroundImage", "textbox");
+    __publicField$5(this, "xOffset", 0);
   }
   static get resizable() {
     return true;
@@ -14834,7 +15082,7 @@ class Custom extends DdlcBase {
     return NameboxTextYOffset$1;
   }
   get nameboxStyle() {
-    return __spreadProps$a(__spreadValues$d({}, NameboxTextStyle$1), {
+    return __spreadProps$e(__spreadValues$h({}, NameboxTextStyle$1), {
       strokeColor: this.nameboxOutlineColor,
       color: "#FFFFFF"
     });
@@ -14991,17 +15239,17 @@ class Custom extends DdlcBase {
     return pattern;
   }
 }
-__publicField$9(Custom, "id", "custom");
-__publicField$9(Custom, "label", "Custom");
-__publicField$9(Custom, "priority", 0);
-__publicField$9(Custom, "gameMode", "ddlc");
+__publicField$5(Custom, "id", "custom");
+__publicField$5(Custom, "label", "Custom");
+__publicField$5(Custom, "priority", 0);
+__publicField$5(Custom, "gameMode", "ddlc");
 var __defProp$k = Object.defineProperty;
 var __defNormalProp$k = (obj, key, value) => key in obj ? __defProp$k(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$8 = (obj, key, value) => {
+var __publicField$4 = (obj, key, value) => {
   __defNormalProp$k(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$v = (__this, __arguments, generator) => {
+var __async$t = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -15024,7 +15272,7 @@ var __async$v = (__this, __arguments, generator) => {
 const _DdlcPlusBase = class {
   constructor(base) {
     this.base = base;
-    __publicField$8(this, "nextArrow", null);
+    __publicField$4(this, "nextArrow", null);
   }
   static get resizable() {
     return false;
@@ -15090,43 +15338,43 @@ const _DdlcPlusBase = class {
   prepare() {
     if (this.nextArrow instanceof ImageAsset)
       return;
-    return (() => __async$v(this, null, function* () {
+    return (() => __async$t(this, null, function* () {
       this.nextArrow = yield getBuildInAsset("next_plus");
     }))();
   }
 };
 let DdlcPlusBase = _DdlcPlusBase;
-__publicField$8(DdlcPlusBase, "widthCache", {});
+__publicField$4(DdlcPlusBase, "widthCache", {});
 var __defProp$j = Object.defineProperty;
-var __defProps$9 = Object.defineProperties;
-var __getOwnPropDescs$9 = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$c = Object.getOwnPropertySymbols;
-var __hasOwnProp$c = Object.prototype.hasOwnProperty;
-var __propIsEnum$c = Object.prototype.propertyIsEnumerable;
+var __defProps$d = Object.defineProperties;
+var __getOwnPropDescs$d = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$g = Object.getOwnPropertySymbols;
+var __hasOwnProp$g = Object.prototype.hasOwnProperty;
+var __propIsEnum$g = Object.prototype.propertyIsEnumerable;
 var __defNormalProp$j = (obj, key, value) => key in obj ? __defProp$j(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$c = (a, b) => {
+var __spreadValues$g = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$c.call(b, prop))
+    if (__hasOwnProp$g.call(b, prop))
       __defNormalProp$j(a, prop, b[prop]);
-  if (__getOwnPropSymbols$c)
-    for (var prop of __getOwnPropSymbols$c(b)) {
-      if (__propIsEnum$c.call(b, prop))
+  if (__getOwnPropSymbols$g)
+    for (var prop of __getOwnPropSymbols$g(b)) {
+      if (__propIsEnum$g.call(b, prop))
         __defNormalProp$j(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$9 = (a, b) => __defProps$9(a, __getOwnPropDescs$9(b));
-var __publicField$7 = (obj, key, value) => {
+var __spreadProps$d = (a, b) => __defProps$d(a, __getOwnPropDescs$d(b));
+var __publicField$3 = (obj, key, value) => {
   __defNormalProp$j(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 class CustomPlus extends DdlcPlusBase {
   constructor() {
     super(...arguments);
-    __publicField$7(this, "_lastColor", null);
-    __publicField$7(this, "_dotPattern", null);
-    __publicField$7(this, "backgroundImage", "textbox");
-    __publicField$7(this, "xOffset", 0);
+    __publicField$3(this, "_lastColor", null);
+    __publicField$3(this, "_dotPattern", null);
+    __publicField$3(this, "backgroundImage", "textbox");
+    __publicField$3(this, "xOffset", 0);
   }
   static get resizable() {
     return true;
@@ -15161,7 +15409,7 @@ class CustomPlus extends DdlcPlusBase {
     return NameboxTextYOffset;
   }
   get nameboxStyle() {
-    return __spreadProps$9(__spreadValues$c({}, NameboxTextStyle), {
+    return __spreadProps$d(__spreadValues$g({}, NameboxTextStyle), {
       strokeColor: this.nameboxOutlineColor,
       color: "#FFFFFF"
     });
@@ -15288,17 +15536,17 @@ class CustomPlus extends DdlcPlusBase {
     return Custom.prototype.getDotPattern.call(this, CustomTBConstants);
   }
 }
-__publicField$7(CustomPlus, "id", "custom_plus");
-__publicField$7(CustomPlus, "label", "Custom (Plus)");
-__publicField$7(CustomPlus, "priority", 0);
-__publicField$7(CustomPlus, "gameMode", "ddlc_plus");
+__publicField$3(CustomPlus, "id", "custom_plus");
+__publicField$3(CustomPlus, "label", "Custom (Plus)");
+__publicField$3(CustomPlus, "priority", 0);
+__publicField$3(CustomPlus, "gameMode", "ddlc_plus");
 var __defProp$i = Object.defineProperty;
 var __defNormalProp$i = (obj, key, value) => key in obj ? __defProp$i(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$6 = (obj, key, value) => {
+var __publicField$2 = (obj, key, value) => {
   __defNormalProp$i(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$u = (__this, __arguments, generator) => {
+var __async$s = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -15353,17 +15601,17 @@ class None extends DdlcBase {
     return TextBoxStyle$1;
   }
   render(_rx) {
-    return __async$u(this, null, function* () {
+    return __async$s(this, null, function* () {
     });
   }
 }
-__publicField$6(None, "id", "none");
-__publicField$6(None, "label", "None");
-__publicField$6(None, "priority", 0);
-__publicField$6(None, "gameMode", "ddlc");
+__publicField$2(None, "id", "none");
+__publicField$2(None, "label", "None");
+__publicField$2(None, "priority", 0);
+__publicField$2(None, "gameMode", "ddlc");
 var __defProp$h = Object.defineProperty;
 var __defNormalProp$h = (obj, key, value) => key in obj ? __defProp$h(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$5 = (obj, key, value) => {
+var __publicField$1 = (obj, key, value) => {
   __defNormalProp$h(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
@@ -15384,11 +15632,11 @@ const rendererLookup = (() => {
 class TextBox extends ScalingRenderable {
   constructor() {
     super(...arguments);
-    __publicField$5(this, "nbTextRenderer", null);
-    __publicField$5(this, "textRenderer", null);
-    __publicField$5(this, "_lastRefVars", null);
-    __publicField$5(this, "refObject", null);
-    __publicField$5(this, "_lastRenderer", null);
+    __publicField$1(this, "nbTextRenderer", null);
+    __publicField$1(this, "textRenderer", null);
+    __publicField$1(this, "_lastRefVars", null);
+    __publicField$1(this, "refObject", null);
+    __publicField$1(this, "_lastRenderer", null);
   }
   getRefVars() {
     const refObj = this.refObject;
@@ -15484,25 +15732,599 @@ class TextBox extends ScalingRenderable {
   }
 }
 var __defProp$g = Object.defineProperty;
+var __defNormalProp$g = (obj, key, value) => key in obj ? __defProp$g(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField = (obj, key, value) => {
+  __defNormalProp$g(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+var __async$r = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
+const _SceneRenderer = class {
+  constructor(store2, _panelId, canvasWidth, canvasHeight) {
+    this.store = store2;
+    this._panelId = _panelId;
+    this.canvasWidth = canvasWidth;
+    this.canvasHeight = canvasHeight;
+    __publicField(this, "renderObjectCache", /* @__PURE__ */ new Map());
+    __publicField(this, "renderer");
+    __publicField(this, "_disposed", false);
+    this.renderer = new Renderer(canvasWidth, canvasHeight);
+  }
+  get panelId() {
+    return this._panelId;
+  }
+  setPanelId(panelId) {
+    if (this._disposed)
+      throw new Error("Disposed scene-renderer called");
+    if (this._panelId === panelId)
+      return;
+    this._panelId = panelId;
+    this.renderObjectCache.forEach((a) => {
+      a.dispose();
+    });
+    this.renderObjectCache.clear();
+  }
+  render(hq, preview, skipLocalCanvases) {
+    if (this._disposed)
+      throw new Error("Disposed scene-renderer called");
+    if (!this.panel)
+      return Promise.resolve(false);
+    return this.renderer.render(
+      this.renderCallback.bind(this, skipLocalCanvases),
+      hq,
+      preview
+    );
+  }
+  download() {
+    if (this._disposed)
+      throw new Error("Disposed scene-renderer called");
+    const date = new Date();
+    const filename = `panel-${[
+      date.getFullYear(),
+      `${date.getMonth() + 1}`.padStart(2, "0"),
+      `${date.getDate()}`.padStart(2, "0"),
+      `${date.getHours()}`.padStart(2, "0"),
+      `${date.getMinutes()}`.padStart(2, "0"),
+      `${date.getSeconds()}`.padStart(2, "0")
+    ].join("-")}.png`;
+    return this.renderer.download(
+      this.renderCallback.bind(this, true),
+      filename
+    );
+  }
+  paintOnto(c, opts) {
+    this.renderer.paintOnto(c, opts);
+  }
+  objectsAt(x, y) {
+    const point = new DOMPointReadOnly(x, y);
+    return this.getRenderObjects().filter((renderObject) => renderObject.hitTest(point)).map((renderObject) => renderObject.id);
+  }
+  getLastRenderObject(id) {
+    var _a;
+    return (_a = this.renderObjectCache.get(id)) != null ? _a : null;
+  }
+  renderCallback(skipLocalCanvases, rx) {
+    return __async$r(this, null, function* () {
+      var _a, _b;
+      if (this._disposed)
+        throw new Error("Disposed scene-renderer called");
+      rx.fsCtx.imageSmoothingEnabled = true;
+      rx.fsCtx.imageSmoothingQuality = rx.hq ? "high" : "low";
+      yield (_a = this.getBackgroundRenderer()) == null ? void 0 : _a.render(rx);
+      const renderables = this.getRenderObjects();
+      const waiting = /* @__PURE__ */ new Map();
+      const processed = /* @__PURE__ */ new Map();
+      for (const renderable of renderables) {
+        const linked = renderable.linkedTo;
+        let linkTransform = new DOMMatrixReadOnly();
+        if (linked != null) {
+          const lookupTransform = processed.get(linked);
+          if (lookupTransform) {
+            linkTransform = lookupTransform;
+          } else {
+            const waitList = waiting.get(linked);
+            if (waitList) {
+              waitList.push(renderable);
+            } else {
+              waiting.set(linked, [renderable]);
+            }
+            continue;
+          }
+        }
+        prepareTransform(renderable, linkTransform);
+      }
+      if (waiting.size > 0) {
+        console.warn("Not all renderables processed. Infinite loop?");
+      }
+      const promises = renderables.map((x) => x.prepareRender(this.panel, this.store, !rx.hq)).filter((x) => x !== void 0);
+      if (promises.length > 0) {
+        yield Promise.all(promises);
+      }
+      const selection = this.store.state.ui.selection;
+      const links = /* @__PURE__ */ new Set();
+      if (selection !== null)
+        fetchLinks(selection, links);
+      const focusedObjId = (_b = document.querySelector(_SceneRenderer.FocusProp)) == null ? void 0 : _b.getAttribute("data-obj-id");
+      for (const object of renderables) {
+        const selected = selection === object.id;
+        const focused = focusedObjId === "" + object.id;
+        object.render(
+          rx.fsCtx,
+          (selected ? SelectedState.Selected : links.has(object.id) ? SelectedState.Indirectly : SelectedState.None) + (focused ? SelectedState.Focused : SelectedState.None),
+          rx.preview,
+          rx.hq,
+          skipLocalCanvases
+        );
+      }
+      rx.applyFilters([...this.panel.filters]);
+      if (rx.preview) {
+        rx.drawImage({
+          x: 0,
+          y: 0,
+          h: this.canvasHeight,
+          w: this.canvasWidth,
+          composite: "destination-over",
+          image: yield getBuildInAsset("backgrounds/transparent")
+        });
+      }
+      function fetchLinks(objId, links2) {
+        links2.add(objId);
+        for (const obj of renderables.filter((x) => x.linkedTo === objId)) {
+          fetchLinks(obj.id, links2);
+        }
+      }
+      function prepareTransform(renderable, linkTransform) {
+        const newTransform = renderable.prepareTransform(linkTransform);
+        processed.set(renderable.id, newTransform);
+        const waitList = waiting.get(renderable.id);
+        if (waitList) {
+          for (const sub of waitList) {
+            prepareTransform(sub, newTransform);
+          }
+          waiting.delete(renderable.id);
+        }
+      }
+    });
+  }
+  getRenderObjects() {
+    const objectsState = this.store.state.panels.panels[this.panelId];
+    const order = [...objectsState.order, ...objectsState.onTopOrder];
+    const objects = objectsState.objects;
+    const toUncache = Array.from(this.renderObjectCache.keys()).filter(
+      (id) => !order.includes(id)
+    );
+    for (const id of toUncache) {
+      this.renderObjectCache.get(id).dispose();
+      this.renderObjectCache.delete(id);
+    }
+    return order.map((id) => {
+      let renderObject = this.renderObjectCache.get(id);
+      if (!renderObject) {
+        const obj = objects[id];
+        const type = obj.type;
+        switch (type) {
+          case "sprite":
+            renderObject = new Sprite(obj);
+            break;
+          case "character": {
+            const char = obj;
+            renderObject = new Character(char, getData(this.store, char));
+            break;
+          }
+          case "textBox":
+            renderObject = new TextBox(obj);
+            break;
+          case "choice":
+            renderObject = new Choice(obj);
+            break;
+          case "notification":
+            renderObject = new Notification(obj);
+            break;
+          case "poem":
+            renderObject = new Poem(obj);
+            break;
+          default:
+            throw new dist.UnreachableCaseError(type);
+        }
+        this.renderObjectCache.set(id, renderObject);
+      }
+      return renderObject;
+    });
+  }
+  get panel() {
+    return this.store.state.panels.panels[this.panelId];
+  }
+  getBackgroundRenderer() {
+    const panel = this.panel;
+    switch (panel.background.current) {
+      case "buildin.static-color":
+        color.color = panel.background.color;
+        return color;
+      default: {
+        const lookup = this.store.getters["content/getBackgrounds"];
+        const current = lookup.get(panel.background.current);
+        if (!current)
+          return null;
+        const variant = current.variants[panel.background.variant];
+        return new Background(
+          panel.background.current,
+          variant,
+          panel.background.flipped,
+          panel.background.scaling,
+          panel.background.composite,
+          panel.background.filters
+        );
+      }
+    }
+  }
+  get disposed() {
+    return this._disposed;
+  }
+  dispose() {
+    this._disposed = true;
+    this.renderer.dispose();
+  }
+};
+let SceneRenderer = _SceneRenderer;
+__publicField(SceneRenderer, "FocusProp", typeof CSS !== "undefined" && CSS.supports("selector(:focus-visible)") ? ":focus-visible" : ":focus");
+let sceneRenderer = null;
+function getMainSceneRenderer(store2) {
+  if (sceneRenderer === null || sceneRenderer.disposed) {
+    if (store2.state.panels.currentPanel === -1)
+      return null;
+    const constants = getConstants().Base;
+    sceneRenderer = new SceneRenderer(
+      store2,
+      store2.state.panels.currentPanel,
+      constants.screenWidth,
+      constants.screenHeight
+    );
+  }
+  return sceneRenderer;
+}
+var __defProp$f = Object.defineProperty;
+var __defProps$c = Object.defineProperties;
+var __getOwnPropDescs$c = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$f = Object.getOwnPropertySymbols;
+var __hasOwnProp$f = Object.prototype.hasOwnProperty;
+var __propIsEnum$f = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$f = (obj, key, value) => key in obj ? __defProp$f(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$f = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$f.call(b, prop))
+      __defNormalProp$f(a, prop, b[prop]);
+  if (__getOwnPropSymbols$f)
+    for (var prop of __getOwnPropSymbols$f(b)) {
+      if (__propIsEnum$f.call(b, prop))
+        __defNormalProp$f(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$c = (a, b) => __defProps$c(a, __getOwnPropDescs$c(b));
+const choiceMutations = {
+  setChoicesProperty(state, command) {
+    const obj = state.panels[command.panelId].objects[command.id];
+    obj[command.key] = command.value;
+    ++obj.version;
+  },
+  setChoiceProperty(state, command) {
+    const obj = state.panels[command.panelId].objects[command.id];
+    obj.choices[command.choiceIdx][command.key] = command.value;
+    ++obj.version;
+  },
+  setChoices(state, command) {
+    const obj = state.panels[command.panelId].objects[command.id];
+    obj.choices = command.choices;
+    ++obj.version;
+  }
+};
+const choiceActions = {
+  createChoice({ commit: commit2, rootState, state }, command) {
+    const constants = getConstants();
+    const id = state.panels[command.panelId].lastObjId + 1;
+    commit2("create", {
+      object: __spreadProps$c(__spreadValues$f({}, baseProps()), {
+        y: constants.Choices.ChoiceY,
+        width: constants.Choices.ChoiceButtonWidth,
+        height: 0,
+        panelId: rootState.panels.currentPanel,
+        id,
+        onTop: true,
+        autoWrap: true,
+        type: "choice",
+        choiceDistance: constants.Choices.ChoiceSpacing,
+        choices: [
+          {
+            selected: false,
+            text: "Click here to edit choice"
+          }
+        ],
+        customColor: constants.Choices.ChoiceButtonColor
+      })
+    });
+    return id;
+  },
+  addChoice({ state, commit: commit2 }, command) {
+    const obj = state.panels[command.panelId].objects[command.id];
+    commit2("setChoices", {
+      id: command.id,
+      panelId: command.panelId,
+      choices: [
+        ...obj.choices,
+        {
+          selected: false,
+          text: command.text
+        }
+      ]
+    });
+  },
+  removeChoice({ state, commit: commit2 }, command) {
+    const obj = state.panels[command.panelId].objects[command.id];
+    const choices = [...obj.choices];
+    choices.splice(command.choiceIdx, 1);
+    if (choices.length === 0) {
+      choices.push({
+        selected: false,
+        text: ""
+      });
+    }
+    commit2("setChoices", {
+      id: command.id,
+      panelId: command.panelId,
+      choices
+    });
+  }
+};
+var __defProp$e = Object.defineProperty;
+var __defProps$b = Object.defineProperties;
+var __getOwnPropDescs$b = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$e = Object.getOwnPropertySymbols;
+var __hasOwnProp$e = Object.prototype.hasOwnProperty;
+var __propIsEnum$e = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$e = (obj, key, value) => key in obj ? __defProp$e(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$e = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$e.call(b, prop))
+      __defNormalProp$e(a, prop, b[prop]);
+  if (__getOwnPropSymbols$e)
+    for (var prop of __getOwnPropSymbols$e(b)) {
+      if (__propIsEnum$e.call(b, prop))
+        __defNormalProp$e(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$b = (a, b) => __defProps$b(a, __getOwnPropDescs$b(b));
+const notificationMutations = {
+  setNotificationProperty(state, command) {
+    const obj = state.panels[command.panelId].objects[command.id];
+    obj[command.key] = command.value;
+    ++obj.version;
+  }
+};
+const notificationActions = {
+  createNotification({ commit: commit2, rootState, state }, command) {
+    const constants = getConstants();
+    const id = state.panels[command.panelId].lastObjId + 1;
+    commit2("create", {
+      object: __spreadProps$b(__spreadValues$e({}, baseProps()), {
+        y: constants.Base.screenHeight / 2,
+        width: constants.Choices.ChoiceButtonWidth,
+        height: 0,
+        panelId: rootState.panels.currentPanel,
+        autoWrap: false,
+        id,
+        onTop: true,
+        type: "notification",
+        customColor: constants.Choices.ChoiceButtonColor,
+        text: "Click here to edit notification",
+        backdrop: true
+      })
+    });
+    return id;
+  }
+};
+var __defProp$d = Object.defineProperty;
+var __defProps$a = Object.defineProperties;
+var __getOwnPropDescs$a = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$d = Object.getOwnPropertySymbols;
+var __hasOwnProp$d = Object.prototype.hasOwnProperty;
+var __propIsEnum$d = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$d = (obj, key, value) => key in obj ? __defProp$d(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$d = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$d.call(b, prop))
+      __defNormalProp$d(a, prop, b[prop]);
+  if (__getOwnPropSymbols$d)
+    for (var prop of __getOwnPropSymbols$d(b)) {
+      if (__propIsEnum$d.call(b, prop))
+        __defNormalProp$d(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$a = (a, b) => __defProps$a(a, __getOwnPropDescs$a(b));
+const poemMutations = {
+  setPoemProperty(state, command) {
+    const obj = state.panels[command.panelId].objects[command.id];
+    obj[command.key] = command.value;
+    ++obj.version;
+  }
+};
+const poemActions = {
+  createPoem({ commit: commit2, rootState, state }, command) {
+    const constants = getConstants();
+    const id = state.panels[command.panelId].lastObjId + 1;
+    commit2("create", {
+      object: {
+        subType: "poem",
+        x: constants.Poem.defaultX,
+        y: constants.Poem.defaultY,
+        width: constants.Poem.defaultPoemWidth,
+        height: constants.Poem.defaultPoemHeight,
+        panelId: rootState.panels.currentPanel,
+        flip: false,
+        rotation: 0,
+        id,
+        onTop: true,
+        opacity: 100,
+        type: "poem",
+        version: 0,
+        autoWrap: true,
+        background: constants.Poem.defaultPoemBackground,
+        font: constants.Poem.defaultPoemStyle,
+        text: "New poem\n\nClick here to edit poem",
+        composite: "source-over",
+        filters: [],
+        label: null,
+        textboxColor: null,
+        enlargeWhenTalking: true,
+        nameboxWidth: null,
+        scaleX: 1,
+        scaleY: 1,
+        skewX: 0,
+        skewY: 0,
+        ratio: 1,
+        preserveRatio: true,
+        consoleColor: constants.Poem.consoleBackgroundColor,
+        overflow: false
+      }
+    });
+    return id;
+  },
+  createConsole({ commit: commit2, rootState, state }, _command) {
+    const constants = getConstants();
+    const id = state.panels[_command.panelId].lastObjId + 1;
+    commit2("create", {
+      object: __spreadProps$a(__spreadValues$d({}, baseProps()), {
+        subType: "console",
+        x: constants.Poem.consoleWidth / 2,
+        y: constants.Poem.consoleHeight / 2,
+        width: constants.Poem.consoleWidth,
+        height: constants.Poem.consoleHeight,
+        panelId: rootState.panels.currentPanel,
+        id,
+        onTop: true,
+        type: "poem",
+        background: constants.Poem.defaultConsoleBackground,
+        font: constants.Poem.defaultConsoleStyle,
+        text: "> _\n  \n  Console command\n  Click here to edit",
+        autoWrap: true,
+        consoleColor: constants.Poem.consoleBackgroundColor
+      })
+    });
+    return id;
+  }
+};
+var __defProp$c = Object.defineProperty;
+var __defProps$9 = Object.defineProperties;
+var __getOwnPropDescs$9 = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$c = Object.getOwnPropertySymbols;
+var __hasOwnProp$c = Object.prototype.hasOwnProperty;
+var __propIsEnum$c = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$c = (obj, key, value) => key in obj ? __defProp$c(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$c = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$c.call(b, prop))
+      __defNormalProp$c(a, prop, b[prop]);
+  if (__getOwnPropSymbols$c)
+    for (var prop of __getOwnPropSymbols$c(b)) {
+      if (__propIsEnum$c.call(b, prop))
+        __defNormalProp$c(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$9 = (a, b) => __defProps$9(a, __getOwnPropDescs$9(b));
+var __async$q = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
+const spriteMutations = {};
+const spriteActions = {
+  createSprite(_0, _1) {
+    return __async$q(this, arguments, function* ({ commit: commit2, rootState, state }, command) {
+      const asset = yield getAAsset(command.assets[0], false);
+      if (!(asset instanceof ImageAsset))
+        return;
+      const id = state.panels[command.panelId].lastObjId + 1;
+      commit2("create", {
+        object: __spreadProps$9(__spreadValues$c({}, baseProps()), {
+          assets: command.assets,
+          height: asset.height,
+          width: asset.width,
+          id,
+          panelId: rootState.panels.currentPanel,
+          onTop: false,
+          type: "sprite",
+          y: 0,
+          enlargeWhenTalking: rootState.ui.defaultCharacterTalkingZoom
+        })
+      });
+      return id;
+    });
+  }
+};
+function rotateAround(x, y, relX, relY, angle) {
+  const angleCos = Math.cos(angle);
+  const angleSin = Math.sin(angle);
+  const translatedX = x - relX;
+  const translatedY = y - relY;
+  const rotatedX = angleCos * translatedX - angleSin * translatedY + relX;
+  const rotatedY = angleSin * translatedX + angleCos * translatedY + relY;
+  return [rotatedX, rotatedY];
+}
+var __defProp$b = Object.defineProperty;
 var __defProps$8 = Object.defineProperties;
 var __getOwnPropDescs$8 = Object.getOwnPropertyDescriptors;
 var __getOwnPropSymbols$b = Object.getOwnPropertySymbols;
 var __hasOwnProp$b = Object.prototype.hasOwnProperty;
 var __propIsEnum$b = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$g = (obj, key, value) => key in obj ? __defProp$g(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defNormalProp$b = (obj, key, value) => key in obj ? __defProp$b(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __spreadValues$b = (a, b) => {
   for (var prop in b || (b = {}))
     if (__hasOwnProp$b.call(b, prop))
-      __defNormalProp$g(a, prop, b[prop]);
+      __defNormalProp$b(a, prop, b[prop]);
   if (__getOwnPropSymbols$b)
     for (var prop of __getOwnPropSymbols$b(b)) {
       if (__propIsEnum$b.call(b, prop))
-        __defNormalProp$g(a, prop, b[prop]);
+        __defNormalProp$b(a, prop, b[prop]);
     }
   return a;
 };
 var __spreadProps$8 = (a, b) => __defProps$8(a, __getOwnPropDescs$8(b));
-var __async$t = (__this, __arguments, generator) => {
+var __async$p = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -15681,7 +16503,7 @@ const textBoxActions = {
     });
   },
   splitTextbox(_0, _1) {
-    return __async$t(this, arguments, function* ({ commit: commit2, state, dispatch: dispatch2 }, command) {
+    return __async$p(this, arguments, function* ({ commit: commit2, state, dispatch: dispatch2 }, command) {
       const obj = state.panels[command.panelId].objects[command.id];
       if (obj.type !== "textBox")
         return;
@@ -15751,19 +16573,19 @@ const textBoxActions = {
 function textboxProperty(panelId, id, key, value) {
   return { id, panelId, key, value };
 }
-var __defProp$f = Object.defineProperty;
+var __defProp$a = Object.defineProperty;
 var __getOwnPropSymbols$a = Object.getOwnPropertySymbols;
 var __hasOwnProp$a = Object.prototype.hasOwnProperty;
 var __propIsEnum$a = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$f = (obj, key, value) => key in obj ? __defProp$f(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defNormalProp$a = (obj, key, value) => key in obj ? __defProp$a(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __spreadValues$a = (a, b) => {
   for (var prop in b || (b = {}))
     if (__hasOwnProp$a.call(b, prop))
-      __defNormalProp$f(a, prop, b[prop]);
+      __defNormalProp$a(a, prop, b[prop]);
   if (__getOwnPropSymbols$a)
     for (var prop of __getOwnPropSymbols$a(b)) {
       if (__propIsEnum$a.call(b, prop))
-        __defNormalProp$f(a, prop, b[prop]);
+        __defNormalProp$a(a, prop, b[prop]);
     }
   return a;
 };
@@ -15868,21 +16690,21 @@ function setFilter(action, objLookup, setMutation) {
     filters
   });
 }
-var __defProp$e = Object.defineProperty;
+var __defProp$9 = Object.defineProperty;
 var __defProps$7 = Object.defineProperties;
 var __getOwnPropDescs$7 = Object.getOwnPropertyDescriptors;
 var __getOwnPropSymbols$9 = Object.getOwnPropertySymbols;
 var __hasOwnProp$9 = Object.prototype.hasOwnProperty;
 var __propIsEnum$9 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$e = (obj, key, value) => key in obj ? __defProp$e(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defNormalProp$9 = (obj, key, value) => key in obj ? __defProp$9(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __spreadValues$9 = (a, b) => {
   for (var prop in b || (b = {}))
     if (__hasOwnProp$9.call(b, prop))
-      __defNormalProp$e(a, prop, b[prop]);
+      __defNormalProp$9(a, prop, b[prop]);
   if (__getOwnPropSymbols$9)
     for (var prop of __getOwnPropSymbols$9(b)) {
       if (__propIsEnum$9.call(b, prop))
-        __defNormalProp$e(a, prop, b[prop]);
+        __defNormalProp$9(a, prop, b[prop]);
     }
   return a;
 };
@@ -16036,7 +16858,7 @@ const actions = __spreadValues$9(__spreadValues$9(__spreadValues$9(__spreadValue
         continue;
       const otherObject = panel.objects[key];
       if (otherObject.linkedTo === obj.id) {
-        const currentSceneRenderer = window.getMainSceneRenderer();
+        const currentSceneRenderer = getMainSceneRenderer(null);
         const otherObjRender = currentSceneRenderer == null ? void 0 : currentSceneRenderer.getLastRenderObject(
           otherObject.id
         );
@@ -16239,21 +17061,21 @@ function fixContentPackRemoval(context, oldContent) {
 function roundTo2Dec(val) {
   return Math.round(val * 100) / 100;
 }
-var __defProp$d = Object.defineProperty;
+var __defProp$8 = Object.defineProperty;
 var __defProps$6 = Object.defineProperties;
 var __getOwnPropDescs$6 = Object.getOwnPropertyDescriptors;
 var __getOwnPropSymbols$8 = Object.getOwnPropertySymbols;
 var __hasOwnProp$8 = Object.prototype.hasOwnProperty;
 var __propIsEnum$8 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$d = (obj, key, value) => key in obj ? __defProp$d(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defNormalProp$8 = (obj, key, value) => key in obj ? __defProp$8(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __spreadValues$8 = (a, b) => {
   for (var prop in b || (b = {}))
     if (__hasOwnProp$8.call(b, prop))
-      __defNormalProp$d(a, prop, b[prop]);
+      __defNormalProp$8(a, prop, b[prop]);
   if (__getOwnPropSymbols$8)
     for (var prop of __getOwnPropSymbols$8(b)) {
       if (__propIsEnum$8.call(b, prop))
-        __defNormalProp$d(a, prop, b[prop]);
+        __defNormalProp$8(a, prop, b[prop]);
     }
   return a;
 };
@@ -16650,26 +17472,26 @@ const uploadUrls = {
     }
   }
 };
-var __defProp$c = Object.defineProperty;
+var __defProp$7 = Object.defineProperty;
 var __defProps$5 = Object.defineProperties;
 var __getOwnPropDescs$5 = Object.getOwnPropertyDescriptors;
 var __getOwnPropSymbols$7 = Object.getOwnPropertySymbols;
 var __hasOwnProp$7 = Object.prototype.hasOwnProperty;
 var __propIsEnum$7 = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$c = (obj, key, value) => key in obj ? __defProp$c(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defNormalProp$7 = (obj, key, value) => key in obj ? __defProp$7(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __spreadValues$7 = (a, b) => {
   for (var prop in b || (b = {}))
     if (__hasOwnProp$7.call(b, prop))
-      __defNormalProp$c(a, prop, b[prop]);
+      __defNormalProp$7(a, prop, b[prop]);
   if (__getOwnPropSymbols$7)
     for (var prop of __getOwnPropSymbols$7(b)) {
       if (__propIsEnum$7.call(b, prop))
-        __defNormalProp$c(a, prop, b[prop]);
+        __defNormalProp$7(a, prop, b[prop]);
     }
   return a;
 };
 var __spreadProps$5 = (a, b) => __defProps$5(a, __getOwnPropDescs$5(b));
-var __async$s = (__this, __arguments, generator) => {
+var __async$o = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -16703,14 +17525,14 @@ const store = createStore({
   },
   actions: {
     removePacks(_0, _1) {
-      return __async$s(this, arguments, function* ({ dispatch: dispatch2, commit: commit2 }, { packs }) {
+      return __async$o(this, arguments, function* ({ dispatch: dispatch2, commit: commit2 }, { packs }) {
         commit2("setUnsafe", true);
         yield dispatch2("content/removeContentPacks", packs);
         commit2("setUnsafe", false);
       });
     },
     getSave(_0, _1) {
-      return __async$s(this, arguments, function* ({ state }, compact) {
+      return __async$o(this, arguments, function* ({ state }, compact) {
         const repo = yield Repo.getInstance();
         return JSON.stringify(
           state,
@@ -16744,7 +17566,7 @@ const store = createStore({
       });
     },
     loadSave(_0, _1) {
-      return __async$s(this, arguments, function* ({ state }, str) {
+      return __async$o(this, arguments, function* ({ state }, str) {
         var _a, _b;
         const data = JSON.parse(str);
         const contentData = data.content;
@@ -16769,7 +17591,7 @@ const store = createStore({
             }
           ),
           ...(yield Promise.all(
-            contentData.map((x) => __async$s(this, null, function* () {
+            contentData.map((x) => __async$o(this, null, function* () {
               if (typeof x !== "string")
                 return x;
               let url = null;
@@ -16825,7 +17647,7 @@ const store = createStore({
   },
   modules: { ui, panels, content, uploadUrls }
 });
-var __async$r = (__this, __arguments, generator) => {
+var __async$n = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -16935,7 +17757,7 @@ const _sfc_main$B = /* @__PURE__ */ defineComponent({
       errors.value.splice(i, 1);
     }
     function resolvableAction(i, actionName) {
-      return __async$r(this, null, function* () {
+      return __async$n(this, null, function* () {
         const error2 = resolvableErrors.value[i];
         resolvableErrors.value.splice(i, 1);
         const action = error2.actions.find((a) => a.name === actionName);
@@ -17107,800 +17929,6 @@ const _sfc_main$A = /* @__PURE__ */ defineComponent({
 });
 const modalDialog_vue_vue_type_style_index_0_scoped_3893e2f9_lang = "";
 const ModalDialog = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["__scopeId", "data-v-3893e2f9"]]);
-var __async$q = (__this, __arguments, generator) => {
-  return new Promise((resolve, reject) => {
-    var fulfilled = (value) => {
-      try {
-        step(generator.next(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var rejected = (value) => {
-      try {
-        step(generator.throw(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
-    step((generator = generator.apply(__this, __arguments)).next());
-  });
-};
-class Background {
-  constructor(id, assets, flip, scale, compositeMode, filters) {
-    this.id = id;
-    this.assets = assets;
-    this.flip = flip;
-    this.scale = scale;
-    this.compositeMode = compositeMode;
-    this.filters = filters;
-  }
-  render(rx) {
-    return __async$q(this, null, function* () {
-      const { screenWidth: screenWidth2, screenHeight: screenHeight2 } = getConstants().Base;
-      const images = yield Promise.all(
-        this.assets.map((asset) => getAAsset(asset, rx.hq))
-      );
-      for (const image of images) {
-        let x = 0;
-        let y = 0;
-        let w = image.width;
-        let h2 = image.height;
-        const scale = this.scale;
-        switch (scale) {
-          case ScalingModes.None:
-            x = screenWidth2 / 2 - w / 2;
-            y = screenHeight2 / 2 - h2 / 2;
-            break;
-          case ScalingModes.Stretch:
-            w = screenWidth2;
-            h2 = screenHeight2;
-            break;
-          case ScalingModes.Cover: {
-            const ratio = w / h2;
-            const screenRatio = screenWidth2 / screenHeight2;
-            if (ratio > screenRatio) {
-              h2 = screenHeight2;
-              w = h2 * ratio;
-            } else {
-              w = screenWidth2;
-              h2 = w / ratio;
-            }
-            x = screenWidth2 / 2 - w / 2;
-            y = screenHeight2 / 2 - h2 / 2;
-            break;
-          }
-          default:
-            throw new dist.UnreachableCaseError(scale);
-        }
-        rx.drawImage({
-          image,
-          x,
-          y,
-          w,
-          h: h2,
-          flip: this.flip,
-          composite: this.compositeMode,
-          filters: this.filters
-        });
-      }
-    });
-  }
-}
-const color = {
-  id: "buildin.static-color",
-  name: "Static color",
-  color: "#000000",
-  render(rx) {
-    const { screenWidth: screenWidth2, screenHeight: screenHeight2 } = getConstants().Base;
-    rx.drawRect({
-      x: 0,
-      y: 0,
-      w: screenWidth2,
-      h: screenHeight2,
-      fill: { style: this.color }
-    });
-    return Promise.resolve();
-  }
-};
-var __defProp$b = Object.defineProperty;
-var __defNormalProp$b = (obj, key, value) => key in obj ? __defProp$b(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$4 = (obj, key, value) => {
-  __defNormalProp$b(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-var __async$p = (__this, __arguments, generator) => {
-  return new Promise((resolve, reject) => {
-    var fulfilled = (value) => {
-      try {
-        step(generator.next(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var rejected = (value) => {
-      try {
-        step(generator.throw(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
-    step((generator = generator.apply(__this, __arguments)).next());
-  });
-};
-class AssetListRenderable extends Renderable {
-  constructor() {
-    super(...arguments);
-    __publicField$4(this, "refTextbox", null);
-    __publicField$4(this, "lastUploadCount", 0);
-    __publicField$4(this, "lastHq", false);
-    __publicField$4(this, "missingAsset", false);
-    __publicField$4(this, "canSkipLocal", false);
-    __publicField$4(this, "transformIsLocal", false);
-    __publicField$4(this, "assetList", []);
-  }
-  prepareRender(panel, store2, lq) {
-    super.prepareRender(panel, store2, lq);
-    let reloadAssets = !lq === this.lastHq;
-    if (this.missingAsset) {
-      const uploadCount = Object.keys(store2.state.uploadUrls).length;
-      reloadAssets = uploadCount !== this.lastUploadCount;
-      this.lastUploadCount = uploadCount;
-    }
-    if (this.isAssetListOutdated()) {
-      this.assetList = this.getAssetList();
-      reloadAssets = true;
-    }
-    if (!reloadAssets)
-      return;
-    this.lastHq = !lq;
-    this.canSkipLocal = this.assetList.length <= 1;
-    return this.loadAssets(!lq);
-  }
-  getAssetsSize() {
-    let width = 0;
-    let height = 0;
-    for (const assets of this.assetList) {
-      if (!("loadedAssets" in assets))
-        continue;
-      for (const asset of assets.loadedAssets) {
-        width = Math.max(width, assets.offset[0] + asset.width);
-        height = Math.max(height, assets.offset[1] + asset.height);
-      }
-    }
-    return new DOMPointReadOnly(width, height);
-  }
-  loadAssets(hq) {
-    const promises = [];
-    this.missingAsset = false;
-    for (const assetEntry of this.assetList) {
-      if ("loadedAssets" in assetEntry && !assetEntry.hasMissing)
-        continue;
-      promises.push(
-        ((assetEntry2) => __async$p(this, null, function* () {
-          const assets = yield Promise.all(
-            assetEntry2.assets.map((asset) => getAAsset(asset, hq))
-          );
-          const out = assetEntry2;
-          out.loadedAssets = assets;
-          out.hasMissing = assets.some((x) => x instanceof ErrorAsset);
-          this.missingAsset || (this.missingAsset = out.hasMissing);
-          return;
-        }))(assetEntry)
-      );
-    }
-    if (promises.length === 0)
-      return;
-    return Promise.all(promises);
-  }
-  renderLocal(ctx, hq) {
-    var _a;
-    console.log("rerendering local");
-    for (const loadedDraw of this.assetList) {
-      if (!("loadedAssets" in loadedDraw))
-        continue;
-      for (const asset of loadedDraw.loadedAssets) {
-        if (!this.canSkipLocal) {
-          ctx.globalCompositeOperation = (_a = loadedDraw.composite) != null ? _a : "source-over";
-        }
-        asset.paintOnto(ctx, {
-          x: loadedDraw.offset[0],
-          y: loadedDraw.offset[1]
-        });
-      }
-    }
-  }
-}
-class Character extends AssetListRenderable {
-  constructor(obj, data) {
-    super(obj);
-    this.data = data;
-  }
-  prepareRender(panel, store2, lq) {
-    this.data = getData(store2, this.obj);
-    return super.prepareRender(panel, store2, lq);
-  }
-  isAssetListOutdated() {
-    return true;
-  }
-  getAssetList() {
-    const pose = getPose(this.data, this.obj);
-    const currentHeads = getHeads(this.data, this.obj);
-    const drawAssetsUnloaded = [];
-    for (const renderCommand of pose.renderCommands) {
-      switch (renderCommand.type) {
-        case "head":
-          drawAssetsUnloaded.push({
-            offset: renderCommand.offset,
-            composite: renderCommand.composite,
-            assets: currentHeads ? currentHeads.variants[this.obj.posePositions.head || 0] : []
-          });
-          break;
-        case "image":
-          drawAssetsUnloaded.push({
-            offset: renderCommand.offset,
-            composite: renderCommand.composite,
-            assets: renderCommand.images
-          });
-          break;
-        case "pose-part": {
-          const posePosition = pose.positions[renderCommand.part];
-          if (!posePosition || posePosition.length === 0) {
-            break;
-          }
-          const partAssets = posePosition[this.obj.posePositions[renderCommand.part] || 0];
-          if (!partAssets)
-            break;
-          drawAssetsUnloaded.push({
-            offset: renderCommand.offset,
-            composite: renderCommand.composite,
-            assets: partAssets
-          });
-          break;
-        }
-      }
-    }
-    return drawAssetsUnloaded;
-  }
-}
-var __defProp$a = Object.defineProperty;
-var __defNormalProp$a = (obj, key, value) => key in obj ? __defProp$a(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$3 = (obj, key, value) => {
-  __defNormalProp$a(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-class Choice extends ScalingRenderable {
-  constructor() {
-    super(...arguments);
-    __publicField$3(this, "_height", 0);
-    __publicField$3(this, "choiceRenderers", []);
-  }
-  get height() {
-    const constants = getConstants().Choices;
-    return this._height + constants.ChoiceOuterPadding * 2;
-  }
-  get width() {
-    const constants = getConstants().Choices;
-    return this.obj.width + constants.ChoiceOuterPadding * 2;
-  }
-  renderLocal(ctx, _hq) {
-    const constants = getConstants().Choices;
-    const w = this.obj.width;
-    const x = constants.ChoiceOuterPadding;
-    let y = constants.ChoiceOuterPadding;
-    for (const choiceRenderer of this.choiceRenderers) {
-      const height = choiceRenderer.getHeight(this.obj.autoWrap ? w : 0);
-      ctx.strokeStyle = constants.ChoiceButtonBorderColor;
-      ctx.lineWidth = constants.Outline;
-      ctx.fillStyle = constants.ChoiceButtonColor;
-      ctx.fillRect(x, y, w, height + constants.ChoicePadding * 2);
-      ctx.strokeRect(x, y, w, height + constants.ChoicePadding * 2);
-      choiceRenderer.fixAlignment(
-        "center",
-        x,
-        w,
-        y + constants.ChoiceSpacing * 1.25,
-        this.obj.autoWrap ? w : 0
-      );
-      choiceRenderer.render(ctx);
-      y += height + constants.ChoicePadding * 2 + constants.ChoiceSpacing;
-    }
-  }
-  prepareRender(panel, store2, lq) {
-    const constants = getConstants();
-    this.choiceRenderers = this.obj.choices.map(
-      (choice) => new TextRenderer(choice.text || " ", constants.Choices.ChoiceTextStyle)
-    );
-    const computeHeight = () => {
-      this._height = this.choiceRenderers.reduce(
-        (acc, renderer2) => acc + renderer2.getHeight(this.obj.autoWrap ? this.obj.width : 0) + constants.Choices.ChoicePadding * 2,
-        0
-      ) + this.obj.choiceDistance * (this.obj.choices.length - 1);
-      return super.prepareRender(panel, store2, lq);
-    };
-    const fontLoaders = this.choiceRenderers.map((x) => x.loadFonts()).filter((x) => x !== void 0);
-    if (fontLoaders.length === 0) {
-      computeHeight();
-    } else {
-      return Promise.all(fontLoaders).then(computeHeight);
-    }
-  }
-}
-var __defProp$9 = Object.defineProperty;
-var __defNormalProp$9 = (obj, key, value) => key in obj ? __defProp$9(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$2 = (obj, key, value) => {
-  __defNormalProp$9(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-class Notification extends ScalingRenderable {
-  constructor() {
-    super(...arguments);
-    __publicField$2(this, "_height", 0);
-    __publicField$2(this, "_width", 0);
-    __publicField$2(this, "_textRenderer", null);
-    __publicField$2(this, "_buttonRenderer", null);
-  }
-  get height() {
-    const constants = getConstants().Choices;
-    return this._height + constants.ChoiceOuterPadding * 2;
-  }
-  get width() {
-    const constants = getConstants().Choices;
-    return this._width + constants.ChoiceOuterPadding * 2;
-  }
-  prepareRender(panel, store2, lq) {
-    const superRet = super.prepareRender(
-      panel,
-      store2,
-      lq
-    );
-    const constants = getConstants().Notification;
-    const textRenderer = this._textRenderer = new TextRenderer(
-      this.obj.text,
-      constants.NotificationTextStyle
-    );
-    const buttonRenderer = this._buttonRenderer = new TextRenderer(
-      "OK",
-      constants.NotificationOkTextStyle
-    );
-    const loadTextFonts = textRenderer.loadFonts();
-    const loadButtonFonts = buttonRenderer.loadFonts();
-    const fixSize = () => {
-      const lineWrap = this.obj.autoWrap ? this.obj.width - constants.NotificationPadding * 2 : 0;
-      const textWidth = this.obj.autoWrap ? lineWrap : textRenderer.getWidth();
-      const textHeight = textRenderer.getHeight(lineWrap);
-      const buttonWidth = this.obj.autoWrap ? lineWrap : buttonRenderer.getWidth();
-      const buttonHeight = buttonRenderer.getHeight(lineWrap);
-      this._width = Math.max(textWidth, buttonWidth) + constants.NotificationPadding * 2;
-      this._height = textHeight + constants.NotificationPadding * 2 + constants.NotificationSpacing + buttonHeight;
-    };
-    if (superRet || loadTextFonts || loadButtonFonts)
-      return Promise.all([superRet, loadTextFonts, loadButtonFonts]).then(
-        fixSize
-      );
-    fixSize();
-    return;
-  }
-  render(ctx, selection, preview, hq, skipLocal) {
-    if (this.obj.backdrop) {
-      ctxScope(ctx, () => {
-        const constants = getConstants();
-        ctx.resetTransform();
-        ctx.fillStyle = constants.Notification.NotificationBackdropColor;
-        ctx.fillRect(
-          0,
-          0,
-          constants.Base.screenWidth,
-          constants.Base.screenHeight
-        );
-      });
-    }
-    return super.render(ctx, selection, preview, hq, skipLocal);
-  }
-  renderLocal(ctx, _hq) {
-    const constants = getConstants();
-    const lineWrap = this.obj.autoWrap ? this.obj.width - constants.Notification.NotificationPadding * 2 : 0;
-    const textRenderer = this._textRenderer;
-    const buttonRenderer = this._buttonRenderer;
-    const w = this._width;
-    const h2 = this._height;
-    const p2 = constants.Choices.ChoiceOuterPadding;
-    ctx.fillStyle = constants.Choices.ChoiceButtonColor, ctx.strokeStyle = constants.Choices.ChoiceButtonBorderColor;
-    ctx.lineWidth = constants.Choices.Outline;
-    ctx.fillRect(p2, p2, w, h2);
-    ctx.strokeRect(p2, p2, w, h2);
-    textRenderer.fixAlignment(
-      "center",
-      p2,
-      w + p2,
-      p2 + constants.Notification.NotificationPadding * 1.5,
-      lineWrap
-    );
-    textRenderer.render(ctx);
-    buttonRenderer.fixAlignment(
-      "center",
-      p2,
-      w + p2,
-      p2 + h2 - constants.Notification.NotificationPadding,
-      lineWrap
-    );
-    buttonRenderer.render(ctx);
-  }
-}
-var __defProp$8 = Object.defineProperty;
-var __defNormalProp$8 = (obj, key, value) => key in obj ? __defProp$8(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$1 = (obj, key, value) => {
-  __defNormalProp$8(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-var __async$o = (__this, __arguments, generator) => {
-  return new Promise((resolve, reject) => {
-    var fulfilled = (value) => {
-      try {
-        step(generator.next(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var rejected = (value) => {
-      try {
-        step(generator.throw(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
-    step((generator = generator.apply(__this, __arguments)).next());
-  });
-};
-const consolePadding = -2;
-const consoleTopPadding = 26;
-const consoleLineWrapPadding = 10;
-const poemTopMargin = 10;
-class Poem extends ScalingRenderable {
-  constructor() {
-    super(...arguments);
-    __publicField$1(this, "_paperHeight", null);
-    __publicField$1(this, "_paperWidth", null);
-    __publicField$1(this, "_paper", null);
-    __publicField$1(this, "_lastPaperUrl", null);
-  }
-  get height() {
-    var _a;
-    return (_a = this._paperHeight) != null ? _a : this.obj.height;
-  }
-  get width() {
-    var _a;
-    return (_a = this._paperWidth) != null ? _a : this.obj.width;
-  }
-  prepareRender(panel, store2, lq) {
-    const superRet = super.prepareRender(
-      panel,
-      store2,
-      lq
-    );
-    const constants = getConstants().Poem;
-    const bg = constants.poemBackgrounds[this.obj.background];
-    const style = constants.poemTextStyles[this.obj.font];
-    const render = new TextRenderer(this.obj.text, style);
-    const fontLoading = render.loadFonts();
-    let imageLoading = void 0;
-    if (!bg.file.startsWith("internal:")) {
-      if (this._lastPaperUrl !== bg.file) {
-        imageLoading = (() => __async$o(this, null, function* () {
-          this._paper = yield getAssetByUrl(
-            `assets/poemBackgrounds/${bg.file}`
-          );
-          this._lastPaperUrl = bg.file;
-          this._paperHeight = this._paper.height * constants.backgroundScale;
-          this._paperWidth = this._paper.width * constants.backgroundScale;
-        }))();
-      }
-    } else {
-      this._lastPaperUrl = null;
-      this._paper = null;
-      this._paperHeight = null;
-      this._paperWidth = null;
-    }
-    if (superRet || fontLoading || imageLoading) {
-      return Promise.all([superRet, fontLoading, imageLoading]);
-    }
-    return;
-  }
-  renderLocal(ctx, _hq) {
-    const constants = getConstants().Poem;
-    const paper = constants.poemBackgrounds[this.obj.background];
-    const w = this.width;
-    const h2 = this.height;
-    let padding = constants.poemPadding;
-    let topPadding = constants.poemTopPadding;
-    let lineWrapPadding = padding * 2;
-    if (paper.file === "internal:console") {
-      ctx.fillStyle = this.obj.consoleColor || constants.consoleBackgroundColor;
-      ctx.fillRect(0, 0, w, h2);
-      padding = consolePadding;
-      topPadding = consoleTopPadding;
-      lineWrapPadding = consoleLineWrapPadding;
-    } else if (this._paper) {
-      this._paper.paintOnto(ctx, {
-        x: 0,
-        y: 0,
-        w,
-        h: h2
-      });
-    }
-    const style = constants.poemTextStyles[this.obj.font];
-    const render = new TextRenderer(this.obj.text, style);
-    render.fixAlignment(
-      "left",
-      poemTopMargin + padding,
-      padding,
-      topPadding + padding,
-      this.obj.autoWrap ? this.width - lineWrapPadding : 0
-    );
-    render.render(ctx);
-  }
-}
-class Sprite extends AssetListRenderable {
-  isAssetListOutdated() {
-    return true;
-  }
-  getAssetList() {
-    return [
-      {
-        assets: this.obj.assets,
-        offset: [0, 0]
-      }
-    ];
-  }
-}
-var __defProp$7 = Object.defineProperty;
-var __defNormalProp$7 = (obj, key, value) => key in obj ? __defProp$7(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField = (obj, key, value) => {
-  __defNormalProp$7(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-var __async$n = (__this, __arguments, generator) => {
-  return new Promise((resolve, reject) => {
-    var fulfilled = (value) => {
-      try {
-        step(generator.next(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var rejected = (value) => {
-      try {
-        step(generator.throw(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
-    step((generator = generator.apply(__this, __arguments)).next());
-  });
-};
-const _SceneRenderer = class {
-  constructor(store2, _panelId, canvasWidth, canvasHeight) {
-    this.store = store2;
-    this._panelId = _panelId;
-    this.canvasWidth = canvasWidth;
-    this.canvasHeight = canvasHeight;
-    __publicField(this, "renderObjectCache", /* @__PURE__ */ new Map());
-    __publicField(this, "renderer");
-    __publicField(this, "_disposed", false);
-    this.renderer = new Renderer(canvasWidth, canvasHeight);
-  }
-  get panelId() {
-    return this._panelId;
-  }
-  setPanelId(panelId) {
-    if (this._disposed)
-      throw new Error("Disposed scene-renderer called");
-    if (this._panelId === panelId)
-      return;
-    this._panelId = panelId;
-    this.renderObjectCache.forEach((a) => {
-      a.dispose();
-    });
-    this.renderObjectCache.clear();
-  }
-  render(hq, preview, skipLocalCanvases) {
-    if (this._disposed)
-      throw new Error("Disposed scene-renderer called");
-    if (!this.panel)
-      return Promise.resolve(false);
-    return this.renderer.render(
-      this.renderCallback.bind(this, skipLocalCanvases),
-      hq,
-      preview
-    );
-  }
-  download() {
-    if (this._disposed)
-      throw new Error("Disposed scene-renderer called");
-    const date = new Date();
-    const filename = `panel-${[
-      date.getFullYear(),
-      `${date.getMonth() + 1}`.padStart(2, "0"),
-      `${date.getDate()}`.padStart(2, "0"),
-      `${date.getHours()}`.padStart(2, "0"),
-      `${date.getMinutes()}`.padStart(2, "0"),
-      `${date.getSeconds()}`.padStart(2, "0")
-    ].join("-")}.png`;
-    return this.renderer.download(
-      this.renderCallback.bind(this, true),
-      filename
-    );
-  }
-  paintOnto(c, opts) {
-    this.renderer.paintOnto(c, opts);
-  }
-  objectsAt(x, y) {
-    const point = new DOMPointReadOnly(x, y);
-    return this.getRenderObjects().filter((renderObject) => renderObject.hitTest(point)).map((renderObject) => renderObject.id);
-  }
-  getLastRenderObject(id) {
-    var _a;
-    return (_a = this.renderObjectCache.get(id)) != null ? _a : null;
-  }
-  renderCallback(skipLocalCanvases, rx) {
-    return __async$n(this, null, function* () {
-      var _a;
-      if (this._disposed)
-        throw new Error("Disposed scene-renderer called");
-      rx.fsCtx.imageSmoothingEnabled = true;
-      rx.fsCtx.imageSmoothingQuality = rx.hq ? "high" : "low";
-      yield (_a = this.getBackgroundRenderer()) == null ? void 0 : _a.render(rx);
-      const renderables = this.getRenderObjects();
-      const waiting = /* @__PURE__ */ new Map();
-      const processed = /* @__PURE__ */ new Map();
-      for (const renderable of renderables) {
-        const linked = renderable.linkedTo;
-        let linkTransform = new DOMMatrixReadOnly();
-        if (linked != null) {
-          const lookupTransform = processed.get(linked);
-          if (lookupTransform) {
-            linkTransform = lookupTransform;
-          } else {
-            const waitList = waiting.get(linked);
-            if (waitList) {
-              waitList.push(renderable);
-            } else {
-              waiting.set(linked, [renderable]);
-            }
-            continue;
-          }
-        }
-        prepareTransform(renderable, linkTransform);
-      }
-      if (waiting.size > 0) {
-        console.warn("Not all renderables processed. Infinite loop?");
-      }
-      function prepareTransform(renderable, linkTransform) {
-        const newTransform = renderable.prepareTransform(linkTransform);
-        processed.set(renderable.id, newTransform);
-        const waitList = waiting.get(renderable.id);
-        if (waitList) {
-          for (const sub of waitList) {
-            prepareTransform(sub, newTransform);
-          }
-          waiting.delete(renderable.id);
-        }
-      }
-      const promises = renderables.map((x) => x.prepareRender(this.panel, this.store, !rx.hq)).filter((x) => x !== void 0);
-      if (promises.length > 0) {
-        yield Promise.all(promises);
-      }
-      const selection = this.store.state.ui.selection;
-      for (const object of renderables) {
-        const selected = selection === object.id;
-        const focusedObj = document.querySelector(_SceneRenderer.FocusProp);
-        const focused = (focusedObj == null ? void 0 : focusedObj.getAttribute("data-obj-id")) === "" + object.id;
-        object.render(
-          rx.fsCtx,
-          (selected ? SelectedState.Selected : SelectedState.None) + (focused ? SelectedState.Focused : SelectedState.None),
-          rx.preview,
-          rx.hq,
-          skipLocalCanvases
-        );
-      }
-      rx.applyFilters([...this.panel.filters]);
-      if (rx.preview) {
-        rx.drawImage({
-          x: 0,
-          y: 0,
-          h: this.canvasHeight,
-          w: this.canvasWidth,
-          composite: "destination-over",
-          image: yield getBuildInAsset("backgrounds/transparent")
-        });
-      }
-    });
-  }
-  getRenderObjects() {
-    const objectsState = this.store.state.panels.panels[this.panelId];
-    const order = [...objectsState.order, ...objectsState.onTopOrder];
-    const objects = objectsState.objects;
-    const toUncache = Array.from(this.renderObjectCache.keys()).filter(
-      (id) => !order.includes(id)
-    );
-    for (const id of toUncache) {
-      this.renderObjectCache.get(id).dispose();
-      this.renderObjectCache.delete(id);
-    }
-    return order.map((id) => {
-      let renderObject = this.renderObjectCache.get(id);
-      if (!renderObject) {
-        const obj = objects[id];
-        const type = obj.type;
-        switch (type) {
-          case "sprite":
-            renderObject = new Sprite(obj);
-            break;
-          case "character": {
-            const char = obj;
-            renderObject = new Character(char, getData(this.store, char));
-            break;
-          }
-          case "textBox":
-            renderObject = new TextBox(obj);
-            break;
-          case "choice":
-            renderObject = new Choice(obj);
-            break;
-          case "notification":
-            renderObject = new Notification(obj);
-            break;
-          case "poem":
-            renderObject = new Poem(obj);
-            break;
-          default:
-            throw new dist.UnreachableCaseError(type);
-        }
-        this.renderObjectCache.set(id, renderObject);
-      }
-      return renderObject;
-    });
-  }
-  get panel() {
-    return this.store.state.panels.panels[this.panelId];
-  }
-  getBackgroundRenderer() {
-    const panel = this.panel;
-    switch (panel.background.current) {
-      case "buildin.static-color":
-        color.color = panel.background.color;
-        return color;
-      default: {
-        const lookup = this.store.getters["content/getBackgrounds"];
-        const current = lookup.get(panel.background.current);
-        if (!current)
-          return null;
-        const variant = current.variants[panel.background.variant];
-        return new Background(
-          panel.background.current,
-          variant,
-          panel.background.flipped,
-          panel.background.scaling,
-          panel.background.composite,
-          panel.background.filters
-        );
-      }
-    }
-  }
-  get disposed() {
-    return this._disposed;
-  }
-  dispose() {
-    this._disposed = true;
-    this.renderer.dispose();
-  }
-};
-let SceneRenderer = _SceneRenderer;
-__publicField(SceneRenderer, "FocusProp", typeof CSS !== "undefined" && CSS.supports("selector(:focus-visible)") ? ":focus-visible" : ":focus");
 var __async$m = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -17937,7 +17965,6 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
     const queuedRender = ref(null);
     const showingLast = ref(false);
     const dropPreventClick = ref(false);
-    const sceneRendererCache = ref(null);
     const selection = computed(() => {
       var _a;
       return (_a = store2.state.ui.selection) != null ? _a : null;
@@ -17946,20 +17973,13 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
       () => store2.state.panels.panels[store2.state.panels.currentPanel]
     );
     const lqRendering = computed(() => store2.state.ui.lqRendering);
-    const sceneRender = computed(() => {
+    function getSceneRender() {
       if (props.preLoading)
         return null;
-      const panelId = store2.state.panels.currentPanel;
-      if (!sceneRendererCache.value) {
-        console.log("New scene renderer!");
-        sceneRendererCache.value = markRaw(
-          new SceneRenderer(store2, panelId, bitmapWidth.value, bitmapHeight.value)
-        );
-      } else {
-        sceneRendererCache.value.setPanelId(panelId);
-      }
-      return sceneRendererCache.value;
-    });
+      const renderer2 = getMainSceneRenderer(store2);
+      renderer2 == null ? void 0 : renderer2.setPanelId(store2.state.panels.currentPanel);
+      return renderer2;
+    }
     const bitmapHeight = computed(() => {
       props.preLoading;
       return getConstants().Base.screenHeight;
@@ -17975,6 +17995,7 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
     }
     function render_() {
       return __async$m(this, null, function* () {
+        var _a;
         if (queuedRender.value != null) {
           cancelAnimationFrame(queuedRender.value);
           queuedRender.value = null;
@@ -17984,7 +18005,7 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
         if (store2.state.unsafe)
           return;
         try {
-          yield sceneRender.value.render(!lqRendering.value, true, false);
+          yield (_a = getSceneRender()) == null ? void 0 : _a.render(!lqRendering.value, true, false);
         } catch (e) {
           console.log(e);
         }
@@ -18022,8 +18043,9 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
       }
     }
     function display() {
+      var _a;
       showingLast.value = false;
-      sceneRender.value.paintOnto(sdCtx.value, {
+      (_a = getSceneRender()) == null ? void 0 : _a.paintOnto(sdCtx.value, {
         x: 0,
         y: 0,
         w: bitmapWidth.value,
@@ -18031,12 +18053,17 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
       });
       inBlendOver.value = false;
     }
-    function toRendererCoordinate(x, y) {
+    function toRendererCoordinate(x, y, transform) {
       const canvas = sd.value;
       const rx = x - canvas.offsetLeft;
       const ry = y - canvas.offsetTop;
-      const sx = rx / canvas.offsetWidth * canvas.width;
-      const sy = ry / canvas.offsetWidth * canvas.width;
+      let sx = rx / canvas.offsetWidth * canvas.width;
+      let sy = ry / canvas.offsetWidth * canvas.width;
+      if (transform) {
+        const point = transform.transformPoint(new DOMPointReadOnly(sx, sy));
+        sx = point.x;
+        sy = point.y;
+      }
       return [sx, sy];
     }
     function onUiClick(e) {
@@ -18048,7 +18075,7 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
         dropPreventClick.value = false;
         return;
       }
-      const objects = sceneRender.value.objectsAt(sx, sy);
+      const objects = getSceneRender().objectsAt(sx, sy);
       const currentObjectIdx = objects.findIndex((id) => id === selection.value);
       let selectedObject;
       if (currentObjectIdx === 0) {
@@ -18070,7 +18097,7 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
     );
     eventBus$1.subscribe(InvalidateRenderEvent, invalidateRender);
     eventBus$1.subscribe(StateLoadingEvent, () => {
-      const cache = sceneRendererCache.value;
+      const cache = getSceneRender();
       if (cache) {
         cache.setPanelId(-1);
       }
@@ -18088,8 +18115,7 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
       invalidateRender();
     });
     onUnmounted(() => {
-      var _a;
-      (_a = sceneRendererCache.value) == null ? void 0 : _a.dispose();
+      getSceneRender().dispose();
     });
     const inBlendOver = ref(false);
     function blendOver(url) {
@@ -18125,20 +18151,9 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
       }
       return false;
     }
-    if (typeof WeakRef !== "undefined") {
-      const self2 = new WeakRef(sceneRender);
-      window.getMainSceneRenderer = function() {
-        var _a;
-        return (_a = self2.deref()) == null ? void 0 : _a.value;
-      };
-    } else {
-      window.getMainSceneRenderer = () => {
-        return sceneRender.value;
-      };
-    }
     function download() {
       return __async$m(this, null, function* () {
-        const url = yield sceneRender.value.download();
+        const url = yield getSceneRender().download();
         yield transaction(() => {
           const oldUrl = store2.state.ui.lastDownload;
           store2.commit("ui/setLastDownload", url);
@@ -18148,34 +18163,40 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
         });
       });
     }
-    const draggedObject = ref(null);
-    const dragXOffset = ref(0);
-    const dragYOffset = ref(0);
-    const dragXOriginal = ref(0);
-    const dragYOriginal = ref(0);
+    let draggedObject = null;
+    let dragTransform = null;
+    let dragXOffset = 0;
+    let dragYOffset = 0;
+    let dragXOriginal = 0;
+    let dragYOriginal = 0;
     function onDragStart(e) {
+      var _a, _b, _c;
       e.preventDefault();
       if (selection.value === null)
         return;
-      draggedObject.value = currentPanel.value.objects[selection.value];
-      const [x, y] = toRendererCoordinate(e.clientX, e.clientY);
-      dragXOffset.value = x - draggedObject.value.x;
-      dragYOffset.value = y - draggedObject.value.y;
-      dragXOriginal.value = draggedObject.value.x;
-      dragYOriginal.value = draggedObject.value.y;
+      draggedObject = currentPanel.value.objects[selection.value];
+      dragTransform = (_c = (_b = (_a = getMainSceneRenderer(store2).getLastRenderObject(draggedObject.linkedTo)) == null ? void 0 : _a.preparedTransform) == null ? void 0 : _b.inverse()) != null ? _c : new DOMMatrixReadOnly();
+      const [x, y] = toRendererCoordinate(e.clientX, e.clientY, dragTransform);
+      dragXOffset = x - draggedObject.x;
+      dragYOffset = y - draggedObject.y;
+      dragXOriginal = draggedObject.x;
+      dragYOriginal = draggedObject.y;
     }
     function onTouchStart(e) {
+      var _a;
       if (selection.value === null)
         return;
-      draggedObject.value = currentPanel.value.objects[selection.value];
+      draggedObject = currentPanel.value.objects[selection.value];
+      dragTransform = (_a = getMainSceneRenderer(store2).getLastRenderObject(draggedObject.id)) == null ? void 0 : _a.preparedTransform.inverse();
       const [x, y] = toRendererCoordinate(
         e.touches[0].clientX,
-        e.touches[0].clientY
+        e.touches[0].clientY,
+        dragTransform
       );
-      dragXOffset.value = x - draggedObject.value.x;
-      dragYOffset.value = y - draggedObject.value.y;
-      dragXOriginal.value = draggedObject.value.x;
-      dragYOriginal.value = draggedObject.value.y;
+      dragXOffset = x;
+      dragYOffset = y;
+      dragXOriginal = draggedObject.x;
+      dragYOriginal = draggedObject.y;
     }
     function onDragOver(e) {
       e.stopPropagation();
@@ -18183,27 +18204,31 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
       e.dataTransfer.dropEffect = "copy";
     }
     function onSpriteDragMove(e) {
-      if (!draggedObject.value)
+      if (!draggedObject)
         return;
       e.preventDefault();
-      let [x, y] = e instanceof MouseEvent ? toRendererCoordinate(e.clientX, e.clientY) : toRendererCoordinate(e.touches[0].clientX, e.touches[0].clientY);
-      x -= dragXOffset.value;
-      y -= dragYOffset.value;
-      const deltaX = Math.abs(x - dragXOriginal.value);
-      const deltaY = Math.abs(y - dragYOriginal.value);
+      let [x, y] = e instanceof MouseEvent ? toRendererCoordinate(e.clientX, e.clientY, dragTransform) : toRendererCoordinate(
+        e.touches[0].clientX,
+        e.touches[0].clientY,
+        dragTransform
+      );
+      x -= dragXOffset;
+      y -= dragYOffset;
+      const deltaX = Math.abs(x - dragXOriginal);
+      const deltaY = Math.abs(y - dragYOriginal);
       if (deltaX + deltaY > 1)
         dropPreventClick.value = true;
       if (e.shiftKey) {
         if (deltaX > deltaY) {
-          y = dragYOriginal.value;
+          y = dragYOriginal;
         } else {
-          x = dragXOriginal.value;
+          x = dragXOriginal;
         }
       }
       transaction(() => __async$m(this, null, function* () {
         yield store2.dispatch("panels/setPosition", {
-          panelId: draggedObject.value.panelId,
-          id: draggedObject.value.id,
+          panelId: draggedObject.panelId,
+          id: draggedObject.id,
           x,
           y
         });
@@ -18244,16 +18269,16 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
       });
     }
     function onSpriteDrop(e) {
-      if (draggedObject.value) {
+      if (draggedObject) {
         if ("TouchEvent" in window && e instanceof TouchEvent) {
           dropPreventClick.value = false;
         }
-        draggedObject.value = null;
+        draggedObject = null;
       }
     }
     function onMouseEnter(e) {
       if (e.buttons !== 1) {
-        draggedObject.value = null;
+        draggedObject = null;
       }
     }
     __expose({ download, blendOver });
@@ -22245,7 +22270,7 @@ var __async$7 = (__this, __arguments, generator) => {
     step((generator = generator.apply(__this, __arguments)).next());
   });
 };
-const _withScopeId$7 = (n) => (pushScopeId("data-v-82ceab0f"), n = n(), popScopeId(), n);
+const _withScopeId$7 = (n) => (pushScopeId("data-v-46c7001f"), n = n(), popScopeId(), n);
 const _hoisted_1$b = /* @__PURE__ */ _withScopeId$7(() => /* @__PURE__ */ createBaseVNode("span", { class: "icon material-icons" }, "edit", -1));
 const _hoisted_2$b = /* @__PURE__ */ _withScopeId$7(() => /* @__PURE__ */ createBaseVNode("p", { class: "modal-text" }, "Enter the new name", -1));
 const _hoisted_3$7 = { class: "modal-text" };
@@ -22333,11 +22358,11 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
       set(value) {
         const obj = props.object;
         const link = value === "" ? null : value;
-        const currentSceneRenderer = window.getMainSceneRenderer();
+        const currentSceneRenderer = getMainSceneRenderer(store2);
         const objRender = currentSceneRenderer == null ? void 0 : currentSceneRenderer.getLastRenderObject(obj.id);
         const linkRender = link === null ? currentSceneRenderer == null ? void 0 : currentSceneRenderer.getLastRenderObject(obj.linkedTo) : currentSceneRenderer == null ? void 0 : currentSceneRenderer.getLastRenderObject(link);
         try {
-          if (!currentSceneRenderer || !objRender || !linkRender) {
+          if (!objRender || !linkRender) {
             store2.commit("panels/setLink", {
               panelId: currentPanel.value.id,
               id: obj.id,
@@ -22833,8 +22858,8 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const objectTool_vue_vue_type_style_index_0_scoped_82ceab0f_lang = "";
-const ObjectTool = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["__scopeId", "data-v-82ceab0f"]]);
+const objectTool_vue_vue_type_style_index_0_scoped_46c7001f_lang = "";
+const ObjectTool = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["__scopeId", "data-v-46c7001f"]]);
 var __async$6 = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -23622,7 +23647,7 @@ var __async$4 = (__this, __arguments, generator) => {
     step((generator = generator.apply(__this, __arguments)).next());
   });
 };
-const _withScopeId$3 = (n) => (pushScopeId("data-v-0d9b68e7"), n = n(), popScopeId(), n);
+const _withScopeId$3 = (n) => (pushScopeId("data-v-7a920c3c"), n = n(), popScopeId(), n);
 const _hoisted_1$6 = /* @__PURE__ */ _withScopeId$3(() => /* @__PURE__ */ createBaseVNode("h1", null, "Panels", -1));
 const _hoisted_2$6 = ["onClick", "onKeydown"];
 const _hoisted_3$4 = { class: "panel_text" };
@@ -23797,22 +23822,22 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
             const context = targetCanvas2.getContext("2d");
             for (let panelIdx = 0; panelIdx < image.length; ++panelIdx) {
               const panelId = image[panelIdx];
-              const sceneRenderer = new SceneRenderer(
+              const sceneRenderer2 = new SceneRenderer(
                 store2,
                 panelId,
                 baseConst2.screenWidth,
                 baseConst2.screenHeight
               );
               try {
-                yield sceneRenderer.render(hq, false, true);
-                sceneRenderer.paintOnto(context, {
+                yield sceneRenderer2.render(hq, false, true);
+                sceneRenderer2.paintOnto(context, {
                   x: 0,
                   y: baseConst2.screenHeight * panelIdx,
                   w: baseConst2.screenWidth,
                   h: baseConst2.screenHeight
                 });
               } finally {
-                sceneRenderer.dispose();
+                sceneRenderer2.dispose();
               }
             }
             ret.push(yield mapper(imageIdx, targetCanvas2));
@@ -23934,18 +23959,15 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
     });
     function renderCurrentThumbnail() {
       return __async$4(this, null, function* () {
-        const getMainSceneRenderer = window.getMainSceneRenderer;
-        const sceneRenderer = getMainSceneRenderer && getMainSceneRenderer();
-        if (!sceneRenderer)
-          return;
-        yield renderPanelThumbnail(sceneRenderer);
+        const sceneRenderer2 = getMainSceneRenderer(store2);
+        yield renderPanelThumbnail(sceneRenderer2);
       });
     }
-    function renderPanelThumbnail(sceneRenderer) {
+    function renderPanelThumbnail(sceneRenderer2) {
       return __async$4(this, null, function* () {
         yield safeAsync("render thumbnail", () => __async$4(this, null, function* () {
-          const panelId = sceneRenderer.panelId;
-          sceneRenderer.paintOnto(thumbnailCtx, {
+          const panelId = sceneRenderer2.panelId;
+          sceneRenderer2.paintOnto(thumbnailCtx, {
             x: 0,
             y: 0,
             w: thumbnailCtx.canvas.width,
@@ -24349,8 +24371,8 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const panels_vue_vue_type_style_index_0_scoped_0d9b68e7_lang = "";
-const PanelsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["__scopeId", "data-v-0d9b68e7"]]);
+const panels_vue_vue_type_style_index_0_scoped_7a920c3c_lang = "";
+const PanelsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["__scopeId", "data-v-7a920c3c"]]);
 const _withScopeId$2 = (n) => (pushScopeId("data-v-e5babed4"), n = n(), popScopeId(), n);
 const _hoisted_1$5 = {
   id: "poem_text",
@@ -25643,10 +25665,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box.2138f9f2.js"), true ? ["./single-box.2138f9f2.js","./single-box.60b91cb2.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box.a0d90115.js"), true ? ["./single-box.a0d90115.js","./single-box.60b91cb2.css"] : void 0, import.meta.url)
     );
     const ExpressionBuilder = defineAsyncComponent(
-      () => __vitePreload(() => import("./index.72975e03.js"), true ? ["./index.72975e03.js","./index.79dcf75d.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.6c936593.js"), true ? ["./index.6c936593.js","./index.c56b9bdd.css"] : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);
@@ -26095,7 +26117,8 @@ export {
   TransitionGroup as T,
   Character as U,
   VueErrorEvent as V,
-  SelectedState as W,
+  ScalingModes as W,
+  SelectedState as X,
   _export_sfc as _,
   createElementBlock as a,
   createBaseVNode as b,
