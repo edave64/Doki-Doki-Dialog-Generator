@@ -139,12 +139,21 @@ function display(): void {
 	});
 	inBlendOver.value = false;
 }
-function toRendererCoordinate(x: number, y: number): [number, number] {
+function toRendererCoordinate(
+	x: number,
+	y: number,
+	transform?: DOMMatrixReadOnly
+): [number, number] {
 	const canvas = sd.value as HTMLCanvasElement;
 	const rx = x - canvas.offsetLeft;
 	const ry = y - canvas.offsetTop;
-	const sx = (rx / canvas.offsetWidth) * canvas.width;
-	const sy = (ry / canvas.offsetWidth) * canvas.width;
+	let sx = (rx / canvas.offsetWidth) * canvas.width;
+	let sy = (ry / canvas.offsetWidth) * canvas.width;
+	if (transform) {
+		const point = transform.transformPoint(new DOMPointReadOnly(sx, sy));
+		sx = point.x;
+		sy = point.y;
+	}
 	return [sx, sy];
 }
 function onUiClick(e: MouseEvent): void {
@@ -259,33 +268,42 @@ async function download(): Promise<void> {
 }
 //#endregion download
 //#region drag and drop
-const draggedObject = ref(null as DeepReadonly<IObject> | null);
-const dragXOffset = ref(0);
-const dragYOffset = ref(0);
-const dragXOriginal = ref(0);
-const dragYOriginal = ref(0);
+let draggedObject: DeepReadonly<IObject> | null = null;
+let dragTransform: DOMMatrixReadOnly = null!;
+let dragXOffset = 0;
+let dragYOffset = 0;
+let dragXOriginal = 0;
+let dragYOriginal = 0;
 
 function onDragStart(e: DragEvent) {
 	e.preventDefault();
 	if (selection.value === null) return;
-	draggedObject.value = currentPanel.value.objects[selection.value];
-	const [x, y] = toRendererCoordinate(e.clientX, e.clientY);
-	dragXOffset.value = x - draggedObject.value.x;
-	dragYOffset.value = y - draggedObject.value.y;
-	dragXOriginal.value = draggedObject.value.x;
-	dragYOriginal.value = draggedObject.value.y;
+	draggedObject = currentPanel.value.objects[selection.value];
+	dragTransform =
+		getMainSceneRenderer(store)!
+			.getLastRenderObject(draggedObject.linkedTo!)
+			?.preparedTransform?.inverse() ?? new DOMMatrixReadOnly();
+	const [x, y] = toRendererCoordinate(e.clientX, e.clientY, dragTransform);
+	dragXOffset = x - draggedObject.x;
+	dragYOffset = y - draggedObject.y;
+	dragXOriginal = draggedObject.x;
+	dragYOriginal = draggedObject.y;
 }
 function onTouchStart(e: TouchEvent) {
 	if (selection.value === null) return;
-	draggedObject.value = currentPanel.value.objects[selection.value];
+	draggedObject = currentPanel.value.objects[selection.value];
+	dragTransform = getMainSceneRenderer(store)!
+		.getLastRenderObject(draggedObject.id)
+		?.preparedTransform!.inverse()!;
 	const [x, y] = toRendererCoordinate(
 		e.touches[0].clientX,
-		e.touches[0].clientY
+		e.touches[0].clientY,
+		dragTransform
 	);
-	dragXOffset.value = x - draggedObject.value.x;
-	dragYOffset.value = y - draggedObject.value.y;
-	dragXOriginal.value = draggedObject.value.x;
-	dragYOriginal.value = draggedObject.value.y;
+	dragXOffset = x;
+	dragYOffset = y;
+	dragXOriginal = draggedObject.x;
+	dragYOriginal = draggedObject.y;
 }
 function onDragOver(e: DragEvent) {
 	e.stopPropagation();
@@ -293,28 +311,32 @@ function onDragOver(e: DragEvent) {
 	e.dataTransfer!.dropEffect = 'copy';
 }
 function onSpriteDragMove(e: MouseEvent | TouchEvent) {
-	if (!draggedObject.value) return;
+	if (!draggedObject) return;
 	e.preventDefault();
 	let [x, y] =
 		e instanceof MouseEvent
-			? toRendererCoordinate(e.clientX, e.clientY)
-			: toRendererCoordinate(e.touches[0].clientX, e.touches[0].clientY);
-	x -= dragXOffset.value;
-	y -= dragYOffset.value;
-	const deltaX = Math.abs(x - dragXOriginal.value);
-	const deltaY = Math.abs(y - dragYOriginal.value);
+			? toRendererCoordinate(e.clientX, e.clientY, dragTransform)
+			: toRendererCoordinate(
+					e.touches[0].clientX,
+					e.touches[0].clientY,
+					dragTransform
+			  );
+	x -= dragXOffset;
+	y -= dragYOffset;
+	const deltaX = Math.abs(x - dragXOriginal);
+	const deltaY = Math.abs(y - dragYOriginal);
 	if (deltaX + deltaY > 1) dropPreventClick.value = true;
 	if (e.shiftKey) {
 		if (deltaX > deltaY) {
-			y = dragYOriginal.value;
+			y = dragYOriginal;
 		} else {
-			x = dragXOriginal.value;
+			x = dragXOriginal;
 		}
 	}
 	transaction(async () => {
 		await store.dispatch('panels/setPosition', {
-			panelId: draggedObject.value!.panelId,
-			id: draggedObject.value!.id,
+			panelId: draggedObject!.panelId,
+			id: draggedObject!.id,
 			x,
 			y,
 		} as ISetObjectPositionMutation);
@@ -355,16 +377,16 @@ async function onDrop(e: DragEvent) {
 	}
 }
 function onSpriteDrop(e: MouseEvent | TouchEvent) {
-	if (draggedObject.value) {
+	if (draggedObject) {
 		if ('TouchEvent' in window && e instanceof TouchEvent) {
 			dropPreventClick.value = false;
 		}
-		draggedObject.value = null;
+		draggedObject = null;
 	}
 }
 function onMouseEnter(e: MouseEvent) {
 	if (e.buttons !== 1) {
-		draggedObject.value = null;
+		draggedObject = null;
 	}
 }
 //#endregion drag and drop
