@@ -125,7 +125,6 @@ import DFieldset from '@/components/ui/d-fieldset.vue';
 import L from '@/components/ui/link.vue';
 import environment from '@/environments/environment';
 import { Character } from '@/renderables/character';
-import { SelectedState } from '@/renderables/offscreen-renderable';
 import { Renderer } from '@/renderer/renderer';
 import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
 import { WorkBatch } from '@/util/workBatch';
@@ -142,6 +141,8 @@ import Selection from './selection.vue';
 import Selector from './selector.vue';
 import { useStore } from '@/store';
 import { verticalScrollRedirect } from '@/components/mixins/vertical-scroll-redirect';
+import { SelectedState } from '@/constants/shared';
+import { IPanel, ScalingModes } from '@/store/panels';
 
 const uploadedExpressionsPackDefaults: ContentPack<IAssetSwitch> = {
 	packId: 'dddg.uploads.expressions',
@@ -306,7 +307,11 @@ async function redraw() {
 				textboxColor: null,
 				enlargeWhenTalking: false,
 				nameboxWidth: null,
-				zoom: 1,
+				scaleX: 1,
+				scaleY: 1,
+				linkedTo: null,
+				skewX: 0,
+				skewY: 0,
 			},
 			await temporaryCharacterModel.value
 		);
@@ -320,7 +325,39 @@ async function redraw() {
 		const renderer = new Renderer(pose.width, pose.height);
 		try {
 			await renderer.render(async (rx) => {
-				await charRenderer.render(SelectedState.None, rx, false);
+				charRenderer.prepareTransform(new DOMMatrixReadOnly());
+				const background: IPanel['background'] = {
+					color: '',
+					composite: 'source-over',
+					current: '',
+					filters: [],
+					flipped: false,
+					scaling: ScalingModes.None,
+					variant: 0,
+				};
+				await charRenderer.prepareRender(
+					{
+						background,
+						composite: 'source-over',
+						filters: [],
+						id: 0,
+						lastObjId: 0,
+						lastRender: '',
+						objects: {},
+						onTopOrder: [],
+						order: [],
+					},
+					store,
+					!rx.hq
+				);
+
+				await charRenderer.render(
+					rx.fsCtx,
+					SelectedState.None,
+					rx.preview,
+					rx.hq,
+					false
+				);
 			});
 
 			const ctx = target.value.getContext('2d')!;

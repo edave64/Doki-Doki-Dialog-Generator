@@ -1,4 +1,5 @@
 import getConstants from '@/constants';
+import { SelectedState } from '@/constants/shared';
 import { ctxScope } from '@/renderer/canvas-tools';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
 import { IRootState } from '@/store';
@@ -6,7 +7,6 @@ import { INotification } from '@/store/object-types/notification';
 import { IPanel } from '@/store/panels';
 import { DeepReadonly } from 'ts-essentials';
 import { Store } from 'vuex';
-import { SelectedState } from './offscreen-renderable';
 import { ScalingRenderable } from './scaling-renderable';
 
 export class Notification extends ScalingRenderable<INotification> {
