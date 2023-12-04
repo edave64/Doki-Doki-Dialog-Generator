@@ -143,6 +143,7 @@ import { useStore } from '@/store';
 import { verticalScrollRedirect } from '@/components/mixins/vertical-scroll-redirect';
 import { SelectedState } from '@/constants/shared';
 import { IPanel, ScalingModes } from '@/store/panels';
+import { ICharacter } from '@/store/object-types/characters';
 
 const uploadedExpressionsPackDefaults: ContentPack<IAssetSwitch> = {
 	packId: 'dddg.uploads.expressions',
@@ -202,13 +203,6 @@ const availableHeadGroups = computed(() => {
 		} as IHeadGroup;
 	});
 });
-(window as any).exp = this;
-if (props.initHeadGroup != null) {
-	headGroup.value = availableHeadGroups.value.find(
-		(group) => group.name === props.initHeadGroup
-	)!;
-}
-applySingleHeadGroup();
 
 function applySingleHeadGroup() {
 	if (availableHeadGroups.value.length === 1) {
@@ -286,33 +280,12 @@ function dragEnter(e: DragEvent) {
 //#endregion Drag and Drop
 //#region Preview
 async function redraw() {
-	if (uploadsFinished.value) return;
-	const pose = previewPoses.value[previewPoseIdx.value];
+	let previewChar = previewCharacter.value;
 	let charRenderer: Character;
+	const pose = previewPoses.value[previewPoseIdx.value];
 	try {
 		charRenderer = new Character(
-			{
-				...charDefDefaults,
-				width: pose.width,
-				height: pose.height,
-				poseId: previewPoseIdx.value,
-				x: pose.width / 2,
-				posePositions: {
-					headGroup: 0,
-					head: uploadedExpressions.value.indexOf(
-						currentUploadedExpression.value!
-					),
-				},
-				label: null,
-				textboxColor: null,
-				enlargeWhenTalking: false,
-				nameboxWidth: null,
-				scaleX: 1,
-				scaleY: 1,
-				linkedTo: null,
-				skewX: 0,
-				skewY: 0,
-			},
+			previewChar,
 			await temporaryCharacterModel.value
 		);
 	} catch (e) {
@@ -343,9 +316,9 @@ async function redraw() {
 						id: 0,
 						lastObjId: 0,
 						lastRender: '',
-						objects: {},
+						objects: { [previewChar.id]: previewChar },
 						onTopOrder: [],
-						order: [],
+						order: [previewChar.id],
 					},
 					store,
 					!rx.hq
@@ -757,6 +730,43 @@ const charDefDefaults = {
 	filters: [],
 };
 //#endregion Constants
+//#region data
+const previewCharacter = computed((): ICharacter => {
+	const pose = previewPoses.value[previewPoseIdx.value];
+	if (!pose) return charDefDefaults as any;
+	return {
+		...charDefDefaults,
+		characterType: props.character,
+		width: pose.width,
+		height: pose.height,
+		poseId: previewPoseIdx.value,
+		x: pose.width / 2,
+		y: pose.height / 2,
+		posePositions: {
+			headGroup: 0,
+			head: uploadedExpressions.value.indexOf(currentUploadedExpression.value!),
+		},
+		label: null,
+		textboxColor: null,
+		enlargeWhenTalking: false,
+		nameboxWidth: null,
+		scaleX: 1,
+		scaleY: 1,
+		linkedTo: null,
+		skewX: 0,
+		skewY: 0,
+	};
+});
+//#endregion data
+//#region init
+(window as any).exp = this;
+if (props.initHeadGroup != null) {
+	headGroup.value = availableHeadGroups.value.find(
+		(group) => group.name === props.initHeadGroup
+	)!;
+}
+applySingleHeadGroup();
+//#endregion
 
 watch(() => availableHeadGroups.value, applySingleHeadGroup);
 watch(

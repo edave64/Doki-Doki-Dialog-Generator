@@ -174,6 +174,7 @@ export const characterActions: ActionTree<IPanels, IRootState> = {
 				posePositions: {},
 				label: char.label ?? char.id,
 				enlargeWhenTalking: rootState.ui.defaultCharacterTalkingZoom,
+				linkedTo: null,
 			} as ICharacter,
 		} as ICreateObjectMutation);
 		return id;

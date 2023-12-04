@@ -1,11 +1,6 @@
 import { IRootState } from '@/store';
 import { IAssetSwitch } from '@/store/content';
-import {
-	getData,
-	getHeads,
-	getPose,
-	ICharacter,
-} from '@/store/object-types/characters';
+import { getHeads, getPose, ICharacter } from '@/store/object-types/characters';
 import { IPanel } from '@/store/panels';
 import {
 	Character as CharacterModel,
@@ -31,7 +26,6 @@ export class Character extends AssetListRenderable<ICharacter> {
 		store: Store<IRootState>,
 		lq: boolean
 	): void | Promise<unknown> {
-		this.data = getData(store, this.obj);
 		return super.prepareRender(panel, store, lq);
 	}
 
@@ -46,15 +40,18 @@ export class Character extends AssetListRenderable<ICharacter> {
 
 		for (const renderCommand of pose.renderCommands) {
 			switch (renderCommand.type) {
-				case 'head':
+				case 'head': {
+					if (!currentHeads) continue;
+					const headVariant: DeepReadonly<IAssetSwitch[]> | undefined =
+						currentHeads.variants[this.obj.posePositions.head || 0];
+					if (headVariant == null) continue;
 					drawAssetsUnloaded.push({
 						offset: renderCommand.offset,
 						composite: renderCommand.composite,
-						assets: currentHeads
-							? currentHeads.variants[this.obj.posePositions.head || 0]
-							: [],
+						assets: headVariant,
 					});
 					break;
+				}
 				case 'image':
 					drawAssetsUnloaded.push({
 						offset: renderCommand.offset,
