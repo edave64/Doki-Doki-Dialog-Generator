@@ -17005,19 +17005,46 @@ const actions = __spreadValues$9(__spreadValues$9(__spreadValues$9(__spreadValue
     }
   },
   copyObjectToClipboard({ commit: commit2, state }, { id, panelId }) {
-    const oldObject = state.panels[panelId].objects[id];
-    commit2("ui/setClipboard", JSON.stringify(oldObject), { root: true });
+    const panel = state.panels[panelId];
+    const baseObject = panel.objects[id];
+    const allObject = Object.values(panel.objects);
+    const objects = [baseObject];
+    collectLinks(baseObject);
+    function collectLinks(from, direct = true) {
+      if (!direct && from === baseObject)
+        throw new Error("Recursively linked object");
+      for (const obj of allObject) {
+        if (obj.linkedTo === from.id) {
+          objects.push(obj);
+          collectLinks(obj, false);
+        }
+      }
+    }
+    commit2("ui/setClipboard", JSON.stringify(objects), { root: true });
   },
   pasteObjectFromClipboard({ commit: commit2, state, rootState }) {
+    var _a;
     if (rootState.ui.clipboard == null)
       return;
-    const oldObject = JSON.parse(rootState.ui.clipboard);
-    commit2("create", {
-      object: __spreadProps$7(__spreadValues$9({}, oldObject), {
-        id: state.panels[state.currentPanel].lastObjId + 1,
-        panelId: state.currentPanel
-      })
-    });
+    const newObjects = JSON.parse(rootState.ui.clipboard);
+    const panel = state.panels[state.currentPanel];
+    const newIds = /* @__PURE__ */ new Map();
+    let id = panel.lastObjId;
+    for (const obj of newObjects) {
+      const newId = ++id;
+      newIds.set(obj.id, newId);
+      obj.id = newId;
+    }
+    for (const obj of newObjects) {
+      if (obj.linkedTo != null) {
+        obj.linkedTo = (_a = newIds.get(obj.linkedTo)) != null ? _a : null;
+      }
+      commit2("create", {
+        object: __spreadProps$7(__spreadValues$9({}, obj), {
+          panelId: state.currentPanel
+        })
+      });
+    }
   },
   object_addFilter({ state, commit: commit2 }, action) {
     addFilter(
@@ -25676,10 +25703,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box.400de089.js"), true ? ["./single-box.400de089.js","./single-box.60b91cb2.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box.5434bf45.js"), true ? ["./single-box.5434bf45.js","./single-box.60b91cb2.css"] : void 0, import.meta.url)
     );
     const ExpressionBuilder = defineAsyncComponent(
-      () => __vitePreload(() => import("./index.1401e1c0.js"), true ? ["./index.1401e1c0.js","./index.43f4fc1a.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.fc593264.js"), true ? ["./index.fc593264.js","./index.43f4fc1a.css"] : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);
