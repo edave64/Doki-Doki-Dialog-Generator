@@ -19,5 +19,6 @@ export function baseProps() {
 		preserveRatio: true,
 		skewX: 0,
 		skewY: 0,
+		linkedTo: null,
 	};
 }

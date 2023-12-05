@@ -6,6 +6,7 @@ import { IRootState } from '..';
 import { IAssetSwitch } from '../content';
 import { IPanel, IPanels } from '../panels';
 import { baseProps } from './base-object-props';
+import getConstants from "@/constants";
 
 export interface ISprite extends IObject {
 	type: 'sprite';
@@ -32,7 +33,7 @@ export const spriteActions: ActionTree<IPanels, IRootState> = {
 				panelId: rootState.panels.currentPanel,
 				onTop: false,
 				type: 'sprite',
-				y: 0,
+				y: getConstants().Base.screenHeight / 2,
 				enlargeWhenTalking: rootState.ui.defaultCharacterTalkingZoom,
 			} as ISprite,
 		} as ICreateObjectMutation);
