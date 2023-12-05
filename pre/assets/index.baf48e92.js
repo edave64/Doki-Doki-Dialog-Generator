@@ -12676,7 +12676,8 @@ const characterActions = {
         styleGroupId: 0,
         posePositions: {},
         label: (_a = char.label) != null ? _a : char.id,
-        enlargeWhenTalking: rootState.ui.defaultCharacterTalkingZoom
+        enlargeWhenTalking: rootState.ui.defaultCharacterTalkingZoom,
+        linkedTo: null
       })
     });
     return id;
@@ -13730,13 +13731,19 @@ class Character extends AssetListRenderable {
     const drawAssetsUnloaded = [];
     for (const renderCommand of pose.renderCommands) {
       switch (renderCommand.type) {
-        case "head":
+        case "head": {
+          if (!currentHeads)
+            continue;
+          const headVariant = currentHeads.variants[this.obj.posePositions.head || 0];
+          if (headVariant == null)
+            continue;
           drawAssetsUnloaded.push({
             offset: renderCommand.offset,
             composite: renderCommand.composite,
-            assets: currentHeads ? currentHeads.variants[this.obj.posePositions.head || 0] : []
+            assets: headVariant
           });
           break;
+        }
         case "image":
           drawAssetsUnloaded.push({
             offset: renderCommand.offset,
@@ -25665,10 +25672,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box.a0d90115.js"), true ? ["./single-box.a0d90115.js","./single-box.60b91cb2.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box.9ccf929d.js"), true ? ["./single-box.9ccf929d.js","./single-box.60b91cb2.css"] : void 0, import.meta.url)
     );
     const ExpressionBuilder = defineAsyncComponent(
-      () => __vitePreload(() => import("./index.6c936593.js"), true ? ["./index.6c936593.js","./index.c56b9bdd.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.b157ff8e.js"), true ? ["./index.b157ff8e.js","./index.43f4fc1a.css"] : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);
@@ -26118,7 +26125,8 @@ export {
   Character as U,
   VueErrorEvent as V,
   ScalingModes as W,
-  SelectedState as X,
+  AssetListRenderable as X,
+  SelectedState as Y,
   _export_sfc as _,
   createElementBlock as a,
   createBaseVNode as b,

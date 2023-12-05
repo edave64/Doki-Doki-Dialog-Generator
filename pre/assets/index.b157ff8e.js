@@ -1,4 +1,4 @@
-import { I as reactive, d as defineComponent, c as computed, o as openBlock, a as createElementBlock, b as createBaseVNode, t as toDisplayString, q as normalizeStyle, s as withModifiers, _ as _export_sfc, J as renderSlot, u as useStore, r as ref, w as watch, m as createBlock, h as withCtx, F as Fragment, e as renderList, j as createTextVNode, l as _sfc_main$3, f as createCommentVNode, g as createVNode, K as DropTarget, k as unref, L as verticalScrollRedirect, n as normalizeClass, B as withDirectives, M as vModelSelect, C as vModelText, N as DFieldset, p as _sfc_main$4, O as getAssetByUrl, P as Renderer, Q as transaction, v as envX, x as pushScopeId, y as popScopeId, S as getAAssetUrl, U as Character, i as nextTick, W as ScalingModes, X as SelectedState } from "./index.b4b6604b.js";
+import { I as reactive, d as defineComponent, c as computed, o as openBlock, a as createElementBlock, b as createBaseVNode, t as toDisplayString, q as normalizeStyle, s as withModifiers, _ as _export_sfc, J as renderSlot, u as useStore, r as ref, w as watch, m as createBlock, h as withCtx, F as Fragment, e as renderList, j as createTextVNode, l as _sfc_main$3, f as createCommentVNode, g as createVNode, K as DropTarget, k as unref, L as verticalScrollRedirect, n as normalizeClass, B as withDirectives, M as vModelSelect, C as vModelText, N as DFieldset, p as _sfc_main$4, O as getAssetByUrl, P as Renderer, Q as transaction, v as envX, x as pushScopeId, y as popScopeId, S as getAAssetUrl, U as Character, i as nextTick, W as ScalingModes, X as AssetListRenderable, Y as SelectedState } from "./index.baf48e92.js";
 var __defProp$1 = Object.defineProperty;
 var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => {
@@ -240,7 +240,7 @@ var __async = (__this, __arguments, generator) => {
     step((generator = generator.apply(__this, __arguments)).next());
   });
 };
-const _withScopeId = (n) => (pushScopeId("data-v-5e61be19"), n = n(), popScopeId(), n);
+const _withScopeId = (n) => (pushScopeId("data-v-2a1008eb"), n = n(), popScopeId(), n);
 const _hoisted_1 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createBaseVNode("h1", null, "Add expressions", -1));
 const _hoisted_2 = {
   key: 0,
@@ -315,13 +315,6 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         };
       });
     });
-    window.exp = this;
-    if (props.initHeadGroup != null) {
-      headGroup.value = availableHeadGroups.value.find(
-        (group) => group.name === props.initHeadGroup
-      );
-    }
-    applySingleHeadGroup();
     function applySingleHeadGroup() {
       if (availableHeadGroups.value.length === 1) {
         headGroup.value = availableHeadGroups.value[0];
@@ -389,33 +382,12 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     }
     function redraw() {
       return __async(this, null, function* () {
-        if (uploadsFinished.value)
-          return;
-        const pose = previewPoses.value[previewPoseIdx.value];
+        let previewChar = previewCharacter.value;
         let charRenderer;
+        const pose = previewPoses.value[previewPoseIdx.value];
         try {
           charRenderer = new Character(
-            __spreadProps(__spreadValues({}, charDefDefaults), {
-              width: pose.width,
-              height: pose.height,
-              poseId: previewPoseIdx.value,
-              x: pose.width / 2,
-              posePositions: {
-                headGroup: 0,
-                head: uploadedExpressions.value.indexOf(
-                  currentUploadedExpression.value
-                )
-              },
-              label: null,
-              textboxColor: null,
-              enlargeWhenTalking: false,
-              nameboxWidth: null,
-              scaleX: 1,
-              scaleY: 1,
-              linkedTo: null,
-              skewX: 0,
-              skewY: 0
-            }),
+            previewChar,
             yield temporaryCharacterModel.value
           );
         } catch (e) {
@@ -437,7 +409,8 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                 scaling: ScalingModes.None,
                 variant: 0
               };
-              yield charRenderer.prepareRender(
+              yield AssetListRenderable.prototype.prepareRender.call(
+                charRenderer,
                 {
                   background,
                   composite: "source-over",
@@ -445,9 +418,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                   id: 0,
                   lastObjId: 0,
                   lastRender: "",
-                  objects: {},
+                  objects: { [previewChar.id]: previewChar },
                   onTopOrder: [],
-                  order: []
+                  order: [previewChar.id]
                 },
                 store,
                 !rx.hq
@@ -797,6 +770,39 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       composite: "source-over",
       filters: []
     };
+    const previewCharacter = computed(() => {
+      const pose = previewPoses.value[previewPoseIdx.value];
+      if (pose == null)
+        return charDefDefaults;
+      return __spreadProps(__spreadValues({}, charDefDefaults), {
+        characterType: props.character,
+        width: pose.width,
+        height: pose.height,
+        poseId: previewPoseIdx.value,
+        x: pose.width / 2,
+        y: pose.height / 2,
+        posePositions: {
+          headGroup: 0,
+          head: uploadedExpressions.value.indexOf(currentUploadedExpression.value)
+        },
+        label: null,
+        textboxColor: null,
+        enlargeWhenTalking: false,
+        nameboxWidth: null,
+        scaleX: 1,
+        scaleY: 1,
+        linkedTo: null,
+        skewX: 0,
+        skewY: 0
+      });
+    });
+    window.exp = this;
+    if (props.initHeadGroup != null) {
+      headGroup.value = availableHeadGroups.value.find(
+        (group) => group.name === props.initHeadGroup
+      );
+    }
+    applySingleHeadGroup();
     watch(() => availableHeadGroups.value, applySingleHeadGroup);
     watch(
       () => [
@@ -815,7 +821,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       return openBlock(), createElementBlock("div", {
         class: "wrapper",
         onDragenter: dragEnter,
-        onMouseleave: _cache[9] || (_cache[9] = ($event) => dt.value.hide())
+        onMouseleave: _cache[9] || (_cache[9] = ($event) => {
+          var _a;
+          return (_a = dt.value) == null ? void 0 : _a.hide();
+        })
       }, [
         _hoisted_1,
         !headGroup.value ? (openBlock(), createBlock(Selector, {
@@ -991,8 +1000,8 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const index_vue_vue_type_style_index_0_scoped_5e61be19_lang = "";
-const index = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-5e61be19"]]);
+const index_vue_vue_type_style_index_0_scoped_2a1008eb_lang = "";
+const index = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-2a1008eb"]]);
 export {
   index as default
 };
