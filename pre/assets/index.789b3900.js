@@ -12538,7 +12538,8 @@ function baseProps() {
     ratio: 1,
     preserveRatio: true,
     skewX: 0,
-    skewY: 0
+    skewY: 0,
+    linkedTo: null
   };
 }
 var __defProp$x = Object.defineProperty;
@@ -16295,7 +16296,7 @@ const spriteActions = {
           panelId: rootState.panels.currentPanel,
           onTop: false,
           type: "sprite",
-          y: 0,
+          y: getConstants().Base.screenHeight / 2,
           enlargeWhenTalking: rootState.ui.defaultCharacterTalkingZoom
         })
       });
@@ -17246,6 +17247,9 @@ const panels = {
               newTextbox.talkingObjId
             );
           }
+        }
+        if (obj.linkedTo != null) {
+          obj.linkedTo = transationTable.get(obj.linkedTo);
         }
       }
       commit2("createPanel", {
@@ -25672,10 +25676,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box.9ccf929d.js"), true ? ["./single-box.9ccf929d.js","./single-box.60b91cb2.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box.400de089.js"), true ? ["./single-box.400de089.js","./single-box.60b91cb2.css"] : void 0, import.meta.url)
     );
     const ExpressionBuilder = defineAsyncComponent(
-      () => __vitePreload(() => import("./index.b157ff8e.js"), true ? ["./index.b157ff8e.js","./index.43f4fc1a.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.1401e1c0.js"), true ? ["./index.1401e1c0.js","./index.43f4fc1a.css"] : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);
