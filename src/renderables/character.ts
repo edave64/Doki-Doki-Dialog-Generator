@@ -1,6 +1,11 @@
 import { IRootState } from '@/store';
 import { IAssetSwitch } from '@/store/content';
-import { getHeads, getPose, ICharacter } from '@/store/object-types/characters';
+import {
+	getData,
+	getHeads,
+	getPose,
+	ICharacter,
+} from '@/store/object-types/characters';
 import { IPanel } from '@/store/panels';
 import {
 	Character as CharacterModel,
@@ -26,6 +31,7 @@ export class Character extends AssetListRenderable<ICharacter> {
 		store: Store<IRootState>,
 		lq: boolean
 	): void | Promise<unknown> {
+		this.data = getData(store, this.obj);
 		return super.prepareRender(panel, store, lq);
 	}
 

@@ -1,5 +1,5 @@
 <template>
-	<div class="wrapper" @dragenter="dragEnter" @mouseleave="dt.hide()">
+	<div class="wrapper" @dragenter="dragEnter" @mouseleave="dt?.hide()">
 		<h1>Add expressions</h1>
 		<selector
 			v-if="!headGroup"
@@ -144,6 +144,7 @@ import { verticalScrollRedirect } from '@/components/mixins/vertical-scroll-redi
 import { SelectedState } from '@/constants/shared';
 import { IPanel, ScalingModes } from '@/store/panels';
 import { ICharacter } from '@/store/object-types/characters';
+import { AssetListRenderable } from '@/renderables/asset-list-renderable';
 
 const uploadedExpressionsPackDefaults: ContentPack<IAssetSwitch> = {
 	packId: 'dddg.uploads.expressions',
@@ -308,7 +309,9 @@ async function redraw() {
 					scaling: ScalingModes.None,
 					variant: 0,
 				};
-				await charRenderer.prepareRender(
+				// Skip reloading the character data.
+				await AssetListRenderable.prototype.prepareRender.call(
+					charRenderer,
 					{
 						background,
 						composite: 'source-over',
@@ -733,7 +736,7 @@ const charDefDefaults = {
 //#region data
 const previewCharacter = computed((): ICharacter => {
 	const pose = previewPoses.value[previewPoseIdx.value];
-	if (!pose) return charDefDefaults as any;
+	if (pose == null) return charDefDefaults as any;
 	return {
 		...charDefDefaults,
 		characterType: props.character,
