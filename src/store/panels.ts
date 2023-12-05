@@ -218,6 +218,9 @@ export default {
 						)!;
 					}
 				}
+				if (obj.linkedTo != null) {
+					obj.linkedTo = transationTable.get(obj.linkedTo)!;
+				}
 			}
 
 			commit('createPanel', {
