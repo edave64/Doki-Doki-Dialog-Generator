@@ -397,19 +397,48 @@ export const actions: ActionTree<IPanels, IRootState> = {
 		{ commit, state },
 		{ id, panelId }: ICopyObjectToClipboardAction
 	) {
-		const oldObject = state.panels[panelId].objects[id];
-		commit('ui/setClipboard', JSON.stringify(oldObject), { root: true });
+		const panel = state.panels[panelId];
+		const baseObject = panel.objects[id];
+		const allObject = Object.values(panel.objects);
+		const objects = [baseObject];
+		collectLinks(baseObject);
+
+		function collectLinks(from: IObject, direct = true) {
+			if (!direct && from === baseObject) throw new Error("Recursively linked object");
+			for (const obj of allObject) {
+				if (obj.linkedTo === from.id) {
+					objects.push(obj);
+					collectLinks(obj, false);
+				}
+			}
+		}
+		commit('ui/setClipboard', JSON.stringify(objects), { root: true });
 	},
 	pasteObjectFromClipboard({ commit, state, rootState }) {
 		if (rootState.ui.clipboard == null) return;
-		const oldObject = JSON.parse(rootState.ui.clipboard);
-		commit('create', {
-			object: {
-				...oldObject,
-				id: state.panels[state.currentPanel].lastObjId + 1,
-				panelId: state.currentPanel,
-			},
-		} as ICreateObjectMutation);
+		const newObjects: IObject[] = JSON.parse(rootState.ui.clipboard);
+		const panel = state.panels[state.currentPanel];
+		const newIds = new Map<IObject['id'], IObject['id']>();
+		let id = panel.lastObjId;
+
+		for (const obj of newObjects) {
+			const newId = ++id;
+			newIds.set(obj.id, newId);
+			obj.id = newId;
+		}
+
+		for (const obj of newObjects) {
+			if (obj.linkedTo != null) {
+				obj.linkedTo = newIds.get(obj.linkedTo) ?? null;
+			}
+
+			commit('create', {
+				object: {
+					...obj,
+					panelId: state.currentPanel,
+				},
+			} as ICreateObjectMutation);
+		}
 	},
 	object_addFilter({ state, commit }, action: IAddFilterAction) {
 		addFilter(
