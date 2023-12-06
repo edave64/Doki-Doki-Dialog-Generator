@@ -1,3 +1,4 @@
+import getConstants from '@/constants';
 import { NsfwPacks } from '@/constants/nsfw';
 import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 import { Repo } from '@/models/repo';
@@ -11,6 +12,9 @@ import content, {
 	IContentState,
 	loadContentPack,
 } from './content';
+import { ICharacter } from './object-types/characters';
+import { ITextBox } from './object-types/textbox';
+import { IObject } from './objects';
 import panels, { IPanels } from './panels';
 import ui, { getDefaultUiState, IUiState } from './ui';
 import uploadUrls, { IUploadUrlState } from './upload-urls';
@@ -45,7 +49,7 @@ export default createStore({
 		async getSave({ state }, compact: boolean) {
 			const repo = await Repo.getInstance();
 			return JSON.stringify(
-				state,
+				{ ...state, version: 2.5 },
 				(key, value) => {
 					if (key === 'ui') return undefined;
 					if (key === 'lastRender') return undefined;
@@ -71,7 +75,7 @@ export default createStore({
 			);
 		},
 		async loadSave({ state }, str: string) {
-			const data: IRootState = JSON.parse(str);
+			const data: IRootState & { version: number } = JSON.parse(str);
 			const contentData = data.content as unknown as Array<
 				ContentPack<IAssetSwitch> | string
 			>;
@@ -144,13 +148,9 @@ export default createStore({
 				combinedPack = mergeContentPacks(combinedPack, contentPack);
 			}
 			data.content.current = combinedPack;
-			for (const panelId of data.panels.panelOrder) {
-				const panel = data.panels.panels[panelId];
-				for (const objKey in panel.objects) {
-					const obj = panel.objects[objKey];
-					obj.scaleX ??= 1;
-					obj.scaleY ??= 1;
-				}
+
+			if (data.version == null || data.version < 2.5) {
+				migrate25(data);
 			}
 
 			this.replaceState(data);
@@ -160,6 +160,52 @@ export default createStore({
 	},
 	modules: { ui, panels, content, uploadUrls },
 });
+
+/**
+ * Take a save from a version before 2.5 and migrate it.
+ * @param data
+ * @returns
+ */
+function migrate25(data: IRootState) {
+	const panels = Object.values(data.panels.panels);
+	// Detect and skip 2.5 prerelease version
+	if (panels.find((x) => Object.values(x.objects).find((x) => 'scaleX' in x)))
+		return;
+
+	for (const panel of panels) {
+		for (const object of Object.values(panel.objects) as (IObject & {
+			zoom?: number;
+		})[]) {
+			object.scaleX = object.zoom ?? 1;
+			object.scaleY = object.zoom ?? 1;
+			object.skewX = 0;
+			object.skewY = 0;
+			object.linkedTo = null;
+			const constants = getConstants();
+
+			if (object.type === 'character') {
+				const character = object as unknown as ICharacter;
+				const charData = data.content.current.characters.find(
+					(c) => c.id === character.characterType
+				);
+				const size = charData?.styleGroups[character.styleGroupId]?.styles[
+					character.styleId
+				]?.poses[character.poseId]?.size ?? [960, 960];
+				object.scaleX *= object.width / size[0];
+				object.scaleY *= object.height / size[1];
+				object.y += (object.height / 2) * (2 - (object.zoom ?? 1));
+				object.width = size[0];
+				object.height = size[1];
+			}
+			if (object.type === 'textBox') {
+				const textbox = object as unknown as ITextBox;
+				textbox.height += constants.TextBox.NameboxHeight;
+				textbox.y += textbox.height / 2;
+			}
+			delete object.zoom;
+		}
+	}
+}
 
 export interface IRemovePacksAction {
 	packs: Set<string>;
