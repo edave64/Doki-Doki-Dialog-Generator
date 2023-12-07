@@ -3,6 +3,7 @@ import { NsfwPacks } from '@/constants/nsfw';
 import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 import { Repo } from '@/models/repo';
 import { mergeContentPacks } from '@/store/content/merge';
+import { decomposeMatrix } from '@/util/math';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { createStore, Store, useStore as vuexUseStore } from 'vuex';
 import content, {
@@ -191,9 +192,32 @@ function migrate25(data: IRootState) {
 				const size = charData?.styleGroups[character.styleGroupId]?.styles[
 					character.styleId
 				]?.poses[character.poseId]?.size ?? [960, 960];
-				object.scaleX *= object.width / size[0];
-				object.scaleY *= object.height / size[1];
-				object.y += (object.height / 2) * (2 - (object.zoom ?? 1));
+
+				let a = new DOMMatrixReadOnly().translate(
+					object.x,
+					object.y + object.height / 2
+				);
+				// Resizing -> Scale from the top
+				a = a
+					.translate(0, -object.height / 2)
+					.scale(object.width / size[0], object.height / size[1])
+					.translate(0, size[1] / 2);
+
+				// new position at center
+				a = a.rotate(object.flip ? -object.rotation : object.rotation);
+
+				// Zoom -> Scale from the bottom
+				a = a
+					.translate(0, size[1] / 2)
+					.scale(object.zoom!)
+					.translate(0, -size[1] / 2);
+
+				const oldRot = object.rotation;
+
+				Object.assign(object, decomposeMatrix(a));
+				object.rotation = object.flip ? 360 - oldRot : oldRot;
+				object.skewX = 0;
+				object.skewY = 0;
 				object.width = size[0];
 				object.height = size[1];
 			}
