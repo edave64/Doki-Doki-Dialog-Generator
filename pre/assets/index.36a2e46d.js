@@ -8228,6 +8228,1240 @@ function imagePromise(url, noCache = false) {
     document.body.appendChild(img);
   });
 }
+const screenWidth$1 = 1280;
+const screenHeight$1 = 720;
+const positions$1 = [
+  "4-1",
+  "3-1",
+  "2-1",
+  "4-2",
+  "center",
+  "4-3",
+  "2-2",
+  "3-3",
+  "4-4"
+];
+const sdCharacterScaleFactor$1 = 1;
+const hdCharacterScaleFactor$1 = 1 / 1.5;
+const CloseUpYOffset$1 = -74;
+const BaseCharacterYPos$1 = 358;
+const characterPositions$1 = [
+  200,
+  240,
+  400,
+  493,
+  640,
+  786,
+  880,
+  1040,
+  1080
+];
+const Base$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  screenWidth: screenWidth$1,
+  screenHeight: screenHeight$1,
+  positions: positions$1,
+  sdCharacterScaleFactor: sdCharacterScaleFactor$1,
+  hdCharacterScaleFactor: hdCharacterScaleFactor$1,
+  CloseUpYOffset: CloseUpYOffset$1,
+  BaseCharacterYPos: BaseCharacterYPos$1,
+  characterPositions: characterPositions$1
+}, Symbol.toStringTag, { value: "Module" }));
+var __defProp$H = Object.defineProperty;
+var __defNormalProp$H = (obj, key, value) => key in obj ? __defProp$H(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$i = (obj, key, value) => {
+  __defNormalProp$H(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+const _RGBAColor = class {
+  constructor(r, g, b, a) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+    this.a = a;
+    Object.freeze(this);
+  }
+  static validCss(str) {
+    return this.validCssRgb(str) || this.validHex(str);
+  }
+  static fromCss(str) {
+    if (this.validCssRgb(str)) {
+      return this.fromCssRgb(str);
+    }
+    if (this.validHex(str)) {
+      return this.fromHex(str);
+    }
+    throw new Error("Invalid RGB color format");
+  }
+  static validCssRgb(str) {
+    return this.rgbEx.test(str) || this.rgbaEx.test(str);
+  }
+  static fromCssRgb(str) {
+    if (!this.validCssRgb(str))
+      throw new Error("Invalid RGB color format");
+    const rgbHead = str.slice(0, -1);
+    const parentesisPos = rgbHead.indexOf("(");
+    const rbgTail = rgbHead.slice(parentesisPos + 1);
+    const elements = rbgTail.split(",").map((x) => parseFloat(x.trim()));
+    return new _RGBAColor(
+      elements[0],
+      elements[1],
+      elements[2],
+      elements.length === 4 ? elements[3] : 1
+    );
+  }
+  static validHex(str) {
+    return this.hexShortEx.test(str) || this.hexLongEx.test(str);
+  }
+  static fromHex(str) {
+    if (!this.validHex(str))
+      throw new Error("Invalid Hex color format");
+    const hexTail = str.slice(1);
+    if (hexTail.length === 3) {
+      return new _RGBAColor(
+        parseInt(hexTail[0] + hexTail[0], 16),
+        parseInt(hexTail[1] + hexTail[1], 16),
+        parseInt(hexTail[2] + hexTail[2], 16),
+        1
+      );
+    }
+    if (hexTail.length === 4) {
+      return new _RGBAColor(
+        parseInt(hexTail[0] + hexTail[0], 16),
+        parseInt(hexTail[1] + hexTail[1], 16),
+        parseInt(hexTail[2] + hexTail[2], 16),
+        parseInt(hexTail[3] + hexTail[3], 16) / 255
+      );
+    }
+    if (hexTail.length === 6) {
+      return new _RGBAColor(
+        parseInt(hexTail[0] + hexTail[1], 16),
+        parseInt(hexTail[2] + hexTail[3], 16),
+        parseInt(hexTail[4] + hexTail[5], 16),
+        1
+      );
+    }
+    if (hexTail.length === 8) {
+      return new _RGBAColor(
+        parseInt(hexTail[0] + hexTail[1], 16),
+        parseInt(hexTail[2] + hexTail[3], 16),
+        parseInt(hexTail[4] + hexTail[5], 16),
+        parseInt(hexTail[6] + hexTail[7], 16) / 255
+      );
+    }
+    throw new Error("Invalid Hex color format length");
+  }
+  toCss() {
+    if (this.a > 1) {
+      return `rgb(${this.r},${this.g},${this.b})`;
+    }
+    return `rgba(${this.r},${this.g},${this.b},${this.a})`;
+  }
+  toHex() {
+    return `#${Math.round(this.r).toString(16).padStart(2, "0")}${Math.round(
+      this.g
+    ).toString(16).padStart(2, "0")}${Math.round(this.b).toString(16).padStart(2, "0")}${Math.round(this.a * 255).toString(16).padStart(2, "0")}`;
+  }
+  toRgb() {
+    return this;
+  }
+  toHSL() {
+    let { r, g, b } = this;
+    const { a } = this;
+    r /= 255;
+    g /= 255;
+    b /= 255;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h2;
+    let s;
+    const l = (max + min) / 2;
+    if (max === min) {
+      h2 = s = 0;
+    } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r:
+          h2 = (g - b) / d + (g < b ? 6 : 0);
+          break;
+        case g:
+          h2 = (b - r) / d + 2;
+          break;
+        case b:
+          h2 = (r - g) / d + 4;
+          break;
+      }
+      h2 /= 6;
+    }
+    return new HSLAColor(h2, s, l, a);
+  }
+  get luminance() {
+    return Math.sqrt(
+      Math.pow(0.299 * (this.r / 255), 2) + Math.pow(0.587 * (this.g / 255), 2) + Math.pow(0.114 * (this.b / 255), 2)
+    );
+  }
+};
+let RGBAColor = _RGBAColor;
+__publicField$i(RGBAColor, "rgbEx", /^rgb\((\d*?),(\d*?),(\d*?)\)$/i);
+__publicField$i(RGBAColor, "rgbaEx", /^rgba\((\d{1,3}),(\d{1,3}),(\d{1,3}),([\d.]+)\)$/i);
+__publicField$i(RGBAColor, "hexShortEx", /^#[0-9A-F]{3,4}$/i);
+__publicField$i(RGBAColor, "hexLongEx", /^#[0-9A-F]{6,8}$/i);
+class HSLAColor {
+  constructor(h2, s, l, a) {
+    this.h = h2;
+    this.s = s;
+    this.l = l;
+    this.a = a;
+    Object.freeze(this);
+  }
+  toCss() {
+    if (this.a >= 1) {
+      return `hsl(${this.h}, ${this.s}, ${this.l})`;
+    }
+    return `hsla(${this.h}, ${this.s}, ${this.l}, ${this.a})`;
+  }
+  shift(deltas) {
+    let { h: h2, s, l, a } = this;
+    h2 += deltas.h;
+    if (h2 >= 1) {
+      h2 -= 1;
+    } else if (h2 < 0) {
+      h2 += 1;
+    }
+    if (s + deltas.s > 1) {
+      s -= deltas.s;
+    } else {
+      s += deltas.s;
+      if (s < 0) {
+        s = 0;
+      }
+    }
+    if (l + deltas.l > 1 || l + deltas.l < 0) {
+      l -= deltas.l;
+    } else {
+      l += deltas.l;
+    }
+    if (a + deltas.a > 1 || a + deltas.a < 0) {
+      a -= deltas.a;
+    } else {
+      a += deltas.a;
+    }
+    return new HSLAColor(h2, s, l, a);
+  }
+  toRgb() {
+    const { h: h2, s, l, a } = this;
+    let r;
+    let g;
+    let b;
+    if (s === 0) {
+      r = g = b = l;
+    } else {
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p2 = 2 * l - q;
+      r = HSLAColor.hue2rgb(p2, q, h2 + 1 / 3);
+      g = HSLAColor.hue2rgb(p2, q, h2);
+      b = HSLAColor.hue2rgb(p2, q, h2 - 1 / 3);
+    }
+    return new RGBAColor(
+      Math.round(r * 255),
+      Math.round(g * 255),
+      Math.round(b * 255),
+      a
+    );
+  }
+  toHSL() {
+    return this;
+  }
+  static hue2rgb(p2, q, t) {
+    if (t < 0)
+      t += 1;
+    if (t > 1)
+      t -= 1;
+    if (t < 1 / 6)
+      return p2 + (q - p2) * 6 * t;
+    if (t < 1 / 2)
+      return q;
+    if (t < 2 / 3)
+      return p2 + (q - p2) * (2 / 3 - t) * 6;
+    return p2;
+  }
+}
+const nameboxTextOutlineDelta$3 = new HSLAColor(
+  -0.03065134099616873,
+  -0.5714285714285714,
+  -0.29607843137254897,
+  0
+);
+const ChoiceButtonColor$1 = "#ffe6f4";
+const ChoiceButtonBorderColor$1 = "#ffbde1";
+const ChoiceButtonWidth$1 = 420;
+const ChoiceSpacing$1 = 22;
+const ChoiceX$1 = 640;
+const ChoiceYOffset$1 = 270;
+const ChoicePadding$1 = 7;
+const Outline$1 = 3;
+const ChoiceOuterPadding$1 = Math.ceil(Outline$1 / 2);
+const ChoiceY$1 = (screenHeight$1 - ChoiceYOffset$1) / 2;
+const ChoiceTextStyle$1 = {
+  alpha: 1,
+  color: "black",
+  fontName: "aller",
+  fontSize: 24,
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 0,
+  lineSpacing: 1,
+  strokeColor: "",
+  strokeWidth: 0
+};
+const Choices$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  nameboxTextOutlineDelta: nameboxTextOutlineDelta$3,
+  ChoiceButtonColor: ChoiceButtonColor$1,
+  ChoiceButtonBorderColor: ChoiceButtonBorderColor$1,
+  ChoiceButtonWidth: ChoiceButtonWidth$1,
+  ChoiceSpacing: ChoiceSpacing$1,
+  ChoiceX: ChoiceX$1,
+  ChoiceYOffset: ChoiceYOffset$1,
+  ChoicePadding: ChoicePadding$1,
+  Outline: Outline$1,
+  ChoiceOuterPadding: ChoiceOuterPadding$1,
+  ChoiceY: ChoiceY$1,
+  ChoiceTextStyle: ChoiceTextStyle$1
+}, Symbol.toStringTag, { value: "Module" }));
+const textboxDefaultColor$1 = "#ffa8d2";
+const controlsDefaultColor$1 = "#552222";
+const nameboxDefaultColor$1 = "#ffeef6";
+const nameboxStrokeDefaultColor$1 = "#bb5599";
+const nameboxTextOutlineDelta$2 = new HSLAColor(
+  -0.03065134099616873,
+  -0.5714285714285714,
+  -0.29607843137254897,
+  0
+);
+const nameboxBackgroundDelta$1 = new HSLAColor(
+  0.002028397565922768,
+  0,
+  0.13725490196078438,
+  0
+);
+const nameboxGradientMiddleStopPosition$1 = 0.82;
+const nameboxGradientEndDelta$1 = new HSLAColor(
+  -0.004901960784313708,
+  -0.8599999999999999,
+  -0.16274509803921566,
+  0
+);
+const nameboxRounding$1 = 12;
+const nameboxRoundingBuffer$1 = 1.5;
+const textboxRounding$1 = 12;
+const textboxRoundingBuffer$1 = 1.5;
+const nameColorThreshold$1 = 0.6;
+const controlColorDelta$1 = new HSLAColor(
+  0.08045977011494243,
+  -0.5714285714285714,
+  -0.5960784313725489,
+  0
+);
+const controlDisableColorDelta$1 = new HSLAColor(
+  0,
+  -0.14285714285714296,
+  0.3,
+  0
+);
+const dotColorDelta$1 = new HSLAColor(
+  0.004269293924466178,
+  -0.01869158878504662,
+  -0.039215686274509665,
+  0
+);
+const dotRadius$1 = 9.5;
+const dotPatternSize$1 = 47;
+const textboxOutlineColorDelta$1 = new HSLAColor(
+  0.0023347701149424305,
+  0,
+  0.10784313725490202,
+  0
+);
+const textboxOutlineWidth$1 = 3;
+const CustomTBConstants$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  textboxDefaultColor: textboxDefaultColor$1,
+  controlsDefaultColor: controlsDefaultColor$1,
+  nameboxDefaultColor: nameboxDefaultColor$1,
+  nameboxStrokeDefaultColor: nameboxStrokeDefaultColor$1,
+  nameboxTextOutlineDelta: nameboxTextOutlineDelta$2,
+  nameboxBackgroundDelta: nameboxBackgroundDelta$1,
+  nameboxGradientMiddleStopPosition: nameboxGradientMiddleStopPosition$1,
+  nameboxGradientEndDelta: nameboxGradientEndDelta$1,
+  nameboxRounding: nameboxRounding$1,
+  nameboxRoundingBuffer: nameboxRoundingBuffer$1,
+  textboxRounding: textboxRounding$1,
+  textboxRoundingBuffer: textboxRoundingBuffer$1,
+  nameColorThreshold: nameColorThreshold$1,
+  controlColorDelta: controlColorDelta$1,
+  controlDisableColorDelta: controlDisableColorDelta$1,
+  dotColorDelta: dotColorDelta$1,
+  dotRadius: dotRadius$1,
+  dotPatternSize: dotPatternSize$1,
+  textboxOutlineColorDelta: textboxOutlineColorDelta$1,
+  textboxOutlineWidth: textboxOutlineWidth$1
+}, Symbol.toStringTag, { value: "Module" }));
+var __defProp$G = Object.defineProperty;
+var __defProps$n = Object.defineProperties;
+var __getOwnPropDescs$n = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$r = Object.getOwnPropertySymbols;
+var __hasOwnProp$r = Object.prototype.hasOwnProperty;
+var __propIsEnum$r = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$G = (obj, key, value) => key in obj ? __defProp$G(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$r = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$r.call(b, prop))
+      __defNormalProp$G(a, prop, b[prop]);
+  if (__getOwnPropSymbols$r)
+    for (var prop of __getOwnPropSymbols$r(b)) {
+      if (__propIsEnum$r.call(b, prop))
+        __defNormalProp$G(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$n = (a, b) => __defProps$n(a, __getOwnPropDescs$n(b));
+const TextBoxWidth$1 = 816;
+const TextBoxCorruptedWidth$1 = 900;
+const TextBoxHeight$1 = 146;
+const TextBoxKerning$1 = 0;
+const TextBoxLineHeight$1 = 29;
+const TextBoxCorruptedKerning$1 = 8;
+const TextBoxTextXOffset$1 = 38;
+const TextBoxTextYOffset$1 = 44;
+const TextBoxBottomSpacing$1 = 6;
+const HdSpacing = 93;
+const HdSideMargin = 404;
+const TextBoxTextCorruptedXOffset$1 = 9;
+const TextBoxTextCorruptedYOffset$1 = 9;
+const NameboxHeight$1 = 39;
+const NameboxWidth$1 = 168;
+const NameboxXOffset$1 = 34;
+const NameboxTextYOffset$1 = 29;
+const ControlsYBottomOffset$1 = 12;
+const ControlsXHistoryOffset$1 = -126;
+const ControlsXSkipOffset$1 = -72;
+const ControlsXStuffOffset$1 = -38;
+const ArrowXRightOffset$1 = 30.75;
+const ArrowYBottomOffset$1 = 26;
+const GlowRX$1 = 426;
+const GlowRY$1 = 58;
+const BaseTextStyle$1 = {
+  alpha: 1,
+  color: "black",
+  fontName: "aller",
+  fontSize: 24,
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 0,
+  lineSpacing: 1,
+  strokeColor: "",
+  strokeWidth: 0
+};
+const NameboxTextStyle$1 = __spreadProps$n(__spreadValues$r({}, BaseTextStyle$1), {
+  fontName: "riffic",
+  fontSize: 24,
+  strokeColor: nameboxStrokeDefaultColor$1,
+  strokeWidth: 6,
+  color: "white",
+  letterSpacing: 1
+});
+const ControlsTextStyle$1 = {
+  align: "left",
+  font: "13px aller",
+  fill: {
+    style: "#522"
+  }
+};
+const ControlsTextDisabledStyle$1 = __spreadProps$n(__spreadValues$r({}, ControlsTextStyle$1), {
+  fill: {
+    style: "#a66"
+  }
+});
+const TextBoxCorruptedStyle$1 = {
+  align: "left",
+  font: "24px verily",
+  outline: {
+    style: "#000",
+    width: 20
+  },
+  fill: {
+    style: "#fff"
+  }
+};
+const TextBoxStyle$1 = {
+  alpha: 1,
+  color: "#ffffff",
+  fontName: "aller",
+  fontSize: 24,
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 0,
+  strokeColor: "#523140",
+  strokeWidth: 4,
+  lineSpacing: 1.2
+};
+const TextBoxX$1 = screenWidth$1 / 2 - TextBoxWidth$1 / 2;
+const TextBoxCorruptedX$1 = screenWidth$1 / 2 - TextBoxCorruptedWidth$1 / 2;
+const TextBoxTextX$1 = TextBoxX$1 + TextBoxTextXOffset$1;
+const NameboxX$1 = TextBoxX$1 + NameboxXOffset$1;
+const NameboxTextX$1 = NameboxX$1 + NameboxWidth$1 / 2;
+const ControlsXHistory$1 = TextBoxX$1 + ControlsXHistoryOffset$1;
+const ControlsXSkip$1 = TextBoxX$1 + ControlsXSkipOffset$1;
+const ControlsXStuff$1 = TextBoxX$1 + ControlsXStuffOffset$1;
+const DefaultTextboxStyle$1 = "normal";
+const TextBox$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  TextBoxWidth: TextBoxWidth$1,
+  TextBoxCorruptedWidth: TextBoxCorruptedWidth$1,
+  TextBoxHeight: TextBoxHeight$1,
+  TextBoxKerning: TextBoxKerning$1,
+  TextBoxLineHeight: TextBoxLineHeight$1,
+  TextBoxCorruptedKerning: TextBoxCorruptedKerning$1,
+  TextBoxTextXOffset: TextBoxTextXOffset$1,
+  TextBoxTextYOffset: TextBoxTextYOffset$1,
+  TextBoxBottomSpacing: TextBoxBottomSpacing$1,
+  HdSpacing,
+  HdSideMargin,
+  TextBoxTextCorruptedXOffset: TextBoxTextCorruptedXOffset$1,
+  TextBoxTextCorruptedYOffset: TextBoxTextCorruptedYOffset$1,
+  NameboxHeight: NameboxHeight$1,
+  NameboxWidth: NameboxWidth$1,
+  NameboxXOffset: NameboxXOffset$1,
+  NameboxTextYOffset: NameboxTextYOffset$1,
+  ControlsYBottomOffset: ControlsYBottomOffset$1,
+  ControlsXHistoryOffset: ControlsXHistoryOffset$1,
+  ControlsXSkipOffset: ControlsXSkipOffset$1,
+  ControlsXStuffOffset: ControlsXStuffOffset$1,
+  ArrowXRightOffset: ArrowXRightOffset$1,
+  ArrowYBottomOffset: ArrowYBottomOffset$1,
+  GlowRX: GlowRX$1,
+  GlowRY: GlowRY$1,
+  BaseTextStyle: BaseTextStyle$1,
+  NameboxTextStyle: NameboxTextStyle$1,
+  ControlsTextStyle: ControlsTextStyle$1,
+  ControlsTextDisabledStyle: ControlsTextDisabledStyle$1,
+  TextBoxCorruptedStyle: TextBoxCorruptedStyle$1,
+  TextBoxStyle: TextBoxStyle$1,
+  TextBoxX: TextBoxX$1,
+  TextBoxCorruptedX: TextBoxCorruptedX$1,
+  TextBoxTextX: TextBoxTextX$1,
+  NameboxX: NameboxX$1,
+  NameboxTextX: NameboxTextX$1,
+  ControlsXHistory: ControlsXHistory$1,
+  ControlsXSkip: ControlsXSkip$1,
+  ControlsXStuff: ControlsXStuff$1,
+  DefaultTextboxStyle: DefaultTextboxStyle$1
+}, Symbol.toStringTag, { value: "Module" }));
+var __defProp$F = Object.defineProperty;
+var __defProps$m = Object.defineProperties;
+var __getOwnPropDescs$m = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$q = Object.getOwnPropertySymbols;
+var __hasOwnProp$q = Object.prototype.hasOwnProperty;
+var __propIsEnum$q = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$F = (obj, key, value) => key in obj ? __defProp$F(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$q = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$q.call(b, prop))
+      __defNormalProp$F(a, prop, b[prop]);
+  if (__getOwnPropSymbols$q)
+    for (var prop of __getOwnPropSymbols$q(b)) {
+      if (__propIsEnum$q.call(b, prop))
+        __defNormalProp$F(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$m = (a, b) => __defProps$m(a, __getOwnPropDescs$m(b));
+const NotificationBackgroundColor$1 = "#ffe6f4";
+const NotificationBorderColor$1 = "#ffbde1";
+const NotificationBackdropColor$1 = "rgba(255,255,255,0.6)";
+const NotificationPadding$1 = 40;
+const NotificationSpacing$1 = 30;
+const NotificationOkTextStyle$1 = __spreadProps$m(__spreadValues$q({}, BaseTextStyle$1), {
+  fontName: "riffic",
+  fontSize: 24,
+  strokeColor: nameboxStrokeDefaultColor$1,
+  strokeWidth: 8,
+  letterSpacing: 1,
+  color: "white"
+});
+const NotificationTextStyle$1 = {
+  alpha: 1,
+  color: "black",
+  fontName: "aller",
+  fontSize: 24,
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 0,
+  lineSpacing: 1.2,
+  strokeColor: "",
+  strokeWidth: 0
+};
+const Notification$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  NotificationBackgroundColor: NotificationBackgroundColor$1,
+  NotificationBorderColor: NotificationBorderColor$1,
+  NotificationBackdropColor: NotificationBackdropColor$1,
+  NotificationPadding: NotificationPadding$1,
+  NotificationSpacing: NotificationSpacing$1,
+  NotificationOkTextStyle: NotificationOkTextStyle$1,
+  NotificationTextStyle: NotificationTextStyle$1
+}, Symbol.toStringTag, { value: "Module" }));
+var __defProp$E = Object.defineProperty;
+var __defProps$l = Object.defineProperties;
+var __getOwnPropDescs$l = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$p = Object.getOwnPropertySymbols;
+var __hasOwnProp$p = Object.prototype.hasOwnProperty;
+var __propIsEnum$p = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$E = (obj, key, value) => key in obj ? __defProp$E(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$p = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$p.call(b, prop))
+      __defNormalProp$E(a, prop, b[prop]);
+  if (__getOwnPropSymbols$p)
+    for (var prop of __getOwnPropSymbols$p(b)) {
+      if (__propIsEnum$p.call(b, prop))
+        __defNormalProp$E(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$l = (a, b) => __defProps$l(a, __getOwnPropDescs$l(b));
+const poemBackgrounds$1 = [
+  { name: "Normal paper", file: "poem.jpg" },
+  { name: "Lightly soiled paper", file: "poem_y1.jpg" },
+  { name: "Heavily soiled paper", file: "poem_y2.jpg" },
+  { name: "Console", file: "internal:console" },
+  { name: "Transparent", file: "internal:transparent" }
+];
+const defaultPoemBackground$1 = 0;
+const defaultPoemStyle$1 = 0;
+const defaultX$1 = screenWidth$1 / 2;
+const defaultY$1 = screenHeight$1 / 2;
+const poemTopPadding$1 = 33;
+const poemBottomPadding$1 = 100;
+const poemPadding$1 = 30;
+const defaultPoemWidth$1 = 800;
+const defaultPoemHeight$1 = 720;
+const backgroundScale$1 = sdCharacterScaleFactor$1;
+const consoleBackgroundColor$1 = "#333333bf";
+const consoleWidth$1 = 480;
+const consoleHeight$1 = 180;
+const defaultConsoleBackground$1 = 3;
+const defaultConsoleStyle$1 = 7;
+const BasePoemStyle$1 = {
+  alpha: 1,
+  color: "black",
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 0,
+  lineSpacing: 1.2,
+  strokeColor: "",
+  strokeWidth: 0,
+  fontName: "aller",
+  fontSize: 12
+};
+const poemTextStyles$1 = [
+  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
+    name: "Sayori",
+    fontName: "hashtag",
+    fontSize: 34,
+    lineSpacing: 1.05,
+    letterSpacing: 0
+  }),
+  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
+    name: "Natsuki",
+    fontName: "ammy_handwriting",
+    fontSize: 28
+  }),
+  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
+    name: "Monika",
+    fontName: "journal",
+    fontSize: 34
+  }),
+  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
+    name: "Yuri",
+    fontName: "jp_hand_slanted",
+    lineSpacing: 1.5,
+    fontSize: 32
+  }),
+  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
+    name: "Yuri Act 2",
+    fontName: "damagrafik_script",
+    fontSize: 18,
+    letterSpacing: -8
+  }),
+  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
+    name: "Yuri Unused",
+    fontName: "as_i_lay_dying",
+    fontSize: 40
+  }),
+  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
+    name: "MC",
+    fontName: "halogen",
+    fontSize: 30,
+    lineSpacing: 1.53
+  }),
+  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
+    name: "Console",
+    fontName: "f25_bank_printer",
+    fontSize: 18,
+    color: "white",
+    lineSpacing: 1.1
+  })
+];
+const Poem$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  poemBackgrounds: poemBackgrounds$1,
+  defaultPoemBackground: defaultPoemBackground$1,
+  defaultPoemStyle: defaultPoemStyle$1,
+  defaultX: defaultX$1,
+  defaultY: defaultY$1,
+  poemTopPadding: poemTopPadding$1,
+  poemBottomPadding: poemBottomPadding$1,
+  poemPadding: poemPadding$1,
+  defaultPoemWidth: defaultPoemWidth$1,
+  defaultPoemHeight: defaultPoemHeight$1,
+  backgroundScale: backgroundScale$1,
+  consoleBackgroundColor: consoleBackgroundColor$1,
+  consoleWidth: consoleWidth$1,
+  consoleHeight: consoleHeight$1,
+  defaultConsoleBackground: defaultConsoleBackground$1,
+  defaultConsoleStyle: defaultConsoleStyle$1,
+  poemTextStyles: poemTextStyles$1
+}, Symbol.toStringTag, { value: "Module" }));
+const Ddlc = {
+  Base: Base$1,
+  Choices: Choices$1,
+  Notification: Notification$2,
+  Poem: Poem$2,
+  TextBox: TextBox$2,
+  TextBoxCustom: CustomTBConstants$1
+};
+const screenWidth = 1920;
+const screenHeight = 1080;
+const positions = [
+  "4-1",
+  "3-1",
+  "2-1",
+  "4-2",
+  "center",
+  "4-3",
+  "2-2",
+  "3-3",
+  "4-4"
+];
+const sdCharacterScaleFactor = 1.5;
+const hdCharacterScaleFactor = 1;
+const CloseUpYOffset = -111;
+const BaseCharacterYPos = -39;
+const characterPositions = [
+  300,
+  360,
+  600,
+  740,
+  960,
+  1180,
+  1320,
+  1560,
+  1620
+];
+const Base = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  screenWidth,
+  screenHeight,
+  positions,
+  sdCharacterScaleFactor,
+  hdCharacterScaleFactor,
+  CloseUpYOffset,
+  BaseCharacterYPos,
+  characterPositions
+}, Symbol.toStringTag, { value: "Module" }));
+const nameboxTextOutlineDelta$1 = new HSLAColor(
+  -0.03065134099616873,
+  -0.5714285714285714,
+  -0.29607843137254897,
+  0
+);
+const ChoiceButtonColor = "#ffe6f4";
+const ChoiceButtonBorderColor = "#ffbde1";
+const ChoiceButtonWidth = 630;
+const ChoiceSpacing = 33;
+const ChoiceX = 960;
+const ChoiceYOffset = 405;
+const ChoicePadding = 10.5;
+const Outline = 4.5;
+const ChoiceOuterPadding = Math.ceil(Outline / 2);
+const ChoiceY = (screenHeight - ChoiceYOffset) / 2;
+const ChoiceTextStyle = {
+  alpha: 1,
+  color: "black",
+  fontName: "aller",
+  fontSize: 36,
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 0,
+  lineSpacing: 1,
+  strokeColor: "",
+  strokeWidth: 0
+};
+const Choices = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  nameboxTextOutlineDelta: nameboxTextOutlineDelta$1,
+  ChoiceButtonColor,
+  ChoiceButtonBorderColor,
+  ChoiceButtonWidth,
+  ChoiceSpacing,
+  ChoiceX,
+  ChoiceYOffset,
+  ChoicePadding,
+  Outline,
+  ChoiceOuterPadding,
+  ChoiceY,
+  ChoiceTextStyle
+}, Symbol.toStringTag, { value: "Module" }));
+const textboxDefaultColor = "#ffa8d2";
+const controlsDefaultColor = "#552222";
+const nameboxDefaultColor = "#ffeef6";
+const nameboxStrokeDefaultColor = "#bb5599";
+const nameboxTextOutlineDelta = new HSLAColor(
+  -0.03065134099616873,
+  -0.5714285714285714,
+  -0.29607843137254897,
+  0
+);
+const nameboxBackgroundDelta = new HSLAColor(
+  0.002028397565922768,
+  0,
+  0.13725490196078438,
+  0
+);
+const nameboxGradientMiddleStopPosition = 0.82;
+const nameboxGradientEndDelta = new HSLAColor(
+  -0.004901960784313708,
+  -0.8599999999999999,
+  -0.16274509803921566,
+  0
+);
+const nameboxRounding = 15;
+const nameboxRoundingBuffer = 1.5;
+const textboxRounding = 19;
+const textboxRoundingBuffer = 1.5;
+const nameColorThreshold = 0.6;
+const controlColorDelta = new HSLAColor(
+  0.08045977011494243,
+  -0.5714285714285714,
+  -0.5960784313725489,
+  0
+);
+const controlDisableColorDelta = new HSLAColor(
+  0,
+  -0.14285714285714296,
+  0.3,
+  0
+);
+const dotColorDelta = new HSLAColor(
+  0.004269293924466178,
+  -0.01869158878504662,
+  -0.039215686274509665,
+  0
+);
+const dotRadius = 9.5 * 1.5;
+const dotPatternSize = 47 * 1.5;
+const textboxOutlineColorDelta = new HSLAColor(
+  0.0023347701149424305,
+  0,
+  0.10784313725490202,
+  0
+);
+const textboxOutlineWidth = 5;
+const CustomTBConstants = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  textboxDefaultColor,
+  controlsDefaultColor,
+  nameboxDefaultColor,
+  nameboxStrokeDefaultColor,
+  nameboxTextOutlineDelta,
+  nameboxBackgroundDelta,
+  nameboxGradientMiddleStopPosition,
+  nameboxGradientEndDelta,
+  nameboxRounding,
+  nameboxRoundingBuffer,
+  textboxRounding,
+  textboxRoundingBuffer,
+  nameColorThreshold,
+  controlColorDelta,
+  controlDisableColorDelta,
+  dotColorDelta,
+  dotRadius,
+  dotPatternSize,
+  textboxOutlineColorDelta,
+  textboxOutlineWidth
+}, Symbol.toStringTag, { value: "Module" }));
+var __defProp$D = Object.defineProperty;
+var __defProps$k = Object.defineProperties;
+var __getOwnPropDescs$k = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$o = Object.getOwnPropertySymbols;
+var __hasOwnProp$o = Object.prototype.hasOwnProperty;
+var __propIsEnum$o = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$D = (obj, key, value) => key in obj ? __defProp$D(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$o = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$o.call(b, prop))
+      __defNormalProp$D(a, prop, b[prop]);
+  if (__getOwnPropSymbols$o)
+    for (var prop of __getOwnPropSymbols$o(b)) {
+      if (__propIsEnum$o.call(b, prop))
+        __defNormalProp$D(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$k = (a, b) => __defProps$k(a, __getOwnPropDescs$k(b));
+const TextBoxWidth = 1220;
+const TextBoxCorruptedWidth = 900;
+const TextBoxHeight = 219;
+const TextBoxKerning = 0;
+const TextBoxLineHeight = 29;
+const TextBoxCorruptedKerning = 8;
+const TextBoxTextXOffset = 57;
+const TextBoxTextYOffset = 68;
+const TextBoxBottomSpacing = 54;
+const TextBoxTextCorruptedXOffset = 9;
+const TextBoxTextCorruptedYOffset = 9;
+const NameboxHeight = 59;
+const NameboxWidth = 252;
+const NameboxXOffset = 49;
+const NameboxTextYOffset = 43;
+const ControlsYBottomOffset = 12 * 1.5;
+const ControlsXHistoryOffset = -126 * 1.5;
+const ControlsXSkipOffset = -72 * 1.5;
+const ControlsXStuffOffset = -38 * 1.5;
+const ArrowXRightOffset = 30.75 * 1.5;
+const ArrowYBottomOffset = 26 * 1.5;
+const GlowRX = 426 * 1.5;
+const GlowRY = 58 * 1.5;
+const BaseTextStyle = {
+  alpha: 1,
+  color: "black",
+  fontName: "aller",
+  fontSize: 24,
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 1,
+  lineSpacing: 1.2,
+  strokeColor: "",
+  strokeWidth: 0
+};
+const NameboxTextStyle = __spreadProps$k(__spreadValues$o({}, BaseTextStyle), {
+  fontName: "riffic",
+  fontSize: 36,
+  strokeColor: nameboxStrokeDefaultColor,
+  strokeWidth: 9,
+  color: "white",
+  letterSpacing: 2
+});
+const ControlsTextStyle = {
+  align: "left",
+  font: "24px aller",
+  fill: {
+    style: "#522"
+  }
+};
+const ControlsTextDisabledStyle = __spreadProps$k(__spreadValues$o({}, ControlsTextStyle), {
+  fill: {
+    style: "#a66"
+  }
+});
+const TextBoxStyle = {
+  alpha: 1,
+  color: "#ffffff",
+  fontName: "aller",
+  fontSize: 30,
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 0,
+  strokeColor: "#523140",
+  strokeWidth: 5,
+  lineSpacing: 1.2
+};
+const TextBoxCorruptedStyle = {
+  align: "left",
+  font: "24px verily",
+  outline: {
+    style: "#000",
+    width: 20
+  },
+  fill: {
+    style: "#fff"
+  }
+};
+const TextBoxX = screenWidth / 2 - TextBoxWidth / 2;
+const TextBoxCorruptedX = screenWidth / 2 - TextBoxCorruptedWidth / 2;
+const TextBoxTextX = TextBoxX + TextBoxTextXOffset;
+const NameboxX = TextBoxX + NameboxXOffset;
+const NameboxTextX = NameboxX + NameboxWidth / 2;
+const ControlsXHistory = TextBoxX + ControlsXHistoryOffset;
+const ControlsXSkip = TextBoxX + ControlsXSkipOffset;
+const ControlsXStuff = TextBoxX + ControlsXStuffOffset;
+const DefaultTextboxStyle = "custom_plus";
+const TextBox$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  TextBoxWidth,
+  TextBoxCorruptedWidth,
+  TextBoxHeight,
+  TextBoxKerning,
+  TextBoxLineHeight,
+  TextBoxCorruptedKerning,
+  TextBoxTextXOffset,
+  TextBoxTextYOffset,
+  TextBoxBottomSpacing,
+  TextBoxTextCorruptedXOffset,
+  TextBoxTextCorruptedYOffset,
+  NameboxHeight,
+  NameboxWidth,
+  NameboxXOffset,
+  NameboxTextYOffset,
+  ControlsYBottomOffset,
+  ControlsXHistoryOffset,
+  ControlsXSkipOffset,
+  ControlsXStuffOffset,
+  ArrowXRightOffset,
+  ArrowYBottomOffset,
+  GlowRX,
+  GlowRY,
+  BaseTextStyle,
+  NameboxTextStyle,
+  ControlsTextStyle,
+  ControlsTextDisabledStyle,
+  TextBoxStyle,
+  TextBoxCorruptedStyle,
+  TextBoxX,
+  TextBoxCorruptedX,
+  TextBoxTextX,
+  NameboxX,
+  NameboxTextX,
+  ControlsXHistory,
+  ControlsXSkip,
+  ControlsXStuff,
+  DefaultTextboxStyle
+}, Symbol.toStringTag, { value: "Module" }));
+var __defProp$C = Object.defineProperty;
+var __defProps$j = Object.defineProperties;
+var __getOwnPropDescs$j = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$n = Object.getOwnPropertySymbols;
+var __hasOwnProp$n = Object.prototype.hasOwnProperty;
+var __propIsEnum$n = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$C = (obj, key, value) => key in obj ? __defProp$C(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$n = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$n.call(b, prop))
+      __defNormalProp$C(a, prop, b[prop]);
+  if (__getOwnPropSymbols$n)
+    for (var prop of __getOwnPropSymbols$n(b)) {
+      if (__propIsEnum$n.call(b, prop))
+        __defNormalProp$C(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$j = (a, b) => __defProps$j(a, __getOwnPropDescs$j(b));
+const NotificationBackgroundColor = "#ffe6f4";
+const NotificationBorderColor = "#ffbde1";
+const NotificationBackdropColor = "rgba(255,255,255,0.6)";
+const NotificationPadding = 60;
+const NotificationSpacing = 45;
+const NotificationOkTextStyle = __spreadProps$j(__spreadValues$n({}, BaseTextStyle), {
+  fontName: "riffic",
+  fontSize: 36,
+  strokeColor: nameboxStrokeDefaultColor,
+  strokeWidth: 12,
+  letterSpacing: 1,
+  color: "white"
+});
+const NotificationTextStyle = {
+  alpha: 1,
+  color: "black",
+  fontName: "aller",
+  fontSize: 36,
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 0,
+  lineSpacing: 1.2,
+  strokeColor: "",
+  strokeWidth: 0
+};
+const Notification$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  NotificationBackgroundColor,
+  NotificationBorderColor,
+  NotificationBackdropColor,
+  NotificationPadding,
+  NotificationSpacing,
+  NotificationOkTextStyle,
+  NotificationTextStyle
+}, Symbol.toStringTag, { value: "Module" }));
+var __defProp$B = Object.defineProperty;
+var __defProps$i = Object.defineProperties;
+var __getOwnPropDescs$i = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$m = Object.getOwnPropertySymbols;
+var __hasOwnProp$m = Object.prototype.hasOwnProperty;
+var __propIsEnum$m = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$B = (obj, key, value) => key in obj ? __defProp$B(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$m = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$m.call(b, prop))
+      __defNormalProp$B(a, prop, b[prop]);
+  if (__getOwnPropSymbols$m)
+    for (var prop of __getOwnPropSymbols$m(b)) {
+      if (__propIsEnum$m.call(b, prop))
+        __defNormalProp$B(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$i = (a, b) => __defProps$i(a, __getOwnPropDescs$i(b));
+const poemBackgrounds = [
+  { name: "Normal paper", file: "poem.jpg" },
+  { name: "Lightly soiled paper", file: "poem_y1.jpg" },
+  { name: "Heavily soiled paper", file: "poem_y2.jpg" },
+  { name: "Console", file: "internal:console" },
+  { name: "Transparent", file: "internal:transparent" }
+];
+const defaultPoemBackground = 0;
+const defaultPoemStyle = 0;
+const defaultX = screenWidth / 2;
+const defaultY = screenHeight / 2;
+const poemTopPadding = 26;
+const poemBottomPadding = 150;
+const poemPadding = 61;
+const defaultPoemWidth = 1200;
+const defaultPoemHeight = 1080;
+const backgroundScale = sdCharacterScaleFactor;
+const consoleBackgroundColor = "#333333bf";
+const consoleWidth = 720;
+const consoleHeight = 270;
+const defaultConsoleBackground = 3;
+const defaultConsoleStyle = 7;
+const BasePoemStyle = {
+  alpha: 1,
+  color: "black",
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 0,
+  lineSpacing: 1.2,
+  strokeColor: "",
+  strokeWidth: 0,
+  fontName: "aller",
+  fontSize: 18
+};
+const poemTextStyles = [
+  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
+    name: "Sayori",
+    fontName: "hashtag",
+    fontSize: 45,
+    lineSpacing: 0.95,
+    letterSpacing: 1
+  }),
+  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
+    name: "Natsuki",
+    fontName: "ammy_handwriting",
+    fontSize: 41,
+    letterSpacing: -0.5
+  }),
+  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
+    name: "Monika",
+    fontName: "journal",
+    fontSize: 36,
+    lineSpacing: 1.4,
+    letterSpacing: 0.5
+  }),
+  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
+    name: "Yuri",
+    fontName: "jp_hand_slanted",
+    lineSpacing: 1.55,
+    fontSize: 48
+  }),
+  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
+    name: "Yuri Act 2",
+    fontName: "damagrafik_script",
+    fontSize: 27,
+    letterSpacing: -12
+  }),
+  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
+    name: "Yuri Unused",
+    fontName: "as_i_lay_dying",
+    fontSize: 60
+  }),
+  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
+    name: "MC",
+    fontName: "halogen",
+    fontSize: 45,
+    lineSpacing: 1.53
+  }),
+  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
+    name: "Console",
+    fontName: "f25_bank_printer",
+    fontSize: 27,
+    color: "white",
+    lineSpacing: 1.1
+  })
+];
+const Poem$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  poemBackgrounds,
+  defaultPoemBackground,
+  defaultPoemStyle,
+  defaultX,
+  defaultY,
+  poemTopPadding,
+  poemBottomPadding,
+  poemPadding,
+  defaultPoemWidth,
+  defaultPoemHeight,
+  backgroundScale,
+  consoleBackgroundColor,
+  consoleWidth,
+  consoleHeight,
+  defaultConsoleBackground,
+  defaultConsoleStyle,
+  poemTextStyles
+}, Symbol.toStringTag, { value: "Module" }));
+const DdlcPlus = {
+  Base,
+  Choices,
+  Notification: Notification$1,
+  Poem: Poem$1,
+  TextBox: TextBox$1,
+  TextBoxCustom: CustomTBConstants
+};
+function getConstants() {
+  if (envX.gameMode === "ddlc_plus")
+    return DdlcPlus;
+  return Ddlc;
+}
 const NsfwPacks = {
   "dddg.buildin.backgrounds.nsfw": `${baseUrl}packs/buildin.base.backgrounds.nsfw.json`,
   "dddg.buildin.sayori.nsfw": `${baseUrl}packs/buildin.base.sayori.nsfw.json`,
@@ -8236,25 +9470,25 @@ const NsfwPacks = {
 };
 const NsfwNames = new Set(Object.keys(NsfwPacks));
 const NsfwPaths = Object.values(NsfwPacks);
-var __defProp$H = Object.defineProperty;
-var __defProps$n = Object.defineProperties;
-var __getOwnPropDescs$n = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$r = Object.getOwnPropertySymbols;
-var __hasOwnProp$r = Object.prototype.hasOwnProperty;
-var __propIsEnum$r = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$H = (obj, key, value) => key in obj ? __defProp$H(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$r = (a, b) => {
+var __defProp$A = Object.defineProperty;
+var __defProps$h = Object.defineProperties;
+var __getOwnPropDescs$h = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$l = Object.getOwnPropertySymbols;
+var __hasOwnProp$l = Object.prototype.hasOwnProperty;
+var __propIsEnum$l = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$A = (obj, key, value) => key in obj ? __defProp$A(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$l = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$r.call(b, prop))
-      __defNormalProp$H(a, prop, b[prop]);
-  if (__getOwnPropSymbols$r)
-    for (var prop of __getOwnPropSymbols$r(b)) {
-      if (__propIsEnum$r.call(b, prop))
-        __defNormalProp$H(a, prop, b[prop]);
+    if (__hasOwnProp$l.call(b, prop))
+      __defNormalProp$A(a, prop, b[prop]);
+  if (__getOwnPropSymbols$l)
+    for (var prop of __getOwnPropSymbols$l(b)) {
+      if (__propIsEnum$l.call(b, prop))
+        __defNormalProp$A(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$n = (a, b) => __defProps$n(a, __getOwnPropDescs$n(b));
+var __spreadProps$h = (a, b) => __defProps$h(a, __getOwnPropDescs$h(b));
 function mergeContentPacks(x, y) {
   return {
     backgrounds: mergeBackgrounds(x.backgrounds, y.backgrounds),
@@ -8264,7 +9498,7 @@ function mergeContentPacks(x, y) {
       x.fonts,
       y.fonts,
       (obj) => obj.id,
-      (xObj, yObj) => __spreadProps$n(__spreadValues$r({}, xObj), {
+      (xObj, yObj) => __spreadProps$h(__spreadValues$l({}, xObj), {
         files: mergeArrayUnique(xObj.files, yObj.files)
       })
     ),
@@ -8369,7 +9603,7 @@ function mergeCharacter(x, y) {
   };
 }
 function mergeStyleClasses(x, y) {
-  const ret = __spreadValues$r({}, x);
+  const ret = __spreadValues$l({}, x);
   for (const classKey in y) {
     if (!Object.prototype.hasOwnProperty.call(y, classKey))
       continue;
@@ -8380,7 +9614,7 @@ function mergeStyleClasses(x, y) {
   return ret;
 }
 function mergePose(x, y) {
-  const positions2 = __spreadValues$r({}, x.positions);
+  const positions2 = __spreadValues$l({}, x.positions);
   for (const key in y.positions) {
     if (positions2[key]) {
       positions2[key] = [...positions2[key], ...y.positions[key]];
@@ -8400,7 +9634,7 @@ function mergePose(x, y) {
   };
 }
 function mergeHeadCollections(x, y) {
-  const ret = __spreadValues$r({}, x);
+  const ret = __spreadValues$l({}, x);
   for (const headGroupKey in y) {
     if (!Object.prototype.hasOwnProperty.call(y, headGroupKey))
       continue;
@@ -8444,6 +9678,50 @@ function mergeIdArrays(x, y, getId2, merge2) {
     }
   }
   return ret;
+}
+function between(min, val, max) {
+  if (min > val)
+    return min;
+  if (val > max)
+    return max;
+  return val;
+}
+function matrixEquals(a, b) {
+  if (a === null && b === null)
+    return true;
+  if (a === null || b === null)
+    return false;
+  return a.a === b.a && a.b === b.b && a.c === b.c && a.d === b.d && a.e === b.e && a.f === b.f;
+}
+function decomposeMatrix(mat) {
+  const { a, b, c, d, e, f } = mat;
+  const delta = a * d - b * c;
+  const result = {
+    x: e,
+    y: f,
+    rotation: 0,
+    scaleX: 0,
+    scaleY: 0,
+    skewX: 0,
+    skewY: 0
+  };
+  if (a != 0 || b != 0) {
+    const r = Math.sqrt(a * a + b * b);
+    result.rotation = (b > 0 ? Math.acos(a / r) : -Math.acos(a / r)) / Math.PI * 180;
+    result.scaleX = r;
+    result.scaleY = delta / r;
+    result.skewX = Math.atan((a * c + b * d) / (r * r)) / Math.PI * 180;
+    result.skewY = 0;
+  } else if (c != 0 || d != 0) {
+    const s = Math.sqrt(c * c + d * d);
+    result.rotation = (Math.PI / 2 - (d > 0 ? Math.acos(-c / s) : -Math.acos(c / s))) / Math.PI * 180;
+    result.scaleX = delta / s;
+    result.scaleY = s;
+    result.skewX = 0;
+    result.skewY = Math.atan((a * c + b * d) / (s * s)) / Math.PI * 180;
+  } else
+    ;
+  return result;
 }
 function getDevtoolsGlobalHook() {
   return getTarget().__VUE_DEVTOOLS_GLOBAL_HOOK__;
@@ -10811,1240 +12089,6 @@ function arraySeeker(array, pos, delta) {
   }
   return val;
 }
-const screenWidth$1 = 1280;
-const screenHeight$1 = 720;
-const positions$1 = [
-  "4-1",
-  "3-1",
-  "2-1",
-  "4-2",
-  "center",
-  "4-3",
-  "2-2",
-  "3-3",
-  "4-4"
-];
-const sdCharacterScaleFactor$1 = 1;
-const hdCharacterScaleFactor$1 = 1 / 1.5;
-const CloseUpYOffset$1 = -74;
-const BaseCharacterYPos$1 = 358;
-const characterPositions$1 = [
-  200,
-  240,
-  400,
-  493,
-  640,
-  786,
-  880,
-  1040,
-  1080
-];
-const Base$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  screenWidth: screenWidth$1,
-  screenHeight: screenHeight$1,
-  positions: positions$1,
-  sdCharacterScaleFactor: sdCharacterScaleFactor$1,
-  hdCharacterScaleFactor: hdCharacterScaleFactor$1,
-  CloseUpYOffset: CloseUpYOffset$1,
-  BaseCharacterYPos: BaseCharacterYPos$1,
-  characterPositions: characterPositions$1
-}, Symbol.toStringTag, { value: "Module" }));
-var __defProp$G = Object.defineProperty;
-var __defNormalProp$G = (obj, key, value) => key in obj ? __defProp$G(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$i = (obj, key, value) => {
-  __defNormalProp$G(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-const _RGBAColor = class {
-  constructor(r, g, b, a) {
-    this.r = r;
-    this.g = g;
-    this.b = b;
-    this.a = a;
-    Object.freeze(this);
-  }
-  static validCss(str) {
-    return this.validCssRgb(str) || this.validHex(str);
-  }
-  static fromCss(str) {
-    if (this.validCssRgb(str)) {
-      return this.fromCssRgb(str);
-    }
-    if (this.validHex(str)) {
-      return this.fromHex(str);
-    }
-    throw new Error("Invalid RGB color format");
-  }
-  static validCssRgb(str) {
-    return this.rgbEx.test(str) || this.rgbaEx.test(str);
-  }
-  static fromCssRgb(str) {
-    if (!this.validCssRgb(str))
-      throw new Error("Invalid RGB color format");
-    const rgbHead = str.slice(0, -1);
-    const parentesisPos = rgbHead.indexOf("(");
-    const rbgTail = rgbHead.slice(parentesisPos + 1);
-    const elements = rbgTail.split(",").map((x) => parseFloat(x.trim()));
-    return new _RGBAColor(
-      elements[0],
-      elements[1],
-      elements[2],
-      elements.length === 4 ? elements[3] : 1
-    );
-  }
-  static validHex(str) {
-    return this.hexShortEx.test(str) || this.hexLongEx.test(str);
-  }
-  static fromHex(str) {
-    if (!this.validHex(str))
-      throw new Error("Invalid Hex color format");
-    const hexTail = str.slice(1);
-    if (hexTail.length === 3) {
-      return new _RGBAColor(
-        parseInt(hexTail[0] + hexTail[0], 16),
-        parseInt(hexTail[1] + hexTail[1], 16),
-        parseInt(hexTail[2] + hexTail[2], 16),
-        1
-      );
-    }
-    if (hexTail.length === 4) {
-      return new _RGBAColor(
-        parseInt(hexTail[0] + hexTail[0], 16),
-        parseInt(hexTail[1] + hexTail[1], 16),
-        parseInt(hexTail[2] + hexTail[2], 16),
-        parseInt(hexTail[3] + hexTail[3], 16) / 255
-      );
-    }
-    if (hexTail.length === 6) {
-      return new _RGBAColor(
-        parseInt(hexTail[0] + hexTail[1], 16),
-        parseInt(hexTail[2] + hexTail[3], 16),
-        parseInt(hexTail[4] + hexTail[5], 16),
-        1
-      );
-    }
-    if (hexTail.length === 8) {
-      return new _RGBAColor(
-        parseInt(hexTail[0] + hexTail[1], 16),
-        parseInt(hexTail[2] + hexTail[3], 16),
-        parseInt(hexTail[4] + hexTail[5], 16),
-        parseInt(hexTail[6] + hexTail[7], 16) / 255
-      );
-    }
-    throw new Error("Invalid Hex color format length");
-  }
-  toCss() {
-    if (this.a > 1) {
-      return `rgb(${this.r},${this.g},${this.b})`;
-    }
-    return `rgba(${this.r},${this.g},${this.b},${this.a})`;
-  }
-  toHex() {
-    return `#${Math.round(this.r).toString(16).padStart(2, "0")}${Math.round(
-      this.g
-    ).toString(16).padStart(2, "0")}${Math.round(this.b).toString(16).padStart(2, "0")}${Math.round(this.a * 255).toString(16).padStart(2, "0")}`;
-  }
-  toRgb() {
-    return this;
-  }
-  toHSL() {
-    let { r, g, b } = this;
-    const { a } = this;
-    r /= 255;
-    g /= 255;
-    b /= 255;
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    let h2;
-    let s;
-    const l = (max + min) / 2;
-    if (max === min) {
-      h2 = s = 0;
-    } else {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      switch (max) {
-        case r:
-          h2 = (g - b) / d + (g < b ? 6 : 0);
-          break;
-        case g:
-          h2 = (b - r) / d + 2;
-          break;
-        case b:
-          h2 = (r - g) / d + 4;
-          break;
-      }
-      h2 /= 6;
-    }
-    return new HSLAColor(h2, s, l, a);
-  }
-  get luminance() {
-    return Math.sqrt(
-      Math.pow(0.299 * (this.r / 255), 2) + Math.pow(0.587 * (this.g / 255), 2) + Math.pow(0.114 * (this.b / 255), 2)
-    );
-  }
-};
-let RGBAColor = _RGBAColor;
-__publicField$i(RGBAColor, "rgbEx", /^rgb\((\d*?),(\d*?),(\d*?)\)$/i);
-__publicField$i(RGBAColor, "rgbaEx", /^rgba\((\d{1,3}),(\d{1,3}),(\d{1,3}),([\d.]+)\)$/i);
-__publicField$i(RGBAColor, "hexShortEx", /^#[0-9A-F]{3,4}$/i);
-__publicField$i(RGBAColor, "hexLongEx", /^#[0-9A-F]{6,8}$/i);
-class HSLAColor {
-  constructor(h2, s, l, a) {
-    this.h = h2;
-    this.s = s;
-    this.l = l;
-    this.a = a;
-    Object.freeze(this);
-  }
-  toCss() {
-    if (this.a >= 1) {
-      return `hsl(${this.h}, ${this.s}, ${this.l})`;
-    }
-    return `hsla(${this.h}, ${this.s}, ${this.l}, ${this.a})`;
-  }
-  shift(deltas) {
-    let { h: h2, s, l, a } = this;
-    h2 += deltas.h;
-    if (h2 >= 1) {
-      h2 -= 1;
-    } else if (h2 < 0) {
-      h2 += 1;
-    }
-    if (s + deltas.s > 1) {
-      s -= deltas.s;
-    } else {
-      s += deltas.s;
-      if (s < 0) {
-        s = 0;
-      }
-    }
-    if (l + deltas.l > 1 || l + deltas.l < 0) {
-      l -= deltas.l;
-    } else {
-      l += deltas.l;
-    }
-    if (a + deltas.a > 1 || a + deltas.a < 0) {
-      a -= deltas.a;
-    } else {
-      a += deltas.a;
-    }
-    return new HSLAColor(h2, s, l, a);
-  }
-  toRgb() {
-    const { h: h2, s, l, a } = this;
-    let r;
-    let g;
-    let b;
-    if (s === 0) {
-      r = g = b = l;
-    } else {
-      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-      const p2 = 2 * l - q;
-      r = HSLAColor.hue2rgb(p2, q, h2 + 1 / 3);
-      g = HSLAColor.hue2rgb(p2, q, h2);
-      b = HSLAColor.hue2rgb(p2, q, h2 - 1 / 3);
-    }
-    return new RGBAColor(
-      Math.round(r * 255),
-      Math.round(g * 255),
-      Math.round(b * 255),
-      a
-    );
-  }
-  toHSL() {
-    return this;
-  }
-  static hue2rgb(p2, q, t) {
-    if (t < 0)
-      t += 1;
-    if (t > 1)
-      t -= 1;
-    if (t < 1 / 6)
-      return p2 + (q - p2) * 6 * t;
-    if (t < 1 / 2)
-      return q;
-    if (t < 2 / 3)
-      return p2 + (q - p2) * (2 / 3 - t) * 6;
-    return p2;
-  }
-}
-const nameboxTextOutlineDelta$3 = new HSLAColor(
-  -0.03065134099616873,
-  -0.5714285714285714,
-  -0.29607843137254897,
-  0
-);
-const ChoiceButtonColor$1 = "#ffe6f4";
-const ChoiceButtonBorderColor$1 = "#ffbde1";
-const ChoiceButtonWidth$1 = 420;
-const ChoiceSpacing$1 = 22;
-const ChoiceX$1 = 640;
-const ChoiceYOffset$1 = 270;
-const ChoicePadding$1 = 7;
-const Outline$1 = 3;
-const ChoiceOuterPadding$1 = Math.ceil(Outline$1 / 2);
-const ChoiceY$1 = (screenHeight$1 - ChoiceYOffset$1) / 2;
-const ChoiceTextStyle$1 = {
-  alpha: 1,
-  color: "black",
-  fontName: "aller",
-  fontSize: 24,
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 0,
-  lineSpacing: 1,
-  strokeColor: "",
-  strokeWidth: 0
-};
-const Choices$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  nameboxTextOutlineDelta: nameboxTextOutlineDelta$3,
-  ChoiceButtonColor: ChoiceButtonColor$1,
-  ChoiceButtonBorderColor: ChoiceButtonBorderColor$1,
-  ChoiceButtonWidth: ChoiceButtonWidth$1,
-  ChoiceSpacing: ChoiceSpacing$1,
-  ChoiceX: ChoiceX$1,
-  ChoiceYOffset: ChoiceYOffset$1,
-  ChoicePadding: ChoicePadding$1,
-  Outline: Outline$1,
-  ChoiceOuterPadding: ChoiceOuterPadding$1,
-  ChoiceY: ChoiceY$1,
-  ChoiceTextStyle: ChoiceTextStyle$1
-}, Symbol.toStringTag, { value: "Module" }));
-const textboxDefaultColor$1 = "#ffa8d2";
-const controlsDefaultColor$1 = "#552222";
-const nameboxDefaultColor$1 = "#ffeef6";
-const nameboxStrokeDefaultColor$1 = "#bb5599";
-const nameboxTextOutlineDelta$2 = new HSLAColor(
-  -0.03065134099616873,
-  -0.5714285714285714,
-  -0.29607843137254897,
-  0
-);
-const nameboxBackgroundDelta$1 = new HSLAColor(
-  0.002028397565922768,
-  0,
-  0.13725490196078438,
-  0
-);
-const nameboxGradientMiddleStopPosition$1 = 0.82;
-const nameboxGradientEndDelta$1 = new HSLAColor(
-  -0.004901960784313708,
-  -0.8599999999999999,
-  -0.16274509803921566,
-  0
-);
-const nameboxRounding$1 = 12;
-const nameboxRoundingBuffer$1 = 1.5;
-const textboxRounding$1 = 12;
-const textboxRoundingBuffer$1 = 1.5;
-const nameColorThreshold$1 = 0.6;
-const controlColorDelta$1 = new HSLAColor(
-  0.08045977011494243,
-  -0.5714285714285714,
-  -0.5960784313725489,
-  0
-);
-const controlDisableColorDelta$1 = new HSLAColor(
-  0,
-  -0.14285714285714296,
-  0.3,
-  0
-);
-const dotColorDelta$1 = new HSLAColor(
-  0.004269293924466178,
-  -0.01869158878504662,
-  -0.039215686274509665,
-  0
-);
-const dotRadius$1 = 9.5;
-const dotPatternSize$1 = 47;
-const textboxOutlineColorDelta$1 = new HSLAColor(
-  0.0023347701149424305,
-  0,
-  0.10784313725490202,
-  0
-);
-const textboxOutlineWidth$1 = 3;
-const CustomTBConstants$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  textboxDefaultColor: textboxDefaultColor$1,
-  controlsDefaultColor: controlsDefaultColor$1,
-  nameboxDefaultColor: nameboxDefaultColor$1,
-  nameboxStrokeDefaultColor: nameboxStrokeDefaultColor$1,
-  nameboxTextOutlineDelta: nameboxTextOutlineDelta$2,
-  nameboxBackgroundDelta: nameboxBackgroundDelta$1,
-  nameboxGradientMiddleStopPosition: nameboxGradientMiddleStopPosition$1,
-  nameboxGradientEndDelta: nameboxGradientEndDelta$1,
-  nameboxRounding: nameboxRounding$1,
-  nameboxRoundingBuffer: nameboxRoundingBuffer$1,
-  textboxRounding: textboxRounding$1,
-  textboxRoundingBuffer: textboxRoundingBuffer$1,
-  nameColorThreshold: nameColorThreshold$1,
-  controlColorDelta: controlColorDelta$1,
-  controlDisableColorDelta: controlDisableColorDelta$1,
-  dotColorDelta: dotColorDelta$1,
-  dotRadius: dotRadius$1,
-  dotPatternSize: dotPatternSize$1,
-  textboxOutlineColorDelta: textboxOutlineColorDelta$1,
-  textboxOutlineWidth: textboxOutlineWidth$1
-}, Symbol.toStringTag, { value: "Module" }));
-var __defProp$F = Object.defineProperty;
-var __defProps$m = Object.defineProperties;
-var __getOwnPropDescs$m = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$q = Object.getOwnPropertySymbols;
-var __hasOwnProp$q = Object.prototype.hasOwnProperty;
-var __propIsEnum$q = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$F = (obj, key, value) => key in obj ? __defProp$F(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$q = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$q.call(b, prop))
-      __defNormalProp$F(a, prop, b[prop]);
-  if (__getOwnPropSymbols$q)
-    for (var prop of __getOwnPropSymbols$q(b)) {
-      if (__propIsEnum$q.call(b, prop))
-        __defNormalProp$F(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$m = (a, b) => __defProps$m(a, __getOwnPropDescs$m(b));
-const TextBoxWidth$1 = 816;
-const TextBoxCorruptedWidth$1 = 900;
-const TextBoxHeight$1 = 146;
-const TextBoxKerning$1 = 0;
-const TextBoxLineHeight$1 = 29;
-const TextBoxCorruptedKerning$1 = 8;
-const TextBoxTextXOffset$1 = 38;
-const TextBoxTextYOffset$1 = 44;
-const TextBoxBottomSpacing$1 = 6;
-const HdSpacing = 93;
-const HdSideMargin = 404;
-const TextBoxTextCorruptedXOffset$1 = 9;
-const TextBoxTextCorruptedYOffset$1 = 9;
-const NameboxHeight$1 = 39;
-const NameboxWidth$1 = 168;
-const NameboxXOffset$1 = 34;
-const NameboxTextYOffset$1 = 29;
-const ControlsYBottomOffset$1 = 12;
-const ControlsXHistoryOffset$1 = -126;
-const ControlsXSkipOffset$1 = -72;
-const ControlsXStuffOffset$1 = -38;
-const ArrowXRightOffset$1 = 30.75;
-const ArrowYBottomOffset$1 = 26;
-const GlowRX$1 = 426;
-const GlowRY$1 = 58;
-const BaseTextStyle$1 = {
-  alpha: 1,
-  color: "black",
-  fontName: "aller",
-  fontSize: 24,
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 0,
-  lineSpacing: 1,
-  strokeColor: "",
-  strokeWidth: 0
-};
-const NameboxTextStyle$1 = __spreadProps$m(__spreadValues$q({}, BaseTextStyle$1), {
-  fontName: "riffic",
-  fontSize: 24,
-  strokeColor: nameboxStrokeDefaultColor$1,
-  strokeWidth: 6,
-  color: "white",
-  letterSpacing: 1
-});
-const ControlsTextStyle$1 = {
-  align: "left",
-  font: "13px aller",
-  fill: {
-    style: "#522"
-  }
-};
-const ControlsTextDisabledStyle$1 = __spreadProps$m(__spreadValues$q({}, ControlsTextStyle$1), {
-  fill: {
-    style: "#a66"
-  }
-});
-const TextBoxCorruptedStyle$1 = {
-  align: "left",
-  font: "24px verily",
-  outline: {
-    style: "#000",
-    width: 20
-  },
-  fill: {
-    style: "#fff"
-  }
-};
-const TextBoxStyle$1 = {
-  alpha: 1,
-  color: "#ffffff",
-  fontName: "aller",
-  fontSize: 24,
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 0,
-  strokeColor: "#523140",
-  strokeWidth: 4,
-  lineSpacing: 1.2
-};
-const TextBoxX$1 = screenWidth$1 / 2 - TextBoxWidth$1 / 2;
-const TextBoxCorruptedX$1 = screenWidth$1 / 2 - TextBoxCorruptedWidth$1 / 2;
-const TextBoxTextX$1 = TextBoxX$1 + TextBoxTextXOffset$1;
-const NameboxX$1 = TextBoxX$1 + NameboxXOffset$1;
-const NameboxTextX$1 = NameboxX$1 + NameboxWidth$1 / 2;
-const ControlsXHistory$1 = TextBoxX$1 + ControlsXHistoryOffset$1;
-const ControlsXSkip$1 = TextBoxX$1 + ControlsXSkipOffset$1;
-const ControlsXStuff$1 = TextBoxX$1 + ControlsXStuffOffset$1;
-const DefaultTextboxStyle$1 = "normal";
-const TextBox$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  TextBoxWidth: TextBoxWidth$1,
-  TextBoxCorruptedWidth: TextBoxCorruptedWidth$1,
-  TextBoxHeight: TextBoxHeight$1,
-  TextBoxKerning: TextBoxKerning$1,
-  TextBoxLineHeight: TextBoxLineHeight$1,
-  TextBoxCorruptedKerning: TextBoxCorruptedKerning$1,
-  TextBoxTextXOffset: TextBoxTextXOffset$1,
-  TextBoxTextYOffset: TextBoxTextYOffset$1,
-  TextBoxBottomSpacing: TextBoxBottomSpacing$1,
-  HdSpacing,
-  HdSideMargin,
-  TextBoxTextCorruptedXOffset: TextBoxTextCorruptedXOffset$1,
-  TextBoxTextCorruptedYOffset: TextBoxTextCorruptedYOffset$1,
-  NameboxHeight: NameboxHeight$1,
-  NameboxWidth: NameboxWidth$1,
-  NameboxXOffset: NameboxXOffset$1,
-  NameboxTextYOffset: NameboxTextYOffset$1,
-  ControlsYBottomOffset: ControlsYBottomOffset$1,
-  ControlsXHistoryOffset: ControlsXHistoryOffset$1,
-  ControlsXSkipOffset: ControlsXSkipOffset$1,
-  ControlsXStuffOffset: ControlsXStuffOffset$1,
-  ArrowXRightOffset: ArrowXRightOffset$1,
-  ArrowYBottomOffset: ArrowYBottomOffset$1,
-  GlowRX: GlowRX$1,
-  GlowRY: GlowRY$1,
-  BaseTextStyle: BaseTextStyle$1,
-  NameboxTextStyle: NameboxTextStyle$1,
-  ControlsTextStyle: ControlsTextStyle$1,
-  ControlsTextDisabledStyle: ControlsTextDisabledStyle$1,
-  TextBoxCorruptedStyle: TextBoxCorruptedStyle$1,
-  TextBoxStyle: TextBoxStyle$1,
-  TextBoxX: TextBoxX$1,
-  TextBoxCorruptedX: TextBoxCorruptedX$1,
-  TextBoxTextX: TextBoxTextX$1,
-  NameboxX: NameboxX$1,
-  NameboxTextX: NameboxTextX$1,
-  ControlsXHistory: ControlsXHistory$1,
-  ControlsXSkip: ControlsXSkip$1,
-  ControlsXStuff: ControlsXStuff$1,
-  DefaultTextboxStyle: DefaultTextboxStyle$1
-}, Symbol.toStringTag, { value: "Module" }));
-var __defProp$E = Object.defineProperty;
-var __defProps$l = Object.defineProperties;
-var __getOwnPropDescs$l = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$p = Object.getOwnPropertySymbols;
-var __hasOwnProp$p = Object.prototype.hasOwnProperty;
-var __propIsEnum$p = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$E = (obj, key, value) => key in obj ? __defProp$E(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$p = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$p.call(b, prop))
-      __defNormalProp$E(a, prop, b[prop]);
-  if (__getOwnPropSymbols$p)
-    for (var prop of __getOwnPropSymbols$p(b)) {
-      if (__propIsEnum$p.call(b, prop))
-        __defNormalProp$E(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$l = (a, b) => __defProps$l(a, __getOwnPropDescs$l(b));
-const NotificationBackgroundColor$1 = "#ffe6f4";
-const NotificationBorderColor$1 = "#ffbde1";
-const NotificationBackdropColor$1 = "rgba(255,255,255,0.6)";
-const NotificationPadding$1 = 40;
-const NotificationSpacing$1 = 30;
-const NotificationOkTextStyle$1 = __spreadProps$l(__spreadValues$p({}, BaseTextStyle$1), {
-  fontName: "riffic",
-  fontSize: 24,
-  strokeColor: nameboxStrokeDefaultColor$1,
-  strokeWidth: 8,
-  letterSpacing: 1,
-  color: "white"
-});
-const NotificationTextStyle$1 = {
-  alpha: 1,
-  color: "black",
-  fontName: "aller",
-  fontSize: 24,
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 0,
-  lineSpacing: 1.2,
-  strokeColor: "",
-  strokeWidth: 0
-};
-const Notification$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  NotificationBackgroundColor: NotificationBackgroundColor$1,
-  NotificationBorderColor: NotificationBorderColor$1,
-  NotificationBackdropColor: NotificationBackdropColor$1,
-  NotificationPadding: NotificationPadding$1,
-  NotificationSpacing: NotificationSpacing$1,
-  NotificationOkTextStyle: NotificationOkTextStyle$1,
-  NotificationTextStyle: NotificationTextStyle$1
-}, Symbol.toStringTag, { value: "Module" }));
-var __defProp$D = Object.defineProperty;
-var __defProps$k = Object.defineProperties;
-var __getOwnPropDescs$k = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$o = Object.getOwnPropertySymbols;
-var __hasOwnProp$o = Object.prototype.hasOwnProperty;
-var __propIsEnum$o = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$D = (obj, key, value) => key in obj ? __defProp$D(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$o = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$o.call(b, prop))
-      __defNormalProp$D(a, prop, b[prop]);
-  if (__getOwnPropSymbols$o)
-    for (var prop of __getOwnPropSymbols$o(b)) {
-      if (__propIsEnum$o.call(b, prop))
-        __defNormalProp$D(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$k = (a, b) => __defProps$k(a, __getOwnPropDescs$k(b));
-const poemBackgrounds$1 = [
-  { name: "Normal paper", file: "poem.jpg" },
-  { name: "Lightly soiled paper", file: "poem_y1.jpg" },
-  { name: "Heavily soiled paper", file: "poem_y2.jpg" },
-  { name: "Console", file: "internal:console" },
-  { name: "Transparent", file: "internal:transparent" }
-];
-const defaultPoemBackground$1 = 0;
-const defaultPoemStyle$1 = 0;
-const defaultX$1 = screenWidth$1 / 2;
-const defaultY$1 = screenHeight$1 / 2;
-const poemTopPadding$1 = 33;
-const poemBottomPadding$1 = 100;
-const poemPadding$1 = 30;
-const defaultPoemWidth$1 = 800;
-const defaultPoemHeight$1 = 720;
-const backgroundScale$1 = sdCharacterScaleFactor$1;
-const consoleBackgroundColor$1 = "#333333bf";
-const consoleWidth$1 = 480;
-const consoleHeight$1 = 180;
-const defaultConsoleBackground$1 = 3;
-const defaultConsoleStyle$1 = 7;
-const BasePoemStyle$1 = {
-  alpha: 1,
-  color: "black",
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 0,
-  lineSpacing: 1.2,
-  strokeColor: "",
-  strokeWidth: 0,
-  fontName: "aller",
-  fontSize: 12
-};
-const poemTextStyles$1 = [
-  __spreadProps$k(__spreadValues$o({}, BasePoemStyle$1), {
-    name: "Sayori",
-    fontName: "hashtag",
-    fontSize: 34,
-    lineSpacing: 1.05,
-    letterSpacing: 0
-  }),
-  __spreadProps$k(__spreadValues$o({}, BasePoemStyle$1), {
-    name: "Natsuki",
-    fontName: "ammy_handwriting",
-    fontSize: 28
-  }),
-  __spreadProps$k(__spreadValues$o({}, BasePoemStyle$1), {
-    name: "Monika",
-    fontName: "journal",
-    fontSize: 34
-  }),
-  __spreadProps$k(__spreadValues$o({}, BasePoemStyle$1), {
-    name: "Yuri",
-    fontName: "jp_hand_slanted",
-    lineSpacing: 1.5,
-    fontSize: 32
-  }),
-  __spreadProps$k(__spreadValues$o({}, BasePoemStyle$1), {
-    name: "Yuri Act 2",
-    fontName: "damagrafik_script",
-    fontSize: 18,
-    letterSpacing: -8
-  }),
-  __spreadProps$k(__spreadValues$o({}, BasePoemStyle$1), {
-    name: "Yuri Unused",
-    fontName: "as_i_lay_dying",
-    fontSize: 40
-  }),
-  __spreadProps$k(__spreadValues$o({}, BasePoemStyle$1), {
-    name: "MC",
-    fontName: "halogen",
-    fontSize: 30,
-    lineSpacing: 1.53
-  }),
-  __spreadProps$k(__spreadValues$o({}, BasePoemStyle$1), {
-    name: "Console",
-    fontName: "f25_bank_printer",
-    fontSize: 18,
-    color: "white",
-    lineSpacing: 1.1
-  })
-];
-const Poem$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  poemBackgrounds: poemBackgrounds$1,
-  defaultPoemBackground: defaultPoemBackground$1,
-  defaultPoemStyle: defaultPoemStyle$1,
-  defaultX: defaultX$1,
-  defaultY: defaultY$1,
-  poemTopPadding: poemTopPadding$1,
-  poemBottomPadding: poemBottomPadding$1,
-  poemPadding: poemPadding$1,
-  defaultPoemWidth: defaultPoemWidth$1,
-  defaultPoemHeight: defaultPoemHeight$1,
-  backgroundScale: backgroundScale$1,
-  consoleBackgroundColor: consoleBackgroundColor$1,
-  consoleWidth: consoleWidth$1,
-  consoleHeight: consoleHeight$1,
-  defaultConsoleBackground: defaultConsoleBackground$1,
-  defaultConsoleStyle: defaultConsoleStyle$1,
-  poemTextStyles: poemTextStyles$1
-}, Symbol.toStringTag, { value: "Module" }));
-const Ddlc = {
-  Base: Base$1,
-  Choices: Choices$1,
-  Notification: Notification$2,
-  Poem: Poem$2,
-  TextBox: TextBox$2,
-  TextBoxCustom: CustomTBConstants$1
-};
-const screenWidth = 1920;
-const screenHeight = 1080;
-const positions = [
-  "4-1",
-  "3-1",
-  "2-1",
-  "4-2",
-  "center",
-  "4-3",
-  "2-2",
-  "3-3",
-  "4-4"
-];
-const sdCharacterScaleFactor = 1.5;
-const hdCharacterScaleFactor = 1;
-const CloseUpYOffset = -111;
-const BaseCharacterYPos = -39;
-const characterPositions = [
-  300,
-  360,
-  600,
-  740,
-  960,
-  1180,
-  1320,
-  1560,
-  1620
-];
-const Base = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  screenWidth,
-  screenHeight,
-  positions,
-  sdCharacterScaleFactor,
-  hdCharacterScaleFactor,
-  CloseUpYOffset,
-  BaseCharacterYPos,
-  characterPositions
-}, Symbol.toStringTag, { value: "Module" }));
-const nameboxTextOutlineDelta$1 = new HSLAColor(
-  -0.03065134099616873,
-  -0.5714285714285714,
-  -0.29607843137254897,
-  0
-);
-const ChoiceButtonColor = "#ffe6f4";
-const ChoiceButtonBorderColor = "#ffbde1";
-const ChoiceButtonWidth = 630;
-const ChoiceSpacing = 33;
-const ChoiceX = 960;
-const ChoiceYOffset = 405;
-const ChoicePadding = 10.5;
-const Outline = 4.5;
-const ChoiceOuterPadding = Math.ceil(Outline / 2);
-const ChoiceY = (screenHeight - ChoiceYOffset) / 2;
-const ChoiceTextStyle = {
-  alpha: 1,
-  color: "black",
-  fontName: "aller",
-  fontSize: 36,
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 0,
-  lineSpacing: 1,
-  strokeColor: "",
-  strokeWidth: 0
-};
-const Choices = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  nameboxTextOutlineDelta: nameboxTextOutlineDelta$1,
-  ChoiceButtonColor,
-  ChoiceButtonBorderColor,
-  ChoiceButtonWidth,
-  ChoiceSpacing,
-  ChoiceX,
-  ChoiceYOffset,
-  ChoicePadding,
-  Outline,
-  ChoiceOuterPadding,
-  ChoiceY,
-  ChoiceTextStyle
-}, Symbol.toStringTag, { value: "Module" }));
-const textboxDefaultColor = "#ffa8d2";
-const controlsDefaultColor = "#552222";
-const nameboxDefaultColor = "#ffeef6";
-const nameboxStrokeDefaultColor = "#bb5599";
-const nameboxTextOutlineDelta = new HSLAColor(
-  -0.03065134099616873,
-  -0.5714285714285714,
-  -0.29607843137254897,
-  0
-);
-const nameboxBackgroundDelta = new HSLAColor(
-  0.002028397565922768,
-  0,
-  0.13725490196078438,
-  0
-);
-const nameboxGradientMiddleStopPosition = 0.82;
-const nameboxGradientEndDelta = new HSLAColor(
-  -0.004901960784313708,
-  -0.8599999999999999,
-  -0.16274509803921566,
-  0
-);
-const nameboxRounding = 15;
-const nameboxRoundingBuffer = 1.5;
-const textboxRounding = 19;
-const textboxRoundingBuffer = 1.5;
-const nameColorThreshold = 0.6;
-const controlColorDelta = new HSLAColor(
-  0.08045977011494243,
-  -0.5714285714285714,
-  -0.5960784313725489,
-  0
-);
-const controlDisableColorDelta = new HSLAColor(
-  0,
-  -0.14285714285714296,
-  0.3,
-  0
-);
-const dotColorDelta = new HSLAColor(
-  0.004269293924466178,
-  -0.01869158878504662,
-  -0.039215686274509665,
-  0
-);
-const dotRadius = 9.5 * 1.5;
-const dotPatternSize = 47 * 1.5;
-const textboxOutlineColorDelta = new HSLAColor(
-  0.0023347701149424305,
-  0,
-  0.10784313725490202,
-  0
-);
-const textboxOutlineWidth = 5;
-const CustomTBConstants = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  textboxDefaultColor,
-  controlsDefaultColor,
-  nameboxDefaultColor,
-  nameboxStrokeDefaultColor,
-  nameboxTextOutlineDelta,
-  nameboxBackgroundDelta,
-  nameboxGradientMiddleStopPosition,
-  nameboxGradientEndDelta,
-  nameboxRounding,
-  nameboxRoundingBuffer,
-  textboxRounding,
-  textboxRoundingBuffer,
-  nameColorThreshold,
-  controlColorDelta,
-  controlDisableColorDelta,
-  dotColorDelta,
-  dotRadius,
-  dotPatternSize,
-  textboxOutlineColorDelta,
-  textboxOutlineWidth
-}, Symbol.toStringTag, { value: "Module" }));
-var __defProp$C = Object.defineProperty;
-var __defProps$j = Object.defineProperties;
-var __getOwnPropDescs$j = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$n = Object.getOwnPropertySymbols;
-var __hasOwnProp$n = Object.prototype.hasOwnProperty;
-var __propIsEnum$n = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$C = (obj, key, value) => key in obj ? __defProp$C(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$n = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$n.call(b, prop))
-      __defNormalProp$C(a, prop, b[prop]);
-  if (__getOwnPropSymbols$n)
-    for (var prop of __getOwnPropSymbols$n(b)) {
-      if (__propIsEnum$n.call(b, prop))
-        __defNormalProp$C(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$j = (a, b) => __defProps$j(a, __getOwnPropDescs$j(b));
-const TextBoxWidth = 1220;
-const TextBoxCorruptedWidth = 900;
-const TextBoxHeight = 219;
-const TextBoxKerning = 0;
-const TextBoxLineHeight = 29;
-const TextBoxCorruptedKerning = 8;
-const TextBoxTextXOffset = 57;
-const TextBoxTextYOffset = 68;
-const TextBoxBottomSpacing = 54;
-const TextBoxTextCorruptedXOffset = 9;
-const TextBoxTextCorruptedYOffset = 9;
-const NameboxHeight = 59;
-const NameboxWidth = 252;
-const NameboxXOffset = 49;
-const NameboxTextYOffset = 43;
-const ControlsYBottomOffset = 12 * 1.5;
-const ControlsXHistoryOffset = -126 * 1.5;
-const ControlsXSkipOffset = -72 * 1.5;
-const ControlsXStuffOffset = -38 * 1.5;
-const ArrowXRightOffset = 30.75 * 1.5;
-const ArrowYBottomOffset = 26 * 1.5;
-const GlowRX = 426 * 1.5;
-const GlowRY = 58 * 1.5;
-const BaseTextStyle = {
-  alpha: 1,
-  color: "black",
-  fontName: "aller",
-  fontSize: 24,
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 1,
-  lineSpacing: 1.2,
-  strokeColor: "",
-  strokeWidth: 0
-};
-const NameboxTextStyle = __spreadProps$j(__spreadValues$n({}, BaseTextStyle), {
-  fontName: "riffic",
-  fontSize: 36,
-  strokeColor: nameboxStrokeDefaultColor,
-  strokeWidth: 9,
-  color: "white",
-  letterSpacing: 2
-});
-const ControlsTextStyle = {
-  align: "left",
-  font: "24px aller",
-  fill: {
-    style: "#522"
-  }
-};
-const ControlsTextDisabledStyle = __spreadProps$j(__spreadValues$n({}, ControlsTextStyle), {
-  fill: {
-    style: "#a66"
-  }
-});
-const TextBoxStyle = {
-  alpha: 1,
-  color: "#ffffff",
-  fontName: "aller",
-  fontSize: 30,
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 0,
-  strokeColor: "#523140",
-  strokeWidth: 5,
-  lineSpacing: 1.2
-};
-const TextBoxCorruptedStyle = {
-  align: "left",
-  font: "24px verily",
-  outline: {
-    style: "#000",
-    width: 20
-  },
-  fill: {
-    style: "#fff"
-  }
-};
-const TextBoxX = screenWidth / 2 - TextBoxWidth / 2;
-const TextBoxCorruptedX = screenWidth / 2 - TextBoxCorruptedWidth / 2;
-const TextBoxTextX = TextBoxX + TextBoxTextXOffset;
-const NameboxX = TextBoxX + NameboxXOffset;
-const NameboxTextX = NameboxX + NameboxWidth / 2;
-const ControlsXHistory = TextBoxX + ControlsXHistoryOffset;
-const ControlsXSkip = TextBoxX + ControlsXSkipOffset;
-const ControlsXStuff = TextBoxX + ControlsXStuffOffset;
-const DefaultTextboxStyle = "custom_plus";
-const TextBox$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  TextBoxWidth,
-  TextBoxCorruptedWidth,
-  TextBoxHeight,
-  TextBoxKerning,
-  TextBoxLineHeight,
-  TextBoxCorruptedKerning,
-  TextBoxTextXOffset,
-  TextBoxTextYOffset,
-  TextBoxBottomSpacing,
-  TextBoxTextCorruptedXOffset,
-  TextBoxTextCorruptedYOffset,
-  NameboxHeight,
-  NameboxWidth,
-  NameboxXOffset,
-  NameboxTextYOffset,
-  ControlsYBottomOffset,
-  ControlsXHistoryOffset,
-  ControlsXSkipOffset,
-  ControlsXStuffOffset,
-  ArrowXRightOffset,
-  ArrowYBottomOffset,
-  GlowRX,
-  GlowRY,
-  BaseTextStyle,
-  NameboxTextStyle,
-  ControlsTextStyle,
-  ControlsTextDisabledStyle,
-  TextBoxStyle,
-  TextBoxCorruptedStyle,
-  TextBoxX,
-  TextBoxCorruptedX,
-  TextBoxTextX,
-  NameboxX,
-  NameboxTextX,
-  ControlsXHistory,
-  ControlsXSkip,
-  ControlsXStuff,
-  DefaultTextboxStyle
-}, Symbol.toStringTag, { value: "Module" }));
-var __defProp$B = Object.defineProperty;
-var __defProps$i = Object.defineProperties;
-var __getOwnPropDescs$i = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$m = Object.getOwnPropertySymbols;
-var __hasOwnProp$m = Object.prototype.hasOwnProperty;
-var __propIsEnum$m = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$B = (obj, key, value) => key in obj ? __defProp$B(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$m = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$m.call(b, prop))
-      __defNormalProp$B(a, prop, b[prop]);
-  if (__getOwnPropSymbols$m)
-    for (var prop of __getOwnPropSymbols$m(b)) {
-      if (__propIsEnum$m.call(b, prop))
-        __defNormalProp$B(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$i = (a, b) => __defProps$i(a, __getOwnPropDescs$i(b));
-const NotificationBackgroundColor = "#ffe6f4";
-const NotificationBorderColor = "#ffbde1";
-const NotificationBackdropColor = "rgba(255,255,255,0.6)";
-const NotificationPadding = 60;
-const NotificationSpacing = 45;
-const NotificationOkTextStyle = __spreadProps$i(__spreadValues$m({}, BaseTextStyle), {
-  fontName: "riffic",
-  fontSize: 36,
-  strokeColor: nameboxStrokeDefaultColor,
-  strokeWidth: 12,
-  letterSpacing: 1,
-  color: "white"
-});
-const NotificationTextStyle = {
-  alpha: 1,
-  color: "black",
-  fontName: "aller",
-  fontSize: 36,
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 0,
-  lineSpacing: 1.2,
-  strokeColor: "",
-  strokeWidth: 0
-};
-const Notification$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  NotificationBackgroundColor,
-  NotificationBorderColor,
-  NotificationBackdropColor,
-  NotificationPadding,
-  NotificationSpacing,
-  NotificationOkTextStyle,
-  NotificationTextStyle
-}, Symbol.toStringTag, { value: "Module" }));
-var __defProp$A = Object.defineProperty;
-var __defProps$h = Object.defineProperties;
-var __getOwnPropDescs$h = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$l = Object.getOwnPropertySymbols;
-var __hasOwnProp$l = Object.prototype.hasOwnProperty;
-var __propIsEnum$l = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$A = (obj, key, value) => key in obj ? __defProp$A(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$l = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$l.call(b, prop))
-      __defNormalProp$A(a, prop, b[prop]);
-  if (__getOwnPropSymbols$l)
-    for (var prop of __getOwnPropSymbols$l(b)) {
-      if (__propIsEnum$l.call(b, prop))
-        __defNormalProp$A(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$h = (a, b) => __defProps$h(a, __getOwnPropDescs$h(b));
-const poemBackgrounds = [
-  { name: "Normal paper", file: "poem.jpg" },
-  { name: "Lightly soiled paper", file: "poem_y1.jpg" },
-  { name: "Heavily soiled paper", file: "poem_y2.jpg" },
-  { name: "Console", file: "internal:console" },
-  { name: "Transparent", file: "internal:transparent" }
-];
-const defaultPoemBackground = 0;
-const defaultPoemStyle = 0;
-const defaultX = screenWidth / 2;
-const defaultY = screenHeight / 2;
-const poemTopPadding = 26;
-const poemBottomPadding = 150;
-const poemPadding = 61;
-const defaultPoemWidth = 1200;
-const defaultPoemHeight = 1080;
-const backgroundScale = sdCharacterScaleFactor;
-const consoleBackgroundColor = "#333333bf";
-const consoleWidth = 720;
-const consoleHeight = 270;
-const defaultConsoleBackground = 3;
-const defaultConsoleStyle = 7;
-const BasePoemStyle = {
-  alpha: 1,
-  color: "black",
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 0,
-  lineSpacing: 1.2,
-  strokeColor: "",
-  strokeWidth: 0,
-  fontName: "aller",
-  fontSize: 18
-};
-const poemTextStyles = [
-  __spreadProps$h(__spreadValues$l({}, BasePoemStyle), {
-    name: "Sayori",
-    fontName: "hashtag",
-    fontSize: 45,
-    lineSpacing: 0.95,
-    letterSpacing: 1
-  }),
-  __spreadProps$h(__spreadValues$l({}, BasePoemStyle), {
-    name: "Natsuki",
-    fontName: "ammy_handwriting",
-    fontSize: 41,
-    letterSpacing: -0.5
-  }),
-  __spreadProps$h(__spreadValues$l({}, BasePoemStyle), {
-    name: "Monika",
-    fontName: "journal",
-    fontSize: 36,
-    lineSpacing: 1.4,
-    letterSpacing: 0.5
-  }),
-  __spreadProps$h(__spreadValues$l({}, BasePoemStyle), {
-    name: "Yuri",
-    fontName: "jp_hand_slanted",
-    lineSpacing: 1.55,
-    fontSize: 48
-  }),
-  __spreadProps$h(__spreadValues$l({}, BasePoemStyle), {
-    name: "Yuri Act 2",
-    fontName: "damagrafik_script",
-    fontSize: 27,
-    letterSpacing: -12
-  }),
-  __spreadProps$h(__spreadValues$l({}, BasePoemStyle), {
-    name: "Yuri Unused",
-    fontName: "as_i_lay_dying",
-    fontSize: 60
-  }),
-  __spreadProps$h(__spreadValues$l({}, BasePoemStyle), {
-    name: "MC",
-    fontName: "halogen",
-    fontSize: 45,
-    lineSpacing: 1.53
-  }),
-  __spreadProps$h(__spreadValues$l({}, BasePoemStyle), {
-    name: "Console",
-    fontName: "f25_bank_printer",
-    fontSize: 27,
-    color: "white",
-    lineSpacing: 1.1
-  })
-];
-const Poem$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  poemBackgrounds,
-  defaultPoemBackground,
-  defaultPoemStyle,
-  defaultX,
-  defaultY,
-  poemTopPadding,
-  poemBottomPadding,
-  poemPadding,
-  defaultPoemWidth,
-  defaultPoemHeight,
-  backgroundScale,
-  consoleBackgroundColor,
-  consoleWidth,
-  consoleHeight,
-  defaultConsoleBackground,
-  defaultConsoleStyle,
-  poemTextStyles
-}, Symbol.toStringTag, { value: "Module" }));
-const DdlcPlus = {
-  Base,
-  Choices,
-  Notification: Notification$1,
-  Poem: Poem$1,
-  TextBox: TextBox$1,
-  TextBoxCustom: CustomTBConstants
-};
-function getConstants() {
-  if (envX.gameMode === "ddlc_plus")
-    return DdlcPlus;
-  return Ddlc;
-}
 var SelectedState = /* @__PURE__ */ ((SelectedState2) => {
   SelectedState2[SelectedState2["None"] = 0] = "None";
   SelectedState2[SelectedState2["Selected"] = 1] = "Selected";
@@ -13373,50 +13417,6 @@ function applyStyle(ctx, params) {
     ctx.strokeStyle = params.outline.style;
     ctx.lineWidth = params.outline.width;
   }
-}
-function between(min, val, max) {
-  if (min > val)
-    return min;
-  if (val > max)
-    return max;
-  return val;
-}
-function matrixEquals(a, b) {
-  if (a === null && b === null)
-    return true;
-  if (a === null || b === null)
-    return false;
-  return a.a === b.a && a.b === b.b && a.c === b.c && a.d === b.d && a.e === b.e && a.f === b.f;
-}
-function decomposeMatrix(mat) {
-  const { a, b, c, d, e, f } = mat;
-  const delta = a * d - b * c;
-  const result = {
-    x: e,
-    y: f,
-    rotation: 0,
-    scaleX: 0,
-    scaleY: 0,
-    skewX: 0,
-    skewY: 0
-  };
-  if (a != 0 || b != 0) {
-    const r = Math.sqrt(a * a + b * b);
-    result.rotation = (b > 0 ? Math.acos(a / r) : -Math.acos(a / r)) / Math.PI * 180;
-    result.scaleX = r;
-    result.scaleY = delta / r;
-    result.skewX = Math.atan((a * c + b * d) / (r * r)) / Math.PI * 180;
-    result.skewY = 0;
-  } else if (c != 0 || d != 0) {
-    const s = Math.sqrt(c * c + d * d);
-    result.rotation = (Math.PI / 2 - (d > 0 ? Math.acos(-c / s) : -Math.acos(c / s))) / Math.PI * 180;
-    result.scaleX = delta / s;
-    result.scaleY = s;
-    result.skewX = 0;
-    result.skewY = Math.atan((a * c + b * d) / (s * s)) / Math.PI * 180;
-  } else
-    ;
-  return result;
 }
 var __defProp$w = Object.defineProperty;
 var __defNormalProp$w = (obj, key, value) => key in obj ? __defProp$w(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
@@ -17573,7 +17573,7 @@ const store = createStore({
       return __async$o(this, arguments, function* ({ state }, compact) {
         const repo = yield Repo.getInstance();
         return JSON.stringify(
-          state,
+          __spreadProps$5(__spreadValues$7({}, state), { version: 2.5 }),
           (key, value) => {
             if (key === "ui")
               return void 0;
@@ -17605,7 +17605,6 @@ const store = createStore({
     },
     loadSave(_0, _1) {
       return __async$o(this, arguments, function* ({ state }, str) {
-        var _a, _b;
         const data = JSON.parse(str);
         const contentData = data.content;
         data.ui = __spreadProps$5(__spreadValues$7({}, getDefaultUiState()), {
@@ -17624,8 +17623,8 @@ const store = createStore({
         data.content.contentPacks = [
           ...state.content.contentPacks.filter(
             (x) => {
-              var _a2;
-              return (_a2 = x.packId) == null ? void 0 : _a2.startsWith("dddg.buildin.");
+              var _a;
+              return (_a = x.packId) == null ? void 0 : _a.startsWith("dddg.buildin.");
             }
           ),
           ...(yield Promise.all(
@@ -17670,13 +17669,8 @@ const store = createStore({
           combinedPack = mergeContentPacks(combinedPack, contentPack);
         }
         data.content.current = combinedPack;
-        for (const panelId of data.panels.panelOrder) {
-          const panel = data.panels.panels[panelId];
-          for (const objKey in panel.objects) {
-            const obj = panel.objects[objKey];
-            (_a = obj.scaleX) != null ? _a : obj.scaleX = 1;
-            (_b = obj.scaleY) != null ? _b : obj.scaleY = 1;
-          }
+        if (data.version == null || data.version < 2.5) {
+          migrate25(data);
         }
         this.replaceState(data);
         eventBus$1.fire(new InvalidateRenderEvent());
@@ -17685,6 +17679,49 @@ const store = createStore({
   },
   modules: { ui, panels, content, uploadUrls }
 });
+function migrate25(data) {
+  var _a, _b, _c, _d, _e, _f;
+  const panels2 = Object.values(data.panels.panels);
+  if (panels2.find((x) => Object.values(x.objects).find((x2) => "scaleX" in x2)))
+    return;
+  for (const panel of panels2) {
+    for (const object of Object.values(panel.objects)) {
+      object.scaleX = (_a = object.zoom) != null ? _a : 1;
+      object.scaleY = (_b = object.zoom) != null ? _b : 1;
+      object.skewX = 0;
+      object.skewY = 0;
+      object.linkedTo = null;
+      const constants = getConstants();
+      if (object.type === "character") {
+        const character = object;
+        const charData = data.content.current.characters.find(
+          (c) => c.id === character.characterType
+        );
+        const size2 = (_f = (_e = (_d = (_c = charData == null ? void 0 : charData.styleGroups[character.styleGroupId]) == null ? void 0 : _c.styles[character.styleId]) == null ? void 0 : _d.poses[character.poseId]) == null ? void 0 : _e.size) != null ? _f : [960, 960];
+        let a = new DOMMatrixReadOnly().translate(
+          object.x,
+          object.y + object.height / 2
+        );
+        a = a.translate(0, -object.height / 2).scale(object.width / size2[0], object.height / size2[1]).translate(0, size2[1] / 2);
+        a = a.rotate(object.flip ? -object.rotation : object.rotation);
+        a = a.translate(0, size2[1] / 2).scale(object.zoom).translate(0, -size2[1] / 2);
+        const oldRot = object.rotation;
+        Object.assign(object, decomposeMatrix(a));
+        object.rotation = object.flip ? 360 - oldRot : oldRot;
+        object.skewX = 0;
+        object.skewY = 0;
+        object.width = size2[0];
+        object.height = size2[1];
+      }
+      if (object.type === "textBox") {
+        const textbox = object;
+        textbox.height += constants.TextBox.NameboxHeight;
+        textbox.y += textbox.height / 2;
+      }
+      delete object.zoom;
+    }
+  }
+}
 var __async$n = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -25703,10 +25740,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box.5434bf45.js"), true ? ["./single-box.5434bf45.js","./single-box.60b91cb2.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box.9f169a00.js"), true ? ["./single-box.9f169a00.js","./single-box.60b91cb2.css"] : void 0, import.meta.url)
     );
     const ExpressionBuilder = defineAsyncComponent(
-      () => __vitePreload(() => import("./index.fc593264.js"), true ? ["./index.fc593264.js","./index.43f4fc1a.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.7db3da96.js"), true ? ["./index.7db3da96.js","./index.43f4fc1a.css"] : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);
