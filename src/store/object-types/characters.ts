@@ -320,9 +320,7 @@ export const characterActions: ActionTree<IPanels, IRootState> = {
 		if (!obj.freeMove) {
 			const constants = getConstants();
 			x = constants.Base.characterPositions[closestCharacterSlot(x)];
-			y =
-				constants.Base.BaseCharacterYPos +
-				(obj.close ? constants.Base.CloseUpYOffset : 0);
+			y = constants.Base.BaseCharacterYPos;
 		}
 		if (obj.x === x && obj.y === y) return;
 		commit('setPosition', {

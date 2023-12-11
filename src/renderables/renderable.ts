@@ -61,10 +61,18 @@ export abstract class Renderable<ObjectType extends IObject> {
 		let transform = new DOMMatrix();
 		const obj = this.obj;
 		transform = transform.translate(this.x, this.y);
+		const h2 = (this.height / 2) * obj.scaleX;
+		if ('close' in obj && obj.close) {
+			transform = transform.translate(0, getConstants().Base.CloseUpYOffset);
+			// const scaleOffset = 1.03 * this.height;
+			transform = transform.translate(0, -h2);
+			transform = transform.scale(2, 2);
+			transform = transform.translate(0, h2);
+		}
 		if (this.isTalking && obj.enlargeWhenTalking) {
-			transform = transform.translate(0, +this.height / 2);
+			transform = transform.translate(0, +h2);
 			transform = transform.scale(1.05, 1.05);
-			transform = transform.translate(0, -this.height / 2);
+			transform = transform.translate(0, -h2);
 		}
 		if (
 			obj.flip ||
@@ -230,6 +238,23 @@ export abstract class Renderable<ObjectType extends IObject> {
 				this.renderLocal(ctx, hq);
 			} else {
 				ctx.drawImage(this.localCanvas!, 0, 0);
+			}
+			for (const pos of [
+				[0, 0],
+				[0, 0.5],
+				[0, 1],
+				[0.5, 0],
+				[0.5, 0.5],
+				[0.5, 1],
+				[1, 0],
+				[1, 0.5],
+				[1, 1],
+			]) {
+				ctx.save();
+				ctx.translate(pos[0] * this.width, pos[1] * this.height);
+				ctx.fillStyle = pos[0] === 0.5 && pos[1] === 0.5 ? '#fff' : '#f00';
+				ctx.fillRect(-2, -2, 5, 5);
+				ctx.restore();
 			}
 		});
 	}
