@@ -12837,7 +12837,7 @@ const characterActions = {
     if (!obj.freeMove) {
       const constants = getConstants();
       x = constants.Base.characterPositions[closestCharacterSlot(x)];
-      y = constants.Base.BaseCharacterYPos + (obj.close ? constants.Base.CloseUpYOffset : 0);
+      y = constants.Base.BaseCharacterYPos;
     }
     if (obj.x === x && obj.y === y)
       return;
@@ -13461,10 +13461,17 @@ class Renderable {
     let transform = new DOMMatrix();
     const obj = this.obj;
     transform = transform.translate(this.x, this.y);
+    const h2 = this.height / 2 * obj.scaleX;
+    if ("close" in obj && obj.close) {
+      transform = transform.translate(0, getConstants().Base.CloseUpYOffset);
+      transform = transform.translate(0, -h2);
+      transform = transform.scale(2, 2);
+      transform = transform.translate(0, h2);
+    }
     if (this.isTalking && obj.enlargeWhenTalking) {
-      transform = transform.translate(0, +this.height / 2);
+      transform = transform.translate(0, +h2);
       transform = transform.scale(1.05, 1.05);
-      transform = transform.translate(0, -this.height / 2);
+      transform = transform.translate(0, -h2);
     }
     if (obj.flip || obj.rotation !== 0 || obj.scaleX !== 1 || obj.scaleY !== 1 || obj.skewX !== 0 || obj.skewY !== 0) {
       if (obj.rotation !== 0) {
@@ -13575,6 +13582,23 @@ class Renderable {
         this.renderLocal(ctx, hq);
       } else {
         ctx.drawImage(this.localCanvas, 0, 0);
+      }
+      for (const pos of [
+        [0, 0],
+        [0, 0.5],
+        [0, 1],
+        [0.5, 0],
+        [0.5, 0.5],
+        [0.5, 1],
+        [1, 0],
+        [1, 0.5],
+        [1, 1]
+      ]) {
+        ctx.save();
+        ctx.translate(pos[0] * this.width, pos[1] * this.height);
+        ctx.fillStyle = pos[0] === 0.5 && pos[1] === 0.5 ? "#fff" : "#f00";
+        ctx.fillRect(-2, -2, 5, 5);
+        ctx.restore();
       }
     });
   }
@@ -25740,10 +25764,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box.9f169a00.js"), true ? ["./single-box.9f169a00.js","./single-box.60b91cb2.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box.35f4680e.js"), true ? ["./single-box.35f4680e.js","./single-box.60b91cb2.css"] : void 0, import.meta.url)
     );
     const ExpressionBuilder = defineAsyncComponent(
-      () => __vitePreload(() => import("./index.7db3da96.js"), true ? ["./index.7db3da96.js","./index.43f4fc1a.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.1555ff62.js"), true ? ["./index.1555ff62.js","./index.43f4fc1a.css"] : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);
