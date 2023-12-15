@@ -44,6 +44,7 @@ import { disposeCanvas } from '@/util/canvas';
 import { DeepReadonly } from 'ts-essentials';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { MutationPayload } from 'vuex';
+import * as Grabbies from './render-grabbies';
 
 const store = useStore();
 const props = defineProps({
@@ -130,13 +131,23 @@ function renderLoadingScreen() {
 	}
 }
 function display(): void {
+	const renderer = getSceneRender();
 	showingLast.value = false;
-	getSceneRender()?.paintOnto(sdCtx.value, {
+	renderer?.paintOnto(sdCtx.value, {
 		x: 0,
 		y: 0,
 		w: bitmapWidth.value,
 		h: bitmapHeight.value,
 	});
+
+	const obj = renderer?.getLastRenderObject(selection.value!);
+	if (obj) {
+		Grabbies.paint(
+			sdCtx.value,
+			obj.preparedTransform.transformPoint(new DOMPoint(0, 0))
+		);
+	}
+
 	inBlendOver.value = false;
 }
 function toRendererCoordinate(

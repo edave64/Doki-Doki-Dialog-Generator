@@ -15,6 +15,8 @@ export interface IConstants {
 	readonly Base: {
 		readonly screenWidth: number;
 		readonly screenHeight: number;
+		readonly wheelInnerRadius: number;
+		readonly wheelWidth: number;
 		readonly sdCharacterScaleFactor: number;
 		readonly hdCharacterScaleFactor: number;
 		readonly positions: string[];
