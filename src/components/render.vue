@@ -303,16 +303,17 @@ function onDragStart(e: DragEvent) {
 function onTouchStart(e: TouchEvent) {
 	if (selection.value === null) return;
 	draggedObject = currentPanel.value.objects[selection.value];
-	dragTransform = getMainSceneRenderer(store)!
-		.getLastRenderObject(draggedObject.id)
-		?.preparedTransform!.inverse()!;
+	dragTransform =
+		getMainSceneRenderer(store)!
+			.getLastRenderObject(draggedObject.linkedTo!)
+			?.preparedTransform?.inverse() ?? new DOMMatrixReadOnly();
 	const [x, y] = toRendererCoordinate(
 		e.touches[0].clientX,
 		e.touches[0].clientY,
 		dragTransform
 	);
-	dragXOffset = x;
-	dragYOffset = y;
+	dragXOffset = x - draggedObject.x;
+	dragYOffset = y - draggedObject.y;
 	dragXOriginal = draggedObject.x;
 	dragYOriginal = draggedObject.y;
 }
