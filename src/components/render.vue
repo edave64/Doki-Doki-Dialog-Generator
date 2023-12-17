@@ -288,35 +288,27 @@ let dragYOriginal = 0;
 
 function onDragStart(e: DragEvent) {
 	e.preventDefault();
-	if (selection.value === null) return;
-	draggedObject = currentPanel.value.objects[selection.value];
-	dragTransform =
-		getMainSceneRenderer(store)!
-			.getLastRenderObject(draggedObject.linkedTo!)
-			?.preparedTransform?.inverse() ?? new DOMMatrixReadOnly();
-	const [x, y] = toRendererCoordinate(e.clientX, e.clientY, dragTransform);
-	dragXOffset = x - draggedObject.x;
-	dragYOffset = y - draggedObject.y;
-	dragXOriginal = draggedObject.x;
-	dragYOriginal = draggedObject.y;
+	dragStart(e.clientX, e.clientY);
 }
+
 function onTouchStart(e: TouchEvent) {
+	dragStart(e.touches[0].clientX, e.touches[0].clientY);
+}
+
+function dragStart(rx: number, ry: number) {
 	if (selection.value === null) return;
 	draggedObject = currentPanel.value.objects[selection.value];
 	dragTransform =
 		getMainSceneRenderer(store)!
 			.getLastRenderObject(draggedObject.linkedTo!)
 			?.preparedTransform?.inverse() ?? new DOMMatrixReadOnly();
-	const [x, y] = toRendererCoordinate(
-		e.touches[0].clientX,
-		e.touches[0].clientY,
-		dragTransform
-	);
+	const [x, y] = toRendererCoordinate(rx, ry, dragTransform);
 	dragXOffset = x - draggedObject.x;
 	dragYOffset = y - draggedObject.y;
 	dragXOriginal = draggedObject.x;
 	dragYOriginal = draggedObject.y;
 }
+
 function onDragOver(e: DragEvent) {
 	e.stopPropagation();
 	e.preventDefault();
