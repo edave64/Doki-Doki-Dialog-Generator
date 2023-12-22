@@ -32,10 +32,11 @@ export function paint(ctx: CanvasRenderingContext2D, center: DOMPointReadOnly) {
 
 		currentGrabby.paint(ctx, center);
 
-		drawGrabby(ctx, currentGrabby, lastPos);
+		ctx.translate(lastPos.x, lastPos.y);
+		ctx.scale(pixelRatio, pixelRatio);
+		drawGrabby(ctx, currentGrabby, new DOMPointReadOnly());
 	} else {
 		const constants = getConstants();
-		ctx.save();
 		ctx.translate(offsetCenter.x, offsetCenter.y);
 		ctx.scale(pixelRatio, pixelRatio);
 		if (center.x > constants.Base.screenWidth / 2) {
@@ -135,7 +136,7 @@ export function onDown(
 		const distance = Math.sqrt(
 			Math.pow(pos.x - grabbyPos.x, 2) + Math.pow(pos.y - grabbyPos.y, 2)
 		);
-		return distance <= constants.Base.wheelWidth / 2;
+		return distance <= (constants.Base.wheelWidth / 2) * pixelRatio;
 	});
 	if (grabbyHit) {
 		currentGrabby = grabbyHit;
