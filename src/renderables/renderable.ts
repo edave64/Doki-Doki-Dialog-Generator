@@ -239,6 +239,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 			} else {
 				ctx.drawImage(this.localCanvas!, 0, 0);
 			}
+			/*
 			for (const pos of [
 				[0, 0],
 				[0, 0.5],
@@ -256,6 +257,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 				ctx.fillRect(-2, -2, 5, 5);
 				ctx.restore();
 			}
+			*/
 		});
 	}
 

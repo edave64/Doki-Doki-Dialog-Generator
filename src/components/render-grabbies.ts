@@ -4,73 +4,202 @@
 
 import { getAssetByUrl } from '@/asset-manager';
 import scale from '@/assets/open_in_full.svg';
+import rotate from '@/assets/rotate_left.svg';
 import getConstants from '@/constants';
-import { ImageAsset } from '@/render-utils/assets/image-asset';
+import { IAsset } from '@/render-utils/assets/asset';
+import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
+import { RStore } from '@/store';
+import { IObject, ISetSpriteRotationMutation } from '@/store/objects';
+import { safeAsync } from '@/util/errors';
 import { between } from '@/util/math';
 
+const pixelRatio = window.devicePixelRatio ?? 1;
+
 export function paint(ctx: CanvasRenderingContext2D, center: DOMPointReadOnly) {
-	if (rotationGrabOrigin) {
-		paintWhileRotating(ctx);
-	} else if (scaleGrabOrigin) {
-		paintWhileScaling(ctx);
-	} else {
-		const offsetCenter = movePointIntoView(center);
-		paintRotationWheel(ctx, offsetCenter);
-		paintScalingGrabby(ctx, offsetCenter);
-	}
-}
+	const offsetCenter = movePointIntoView(center);
 
-let rotationGrabOrigin: DOMPointReadOnly | null = null;
-let scaleGrabOrigin: DOMPointReadOnly | null = null;
-
-function onDown(event: MouseEvent) {}
-
-function onMove(event: MouseEvent) {}
-
-function onUp(event: MouseEvent) {}
-
-function paintRotationWheel(
-	ctx: CanvasRenderingContext2D,
-	center: DOMPointReadOnly
-) {
-	const constants = getConstants();
-	ctx.globalAlpha = 1;
 	ctx.save();
-	ctx.translate(center.x, center.y);
-	const wheel = constants.Base.wheelInnerRadius + constants.Base.wheelWidth / 2;
-	ctx.beginPath();
-	ctx.ellipse(0, 0, wheel, wheel, 0, 0, 2 * Math.PI);
-	ctx.closePath();
-	ctx.strokeStyle = constants.Base.WheelBackground;
-	ctx.lineWidth = constants.Base.wheelWidth;
-	ctx.stroke();
+	if (currentGrabby && lastPos) {
+		ctx.save();
+		ctx.beginPath();
+		ctx.moveTo(center.x, center.y);
+		ctx.lineTo(lastPos.x, lastPos.y);
+		ctx.setLineDash([5 * pixelRatio, 5 * pixelRatio]);
+		ctx.strokeStyle = '#000';
+		ctx.stroke();
+		ctx.closePath();
+		ctx.restore();
+
+		currentGrabby.paint(ctx, center);
+
+		drawGrabby(ctx, currentGrabby, lastPos);
+	} else {
+		const constants = getConstants();
+		ctx.save();
+		ctx.translate(offsetCenter.x, offsetCenter.y);
+		ctx.scale(pixelRatio, pixelRatio);
+		if (center.x > constants.Base.screenWidth / 2) {
+			ctx.scale(-1, 1);
+		}
+		if (center.y > constants.Base.screenHeight / 2) {
+			ctx.scale(1, -1);
+		}
+		for (let i = 0; i < grabbies.length; i++) {
+			const grabby = grabbies[i];
+			if (!grabby.pos) {
+				grabby.pos = getRadialPos(rotationOneSixth * (i + 1));
+			}
+			drawGrabby(ctx, grabby, grabby.pos!);
+		}
+	}
 	ctx.restore();
 }
 
-function paintWhileScaling(ctx: CanvasRenderingContext2D) {}
+let initialDragAngle: number = 0;
+let initalObjRotation: number = 0;
+const tau = 2 * Math.PI;
 
-let scaleImg: ImageAsset | null = null;
-getAssetByUrl(scale).then((x) => {
-	if (x instanceof ImageAsset) scaleImg = x;
-});
-function paintScalingGrabby(
+const grabbies: Grabby[] = [
+	{
+		icon: rotate,
+		paint(ctx: CanvasRenderingContext2D, center: DOMPointReadOnly) {
+			const { angle, distance } = vectorToAngleAndDistance(
+				pointsToVector(center, lastPos!)
+			);
+			const constants = getConstants().Base;
+			let normAngle = (initialDragAngle - angle + tau) % tau;
+
+			ctx.beginPath();
+			ctx.moveTo(center.x, center.y);
+			let start = initialDragAngle - Math.PI;
+			let end = start + angle - initialDragAngle;
+
+			console.log(normAngle);
+			// Flipping start and end if the rotation is less than half a circle
+			if (normAngle <= Math.PI) {
+				const tmp = end;
+				end = start;
+				start = tmp;
+			}
+
+			ctx.arc(center.x, center.y, constants.wheelInnerRadius, start, end);
+			ctx.lineTo(center.x, center.y);
+			ctx.globalCompositeOperation = 'difference';
+			ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+			ctx.fill();
+			ctx.globalCompositeOperation = 'source-over';
+		},
+		onStartMove(store: RStore, obj: IObject, center: DOMPointReadOnly) {
+			initalObjRotation = obj.rotation;
+			const { angle, distance } = vectorToAngleAndDistance(
+				pointsToVector(center, lastPos!)
+			);
+			initialDragAngle = angle;
+		},
+		onMove(store: RStore, obj: IObject, center: DOMPointReadOnly) {
+			const { angle, distance } = vectorToAngleAndDistance(
+				pointsToVector(center, lastPos!)
+			);
+
+			console.log('angle', angle, 'Grad angle', (angle / Math.PI) * 180);
+
+			store.commit('panels/setRotation', {
+				panelId: obj.panelId,
+				id: obj.id,
+				rotation:
+					initalObjRotation + ((angle - initialDragAngle) / Math.PI) * 180,
+			} as ISetSpriteRotationMutation);
+		},
+	},
+	{
+		icon: scale,
+		paint(ctx: CanvasRenderingContext2D, center: DOMPointReadOnly) {},
+		onStartMove(store: RStore, obj: IObject, center: DOMPointReadOnly) {},
+		onMove(store: RStore, obj: IObject) {},
+	},
+];
+
+let currentGrabby: Grabby | null = null;
+let grabStarted = false;
+let startPos: DOMPointReadOnly | null = null;
+let lastPos: DOMPointReadOnly | null = null;
+
+export function onDown(
+	pos: DOMPointReadOnly,
+	transformedPoint: DOMPointReadOnly
+) {
+	const constants = getConstants();
+	const grabbyHit = grabbies.find((grabby) => {
+		const grabbyPos = grabby.lastDrawPos;
+		if (!grabbyPos) return false;
+		const distance = Math.sqrt(
+			Math.pow(pos.x - grabbyPos.x, 2) + Math.pow(pos.y - grabbyPos.y, 2)
+		);
+		return distance <= constants.Base.wheelWidth / 2;
+	});
+	if (grabbyHit) {
+		currentGrabby = grabbyHit;
+		grabStarted = false;
+		startPos = transformedPoint;
+		lastPos = pos;
+		return true;
+	}
+	return false;
+}
+
+export function onMove(
+	store: RStore,
+	pos: DOMPointReadOnly,
+	transformedPoint: DOMPointReadOnly
+) {
+	if (!currentGrabby) return false;
+	const panels = store.state.panels;
+	const currentPanel = panels.panels[panels.currentPanel];
+	const obj = currentPanel.objects[store.state.ui.selection!];
+	const linkedTransform =
+		getMainSceneRenderer(store)?.getLastRenderObject(obj.linkedTo!)
+			?.preparedTransform ?? new DOMMatrixReadOnly();
+	const center = linkedTransform.transformPoint(
+		new DOMPointReadOnly(obj.x, obj.y)
+	);
+	if (!grabStarted) {
+		grabStarted = true;
+		currentGrabby.onStartMove(store, obj, center);
+	}
+	lastPos = pos;
+	currentGrabby.onMove(store, obj, center);
+	return true;
+}
+
+export function onDrop() {
+	if (!currentGrabby) return false;
+	currentGrabby = null;
+	lastPos = null;
+	return true;
+}
+
+const grabbyIcons = new Map<string, IAsset>();
+for (const grabby of grabbies) {
+	safeAsync(
+		'Loading grabby icon',
+		(async (grabby: Grabby) => {
+			grabbyIcons.set(grabby.icon, await getAssetByUrl(grabby.icon));
+		}).bind(this, grabby)
+	);
+}
+
+function drawGrabby(
 	ctx: CanvasRenderingContext2D,
-	center: DOMPointReadOnly
+	grabby: Grabby,
+	pos: DOMPointReadOnly
 ) {
 	const constants = getConstants();
 	ctx.save();
-	ctx.translate(center.x, center.y);
-	const wheel = constants.Base.wheelInnerRadius + constants.Base.wheelWidth / 2;
-	ctx.translate(
-		center.x > constants.Base.screenWidth / 2 ? -wheel : wheel,
-		center.y >= constants.Base.screenHeight / 2 ? -wheel : wheel
-	);
-	if (center.x <= constants.Base.screenWidth / 2) {
-		ctx.scale(1, -1);
-	}
-	if (center.y >= constants.Base.screenHeight / 2) {
-		ctx.scale(1, -1);
-	}
+	ctx.translate(pos.x, pos.y);
+	grabby.lastDrawPos = ctx
+		.getTransform()
+		.transformPoint(new DOMPointReadOnly());
+	ctx.scale(-1, 1);
 	ctx.beginPath();
 	ctx.ellipse(
 		0,
@@ -82,21 +211,59 @@ function paintScalingGrabby(
 		2 * Math.PI
 	);
 	ctx.closePath();
-	ctx.fillStyle = constants.Base.WheelBackground;
+	const style = getComputedStyle(document.body);
+	ctx.fillStyle = style.getPropertyValue('--accent-background');
+	ctx.strokeStyle = style.getPropertyValue('--border');
+	ctx.lineWidth = 2;
 	ctx.fill();
+	ctx.stroke();
 
-	if (scaleImg) scaleImg.paintOnto(ctx);
+	grabbyIcons.get(grabby.icon)?.paintOnto(ctx);
 	ctx.restore();
 }
 
-function paintWhileRotating(ctx: CanvasRenderingContext2D) {}
+interface Grabby {
+	icon: string;
+	onStartMove: (store: RStore, obj: IObject, center: DOMPointReadOnly) => void;
+	onMove: (store: RStore, obj: IObject, center: DOMPointReadOnly) => void;
+	paint: (ctx: CanvasRenderingContext2D, center: DOMPointReadOnly) => void;
+	pos?: DOMPointReadOnly;
+	lastDrawPos?: DOMPointReadOnly;
+}
 
 function movePointIntoView(center: DOMPointReadOnly): DOMPointReadOnly {
 	const constants = getConstants();
 	const fullRadius =
-		constants.Base.wheelWidth + constants.Base.wheelInnerRadius;
+		constants.Base.wheelWidth + constants.Base.wheelInnerRadius * pixelRatio;
 	return new DOMPointReadOnly(
 		between(fullRadius, center.x, constants.Base.screenWidth - fullRadius),
 		between(fullRadius, center.y, constants.Base.screenHeight - fullRadius)
 	);
+}
+
+const rotationOneSixth = Math.PI / 6;
+function getRadialPos(angle: number): DOMPointReadOnly {
+	const constants = getConstants().Base;
+	return new DOMPointReadOnly(
+		constants.wheelInnerRadius * Math.cos(angle),
+		constants.wheelInnerRadius * Math.sin(angle)
+	);
+}
+
+function pointsToVector(
+	a: DOMPointReadOnly,
+	b: DOMPointReadOnly
+): DOMPointReadOnly {
+	return new DOMPointReadOnly(a.x - b.x, a.y - b.y);
+}
+
+function vectorToAngleAndDistance(v: DOMPointReadOnly): {
+	angle: number;
+	distance: number;
+} {
+	const angle = Math.atan2(v.y, v.x);
+	return {
+		angle: angle < 0 ? Math.PI * 2 + angle : angle,
+		distance: Math.sqrt(v.x * v.x + v.y * v.y),
+	};
 }

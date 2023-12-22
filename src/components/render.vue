@@ -178,8 +178,9 @@ function onUiClick(e: MouseEvent): void {
 	}
 
 	const objects = getSceneRender()!.objectsAt(sx, sy);
+	const selectionId = selection.value;
 
-	const currentObjectIdx = objects.findIndex((id) => id === selection.value);
+	const currentObjectIdx = objects.findIndex((id) => id === selectionId);
 	let selectedObject: IObject['id'] | null;
 
 	if (currentObjectIdx === 0) {
@@ -296,13 +297,25 @@ function onTouchStart(e: TouchEvent) {
 }
 
 function dragStart(rx: number, ry: number) {
-	if (selection.value === null) return;
-	draggedObject = currentPanel.value.objects[selection.value];
+	const selectionId = selection.value;
+	if (selectionId === null) return;
+
+	draggedObject = currentPanel.value.objects[selectionId];
 	dragTransform =
 		getMainSceneRenderer(store)!
 			.getLastRenderObject(draggedObject.linkedTo!)
 			?.preparedTransform?.inverse() ?? new DOMMatrixReadOnly();
 	const [x, y] = toRendererCoordinate(rx, ry, dragTransform);
+
+	if (
+		selectionId != null &&
+		Grabbies.onDown(
+			new DOMPointReadOnly(...toRendererCoordinate(rx, ry)),
+			new DOMPointReadOnly(x, y)
+		)
+	)
+		return;
+
 	dragXOffset = x - draggedObject.x;
 	dragYOffset = y - draggedObject.y;
 	dragXOriginal = draggedObject.x;
@@ -317,14 +330,19 @@ function onDragOver(e: DragEvent) {
 function onSpriteDragMove(e: MouseEvent | TouchEvent) {
 	if (!draggedObject) return;
 	e.preventDefault();
-	let [x, y] =
-		e instanceof MouseEvent
-			? toRendererCoordinate(e.clientX, e.clientY, dragTransform)
-			: toRendererCoordinate(
-					e.touches[0].clientX,
-					e.touches[0].clientY,
-					dragTransform
-			  );
+	const oX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+	const oY = e instanceof MouseEvent ? e.clientY : e.touches[0].clientY;
+	let [x, y] = toRendererCoordinate(oX, oY, dragTransform);
+	if (
+		Grabbies.onMove(
+			store,
+			new DOMPointReadOnly(...toRendererCoordinate(oX, oY)),
+			new DOMPointReadOnly(x, y)
+		)
+	) {
+		invalidateRender();
+		return;
+	}
 	x -= dragXOffset;
 	y -= dragYOffset;
 	const deltaX = Math.abs(x - dragXOriginal);
@@ -381,6 +399,13 @@ async function onDrop(e: DragEvent) {
 	}
 }
 function onSpriteDrop(e: MouseEvent | TouchEvent) {
+	if (Grabbies.onDrop()) {
+		invalidateRender();
+		e.preventDefault();
+		draggedObject = null;
+		dropPreventClick.value = true;
+		return;
+	}
 	if (draggedObject) {
 		if ('TouchEvent' in window && e instanceof TouchEvent) {
 			dropPreventClick.value = false;

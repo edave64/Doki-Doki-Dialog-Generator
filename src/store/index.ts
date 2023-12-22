@@ -32,6 +32,8 @@ export function useStore() {
 	return vuexUseStore() as Store<IRootState>;
 }
 
+export type RStore = Store<IRootState>;
+
 export default createStore({
 	state: {
 		unsafe: false,
