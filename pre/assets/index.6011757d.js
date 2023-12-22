@@ -1723,8 +1723,8 @@ function watch(source, cb, options) {
   return doWatch(source, cb, options);
 }
 function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = EMPTY_OBJ) {
-  var _a;
-  const instance = getCurrentScope() === ((_a = currentInstance) == null ? void 0 : _a.scope) ? currentInstance : null;
+  var _a2;
+  const instance = getCurrentScope() === ((_a2 = currentInstance) == null ? void 0 : _a2.scope) ? currentInstance : null;
   let getter;
   let forceTrigger = false;
   let isMultiSource = false;
@@ -6916,7 +6916,7 @@ var __publicField$o = (obj, key, value) => {
   __defNormalProp$N(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$H = (__this, __arguments, generator) => {
+var __async$I = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -6962,9 +6962,9 @@ const _Repo = class {
     this.onlineRepo = ref(onlineRepo);
     this.localRepo = ref(localRepo);
     this.combinedList = computed(() => {
-      var _a, _b;
+      var _a2, _b;
       const onlineRepo2 = this.onlineRepo.value;
-      const onlinePacks = (_a = onlineRepo2 == null ? void 0 : onlineRepo2.packs) != null ? _a : [];
+      const onlinePacks = (_a2 = onlineRepo2 == null ? void 0 : onlineRepo2.packs) != null ? _a2 : [];
       const onlineRepoLookup = new Map(
         onlinePacks.map((pack) => [pack.id, pack])
       );
@@ -6993,8 +6993,8 @@ const _Repo = class {
         addedPacks.add(packId);
         return true;
       }).map((packId) => {
-        var _a2, _b2, _c;
-        return __spreadProps$o(__spreadValues$u(__spreadValues$u(__spreadValues$u({}, (_a2 = onlineRepoLookup.get(packId)) != null ? _a2 : {
+        var _a22, _b2, _c;
+        return __spreadProps$o(__spreadValues$u(__spreadValues$u(__spreadValues$u({}, (_a22 = onlineRepoLookup.get(packId)) != null ? _a22 : {
           characters: [],
           kind: [],
           authors: []
@@ -7007,9 +7007,9 @@ const _Repo = class {
       });
     });
     this.authors = computed(() => {
-      var _a, _b;
+      var _a2, _b;
       const onlineRepo2 = this.onlineRepo.value;
-      const onlineAuthors = (_a = onlineRepo2 == null ? void 0 : onlineRepo2.authors) != null ? _a : {};
+      const onlineAuthors = (_a2 = onlineRepo2 == null ? void 0 : onlineRepo2.authors) != null ? _a2 : {};
       const localRepo2 = this.localRepo.value;
       const localAuthors = (_b = localRepo2 == null ? void 0 : localRepo2.authors) != null ? _b : {};
       return __spreadValues$u(__spreadValues$u({}, onlineAuthors), localAuthors);
@@ -7022,7 +7022,7 @@ const _Repo = class {
     return _Repo.instance;
   }
   static createInstance() {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       const onlineRepoLoading = _Repo.loadRepo(repoUrl);
       const localRepoLoading = envX.supports.localRepo ? yield _Repo.loadRepo(envX.localRepositoryUrl) : null;
       const [onlineRepoLoaded, localRepoLoaded, $store] = yield Promise.all([
@@ -7034,7 +7034,7 @@ const _Repo = class {
     });
   }
   static loadRepo(repo) {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       try {
         const [packs, authors] = yield Promise.all([
           _Repo.fetchJSON(repo + "repo.json"),
@@ -7047,7 +7047,7 @@ const _Repo = class {
     });
   }
   static fetchJSON(path) {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       const req = yield fetch(path);
       if (!req.ok)
         throw new Error("Could not load json");
@@ -7055,7 +7055,7 @@ const _Repo = class {
     });
   }
   reloadLocalRepo() {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       this.localRepo.value = envX.supports.localRepo ? yield _Repo.loadRepo(envX.localRepositoryUrl) : null;
     });
   }
@@ -7063,15 +7063,15 @@ const _Repo = class {
     return this.combinedList.value;
   }
   hasPack(id, onlineOnly = false) {
-    var _a;
+    var _a2;
     if (onlineOnly) {
-      return !!((_a = this.onlineRepo.value) == null ? void 0 : _a.packs.find((pack) => pack.id === id));
+      return !!((_a2 = this.onlineRepo.value) == null ? void 0 : _a2.packs.find((pack) => pack.id === id));
     }
     return !!this.getPacks().find((pack) => pack.id === id);
   }
   getPack(id) {
-    var _a;
-    return (_a = this.getPacks().find((pack) => pack.id === id)) != null ? _a : null;
+    var _a2;
+    return (_a2 = this.getPacks().find((pack) => pack.id === id)) != null ? _a2 : null;
   }
   getAuthor(id) {
     return this.authors.value[id] || null;
@@ -7080,7 +7080,7 @@ const _Repo = class {
     return this.authors.value;
   }
   loadTempPack(url) {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       const req = fetch(url);
       let res;
       try {
@@ -7123,7 +7123,7 @@ __publicField$o(Repo, "$store", new Promise(
     _Repo.setStore = resolve;
   }
 ));
-var __async$G = (__this, __arguments, generator) => {
+var __async$H = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -7149,7 +7149,7 @@ function transactionLayer() {
   let transactionRunning = false;
   return function transaction2(callback) {
     return new Promise((resolve, _reject) => {
-      const exec = () => __async$G(this, null, function* () {
+      const exec = () => __async$H(this, null, function* () {
         try {
           if (callback.length > 0) {
             yield callback(transactionLayer());
@@ -7194,7 +7194,7 @@ var __publicField$n = (obj, key, value) => {
   __defNormalProp$M(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$F = (__this, __arguments, generator) => {
+var __async$G = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -7258,33 +7258,33 @@ class Browser {
       limitedCanvasSpace: mobileSafari
     });
     if (canSave) {
-      this.loading = (() => __async$F(this, null, function* () {
+      this.loading = (() => __async$G(this, null, function* () {
         this.savingEnabled = yield IndexedDBHandler.doesDbExists();
       }))();
     } else {
       this.loading = Promise.resolve();
     }
-    this.loading.then(() => __async$F(this, null, function* () {
-      var _a;
+    this.loading.then(() => __async$G(this, null, function* () {
+      var _a2;
       yield this.loadingContentPacksAllowed;
       if (this.creatingDB)
         yield this.creatingDB;
       if (this.savingEnabled) {
-        const autoload = (_a = yield IndexedDBHandler.loadAutoload()) != null ? _a : [];
+        const autoload = (_a2 = yield IndexedDBHandler.loadAutoload()) != null ? _a2 : [];
         this.state.autoAdd = autoload;
         const repo = yield Repo.getInstance();
         const packUrls = yield Promise.all(
-          autoload.map((compoundId) => __async$F(this, null, function* () {
-            var _a2;
+          autoload.map((compoundId) => __async$G(this, null, function* () {
+            var _a22;
             const [id, url] = compoundId.split(";", 2);
             if (url != null && !repo.hasPack(id)) {
               yield repo.loadTempPack(url);
             }
             const pack = repo.getPack(id);
-            return (_a2 = pack.dddg2Path) != null ? _a2 : pack.dddg1Path;
+            return (_a22 = pack.dddg2Path) != null ? _a22 : pack.dddg1Path;
           }))
         );
-        yield transaction(() => __async$F(this, null, function* () {
+        yield transaction(() => __async$G(this, null, function* () {
           yield this.$store.dispatch("content/loadContentPacks", packUrls);
         }));
       }
@@ -7326,7 +7326,7 @@ class Browser {
     return Promise.resolve();
   }
   loadGameMode() {
-    return __async$F(this, null, function* () {
+    return __async$G(this, null, function* () {
       const searchParams = new URLSearchParams(location.search);
       const getMode = searchParams.get("mode");
       if (getMode === "ddlc" || getMode === "ddlc_plus") {
@@ -7347,7 +7347,7 @@ class Browser {
     });
   }
   setGameMode(mode) {
-    return __async$F(this, null, function* () {
+    return __async$G(this, null, function* () {
       if (this.isSavingEnabled.value) {
         yield IndexedDBHandler.saveGameMode(mode);
       }
@@ -7365,7 +7365,7 @@ class Browser {
     this.$store = store2;
   }
   saveToFile(downloadCanvas, filename, format = "image/png", quality = 1) {
-    return __async$F(this, null, function* () {
+    return __async$G(this, null, function* () {
       const a = document.createElement("a");
       a.setAttribute("download", filename);
       const url = yield this.createObjectURL(downloadCanvas, format, quality);
@@ -7383,7 +7383,7 @@ class Browser {
     throw new Error("This environment does not support a local repository");
   }
   autoLoadAdd(id) {
-    return __async$F(this, null, function* () {
+    return __async$G(this, null, function* () {
       yield this.loading;
       yield this.creatingDB;
       yield IndexedDBHandler.saveAutoload([...this.state.autoAdd, id]);
@@ -7391,7 +7391,7 @@ class Browser {
     });
   }
   autoLoadRemove(id) {
-    return __async$F(this, null, function* () {
+    return __async$G(this, null, function* () {
       yield this.loading;
       yield this.creatingDB;
       const packId = this.normalizePackId(id);
@@ -7410,7 +7410,7 @@ class Browser {
     return parts[parts.length - 1];
   }
   loadSettings() {
-    return __async$F(this, null, function* () {
+    return __async$G(this, null, function* () {
       yield this.loading;
       yield this.creatingDB;
       const base = {
@@ -7426,7 +7426,7 @@ class Browser {
     });
   }
   saveSettings(settings) {
-    return __async$F(this, null, function* () {
+    return __async$G(this, null, function* () {
       yield this.loading;
       yield this.creatingDB;
       if (!this.isSavingEnabled.value)
@@ -7435,7 +7435,7 @@ class Browser {
     });
   }
   isInitialized() {
-    return __async$F(this, null, function* () {
+    return __async$G(this, null, function* () {
       yield this.loading;
       yield this.creatingDB;
     });
@@ -7484,9 +7484,9 @@ class Browser {
 }
 const IndexedDBHandler = {
   indexedDB: (() => {
-    var _a, _b, _c;
+    var _a2, _b, _c;
     try {
-      return (_c = (_b = (_a = window.indexedDB) != null ? _a : window.mozIndexedDB) != null ? _b : window.webkitIndexedDB) != null ? _c : window.msIndexedDB;
+      return (_c = (_b = (_a2 = window.indexedDB) != null ? _a2 : window.mozIndexedDB) != null ? _b : window.webkitIndexedDB) != null ? _c : window.msIndexedDB;
     } catch (e) {
       return null;
     }
@@ -7518,9 +7518,9 @@ const IndexedDBHandler = {
         reject(event);
       };
       req.onupgradeneeded = (event) => {
-        var _a;
+        var _a2;
         const db = event.target.result;
-        const oldVer = (_a = event.oldVersion) != null ? _a : event.version;
+        const oldVer = (_a2 = event.oldVersion) != null ? _a2 : event.version;
         if (oldVer < 1) {
           db.createObjectStore("settings");
         }
@@ -7551,39 +7551,39 @@ const IndexedDBHandler = {
     });
   },
   loadAutoload() {
-    return this.objectStorePromise("readonly", (store2) => __async$F(this, null, function* () {
+    return this.objectStorePromise("readonly", (store2) => __async$G(this, null, function* () {
       return yield this.reqPromise(store2.get("autoload"));
     }));
   },
   saveAutoload(autoloads) {
-    return this.objectStorePromise("readwrite", (store2) => __async$F(this, null, function* () {
+    return this.objectStorePromise("readwrite", (store2) => __async$G(this, null, function* () {
       yield this.reqPromise(store2.put([...autoloads], "autoload"));
     }));
   },
   loadGameMode() {
-    return this.objectStorePromise("readonly", (store2) => __async$F(this, null, function* () {
+    return this.objectStorePromise("readonly", (store2) => __async$G(this, null, function* () {
       return yield this.reqPromise(store2.get("gameMode"));
     }));
   },
   saveGameMode(mode) {
-    return this.objectStorePromise("readwrite", (store2) => __async$F(this, null, function* () {
+    return this.objectStorePromise("readwrite", (store2) => __async$G(this, null, function* () {
       yield this.reqPromise(store2.put(mode, "gameMode"));
     }));
   },
   saveSettings(settings) {
-    return this.objectStorePromise("readwrite", (store2) => __async$F(this, null, function* () {
+    return this.objectStorePromise("readwrite", (store2) => __async$G(this, null, function* () {
       yield this.reqPromise(store2.put(__spreadValues$t({}, settings), "settings"));
     }));
   },
   loadSettings() {
-    return this.objectStorePromise("readonly", (store2) => __async$F(this, null, function* () {
+    return this.objectStorePromise("readonly", (store2) => __async$G(this, null, function* () {
       return yield this.reqPromise(store2.get("settings"));
     }));
   },
   objectStorePromise(mode, callback) {
     if (!this.db)
       return Promise.reject(new Error("No database"));
-    return new Promise((resolve, reject) => __async$F(this, null, function* () {
+    return new Promise((resolve, reject) => __async$G(this, null, function* () {
       const transact = (yield this.db).transaction(["settings"], mode);
       const store2 = transact.objectStore("settings");
       try {
@@ -7621,7 +7621,7 @@ var __publicField$m = (obj, key, value) => {
   __defNormalProp$L(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$E = (__this, __arguments, generator) => {
+var __async$F = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -7687,20 +7687,20 @@ class Electron {
     });
     this.electron.ipcRenderer.on(
       "add-persistent-content-pack",
-      (filePath) => __async$E(this, null, function* () {
+      (filePath) => __async$F(this, null, function* () {
         yield this.loadingContentPacksAllowed;
         if (!this.$store) {
           this.pendingContentPacks.push(filePath);
           return;
         }
-        yield transaction(() => __async$E(this, null, function* () {
+        yield transaction(() => __async$F(this, null, function* () {
           yield this.$store.dispatch("content/loadContentPacks", filePath);
         }));
       })
     );
     this.electron.ipcRenderer.on(
       "add-persistent-background",
-      (filepath) => __async$E(this, null, function* () {
+      (filepath) => __async$F(this, null, function* () {
         const name = "persistentBg-" + filepath;
         const parts = filepath.split("/");
         yield registerAssetWithURL(name, filepath);
@@ -7724,10 +7724,10 @@ class Electron {
     );
     this.electron.ipcRenderer.onConversation(
       "load-packs",
-      (packIds) => __async$E(this, null, function* () {
+      (packIds) => __async$F(this, null, function* () {
         const repo = yield Repo.getInstance();
         const packUrls = yield Promise.all(
-          packIds.map((compoundId) => __async$E(this, null, function* () {
+          packIds.map((compoundId) => __async$F(this, null, function* () {
             const [id, url] = compoundId.split(";", 2);
             if (url != null && !repo.hasPack(id)) {
               yield repo.loadTempPack(url);
@@ -7740,7 +7740,7 @@ class Electron {
           packUrls.forEach((url) => this.pendingContentPacks.push(url));
           return;
         }
-        yield transaction(() => __async$E(this, null, function* () {
+        yield transaction(() => __async$F(this, null, function* () {
           yield this.$store.dispatch("content/loadContentPacks", packUrls);
         }));
       })
@@ -7751,12 +7751,12 @@ class Electron {
         this.state.autoAdd = packIds;
       }
     );
-    this.electron.ipcRenderer.onConversation("reload-repo", () => __async$E(this, null, function* () {
+    this.electron.ipcRenderer.onConversation("reload-repo", () => __async$F(this, null, function* () {
       yield (yield Repo.getInstance()).reloadLocalRepo();
     }));
     this.electron.ipcRenderer.onConversation(
       "replace-pack",
-      (contentPack) => __async$E(this, null, function* () {
+      (contentPack) => __async$F(this, null, function* () {
         const action = {
           processed: false,
           contentPack
@@ -7764,7 +7764,7 @@ class Electron {
         if (!this.$store) {
           this.pendingContentPacksReplace.push(action);
         } else {
-          yield transaction(() => __async$E(this, null, function* () {
+          yield transaction(() => __async$F(this, null, function* () {
             yield this.$store.dispatch("content/replaceContentPack", action);
           }));
         }
@@ -7832,8 +7832,8 @@ class Electron {
   onPanelChange(_handler) {
   }
   saveSettings(settings) {
-    return __async$E(this, null, function* () {
-      var _a;
+    return __async$F(this, null, function* () {
+      var _a2;
       yield this.electron.ipcRenderer.sendConvo(
         "config.set",
         "nsfw",
@@ -7842,7 +7842,7 @@ class Electron {
       yield this.electron.ipcRenderer.sendConvo(
         "config.set",
         "darkMode",
-        (_a = settings.darkMode) != null ? _a : void 0
+        (_a2 = settings.darkMode) != null ? _a2 : void 0
       );
       yield this.electron.ipcRenderer.sendConvo(
         "config.set",
@@ -7852,22 +7852,22 @@ class Electron {
     });
   }
   loadGameMode() {
-    return __async$E(this, null, function* () {
+    return __async$F(this, null, function* () {
       this._gameMode = (yield this.electron.ipcRenderer.sendConvo("config.get", "gameMode")) || "ddlc";
     });
   }
   setGameMode(mode) {
-    return __async$E(this, null, function* () {
+    return __async$F(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo("config.set", "gameMode", mode);
       this.electron.ipcRenderer.send("reload");
     });
   }
   loadSettings() {
-    return __async$E(this, null, function* () {
-      var _a, _b, _c;
+    return __async$F(this, null, function* () {
+      var _a2, _b, _c;
       return {
         lq: false,
-        nsfw: (_a = yield this.electron.ipcRenderer.sendConvo("config.get", "nsfw")) != null ? _a : false,
+        nsfw: (_a2 = yield this.electron.ipcRenderer.sendConvo("config.get", "nsfw")) != null ? _a2 : false,
         darkMode: (_b = yield this.electron.ipcRenderer.sendConvo("config.get", "darkMode")) != null ? _b : void 0,
         defaultCharacterTalkingZoom: (_c = yield this.electron.ipcRenderer.sendConvo(
           "config.get",
@@ -7877,7 +7877,7 @@ class Electron {
     });
   }
   localRepoInstall(url, repo, authors) {
-    return __async$E(this, null, function* () {
+    return __async$F(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo(
         "repo.install",
         url,
@@ -7887,24 +7887,24 @@ class Electron {
     });
   }
   localRepoUninstall(id) {
-    return __async$E(this, null, function* () {
+    return __async$F(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo("repo.uninstall", id);
     });
   }
   autoLoadAdd(id) {
-    return __async$E(this, null, function* () {
+    return __async$F(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo("auto-load.add", id);
     });
   }
   autoLoadRemove(id) {
-    return __async$E(this, null, function* () {
+    return __async$F(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo("auto-load.remove", id);
     });
   }
   saveToFile(downloadCanvas, filename, format = "image/png", quality = 1) {
     return new Promise((resolve, reject) => {
       downloadCanvas.toBlob(
-        (blob) => __async$E(this, null, function* () {
+        (blob) => __async$F(this, null, function* () {
           if (!blob) {
             reject();
             return;
@@ -7923,7 +7923,7 @@ class Electron {
     });
   }
   prompt(message, defaultValue) {
-    return __async$E(this, null, function* () {
+    return __async$F(this, null, function* () {
       return yield this.electron.ipcRenderer.sendConvo(
         "show-prompt",
         message,
@@ -7934,7 +7934,7 @@ class Electron {
   connectToStore(store2) {
     this.$store = store2;
     this.invalidateInstalledBGs();
-    transaction(() => __async$E(this, null, function* () {
+    transaction(() => __async$F(this, null, function* () {
       if (this.pendingContentPacks.length > 0) {
         yield this.$store.dispatch(
           "content/loadContentPacks",
@@ -7964,7 +7964,7 @@ class Electron {
     }
     if (!this.$store)
       return;
-    transaction(() => __async$E(this, null, function* () {
+    transaction(() => __async$F(this, null, function* () {
       yield this.$store.dispatch("content/replaceContentPack", {
         contentPack: installedBackgroundsPack
       });
@@ -8054,7 +8054,7 @@ var __publicField$j = (obj, key, value) => {
   __defNormalProp$I(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$D = (__this, __arguments, generator) => {
+var __async$E = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -8083,7 +8083,7 @@ function isWebPSupported() {
   }
   const losslessCode = "data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA=";
   const transparentCode = "data:image/webp;base64,UklGRogAAABXRUJQVlA4THwAAAAv/8SzAA/wGbPPmH3GbP7jAQSSNu9f+rzDwYj+G23bpt3Gx3xD8353j73f5b87+e9OALmT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9OAriT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9O/rsTwe7kvzsL";
-  return webpSupportPromise = (() => __async$D(this, null, function* () {
+  return webpSupportPromise = (() => __async$E(this, null, function* () {
     const ret = yield Promise.all([
       canLoadImg(losslessCode, 1, 2),
       canLoadImg(transparentCode, 720, 1280)
@@ -8107,7 +8107,7 @@ let heifSupportPromise;
 function isHeifSupported() {
   if (heifSupportPromise)
     return heifSupportPromise;
-  return heifSupportPromise = (() => __async$D(this, null, function* () {
+  return heifSupportPromise = (() => __async$E(this, null, function* () {
     const losslessCode = "data:image/heic;base64,AAAAGGZ0eXBoZWljAAAAAG1pZjFoZWljAAAAsW1ldGEAAAAAAAAAIWhkbHIAAAAAAAAAAHBpY3QAXABjAGMAcwBsAGEAAAAADnBpdG0AAAAAAAEAAAAQaWxvYwAAAABEQAAAAAAAI2lpbmYAAAAAAAEAAAAVaW5mZQIAAAAAAQAAaHZjMQAAAABDaXBycAAAACdpcGNvAAAAH2h2Y0NmzGx1ci0AAAAAAABv9HP+//v9bjr3AAAAABRpcG1hAAAAAAAAAAEAAQGBAAAACG1kYXQ=";
     return yield canLoadImg(losslessCode, 1, 2);
   }))();
@@ -8133,8 +8133,8 @@ class TmpAssetCache {
     __publicField$j(this, "cache", /* @__PURE__ */ new Map());
   }
   get(url) {
-    var _a;
-    const lookup = (_a = this.cache.get(url)) == null ? void 0 : _a.deref();
+    var _a2;
+    const lookup = (_a2 = this.cache.get(url)) == null ? void 0 : _a2.deref();
     if (lookup)
       return lookup;
     const promise = requestAssetByUrl(url);
@@ -8168,13 +8168,13 @@ function getAssetByUrl(url) {
 }
 const baseUrl = "./";
 function getBuildInAsset(asset, hq = true) {
-  return __async$D(this, null, function* () {
+  return __async$E(this, null, function* () {
     const url = `${baseUrl}assets/${asset}${hq ? "" : ".lq"}${(yield isWebPSupported()) ? ".webp" : ".png"}`.replace(/\/+/, "/");
     return yield getAssetCache().get(url);
   });
 }
 function getBuildInAssetUrl(asset, hq = true) {
-  return __async$D(this, null, function* () {
+  return __async$E(this, null, function* () {
     return `${baseUrl}assets/${asset}${envX.supports.lq && !hq ? ".lq" : ""}${(yield isWebPSupported()) ? ".webp" : ".png"}`.replace(/\/+/, "/");
   });
 }
@@ -8182,11 +8182,11 @@ function registerAssetWithURL(asset, url) {
   customUrl[asset] = url;
 }
 function requestAssetByUrl(url) {
-  return __async$D(this, null, function* () {
+  return __async$E(this, null, function* () {
     const isCustom = !!customUrl[url];
     if (isCustom)
       url = customUrl[url];
-    return yield (() => __async$D(this, null, function* () {
+    return yield (() => __async$E(this, null, function* () {
       try {
         return yield imagePromise(url);
       } catch (e) {
@@ -9528,14 +9528,14 @@ function mergeContentPacks(x, y) {
       y.sprites,
       (obj) => obj.id,
       (xObj, yObj) => {
-        var _a;
+        var _a2;
         return {
           id: xObj.id,
           label: xObj.label,
           variants: [...xObj.variants, ...yObj.variants],
           defaultScale: xObj.defaultScale,
           hd: xObj.hd,
-          sdVersion: (_a = xObj.sdVersion) != null ? _a : yObj.sdVersion
+          sdVersion: (_a2 = xObj.sdVersion) != null ? _a2 : yObj.sdVersion
         };
       }
     ),
@@ -9551,13 +9551,13 @@ function mergeBackgrounds(x, y) {
   return mergeIdArrays(x, y, (obj) => obj.id, mergeBackground);
 }
 function mergeBackground(x, y) {
-  var _a;
+  var _a2;
   return {
     id: x.id,
     label: x.label,
     variants: [...x.variants, ...y.variants],
     scaling: x.scaling,
-    sdVersion: (_a = x.sdVersion) != null ? _a : y.sdVersion
+    sdVersion: (_a2 = x.sdVersion) != null ? _a2 : y.sdVersion
   };
 }
 function mergeCharacters(x, y) {
@@ -9747,14 +9747,14 @@ const HOOK_PLUGIN_SETTINGS_SET = "plugin:settings:set";
 let supported;
 let perf;
 function isPerformanceSupported() {
-  var _a;
+  var _a2;
   if (supported !== void 0) {
     return supported;
   }
   if (typeof window !== "undefined" && window.performance) {
     supported = true;
     perf = window.performance;
-  } else if (typeof global !== "undefined" && ((_a = global.perf_hooks) === null || _a === void 0 ? void 0 : _a.performance)) {
+  } else if (typeof global !== "undefined" && ((_a2 = global.perf_hooks) === null || _a2 === void 0 ? void 0 : _a2.performance)) {
     supported = true;
     perf = global.perf_hooks.performance;
   } else {
@@ -10745,7 +10745,7 @@ Object.defineProperty(util, "__esModule", { value: true });
 util.mapObject = assetWalker_1 = util.assetWalker = normalizePath_1 = util.normalizePath = void 0;
 var maxReplacementTrips = 10;
 function normalizePath(str, replacements, fileTypes, lq) {
-  var e_1, _a;
+  var e_1, _a2;
   var oldStr = "";
   var i = 0;
   var replacementMap = new Map(Array.from(replacements.entries()).map(function(r) {
@@ -10764,8 +10764,8 @@ function normalizePath(str, replacements, fileTypes, lq) {
       e_1 = { error: e_1_1 };
     } finally {
       try {
-        if (_c && !_c.done && (_a = _b.return))
-          _a.call(_b);
+        if (_c && !_c.done && (_a2 = _b.return))
+          _a2.call(_b);
       } finally {
         if (e_1)
           throw e_1.error;
@@ -10860,7 +10860,7 @@ function walkStyleClasses(style, callback) {
   return ret;
 }
 function walkPose(pose, callback) {
-  var e_2, _a;
+  var e_2, _a2;
   var newParts = {};
   try {
     for (var _b = __values$1(Object.keys(pose.positions)), _c = _b.next(); !_c.done; _c = _b.next()) {
@@ -10876,8 +10876,8 @@ function walkPose(pose, callback) {
     e_2 = { error: e_2_1 };
   } finally {
     try {
-      if (_c && !_c.done && (_a = _b.return))
-        _a.call(_b);
+      if (_c && !_c.done && (_a2 = _b.return))
+        _a2.call(_b);
     } finally {
       if (e_2)
         throw e_2.error;
@@ -11027,7 +11027,7 @@ function mapNormalize(callback, collection, folder, ctx) {
 }
 parser$1.mapNormalize = mapNormalize;
 function normalizeSprite(sprite, baseFolder, ctx) {
-  var _a;
+  var _a2;
   var spriteFolder = joinNormalize$1(baseFolder, sprite.folder, ctx);
   return {
     id: expandId(ctx.packId, sprite.id),
@@ -11037,7 +11037,7 @@ function normalizeSprite(sprite, baseFolder, ctx) {
     }),
     defaultScale: sprite.defaultScale || [1, 1],
     sdVersion: sprite.sdVersion,
-    hd: (_a = sprite.hd) !== null && _a !== void 0 ? _a : null
+    hd: (_a2 = sprite.hd) !== null && _a2 !== void 0 ? _a2 : null
   };
 }
 parser$1.normalizeSprite = normalizeSprite;
@@ -11072,7 +11072,7 @@ function normalizeFont(font, baseFolder, ctx) {
 }
 parser$1.normalizeFont = normalizeFont;
 function normalizeBackground(background, baseFolder, ctx) {
-  var _a;
+  var _a2;
   var backgroundFolder = joinNormalize$1(baseFolder, background.folder, ctx);
   return {
     id: expandId(ctx.packId, background.id),
@@ -11080,7 +11080,7 @@ function normalizeBackground(background, baseFolder, ctx) {
     variants: background.variants.map(function(collection) {
       return normalizFileCollection(collection, backgroundFolder, ctx);
     }),
-    scaling: ["none", "strech", "cover"].includes((_a = background.scaling) === null || _a === void 0 ? void 0 : _a.toLowerCase()) ? background.scaling.toLowerCase() : "cover",
+    scaling: ["none", "strech", "cover"].includes((_a2 = background.scaling) === null || _a2 === void 0 ? void 0 : _a2.toLowerCase()) ? background.scaling.toLowerCase() : "cover",
     sdVersion: background.sdVersion
   };
 }
@@ -11098,14 +11098,14 @@ function normalizFileCollection(collection, baseFolder, ctx) {
   });
 }
 function normalizeCharacter$1(character, baseFolder, ctx) {
-  var _a, _b, _c;
+  var _a2, _b, _c;
   var charFolder = joinNormalize$1(baseFolder, character.folder, ctx);
   return {
     id: expandId(ctx.packId, character.id),
     label: character.label,
     chibi: character.chibi ? joinNormalize$1(charFolder, character.chibi, ctx) : void 0,
     heads: normalizeHeads$1(character.heads, charFolder, ctx),
-    defaultScale: (_a = character.defaultScale) !== null && _a !== void 0 ? _a : [0.8, 0.8],
+    defaultScale: (_a2 = character.defaultScale) !== null && _a2 !== void 0 ? _a2 : [0.8, 0.8],
     size: (_b = character.size) !== null && _b !== void 0 ? _b : [960, 960],
     hd: (_c = character.hd) !== null && _c !== void 0 ? _c : false,
     sdVersion: character.sdVersion,
@@ -11186,10 +11186,10 @@ function normalizeHeads$1(heads, baseFolder, ctx) {
   return ret;
 }
 function normalizePose(pose, baseFolder, ctx) {
-  var _a, _b;
+  var _a2, _b;
   var poseFolder = joinNormalize$1(baseFolder, pose.folder, ctx);
   return {
-    compatibleHeads: ((_a = pose.compatibleHeads) === null || _a === void 0 ? void 0 : _a.map(function(head2) {
+    compatibleHeads: ((_a2 = pose.compatibleHeads) === null || _a2 === void 0 ? void 0 : _a2.map(function(head2) {
       return expandId(ctx.packId, head2);
     })) || [],
     id: expandId(ctx.packId, pose.id),
@@ -11492,7 +11492,7 @@ function convertCharacter(characterV1, paths, nsfw) {
   };
 }
 function extractStyleGroups(characterV1, ctx, nsfw) {
-  var e_1, _a;
+  var e_1, _a2;
   var translation = translationTables[ctx.characterId];
   var baseStyleIds = [];
   var baseStyles = /* @__PURE__ */ new Map();
@@ -11507,7 +11507,7 @@ function extractStyleGroups(characterV1, ctx, nsfw) {
     return [style.name, style];
   }));
   var _loop_1 = function(styleName2) {
-    var e_2, _a2, e_3, _b;
+    var e_2, _a3, e_3, _b;
     var style = styleDefinitions.get(styleName2);
     if (style && style.nsfw && !nsfw)
       return "continue";
@@ -11542,8 +11542,8 @@ function extractStyleGroups(characterV1, ctx, nsfw) {
       e_2 = { error: e_2_1 };
     } finally {
       try {
-        if (useComponents_1_1 && !useComponents_1_1.done && (_a2 = useComponents_1.return))
-          _a2.call(useComponents_1);
+        if (useComponents_1_1 && !useComponents_1_1.done && (_a3 = useComponents_1.return))
+          _a3.call(useComponents_1);
       } finally {
         if (e_2)
           throw e_2.error;
@@ -11576,8 +11576,8 @@ function extractStyleGroups(characterV1, ctx, nsfw) {
     e_1 = { error: e_1_1 };
   } finally {
     try {
-      if (styleNames_1_1 && !styleNames_1_1.done && (_a = styleNames_1.return))
-        _a.call(styleNames_1);
+      if (styleNames_1_1 && !styleNames_1_1.done && (_a2 = styleNames_1.return))
+        _a2.call(styleNames_1);
     } finally {
       if (e_1)
         throw e_1.error;
@@ -11641,7 +11641,7 @@ function convertNsfwAbles(nsfwAbles, nsfw) {
   });
 }
 function convertHeads(headCollectionsV1, ctx, nsfw) {
-  var e_4, _a;
+  var e_4, _a2;
   var headCollectionsV2 = {};
   try {
     for (var _b = __values(Object.keys(headCollectionsV1)), _c = _b.next(); !_c.done; _c = _b.next()) {
@@ -11663,8 +11663,8 @@ function convertHeads(headCollectionsV1, ctx, nsfw) {
     e_4 = { error: e_4_1 };
   } finally {
     try {
-      if (_c && !_c.done && (_a = _b.return))
-        _a.call(_b);
+      if (_c && !_c.done && (_a2 = _b.return))
+        _a2.call(_b);
     } finally {
       if (e_4)
         throw e_4.error;
@@ -11891,7 +11891,7 @@ function joinNormalize(base, sub, paths) {
     return sub;
   return base + sub;
 }
-var __async$C = (__this, __arguments, generator) => {
+var __async$D = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -11959,7 +11959,7 @@ const content = {
       dispatch2("panels/fixContentPackRemoval", oldState, { root: true });
     },
     replaceContentPack(_0, _1) {
-      return __async$C(this, arguments, function* ({ commit: commit2, state }, action) {
+      return __async$D(this, arguments, function* ({ commit: commit2, state }, action) {
         debugger;
         const convertedPack = action.processed ? action.contentPack : yield convertContentPack(action.contentPack);
         let packs = state.contentPacks;
@@ -11982,12 +11982,12 @@ const content = {
       });
     },
     loadContentPacks(_0, _1) {
-      return __async$C(this, arguments, function* ({ commit: commit2, state }, urls) {
+      return __async$D(this, arguments, function* ({ commit: commit2, state }, urls) {
         if (typeof urls === "string") {
           urls = [urls];
         }
         const contentPacks = yield Promise.all(
-          urls.map((url) => __async$C(this, null, function* () {
+          urls.map((url) => __async$D(this, null, function* () {
             return yield loadContentPack(url);
           }))
         );
@@ -12032,7 +12032,7 @@ const content = {
   }
 };
 function loadContentPack(url) {
-  return __async$C(this, null, function* () {
+  return __async$D(this, null, function* () {
     const response = yield fetch(url);
     if (!response.ok) {
       throw new Error(
@@ -12068,7 +12068,7 @@ function sortByDependencies(packs) {
   return packs;
 }
 function convertContentPack(pack) {
-  return __async$C(this, null, function* () {
+  return __async$D(this, null, function* () {
     const types = new Set(
       (yield isWebPSupported()) ? ["webp", ...baseTypes] : baseTypes
     );
@@ -12078,13 +12078,13 @@ function convertContentPack(pack) {
     return assetWalker_1(
       pack,
       (path, _type) => {
-        var _a;
+        var _a2;
         const hq = normalizePath_1(path, replacementMap, types, false);
         const lq = normalizePath_1(path, replacementMap, types, true);
         return {
           hq,
           lq,
-          sourcePack: (_a = pack.packId) != null ? _a : "buildIn"
+          sourcePack: (_a2 = pack.packId) != null ? _a2 : "buildIn"
         };
       }
     );
@@ -12167,7 +12167,7 @@ var __publicField$h = (obj, key, value) => {
   __defNormalProp$z(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$B = (__this, __arguments, generator) => {
+var __async$C = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -12397,7 +12397,7 @@ class RenderContext {
     );
   }
   customTransform(transform, render) {
-    return __async$B(this, null, function* () {
+    return __async$C(this, null, function* () {
       this.fsCtx.save();
       yield transform(this.fsCtx);
       yield render(this);
@@ -12458,7 +12458,7 @@ var __publicField$g = (obj, key, value) => {
   __defNormalProp$y(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$A = (__this, __arguments, generator) => {
+var __async$B = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -12492,7 +12492,7 @@ class Renderer {
     return this._disposed;
   }
   render(renderCallback, hq = true, preview = true) {
-    return __async$A(this, null, function* () {
+    return __async$B(this, null, function* () {
       if (this.runningContext) {
         this.runningContext.abort();
       }
@@ -12533,13 +12533,13 @@ class Renderer {
     }
   }
   download(renderCallback, filename) {
-    return __async$A(this, null, function* () {
+    return __async$B(this, null, function* () {
       const downloadCanvas = yield this.drawToCanvas(renderCallback);
       return yield envX.saveToFile(downloadCanvas, filename);
     });
   }
   renderToBlob(renderCallback) {
-    return __async$A(this, null, function* () {
+    return __async$B(this, null, function* () {
       const downloadCanvas = yield this.drawToCanvas(renderCallback);
       return yield new Promise((resolve, reject) => {
         downloadCanvas.toBlob((blob) => {
@@ -12552,7 +12552,7 @@ class Renderer {
     });
   }
   drawToCanvas(renderCallback) {
-    return __async$A(this, null, function* () {
+    return __async$B(this, null, function* () {
       const downloadCanvas = makeCanvas();
       downloadCanvas.width = this.previewCanvas.width;
       downloadCanvas.height = this.previewCanvas.height;
@@ -12617,7 +12617,7 @@ var __spreadValues$j = (a, b) => {
   return a;
 };
 var __spreadProps$g = (a, b) => __defProps$g(a, __getOwnPropDescs$g(b));
-var __async$z = (__this, __arguments, generator) => {
+var __async$A = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -12709,7 +12709,7 @@ function closestCharacterSlot(pos) {
 }
 const characterActions = {
   createCharacters({ rootState, rootGetters, commit: commit2, state }, command) {
-    var _a;
+    var _a2;
     const id = state.panels[command.panelId].lastObjId + 1;
     const constants = getConstants();
     const char = getDataG(rootGetters, command.characterType);
@@ -12732,7 +12732,7 @@ const characterActions = {
         styleId: 0,
         styleGroupId: 0,
         posePositions: {},
-        label: (_a = char.label) != null ? _a : char.id,
+        label: (_a2 = char.label) != null ? _a2 : char.id,
         enlargeWhenTalking: rootState.ui.defaultCharacterTalkingZoom,
         linkedTo: null
       })
@@ -12880,7 +12880,7 @@ const characterActions = {
   }
 };
 function fixContentPackRemovalFromCharacter(context, panelId, id, oldPack) {
-  return __async$z(this, null, function* () {
+  return __async$A(this, null, function* () {
     const obj = context.state.panels[panelId].objects[id];
     const oldCharData = oldPack.characters.find(
       (char) => char.id === obj.characterType
@@ -13278,7 +13278,7 @@ Object.defineProperty(awaited, "__esModule", { value: true });
   __exportStar(noop$1, exports);
   __exportStar(awaited, exports);
 })(dist);
-var __async$y = (__this, __arguments, generator) => {
+var __async$z = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -13299,16 +13299,16 @@ var __async$y = (__this, __arguments, generator) => {
   });
 };
 class Background {
-  constructor(id, assets, flip, scale, compositeMode, filters) {
+  constructor(id, assets, flip, scale2, compositeMode, filters) {
     this.id = id;
     this.assets = assets;
     this.flip = flip;
-    this.scale = scale;
+    this.scale = scale2;
     this.compositeMode = compositeMode;
     this.filters = filters;
   }
   render(rx) {
-    return __async$y(this, null, function* () {
+    return __async$z(this, null, function* () {
       const { screenWidth: screenWidth2, screenHeight: screenHeight2 } = getConstants().Base;
       const images = yield Promise.all(
         this.assets.map((asset) => getAAsset(asset, rx.hq))
@@ -13318,8 +13318,8 @@ class Background {
         let y = 0;
         let w = image.width;
         let h2 = image.height;
-        const scale = this.scale;
-        switch (scale) {
+        const scale2 = this.scale;
+        switch (scale2) {
           case ScalingModes.None:
             x = screenWidth2 / 2 - w / 2;
             y = screenHeight2 / 2 - h2 / 2;
@@ -13343,7 +13343,7 @@ class Background {
             break;
           }
           default:
-            throw new dist.UnreachableCaseError(scale);
+            throw new dist.UnreachableCaseError(scale2);
         }
         rx.drawImage({
           image,
@@ -13581,7 +13581,7 @@ class Renderable {
     }
     const shadow = selectionColors[selection];
     ctxScope(ctx, () => {
-      var _a;
+      var _a2;
       if (shadow != null) {
         ctx.shadowColor = shadow;
         ctx.shadowBlur = 20;
@@ -13589,7 +13589,7 @@ class Renderable {
       if (!this.transformIsLocal || skipLocal) {
         ctx.setTransform(transform);
       }
-      ctx.globalCompositeOperation = (_a = this.obj.composite) != null ? _a : "source-over";
+      ctx.globalCompositeOperation = (_a2 = this.obj.composite) != null ? _a2 : "source-over";
       if (skipLocal) {
         this.renderLocal(ctx, hq);
       } else {
@@ -13630,7 +13630,7 @@ var __publicField$e = (obj, key, value) => {
   __defNormalProp$v(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$x = (__this, __arguments, generator) => {
+var __async$y = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -13699,7 +13699,7 @@ class AssetListRenderable extends Renderable {
       if ("loadedAssets" in assetEntry && !assetEntry.hasMissing)
         continue;
       promises.push(
-        ((assetEntry2) => __async$x(this, null, function* () {
+        ((assetEntry2) => __async$y(this, null, function* () {
           const assets = yield Promise.all(
             assetEntry2.assets.map((asset) => getAAsset(asset, hq))
           );
@@ -13716,14 +13716,14 @@ class AssetListRenderable extends Renderable {
     return Promise.all(promises);
   }
   renderLocal(ctx, hq) {
-    var _a;
+    var _a2;
     console.log("rerendering local");
     for (const loadedDraw of this.assetList) {
       if (!("loadedAssets" in loadedDraw))
         continue;
       for (const asset of loadedDraw.loadedAssets) {
         if (!this.canSkipLocal) {
-          ctx.globalCompositeOperation = (_a = loadedDraw.composite) != null ? _a : "source-over";
+          ctx.globalCompositeOperation = (_a2 = loadedDraw.composite) != null ? _a2 : "source-over";
         }
         asset.paintOnto(ctx, {
           x: loadedDraw.offset[0],
@@ -14706,7 +14706,7 @@ var __publicField$9 = (obj, key, value) => {
   __defNormalProp$p(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$w = (__this, __arguments, generator) => {
+var __async$x = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -14739,12 +14739,12 @@ class Poem extends ScalingRenderable {
     __publicField$9(this, "_lastPaperUrl", null);
   }
   get height() {
-    var _a;
-    return (_a = this._paperHeight) != null ? _a : this.obj.height;
+    var _a2;
+    return (_a2 = this._paperHeight) != null ? _a2 : this.obj.height;
   }
   get width() {
-    var _a;
-    return (_a = this._paperWidth) != null ? _a : this.obj.width;
+    var _a2;
+    return (_a2 = this._paperWidth) != null ? _a2 : this.obj.width;
   }
   prepareRender(panel, store2, lq) {
     const superRet = super.prepareRender(
@@ -14760,7 +14760,7 @@ class Poem extends ScalingRenderable {
     let imageLoading = void 0;
     if (!bg.file.startsWith("internal:")) {
       if (this._lastPaperUrl !== bg.file) {
-        imageLoading = (() => __async$w(this, null, function* () {
+        imageLoading = (() => __async$x(this, null, function* () {
           this._paper = yield getAssetByUrl(
             `assets/poemBackgrounds/${bg.file}`
           );
@@ -14833,7 +14833,7 @@ var __publicField$8 = (obj, key, value) => {
   __defNormalProp$o(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$v = (__this, __arguments, generator) => {
+var __async$w = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -14906,7 +14906,7 @@ class DdlcBase {
   prepare() {
     if (this.nextArrow instanceof ImageAsset)
       return;
-    return (() => __async$v(this, null, function* () {
+    return (() => __async$w(this, null, function* () {
       this.nextArrow = yield getBuildInAsset("next");
     }))();
   }
@@ -14917,7 +14917,7 @@ var __publicField$7 = (obj, key, value) => {
   __defNormalProp$n(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$u = (__this, __arguments, generator) => {
+var __async$v = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -14982,16 +14982,16 @@ class Default extends DdlcBase {
     return TextBoxTextYOffset$1;
   }
   renderNamebox(rx, x, y) {
-    var _a;
-    (_a = this.nameBoxAsset) == null ? void 0 : _a.paintOnto(rx, { x, y });
+    var _a2;
+    (_a2 = this.nameBoxAsset) == null ? void 0 : _a2.paintOnto(rx, { x, y });
   }
   renderBackdrop(rx, x, y) {
-    var _a;
+    var _a2;
     x += this.xOffset;
-    (_a = this.backdropAsset) == null ? void 0 : _a.paintOnto(rx, { x, y });
+    (_a2 = this.backdropAsset) == null ? void 0 : _a2.paintOnto(rx, { x, y });
   }
   render(rx) {
-    var _a;
+    var _a2;
     const w = this.width;
     const h2 = this.height;
     this.renderBackdrop(rx, 0, 0 + this.nameboxHeight);
@@ -15003,7 +15003,7 @@ class Default extends DdlcBase {
     if (this.obj.controls)
       this.renderControls(rx, controlsY);
     if (this.obj.continue) {
-      (_a = this.nextArrow) == null ? void 0 : _a.paintOnto(rx, {
+      (_a2 = this.nextArrow) == null ? void 0 : _a2.paintOnto(rx, {
         x: w - ArrowXRightOffset$1,
         y: bottom - ArrowYBottomOffset$1
       });
@@ -15015,10 +15015,10 @@ class Default extends DdlcBase {
       return;
     return Promise.all([
       prep,
-      this.backdropAsset instanceof ImageAsset ? void 0 : (() => __async$u(this, null, function* () {
+      this.backdropAsset instanceof ImageAsset ? void 0 : (() => __async$v(this, null, function* () {
         this.backdropAsset = yield getBuildInAsset(this.backgroundImage);
       }))(),
-      this.nameBoxAsset instanceof ImageAsset ? void 0 : (() => __async$u(this, null, function* () {
+      this.nameBoxAsset instanceof ImageAsset ? void 0 : (() => __async$v(this, null, function* () {
         this.nameBoxAsset = yield getBuildInAsset("namebox");
       }))()
     ]);
@@ -15276,7 +15276,7 @@ var __publicField$4 = (obj, key, value) => {
   __defNormalProp$k(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$t = (__this, __arguments, generator) => {
+var __async$u = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -15365,7 +15365,7 @@ const _DdlcPlusBase = class {
   prepare() {
     if (this.nextArrow instanceof ImageAsset)
       return;
-    return (() => __async$t(this, null, function* () {
+    return (() => __async$u(this, null, function* () {
       this.nextArrow = yield getBuildInAsset("next_plus");
     }))();
   }
@@ -15573,7 +15573,7 @@ var __publicField$2 = (obj, key, value) => {
   __defNormalProp$i(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$s = (__this, __arguments, generator) => {
+var __async$t = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -15628,7 +15628,7 @@ class None extends DdlcBase {
     return TextBoxStyle$1;
   }
   render(_rx) {
-    return __async$s(this, null, function* () {
+    return __async$t(this, null, function* () {
     });
   }
 }
@@ -15676,15 +15676,15 @@ class TextBox extends ScalingRenderable {
     ]);
   }
   getName() {
-    var _a, _b;
-    return this.obj.talkingObjId === "$other$" ? this.obj.talkingOther : (_b = (_a = this.refObject) == null ? void 0 : _a.label) != null ? _b : "Missing name";
+    var _a2, _b;
+    return this.obj.talkingObjId === "$other$" ? this.obj.talkingOther : (_b = (_a2 = this.refObject) == null ? void 0 : _a2.label) != null ? _b : "Missing name";
   }
   prepareRender(panel, store2, lq) {
-    var _a;
+    var _a2;
     const ret = super.prepareRender(panel, store2, lq);
     const prepareRet = this.textboxRenderer.prepare();
     if (typeof this.obj.talkingObjId === "number") {
-      this.refObject = (_a = panel.objects[this.obj.talkingObjId]) != null ? _a : null;
+      this.refObject = (_a2 = panel.objects[this.obj.talkingObjId]) != null ? _a2 : null;
     }
     const currentRefVars = this.getRefVars();
     if (currentRefVars !== this._lastRefVars) {
@@ -15764,7 +15764,7 @@ var __publicField = (obj, key, value) => {
   __defNormalProp$g(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$r = (__this, __arguments, generator) => {
+var __async$s = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -15845,17 +15845,17 @@ const _SceneRenderer = class {
     return this.getRenderObjects().filter((renderObject) => renderObject.hitTest(point)).map((renderObject) => renderObject.id);
   }
   getLastRenderObject(id) {
-    var _a;
-    return (_a = this.renderObjectCache.get(id)) != null ? _a : null;
+    var _a2;
+    return (_a2 = this.renderObjectCache.get(id)) != null ? _a2 : null;
   }
   renderCallback(skipLocalCanvases, rx) {
-    return __async$r(this, null, function* () {
-      var _a, _b;
+    return __async$s(this, null, function* () {
+      var _a2, _b;
       if (this._disposed)
         throw new Error("Disposed scene-renderer called");
       rx.fsCtx.imageSmoothingEnabled = true;
       rx.fsCtx.imageSmoothingQuality = rx.hq ? "high" : "low";
-      yield (_a = this.getBackgroundRenderer()) == null ? void 0 : _a.render(rx);
+      yield (_a2 = this.getBackgroundRenderer()) == null ? void 0 : _a2.render(rx);
       const renderables = this.getRenderObjects();
       const waiting = /* @__PURE__ */ new Map();
       const processed = /* @__PURE__ */ new Map();
@@ -16278,7 +16278,7 @@ var __spreadValues$c = (a, b) => {
   return a;
 };
 var __spreadProps$9 = (a, b) => __defProps$9(a, __getOwnPropDescs$9(b));
-var __async$q = (__this, __arguments, generator) => {
+var __async$r = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -16301,7 +16301,7 @@ var __async$q = (__this, __arguments, generator) => {
 const spriteMutations = {};
 const spriteActions = {
   createSprite(_0, _1) {
-    return __async$q(this, arguments, function* ({ commit: commit2, rootState, state }, command) {
+    return __async$r(this, arguments, function* ({ commit: commit2, rootState, state }, command) {
       const asset = yield getAAsset(command.assets[0], false);
       if (!(asset instanceof ImageAsset))
         return;
@@ -16351,7 +16351,7 @@ var __spreadValues$b = (a, b) => {
   return a;
 };
 var __spreadProps$8 = (a, b) => __defProps$8(a, __getOwnPropDescs$8(b));
-var __async$p = (__this, __arguments, generator) => {
+var __async$q = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -16402,7 +16402,7 @@ const textBoxMutations = {
 };
 const textBoxActions = {
   createTextBox({ commit: commit2, state, rootState }, command) {
-    var _a;
+    var _a2;
     const constants = getConstants();
     const id = state.panels[command.panelId].lastObjId + 1;
     const style = constants.TextBox.DefaultTextboxStyle;
@@ -16435,7 +16435,7 @@ const textBoxActions = {
         customNameboxStroke: constants.TextBoxCustom.nameboxStrokeDefaultColor,
         talkingObjId: null,
         talkingOther: "",
-        text: (_a = command.text) != null ? _a : "Click here to edit the textbox",
+        text: (_a2 = command.text) != null ? _a2 : "Click here to edit the textbox",
         resetBounds,
         overflow: false
       })
@@ -16530,7 +16530,7 @@ const textBoxActions = {
     });
   },
   splitTextbox(_0, _1) {
-    return __async$p(this, arguments, function* ({ commit: commit2, state, dispatch: dispatch2 }, command) {
+    return __async$q(this, arguments, function* ({ commit: commit2, state, dispatch: dispatch2 }, command) {
       const obj = state.panels[command.panelId].objects[command.id];
       if (obj.type !== "textBox")
         return;
@@ -16874,7 +16874,7 @@ const mutations = __spreadValues$9(__spreadValues$9(__spreadValues$9(__spreadVal
 }, spriteMutations), characterMutations), textBoxMutations), choiceMutations), notificationMutations), poemMutations);
 const actions = __spreadValues$9(__spreadValues$9(__spreadValues$9(__spreadValues$9(__spreadValues$9(__spreadValues$9({
   removeObject({ state, commit: commit2, rootState }, command) {
-    var _a;
+    var _a2;
     const panel = state.panels[command.panelId];
     const obj = panel.objects[command.id];
     if (rootState.ui.selection === command.id) {
@@ -16913,7 +16913,7 @@ const actions = __spreadValues$9(__spreadValues$9(__spreadValues$9(__spreadValue
       if (otherObject.type === "textBox" && otherObject.talkingObjId === obj.id) {
         commit2("setTalkingOther", {
           id: otherObject.id,
-          talkingOther: (_a = obj.label) != null ? _a : "",
+          talkingOther: (_a2 = obj.label) != null ? _a2 : "",
           panelId: command.panelId
         });
       }
@@ -17042,7 +17042,7 @@ const actions = __spreadValues$9(__spreadValues$9(__spreadValues$9(__spreadValue
     commit2("ui/setClipboard", JSON.stringify(objects), { root: true });
   },
   pasteObjectFromClipboard({ commit: commit2, state, rootState }) {
-    var _a;
+    var _a2;
     if (rootState.ui.clipboard == null)
       return;
     const newObjects = JSON.parse(rootState.ui.clipboard);
@@ -17056,7 +17056,7 @@ const actions = __spreadValues$9(__spreadValues$9(__spreadValues$9(__spreadValue
     }
     for (const obj of newObjects) {
       if (obj.linkedTo != null) {
-        obj.linkedTo = (_a = newIds.get(obj.linkedTo)) != null ? _a : null;
+        obj.linkedTo = (_a2 = newIds.get(obj.linkedTo)) != null ? _a2 : null;
       }
       commit2("create", {
         object: __spreadProps$7(__spreadValues$9({}, obj), {
@@ -17548,7 +17548,7 @@ var __spreadValues$7 = (a, b) => {
   return a;
 };
 var __spreadProps$5 = (a, b) => __defProps$5(a, __getOwnPropDescs$5(b));
-var __async$o = (__this, __arguments, generator) => {
+var __async$p = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -17582,14 +17582,14 @@ const store = createStore({
   },
   actions: {
     removePacks(_0, _1) {
-      return __async$o(this, arguments, function* ({ dispatch: dispatch2, commit: commit2 }, { packs }) {
+      return __async$p(this, arguments, function* ({ dispatch: dispatch2, commit: commit2 }, { packs }) {
         commit2("setUnsafe", true);
         yield dispatch2("content/removeContentPacks", packs);
         commit2("setUnsafe", false);
       });
     },
     getSave(_0, _1) {
-      return __async$o(this, arguments, function* ({ state }, compact) {
+      return __async$p(this, arguments, function* ({ state }, compact) {
         const repo = yield Repo.getInstance();
         return JSON.stringify(
           __spreadProps$5(__spreadValues$7({}, state), { version: 2.5 }),
@@ -17603,12 +17603,12 @@ const store = createStore({
             if (key === "content" && compact)
               return value.contentPacks.filter(
                 (x) => {
-                  var _a, _b;
-                  return !((_a = x.packId) == null ? void 0 : _a.startsWith("dddg.buildin.")) || ((_b = x.packId) == null ? void 0 : _b.endsWith(".nsfw"));
+                  var _a2, _b;
+                  return !((_a2 = x.packId) == null ? void 0 : _a2.startsWith("dddg.buildin.")) || ((_b = x.packId) == null ? void 0 : _b.endsWith(".nsfw"));
                 }
               ).map((x) => {
-                var _a;
-                let id = ((_a = x.packId) == null ? void 0 : _a.startsWith("dddg.uploads.")) ? x : x.packId;
+                var _a2;
+                let id = ((_a2 = x.packId) == null ? void 0 : _a2.startsWith("dddg.uploads.")) ? x : x.packId;
                 if (x.packId != null) {
                   const pack = repo.getPack(x.packId);
                   if (pack && pack.repoUrl != null)
@@ -17623,7 +17623,7 @@ const store = createStore({
       });
     },
     loadSave(_0, _1) {
-      return __async$o(this, arguments, function* ({ state }, str) {
+      return __async$p(this, arguments, function* ({ state }, str) {
         const data = JSON.parse(str);
         const contentData = data.content;
         data.ui = __spreadProps$5(__spreadValues$7({}, getDefaultUiState()), {
@@ -17642,12 +17642,12 @@ const store = createStore({
         data.content.contentPacks = [
           ...state.content.contentPacks.filter(
             (x) => {
-              var _a;
-              return (_a = x.packId) == null ? void 0 : _a.startsWith("dddg.buildin.");
+              var _a2;
+              return (_a2 = x.packId) == null ? void 0 : _a2.startsWith("dddg.buildin.");
             }
           ),
           ...(yield Promise.all(
-            contentData.map((x) => __async$o(this, null, function* () {
+            contentData.map((x) => __async$p(this, null, function* () {
               if (typeof x !== "string")
                 return x;
               let url = null;
@@ -17699,13 +17699,13 @@ const store = createStore({
   modules: { ui, panels, content, uploadUrls }
 });
 function migrate25(data) {
-  var _a, _b, _c, _d, _e, _f;
+  var _a2, _b, _c, _d, _e, _f;
   const panels2 = Object.values(data.panels.panels);
   if (panels2.find((x) => Object.values(x.objects).find((x2) => "scaleX" in x2)))
     return;
   for (const panel of panels2) {
     for (const object of Object.values(panel.objects)) {
-      object.scaleX = (_a = object.zoom) != null ? _a : 1;
+      object.scaleX = (_a2 = object.zoom) != null ? _a2 : 1;
       object.scaleY = (_b = object.zoom) != null ? _b : 1;
       object.skewX = 0;
       object.skewY = 0;
@@ -17741,7 +17741,7 @@ function migrate25(data) {
     }
   }
 }
-var __async$n = (__this, __arguments, generator) => {
+var __async$o = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -17851,7 +17851,7 @@ const _sfc_main$B = /* @__PURE__ */ defineComponent({
       errors.value.splice(i, 1);
     }
     function resolvableAction(i, actionName) {
-      return __async$n(this, null, function* () {
+      return __async$o(this, null, function* () {
         const error2 = resolvableErrors.value[i];
         resolvableErrors.value.splice(i, 1);
         const action = error2.actions.find((a) => a.name === actionName);
@@ -18023,7 +18023,286 @@ const _sfc_main$A = /* @__PURE__ */ defineComponent({
 });
 const modalDialog_vue_vue_type_style_index_0_scoped_95b82e11_lang = "";
 const ModalDialog = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["__scopeId", "data-v-95b82e11"]]);
+const scale = "" + new URL("open_in_full.e8d5767b.svg", import.meta.url).href;
+const rotate = "" + new URL("rotate_left.1e7e3add.svg", import.meta.url).href;
+var __async$n = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
+function safeAsync(name, callback) {
+  return __async$n(this, null, function* () {
+    try {
+      yield callback();
+    } catch (e) {
+      console.error("Error in promise", name, e);
+      eventBus$1.fire(
+        new FailureEvent(
+          "Unexpected error! Please copy the following message and send it to /u/edave64: Error in '" + name + '", ' + normalizeError(e)
+        )
+      );
+    }
+  });
+}
+function normalizeError(e) {
+  if (e instanceof Error) {
+    if (e.stack != null) {
+      const stackLines = e.stack.split("\n");
+      if (stackLines[0].includes(e.name) && stackLines[0].includes(e.message)) {
+        return stackLines[0] + "\n<br />" + stackLines[1];
+      } else {
+        return e.name + ": " + e.message + "\n<br />" + stackLines[0];
+      }
+    }
+    return e.name + ": " + e.message;
+  }
+  if (e instanceof Object) {
+    return JSON.stringify(e);
+  }
+  return "" + e;
+}
 var __async$m = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
+var _a;
+const pixelRatio = (_a = window.devicePixelRatio) != null ? _a : 1;
+function paint(ctx, center) {
+  const offsetCenter = movePointIntoView(center);
+  ctx.save();
+  if (currentGrabby && lastPos) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(center.x, center.y);
+    ctx.lineTo(lastPos.x, lastPos.y);
+    ctx.setLineDash([5 * pixelRatio, 5 * pixelRatio]);
+    ctx.strokeStyle = "#000";
+    ctx.stroke();
+    ctx.closePath();
+    ctx.restore();
+    currentGrabby.paint(ctx, center);
+    drawGrabby(ctx, currentGrabby, lastPos);
+  } else {
+    const constants = getConstants();
+    ctx.save();
+    ctx.translate(offsetCenter.x, offsetCenter.y);
+    ctx.scale(pixelRatio, pixelRatio);
+    if (center.x > constants.Base.screenWidth / 2) {
+      ctx.scale(-1, 1);
+    }
+    if (center.y > constants.Base.screenHeight / 2) {
+      ctx.scale(1, -1);
+    }
+    for (let i = 0; i < grabbies.length; i++) {
+      const grabby = grabbies[i];
+      if (!grabby.pos) {
+        grabby.pos = getRadialPos(rotationOneSixth * (i + 1));
+      }
+      drawGrabby(ctx, grabby, grabby.pos);
+    }
+  }
+  ctx.restore();
+}
+let initialDragAngle = 0;
+let initalObjRotation = 0;
+const tau = 2 * Math.PI;
+const grabbies = [
+  {
+    icon: rotate,
+    paint(ctx, center) {
+      const { angle, distance } = vectorToAngleAndDistance(
+        pointsToVector(center, lastPos)
+      );
+      const constants = getConstants().Base;
+      let normAngle = (initialDragAngle - angle + tau) % tau;
+      ctx.beginPath();
+      ctx.moveTo(center.x, center.y);
+      let start = initialDragAngle - Math.PI;
+      let end = start + angle - initialDragAngle;
+      console.log(normAngle);
+      if (normAngle <= Math.PI) {
+        const tmp = end;
+        end = start;
+        start = tmp;
+      }
+      ctx.arc(center.x, center.y, constants.wheelInnerRadius, start, end);
+      ctx.lineTo(center.x, center.y);
+      ctx.globalCompositeOperation = "difference";
+      ctx.fillStyle = "rgba(255, 255, 255, 1)";
+      ctx.fill();
+      ctx.globalCompositeOperation = "source-over";
+    },
+    onStartMove(store2, obj, center) {
+      initalObjRotation = obj.rotation;
+      const { angle, distance } = vectorToAngleAndDistance(
+        pointsToVector(center, lastPos)
+      );
+      initialDragAngle = angle;
+    },
+    onMove(store2, obj, center) {
+      const { angle, distance } = vectorToAngleAndDistance(
+        pointsToVector(center, lastPos)
+      );
+      console.log("angle", angle, "Grad angle", angle / Math.PI * 180);
+      store2.commit("panels/setRotation", {
+        panelId: obj.panelId,
+        id: obj.id,
+        rotation: initalObjRotation + (angle - initialDragAngle) / Math.PI * 180
+      });
+    }
+  },
+  {
+    icon: scale,
+    paint(ctx, center) {
+    },
+    onStartMove(store2, obj, center) {
+    },
+    onMove(store2, obj) {
+    }
+  }
+];
+let currentGrabby = null;
+let grabStarted = false;
+let lastPos = null;
+function onDown(pos, transformedPoint) {
+  const constants = getConstants();
+  const grabbyHit = grabbies.find((grabby) => {
+    const grabbyPos = grabby.lastDrawPos;
+    if (!grabbyPos)
+      return false;
+    const distance = Math.sqrt(
+      Math.pow(pos.x - grabbyPos.x, 2) + Math.pow(pos.y - grabbyPos.y, 2)
+    );
+    return distance <= constants.Base.wheelWidth / 2;
+  });
+  if (grabbyHit) {
+    currentGrabby = grabbyHit;
+    grabStarted = false;
+    lastPos = pos;
+    return true;
+  }
+  return false;
+}
+function onMove(store2, pos, transformedPoint) {
+  var _a2, _b, _c;
+  if (!currentGrabby)
+    return false;
+  const panels2 = store2.state.panels;
+  const currentPanel = panels2.panels[panels2.currentPanel];
+  const obj = currentPanel.objects[store2.state.ui.selection];
+  const linkedTransform = (_c = (_b = (_a2 = getMainSceneRenderer(store2)) == null ? void 0 : _a2.getLastRenderObject(obj.linkedTo)) == null ? void 0 : _b.preparedTransform) != null ? _c : new DOMMatrixReadOnly();
+  const center = linkedTransform.transformPoint(
+    new DOMPointReadOnly(obj.x, obj.y)
+  );
+  if (!grabStarted) {
+    grabStarted = true;
+    currentGrabby.onStartMove(store2, obj, center);
+  }
+  lastPos = pos;
+  currentGrabby.onMove(store2, obj, center);
+  return true;
+}
+function onDrop() {
+  if (!currentGrabby)
+    return false;
+  currentGrabby = null;
+  lastPos = null;
+  return true;
+}
+const grabbyIcons = /* @__PURE__ */ new Map();
+for (const grabby of grabbies) {
+  safeAsync(
+    "Loading grabby icon",
+    ((grabby2) => __async$m(void 0, null, function* () {
+      grabbyIcons.set(grabby2.icon, yield getAssetByUrl(grabby2.icon));
+    })).bind(void 0, grabby)
+  );
+}
+function drawGrabby(ctx, grabby, pos) {
+  var _a2;
+  const constants = getConstants();
+  ctx.save();
+  ctx.translate(pos.x, pos.y);
+  grabby.lastDrawPos = ctx.getTransform().transformPoint(new DOMPointReadOnly());
+  ctx.scale(-1, 1);
+  ctx.beginPath();
+  ctx.ellipse(
+    0,
+    0,
+    constants.Base.wheelWidth / 2,
+    constants.Base.wheelWidth / 2,
+    0,
+    0,
+    2 * Math.PI
+  );
+  ctx.closePath();
+  const style = getComputedStyle(document.body);
+  ctx.fillStyle = style.getPropertyValue("--accent-background");
+  ctx.strokeStyle = style.getPropertyValue("--border");
+  ctx.lineWidth = 2;
+  ctx.fill();
+  ctx.stroke();
+  (_a2 = grabbyIcons.get(grabby.icon)) == null ? void 0 : _a2.paintOnto(ctx);
+  ctx.restore();
+}
+function movePointIntoView(center) {
+  const constants = getConstants();
+  const fullRadius = constants.Base.wheelWidth + constants.Base.wheelInnerRadius * pixelRatio;
+  return new DOMPointReadOnly(
+    between(fullRadius, center.x, constants.Base.screenWidth - fullRadius),
+    between(fullRadius, center.y, constants.Base.screenHeight - fullRadius)
+  );
+}
+const rotationOneSixth = Math.PI / 6;
+function getRadialPos(angle) {
+  const constants = getConstants().Base;
+  return new DOMPointReadOnly(
+    constants.wheelInnerRadius * Math.cos(angle),
+    constants.wheelInnerRadius * Math.sin(angle)
+  );
+}
+function pointsToVector(a, b) {
+  return new DOMPointReadOnly(a.x - b.x, a.y - b.y);
+}
+function vectorToAngleAndDistance(v) {
+  const angle = Math.atan2(v.y, v.x);
+  return {
+    angle: angle < 0 ? Math.PI * 2 + angle : angle,
+    distance: Math.sqrt(v.x * v.x + v.y * v.y)
+  };
+}
+var __async$l = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -18060,8 +18339,8 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
     const showingLast = ref(false);
     const dropPreventClick = ref(false);
     const selection = computed(() => {
-      var _a;
-      return (_a = store2.state.ui.selection) != null ? _a : null;
+      var _a2;
+      return (_a2 = store2.state.ui.selection) != null ? _a2 : null;
     });
     const currentPanel = computed(
       () => store2.state.panels.panels[store2.state.panels.currentPanel]
@@ -18088,8 +18367,8 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
       queuedRender.value = requestAnimationFrame(render_);
     }
     function render_() {
-      return __async$m(this, null, function* () {
-        var _a;
+      return __async$l(this, null, function* () {
+        var _a2;
         if (queuedRender.value != null) {
           cancelAnimationFrame(queuedRender.value);
           queuedRender.value = null;
@@ -18099,7 +18378,7 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
         if (store2.state.unsafe)
           return;
         try {
-          yield (_a = getSceneRender()) == null ? void 0 : _a.render(!lqRendering.value, true, false);
+          yield (_a2 = getSceneRender()) == null ? void 0 : _a2.render(!lqRendering.value, true, false);
         } catch (e) {
           console.log(e);
         }
@@ -18145,6 +18424,13 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
         w: bitmapWidth.value,
         h: bitmapHeight.value
       });
+      const obj = renderer2 == null ? void 0 : renderer2.getLastRenderObject(selection.value);
+      if (obj) {
+        paint(
+          sdCtx.value,
+          obj.preparedTransform.transformPoint(new DOMPoint(0, 0))
+        );
+      }
       inBlendOver.value = false;
     }
     function toRendererCoordinate(x, y, transform) {
@@ -18161,7 +18447,7 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
       return [sx, sy];
     }
     function onUiClick(e) {
-      var _a;
+      var _a2;
       const [sx, sy] = toRendererCoordinate(e.clientX, e.clientY);
       if (handleColorPickerClick(sx, sy))
         return;
@@ -18170,14 +18456,15 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
         return;
       }
       const objects = getSceneRender().objectsAt(sx, sy);
-      const currentObjectIdx = objects.findIndex((id) => id === selection.value);
+      const selectionId = selection.value;
+      const currentObjectIdx = objects.findIndex((id) => id === selectionId);
       let selectedObject;
       if (currentObjectIdx === 0) {
         selectedObject = null;
       } else if (currentObjectIdx !== -1) {
         selectedObject = objects[currentObjectIdx - 1];
       } else {
-        selectedObject = (_a = objects[objects.length - 1]) != null ? _a : null;
+        selectedObject = (_a2 = objects[objects.length - 1]) != null ? _a2 : null;
       }
       transaction(() => {
         if (store2.state.ui.selection === selectedObject)
@@ -18213,7 +18500,7 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
     });
     const inBlendOver = ref(false);
     function blendOver(url) {
-      return __async$m(this, null, function* () {
+      return __async$l(this, null, function* () {
         if (inBlendOver.value) {
           render_();
           inBlendOver.value = false;
@@ -18246,7 +18533,7 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
       return false;
     }
     function download() {
-      return __async$m(this, null, function* () {
+      return __async$l(this, null, function* () {
         const url = yield getSceneRender().download();
         yield transaction(() => {
           const oldUrl = store2.state.ui.lastDownload;
@@ -18264,31 +18551,27 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
     let dragXOriginal = 0;
     let dragYOriginal = 0;
     function onDragStart(e) {
-      var _a, _b, _c;
       e.preventDefault();
-      if (selection.value === null)
-        return;
-      draggedObject = currentPanel.value.objects[selection.value];
-      dragTransform = (_c = (_b = (_a = getMainSceneRenderer(store2).getLastRenderObject(draggedObject.linkedTo)) == null ? void 0 : _a.preparedTransform) == null ? void 0 : _b.inverse()) != null ? _c : new DOMMatrixReadOnly();
-      const [x, y] = toRendererCoordinate(e.clientX, e.clientY, dragTransform);
-      dragXOffset = x - draggedObject.x;
-      dragYOffset = y - draggedObject.y;
-      dragXOriginal = draggedObject.x;
-      dragYOriginal = draggedObject.y;
+      dragStart(e.clientX, e.clientY);
     }
     function onTouchStart(e) {
-      var _a;
-      if (selection.value === null)
+      dragStart(e.touches[0].clientX, e.touches[0].clientY);
+    }
+    function dragStart(rx, ry) {
+      var _a2, _b, _c;
+      const selectionId = selection.value;
+      if (selectionId === null)
         return;
-      draggedObject = currentPanel.value.objects[selection.value];
-      dragTransform = (_a = getMainSceneRenderer(store2).getLastRenderObject(draggedObject.id)) == null ? void 0 : _a.preparedTransform.inverse();
-      const [x, y] = toRendererCoordinate(
-        e.touches[0].clientX,
-        e.touches[0].clientY,
-        dragTransform
-      );
-      dragXOffset = x;
-      dragYOffset = y;
+      draggedObject = currentPanel.value.objects[selectionId];
+      dragTransform = (_c = (_b = (_a2 = getMainSceneRenderer(store2).getLastRenderObject(draggedObject.linkedTo)) == null ? void 0 : _a2.preparedTransform) == null ? void 0 : _b.inverse()) != null ? _c : new DOMMatrixReadOnly();
+      const [x, y] = toRendererCoordinate(rx, ry, dragTransform);
+      if (selectionId != null && onDown(
+        new DOMPointReadOnly(...toRendererCoordinate(rx, ry)),
+        new DOMPointReadOnly(x, y)
+      ))
+        return;
+      dragXOffset = x - draggedObject.x;
+      dragYOffset = y - draggedObject.y;
       dragXOriginal = draggedObject.x;
       dragYOriginal = draggedObject.y;
     }
@@ -18301,11 +18584,17 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
       if (!draggedObject)
         return;
       e.preventDefault();
-      let [x, y] = e instanceof MouseEvent ? toRendererCoordinate(e.clientX, e.clientY, dragTransform) : toRendererCoordinate(
-        e.touches[0].clientX,
-        e.touches[0].clientY,
-        dragTransform
-      );
+      const oX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
+      const oY = e instanceof MouseEvent ? e.clientY : e.touches[0].clientY;
+      let [x, y] = toRendererCoordinate(oX, oY, dragTransform);
+      if (onMove(
+        store2,
+        new DOMPointReadOnly(...toRendererCoordinate(oX, oY)),
+        new DOMPointReadOnly(x, y)
+      )) {
+        invalidateRender();
+        return;
+      }
       x -= dragXOffset;
       y -= dragYOffset;
       const deltaX = Math.abs(x - dragXOriginal);
@@ -18319,7 +18608,7 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
           x = dragXOriginal;
         }
       }
-      transaction(() => __async$m(this, null, function* () {
+      transaction(() => __async$l(this, null, function* () {
         yield store2.dispatch("panels/setPosition", {
           panelId: draggedObject.panelId,
           id: draggedObject.id,
@@ -18328,8 +18617,8 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
         });
       }));
     }
-    function onDrop(e) {
-      return __async$m(this, null, function* () {
+    function onDrop$1(e) {
+      return __async$l(this, null, function* () {
         e.stopPropagation();
         e.preventDefault();
         if (!e.dataTransfer)
@@ -18343,7 +18632,7 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
                 name: file.name,
                 url
               });
-              yield transaction(() => __async$m(this, null, function* () {
+              yield transaction(() => __async$l(this, null, function* () {
                 yield store2.dispatch("panels/createSprite", {
                   panelId: store2.state.panels.currentPanel,
                   assets: [
@@ -18363,6 +18652,13 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
       });
     }
     function onSpriteDrop(e) {
+      if (onDrop()) {
+        invalidateRender();
+        e.preventDefault();
+        draggedObject = null;
+        dropPreventClick.value = true;
+        return;
+      }
       if (draggedObject) {
         if ("TouchEvent" in window && e instanceof TouchEvent) {
           dropPreventClick.value = false;
@@ -18393,7 +18689,7 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
         onTouchend: onSpriteDrop,
         onMouseup: onSpriteDrop,
         onDragover: onDragOver,
-        onDrop,
+        onDrop: onDrop$1,
         onMouseenter: onMouseEnter,
         onContextmenu: _cache[0] || (_cache[0] = withModifiers(() => {
         }, ["prevent"]))
@@ -18470,11 +18766,11 @@ const _sfc_main$y = /* @__PURE__ */ defineComponent({
       window.removeEventListener("keydown", fireShortcut);
     });
     return (_ctx, _cache) => {
-      var _a, _b;
+      var _a2, _b;
       return openBlock(), createElementBlock("button", {
         class: normalizeClass([__props.iconPos]),
         disabled: __props.disabled,
-        title: (_a = __props.title) != null ? _a : void 0,
+        title: (_a2 = __props.title) != null ? _a2 : void 0,
         "aria-label": (_b = __props.title) != null ? _b : void 0,
         style: normalizeStyle$1(__props.icon ? "height: auto" : ""),
         ref_key: "btn",
@@ -18557,7 +18853,7 @@ function setupPanelMixin(root) {
   });
   return { vertical, getRoot };
 }
-var __async$l = (__this, __arguments, generator) => {
+var __async$k = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -18592,7 +18888,7 @@ const _sfc_main$x = /* @__PURE__ */ defineComponent({
       return character.chibi ? envX.supports.lq ? character.chibi.lq : character.chibi.hq : "";
     }
     function onChosen(id) {
-      transaction(() => __async$l(this, null, function* () {
+      transaction(() => __async$k(this, null, function* () {
         yield store2.dispatch("panels/createCharacters", {
           characterType: id,
           panelId: store2.state.panels.currentPanel
@@ -18695,7 +18991,7 @@ var __spreadValues$6 = (a, b) => {
   return a;
 };
 var __spreadProps$4 = (a, b) => __defProps$4(a, __getOwnPropDescs$4(b));
-var __async$k = (__this, __arguments, generator) => {
+var __async$j = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -18751,8 +19047,8 @@ const _sfc_main$v = /* @__PURE__ */ defineComponent({
       return sprite.variants[0].map((variant) => `url('${getAAssetUrl(variant, false)}')`).join(",");
     }
     function addSpriteToScene(sprite) {
-      return __async$k(this, null, function* () {
-        yield transaction(() => __async$k(this, null, function* () {
+      return __async$j(this, null, function* () {
+        yield transaction(() => __async$j(this, null, function* () {
           yield store2.dispatch("panels/createSprite", {
             panelId: store2.state.panels.currentPanel,
             assets: sprite.variants[0]
@@ -18765,7 +19061,7 @@ const _sfc_main$v = /* @__PURE__ */ defineComponent({
     }
     const missingSpriteUpload = ref(null);
     function onMissingSpriteFileUpload(_e) {
-      return __async$k(this, null, function* () {
+      return __async$j(this, null, function* () {
         const uploadInput = missingSpriteUpload.value;
         const spriteName = uploadInput.uploadingSprite;
         if (!uploadInput.files)
@@ -18775,7 +19071,7 @@ const _sfc_main$v = /* @__PURE__ */ defineComponent({
           return;
         }
         const file = uploadInput.files[0];
-        yield transaction(() => __async$k(this, null, function* () {
+        yield transaction(() => __async$j(this, null, function* () {
           const url = URL.createObjectURL(file);
           yield store2.dispatch("uploadUrls/add", {
             name: spriteName,
@@ -18813,7 +19109,7 @@ const _sfc_main$v = /* @__PURE__ */ defineComponent({
       }
     }
     function uploadFromURL() {
-      return __async$k(this, null, function* () {
+      return __async$j(this, null, function* () {
         const url = prompt("Enter the URL of the image");
         if (url == null)
           return;
@@ -18822,8 +19118,8 @@ const _sfc_main$v = /* @__PURE__ */ defineComponent({
       });
     }
     function addCustomSpriteFile(file) {
-      return __async$k(this, null, function* () {
-        yield transaction((subTransaction) => __async$k(this, null, function* () {
+      return __async$j(this, null, function* () {
+        yield transaction((subTransaction) => __async$j(this, null, function* () {
           const url = URL.createObjectURL(file);
           const assetUrl = yield store2.dispatch("uploadUrls/add", {
             name: file.name,
@@ -18834,7 +19130,7 @@ const _sfc_main$v = /* @__PURE__ */ defineComponent({
       });
     }
     function addNewCustomSprite(_0, _1) {
-      return __async$k(this, arguments, function* (label, url, subTransaction = transaction) {
+      return __async$j(this, arguments, function* (label, url, subTransaction = transaction) {
         const old = store2.state.content.contentPacks.find(
           (x) => x.packId === uploadedSpritesPackDefault.packId
         ) || uploadedSpritesPackDefault;
@@ -18850,7 +19146,7 @@ const _sfc_main$v = /* @__PURE__ */ defineComponent({
             }
           ]
         });
-        yield subTransaction(() => __async$k(this, null, function* () {
+        yield subTransaction(() => __async$j(this, null, function* () {
           yield store2.dispatch("content/replaceContentPack", {
             contentPack: newPackVersion,
             processed: true
@@ -18971,7 +19267,7 @@ const _sfc_main$v = /* @__PURE__ */ defineComponent({
 });
 const sprite_vue_vue_type_style_index_0_scoped_d2e4e53f_lang = "";
 const Sprites = /* @__PURE__ */ _export_sfc(_sfc_main$v, [["__scopeId", "data-v-d2e4e53f"]]);
-var __async$j = (__this, __arguments, generator) => {
+var __async$i = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -18996,33 +19292,33 @@ const _sfc_main$u = /* @__PURE__ */ defineComponent({
   setup(__props) {
     const store2 = useStore();
     function addTextBox() {
-      return __async$j(this, null, function* () {
+      return __async$i(this, null, function* () {
         return yield createUiElement("createTextBox");
       });
     }
     function addChoice() {
-      return __async$j(this, null, function* () {
+      return __async$i(this, null, function* () {
         return yield createUiElement("createChoice");
       });
     }
     function addDialog() {
-      return __async$j(this, null, function* () {
+      return __async$i(this, null, function* () {
         return yield createUiElement("createNotification");
       });
     }
     function addPoem() {
-      return __async$j(this, null, function* () {
+      return __async$i(this, null, function* () {
         return yield createUiElement("createPoem");
       });
     }
     function addConsole() {
-      return __async$j(this, null, function* () {
+      return __async$i(this, null, function* () {
         return yield createUiElement("createConsole");
       });
     }
     function createUiElement(messageName) {
-      return __async$j(this, null, function* () {
-        yield transaction(() => __async$j(this, null, function* () {
+      return __async$i(this, null, function* () {
+        yield transaction(() => __async$i(this, null, function* () {
           yield store2.dispatch(`panels/${messageName}`, {
             panelId: store2.state.panels.currentPanel
           });
@@ -19055,7 +19351,7 @@ const _sfc_main$u = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var __async$i = (__this, __arguments, generator) => {
+var __async$h = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -19111,7 +19407,7 @@ const _sfc_main$t = /* @__PURE__ */ defineComponent({
       return store2.state.ui.clipboard != null;
     });
     function paste() {
-      transaction(() => __async$i(this, null, function* () {
+      transaction(() => __async$h(this, null, function* () {
         yield store2.dispatch("panels/pasteObjectFromClipboard", {
           panelId: currentPanel.value.id
         });
@@ -19123,12 +19419,12 @@ const _sfc_main$t = /* @__PURE__ */ defineComponent({
         ref_key: "root",
         ref: root,
         onDragenter: _cache[2] || (_cache[2] = (...args) => {
-          var _a, _b;
-          return ((_a = sprites.value) == null ? void 0 : _a.showDropTarget) && ((_b = sprites.value) == null ? void 0 : _b.showDropTarget(...args));
+          var _a2, _b;
+          return ((_a2 = sprites.value) == null ? void 0 : _a2.showDropTarget) && ((_b = sprites.value) == null ? void 0 : _b.showDropTarget(...args));
         }),
         onMouseleave: _cache[3] || (_cache[3] = (...args) => {
-          var _a, _b;
-          return ((_a = sprites.value) == null ? void 0 : _a.hideDropTarget) && ((_b = sprites.value) == null ? void 0 : _b.hideDropTarget(...args));
+          var _a2, _b;
+          return ((_a2 = sprites.value) == null ? void 0 : _a2.hideDropTarget) && ((_b = sprites.value) == null ? void 0 : _b.hideDropTarget(...args));
         })
       }, [
         _hoisted_1$o,
@@ -19356,9 +19652,9 @@ const _sfc_main$r = /* @__PURE__ */ defineComponent({
       }
       event.preventDefault();
       const bounding = svgE.getBoundingClientRect();
-      const scale = bounding.width / (sliderOffset + sliderLength + sliderOffset);
+      const scale2 = bounding.width / (sliderOffset + sliderLength + sliderOffset);
       const x = (event instanceof MouseEvent ? event.clientX : event.touches[0].clientX) - bounding.x;
-      const scaledX = x / scale;
+      const scaledX = x / scale2;
       const value = Math.max(Math.min(scaledX - sliderOffset, sliderLength), 0) / sliderLength * props.maxValue;
       emit2("update:modelValue", value);
       event.preventDefault();
@@ -19577,8 +19873,8 @@ const _sfc_main$q = /* @__PURE__ */ defineComponent({
     function stop({ rgba, hsla }) {
       const maxValue = computed(
         () => {
-          var _a;
-          return props.mode === "rgba" ? 255 : (_a = hsla.max) != null ? _a : 100;
+          var _a2;
+          return props.mode === "rgba" ? 255 : (_a2 = hsla.max) != null ? _a2 : 100;
         }
       );
       const label = computed(
@@ -19645,7 +19941,7 @@ var __spreadValues$4 = (a, b) => {
   return a;
 };
 var __spreadProps$2 = (a, b) => __defProps$2(a, __getOwnPropDescs$2(b));
-var __async$h = (__this, __arguments, generator) => {
+var __async$g = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -19743,7 +20039,7 @@ const _sfc_main$p = /* @__PURE__ */ defineComponent(__spreadProps$2(__spreadValu
           }
         ]
       });
-      transaction(() => __async$h(this, null, function* () {
+      transaction(() => __async$g(this, null, function* () {
         yield store2.dispatch("content/replaceContentPack", {
           contentPack: newPack,
           processed: true
@@ -19928,7 +20224,7 @@ var __spreadValues$3 = (a, b) => {
     }
   return a;
 };
-var __async$g = (__this, __arguments, generator) => {
+var __async$f = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -20130,8 +20426,8 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
     const filters = computed(() => object.value.filters);
     const currentFilter = computed(
       () => {
-        var _a;
-        return (_a = filters.value[currentFilterIdx.value]) != null ? _a : null;
+        var _a2;
+        return (_a2 = filters.value[currentFilterIdx.value]) != null ? _a2 : null;
       }
     );
     const isPercentFilter = computed(() => {
@@ -20192,7 +20488,7 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
       }
     }
     function addFilter2() {
-      transaction(() => __async$g(this, null, function* () {
+      transaction(() => __async$f(this, null, function* () {
         yield store2.dispatch(objectTypeScope("addFilter"), {
           id: props.id,
           panelId: props.panelId,
@@ -20206,7 +20502,7 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
       currentFilterIdx.value = idx;
     }
     function removeFilter2() {
-      transaction(() => __async$g(this, null, function* () {
+      transaction(() => __async$f(this, null, function* () {
         yield store2.dispatch(objectTypeScope("removeFilter"), {
           id: props.id,
           panelId: props.panelId,
@@ -20219,7 +20515,7 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
       }));
     }
     function moveFilter2(moveBy) {
-      transaction(() => __async$g(this, null, function* () {
+      transaction(() => __async$f(this, null, function* () {
         yield store2.dispatch(objectTypeScope("moveFilter"), {
           id: props.id,
           panelId: props.panelId,
@@ -20240,7 +20536,7 @@ const _sfc_main$m = /* @__PURE__ */ defineComponent({
       setFilterProperty({ value });
     }
     function setFilterProperty(value) {
-      transaction(() => __async$g(this, null, function* () {
+      transaction(() => __async$f(this, null, function* () {
         yield store2.dispatch(objectTypeScope("setFilter"), __spreadValues$3({
           id: props.id,
           panelId: props.panelId,
@@ -20570,17 +20866,17 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
       return props.backgroundId === background.value.current;
     });
     const title = computed(() => {
-      var _a;
+      var _a2;
       switch (props.backgroundId) {
         case "buildin.static-color":
           return "Static color";
         case "buildin.transparent":
           return "Transparent";
       }
-      return (_a = bgData.value.label) != null ? _a : "";
+      return (_a2 = bgData.value.label) != null ? _a2 : "";
     });
     const style = computed(() => {
-      var _a;
+      var _a2;
       switch (props.backgroundId) {
         case "buildin.static-color":
           return {
@@ -20589,7 +20885,7 @@ const _sfc_main$l = /* @__PURE__ */ defineComponent({
         case "buildin.transparent":
           return {};
       }
-      const urls = (_a = bgData.value) == null ? void 0 : _a.variants[0].map((img) => `url('${getAAssetUrl(img, false)}')`).join(",");
+      const urls = (_a2 = bgData.value) == null ? void 0 : _a2.variants[0].map((img) => `url('${getAAssetUrl(img, false)}')`).join(",");
       return {
         backgroundImage: urls != null ? urls : ""
       };
@@ -20659,7 +20955,7 @@ const _sfc_main$k = /* @__PURE__ */ defineComponent({
   }
 });
 const toggle_vue_vue_type_style_index_0_lang = "";
-var __async$f = (__this, __arguments, generator) => {
+var __async$e = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -20761,7 +21057,7 @@ const _sfc_main$j = /* @__PURE__ */ defineComponent({
       () => bgData.value ? bgData.value.variants.length > 1 : false
     );
     function seekVariant(delta) {
-      transaction(() => __async$f(this, null, function* () {
+      transaction(() => __async$e(this, null, function* () {
         yield store2.dispatch("panels/seekBackgroundVariant", {
           delta,
           panelId: store2.state.panels.currentPanel
@@ -20856,7 +21152,7 @@ var __spreadValues$2 = (a, b) => {
   return a;
 };
 var __spreadProps$1 = (a, b) => __defProps$1(a, __getOwnPropDescs$1(b));
-var __async$e = (__this, __arguments, generator) => {
+var __async$d = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -20944,8 +21240,8 @@ const _sfc_main$i = /* @__PURE__ */ defineComponent({
       }
     }
     function addImageFile(file) {
-      return __async$e(this, null, function* () {
-        yield transaction(() => __async$e(this, null, function* () {
+      return __async$d(this, null, function* () {
+        yield transaction(() => __async$d(this, null, function* () {
           const url = URL.createObjectURL(file);
           const assetUrl = yield store2.dispatch("uploadUrls/add", {
             name: file.name,
@@ -20963,7 +21259,7 @@ const _sfc_main$i = /* @__PURE__ */ defineComponent({
       addNewCustomBackground(lastSegment, lastSegment, url);
     }
     function addNewCustomBackground(id, label, url) {
-      return __async$e(this, null, function* () {
+      return __async$d(this, null, function* () {
         const old = store2.state.content.contentPacks.find(
           (x) => x.packId === uploadedBackgroundsPackDefaults.packId
         ) || uploadedBackgroundsPackDefaults;
@@ -20986,7 +21282,7 @@ const _sfc_main$i = /* @__PURE__ */ defineComponent({
             }
           ]
         });
-        yield transaction(() => __async$e(this, null, function* () {
+        yield transaction(() => __async$d(this, null, function* () {
           yield store2.dispatch("content/replaceContentPack", {
             contentPack: newPackVersion,
             processed: true
@@ -21139,57 +21435,6 @@ function genericSetterMerged(store2, object, message, action, key) {
     }
   });
 }
-var __async$d = (__this, __arguments, generator) => {
-  return new Promise((resolve, reject) => {
-    var fulfilled = (value) => {
-      try {
-        step(generator.next(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var rejected = (value) => {
-      try {
-        step(generator.throw(value));
-      } catch (e) {
-        reject(e);
-      }
-    };
-    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
-    step((generator = generator.apply(__this, __arguments)).next());
-  });
-};
-function safeAsync(name, callback) {
-  return __async$d(this, null, function* () {
-    try {
-      yield callback();
-    } catch (e) {
-      console.error("Error in promise", name, e);
-      eventBus$1.fire(
-        new FailureEvent(
-          "Unexpected error! Please copy the following message and send it to /u/edave64: Error in '" + name + '", ' + normalizeError(e)
-        )
-      );
-    }
-  });
-}
-function normalizeError(e) {
-  if (e instanceof Error) {
-    if (e.stack != null) {
-      const stackLines = e.stack.split("\n");
-      if (stackLines[0].includes(e.name) && stackLines[0].includes(e.message)) {
-        return stackLines[0] + "\n<br />" + stackLines[1];
-      } else {
-        return e.name + ": " + e.message + "\n<br />" + stackLines[0];
-      }
-    }
-    return e.name + ": " + e.message;
-  }
-  if (e instanceof Object) {
-    return JSON.stringify(e);
-  }
-  return "" + e;
-}
 var __async$c = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -21244,10 +21489,10 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
       )}px`;
     });
     const background = computed(() => {
-      var _a, _b;
+      var _a2, _b;
       let ret = "";
       const size2 = backgroundSize.value;
-      const globalOffset = (_a = props.part.offset) != null ? _a : [0, 0];
+      const globalOffset = (_a2 = props.part.offset) != null ? _a2 : [0, 0];
       const max = props.part.images.length - 1;
       for (let i = 0; i <= max; ++i) {
         const image = props.part.images[max - i];
@@ -21288,9 +21533,9 @@ const _sfc_main$h = /* @__PURE__ */ defineComponent({
     }
     safeAsync("Initialization of parts button", init);
     return (_ctx, _cache) => {
-      var _a;
+      var _a2;
       return openBlock(), createElementBlock("div", {
-        class: normalizeClass({ part: true, active: (_a = __props.part) == null ? void 0 : _a.active }),
+        class: normalizeClass({ part: true, active: (_a2 = __props.part) == null ? void 0 : _a2.active }),
         style: normalizeStyle$1(style.value),
         tabindex: "0",
         onClick: _cache[0] || (_cache[0] = ($event) => emit2("click")),
@@ -22446,8 +22691,8 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
     setupPanelMixin(root);
     const transformLink = computed({
       get() {
-        var _a;
-        return (_a = props.object.linkedTo) != null ? _a : "";
+        var _a2;
+        return (_a2 = props.object.linkedTo) != null ? _a2 : "";
       },
       set(value) {
         const obj = props.object;
@@ -22522,8 +22767,8 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
     const easterEgg = location.search.includes("alex");
     const overflow = computed({
       get() {
-        var _a;
-        return (_a = props.object.overflow) != null ? _a : false;
+        var _a2;
+        return (_a2 = props.object.overflow) != null ? _a2 : false;
       },
       set(overflow2) {
         transaction(() => __async$7(this, null, function* () {
@@ -22633,8 +22878,8 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
     );
     const hasLabel = computed(() => props.object.label !== null);
     const heading = computed(() => {
-      var _a, _b;
-      return (_b = (_a = props.object.label) != null ? _a : props.title) != null ? _b : "Object";
+      var _a2, _b;
+      return (_b = (_a2 = props.object.label) != null ? _a2 : props.title) != null ? _b : "Object";
     });
     const useCustomTextboxColor = computed({
       get() {
@@ -22659,8 +22904,8 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
       }));
     }
     function enableNameEdit() {
-      var _a;
-      modalNameInput.value = (_a = props.object.label) != null ? _a : "";
+      var _a2;
+      modalNameInput.value = (_a2 = props.object.label) != null ? _a2 : "";
       showRename.value = true;
     }
     function renameOption(option) {
@@ -22888,7 +23133,7 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
             title: "Textbox settings"
           }, {
             default: withCtx(() => {
-              var _a;
+              var _a2;
               return [
                 __props.object.type === "character" || __props.object.type === "sprite" ? (openBlock(), createBlock(_sfc_main$k, {
                   key: 0,
@@ -22908,7 +23153,7 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                       createBaseVNode("button", {
                         id: "textbox_color",
                         class: "color-button",
-                        style: normalizeStyle$1({ background: (_a = __props.object.textboxColor) != null ? _a : "" }),
+                        style: normalizeStyle$1({ background: (_a2 = __props.object.textboxColor) != null ? _a2 : "" }),
                         onClick: selectTextboxColor
                       }, null, 4)
                     ])
@@ -23028,8 +23273,8 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
     });
     const charData = computed(() => getData(store2, object.value));
     const label = computed(() => {
-      var _a;
-      return (_a = charData.value.label) != null ? _a : "";
+      var _a2;
+      return (_a2 = charData.value.label) != null ? _a2 : "";
     });
     const parts = computed(() => getParts(charData.value, object.value));
     const hasMultipleStyles = computed(
@@ -24708,11 +24953,11 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
     const root = ref(null);
     setupPanelMixin(root);
     function saveSettings() {
-      var _a;
+      var _a2;
       envX.saveSettings({
         lq: store2.state.ui.lqRendering,
         nsfw: store2.state.ui.nsfw,
-        darkMode: (_a = store2.state.ui.useDarkTheme) != null ? _a : void 0,
+        darkMode: (_a2 = store2.state.ui.useDarkTheme) != null ? _a2 : void 0,
         looseTextParsing: envX.state.looseTextParsing,
         defaultCharacterTalkingZoom: store2.state.ui.defaultCharacterTalkingZoom
       });
@@ -25248,8 +25493,8 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     });
     const talkingObjId = computed({
       get() {
-        var _a;
-        return (_a = object.value.talkingObjId) != null ? _a : "$null$";
+        var _a2;
+        return (_a2 = object.value.talkingObjId) != null ? _a2 : "$null$";
       },
       set(val) {
         transaction(() => {
@@ -25759,10 +26004,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box.cc691147.js"), true ? ["./single-box.cc691147.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box.b7cbef80.js"), true ? ["./single-box.b7cbef80.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
     );
     const ExpressionBuilder = defineAsyncComponent(
-      () => __vitePreload(() => import("./index.8ea22ac5.js"), true ? ["./index.8ea22ac5.js","./index.a2d17a51.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.d26e4a88.js"), true ? ["./index.d26e4a88.js","./index.a2d17a51.css"] : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);
@@ -25835,8 +26080,8 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const userPrefersDarkMode = computed(() => store2.state.ui.useDarkTheme);
     const useDarkTheme = computed(
       () => {
-        var _a;
-        return (_a = userPrefersDarkMode.value) != null ? _a : systemPrefersDarkMode.value;
+        var _a2;
+        return (_a2 = userPrefersDarkMode.value) != null ? _a2 : systemPrefersDarkMode.value;
       }
     );
     watch(
@@ -26063,8 +26308,8 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     watch(
       () => store2.state.ui.selection,
       (id) => {
-        var _a, _b;
-        if (((_a = document.activeElement) == null ? void 0 : _a.getAttribute("data-obj-id")) !== "" + id) {
+        var _a2, _b;
+        if (((_a2 = document.activeElement) == null ? void 0 : _a2.getAttribute("data-obj-id")) !== "" + id) {
           (_b = document.querySelector(`*[data-obj-id='${id}']`)) == null ? void 0 : _b.focus({
             focusVisible: false,
             preventScroll: true
@@ -26082,9 +26327,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       preLoading.value = false;
       const settings = yield envX.loadSettings();
       yield transaction(() => __async2(this, null, function* () {
-        var _a, _b, _c, _d;
+        var _a2, _b, _c, _d;
         envX.state.looseTextParsing = settings.looseTextParsing || true;
-        store2.commit("ui/setLqRendering", (_a = settings.lq) != null ? _a : false);
+        store2.commit("ui/setLqRendering", (_a2 = settings.lq) != null ? _a2 : false);
         store2.commit("ui/setDarkTheme", (_b = settings.darkMode) != null ? _b : null);
         store2.commit(
           "ui/setDefaultCharacterTalkingZoom",
