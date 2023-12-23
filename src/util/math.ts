@@ -8,6 +8,10 @@ export function between(min: number, val: number, max: number) {
 	return val;
 }
 
+export function mod(a: number, b: number) {
+	return ((a % b) + b) % b;
+}
+
 export function matrixEquals(
 	a: DOMMatrixReadOnly | null,
 	b: DOMMatrixReadOnly | null

@@ -11,7 +11,7 @@ import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
 import { RStore } from '@/store';
 import { IObject, ISetSpriteRotationMutation } from '@/store/objects';
 import { safeAsync } from '@/util/errors';
-import { between } from '@/util/math';
+import { between, mod } from '@/util/math';
 
 const pixelRatio = window.devicePixelRatio ?? 1;
 
@@ -19,22 +19,13 @@ export function paint(ctx: CanvasRenderingContext2D, center: DOMPointReadOnly) {
 	const offsetCenter = movePointIntoView(center);
 
 	ctx.save();
-	if (currentGrabby && lastPos) {
-		ctx.save();
-		ctx.beginPath();
-		ctx.moveTo(center.x, center.y);
-		ctx.lineTo(lastPos.x, lastPos.y);
-		ctx.setLineDash([5 * pixelRatio, 5 * pixelRatio]);
-		ctx.strokeStyle = '#000';
-		ctx.stroke();
-		ctx.closePath();
-		ctx.restore();
+	if (dragData) {
+		paintDashedLine(center, dragData.lastPos);
+		dragData.grabby.paint(ctx, center, dragData);
 
-		currentGrabby.paint(ctx, center);
-
-		ctx.translate(lastPos.x, lastPos.y);
+		ctx.translate(dragData.lastPos.x, dragData.lastPos.y);
 		ctx.scale(pixelRatio, pixelRatio);
-		drawGrabby(ctx, currentGrabby, new DOMPointReadOnly());
+		drawGrabby(ctx, dragData.grabby, new DOMPointReadOnly());
 	} else {
 		const constants = getConstants();
 		ctx.translate(offsetCenter.x, offsetCenter.y);
@@ -54,6 +45,21 @@ export function paint(ctx: CanvasRenderingContext2D, center: DOMPointReadOnly) {
 		}
 	}
 	ctx.restore();
+
+	function paintDashedLine(start: DOMPointReadOnly, end: DOMPointReadOnly) {
+		ctx.save();
+		try {
+			ctx.beginPath();
+			ctx.moveTo(start.x, start.y);
+			ctx.lineTo(end.x, end.y);
+			ctx.setLineDash([5 * pixelRatio, 5 * pixelRatio]);
+			ctx.strokeStyle = '#000';
+			ctx.stroke();
+			ctx.closePath();
+		} finally {
+			ctx.restore();
+		}
+	}
 }
 
 let initialDragAngle: number = 0;
@@ -63,19 +69,22 @@ const tau = 2 * Math.PI;
 const grabbies: Grabby[] = [
 	{
 		icon: rotate,
-		paint(ctx: CanvasRenderingContext2D, center: DOMPointReadOnly) {
+		paint(
+			ctx: CanvasRenderingContext2D,
+			center: DOMPointReadOnly,
+			{ lastPos }: IRotationDragData
+		) {
 			const { angle, distance } = vectorToAngleAndDistance(
 				pointsToVector(center, lastPos!)
 			);
 			const constants = getConstants().Base;
-			let normAngle = (initialDragAngle - angle + tau) % tau;
+			let normAngle = mod(initialDragAngle - angle, tau);
 
 			ctx.beginPath();
 			ctx.moveTo(center.x, center.y);
 			let start = initialDragAngle - Math.PI;
 			let end = start + angle - initialDragAngle;
 
-			console.log(normAngle);
 			// Flipping start and end if the rotation is less than half a circle
 			if (normAngle <= Math.PI) {
 				const tmp = end;
@@ -90,25 +99,42 @@ const grabbies: Grabby[] = [
 			ctx.fill();
 			ctx.globalCompositeOperation = 'source-over';
 		},
-		onStartMove(store: RStore, obj: IObject, center: DOMPointReadOnly) {
+		onStartMove(
+			store: RStore,
+			obj: IObject,
+			center: DOMPointReadOnly,
+			{ lastPos }: IRotationDragData
+		) {
 			initalObjRotation = obj.rotation;
 			const { angle, distance } = vectorToAngleAndDistance(
 				pointsToVector(center, lastPos!)
 			);
 			initialDragAngle = angle;
 		},
-		onMove(store: RStore, obj: IObject, center: DOMPointReadOnly) {
+		onMove(
+			store: RStore,
+			obj: IObject,
+			center: DOMPointReadOnly,
+			shift: boolean
+		) {
 			const { angle, distance } = vectorToAngleAndDistance(
-				pointsToVector(center, lastPos!)
+				pointsToVector(center, dragData!.lastPos)
 			);
 
-			console.log('angle', angle, 'Grad angle', (angle / Math.PI) * 180);
+			let rotation = mod(
+				initalObjRotation + ((angle - initialDragAngle) / Math.PI) * 180,
+				360
+			);
 
+			if (shift) {
+				rotation = Math.round(rotation / 22.5) * 22.5;
+			}
+
+			if (obj.rotation === rotation) return;
 			store.commit('panels/setRotation', {
 				panelId: obj.panelId,
 				id: obj.id,
-				rotation:
-					initalObjRotation + ((angle - initialDragAngle) / Math.PI) * 180,
+				rotation,
 			} as ISetSpriteRotationMutation);
 		},
 	},
@@ -120,15 +146,9 @@ const grabbies: Grabby[] = [
 	},
 ];
 
-let currentGrabby: Grabby | null = null;
-let grabStarted = false;
-let startPos: DOMPointReadOnly | null = null;
-let lastPos: DOMPointReadOnly | null = null;
+let dragData: IDragData | null = null;
 
-export function onDown(
-	pos: DOMPointReadOnly,
-	transformedPoint: DOMPointReadOnly
-) {
+export function onDown(pos: DOMPointReadOnly) {
 	const constants = getConstants();
 	const grabbyHit = grabbies.find((grabby) => {
 		const grabbyPos = grabby.lastDrawPos;
@@ -139,21 +159,18 @@ export function onDown(
 		return distance <= (constants.Base.wheelWidth / 2) * pixelRatio;
 	});
 	if (grabbyHit) {
-		currentGrabby = grabbyHit;
-		grabStarted = false;
-		startPos = transformedPoint;
-		lastPos = pos;
+		dragData = {
+			lastPos: pos,
+			started: false,
+			grabby: grabbyHit,
+		};
 		return true;
 	}
 	return false;
 }
 
-export function onMove(
-	store: RStore,
-	pos: DOMPointReadOnly,
-	transformedPoint: DOMPointReadOnly
-) {
-	if (!currentGrabby) return false;
+export function onMove(store: RStore, pos: DOMPointReadOnly, shift: boolean) {
+	if (!dragData) return false;
 	const panels = store.state.panels;
 	const currentPanel = panels.panels[panels.currentPanel];
 	const obj = currentPanel.objects[store.state.ui.selection!];
@@ -163,19 +180,18 @@ export function onMove(
 	const center = linkedTransform.transformPoint(
 		new DOMPointReadOnly(obj.x, obj.y)
 	);
-	if (!grabStarted) {
-		grabStarted = true;
-		currentGrabby.onStartMove(store, obj, center);
+	if (!dragData.started) {
+		dragData.started = true;
+		dragData.grabby.onStartMove(store, obj, center, dragData);
 	}
-	lastPos = pos;
-	currentGrabby.onMove(store, obj, center);
+	dragData.lastPos = pos;
+	dragData.grabby.onMove(store, obj, center, shift, dragData);
 	return true;
 }
 
 export function onDrop() {
-	if (!currentGrabby) return false;
-	currentGrabby = null;
-	lastPos = null;
+	if (!dragData) return false;
+	dragData = null;
 	return true;
 }
 
@@ -209,7 +225,7 @@ function drawGrabby(
 		constants.Base.wheelWidth / 2,
 		0,
 		0,
-		2 * Math.PI
+		tau
 	);
 	ctx.closePath();
 	const style = getComputedStyle(document.body);
@@ -225,9 +241,24 @@ function drawGrabby(
 
 interface Grabby {
 	icon: string;
-	onStartMove: (store: RStore, obj: IObject, center: DOMPointReadOnly) => void;
-	onMove: (store: RStore, obj: IObject, center: DOMPointReadOnly) => void;
-	paint: (ctx: CanvasRenderingContext2D, center: DOMPointReadOnly) => void;
+	onStartMove: (
+		store: RStore,
+		obj: IObject,
+		center: DOMPointReadOnly,
+		dragData: IDragData
+	) => void;
+	onMove: (
+		store: RStore,
+		obj: IObject,
+		center: DOMPointReadOnly,
+		shift: boolean,
+		dragData: IDragData
+	) => void;
+	paint: (
+		ctx: CanvasRenderingContext2D,
+		center: DOMPointReadOnly,
+		dragData: IDragData
+	) => void;
 	pos?: DOMPointReadOnly;
 	lastDrawPos?: DOMPointReadOnly;
 }
@@ -264,7 +295,15 @@ function vectorToAngleAndDistance(v: DOMPointReadOnly): {
 } {
 	const angle = Math.atan2(v.y, v.x);
 	return {
-		angle: angle < 0 ? Math.PI * 2 + angle : angle,
+		angle: mod(angle, tau),
 		distance: Math.sqrt(v.x * v.x + v.y * v.y),
 	};
 }
+
+interface IDragData {
+	lastPos: DOMPointReadOnly;
+	started: boolean;
+	grabby: Grabby;
+}
+
+interface IRotationDragData extends IDragData {}

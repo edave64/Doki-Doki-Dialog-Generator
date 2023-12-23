@@ -309,10 +309,7 @@ function dragStart(rx: number, ry: number) {
 
 	if (
 		selectionId != null &&
-		Grabbies.onDown(
-			new DOMPointReadOnly(...toRendererCoordinate(rx, ry)),
-			new DOMPointReadOnly(x, y)
-		)
+		Grabbies.onDown(new DOMPointReadOnly(...toRendererCoordinate(rx, ry)))
 	)
 		return;
 
@@ -337,7 +334,7 @@ function onSpriteDragMove(e: MouseEvent | TouchEvent) {
 		Grabbies.onMove(
 			store,
 			new DOMPointReadOnly(...toRendererCoordinate(oX, oY)),
-			new DOMPointReadOnly(x, y)
+			e.shiftKey
 		)
 	) {
 		invalidateRender();
