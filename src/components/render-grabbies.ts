@@ -6,8 +6,10 @@ import { getAssetByUrl } from '@/asset-manager';
 import scale from '@/assets/open_in_full.svg';
 import rotate from '@/assets/rotate_left.svg';
 import getConstants from '@/constants';
+import { SelectedState } from '@/constants/shared';
 import { IAsset } from '@/render-utils/assets/asset';
 import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
+import { Renderable } from '@/renderables/renderable';
 import { RStore } from '@/store';
 import { IObject, ISetSpriteRotationMutation } from '@/store/objects';
 import { safeAsync } from '@/util/errors';
@@ -132,8 +134,23 @@ const grabbies: Grabby[] = [
 	},
 	{
 		icon: scale,
-		paint(ctx: CanvasRenderingContext2D) {},
-		onStartMove(store: RStore, obj: IObject) {},
+		paint(
+			ctx: CanvasRenderingContext2D,
+			{ renderObj, originalObjTransform }: IScaleDragData
+		) {
+			if (!originalObjTransform) return;
+			const currentTransform = renderObj.preparedTransform;
+			try {
+				renderObj.preparedTransform = originalObjTransform;
+				ctx.globalAlpha = 0.5;
+				renderObj.render(ctx, SelectedState.None, true, false, true);
+			} finally {
+				renderObj.preparedTransform = currentTransform;
+			}
+		},
+		onStartMove(store: RStore, obj: IObject, dragData: IScaleDragData) {
+			dragData.originalObjTransform = dragData.renderObj.preparedTransform;
+		},
 		onMove(store: RStore, obj: IObject) {},
 	},
 ];
@@ -156,6 +173,7 @@ export function onDown(pos: DOMPointReadOnly) {
 			started: false,
 			grabby: grabbyHit,
 			center: null!,
+			renderObj: null!,
 		};
 		return true;
 	}
@@ -169,9 +187,13 @@ export function onMove(store: RStore, pos: DOMPointReadOnly, shift: boolean) {
 	const obj = currentPanel.objects[store.state.ui.selection!];
 	if (!dragData.started) {
 		dragData.started = true;
+		const sceneRenderer = getMainSceneRenderer(store);
+		const renderObj = sceneRenderer?.getLastRenderObject(obj.id)!;
 		const linkedTransform =
-			getMainSceneRenderer(store)?.getLastRenderObject(obj.linkedTo!)
-				?.preparedTransform ?? new DOMMatrixReadOnly();
+			sceneRenderer?.getLastRenderObject(obj.linkedTo!)?.preparedTransform ??
+			new DOMMatrixReadOnly();
+
+		dragData.renderObj = renderObj;
 		dragData.center = linkedTransform.transformPoint(
 			new DOMPointReadOnly(obj.x, obj.y)
 		);
@@ -283,9 +305,17 @@ interface IDragData {
 	center: DOMPointReadOnly;
 	started: boolean;
 	grabby: Grabby;
+	renderObj: Renderable<IObject>;
 }
 
 interface IRotationDragData extends IDragData {
 	initialDragAngle: number;
 	initalObjRotation: number;
+}
+
+interface IScaleDragData extends IDragData {
+	initialDelta: DOMPointReadOnly;
+	initialScaleX: number;
+	initialScaleY: number;
+	originalObjTransform: DOMMatrixReadOnly;
 }

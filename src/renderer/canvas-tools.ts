@@ -81,6 +81,37 @@ export function applyStyle(
 	}
 }
 
+export function applyFilter(
+	ctx: CanvasRenderingContext2D,
+	filters: DeepReadonly<SpriteFilter[]>
+) {
+	// Safari fallback
+	if (!(('filter' in ctx) as any)) {
+		let opacityCombined = 1;
+		for (const filter of filters) {
+			if (filter.type === 'opacity') {
+				opacityCombined *= filter.value;
+			}
+		}
+		ctx.globalAlpha *= opacityCombined;
+	} else {
+		let filterStr = '';
+		for (const filter of filters) {
+			if (filter.type === 'drop-shadow') {
+				filterStr += ` drop-shadow(${filter.offsetX}px ${filter.offsetY}px ${filter.blurRadius}px ${filter.color})`;
+			} else if (filter.type === 'hue-rotate') {
+				filterStr += ` hue-rotate(${filter.value}deg)`;
+			} else if (filter.type === 'blur') {
+				filterStr += ` blur(${filter.value}px)`;
+			} else {
+				filterStr += ` ${filter.type}(${filter.value * 100}%)`;
+			}
+		}
+		ctx.filter =
+			(ctx.filter === 'none' ? '' : ctx.filter) + filterStr.trimStart();
+	}
+}
+
 interface IFill {
 	readonly style: string | CanvasGradient | CanvasPattern;
 }

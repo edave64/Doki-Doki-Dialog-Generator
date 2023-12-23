@@ -1,6 +1,6 @@
 import getConstants from '@/constants';
 import { SelectedState, selectionColors } from '@/constants/shared';
-import { ctxScope } from '@/renderer/canvas-tools';
+import { applyFilter, ctxScope } from '@/renderer/canvas-tools';
 import { IRootState } from '@/store';
 import { ITextBox } from '@/store/object-types/textbox';
 import { IObject } from '@/store/objects';
@@ -234,6 +234,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 			}
 
 			ctx.globalCompositeOperation = this.obj.composite ?? 'source-over';
+			applyFilter(ctx, this.obj.filters);
 			if (skipLocal) {
 				this.renderLocal(ctx, hq);
 			} else {
