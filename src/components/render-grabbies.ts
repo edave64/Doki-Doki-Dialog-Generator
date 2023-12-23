@@ -21,7 +21,7 @@ export function paint(ctx: CanvasRenderingContext2D, center: DOMPointReadOnly) {
 	ctx.save();
 	if (dragData) {
 		paintDashedLine(center, dragData.lastPos);
-		dragData.grabby.paint(ctx, center, dragData);
+		dragData.grabby.paint(ctx, dragData);
 
 		ctx.translate(dragData.lastPos.x, dragData.lastPos.y);
 		ctx.scale(pixelRatio, pixelRatio);
@@ -62,8 +62,6 @@ export function paint(ctx: CanvasRenderingContext2D, center: DOMPointReadOnly) {
 	}
 }
 
-let initialDragAngle: number = 0;
-let initalObjRotation: number = 0;
 const tau = 2 * Math.PI;
 
 const grabbies: Grabby[] = [
@@ -71,10 +69,9 @@ const grabbies: Grabby[] = [
 		icon: rotate,
 		paint(
 			ctx: CanvasRenderingContext2D,
-			center: DOMPointReadOnly,
-			{ lastPos }: IRotationDragData
+			{ lastPos, center, initialDragAngle }: IRotationDragData
 		) {
-			const { angle, distance } = vectorToAngleAndDistance(
+			const { angle } = vectorToAngleAndDistance(
 				pointsToVector(center, lastPos!)
 			);
 			const constants = getConstants().Base;
@@ -99,25 +96,20 @@ const grabbies: Grabby[] = [
 			ctx.fill();
 			ctx.globalCompositeOperation = 'source-over';
 		},
-		onStartMove(
-			store: RStore,
-			obj: IObject,
-			center: DOMPointReadOnly,
-			{ lastPos }: IRotationDragData
-		) {
-			initalObjRotation = obj.rotation;
-			const { angle, distance } = vectorToAngleAndDistance(
-				pointsToVector(center, lastPos!)
+		onStartMove(store: RStore, obj: IObject, dragData: IRotationDragData) {
+			dragData.initalObjRotation = obj.rotation;
+			const { angle } = vectorToAngleAndDistance(
+				pointsToVector(dragData.center, dragData.lastPos)
 			);
-			initialDragAngle = angle;
+			dragData.initialDragAngle = angle;
 		},
 		onMove(
 			store: RStore,
 			obj: IObject,
-			center: DOMPointReadOnly,
-			shift: boolean
+			shift: boolean,
+			{ center, initalObjRotation, initialDragAngle }: IRotationDragData
 		) {
-			const { angle, distance } = vectorToAngleAndDistance(
+			const { angle } = vectorToAngleAndDistance(
 				pointsToVector(center, dragData!.lastPos)
 			);
 
@@ -140,8 +132,8 @@ const grabbies: Grabby[] = [
 	},
 	{
 		icon: scale,
-		paint(ctx: CanvasRenderingContext2D, center: DOMPointReadOnly) {},
-		onStartMove(store: RStore, obj: IObject, center: DOMPointReadOnly) {},
+		paint(ctx: CanvasRenderingContext2D) {},
+		onStartMove(store: RStore, obj: IObject) {},
 		onMove(store: RStore, obj: IObject) {},
 	},
 ];
@@ -163,6 +155,7 @@ export function onDown(pos: DOMPointReadOnly) {
 			lastPos: pos,
 			started: false,
 			grabby: grabbyHit,
+			center: null!,
 		};
 		return true;
 	}
@@ -174,18 +167,18 @@ export function onMove(store: RStore, pos: DOMPointReadOnly, shift: boolean) {
 	const panels = store.state.panels;
 	const currentPanel = panels.panels[panels.currentPanel];
 	const obj = currentPanel.objects[store.state.ui.selection!];
-	const linkedTransform =
-		getMainSceneRenderer(store)?.getLastRenderObject(obj.linkedTo!)
-			?.preparedTransform ?? new DOMMatrixReadOnly();
-	const center = linkedTransform.transformPoint(
-		new DOMPointReadOnly(obj.x, obj.y)
-	);
 	if (!dragData.started) {
 		dragData.started = true;
-		dragData.grabby.onStartMove(store, obj, center, dragData);
+		const linkedTransform =
+			getMainSceneRenderer(store)?.getLastRenderObject(obj.linkedTo!)
+				?.preparedTransform ?? new DOMMatrixReadOnly();
+		dragData.center = linkedTransform.transformPoint(
+			new DOMPointReadOnly(obj.x, obj.y)
+		);
+		dragData.grabby.onStartMove(store, obj, dragData);
 	}
 	dragData.lastPos = pos;
-	dragData.grabby.onMove(store, obj, center, shift, dragData);
+	dragData.grabby.onMove(store, obj, shift, dragData);
 	return true;
 }
 
@@ -241,24 +234,9 @@ function drawGrabby(
 
 interface Grabby {
 	icon: string;
-	onStartMove: (
-		store: RStore,
-		obj: IObject,
-		center: DOMPointReadOnly,
-		dragData: IDragData
-	) => void;
-	onMove: (
-		store: RStore,
-		obj: IObject,
-		center: DOMPointReadOnly,
-		shift: boolean,
-		dragData: IDragData
-	) => void;
-	paint: (
-		ctx: CanvasRenderingContext2D,
-		center: DOMPointReadOnly,
-		dragData: IDragData
-	) => void;
+	onStartMove: (store: RStore, obj: IObject, dragData: any) => void;
+	onMove: (store: RStore, obj: IObject, shift: boolean, dragData: any) => void;
+	paint: (ctx: CanvasRenderingContext2D, dragData: any) => void;
 	pos?: DOMPointReadOnly;
 	lastDrawPos?: DOMPointReadOnly;
 }
@@ -302,8 +280,12 @@ function vectorToAngleAndDistance(v: DOMPointReadOnly): {
 
 interface IDragData {
 	lastPos: DOMPointReadOnly;
+	center: DOMPointReadOnly;
 	started: boolean;
 	grabby: Grabby;
 }
 
-interface IRotationDragData extends IDragData {}
+interface IRotationDragData extends IDragData {
+	initialDragAngle: number;
+	initalObjRotation: number;
+}
