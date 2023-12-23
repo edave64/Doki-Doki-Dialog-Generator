@@ -9698,6 +9698,9 @@ function between(min, val, max) {
     return max;
   return val;
 }
+function mod(a, b) {
+  return (a % b + b) % b;
+}
 function matrixEquals(a, b) {
   if (a === null && b === null)
     return true;
@@ -13430,6 +13433,31 @@ function applyStyle(ctx, params) {
     ctx.lineWidth = params.outline.width;
   }
 }
+function applyFilter(ctx, filters) {
+  if (!("filter" in ctx)) {
+    let opacityCombined = 1;
+    for (const filter of filters) {
+      if (filter.type === "opacity") {
+        opacityCombined *= filter.value;
+      }
+    }
+    ctx.globalAlpha *= opacityCombined;
+  } else {
+    let filterStr = "";
+    for (const filter of filters) {
+      if (filter.type === "drop-shadow") {
+        filterStr += ` drop-shadow(${filter.offsetX}px ${filter.offsetY}px ${filter.blurRadius}px ${filter.color})`;
+      } else if (filter.type === "hue-rotate") {
+        filterStr += ` hue-rotate(${filter.value}deg)`;
+      } else if (filter.type === "blur") {
+        filterStr += ` blur(${filter.value}px)`;
+      } else {
+        filterStr += ` ${filter.type}(${filter.value * 100}%)`;
+      }
+    }
+    ctx.filter = (ctx.filter === "none" ? "" : ctx.filter) + filterStr.trimStart();
+  }
+}
 var __defProp$w = Object.defineProperty;
 var __defNormalProp$w = (obj, key, value) => key in obj ? __defProp$w(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$f = (obj, key, value) => {
@@ -13590,6 +13618,7 @@ class Renderable {
         ctx.setTransform(transform);
       }
       ctx.globalCompositeOperation = (_a2 = this.obj.composite) != null ? _a2 : "source-over";
+      applyFilter(ctx, this.obj.filters);
       if (skipLocal) {
         this.renderLocal(ctx, hq);
       } else {
@@ -18101,21 +18130,14 @@ const pixelRatio = (_a = window.devicePixelRatio) != null ? _a : 1;
 function paint(ctx, center) {
   const offsetCenter = movePointIntoView(center);
   ctx.save();
-  if (currentGrabby && lastPos) {
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(center.x, center.y);
-    ctx.lineTo(lastPos.x, lastPos.y);
-    ctx.setLineDash([5 * pixelRatio, 5 * pixelRatio]);
-    ctx.strokeStyle = "#000";
-    ctx.stroke();
-    ctx.closePath();
-    ctx.restore();
-    currentGrabby.paint(ctx, center);
-    drawGrabby(ctx, currentGrabby, lastPos);
+  if (dragData) {
+    paintDashedLine(center, dragData.lastPos);
+    dragData.grabby.paint(ctx, dragData);
+    ctx.translate(dragData.lastPos.x, dragData.lastPos.y);
+    ctx.scale(pixelRatio, pixelRatio);
+    drawGrabby(ctx, dragData.grabby, new DOMPointReadOnly());
   } else {
     const constants = getConstants();
-    ctx.save();
     ctx.translate(offsetCenter.x, offsetCenter.y);
     ctx.scale(pixelRatio, pixelRatio);
     if (center.x > constants.Base.screenWidth / 2) {
@@ -18133,24 +18155,35 @@ function paint(ctx, center) {
     }
   }
   ctx.restore();
+  function paintDashedLine(start, end) {
+    ctx.save();
+    try {
+      ctx.beginPath();
+      ctx.moveTo(start.x, start.y);
+      ctx.lineTo(end.x, end.y);
+      ctx.setLineDash([5 * pixelRatio, 5 * pixelRatio]);
+      ctx.strokeStyle = "#000";
+      ctx.stroke();
+      ctx.closePath();
+    } finally {
+      ctx.restore();
+    }
+  }
 }
-let initialDragAngle = 0;
-let initalObjRotation = 0;
 const tau = 2 * Math.PI;
 const grabbies = [
   {
     icon: rotate,
-    paint(ctx, center) {
-      const { angle, distance } = vectorToAngleAndDistance(
+    paint(ctx, { lastPos, center, initialDragAngle }) {
+      const { angle } = vectorToAngleAndDistance(
         pointsToVector(center, lastPos)
       );
       const constants = getConstants().Base;
-      let normAngle = (initialDragAngle - angle + tau) % tau;
+      let normAngle = mod(initialDragAngle - angle, tau);
       ctx.beginPath();
       ctx.moveTo(center.x, center.y);
       let start = initialDragAngle - Math.PI;
       let end = start + angle - initialDragAngle;
-      console.log(normAngle);
       if (normAngle <= Math.PI) {
         const tmp = end;
         end = start;
@@ -18163,39 +18196,56 @@ const grabbies = [
       ctx.fill();
       ctx.globalCompositeOperation = "source-over";
     },
-    onStartMove(store2, obj, center) {
-      initalObjRotation = obj.rotation;
-      const { angle, distance } = vectorToAngleAndDistance(
-        pointsToVector(center, lastPos)
+    onStartMove(store2, obj, dragData2) {
+      dragData2.initalObjRotation = obj.rotation;
+      const { angle } = vectorToAngleAndDistance(
+        pointsToVector(dragData2.center, dragData2.lastPos)
       );
-      initialDragAngle = angle;
+      dragData2.initialDragAngle = angle;
     },
-    onMove(store2, obj, center) {
-      const { angle, distance } = vectorToAngleAndDistance(
-        pointsToVector(center, lastPos)
+    onMove(store2, obj, shift, { center, initalObjRotation, initialDragAngle }) {
+      const { angle } = vectorToAngleAndDistance(
+        pointsToVector(center, dragData.lastPos)
       );
-      console.log("angle", angle, "Grad angle", angle / Math.PI * 180);
+      let rotation = mod(
+        initalObjRotation + (angle - initialDragAngle) / Math.PI * 180,
+        360
+      );
+      if (shift) {
+        rotation = Math.round(rotation / 22.5) * 22.5;
+      }
+      if (obj.rotation === rotation)
+        return;
       store2.commit("panels/setRotation", {
         panelId: obj.panelId,
         id: obj.id,
-        rotation: initalObjRotation + (angle - initialDragAngle) / Math.PI * 180
+        rotation
       });
     }
   },
   {
     icon: scale,
-    paint(ctx, center) {
+    paint(ctx, { renderObj, originalObjTransform }) {
+      if (!originalObjTransform)
+        return;
+      const currentTransform = renderObj.preparedTransform;
+      try {
+        renderObj.preparedTransform = originalObjTransform;
+        ctx.globalAlpha = 0.5;
+        renderObj.render(ctx, SelectedState.None, true, false, true);
+      } finally {
+        renderObj.preparedTransform = currentTransform;
+      }
     },
-    onStartMove(store2, obj, center) {
+    onStartMove(store2, obj, dragData2) {
+      dragData2.originalObjTransform = dragData2.renderObj.preparedTransform;
     },
     onMove(store2, obj) {
     }
   }
 ];
-let currentGrabby = null;
-let grabStarted = false;
-let lastPos = null;
-function onDown(pos, transformedPoint) {
+let dragData = null;
+function onDown(pos) {
   const constants = getConstants();
   const grabbyHit = grabbies.find((grabby) => {
     const grabbyPos = grabby.lastDrawPos;
@@ -18204,40 +18254,46 @@ function onDown(pos, transformedPoint) {
     const distance = Math.sqrt(
       Math.pow(pos.x - grabbyPos.x, 2) + Math.pow(pos.y - grabbyPos.y, 2)
     );
-    return distance <= constants.Base.wheelWidth / 2;
+    return distance <= constants.Base.wheelWidth / 2 * pixelRatio;
   });
   if (grabbyHit) {
-    currentGrabby = grabbyHit;
-    grabStarted = false;
-    lastPos = pos;
+    dragData = {
+      lastPos: pos,
+      started: false,
+      grabby: grabbyHit,
+      center: null,
+      renderObj: null
+    };
     return true;
   }
   return false;
 }
-function onMove(store2, pos, transformedPoint) {
-  var _a2, _b, _c;
-  if (!currentGrabby)
+function onMove(store2, pos, shift) {
+  var _a2, _b;
+  if (!dragData)
     return false;
   const panels2 = store2.state.panels;
   const currentPanel = panels2.panels[panels2.currentPanel];
   const obj = currentPanel.objects[store2.state.ui.selection];
-  const linkedTransform = (_c = (_b = (_a2 = getMainSceneRenderer(store2)) == null ? void 0 : _a2.getLastRenderObject(obj.linkedTo)) == null ? void 0 : _b.preparedTransform) != null ? _c : new DOMMatrixReadOnly();
-  const center = linkedTransform.transformPoint(
-    new DOMPointReadOnly(obj.x, obj.y)
-  );
-  if (!grabStarted) {
-    grabStarted = true;
-    currentGrabby.onStartMove(store2, obj, center);
+  if (!dragData.started) {
+    dragData.started = true;
+    const sceneRenderer2 = getMainSceneRenderer(store2);
+    const renderObj = sceneRenderer2 == null ? void 0 : sceneRenderer2.getLastRenderObject(obj.id);
+    const linkedTransform = (_b = (_a2 = sceneRenderer2 == null ? void 0 : sceneRenderer2.getLastRenderObject(obj.linkedTo)) == null ? void 0 : _a2.preparedTransform) != null ? _b : new DOMMatrixReadOnly();
+    dragData.renderObj = renderObj;
+    dragData.center = linkedTransform.transformPoint(
+      new DOMPointReadOnly(obj.x, obj.y)
+    );
+    dragData.grabby.onStartMove(store2, obj, dragData);
   }
-  lastPos = pos;
-  currentGrabby.onMove(store2, obj, center);
+  dragData.lastPos = pos;
+  dragData.grabby.onMove(store2, obj, shift, dragData);
   return true;
 }
 function onDrop() {
-  if (!currentGrabby)
+  if (!dragData)
     return false;
-  currentGrabby = null;
-  lastPos = null;
+  dragData = null;
   return true;
 }
 const grabbyIcons = /* @__PURE__ */ new Map();
@@ -18264,7 +18320,7 @@ function drawGrabby(ctx, grabby, pos) {
     constants.Base.wheelWidth / 2,
     0,
     0,
-    2 * Math.PI
+    tau
   );
   ctx.closePath();
   const style = getComputedStyle(document.body);
@@ -18298,7 +18354,7 @@ function pointsToVector(a, b) {
 function vectorToAngleAndDistance(v) {
   const angle = Math.atan2(v.y, v.x);
   return {
-    angle: angle < 0 ? Math.PI * 2 + angle : angle,
+    angle: mod(angle, tau),
     distance: Math.sqrt(v.x * v.x + v.y * v.y)
   };
 }
@@ -18565,10 +18621,7 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
       draggedObject = currentPanel.value.objects[selectionId];
       dragTransform = (_c = (_b = (_a2 = getMainSceneRenderer(store2).getLastRenderObject(draggedObject.linkedTo)) == null ? void 0 : _a2.preparedTransform) == null ? void 0 : _b.inverse()) != null ? _c : new DOMMatrixReadOnly();
       const [x, y] = toRendererCoordinate(rx, ry, dragTransform);
-      if (selectionId != null && onDown(
-        new DOMPointReadOnly(...toRendererCoordinate(rx, ry)),
-        new DOMPointReadOnly(x, y)
-      ))
+      if (selectionId != null && onDown(new DOMPointReadOnly(...toRendererCoordinate(rx, ry))))
         return;
       dragXOffset = x - draggedObject.x;
       dragYOffset = y - draggedObject.y;
@@ -18590,7 +18643,7 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
       if (onMove(
         store2,
         new DOMPointReadOnly(...toRendererCoordinate(oX, oY)),
-        new DOMPointReadOnly(x, y)
+        e.shiftKey
       )) {
         invalidateRender();
         return;
@@ -26004,10 +26057,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box.b7cbef80.js"), true ? ["./single-box.b7cbef80.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box.809e7e38.js"), true ? ["./single-box.809e7e38.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
     );
     const ExpressionBuilder = defineAsyncComponent(
-      () => __vitePreload(() => import("./index.d26e4a88.js"), true ? ["./index.d26e4a88.js","./index.a2d17a51.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.4c83f837.js"), true ? ["./index.4c83f837.js","./index.a2d17a51.css"] : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);
