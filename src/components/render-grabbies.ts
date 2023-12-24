@@ -10,8 +10,13 @@ import { SelectedState } from '@/constants/shared';
 import { IAsset } from '@/render-utils/assets/asset';
 import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
 import { Renderable } from '@/renderables/renderable';
+import { ctxScope } from '@/renderer/canvas-tools';
 import { RStore } from '@/store';
-import { IObject, ISetSpriteRotationMutation } from '@/store/objects';
+import {
+	IObject,
+	ISetObjectScaleMutation,
+	ISetSpriteRotationMutation,
+} from '@/store/objects';
 import { safeAsync } from '@/util/errors';
 import { between, mod } from '@/util/math';
 
@@ -142,16 +147,67 @@ const grabbies: Grabby[] = [
 			const currentTransform = renderObj.preparedTransform;
 			try {
 				renderObj.preparedTransform = originalObjTransform;
-				ctx.globalAlpha = 0.5;
-				renderObj.render(ctx, SelectedState.None, true, false, true);
+				ctxScope(ctx, () => {
+					ctx.globalAlpha = 0.5;
+					renderObj.render(ctx, SelectedState.None, true, false, true);
+					ctx.globalAlpha = 1;
+				});
 			} finally {
 				renderObj.preparedTransform = currentTransform;
 			}
 		},
 		onStartMove(store: RStore, obj: IObject, dragData: IScaleDragData) {
 			dragData.originalObjTransform = dragData.renderObj.preparedTransform;
+			dragData.initialScaleX = obj.scaleX;
+			dragData.initialScaleY = obj.scaleY;
+			dragData.initialDelta = pointsToVector(dragData.center, dragData.lastPos);
 		},
-		onMove(store: RStore, obj: IObject) {},
+		onMove(
+			store: RStore,
+			obj: IObject,
+			shift: boolean,
+			{
+				initialScaleX,
+				initialScaleY,
+				initialDelta,
+				center,
+				lastPos,
+			}: IScaleDragData
+		) {
+			const currentDelta = pointsToVector(center, lastPos);
+			let scaleX = (currentDelta.x / initialDelta.x) * initialScaleX;
+			let scaleY = (currentDelta.y / initialDelta.y) * initialScaleY;
+
+			if (shift) {
+				const { angle } = vectorToAngleAndDistance(currentDelta);
+				const quaterAngle = mod(angle, Math.PI / 2);
+				// Turn the angle into a number from 0 to 2
+				const angleSection = Math.round((quaterAngle / (Math.PI / 2)) * 2);
+				switch (angleSection) {
+					case 0:
+						scaleX = initialScaleX;
+						break;
+					case 1:
+						const avg =
+							(currentDelta.x / initialDelta.x +
+								currentDelta.y / initialDelta.y) /
+							2;
+						scaleX = avg * initialScaleX;
+						scaleY = avg * initialScaleY;
+						break;
+					case 2:
+						scaleY = initialScaleY;
+				}
+			}
+
+			if (obj.scaleX === scaleX && obj.scaleY === scaleY) return;
+			store.commit('panels/setObjectScale', {
+				panelId: obj.panelId,
+				id: obj.id,
+				scaleX,
+				scaleY,
+			} as ISetObjectScaleMutation);
+		},
 	},
 ];
 
