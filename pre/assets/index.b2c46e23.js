@@ -18231,16 +18231,56 @@ const grabbies = [
       const currentTransform = renderObj.preparedTransform;
       try {
         renderObj.preparedTransform = originalObjTransform;
-        ctx.globalAlpha = 0.5;
-        renderObj.render(ctx, SelectedState.None, true, false, true);
+        ctxScope(ctx, () => {
+          ctx.globalAlpha = 0.5;
+          renderObj.render(ctx, SelectedState.None, true, false, true);
+          ctx.globalAlpha = 1;
+        });
       } finally {
         renderObj.preparedTransform = currentTransform;
       }
     },
     onStartMove(store2, obj, dragData2) {
       dragData2.originalObjTransform = dragData2.renderObj.preparedTransform;
+      dragData2.initialScaleX = obj.scaleX;
+      dragData2.initialScaleY = obj.scaleY;
+      dragData2.initialDelta = pointsToVector(dragData2.center, dragData2.lastPos);
     },
-    onMove(store2, obj) {
+    onMove(store2, obj, shift, {
+      initialScaleX,
+      initialScaleY,
+      initialDelta,
+      center,
+      lastPos
+    }) {
+      const currentDelta = pointsToVector(center, lastPos);
+      let scaleX = currentDelta.x / initialDelta.x * initialScaleX;
+      let scaleY = currentDelta.y / initialDelta.y * initialScaleY;
+      if (shift) {
+        const { angle } = vectorToAngleAndDistance(currentDelta);
+        const quaterAngle = mod(angle, Math.PI / 2);
+        const angleSection = Math.round(quaterAngle / (Math.PI / 2) * 2);
+        switch (angleSection) {
+          case 0:
+            scaleX = initialScaleX;
+            break;
+          case 1:
+            const avg = (currentDelta.x / initialDelta.x + currentDelta.y / initialDelta.y) / 2;
+            scaleX = avg * initialScaleX;
+            scaleY = avg * initialScaleY;
+            break;
+          case 2:
+            scaleY = initialScaleY;
+        }
+      }
+      if (obj.scaleX === scaleX && obj.scaleY === scaleY)
+        return;
+      store2.commit("panels/setObjectScale", {
+        panelId: obj.panelId,
+        id: obj.id,
+        scaleX,
+        scaleY
+      });
     }
   }
 ];
@@ -26057,10 +26097,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box.809e7e38.js"), true ? ["./single-box.809e7e38.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box.5a6730f6.js"), true ? ["./single-box.5a6730f6.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
     );
     const ExpressionBuilder = defineAsyncComponent(
-      () => __vitePreload(() => import("./index.4c83f837.js"), true ? ["./index.4c83f837.js","./index.a2d17a51.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.26843c32.js"), true ? ["./index.26843c32.js","./index.a2d17a51.css"] : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);
