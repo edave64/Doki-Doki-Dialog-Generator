@@ -2,7 +2,7 @@
 export const screenWidth = 1920;
 export const screenHeight = 1080;
 
-export const wheelInnerRadius = 64;
+export const wheelInnerRadius = 128;
 export const wheelWidth = 32;
 export const WheelBackground = 'rgba(60,60,60,0.8)';
 
