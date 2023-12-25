@@ -8230,7 +8230,7 @@ function imagePromise(url, noCache = false) {
 }
 const screenWidth$1 = 1280;
 const screenHeight$1 = 720;
-const wheelInnerRadius$1 = 64;
+const wheelInnerRadius$1 = 128;
 const wheelWidth$1 = 32;
 const WheelBackground$1 = "rgba(60,60,60,0.8)";
 const positions$1 = [
@@ -8961,7 +8961,7 @@ const Ddlc = {
 };
 const screenWidth = 1920;
 const screenHeight = 1080;
-const wheelInnerRadius = 64;
+const wheelInnerRadius = 128;
 const wheelWidth = 32;
 const WheelBackground = "rgba(60,60,60,0.8)";
 const positions = [
@@ -18253,24 +18253,47 @@ const grabbies = [
       center,
       lastPos
     }) {
+      const constants = getConstants();
       const currentDelta = pointsToVector(center, lastPos);
       let scaleX = currentDelta.x / initialDelta.x * initialScaleX;
       let scaleY = currentDelta.y / initialDelta.y * initialScaleY;
       if (shift) {
-        const { angle } = vectorToAngleAndDistance(currentDelta);
-        const quaterAngle = mod(angle, Math.PI / 2);
-        const angleSection = Math.round(quaterAngle / (Math.PI / 2) * 2);
-        switch (angleSection) {
-          case 0:
-            scaleX = initialScaleX;
-            break;
-          case 1:
-            const avg = (currentDelta.x / initialDelta.x + currentDelta.y / initialDelta.y) / 2;
-            scaleX = avg * initialScaleX;
-            scaleY = avg * initialScaleY;
-            break;
-          case 2:
-            scaleY = initialScaleY;
+        let startAdjustedDelta = currentDelta;
+        if (center.x > constants.Base.screenWidth / 2) {
+          startAdjustedDelta = new DOMPointReadOnly(
+            -startAdjustedDelta.x,
+            startAdjustedDelta.y
+          );
+        }
+        if (center.y > constants.Base.screenHeight / 2) {
+          startAdjustedDelta = new DOMPointReadOnly(
+            startAdjustedDelta.x,
+            -startAdjustedDelta.y
+          );
+        }
+        const { angle } = vectorToAngleAndDistance(startAdjustedDelta);
+        const angleDirection = Math.round(angle / tau * 11);
+        const avg = (Math.abs(currentDelta.x) / Math.abs(initialDelta.x) + Math.abs(currentDelta.y) / Math.abs(initialDelta.y)) / 2;
+        if (angleDirection === 0 || angleDirection === 11) {
+          scaleY = initialScaleY;
+        } else if (angleDirection === 1) {
+          scaleX = -avg * initialScaleX;
+          scaleY = -avg * initialScaleY;
+        } else if (angleDirection === 2 || angleDirection === 3) {
+          scaleX = initialScaleX;
+        } else if (angleDirection === 4) {
+          scaleX = avg * initialScaleX;
+          scaleY = -avg * initialScaleY;
+        } else if (angleDirection === 5 || angleDirection === 6) {
+          scaleY = initialScaleY;
+        } else if (angleDirection === 7) {
+          scaleX = avg * initialScaleX;
+          scaleY = avg * initialScaleY;
+        } else if (angleDirection === 8 || angleDirection === 9) {
+          scaleX = initialScaleX;
+        } else if (angleDirection === 10) {
+          scaleX = -avg * initialScaleX;
+          scaleY = avg * initialScaleY;
         }
       }
       if (obj.scaleX === scaleX && obj.scaleY === scaleY)
@@ -26097,10 +26120,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box.5a6730f6.js"), true ? ["./single-box.5a6730f6.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box.7ef809ad.js"), true ? ["./single-box.7ef809ad.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
     );
     const ExpressionBuilder = defineAsyncComponent(
-      () => __vitePreload(() => import("./index.26843c32.js"), true ? ["./index.26843c32.js","./index.a2d17a51.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.22207bb8.js"), true ? ["./index.22207bb8.js","./index.a2d17a51.css"] : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);
