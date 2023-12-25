@@ -18052,8 +18052,10 @@ const _sfc_main$A = /* @__PURE__ */ defineComponent({
 });
 const modalDialog_vue_vue_type_style_index_0_scoped_95b82e11_lang = "";
 const ModalDialog = /* @__PURE__ */ _export_sfc(_sfc_main$A, [["__scopeId", "data-v-95b82e11"]]);
-const scale = "" + new URL("open_in_full.e8d5767b.svg", import.meta.url).href;
-const rotate = "" + new URL("rotate_left.1e7e3add.svg", import.meta.url).href;
+const scale = "" + new URL("open_in_full.0d15444c.svg", import.meta.url).href;
+const scaleDark = "" + new URL("open_in_full_dark.e8d5767b.svg", import.meta.url).href;
+const rotate = "" + new URL("rotate_left.d26c7be6.svg", import.meta.url).href;
+const rotateDark = "" + new URL("rotate_left_dark.1e7e3add.svg", import.meta.url).href;
 var __async$n = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -18174,6 +18176,7 @@ const tau = 2 * Math.PI;
 const grabbies = [
   {
     icon: rotate,
+    iconDark: rotateDark,
     paint(ctx, { lastPos, center, initialDragAngle }) {
       const { angle } = vectorToAngleAndDistance(
         pointsToVector(center, lastPos)
@@ -18225,6 +18228,7 @@ const grabbies = [
   },
   {
     icon: scale,
+    iconDark: scaleDark,
     paint(ctx, { renderObj, originalObjTransform }) {
       if (!originalObjTransform)
         return;
@@ -18365,6 +18369,7 @@ for (const grabby of grabbies) {
     "Loading grabby icon",
     ((grabby2) => __async$m(void 0, null, function* () {
       grabbyIcons.set(grabby2.icon, yield getAssetByUrl(grabby2.icon));
+      grabbyIcons.set(grabby2.iconDark, yield getAssetByUrl(grabby2.iconDark));
     })).bind(void 0, grabby)
   );
 }
@@ -18392,7 +18397,8 @@ function drawGrabby(ctx, grabby, pos) {
   ctx.lineWidth = 2;
   ctx.fill();
   ctx.stroke();
-  (_a2 = grabbyIcons.get(grabby.icon)) == null ? void 0 : _a2.paintOnto(ctx);
+  const icon = document.body.classList.contains("dark-theme") ? grabby.iconDark : grabby.icon;
+  (_a2 = grabbyIcons.get(icon)) == null ? void 0 : _a2.paintOnto(ctx);
   ctx.restore();
 }
 function movePointIntoView(center) {
@@ -26120,10 +26126,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box.7ef809ad.js"), true ? ["./single-box.7ef809ad.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box.09b1fe94.js"), true ? ["./single-box.09b1fe94.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
     );
     const ExpressionBuilder = defineAsyncComponent(
-      () => __vitePreload(() => import("./index.22207bb8.js"), true ? ["./index.22207bb8.js","./index.a2d17a51.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.4a90acbd.js"), true ? ["./index.4a90acbd.js","./index.a2d17a51.css"] : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);
