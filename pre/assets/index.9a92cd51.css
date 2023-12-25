@@ -401,7 +401,7 @@ fieldset[data-v-60e241fa] {
 .value-input-table input[data-v-3d98ba0e],
 .value-input-table .color-button[data-v-3d98ba0e] {
   width: 100px;
-}.background[data-v-6bc627fd] {
+}.background[data-v-a03a1466] {
   background-size: cover;
   text-shadow: 0 0 4px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
   color: white;
@@ -417,7 +417,7 @@ fieldset[data-v-60e241fa] {
   margin-top: 4px;
   margin-right: 4px !important;
 }
-.background.active[data-v-6bc627fd] {
+.background.active[data-v-a03a1466] {
   box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.25);
   box-shadow: inset 0 0 1px 3px var(--modal-backdrop-light);
 }.toggle_box {
