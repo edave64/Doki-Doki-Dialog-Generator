@@ -174,29 +174,53 @@ const grabbies: Grabby[] = [
 				lastPos,
 			}: IScaleDragData
 		) {
+			const constants = getConstants();
 			const currentDelta = pointsToVector(center, lastPos);
 			let scaleX = (currentDelta.x / initialDelta.x) * initialScaleX;
 			let scaleY = (currentDelta.y / initialDelta.y) * initialScaleY;
 
 			if (shift) {
-				const { angle } = vectorToAngleAndDistance(currentDelta);
-				const quaterAngle = mod(angle, Math.PI / 2);
-				// Turn the angle into a number from 0 to 2
-				const angleSection = Math.round((quaterAngle / (Math.PI / 2)) * 2);
-				switch (angleSection) {
-					case 0:
-						scaleX = initialScaleX;
-						break;
-					case 1:
-						const avg =
-							(currentDelta.x / initialDelta.x +
-								currentDelta.y / initialDelta.y) /
-							2;
-						scaleX = avg * initialScaleX;
-						scaleY = avg * initialScaleY;
-						break;
-					case 2:
-						scaleY = initialScaleY;
+				let startAdjustedDelta = currentDelta;
+				if (center.x > constants.Base.screenWidth / 2) {
+					startAdjustedDelta = new DOMPointReadOnly(
+						-startAdjustedDelta.x,
+						startAdjustedDelta.y
+					);
+				}
+				if (center.y > constants.Base.screenHeight / 2) {
+					startAdjustedDelta = new DOMPointReadOnly(
+						startAdjustedDelta.x,
+						-startAdjustedDelta.y
+					);
+				}
+
+				const { angle } = vectorToAngleAndDistance(startAdjustedDelta);
+				const angleDirection = Math.round((angle / tau) * 11);
+				const avg =
+					(Math.abs(currentDelta.x) / Math.abs(initialDelta.x) +
+						Math.abs(currentDelta.y) / Math.abs(initialDelta.y)) /
+					2;
+
+				if (angleDirection === 0 || angleDirection === 11) {
+					scaleY = initialScaleY;
+				} else if (angleDirection === 1) {
+					scaleX = -avg * initialScaleX;
+					scaleY = -avg * initialScaleY;
+				} else if (angleDirection === 2 || angleDirection === 3) {
+					scaleX = initialScaleX;
+				} else if (angleDirection === 4) {
+					scaleX = avg * initialScaleX;
+					scaleY = -avg * initialScaleY;
+				} else if (angleDirection === 5 || angleDirection === 6) {
+					scaleY = initialScaleY;
+				} else if (angleDirection === 7) {
+					scaleX = avg * initialScaleX;
+					scaleY = avg * initialScaleY;
+				} else if (angleDirection === 8 || angleDirection === 9) {
+					scaleX = initialScaleX;
+				} else if (angleDirection === 10) {
+					scaleX = -avg * initialScaleX;
+					scaleY = avg * initialScaleY;
 				}
 			}
 
