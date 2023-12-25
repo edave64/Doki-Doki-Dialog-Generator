@@ -4,7 +4,9 @@
 
 import { getAssetByUrl } from '@/asset-manager';
 import scale from '@/assets/open_in_full.svg';
+import scaleDark from '@/assets/open_in_full_dark.svg';
 import rotate from '@/assets/rotate_left.svg';
+import rotateDark from '@/assets/rotate_left_dark.svg';
 import getConstants from '@/constants';
 import { SelectedState } from '@/constants/shared';
 import { IAsset } from '@/render-utils/assets/asset';
@@ -74,6 +76,7 @@ const tau = 2 * Math.PI;
 const grabbies: Grabby[] = [
 	{
 		icon: rotate,
+		iconDark: rotateDark,
 		paint(
 			ctx: CanvasRenderingContext2D,
 			{ lastPos, center, initialDragAngle }: IRotationDragData
@@ -139,6 +142,7 @@ const grabbies: Grabby[] = [
 	},
 	{
 		icon: scale,
+		iconDark: scaleDark,
 		paint(
 			ctx: CanvasRenderingContext2D,
 			{ renderObj, originalObjTransform }: IScaleDragData
@@ -296,6 +300,7 @@ for (const grabby of grabbies) {
 		'Loading grabby icon',
 		(async (grabby: Grabby) => {
 			grabbyIcons.set(grabby.icon, await getAssetByUrl(grabby.icon));
+			grabbyIcons.set(grabby.iconDark, await getAssetByUrl(grabby.iconDark));
 		}).bind(this, grabby)
 	);
 }
@@ -329,13 +334,16 @@ function drawGrabby(
 	ctx.lineWidth = 2;
 	ctx.fill();
 	ctx.stroke();
-
-	grabbyIcons.get(grabby.icon)?.paintOnto(ctx);
+	const icon = document.body.classList.contains('dark-theme')
+		? grabby.iconDark
+		: grabby.icon;
+	grabbyIcons.get(icon)?.paintOnto(ctx);
 	ctx.restore();
 }
 
 interface Grabby {
 	icon: string;
+	iconDark: string;
 	onStartMove: (store: RStore, obj: IObject, dragData: any) => void;
 	onMove: (store: RStore, obj: IObject, shift: boolean, dragData: any) => void;
 	paint: (ctx: CanvasRenderingContext2D, dragData: any) => void;
