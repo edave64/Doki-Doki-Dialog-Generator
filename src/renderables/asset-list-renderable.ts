@@ -20,8 +20,13 @@ export abstract class AssetListRenderable<
 	private lastUploadCount = 0;
 	private lastHq: boolean = false;
 	private missingAsset = false;
-	protected canSkipLocal = false;
-	protected transformIsLocal = false;
+	private _canSkipLocal = false;
+	protected get canSkipLocal() {
+		return this._canSkipLocal;
+	}
+	protected get transformIsLocal() {
+		return false;
+	}
 
 	public prepareRender(
 		panel: DeepReadonly<IPanel>,
@@ -41,7 +46,7 @@ export abstract class AssetListRenderable<
 		}
 		if (!reloadAssets) return;
 		this.lastHq = !lq;
-		this.canSkipLocal = this.assetList.length <= 1;
+		this._canSkipLocal = this.assetList.length <= 1;
 		return this.loadAssets(!lq);
 	}
 
@@ -93,10 +98,19 @@ export abstract class AssetListRenderable<
 				if (!this.canSkipLocal) {
 					ctx.globalCompositeOperation = loadedDraw.composite ?? 'source-over';
 				}
-				asset.paintOnto(ctx, {
-					x: loadedDraw.offset[0],
-					y: loadedDraw.offset[1],
-				});
+				if (asset instanceof ErrorAsset) {
+					asset.paintOnto(ctx, {
+						x: loadedDraw.offset[0],
+						y: loadedDraw.offset[1],
+						h: this.height,
+						w: this.width,
+					});
+				} else {
+					asset.paintOnto(ctx, {
+						x: loadedDraw.offset[0],
+						y: loadedDraw.offset[1],
+					});
+				}
 			}
 		}
 	}
