@@ -14,6 +14,7 @@ import content, {
 	loadContentPack,
 } from './content';
 import { ICharacter } from './object-types/characters';
+import { ISprite } from './object-types/sprite';
 import { ITextBox } from './object-types/textbox';
 import { IObject } from './objects';
 import panels, { IPanels } from './panels';
@@ -41,6 +42,22 @@ export default createStore({
 	mutations: {
 		setUnsafe(state, unsafe: boolean) {
 			state.unsafe = unsafe;
+		},
+		fix25Sprites(state, data: { url: string; size: [number, number] }) {
+			for (const panel of Object.values(state.panels.panels)) {
+				for (const object of Object.values(panel.objects)) {
+					if (
+						object.type !== 'sprite' ||
+						!(object as any).requireFixing25 ||
+						object.scaleX !== object.scaleY
+					)
+						continue;
+					const sprite = object as ISprite;
+					if (sprite.assets.length === 1 && sprite.assets[0].hq === data.url) {
+						adjust25ObjectSize(sprite, object.scaleX, data.size);
+					}
+				}
+			}
 		},
 	},
 	actions: {
@@ -194,43 +211,51 @@ function migrate25(data: IRootState) {
 				const size = charData?.styleGroups[character.styleGroupId]?.styles[
 					character.styleId
 				]?.poses[character.poseId]?.size ?? [960, 960];
-
-				let a = new DOMMatrixReadOnly().translate(
-					object.x,
-					object.y + object.height / 2
-				);
-				// Resizing -> Scale from the top
-				a = a
-					.translate(0, -object.height / 2)
-					.scale(object.width / size[0], object.height / size[1])
-					.translate(0, size[1] / 2);
-
-				// new position at center
-				a = a.rotate(object.flip ? -object.rotation : object.rotation);
-
-				// Zoom -> Scale from the bottom
-				a = a
-					.translate(0, size[1] / 2)
-					.scale(object.zoom!)
-					.translate(0, -size[1] / 2);
-
-				const oldRot = object.rotation;
-
-				Object.assign(object, decomposeMatrix(a));
-				object.rotation = object.flip ? 360 - oldRot : oldRot;
-				object.skewX = 0;
-				object.skewY = 0;
-				object.width = size[0];
-				object.height = size[1];
+				adjust25ObjectSize(object, object.zoom ?? 1, size);
 			}
 			if (object.type === 'textBox') {
 				const textbox = object as unknown as ITextBox;
 				textbox.height += constants.TextBox.NameboxHeight;
 				textbox.y += textbox.height / 2;
 			}
+			if (object.type === 'sprite') {
+				(object as any).requireFixing25 = true;
+				(data as any).requireFixing25 = true;
+			}
 			delete object.zoom;
 		}
 	}
+}
+
+export function adjust25ObjectSize(
+	obj: IObject,
+	zoom: number,
+	size: [number, number]
+): void {
+	let a = new DOMMatrixReadOnly().translate(obj.x, obj.y + obj.height / 2);
+	// Resizing -> Scale from the top
+	a = a
+		.translate(0, -obj.height / 2)
+		.scale(obj.width / size[0], obj.height / size[1])
+		.translate(0, size[1] / 2);
+
+	// new position at center
+	a = a.rotate(obj.flip ? -obj.rotation : obj.rotation);
+
+	// Zoom -> Scale from the bottom
+	a = a
+		.translate(0, size[1] / 2)
+		.scale(zoom)
+		.translate(0, -size[1] / 2);
+
+	const oldRot = obj.rotation;
+
+	Object.assign(obj, decomposeMatrix(a));
+	obj.rotation = obj.flip ? 360 - oldRot : oldRot;
+	obj.skewX = 0;
+	obj.skewY = 0;
+	obj.width = size[0];
+	obj.height = size[1];
 }
 
 export interface IRemovePacksAction {
