@@ -58,7 +58,7 @@
 			/>
 			<position-and-size :obj="object" />
 			<layers :object="object" />
-			<d-fieldset title="Transform">
+			<d-fieldset title="Transform" class="transforms">
 				<toggle v-model="flip" label="Flip?" />
 				<label for="linked_to" class="v-w100">Linked with:</label>
 				<select
@@ -542,6 +542,17 @@ export interface Handler {
 </script>
 
 <style lang="scss" scoped>
+.panel:not(.vertical) {
+	.transforms {
+		height: 100%;
+		:deep(fieldset) {
+			max-height: 100%;
+			height: 100%;
+			overflow: auto;
+		}
+	}
+}
+
 .panel.vertical {
 	.input-table {
 		width: 100%;
