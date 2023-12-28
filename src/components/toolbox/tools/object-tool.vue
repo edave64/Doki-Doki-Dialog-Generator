@@ -87,38 +87,41 @@
 							/>
 						</td>
 					</tr>
-					<tr>
-						<td>
-							<label for="zoom" class="v-w100">{{
-								easterEgg ? 'Zoom' : 'Scale X'
-							}}</label>
-						</td>
-						<td>
-							<input
-								id="zoom"
-								type="number"
-								class="smol v-w100"
-								step="1"
-								min="0"
-								v-model="scaleX"
-								@keydown.stop
-							/>
-						</td>
-					</tr>
-					<tr v-if="!easterEgg">
-						<td><label for="zoom" class="v-w100">Scale Y: </label></td>
-						<td>
-							<input
-								id="zoom"
-								type="number"
-								class="smol v-w100"
-								step="1"
-								min="0"
-								v-model="scaleY"
-								@keydown.stop
-							/>
-						</td>
-					</tr>
+					<!-- A sprite that hasn't yet been reimported from an old version should not be resized -->
+					<template v-if="!object.requireFixing25">
+						<tr>
+							<td>
+								<label for="zoom" class="v-w100">{{
+									easterEgg ? 'Zoom' : 'Scale X'
+								}}</label>
+							</td>
+							<td>
+								<input
+									id="zoom"
+									type="number"
+									class="smol v-w100"
+									step="1"
+									min="0"
+									v-model="scaleX"
+									@keydown.stop
+								/>
+							</td>
+						</tr>
+						<tr v-if="!easterEgg">
+							<td><label for="zoom" class="v-w100">Scale Y: </label></td>
+							<td>
+								<input
+									id="zoom"
+									type="number"
+									class="smol v-w100"
+									step="1"
+									min="0"
+									v-model="scaleY"
+									@keydown.stop
+								/>
+							</td>
+						</tr>
+					</template>
 					<tr>
 						<td><label for="zoom" class="v-w100">Skew X: </label></td>
 						<td>

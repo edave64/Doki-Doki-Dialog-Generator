@@ -55,6 +55,7 @@ export default createStore({
 					const sprite = object as ISprite;
 					if (sprite.assets.length === 1 && sprite.assets[0].hq === data.url) {
 						adjust25ObjectSize(sprite, object.scaleX, data.size);
+						delete (object as any).requireFixing25;
 					}
 				}
 			}
