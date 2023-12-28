@@ -147,7 +147,7 @@
 					</tr>
 					<tr>
 						<td colspan="2" v-if="!easterEgg">
-							<toggle v-model="preserveRatio" label="Lock ratio?" />
+							<toggle v-model="preserveRatio" label="Lock scale ratio?" />
 						</td>
 					</tr>
 				</table>
