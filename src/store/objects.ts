@@ -143,6 +143,7 @@ export const mutations: MutationTree<IPanels> = {
 		const obj = panel.objects[command.id];
 		obj.width = Math.round(command.width * 100) / 100;
 		obj.height = Math.round(command.height * 100) / 100;
+		++obj.version;
 	},
 	setRatio(state, command: ISetSpriteRatioMutation) {
 		const panel = state.panels[command.panelId];
@@ -404,7 +405,8 @@ export const actions: ActionTree<IPanels, IRootState> = {
 		collectLinks(baseObject);
 
 		function collectLinks(from: IObject, direct = true) {
-			if (!direct && from === baseObject) throw new Error("Recursively linked object");
+			if (!direct && from === baseObject)
+				throw new Error('Recursively linked object');
 			for (const obj of allObject) {
 				if (obj.linkedTo === from.id) {
 					objects.push(obj);
