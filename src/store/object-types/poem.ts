@@ -70,6 +70,7 @@ export const poemActions: ActionTree<IPanels, IRootState> = {
 				preserveRatio: true,
 				consoleColor: constants.Poem.consoleBackgroundColor,
 				overflow: false,
+				linkedTo: null,
 			} as IPoem,
 		} as ICreateObjectMutation);
 		return id;
@@ -117,7 +118,7 @@ export interface ISetTextMutation extends IObjectMutation {
 
 export type PoemSimpleProperties = Exclude<
 	keyof IPoem,
-	keyof IObject | 'subType'
+	keyof IObject | 'subType' | 'overflow'
 >;
 
 export interface ISetTextBoxProperty<T extends PoemSimpleProperties>

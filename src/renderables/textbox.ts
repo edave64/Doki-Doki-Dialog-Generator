@@ -110,6 +110,13 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 	protected renderLocal(ctx: CanvasRenderingContext2D, _hq: boolean): void {
 		const styleRenderer = this.textboxRenderer;
 		const w = styleRenderer.width;
+
+		if (!this.obj.overflow) {
+			const rect = new Path2D();
+			rect.rect(0, 0, styleRenderer.width, this.height);
+			ctx.clip(rect);
+		}
+
 		styleRenderer.render(ctx);
 
 		if (this.obj.talkingObjId !== null) {

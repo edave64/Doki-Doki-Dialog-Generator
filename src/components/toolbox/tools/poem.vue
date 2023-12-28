@@ -15,6 +15,11 @@
 			<button class="w100 bt0" @click="textEditor = true">Formatting</button>
 		</div>
 		<toggle label="Auto line wrap?" v-model="autoWrap" />
+		<toggle
+			label="Allow overflow?"
+			v-model="overflow"
+			title="When text is too long, it is shown outside the container. Uses more memory"
+		/>
 		<template v-if="object.subType === 'poem'">
 			<select v-model="poemBackground" @keydown.stop>
 				<option
@@ -151,6 +156,7 @@ const colorHandler = computed((): Handler | undefined => {
 const text = setableP('text');
 const autoWrap = setableP('autoWrap');
 const poemStyle = setableP('font');
+const overflow = setableP('overflow');
 const poemBackground = setableP('background');
 </script>
 

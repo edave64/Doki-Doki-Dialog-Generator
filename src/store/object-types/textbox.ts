@@ -315,7 +315,7 @@ export interface ISetResetBoundsMutation extends IObjectMutation {
 
 export type TextBoxSimpleProperties = Exclude<
 	keyof ITextBox,
-	keyof IObject | 'talkingObjId' | 'talkingOther' | 'resetBounds'
+	keyof IObject | 'talkingObjId' | 'talkingOther' | 'resetBounds' | 'overflow'
 >;
 
 export function textboxProperty<T extends TextBoxSimpleProperties>(

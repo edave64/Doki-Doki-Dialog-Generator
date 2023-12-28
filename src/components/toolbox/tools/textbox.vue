@@ -73,6 +73,11 @@
 				v-model="autoWrap"
 				title="Automatically insert line breaks when a line of text is larger than the textbox"
 			/>
+			<toggle
+				label="Allow overflow?"
+				v-model="overflow"
+				title="When text is too long, it is shown outside the textbox. Uses more memory"
+			/>
 			<div id="dialog_text_wrapper" class="v-w100">
 				<label for="dialog_text">Dialog:</label>
 				<textarea
@@ -367,6 +372,7 @@ const colorName = computed((): string => {
 //#region Text
 const autoQuoting = tbSetable('autoQuoting');
 const autoWrap = tbSetable('autoWrap');
+const overflow = tbSetable('overflow');
 const dialog = tbSetable('text');
 //#endregion Text
 //#region Style

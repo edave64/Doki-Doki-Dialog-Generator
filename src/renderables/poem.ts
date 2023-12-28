@@ -88,6 +88,12 @@ export class Poem extends ScalingRenderable<IPoem> {
 				w,
 				h,
 			});
+
+			if (!this.obj.overflow) {
+				const rect = new Path2D();
+				rect.rect(0, 0, w, h);
+				ctx.clip(rect);
+			}
 		}
 
 		const style = constants.poemTextStyles[this.obj.font];
