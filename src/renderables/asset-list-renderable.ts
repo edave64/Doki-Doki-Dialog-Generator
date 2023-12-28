@@ -46,6 +46,7 @@ export abstract class AssetListRenderable<
 		}
 		if (!reloadAssets) return;
 		this.lastHq = !lq;
+		this.localCanvasInvalid = true;
 		this._canSkipLocal = this.assetList.length <= 1;
 		return this.loadAssets(!lq);
 	}
@@ -87,7 +88,9 @@ export abstract class AssetListRenderable<
 		return Promise.all(promises);
 	}
 	protected assetList: (IDrawAssetsUnloaded | IDrawAssets)[] = [];
-	protected abstract isAssetListOutdated(): boolean;
+	protected isAssetListOutdated() {
+		return this.assetList.length === 0;
+	}
 
 	protected renderLocal(ctx: CanvasRenderingContext2D, hq: boolean) {
 		console.log('rerendering local');

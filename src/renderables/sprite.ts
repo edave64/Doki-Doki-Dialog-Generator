@@ -6,10 +6,6 @@ import {
 } from './asset-list-renderable';
 
 export class Sprite extends AssetListRenderable<ISprite> {
-	protected isAssetListOutdated(): boolean {
-		return true;
-	}
-
 	protected getAssetList(): (IDrawAssets | IDrawAssetsUnloaded)[] {
 		return [
 			{
