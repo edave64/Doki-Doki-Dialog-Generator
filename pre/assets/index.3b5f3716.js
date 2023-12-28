@@ -6916,7 +6916,7 @@ var __publicField$o = (obj, key, value) => {
   __defNormalProp$N(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$J = (__this, __arguments, generator) => {
+var __async$K = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -7022,7 +7022,7 @@ const _Repo = class {
     return _Repo.instance;
   }
   static createInstance() {
-    return __async$J(this, null, function* () {
+    return __async$K(this, null, function* () {
       const onlineRepoLoading = _Repo.loadRepo(repoUrl);
       const localRepoLoading = envX.supports.localRepo ? yield _Repo.loadRepo(envX.localRepositoryUrl) : null;
       const [onlineRepoLoaded, localRepoLoaded, $store] = yield Promise.all([
@@ -7034,7 +7034,7 @@ const _Repo = class {
     });
   }
   static loadRepo(repo) {
-    return __async$J(this, null, function* () {
+    return __async$K(this, null, function* () {
       try {
         const [packs, authors] = yield Promise.all([
           _Repo.fetchJSON(repo + "repo.json"),
@@ -7047,7 +7047,7 @@ const _Repo = class {
     });
   }
   static fetchJSON(path) {
-    return __async$J(this, null, function* () {
+    return __async$K(this, null, function* () {
       const req = yield fetch(path);
       if (!req.ok)
         throw new Error("Could not load json");
@@ -7055,7 +7055,7 @@ const _Repo = class {
     });
   }
   reloadLocalRepo() {
-    return __async$J(this, null, function* () {
+    return __async$K(this, null, function* () {
       this.localRepo.value = envX.supports.localRepo ? yield _Repo.loadRepo(envX.localRepositoryUrl) : null;
     });
   }
@@ -7080,7 +7080,7 @@ const _Repo = class {
     return this.authors.value;
   }
   loadTempPack(url) {
-    return __async$J(this, null, function* () {
+    return __async$K(this, null, function* () {
       const req = fetch(url);
       let res;
       try {
@@ -7123,7 +7123,7 @@ __publicField$o(Repo, "$store", new Promise(
     _Repo.setStore = resolve;
   }
 ));
-var __async$I = (__this, __arguments, generator) => {
+var __async$J = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -7149,7 +7149,7 @@ function transactionLayer() {
   let transactionRunning = false;
   return function transaction2(callback) {
     return new Promise((resolve, _reject) => {
-      const exec = () => __async$I(this, null, function* () {
+      const exec = () => __async$J(this, null, function* () {
         try {
           if (callback.length > 0) {
             yield callback(transactionLayer());
@@ -7194,7 +7194,7 @@ var __publicField$n = (obj, key, value) => {
   __defNormalProp$M(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$H = (__this, __arguments, generator) => {
+var __async$I = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -7258,13 +7258,13 @@ class Browser {
       limitedCanvasSpace: mobileSafari
     });
     if (canSave) {
-      this.loading = (() => __async$H(this, null, function* () {
+      this.loading = (() => __async$I(this, null, function* () {
         this.savingEnabled = yield IndexedDBHandler.doesDbExists();
       }))();
     } else {
       this.loading = Promise.resolve();
     }
-    this.loading.then(() => __async$H(this, null, function* () {
+    this.loading.then(() => __async$I(this, null, function* () {
       var _a2;
       yield this.loadingContentPacksAllowed;
       if (this.creatingDB)
@@ -7274,7 +7274,7 @@ class Browser {
         this.state.autoAdd = autoload;
         const repo = yield Repo.getInstance();
         const packUrls = yield Promise.all(
-          autoload.map((compoundId) => __async$H(this, null, function* () {
+          autoload.map((compoundId) => __async$I(this, null, function* () {
             var _a22;
             const [id, url] = compoundId.split(";", 2);
             if (url != null && !repo.hasPack(id)) {
@@ -7284,7 +7284,7 @@ class Browser {
             return (_a22 = pack.dddg2Path) != null ? _a22 : pack.dddg1Path;
           }))
         );
-        yield transaction(() => __async$H(this, null, function* () {
+        yield transaction(() => __async$I(this, null, function* () {
           yield this.$store.dispatch("content/loadContentPacks", packUrls);
         }));
       }
@@ -7326,7 +7326,7 @@ class Browser {
     return Promise.resolve();
   }
   loadGameMode() {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       const searchParams = new URLSearchParams(location.search);
       const getMode = searchParams.get("mode");
       if (getMode === "ddlc" || getMode === "ddlc_plus") {
@@ -7347,7 +7347,7 @@ class Browser {
     });
   }
   setGameMode(mode) {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       if (this.isSavingEnabled.value) {
         yield IndexedDBHandler.saveGameMode(mode);
       }
@@ -7365,7 +7365,7 @@ class Browser {
     this.$store = store2;
   }
   saveToFile(downloadCanvas, filename, format = "image/png", quality = 1) {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       const a = document.createElement("a");
       a.setAttribute("download", filename);
       const url = yield this.createObjectURL(downloadCanvas, format, quality);
@@ -7383,7 +7383,7 @@ class Browser {
     throw new Error("This environment does not support a local repository");
   }
   autoLoadAdd(id) {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       yield this.loading;
       yield this.creatingDB;
       yield IndexedDBHandler.saveAutoload([...this.state.autoAdd, id]);
@@ -7391,7 +7391,7 @@ class Browser {
     });
   }
   autoLoadRemove(id) {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       yield this.loading;
       yield this.creatingDB;
       const packId = this.normalizePackId(id);
@@ -7410,7 +7410,7 @@ class Browser {
     return parts[parts.length - 1];
   }
   loadSettings() {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       yield this.loading;
       yield this.creatingDB;
       const base = {
@@ -7426,7 +7426,7 @@ class Browser {
     });
   }
   saveSettings(settings) {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       yield this.loading;
       yield this.creatingDB;
       if (!this.isSavingEnabled.value)
@@ -7435,7 +7435,7 @@ class Browser {
     });
   }
   isInitialized() {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       yield this.loading;
       yield this.creatingDB;
     });
@@ -7551,39 +7551,39 @@ const IndexedDBHandler = {
     });
   },
   loadAutoload() {
-    return this.objectStorePromise("readonly", (store2) => __async$H(this, null, function* () {
+    return this.objectStorePromise("readonly", (store2) => __async$I(this, null, function* () {
       return yield this.reqPromise(store2.get("autoload"));
     }));
   },
   saveAutoload(autoloads) {
-    return this.objectStorePromise("readwrite", (store2) => __async$H(this, null, function* () {
+    return this.objectStorePromise("readwrite", (store2) => __async$I(this, null, function* () {
       yield this.reqPromise(store2.put([...autoloads], "autoload"));
     }));
   },
   loadGameMode() {
-    return this.objectStorePromise("readonly", (store2) => __async$H(this, null, function* () {
+    return this.objectStorePromise("readonly", (store2) => __async$I(this, null, function* () {
       return yield this.reqPromise(store2.get("gameMode"));
     }));
   },
   saveGameMode(mode) {
-    return this.objectStorePromise("readwrite", (store2) => __async$H(this, null, function* () {
+    return this.objectStorePromise("readwrite", (store2) => __async$I(this, null, function* () {
       yield this.reqPromise(store2.put(mode, "gameMode"));
     }));
   },
   saveSettings(settings) {
-    return this.objectStorePromise("readwrite", (store2) => __async$H(this, null, function* () {
+    return this.objectStorePromise("readwrite", (store2) => __async$I(this, null, function* () {
       yield this.reqPromise(store2.put(__spreadValues$t({}, settings), "settings"));
     }));
   },
   loadSettings() {
-    return this.objectStorePromise("readonly", (store2) => __async$H(this, null, function* () {
+    return this.objectStorePromise("readonly", (store2) => __async$I(this, null, function* () {
       return yield this.reqPromise(store2.get("settings"));
     }));
   },
   objectStorePromise(mode, callback) {
     if (!this.db)
       return Promise.reject(new Error("No database"));
-    return new Promise((resolve, reject) => __async$H(this, null, function* () {
+    return new Promise((resolve, reject) => __async$I(this, null, function* () {
       const transact = (yield this.db).transaction(["settings"], mode);
       const store2 = transact.objectStore("settings");
       try {
@@ -7621,7 +7621,7 @@ var __publicField$m = (obj, key, value) => {
   __defNormalProp$L(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$G = (__this, __arguments, generator) => {
+var __async$H = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -7687,20 +7687,20 @@ class Electron {
     });
     this.electron.ipcRenderer.on(
       "add-persistent-content-pack",
-      (filePath) => __async$G(this, null, function* () {
+      (filePath) => __async$H(this, null, function* () {
         yield this.loadingContentPacksAllowed;
         if (!this.$store) {
           this.pendingContentPacks.push(filePath);
           return;
         }
-        yield transaction(() => __async$G(this, null, function* () {
+        yield transaction(() => __async$H(this, null, function* () {
           yield this.$store.dispatch("content/loadContentPacks", filePath);
         }));
       })
     );
     this.electron.ipcRenderer.on(
       "add-persistent-background",
-      (filepath) => __async$G(this, null, function* () {
+      (filepath) => __async$H(this, null, function* () {
         const name = "persistentBg-" + filepath;
         const parts = filepath.split("/");
         yield registerAssetWithURL(name, filepath);
@@ -7724,10 +7724,10 @@ class Electron {
     );
     this.electron.ipcRenderer.onConversation(
       "load-packs",
-      (packIds) => __async$G(this, null, function* () {
+      (packIds) => __async$H(this, null, function* () {
         const repo = yield Repo.getInstance();
         const packUrls = yield Promise.all(
-          packIds.map((compoundId) => __async$G(this, null, function* () {
+          packIds.map((compoundId) => __async$H(this, null, function* () {
             const [id, url] = compoundId.split(";", 2);
             if (url != null && !repo.hasPack(id)) {
               yield repo.loadTempPack(url);
@@ -7740,7 +7740,7 @@ class Electron {
           packUrls.forEach((url) => this.pendingContentPacks.push(url));
           return;
         }
-        yield transaction(() => __async$G(this, null, function* () {
+        yield transaction(() => __async$H(this, null, function* () {
           yield this.$store.dispatch("content/loadContentPacks", packUrls);
         }));
       })
@@ -7751,12 +7751,12 @@ class Electron {
         this.state.autoAdd = packIds;
       }
     );
-    this.electron.ipcRenderer.onConversation("reload-repo", () => __async$G(this, null, function* () {
+    this.electron.ipcRenderer.onConversation("reload-repo", () => __async$H(this, null, function* () {
       yield (yield Repo.getInstance()).reloadLocalRepo();
     }));
     this.electron.ipcRenderer.onConversation(
       "replace-pack",
-      (contentPack) => __async$G(this, null, function* () {
+      (contentPack) => __async$H(this, null, function* () {
         const action = {
           processed: false,
           contentPack
@@ -7764,7 +7764,7 @@ class Electron {
         if (!this.$store) {
           this.pendingContentPacksReplace.push(action);
         } else {
-          yield transaction(() => __async$G(this, null, function* () {
+          yield transaction(() => __async$H(this, null, function* () {
             yield this.$store.dispatch("content/replaceContentPack", action);
           }));
         }
@@ -7832,7 +7832,7 @@ class Electron {
   onPanelChange(_handler) {
   }
   saveSettings(settings) {
-    return __async$G(this, null, function* () {
+    return __async$H(this, null, function* () {
       var _a2;
       yield this.electron.ipcRenderer.sendConvo(
         "config.set",
@@ -7852,18 +7852,18 @@ class Electron {
     });
   }
   loadGameMode() {
-    return __async$G(this, null, function* () {
+    return __async$H(this, null, function* () {
       this._gameMode = (yield this.electron.ipcRenderer.sendConvo("config.get", "gameMode")) || "ddlc";
     });
   }
   setGameMode(mode) {
-    return __async$G(this, null, function* () {
+    return __async$H(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo("config.set", "gameMode", mode);
       this.electron.ipcRenderer.send("reload");
     });
   }
   loadSettings() {
-    return __async$G(this, null, function* () {
+    return __async$H(this, null, function* () {
       var _a2, _b, _c;
       return {
         lq: false,
@@ -7877,7 +7877,7 @@ class Electron {
     });
   }
   localRepoInstall(url, repo, authors) {
-    return __async$G(this, null, function* () {
+    return __async$H(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo(
         "repo.install",
         url,
@@ -7887,24 +7887,24 @@ class Electron {
     });
   }
   localRepoUninstall(id) {
-    return __async$G(this, null, function* () {
+    return __async$H(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo("repo.uninstall", id);
     });
   }
   autoLoadAdd(id) {
-    return __async$G(this, null, function* () {
+    return __async$H(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo("auto-load.add", id);
     });
   }
   autoLoadRemove(id) {
-    return __async$G(this, null, function* () {
+    return __async$H(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo("auto-load.remove", id);
     });
   }
   saveToFile(downloadCanvas, filename, format = "image/png", quality = 1) {
     return new Promise((resolve, reject) => {
       downloadCanvas.toBlob(
-        (blob) => __async$G(this, null, function* () {
+        (blob) => __async$H(this, null, function* () {
           if (!blob) {
             reject();
             return;
@@ -7923,7 +7923,7 @@ class Electron {
     });
   }
   prompt(message, defaultValue) {
-    return __async$G(this, null, function* () {
+    return __async$H(this, null, function* () {
       return yield this.electron.ipcRenderer.sendConvo(
         "show-prompt",
         message,
@@ -7934,7 +7934,7 @@ class Electron {
   connectToStore(store2) {
     this.$store = store2;
     this.invalidateInstalledBGs();
-    transaction(() => __async$G(this, null, function* () {
+    transaction(() => __async$H(this, null, function* () {
       if (this.pendingContentPacks.length > 0) {
         yield this.$store.dispatch(
           "content/loadContentPacks",
@@ -7964,7 +7964,7 @@ class Electron {
     }
     if (!this.$store)
       return;
-    transaction(() => __async$G(this, null, function* () {
+    transaction(() => __async$H(this, null, function* () {
       yield this.$store.dispatch("content/replaceContentPack", {
         contentPack: installedBackgroundsPack
       });
@@ -8054,7 +8054,7 @@ var __publicField$j = (obj, key, value) => {
   __defNormalProp$I(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$F = (__this, __arguments, generator) => {
+var __async$G = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -8083,7 +8083,7 @@ function isWebPSupported() {
   }
   const losslessCode = "data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA=";
   const transparentCode = "data:image/webp;base64,UklGRogAAABXRUJQVlA4THwAAAAv/8SzAA/wGbPPmH3GbP7jAQSSNu9f+rzDwYj+G23bpt3Gx3xD8353j73f5b87+e9OALmT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9OAriT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9O/rsTwe7kvzsL";
-  return webpSupportPromise = (() => __async$F(this, null, function* () {
+  return webpSupportPromise = (() => __async$G(this, null, function* () {
     const ret = yield Promise.all([
       canLoadImg(losslessCode, 1, 2),
       canLoadImg(transparentCode, 720, 1280)
@@ -8107,7 +8107,7 @@ let heifSupportPromise;
 function isHeifSupported() {
   if (heifSupportPromise)
     return heifSupportPromise;
-  return heifSupportPromise = (() => __async$F(this, null, function* () {
+  return heifSupportPromise = (() => __async$G(this, null, function* () {
     const losslessCode = "data:image/heic;base64,AAAAGGZ0eXBoZWljAAAAAG1pZjFoZWljAAAAsW1ldGEAAAAAAAAAIWhkbHIAAAAAAAAAAHBpY3QAXABjAGMAcwBsAGEAAAAADnBpdG0AAAAAAAEAAAAQaWxvYwAAAABEQAAAAAAAI2lpbmYAAAAAAAEAAAAVaW5mZQIAAAAAAQAAaHZjMQAAAABDaXBycAAAACdpcGNvAAAAH2h2Y0NmzGx1ci0AAAAAAABv9HP+//v9bjr3AAAAABRpcG1hAAAAAAAAAAEAAQGBAAAACG1kYXQ=";
     return yield canLoadImg(losslessCode, 1, 2);
   }))();
@@ -8168,13 +8168,13 @@ function getAssetByUrl(url) {
 }
 const baseUrl = "./";
 function getBuildInAsset(asset, hq = true) {
-  return __async$F(this, null, function* () {
+  return __async$G(this, null, function* () {
     const url = `${baseUrl}assets/${asset}${hq ? "" : ".lq"}${(yield isWebPSupported()) ? ".webp" : ".png"}`.replace(/\/+/, "/");
     return yield getAssetCache().get(url);
   });
 }
 function getBuildInAssetUrl(asset, hq = true) {
-  return __async$F(this, null, function* () {
+  return __async$G(this, null, function* () {
     return `${baseUrl}assets/${asset}${envX.supports.lq && !hq ? ".lq" : ""}${(yield isWebPSupported()) ? ".webp" : ".png"}`.replace(/\/+/, "/");
   });
 }
@@ -8182,11 +8182,11 @@ function registerAssetWithURL(asset, url) {
   customUrl[asset] = url;
 }
 function requestAssetByUrl(url) {
-  return __async$F(this, null, function* () {
+  return __async$G(this, null, function* () {
     const isCustom = !!customUrl[url];
     if (isCustom)
       url = customUrl[url];
-    return yield (() => __async$F(this, null, function* () {
+    return yield (() => __async$G(this, null, function* () {
       try {
         return yield imagePromise(url);
       } catch (e) {
@@ -11894,7 +11894,7 @@ function joinNormalize(base, sub, paths) {
     return sub;
   return base + sub;
 }
-var __async$E = (__this, __arguments, generator) => {
+var __async$F = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -11962,7 +11962,7 @@ const content = {
       dispatch2("panels/fixContentPackRemoval", oldState, { root: true });
     },
     replaceContentPack(_0, _1) {
-      return __async$E(this, arguments, function* ({ commit: commit2, state }, action) {
+      return __async$F(this, arguments, function* ({ commit: commit2, state }, action) {
         debugger;
         const convertedPack = action.processed ? action.contentPack : yield convertContentPack(action.contentPack);
         let packs = state.contentPacks;
@@ -11985,12 +11985,12 @@ const content = {
       });
     },
     loadContentPacks(_0, _1) {
-      return __async$E(this, arguments, function* ({ commit: commit2, state }, urls) {
+      return __async$F(this, arguments, function* ({ commit: commit2, state }, urls) {
         if (typeof urls === "string") {
           urls = [urls];
         }
         const contentPacks = yield Promise.all(
-          urls.map((url) => __async$E(this, null, function* () {
+          urls.map((url) => __async$F(this, null, function* () {
             return yield loadContentPack(url);
           }))
         );
@@ -12035,7 +12035,7 @@ const content = {
   }
 };
 function loadContentPack(url) {
-  return __async$E(this, null, function* () {
+  return __async$F(this, null, function* () {
     const response = yield fetch(url);
     if (!response.ok) {
       throw new Error(
@@ -12071,7 +12071,7 @@ function sortByDependencies(packs) {
   return packs;
 }
 function convertContentPack(pack) {
-  return __async$E(this, null, function* () {
+  return __async$F(this, null, function* () {
     const types = new Set(
       (yield isWebPSupported()) ? ["webp", ...baseTypes] : baseTypes
     );
@@ -12170,7 +12170,7 @@ var __publicField$h = (obj, key, value) => {
   __defNormalProp$z(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$D = (__this, __arguments, generator) => {
+var __async$E = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -12400,7 +12400,7 @@ class RenderContext {
     );
   }
   customTransform(transform, render) {
-    return __async$D(this, null, function* () {
+    return __async$E(this, null, function* () {
       this.fsCtx.save();
       yield transform(this.fsCtx);
       yield render(this);
@@ -12461,7 +12461,7 @@ var __publicField$g = (obj, key, value) => {
   __defNormalProp$y(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$C = (__this, __arguments, generator) => {
+var __async$D = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -12495,7 +12495,7 @@ class Renderer {
     return this._disposed;
   }
   render(renderCallback, hq = true, preview = true) {
-    return __async$C(this, null, function* () {
+    return __async$D(this, null, function* () {
       if (this.runningContext) {
         this.runningContext.abort();
       }
@@ -12536,13 +12536,13 @@ class Renderer {
     }
   }
   download(renderCallback, filename) {
-    return __async$C(this, null, function* () {
+    return __async$D(this, null, function* () {
       const downloadCanvas = yield this.drawToCanvas(renderCallback);
       return yield envX.saveToFile(downloadCanvas, filename);
     });
   }
   renderToBlob(renderCallback) {
-    return __async$C(this, null, function* () {
+    return __async$D(this, null, function* () {
       const downloadCanvas = yield this.drawToCanvas(renderCallback);
       return yield new Promise((resolve, reject) => {
         downloadCanvas.toBlob((blob) => {
@@ -12555,7 +12555,7 @@ class Renderer {
     });
   }
   drawToCanvas(renderCallback) {
-    return __async$C(this, null, function* () {
+    return __async$D(this, null, function* () {
       const downloadCanvas = makeCanvas();
       downloadCanvas.width = this.previewCanvas.width;
       downloadCanvas.height = this.previewCanvas.height;
@@ -12620,7 +12620,7 @@ var __spreadValues$j = (a, b) => {
   return a;
 };
 var __spreadProps$g = (a, b) => __defProps$g(a, __getOwnPropDescs$g(b));
-var __async$B = (__this, __arguments, generator) => {
+var __async$C = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -12883,7 +12883,7 @@ const characterActions = {
   }
 };
 function fixContentPackRemovalFromCharacter(context, panelId, id, oldPack) {
-  return __async$B(this, null, function* () {
+  return __async$C(this, null, function* () {
     const obj = context.state.panels[panelId].objects[id];
     const oldCharData = oldPack.characters.find(
       (char) => char.id === obj.characterType
@@ -13281,7 +13281,7 @@ Object.defineProperty(awaited, "__esModule", { value: true });
   __exportStar(noop$1, exports);
   __exportStar(awaited, exports);
 })(dist);
-var __async$A = (__this, __arguments, generator) => {
+var __async$B = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -13311,7 +13311,7 @@ class Background {
     this.filters = filters;
   }
   render(rx) {
-    return __async$A(this, null, function* () {
+    return __async$B(this, null, function* () {
       const { screenWidth: screenWidth2, screenHeight: screenHeight2 } = getConstants().Base;
       const images = yield Promise.all(
         this.assets.map((asset) => getAAsset(asset, rx.hq))
@@ -13659,7 +13659,7 @@ var __publicField$e = (obj, key, value) => {
   __defNormalProp$v(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$z = (__this, __arguments, generator) => {
+var __async$A = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -13686,9 +13686,14 @@ class AssetListRenderable extends Renderable {
     __publicField$e(this, "lastUploadCount", 0);
     __publicField$e(this, "lastHq", false);
     __publicField$e(this, "missingAsset", false);
-    __publicField$e(this, "canSkipLocal", false);
-    __publicField$e(this, "transformIsLocal", false);
+    __publicField$e(this, "_canSkipLocal", false);
     __publicField$e(this, "assetList", []);
+  }
+  get canSkipLocal() {
+    return this._canSkipLocal;
+  }
+  get transformIsLocal() {
+    return false;
   }
   prepareRender(panel, store2, lq) {
     super.prepareRender(panel, store2, lq);
@@ -13705,7 +13710,8 @@ class AssetListRenderable extends Renderable {
     if (!reloadAssets)
       return;
     this.lastHq = !lq;
-    this.canSkipLocal = this.assetList.length <= 1;
+    this.localCanvasInvalid = true;
+    this._canSkipLocal = this.assetList.length <= 1;
     return this.loadAssets(!lq);
   }
   getAssetsSize() {
@@ -13728,7 +13734,7 @@ class AssetListRenderable extends Renderable {
       if ("loadedAssets" in assetEntry && !assetEntry.hasMissing)
         continue;
       promises.push(
-        ((assetEntry2) => __async$z(this, null, function* () {
+        ((assetEntry2) => __async$A(this, null, function* () {
           const assets = yield Promise.all(
             assetEntry2.assets.map((asset) => getAAsset(asset, hq))
           );
@@ -13744,6 +13750,9 @@ class AssetListRenderable extends Renderable {
       return;
     return Promise.all(promises);
   }
+  isAssetListOutdated() {
+    return this.assetList.length === 0;
+  }
   renderLocal(ctx, hq) {
     var _a2;
     console.log("rerendering local");
@@ -13754,10 +13763,19 @@ class AssetListRenderable extends Renderable {
         if (!this.canSkipLocal) {
           ctx.globalCompositeOperation = (_a2 = loadedDraw.composite) != null ? _a2 : "source-over";
         }
-        asset.paintOnto(ctx, {
-          x: loadedDraw.offset[0],
-          y: loadedDraw.offset[1]
-        });
+        if (asset instanceof ErrorAsset) {
+          asset.paintOnto(ctx, {
+            x: loadedDraw.offset[0],
+            y: loadedDraw.offset[1],
+            h: this.height,
+            w: this.width
+          });
+        } else {
+          asset.paintOnto(ctx, {
+            x: loadedDraw.offset[0],
+            y: loadedDraw.offset[1]
+          });
+        }
       }
     }
   }
@@ -14735,7 +14753,7 @@ var __publicField$9 = (obj, key, value) => {
   __defNormalProp$p(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$y = (__this, __arguments, generator) => {
+var __async$z = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -14789,7 +14807,7 @@ class Poem extends ScalingRenderable {
     let imageLoading = void 0;
     if (!bg.file.startsWith("internal:")) {
       if (this._lastPaperUrl !== bg.file) {
-        imageLoading = (() => __async$y(this, null, function* () {
+        imageLoading = (() => __async$z(this, null, function* () {
           this._paper = yield getAssetByUrl(
             `assets/poemBackgrounds/${bg.file}`
           );
@@ -14830,6 +14848,11 @@ class Poem extends ScalingRenderable {
         w,
         h: h2
       });
+      if (!this.obj.overflow) {
+        const rect = new Path2D();
+        rect.rect(0, 0, w, h2);
+        ctx.clip(rect);
+      }
     }
     const style = constants.poemTextStyles[this.obj.font];
     const render = new TextRenderer(this.obj.text, style);
@@ -14844,9 +14867,6 @@ class Poem extends ScalingRenderable {
   }
 }
 class Sprite extends AssetListRenderable {
-  isAssetListOutdated() {
-    return true;
-  }
   getAssetList() {
     return [
       {
@@ -14862,7 +14882,7 @@ var __publicField$8 = (obj, key, value) => {
   __defNormalProp$o(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$x = (__this, __arguments, generator) => {
+var __async$y = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -14935,7 +14955,7 @@ class DdlcBase {
   prepare() {
     if (this.nextArrow instanceof ImageAsset)
       return;
-    return (() => __async$x(this, null, function* () {
+    return (() => __async$y(this, null, function* () {
       this.nextArrow = yield getBuildInAsset("next");
     }))();
   }
@@ -14946,7 +14966,7 @@ var __publicField$7 = (obj, key, value) => {
   __defNormalProp$n(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$w = (__this, __arguments, generator) => {
+var __async$x = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -15044,10 +15064,10 @@ class Default extends DdlcBase {
       return;
     return Promise.all([
       prep,
-      this.backdropAsset instanceof ImageAsset ? void 0 : (() => __async$w(this, null, function* () {
+      this.backdropAsset instanceof ImageAsset ? void 0 : (() => __async$x(this, null, function* () {
         this.backdropAsset = yield getBuildInAsset(this.backgroundImage);
       }))(),
-      this.nameBoxAsset instanceof ImageAsset ? void 0 : (() => __async$w(this, null, function* () {
+      this.nameBoxAsset instanceof ImageAsset ? void 0 : (() => __async$x(this, null, function* () {
         this.nameBoxAsset = yield getBuildInAsset("namebox");
       }))()
     ]);
@@ -15305,7 +15325,7 @@ var __publicField$4 = (obj, key, value) => {
   __defNormalProp$k(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$v = (__this, __arguments, generator) => {
+var __async$w = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -15394,7 +15414,7 @@ const _DdlcPlusBase = class {
   prepare() {
     if (this.nextArrow instanceof ImageAsset)
       return;
-    return (() => __async$v(this, null, function* () {
+    return (() => __async$w(this, null, function* () {
       this.nextArrow = yield getBuildInAsset("next_plus");
     }))();
   }
@@ -15602,7 +15622,7 @@ var __publicField$2 = (obj, key, value) => {
   __defNormalProp$i(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$u = (__this, __arguments, generator) => {
+var __async$v = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -15657,7 +15677,7 @@ class None extends DdlcBase {
     return TextBoxStyle$1;
   }
   render(_rx) {
-    return __async$u(this, null, function* () {
+    return __async$v(this, null, function* () {
     });
   }
 }
@@ -15737,6 +15757,11 @@ class TextBox extends ScalingRenderable {
   renderLocal(ctx, _hq) {
     const styleRenderer = this.textboxRenderer;
     const w = styleRenderer.width;
+    if (!this.obj.overflow) {
+      const rect = new Path2D();
+      rect.rect(0, 0, styleRenderer.width, this.height);
+      ctx.clip(rect);
+    }
     styleRenderer.render(ctx);
     if (this.obj.talkingObjId !== null) {
       this.renderName(ctx, styleRenderer.nameboxOffsetX, 0);
@@ -15793,7 +15818,7 @@ var __publicField = (obj, key, value) => {
   __defNormalProp$g(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$t = (__this, __arguments, generator) => {
+var __async$u = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -15878,7 +15903,7 @@ const _SceneRenderer = class {
     return (_a2 = this.renderObjectCache.get(id)) != null ? _a2 : null;
   }
   renderCallback(skipLocalCanvases, rx) {
-    return __async$t(this, null, function* () {
+    return __async$u(this, null, function* () {
       var _a2, _b;
       if (this._disposed)
         throw new Error("Disposed scene-renderer called");
@@ -16259,7 +16284,8 @@ const poemActions = {
         ratio: 1,
         preserveRatio: true,
         consoleColor: constants.Poem.consoleBackgroundColor,
-        overflow: false
+        overflow: false,
+        linkedTo: null
       }
     });
     return id;
@@ -16307,7 +16333,7 @@ var __spreadValues$c = (a, b) => {
   return a;
 };
 var __spreadProps$9 = (a, b) => __defProps$9(a, __getOwnPropDescs$9(b));
-var __async$s = (__this, __arguments, generator) => {
+var __async$t = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -16330,7 +16356,7 @@ var __async$s = (__this, __arguments, generator) => {
 const spriteMutations = {};
 const spriteActions = {
   createSprite(_0, _1) {
-    return __async$s(this, arguments, function* ({ commit: commit2, rootState, state }, command) {
+    return __async$t(this, arguments, function* ({ commit: commit2, rootState, state }, command) {
       const asset = yield getAAsset(command.assets[0], false);
       if (!(asset instanceof ImageAsset))
         return;
@@ -16380,7 +16406,7 @@ var __spreadValues$b = (a, b) => {
   return a;
 };
 var __spreadProps$8 = (a, b) => __defProps$8(a, __getOwnPropDescs$8(b));
-var __async$r = (__this, __arguments, generator) => {
+var __async$s = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -16559,7 +16585,7 @@ const textBoxActions = {
     });
   },
   splitTextbox(_0, _1) {
-    return __async$r(this, arguments, function* ({ commit: commit2, state, dispatch: dispatch2 }, command) {
+    return __async$s(this, arguments, function* ({ commit: commit2, state, dispatch: dispatch2 }, command) {
       const obj = state.panels[command.panelId].objects[command.id];
       if (obj.type !== "textBox")
         return;
@@ -16828,6 +16854,7 @@ const mutations = __spreadValues$9(__spreadValues$9(__spreadValues$9(__spreadVal
     const obj = panel.objects[command.id];
     obj.width = Math.round(command.width * 100) / 100;
     obj.height = Math.round(command.height * 100) / 100;
+    ++obj.version;
   },
   setRatio(state, command) {
     const panel = state.panels[command.panelId];
@@ -17538,6 +17565,26 @@ const ui = {
     }
   }
 };
+var __async$r = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 const uploadUrls = {
   namespaced: true,
   state: {},
@@ -17547,14 +17594,24 @@ const uploadUrls = {
     }
   },
   actions: {
-    add({ state, commit: commit2 }, { name, url }) {
-      if (state[name]) {
-        throw new Error(`There is already an uploaded file called "${name}"`);
-      }
-      const assertUrl = "uploads:" + name;
-      commit2("add", { name: assertUrl, url });
-      registerAssetWithURL(assertUrl, url);
-      return assertUrl;
+    add(_0, _1) {
+      return __async$r(this, arguments, function* ({ state, commit: commit2, rootState }, { name, url }) {
+        if (state[name]) {
+          throw new Error(`There is already an uploaded file called "${name}"`);
+        }
+        const assertUrl = "uploads:" + name;
+        commit2("add", { name: assertUrl, url });
+        registerAssetWithURL(assertUrl, url);
+        if ("requireFixing25" in rootState) {
+          const asset = yield getAssetByUrl(assertUrl);
+          commit2(
+            "fix25Sprites",
+            { url: assertUrl, size: [asset.width, asset.height] },
+            { root: true }
+          );
+        }
+        return assertUrl;
+      });
     }
   }
 };
@@ -17607,6 +17664,19 @@ const store = createStore({
   mutations: {
     setUnsafe(state, unsafe) {
       state.unsafe = unsafe;
+    },
+    fix25Sprites(state, data) {
+      for (const panel of Object.values(state.panels.panels)) {
+        for (const object of Object.values(panel.objects)) {
+          if (object.type !== "sprite" || !object.requireFixing25 || object.scaleX !== object.scaleY)
+            continue;
+          const sprite = object;
+          if (sprite.assets.length === 1 && sprite.assets[0].hq === data.url) {
+            adjust25ObjectSize(sprite, object.scaleX, data.size);
+            delete object.requireFixing25;
+          }
+        }
+      }
     }
   },
   actions: {
@@ -17728,7 +17798,7 @@ const store = createStore({
   modules: { ui, panels, content, uploadUrls }
 });
 function migrate25(data) {
-  var _a2, _b, _c, _d, _e, _f;
+  var _a2, _b, _c, _d, _e, _f, _g;
   const panels2 = Object.values(data.panels.panels);
   if (panels2.find((x) => Object.values(x.objects).find((x2) => "scaleX" in x2)))
     return;
@@ -17746,29 +17816,33 @@ function migrate25(data) {
           (c) => c.id === character.characterType
         );
         const size2 = (_f = (_e = (_d = (_c = charData == null ? void 0 : charData.styleGroups[character.styleGroupId]) == null ? void 0 : _c.styles[character.styleId]) == null ? void 0 : _d.poses[character.poseId]) == null ? void 0 : _e.size) != null ? _f : [960, 960];
-        let a = new DOMMatrixReadOnly().translate(
-          object.x,
-          object.y + object.height / 2
-        );
-        a = a.translate(0, -object.height / 2).scale(object.width / size2[0], object.height / size2[1]).translate(0, size2[1] / 2);
-        a = a.rotate(object.flip ? -object.rotation : object.rotation);
-        a = a.translate(0, size2[1] / 2).scale(object.zoom).translate(0, -size2[1] / 2);
-        const oldRot = object.rotation;
-        Object.assign(object, decomposeMatrix(a));
-        object.rotation = object.flip ? 360 - oldRot : oldRot;
-        object.skewX = 0;
-        object.skewY = 0;
-        object.width = size2[0];
-        object.height = size2[1];
+        adjust25ObjectSize(object, (_g = object.zoom) != null ? _g : 1, size2);
       }
       if (object.type === "textBox") {
         const textbox = object;
         textbox.height += constants.TextBox.NameboxHeight;
         textbox.y += textbox.height / 2;
       }
+      if (object.type === "sprite") {
+        object.requireFixing25 = true;
+        data.requireFixing25 = true;
+      }
       delete object.zoom;
     }
   }
+}
+function adjust25ObjectSize(obj, zoom, size2) {
+  let a = new DOMMatrixReadOnly().translate(obj.x, obj.y + obj.height / 2);
+  a = a.translate(0, -obj.height / 2).scale(obj.width / size2[0], obj.height / size2[1]).translate(0, size2[1] / 2);
+  a = a.rotate(obj.flip ? -obj.rotation : obj.rotation);
+  a = a.translate(0, size2[1] / 2).scale(zoom).translate(0, -size2[1] / 2);
+  const oldRot = obj.rotation;
+  Object.assign(obj, decomposeMatrix(a));
+  obj.rotation = obj.flip ? 360 - oldRot : oldRot;
+  obj.skewX = 0;
+  obj.skewY = 0;
+  obj.width = size2[0];
+  obj.height = size2[1];
 }
 var __async$p = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
@@ -22824,7 +22898,7 @@ var __async$7 = (__this, __arguments, generator) => {
     step((generator = generator.apply(__this, __arguments)).next());
   });
 };
-const _withScopeId$7 = (n) => (pushScopeId("data-v-1b78d20b"), n = n(), popScopeId(), n);
+const _withScopeId$7 = (n) => (pushScopeId("data-v-b46f0fb4"), n = n(), popScopeId(), n);
 const _hoisted_1$b = /* @__PURE__ */ _withScopeId$7(() => /* @__PURE__ */ createBaseVNode("span", { class: "icon material-icons" }, "edit", -1));
 const _hoisted_2$b = /* @__PURE__ */ _withScopeId$7(() => /* @__PURE__ */ createBaseVNode("p", { class: "modal-text" }, "Enter the new name", -1));
 const _hoisted_3$7 = { class: "modal-text" };
@@ -23219,7 +23293,10 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
           }, null, 8, ["modelValue"])) : createCommentVNode("", true),
           createVNode(PositionAndSize, { obj: __props.object }, null, 8, ["obj"]),
           createVNode(Layers, { object: __props.object }, null, 8, ["object"]),
-          createVNode(DFieldset, { title: "Transform" }, {
+          createVNode(DFieldset, {
+            title: "Transform",
+            class: "transforms"
+          }, {
             default: withCtx(() => [
               createVNode(_sfc_main$k, {
                 modelValue: unref(flip),
@@ -23260,42 +23337,44 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                     ])
                   ])
                 ]),
-                createBaseVNode("tr", null, [
-                  createBaseVNode("td", null, [
-                    createBaseVNode("label", _hoisted_9$5, toDisplayString(unref(easterEgg) ? "Zoom" : "Scale X"), 1)
+                !__props.object.requireFixing25 ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
+                  createBaseVNode("tr", null, [
+                    createBaseVNode("td", null, [
+                      createBaseVNode("label", _hoisted_9$5, toDisplayString(unref(easterEgg) ? "Zoom" : "Scale X"), 1)
+                    ]),
+                    createBaseVNode("td", null, [
+                      withDirectives(createBaseVNode("input", {
+                        id: "zoom",
+                        type: "number",
+                        class: "smol v-w100",
+                        step: "1",
+                        min: "0",
+                        "onUpdate:modelValue": _cache[14] || (_cache[14] = ($event) => scaleX.value = $event),
+                        onKeydown: _cache[15] || (_cache[15] = withModifiers(() => {
+                        }, ["stop"]))
+                      }, null, 544), [
+                        [vModelText, scaleX.value]
+                      ])
+                    ])
                   ]),
-                  createBaseVNode("td", null, [
-                    withDirectives(createBaseVNode("input", {
-                      id: "zoom",
-                      type: "number",
-                      class: "smol v-w100",
-                      step: "1",
-                      min: "0",
-                      "onUpdate:modelValue": _cache[14] || (_cache[14] = ($event) => scaleX.value = $event),
-                      onKeydown: _cache[15] || (_cache[15] = withModifiers(() => {
-                      }, ["stop"]))
-                    }, null, 544), [
-                      [vModelText, scaleX.value]
+                  !unref(easterEgg) ? (openBlock(), createElementBlock("tr", _hoisted_10$4, [
+                    _hoisted_11$4,
+                    createBaseVNode("td", null, [
+                      withDirectives(createBaseVNode("input", {
+                        id: "zoom",
+                        type: "number",
+                        class: "smol v-w100",
+                        step: "1",
+                        min: "0",
+                        "onUpdate:modelValue": _cache[16] || (_cache[16] = ($event) => scaleY.value = $event),
+                        onKeydown: _cache[17] || (_cache[17] = withModifiers(() => {
+                        }, ["stop"]))
+                      }, null, 544), [
+                        [vModelText, scaleY.value]
+                      ])
                     ])
-                  ])
-                ]),
-                !unref(easterEgg) ? (openBlock(), createElementBlock("tr", _hoisted_10$4, [
-                  _hoisted_11$4,
-                  createBaseVNode("td", null, [
-                    withDirectives(createBaseVNode("input", {
-                      id: "zoom",
-                      type: "number",
-                      class: "smol v-w100",
-                      step: "1",
-                      min: "0",
-                      "onUpdate:modelValue": _cache[16] || (_cache[16] = ($event) => scaleY.value = $event),
-                      onKeydown: _cache[17] || (_cache[17] = withModifiers(() => {
-                      }, ["stop"]))
-                    }, null, 544), [
-                      [vModelText, scaleY.value]
-                    ])
-                  ])
-                ])) : createCommentVNode("", true),
+                  ])) : createCommentVNode("", true)
+                ], 64)) : createCommentVNode("", true),
                 createBaseVNode("tr", null, [
                   _hoisted_12$4,
                   createBaseVNode("td", null, [
@@ -23333,7 +23412,7 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                     createVNode(_sfc_main$k, {
                       modelValue: preserveRatio.value,
                       "onUpdate:modelValue": _cache[22] || (_cache[22] = ($event) => preserveRatio.value = $event),
-                      label: "Lock ratio?"
+                      label: "Lock scale ratio?"
                     }, null, 8, ["modelValue"])
                   ])) : createCommentVNode("", true)
                 ])
@@ -23412,8 +23491,8 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const objectTool_vue_vue_type_style_index_0_scoped_1b78d20b_lang = "";
-const ObjectTool = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["__scopeId", "data-v-1b78d20b"]]);
+const objectTool_vue_vue_type_style_index_0_scoped_b46f0fb4_lang = "";
+const ObjectTool = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["__scopeId", "data-v-b46f0fb4"]]);
 var __async$6 = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -24927,7 +25006,7 @@ const _sfc_main$6 = /* @__PURE__ */ defineComponent({
 });
 const panels_vue_vue_type_style_index_0_scoped_74b7d9e5_lang = "";
 const PanelsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["__scopeId", "data-v-74b7d9e5"]]);
-const _withScopeId$2 = (n) => (pushScopeId("data-v-e5babed4"), n = n(), popScopeId(), n);
+const _withScopeId$2 = (n) => (pushScopeId("data-v-f4db8760"), n = n(), popScopeId(), n);
 const _hoisted_1$5 = {
   id: "poem_text",
   class: "v-w100"
@@ -25023,6 +25102,7 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
     const text = setableP("text");
     const autoWrap = setableP("autoWrap");
     const poemStyle = setableP("font");
+    const overflow = setableP("overflow");
     const poemBackground = setableP("background");
     return (_ctx, _cache) => {
       return openBlock(), createBlock(ObjectTool, {
@@ -25056,10 +25136,16 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
             modelValue: unref(autoWrap),
             "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => isRef(autoWrap) ? autoWrap.value = $event : null)
           }, null, 8, ["modelValue"]),
+          createVNode(_sfc_main$k, {
+            label: "Allow overflow?",
+            modelValue: unref(overflow),
+            "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => isRef(overflow) ? overflow.value = $event : null),
+            title: "When text is too long, it is shown outside the container. Uses more memory"
+          }, null, 8, ["modelValue"]),
           object.value.subType === "poem" ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
             withDirectives(createBaseVNode("select", {
-              "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => isRef(poemBackground) ? poemBackground.value = $event : null),
-              onKeydown: _cache[5] || (_cache[5] = withModifiers(() => {
+              "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => isRef(poemBackground) ? poemBackground.value = $event : null),
+              onKeydown: _cache[6] || (_cache[6] = withModifiers(() => {
               }, ["stop"]))
             }, [
               (openBlock(true), createElementBlock(Fragment, null, renderList(unref(poemBackgrounds$1), (background, idx) => {
@@ -25072,8 +25158,8 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
               [vModelSelect, unref(poemBackground)]
             ]),
             withDirectives(createBaseVNode("select", {
-              "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => isRef(poemStyle) ? poemStyle.value = $event : null),
-              onKeydown: _cache[7] || (_cache[7] = withModifiers(() => {
+              "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => isRef(poemStyle) ? poemStyle.value = $event : null),
+              onKeydown: _cache[8] || (_cache[8] = withModifiers(() => {
               }, ["stop"]))
             }, [
               (openBlock(true), createElementBlock(Fragment, null, renderList(unref(poemTextStyles$1), (style, idx) => {
@@ -25093,7 +25179,7 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
                   id: "console_color",
                   class: "w100",
                   style: normalizeStyle$1([{ background: object.value.consoleColor }, { "min-width": "64px" }]),
-                  onClick: _cache[8] || (_cache[8] = ($event) => colorSelect.value = "base")
+                  onClick: _cache[9] || (_cache[9] = ($event) => colorSelect.value = "base")
                 }, null, 4)
               ])
             ])
@@ -25104,8 +25190,8 @@ const _sfc_main$5 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const poem_vue_vue_type_style_index_0_scoped_e5babed4_lang = "";
-const PoemPanel = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["__scopeId", "data-v-e5babed4"]]);
+const poem_vue_vue_type_style_index_0_scoped_f4db8760_lang = "";
+const PoemPanel = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["__scopeId", "data-v-f4db8760"]]);
 var __async$3 = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -25550,7 +25636,7 @@ var __async$1 = (__this, __arguments, generator) => {
     step((generator = generator.apply(__this, __arguments)).next());
   });
 };
-const _withScopeId = (n) => (pushScopeId("data-v-0d2a2a76"), n = n(), popScopeId(), n);
+const _withScopeId = (n) => (pushScopeId("data-v-66c34976"), n = n(), popScopeId(), n);
 const _hoisted_1$2 = { class: "upper-combos" };
 const _hoisted_2$2 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createBaseVNode("td", null, [
   /* @__PURE__ */ createBaseVNode("label", { for: "text_style" }, "Style:")
@@ -25764,6 +25850,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     });
     const autoQuoting = tbSetable("autoQuoting");
     const autoWrap = tbSetable("autoWrap");
+    const overflow = tbSetable("overflow");
     const dialog = tbSetable("text");
     const customizable = computed(() => textBoxStyle.value.startsWith("custom"));
     const textBoxStyle = genericSetterMerged(
@@ -25885,22 +25972,28 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
             "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => isRef(autoWrap) ? autoWrap.value = $event : null),
             title: "Automatically insert line breaks when a line of text is larger than the textbox"
           }, null, 8, ["modelValue"]),
+          createVNode(_sfc_main$k, {
+            label: "Allow overflow?",
+            modelValue: unref(overflow),
+            "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => isRef(overflow) ? overflow.value = $event : null),
+            title: "When text is too long, it is shown outside the textbox. Uses more memory"
+          }, null, 8, ["modelValue"]),
           createBaseVNode("div", _hoisted_16, [
             _hoisted_17,
             withDirectives(createBaseVNode("textarea", {
               class: "v-w100",
               ref_key: "textarea",
               ref: textarea,
-              "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => isRef(dialog) ? dialog.value = $event : null),
+              "onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => isRef(dialog) ? dialog.value = $event : null),
               id: "dialog_text",
-              onKeydown: _cache[10] || (_cache[10] = withModifiers(() => {
+              onKeydown: _cache[11] || (_cache[11] = withModifiers(() => {
               }, ["stop"]))
             }, null, 544), [
               [vModelText, unref(dialog)]
             ]),
             createBaseVNode("button", {
               class: "w100 bt0",
-              onClick: _cache[11] || (_cache[11] = ($event) => textEditor.value = "body")
+              onClick: _cache[12] || (_cache[12] = ($event) => textEditor.value = "body")
             }, " Formatting ")
           ])
         ]),
@@ -25919,17 +26012,17 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                   createVNode(_sfc_main$k, {
                     label: "Controls visible?",
                     modelValue: unref(showControls),
-                    "onUpdate:modelValue": _cache[12] || (_cache[12] = ($event) => isRef(showControls) ? showControls.value = $event : null)
+                    "onUpdate:modelValue": _cache[13] || (_cache[13] = ($event) => isRef(showControls) ? showControls.value = $event : null)
                   }, null, 8, ["modelValue"]),
                   createVNode(_sfc_main$k, {
                     label: "Able to skip?",
                     modelValue: unref(allowSkipping),
-                    "onUpdate:modelValue": _cache[13] || (_cache[13] = ($event) => isRef(allowSkipping) ? allowSkipping.value = $event : null)
+                    "onUpdate:modelValue": _cache[14] || (_cache[14] = ($event) => isRef(allowSkipping) ? allowSkipping.value = $event : null)
                   }, null, 8, ["modelValue"]),
                   createVNode(_sfc_main$k, {
                     label: "Continue arrow?",
                     modelValue: unref(showContinueArrow),
-                    "onUpdate:modelValue": _cache[14] || (_cache[14] = ($event) => isRef(showContinueArrow) ? showContinueArrow.value = $event : null)
+                    "onUpdate:modelValue": _cache[15] || (_cache[15] = ($event) => isRef(showContinueArrow) ? showContinueArrow.value = $event : null)
                   }, null, 8, ["modelValue"]),
                   customizable.value ? (openBlock(), createElementBlock("table", _hoisted_18, [
                     createBaseVNode("tr", null, [
@@ -25940,8 +26033,8 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                           type: "number",
                           style: { "width": "48px" },
                           placeholder: nameboxWidthDefault.value + "",
-                          "onUpdate:modelValue": _cache[15] || (_cache[15] = ($event) => isRef(customNameboxWidth) ? customNameboxWidth.value = $event : null),
-                          onKeydown: _cache[16] || (_cache[16] = withModifiers(() => {
+                          "onUpdate:modelValue": _cache[16] || (_cache[16] = ($event) => isRef(customNameboxWidth) ? customNameboxWidth.value = $event : null),
+                          onKeydown: _cache[17] || (_cache[17] = withModifiers(() => {
                           }, ["stop"]))
                         }, null, 40, _hoisted_20), [
                           [
@@ -25957,7 +26050,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                       createBaseVNode("td", _hoisted_21, [
                         createVNode(_sfc_main$k, {
                           modelValue: unref(overrideColor),
-                          "onUpdate:modelValue": _cache[17] || (_cache[17] = ($event) => isRef(overrideColor) ? overrideColor.value = $event : null),
+                          "onUpdate:modelValue": _cache[18] || (_cache[18] = ($event) => isRef(overrideColor) ? overrideColor.value = $event : null),
                           label: "Override color"
                         }, null, 8, ["modelValue"])
                       ])
@@ -25969,7 +26062,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                           id: "textbox_color",
                           class: "color-button",
                           style: normalizeStyle$1({ background: object.value.customColor }),
-                          onClick: _cache[18] || (_cache[18] = ($event) => colorSelect.value = "base")
+                          onClick: _cache[19] || (_cache[19] = ($event) => colorSelect.value = "base")
                         }, null, 4)
                       ])
                     ])) : createCommentVNode("", true),
@@ -25978,7 +26071,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                         createVNode(_sfc_main$k, {
                           id: "derive_custom_colors",
                           modelValue: unref(deriveCustomColors),
-                          "onUpdate:modelValue": _cache[19] || (_cache[19] = ($event) => isRef(deriveCustomColors) ? deriveCustomColors.value = $event : null),
+                          "onUpdate:modelValue": _cache[20] || (_cache[20] = ($event) => isRef(deriveCustomColors) ? deriveCustomColors.value = $event : null),
                           label: "Derive other colors"
                         }, null, 8, ["modelValue"])
                       ])
@@ -25991,7 +26084,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                             id: "custom_controls_color",
                             class: "color-button",
                             style: normalizeStyle$1({ background: object.value.customControlsColor }),
-                            onClick: _cache[20] || (_cache[20] = ($event) => colorSelect.value = "controls")
+                            onClick: _cache[21] || (_cache[21] = ($event) => colorSelect.value = "controls")
                           }, null, 4)
                         ])
                       ]),
@@ -26002,7 +26095,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                             id: "custom_namebox_color",
                             class: "color-button",
                             style: normalizeStyle$1({ background: object.value.customNameboxColor }),
-                            onClick: _cache[21] || (_cache[21] = ($event) => colorSelect.value = "namebox")
+                            onClick: _cache[22] || (_cache[22] = ($event) => colorSelect.value = "namebox")
                           }, null, 4)
                         ])
                       ]),
@@ -26013,7 +26106,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
                             id: "custom_namebox_stroke",
                             class: "color-button",
                             style: normalizeStyle$1({ background: object.value.customNameboxStroke }),
-                            onClick: _cache[22] || (_cache[22] = ($event) => colorSelect.value = "nameboxStroke")
+                            onClick: _cache[23] || (_cache[23] = ($event) => colorSelect.value = "nameboxStroke")
                           }, null, 4)
                         ])
                       ])
@@ -26036,8 +26129,8 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const textbox_vue_vue_type_style_index_0_scoped_0d2a2a76_lang = "";
-const TextBoxPanel = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["__scopeId", "data-v-0d2a2a76"]]);
+const textbox_vue_vue_type_style_index_0_scoped_66c34976_lang = "";
+const TextBoxPanel = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["__scopeId", "data-v-66c34976"]]);
 const _hoisted_1$1 = { id: "toolbar" };
 const _hoisted_2$1 = { id: "toolbar-end" };
 const _sfc_main$1 = /* @__PURE__ */ defineComponent({
@@ -26219,10 +26312,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box.89130b8d.js"), true ? ["./single-box.89130b8d.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box.221d666f.js"), true ? ["./single-box.221d666f.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
     );
     const ExpressionBuilder = defineAsyncComponent(
-      () => __vitePreload(() => import("./index.d0ce8a50.js"), true ? ["./index.d0ce8a50.js","./index.a2d17a51.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.23eab955.js"), true ? ["./index.23eab955.js","./index.a2d17a51.css"] : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);
