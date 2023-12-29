@@ -18865,6 +18865,9 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
     function onMouseEnter(e) {
       if (e.buttons !== 1) {
         draggedObject = null;
+        if (onDrop()) {
+          invalidateRender();
+        }
       }
     }
     __expose({ download, blendOver });
@@ -26312,10 +26315,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box.221d666f.js"), true ? ["./single-box.221d666f.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box.c9c8f5af.js"), true ? ["./single-box.c9c8f5af.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
     );
     const ExpressionBuilder = defineAsyncComponent(
-      () => __vitePreload(() => import("./index.23eab955.js"), true ? ["./index.23eab955.js","./index.a2d17a51.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.e348a005.js"), true ? ["./index.e348a005.js","./index.a2d17a51.css"] : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);

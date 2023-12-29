@@ -254,6 +254,10 @@
 		{
 			"label": "Textbox Color",
 			"color": "#FFA8D2"
+		},
+		{
+			"label": "Console Color",
+			"color": "#333333BF"
 		}
 	]
 }
