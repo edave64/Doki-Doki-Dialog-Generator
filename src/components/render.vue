@@ -413,6 +413,9 @@ function onSpriteDrop(e: MouseEvent | TouchEvent) {
 function onMouseEnter(e: MouseEvent) {
 	if (e.buttons !== 1) {
 		draggedObject = null;
+		if (Grabbies.onDrop()) {
+			invalidateRender();
+		}
 	}
 }
 //#endregion drag and drop
