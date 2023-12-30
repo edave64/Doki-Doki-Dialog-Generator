@@ -85,10 +85,10 @@ export abstract class Renderable<ObjectType extends IObject> {
 			if (obj.rotation !== 0) {
 				transform = transform.rotate(0, 0, obj.rotation);
 			}
-			if (obj.skewX !== 1) {
+			if (obj.skewX !== 0) {
 				transform = transform.skewX(obj.skewX);
 			}
-			if (obj.skewY !== 1) {
+			if (obj.skewY !== 0) {
 				transform = transform.skewY(obj.skewY);
 			}
 			if (obj.flip) {
