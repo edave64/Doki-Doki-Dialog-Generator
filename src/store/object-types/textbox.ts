@@ -77,6 +77,10 @@ export const textBoxMutations: MutationTree<IPanels> = {
 		obj.height = command.resetBounds.height;
 		obj.width = command.resetBounds.width;
 		obj.rotation = command.resetBounds.rotation;
+		obj.skewX = command.resetBounds.skewX;
+		obj.skewY = command.resetBounds.skewY;
+		obj.scaleX = command.resetBounds.scaleX;
+		obj.scaleY = command.resetBounds.scaleY;
 		++obj.version;
 	},
 	setTextBoxProperty<T extends TextBoxSimpleProperties>(
@@ -105,6 +109,10 @@ export const textBoxActions: ActionTree<IPanels, IRootState> = {
 			width: renderer.defaultWidth,
 			height: renderer.defaultHeight,
 			rotation: 0,
+			scaleX: 1,
+			scaleY: 1,
+			skewX: 0,
+			skewY: 0,
 		};
 		commit('create', {
 			object: {
