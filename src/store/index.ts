@@ -1,9 +1,7 @@
-import getConstants from '@/constants';
 import { NsfwPacks } from '@/constants/nsfw';
 import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 import { Repo } from '@/models/repo';
 import { mergeContentPacks } from '@/store/content/merge';
-import { decomposeMatrix } from '@/util/math';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { createStore, Store, useStore as vuexUseStore } from 'vuex';
 import content, {
@@ -13,10 +11,7 @@ import content, {
 	IContentState,
 	loadContentPack,
 } from './content';
-import { ICharacter } from './object-types/characters';
-import { ISprite } from './object-types/sprite';
-import { ITextBox } from './object-types/textbox';
-import { IObject } from './objects';
+import { migrateSave2_5, rootStateMigrations2_5 } from './migrations/v2_5';
 import panels, { IPanels } from './panels';
 import ui, { getDefaultUiState, IUiState } from './ui';
 import uploadUrls, { IUploadUrlState } from './upload-urls';
@@ -43,23 +38,7 @@ export default createStore({
 		setUnsafe(state, unsafe: boolean) {
 			state.unsafe = unsafe;
 		},
-		fix25Sprites(state, data: { url: string; size: [number, number] }) {
-			for (const panel of Object.values(state.panels.panels)) {
-				for (const object of Object.values(panel.objects)) {
-					if (
-						object.type !== 'sprite' ||
-						!(object as any).requireFixing25 ||
-						object.scaleX !== object.scaleY
-					)
-						continue;
-					const sprite = object as ISprite;
-					if (sprite.assets.length === 1 && sprite.assets[0].hq === data.url) {
-						adjust25ObjectSize(sprite, object.scaleX, data.size);
-						delete (object as any).requireFixing25;
-					}
-				}
-			}
-		},
+		...rootStateMigrations2_5,
 	},
 	actions: {
 		async removePacks({ dispatch, commit }, { packs }: IRemovePacksAction) {
@@ -171,7 +150,7 @@ export default createStore({
 			data.content.current = combinedPack;
 
 			if (data.version == null || data.version < 2.5) {
-				migrate25(data);
+				migrateSave2_5(data);
 			}
 
 			this.replaceState(data);
@@ -181,83 +160,6 @@ export default createStore({
 	},
 	modules: { ui, panels, content, uploadUrls },
 });
-
-/**
- * Take a save from a version before 2.5 and migrate it.
- * @param data
- * @returns
- */
-function migrate25(data: IRootState) {
-	const panels = Object.values(data.panels.panels);
-	// Detect and skip 2.5 prerelease version
-	if (panels.find((x) => Object.values(x.objects).find((x) => 'scaleX' in x)))
-		return;
-
-	for (const panel of panels) {
-		for (const object of Object.values(panel.objects) as (IObject & {
-			zoom?: number;
-		})[]) {
-			object.scaleX = object.zoom ?? 1;
-			object.scaleY = object.zoom ?? 1;
-			object.skewX = 0;
-			object.skewY = 0;
-			object.linkedTo = null;
-			const constants = getConstants();
-
-			if (object.type === 'character') {
-				const character = object as unknown as ICharacter;
-				const charData = data.content.current.characters.find(
-					(c) => c.id === character.characterType
-				);
-				const size = charData?.styleGroups[character.styleGroupId]?.styles[
-					character.styleId
-				]?.poses[character.poseId]?.size ?? [960, 960];
-				adjust25ObjectSize(object, object.zoom ?? 1, size);
-			}
-			if (object.type === 'textBox') {
-				const textbox = object as unknown as ITextBox;
-				textbox.height += constants.TextBox.NameboxHeight;
-				textbox.y += textbox.height / 2;
-			}
-			if (object.type === 'sprite') {
-				(object as any).requireFixing25 = true;
-				(data as any).requireFixing25 = true;
-			}
-			delete object.zoom;
-		}
-	}
-}
-
-export function adjust25ObjectSize(
-	obj: IObject,
-	zoom: number,
-	size: [number, number]
-): void {
-	let a = new DOMMatrixReadOnly().translate(obj.x, obj.y + obj.height / 2);
-	// Resizing -> Scale from the top
-	a = a
-		.translate(0, -obj.height / 2)
-		.scale(obj.width / size[0], obj.height / size[1])
-		.translate(0, size[1] / 2);
-
-	// new position at center
-	a = a.rotate(obj.flip ? -obj.rotation : obj.rotation);
-
-	// Zoom -> Scale from the bottom
-	a = a
-		.translate(0, size[1] / 2)
-		.scale(zoom)
-		.translate(0, -size[1] / 2);
-
-	const oldRot = obj.rotation;
-
-	Object.assign(obj, decomposeMatrix(a));
-	obj.rotation = obj.flip ? 360 - oldRot : oldRot;
-	obj.skewX = 0;
-	obj.skewY = 0;
-	obj.width = size[0];
-	obj.height = size[1];
-}
 
 export interface IRemovePacksAction {
 	packs: Set<string>;

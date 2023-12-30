@@ -1,6 +1,7 @@
-import { getAssetByUrl, registerAssetWithURL } from '@/asset-manager';
+import { registerAssetWithURL } from '@/asset-manager';
 import { Module } from 'vuex';
 import { IRootState } from '.';
+import { afterImageUpload2_5 } from './migrations/v2_5';
 
 export type IUploadUrlState = {
 	[name: string]: string;
@@ -25,14 +26,7 @@ export default {
 			const assertUrl = 'uploads:' + name;
 			commit('add', { name: assertUrl, url });
 			registerAssetWithURL(assertUrl, url);
-			if ('requireFixing25' in rootState) {
-				const asset = await getAssetByUrl(assertUrl);
-				commit(
-					'fix25Sprites',
-					{ url: assertUrl, size: [asset.width, asset.height] },
-					{ root: true }
-				);
-			}
+			await afterImageUpload2_5(rootState, commit, assertUrl);
 			return assertUrl;
 		},
 	},

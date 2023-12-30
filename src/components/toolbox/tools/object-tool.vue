@@ -88,7 +88,7 @@
 						</td>
 					</tr>
 					<!-- A sprite that hasn't yet been reimported from an old version should not be resized -->
-					<template v-if="!object.requireFixing25">
+					<template v-if="allowZoom">
 						<tr>
 							<td>
 								<label for="zoom" class="v-w100">{{
@@ -233,6 +233,7 @@ import eventBus, { FailureEvent } from '@/eventbus/event-bus';
 import { SceneRenderer } from '@/renderables/scene-renderer';
 import { decomposeMatrix } from '@/util/math';
 import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
+import { allowScaleModification } from '@/store/migrations/v2_5';
 
 const store = useStore();
 const root = ref(null! as HTMLElement);
@@ -326,6 +327,10 @@ const enlargeWhenTalking = setable(
 
 const canOverflow = computed(() => {
 	return 'overflow' in props.object;
+});
+
+const allowZoom = computed(() => {
+	return allowScaleModification(props.object);
 });
 
 const currentPanel = computed(() => {
