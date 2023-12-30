@@ -6,11 +6,12 @@ import {
 	IObjectMutation,
 	ISetObjectFlipMutation,
 	ISetObjectPositionMutation,
+	ISetObjectScaleMutation,
+	ISetObjectSkewMutation,
 	ISetSpriteRotationMutation,
 } from '@/store/objects';
 import { IPanel, IPanels } from '@/store/panels';
 import { between } from '@/util/math';
-import { rotateAround } from '@/util/rotation';
 import { ActionTree, MutationTree } from 'vuex';
 import { IRootState } from '..';
 import { baseProps } from './base-object-props';
@@ -47,6 +48,10 @@ export interface ITextBox extends IObject {
 		width: number;
 		height: number;
 		rotation: number;
+		skewX: number;
+		skewY: number;
+		scaleX: number;
+		scaleY: number;
 	};
 }
 
@@ -92,7 +97,6 @@ export const textBoxActions: ActionTree<IPanels, IRootState> = {
 		const constants = getConstants();
 		const id = state.panels[command.panelId].lastObjId + 1;
 		const style = constants.TextBox.DefaultTextboxStyle;
-		debugger;
 		const renderer = rendererLookup[style];
 
 		const resetBounds = command.resetBounds || {
@@ -229,6 +233,18 @@ export const textBoxActions: ActionTree<IPanels, IRootState> = {
 			id: command.id,
 			rotation: obj.resetBounds.rotation,
 		} as ISetSpriteRotationMutation);
+		commit('setObjectScale', {
+			panelId: command.panelId,
+			id: command.id,
+			scaleX: obj.resetBounds.scaleX,
+			scaleY: obj.resetBounds.scaleY,
+		} as ISetObjectScaleMutation);
+		commit('setObjectSkew', {
+			panelId: command.panelId,
+			id: command.id,
+			skewX: obj.resetBounds.skewX,
+			skewY: obj.resetBounds.skewY,
+		} as ISetObjectSkewMutation);
 	},
 
 	async splitTextbox({ commit, state, dispatch }, command: ISplitTextbox) {
@@ -238,36 +254,42 @@ export const textBoxActions: ActionTree<IPanels, IRootState> = {
 		const newWidth = (obj.width - splitTextboxSpacing) / 2;
 		const centerDistance = newWidth / 2 + splitTextboxSpacing / 2;
 
-		const baseCenter = [obj.x, obj.y];
-		let boxOneCoords = [obj.x - centerDistance, obj.y];
-		let boxTwoCoords = [obj.x + centerDistance, obj.y];
-
+		let transform = new DOMMatrixReadOnly().translate(obj.x, obj.y);
 		if (obj.rotation !== 0) {
-			boxOneCoords = rotateAround(
-				boxOneCoords[0],
-				boxOneCoords[1],
-				baseCenter[0],
-				baseCenter[1],
-				(obj.rotation / 180) * Math.PI
-			);
-			boxTwoCoords = rotateAround(
-				boxTwoCoords[0],
-				boxTwoCoords[1],
-				baseCenter[0],
-				baseCenter[1],
-				(obj.rotation / 180) * Math.PI
-			);
+			transform = transform.rotate(0, 0, obj.rotation);
 		}
+		if (obj.skewX !== 0) {
+			transform = transform.skewX(obj.skewX);
+		}
+		if (obj.skewY !== 0) {
+			transform = transform.skewY(obj.skewY);
+		}
+		if (obj.flip) {
+			transform = transform.flipX();
+		}
+		transform = transform.scale(obj.scaleX, obj.scaleY);
+
+		const boxOneCoords = transform.transformPoint(
+			new DOMPointReadOnly(-centerDistance, 0)
+		);
+
+		const boxTwoCoords = transform.transformPoint(
+			new DOMPointReadOnly(centerDistance, 0)
+		);
 
 		commit('setResetBounds', {
 			id: command.id,
 			panelId: command.panelId,
 			resetBounds: {
-				x: boxOneCoords[0],
-				y: boxOneCoords[1],
+				x: boxOneCoords.x,
+				y: boxOneCoords.y,
 				width: newWidth,
 				height: obj.height,
 				rotation: obj.rotation,
+				scaleX: obj.scaleX,
+				scaleY: obj.scaleY,
+				skewX: obj.skewX,
+				skewY: obj.skewY,
 			},
 		} as ISetResetBoundsMutation);
 		const newStyle = obj.style === 'custom_plus' ? 'custom_plus' : 'custom';
@@ -280,11 +302,15 @@ export const textBoxActions: ActionTree<IPanels, IRootState> = {
 		const id = (await dispatch('createTextBox', {
 			panelId: command.panelId,
 			resetBounds: {
-				x: boxTwoCoords[0],
-				y: boxTwoCoords[1],
+				x: boxTwoCoords.x,
+				y: boxTwoCoords.y,
 				width: newWidth,
 				height: obj.height,
 				rotation: obj.rotation,
+				scaleX: obj.scaleX,
+				scaleY: obj.scaleY,
+				skewX: obj.skewX,
+				skewY: obj.skewY,
 			},
 		} as ICreateTextBoxAction)) as number;
 		await dispatch('setStyle', {
