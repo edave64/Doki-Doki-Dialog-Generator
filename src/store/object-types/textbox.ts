@@ -92,6 +92,7 @@ export const textBoxActions: ActionTree<IPanels, IRootState> = {
 		const constants = getConstants();
 		const id = state.panels[command.panelId].lastObjId + 1;
 		const style = constants.TextBox.DefaultTextboxStyle;
+		debugger;
 		const renderer = rendererLookup[style];
 
 		const resetBounds = command.resetBounds || {
@@ -114,7 +115,7 @@ export const textBoxActions: ActionTree<IPanels, IRootState> = {
 				skip: true,
 				autoQuoting: true,
 				autoWrap: true,
-				style: 'custom',
+				style,
 				overrideColor: false,
 				customColor: constants.TextBoxCustom.textboxDefaultColor,
 				deriveCustomColors: true,
