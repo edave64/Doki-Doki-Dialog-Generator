@@ -4,6 +4,7 @@ import {
 	ICreateObjectMutation,
 	IObject,
 	IObjectMutation,
+	ISetLinkMutation,
 	ISetObjectFlipMutation,
 	ISetObjectPositionMutation,
 	ISetObjectScaleMutation,
@@ -333,6 +334,18 @@ export const textBoxActions: ActionTree<IPanels, IRootState> = {
 				flip: obj.flip,
 			} as ISetObjectFlipMutation);
 		}
+		commit('setLink', {
+			id,
+			panelId: command.panelId,
+			link: obj.linkedTo,
+			rotation: obj.rotation,
+			scaleX: obj.scaleX,
+			scaleY: obj.scaleY,
+			skewX: obj.skewX,
+			skewY: obj.skewY,
+			x: boxTwoCoords.x,
+			y: boxTwoCoords.y,
+		} as ISetLinkMutation);
 	},
 };
 
