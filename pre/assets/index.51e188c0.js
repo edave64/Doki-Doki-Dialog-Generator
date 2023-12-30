@@ -15387,10 +15387,9 @@ const _DdlcPlusBase = class {
     return ControlsTextDisabledStyle;
   }
   renderControls(rx, y) {
-    const constants = getConstants();
     const w = this.width;
     const w2 = w / 2;
-    const baseX = this.base.obj.flip ? constants.Base.screenWidth - this.base.obj.x : this.base.obj.x;
+    const baseX = w2;
     const x = baseX - w2;
     const controlsStyle = this.getControlsStyle();
     const texts = ["History", "Skip", "Auto", "Save", "Load", "Settings"];
@@ -16477,6 +16476,7 @@ const textBoxActions = {
     const constants = getConstants();
     const id = state.panels[command.panelId].lastObjId + 1;
     const style = constants.TextBox.DefaultTextboxStyle;
+    debugger;
     const renderer2 = rendererLookup[style];
     const resetBounds = command.resetBounds || {
       x: renderer2.defaultX,
@@ -16496,7 +16496,7 @@ const textBoxActions = {
         skip: true,
         autoQuoting: true,
         autoWrap: true,
-        style: "custom",
+        style,
         overrideColor: false,
         customColor: constants.TextBoxCustom.textboxDefaultColor,
         deriveCustomColors: true,
@@ -26331,10 +26331,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box.83d22ce5.js"), true ? ["./single-box.83d22ce5.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box.e0ffb616.js"), true ? ["./single-box.e0ffb616.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
     );
     const ExpressionBuilder = defineAsyncComponent(
-      () => __vitePreload(() => import("./index.a98e3353.js"), true ? ["./index.a98e3353.js","./index.a2d17a51.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.e93c63ed.js"), true ? ["./index.e93c63ed.js","./index.a2d17a51.css"] : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);
