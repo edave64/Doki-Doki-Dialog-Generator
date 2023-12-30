@@ -41,6 +41,10 @@ export abstract class DdlcBase implements ITextboxRenderer {
 		);
 	}
 
+	public get allowSkippingLocal() {
+		return true;
+	}
+
 	public get obj() {
 		return this.base.obj;
 	}

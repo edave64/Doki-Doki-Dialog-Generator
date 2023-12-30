@@ -36,6 +36,12 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 		return true;
 	}
 
+	public get allowSkippingLocal() {
+		// The rendering of the dot pattern needs there to be no background other than the textbox itself,
+		// otherwise source-atop compositing doesn't function as intended
+		return false;
+	}
+
 	public get height() {
 		return this.obj.height;
 	}

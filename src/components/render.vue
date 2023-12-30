@@ -94,7 +94,7 @@ async function render_(): Promise<void> {
 	if (store.state.unsafe) return;
 
 	try {
-		await getSceneRender()?.render(!lqRendering.value, true, false);
+		await getSceneRender()?.render(!lqRendering.value, true, true);
 	} catch (e) {
 		console.log(e);
 	}

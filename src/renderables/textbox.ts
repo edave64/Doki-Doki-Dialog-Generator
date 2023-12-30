@@ -75,6 +75,12 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 			: this.refObject?.label ?? 'Missing name';
 	}
 
+	protected get canSkipLocal(): boolean {
+		return (
+			super.canSkipLocal && (this._lastRenderer?.allowSkippingLocal ?? true)
+		);
+	}
+
 	public prepareRender(
 		panel: DeepReadonly<IPanel>,
 		store: Store<IRootState>,
@@ -210,6 +216,8 @@ export interface ITextboxRenderer {
 	readonly textOffsetX: number;
 	readonly textOffsetY: number;
 	readonly textboxStyle: ITextStyle;
+
+	readonly allowSkippingLocal: boolean;
 
 	prepare(): void | Promise<any>;
 	render(rx: CanvasRenderingContext2D): void;
