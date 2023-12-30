@@ -14919,6 +14919,9 @@ class DdlcBase {
   static get defaultY() {
     return getConstants().Base.screenHeight - this.defaultHeight / 2 - getConstants().TextBox.TextBoxBottomSpacing;
   }
+  get allowSkippingLocal() {
+    return true;
+  }
   get obj() {
     return this.base.obj;
   }
@@ -15127,6 +15130,9 @@ class Custom extends DdlcBase {
   }
   static get resizable() {
     return true;
+  }
+  get allowSkippingLocal() {
+    return false;
   }
   get height() {
     return this.obj.height;
@@ -15365,6 +15371,9 @@ const _DdlcPlusBase = class {
   static get defaultY() {
     return getConstants().Base.screenHeight - this.defaultHeight / 2 - getConstants().TextBox.TextBoxBottomSpacing;
   }
+  get allowSkippingLocal() {
+    return true;
+  }
   get obj() {
     return this.base.obj;
   }
@@ -15454,6 +15463,9 @@ class CustomPlus extends DdlcPlusBase {
   }
   static get resizable() {
     return true;
+  }
+  get allowSkippingLocal() {
+    return false;
   }
   get height() {
     return this.obj.height;
@@ -15727,6 +15739,10 @@ class TextBox extends ScalingRenderable {
   getName() {
     var _a2, _b;
     return this.obj.talkingObjId === "$other$" ? this.obj.talkingOther : (_b = (_a2 = this.refObject) == null ? void 0 : _a2.label) != null ? _b : "Missing name";
+  }
+  get canSkipLocal() {
+    var _a2, _b;
+    return super.canSkipLocal && ((_b = (_a2 = this._lastRenderer) == null ? void 0 : _a2.allowSkippingLocal) != null ? _b : true);
   }
   prepareRender(panel, store2, lq) {
     var _a2;
@@ -18577,7 +18593,7 @@ const _sfc_main$z = /* @__PURE__ */ defineComponent({
         if (store2.state.unsafe)
           return;
         try {
-          yield (_a2 = getSceneRender()) == null ? void 0 : _a2.render(!lqRendering.value, true, false);
+          yield (_a2 = getSceneRender()) == null ? void 0 : _a2.render(!lqRendering.value, true, true);
         } catch (e) {
           console.log(e);
         }
@@ -26315,10 +26331,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box.c9c8f5af.js"), true ? ["./single-box.c9c8f5af.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box.83d22ce5.js"), true ? ["./single-box.83d22ce5.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
     );
     const ExpressionBuilder = defineAsyncComponent(
-      () => __vitePreload(() => import("./index.e348a005.js"), true ? ["./index.e348a005.js","./index.a2d17a51.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.a98e3353.js"), true ? ["./index.a98e3353.js","./index.a2d17a51.css"] : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);
