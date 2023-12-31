@@ -11,6 +11,9 @@ import { DeepReadonly } from 'ts-essentials';
 import { Store } from 'vuex';
 import { Renderable } from './renderable';
 
+/**
+ * An abstraction over objects that are just a bunch of images drawn on top of each other. (Sprites and characters)
+ */
 export abstract class AssetListRenderable<
 	Obj extends IObject
 > extends Renderable<Obj> {
@@ -34,7 +37,7 @@ export abstract class AssetListRenderable<
 		lq: boolean
 	): void | Promise<unknown> {
 		super.prepareRender(panel, store, lq);
-		let reloadAssets = !lq === this.lastHq;
+		let reloadAssets = !lq !== this.lastHq;
 		if (this.missingAsset) {
 			const uploadCount = Object.keys(store.state.uploadUrls).length;
 			reloadAssets = uploadCount !== this.lastUploadCount;
@@ -42,7 +45,15 @@ export abstract class AssetListRenderable<
 		}
 		if (this.isAssetListOutdated()) {
 			this.assetList = this.getAssetList();
-			reloadAssets = true;
+			// reloadAssets = true;
+			// Check if there are any new assets in here.
+			// TODO: This currently only exists because character.ts can't be bothered to implement the
+			//       assetListOutdated check properly. In theory, this is not correct, it just detects if there are any
+			//       assets that weren't in the sprite previously. If one pose has just one asset fewer, like an
+			//       accessory, or has the same assets with different offsets, it will not update the local canvas.
+			reloadAssets = !!this.assetList.find(
+				(x) => !('loadedAssets' in x) || x.hasMissing
+			);
 		}
 		if (!reloadAssets) return;
 		this.lastHq = !lq;

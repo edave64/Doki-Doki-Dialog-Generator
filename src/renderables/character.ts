@@ -15,9 +15,13 @@ import { DeepReadonly } from 'ts-essentials';
 import { Store } from 'vuex';
 import {
 	AssetListRenderable,
+	IDrawAssets,
 	IDrawAssetsUnloaded,
 } from './asset-list-renderable';
 
+/**
+ * Renders a character (Like Monika, Sayori, etc.) to the scene.
+ */
 export class Character extends AssetListRenderable<ICharacter> {
 	public constructor(
 		obj: DeepReadonly<ICharacter>,
@@ -39,31 +43,25 @@ export class Character extends AssetListRenderable<ICharacter> {
 		return true;
 	}
 
-	protected getAssetList(): IDrawAssetsUnloaded[] {
+	protected getAssetList(): Array<IDrawAssetsUnloaded | IDrawAssets> {
 		const pose = getPose(this.data, this.obj) as Pose<IAssetSwitch>;
 		const currentHeads = getHeads(this.data, this.obj);
-		const drawAssetsUnloaded: IDrawAssetsUnloaded[] = [];
+		const drawAssetsNew: Array<IDrawAssetsUnloaded | IDrawAssets> = [];
+		const oldAssets = this.assetList || [];
 
 		for (const renderCommand of pose.renderCommands) {
+			let newAssets: IDrawAssetsUnloaded['assets'] | null = null;
 			switch (renderCommand.type) {
 				case 'head': {
 					if (!currentHeads) continue;
 					const headVariant: DeepReadonly<IAssetSwitch[]> | undefined =
 						currentHeads.variants[this.obj.posePositions.head || 0];
 					if (headVariant == null) continue;
-					drawAssetsUnloaded.push({
-						offset: renderCommand.offset,
-						composite: renderCommand.composite,
-						assets: headVariant,
-					});
+					newAssets = headVariant;
 					break;
 				}
 				case 'image':
-					drawAssetsUnloaded.push({
-						offset: renderCommand.offset,
-						composite: renderCommand.composite,
-						assets: renderCommand.images,
-					});
+					newAssets = renderCommand.images;
 					break;
 				case 'pose-part': {
 					const posePosition = pose.positions[renderCommand.part];
@@ -75,15 +73,28 @@ export class Character extends AssetListRenderable<ICharacter> {
 						posePosition[this.obj.posePositions[renderCommand.part] || 0];
 					// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 					if (!partAssets) break;
-					drawAssetsUnloaded.push({
-						offset: renderCommand.offset,
-						composite: renderCommand.composite,
-						assets: partAssets,
-					});
+					newAssets = partAssets;
 					break;
 				}
 			}
+			if (newAssets) {
+				const oldEntry = oldAssets.find((x) => x.assets === newAssets);
+				// Reuse old entry
+				if (oldEntry) {
+					drawAssetsNew.push({
+						...oldEntry,
+						offset: renderCommand.offset,
+						composite: renderCommand.composite,
+					});
+				} else {
+					drawAssetsNew.push({
+						assets: newAssets,
+						offset: renderCommand.offset,
+						composite: renderCommand.composite,
+					});
+				}
+			}
 		}
-		return drawAssetsUnloaded;
+		return drawAssetsNew;
 	}
 }
