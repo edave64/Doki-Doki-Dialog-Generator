@@ -139,7 +139,6 @@ const missingHead = computed(() => {
 	if (!heads) return null;
 	for (const asset of heads.variants) {
 		const url = getAAssetUrl(asset[0], false);
-		console.log(url);
 		if (url.startsWith('uploads:')) return url.substring(8);
 	}
 	return null;
