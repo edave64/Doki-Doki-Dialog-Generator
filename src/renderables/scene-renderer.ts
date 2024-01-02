@@ -23,6 +23,9 @@ import { Renderable } from './renderable';
 import { Sprite } from './sprite';
 import { TextBox } from './textbox';
 
+/**
+ * Renders a full panel, including the background and all objects
+ */
 export class SceneRenderer {
 	// Support for browsers without :focus-visible
 	public static FocusProp: string =
@@ -117,9 +120,12 @@ export class SceneRenderer {
 		await this.getBackgroundRenderer()?.render(rx);
 
 		const renderables = this.getRenderObjects();
+
+		// Step 1: Prepare the matrix transformation of all objects.
+		// Resolves all transforms in order, so that objects that are linked by other objects are always resolved
+		// before their dependencies.
 		const waiting: Map<IObject['id'], Array<Renderable<IObject>>> = new Map();
 		const processed: Map<IObject['id'], DOMMatrixReadOnly> = new Map();
-
 		for (const renderable of renderables) {
 			const linked = renderable.linkedTo;
 			let linkTransform = new DOMMatrixReadOnly();
