@@ -6804,10 +6804,10 @@ function mitt(n) {
     });
   } };
 }
-var __defProp$O = Object.defineProperty;
-var __defNormalProp$O = (obj, key, value) => key in obj ? __defProp$O(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$P = Object.defineProperty;
+var __defNormalProp$P = (obj, key, value) => key in obj ? __defProp$P(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$p = (obj, key, value) => {
-  __defNormalProp$O(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$P(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 const eventBus = mitt();
@@ -6893,30 +6893,30 @@ class VueErrorEvent {
   }
 }
 __publicField$p(VueErrorEvent, "kind", "VueErrorEvent");
-var __defProp$N = Object.defineProperty;
-var __defProps$o = Object.defineProperties;
-var __getOwnPropDescs$o = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$u = Object.getOwnPropertySymbols;
-var __hasOwnProp$u = Object.prototype.hasOwnProperty;
-var __propIsEnum$u = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$N = (obj, key, value) => key in obj ? __defProp$N(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$u = (a, b) => {
+var __defProp$O = Object.defineProperty;
+var __defProps$p = Object.defineProperties;
+var __getOwnPropDescs$p = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$v = Object.getOwnPropertySymbols;
+var __hasOwnProp$v = Object.prototype.hasOwnProperty;
+var __propIsEnum$v = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$O = (obj, key, value) => key in obj ? __defProp$O(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$v = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$u.call(b, prop))
-      __defNormalProp$N(a, prop, b[prop]);
-  if (__getOwnPropSymbols$u)
-    for (var prop of __getOwnPropSymbols$u(b)) {
-      if (__propIsEnum$u.call(b, prop))
-        __defNormalProp$N(a, prop, b[prop]);
+    if (__hasOwnProp$v.call(b, prop))
+      __defNormalProp$O(a, prop, b[prop]);
+  if (__getOwnPropSymbols$v)
+    for (var prop of __getOwnPropSymbols$v(b)) {
+      if (__propIsEnum$v.call(b, prop))
+        __defNormalProp$O(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$o = (a, b) => __defProps$o(a, __getOwnPropDescs$o(b));
+var __spreadProps$p = (a, b) => __defProps$p(a, __getOwnPropDescs$p(b));
 var __publicField$o = (obj, key, value) => {
-  __defNormalProp$N(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$O(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$K = (__this, __arguments, generator) => {
+var __async$L = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -6994,7 +6994,7 @@ const _Repo = class {
         return true;
       }).map((packId) => {
         var _a22, _b2, _c;
-        return __spreadProps$o(__spreadValues$u(__spreadValues$u(__spreadValues$u({}, (_a22 = onlineRepoLookup.get(packId)) != null ? _a22 : {
+        return __spreadProps$p(__spreadValues$v(__spreadValues$v(__spreadValues$v({}, (_a22 = onlineRepoLookup.get(packId)) != null ? _a22 : {
           characters: [],
           kind: [],
           authors: []
@@ -7012,7 +7012,7 @@ const _Repo = class {
       const onlineAuthors = (_a2 = onlineRepo2 == null ? void 0 : onlineRepo2.authors) != null ? _a2 : {};
       const localRepo2 = this.localRepo.value;
       const localAuthors = (_b = localRepo2 == null ? void 0 : localRepo2.authors) != null ? _b : {};
-      return __spreadValues$u(__spreadValues$u({}, onlineAuthors), localAuthors);
+      return __spreadValues$v(__spreadValues$v({}, onlineAuthors), localAuthors);
     });
     Object.freeze(this);
   }
@@ -7022,7 +7022,7 @@ const _Repo = class {
     return _Repo.instance;
   }
   static createInstance() {
-    return __async$K(this, null, function* () {
+    return __async$L(this, null, function* () {
       const onlineRepoLoading = _Repo.loadRepo(repoUrl);
       const localRepoLoading = envX.supports.localRepo ? yield _Repo.loadRepo(envX.localRepositoryUrl) : null;
       const [onlineRepoLoaded, localRepoLoaded, $store] = yield Promise.all([
@@ -7034,7 +7034,7 @@ const _Repo = class {
     });
   }
   static loadRepo(repo) {
-    return __async$K(this, null, function* () {
+    return __async$L(this, null, function* () {
       try {
         const [packs, authors] = yield Promise.all([
           _Repo.fetchJSON(repo + "repo.json"),
@@ -7047,7 +7047,7 @@ const _Repo = class {
     });
   }
   static fetchJSON(path) {
-    return __async$K(this, null, function* () {
+    return __async$L(this, null, function* () {
       const req = yield fetch(path);
       if (!req.ok)
         throw new Error("Could not load json");
@@ -7055,7 +7055,7 @@ const _Repo = class {
     });
   }
   reloadLocalRepo() {
-    return __async$K(this, null, function* () {
+    return __async$L(this, null, function* () {
       this.localRepo.value = envX.supports.localRepo ? yield _Repo.loadRepo(envX.localRepositoryUrl) : null;
     });
   }
@@ -7080,7 +7080,7 @@ const _Repo = class {
     return this.authors.value;
   }
   loadTempPack(url) {
-    return __async$K(this, null, function* () {
+    return __async$L(this, null, function* () {
       const req = fetch(url);
       let res;
       try {
@@ -7123,7 +7123,7 @@ __publicField$o(Repo, "$store", new Promise(
     _Repo.setStore = resolve;
   }
 ));
-var __async$J = (__this, __arguments, generator) => {
+var __async$K = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -7149,7 +7149,7 @@ function transactionLayer() {
   let transactionRunning = false;
   return function transaction2(callback) {
     return new Promise((resolve, _reject) => {
-      const exec = () => __async$J(this, null, function* () {
+      const exec = () => __async$K(this, null, function* () {
         try {
           if (callback.length > 0) {
             yield callback(transactionLayer());
@@ -7174,27 +7174,27 @@ function transactionLayer() {
     });
   };
 }
-var __defProp$M = Object.defineProperty;
-var __getOwnPropSymbols$t = Object.getOwnPropertySymbols;
-var __hasOwnProp$t = Object.prototype.hasOwnProperty;
-var __propIsEnum$t = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$M = (obj, key, value) => key in obj ? __defProp$M(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$t = (a, b) => {
+var __defProp$N = Object.defineProperty;
+var __getOwnPropSymbols$u = Object.getOwnPropertySymbols;
+var __hasOwnProp$u = Object.prototype.hasOwnProperty;
+var __propIsEnum$u = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$N = (obj, key, value) => key in obj ? __defProp$N(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$u = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$t.call(b, prop))
-      __defNormalProp$M(a, prop, b[prop]);
-  if (__getOwnPropSymbols$t)
-    for (var prop of __getOwnPropSymbols$t(b)) {
-      if (__propIsEnum$t.call(b, prop))
-        __defNormalProp$M(a, prop, b[prop]);
+    if (__hasOwnProp$u.call(b, prop))
+      __defNormalProp$N(a, prop, b[prop]);
+  if (__getOwnPropSymbols$u)
+    for (var prop of __getOwnPropSymbols$u(b)) {
+      if (__propIsEnum$u.call(b, prop))
+        __defNormalProp$N(a, prop, b[prop]);
     }
   return a;
 };
 var __publicField$n = (obj, key, value) => {
-  __defNormalProp$M(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$N(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$I = (__this, __arguments, generator) => {
+var __async$J = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -7258,13 +7258,13 @@ class Browser {
       limitedCanvasSpace: mobileSafari
     });
     if (canSave) {
-      this.loading = (() => __async$I(this, null, function* () {
+      this.loading = (() => __async$J(this, null, function* () {
         this.savingEnabled = yield IndexedDBHandler.doesDbExists();
       }))();
     } else {
       this.loading = Promise.resolve();
     }
-    this.loading.then(() => __async$I(this, null, function* () {
+    this.loading.then(() => __async$J(this, null, function* () {
       var _a2;
       yield this.loadingContentPacksAllowed;
       if (this.creatingDB)
@@ -7274,7 +7274,7 @@ class Browser {
         this.state.autoAdd = autoload;
         const repo = yield Repo.getInstance();
         const packUrls = yield Promise.all(
-          autoload.map((compoundId) => __async$I(this, null, function* () {
+          autoload.map((compoundId) => __async$J(this, null, function* () {
             var _a22;
             const [id, url] = compoundId.split(";", 2);
             if (url != null && !repo.hasPack(id)) {
@@ -7284,7 +7284,7 @@ class Browser {
             return (_a22 = pack.dddg2Path) != null ? _a22 : pack.dddg1Path;
           }))
         );
-        yield transaction(() => __async$I(this, null, function* () {
+        yield transaction(() => __async$J(this, null, function* () {
           yield this.$store.dispatch("content/loadContentPacks", packUrls);
         }));
       }
@@ -7326,7 +7326,7 @@ class Browser {
     return Promise.resolve();
   }
   loadGameMode() {
-    return __async$I(this, null, function* () {
+    return __async$J(this, null, function* () {
       const searchParams = new URLSearchParams(location.search);
       const getMode = searchParams.get("mode");
       if (getMode === "ddlc" || getMode === "ddlc_plus") {
@@ -7347,7 +7347,7 @@ class Browser {
     });
   }
   setGameMode(mode) {
-    return __async$I(this, null, function* () {
+    return __async$J(this, null, function* () {
       if (this.isSavingEnabled.value) {
         yield IndexedDBHandler.saveGameMode(mode);
       }
@@ -7365,7 +7365,7 @@ class Browser {
     this.$store = store2;
   }
   saveToFile(downloadCanvas, filename, format = "image/png", quality = 1) {
-    return __async$I(this, null, function* () {
+    return __async$J(this, null, function* () {
       const a = document.createElement("a");
       a.setAttribute("download", filename);
       const url = yield this.createObjectURL(downloadCanvas, format, quality);
@@ -7383,7 +7383,7 @@ class Browser {
     throw new Error("This environment does not support a local repository");
   }
   autoLoadAdd(id) {
-    return __async$I(this, null, function* () {
+    return __async$J(this, null, function* () {
       yield this.loading;
       yield this.creatingDB;
       yield IndexedDBHandler.saveAutoload([...this.state.autoAdd, id]);
@@ -7391,7 +7391,7 @@ class Browser {
     });
   }
   autoLoadRemove(id) {
-    return __async$I(this, null, function* () {
+    return __async$J(this, null, function* () {
       yield this.loading;
       yield this.creatingDB;
       const packId = this.normalizePackId(id);
@@ -7410,7 +7410,7 @@ class Browser {
     return parts[parts.length - 1];
   }
   loadSettings() {
-    return __async$I(this, null, function* () {
+    return __async$J(this, null, function* () {
       yield this.loading;
       yield this.creatingDB;
       const base = {
@@ -7422,11 +7422,11 @@ class Browser {
       };
       if (!this.isSavingEnabled.value)
         return base;
-      return __spreadValues$t(__spreadValues$t({}, base), yield IndexedDBHandler.loadSettings());
+      return __spreadValues$u(__spreadValues$u({}, base), yield IndexedDBHandler.loadSettings());
     });
   }
   saveSettings(settings) {
-    return __async$I(this, null, function* () {
+    return __async$J(this, null, function* () {
       yield this.loading;
       yield this.creatingDB;
       if (!this.isSavingEnabled.value)
@@ -7435,7 +7435,7 @@ class Browser {
     });
   }
   isInitialized() {
-    return __async$I(this, null, function* () {
+    return __async$J(this, null, function* () {
       yield this.loading;
       yield this.creatingDB;
     });
@@ -7551,39 +7551,39 @@ const IndexedDBHandler = {
     });
   },
   loadAutoload() {
-    return this.objectStorePromise("readonly", (store2) => __async$I(this, null, function* () {
+    return this.objectStorePromise("readonly", (store2) => __async$J(this, null, function* () {
       return yield this.reqPromise(store2.get("autoload"));
     }));
   },
   saveAutoload(autoloads) {
-    return this.objectStorePromise("readwrite", (store2) => __async$I(this, null, function* () {
+    return this.objectStorePromise("readwrite", (store2) => __async$J(this, null, function* () {
       yield this.reqPromise(store2.put([...autoloads], "autoload"));
     }));
   },
   loadGameMode() {
-    return this.objectStorePromise("readonly", (store2) => __async$I(this, null, function* () {
+    return this.objectStorePromise("readonly", (store2) => __async$J(this, null, function* () {
       return yield this.reqPromise(store2.get("gameMode"));
     }));
   },
   saveGameMode(mode) {
-    return this.objectStorePromise("readwrite", (store2) => __async$I(this, null, function* () {
+    return this.objectStorePromise("readwrite", (store2) => __async$J(this, null, function* () {
       yield this.reqPromise(store2.put(mode, "gameMode"));
     }));
   },
   saveSettings(settings) {
-    return this.objectStorePromise("readwrite", (store2) => __async$I(this, null, function* () {
-      yield this.reqPromise(store2.put(__spreadValues$t({}, settings), "settings"));
+    return this.objectStorePromise("readwrite", (store2) => __async$J(this, null, function* () {
+      yield this.reqPromise(store2.put(__spreadValues$u({}, settings), "settings"));
     }));
   },
   loadSettings() {
-    return this.objectStorePromise("readonly", (store2) => __async$I(this, null, function* () {
+    return this.objectStorePromise("readonly", (store2) => __async$J(this, null, function* () {
       return yield this.reqPromise(store2.get("settings"));
     }));
   },
   objectStorePromise(mode, callback) {
     if (!this.db)
       return Promise.reject(new Error("No database"));
-    return new Promise((resolve, reject) => __async$I(this, null, function* () {
+    return new Promise((resolve, reject) => __async$J(this, null, function* () {
       const transact = (yield this.db).transaction(["settings"], mode);
       const store2 = transact.objectStore("settings");
       try {
@@ -7615,13 +7615,13 @@ class OldEdge extends Browser {
     return Promise.resolve(url);
   }
 }
-var __defProp$L = Object.defineProperty;
-var __defNormalProp$L = (obj, key, value) => key in obj ? __defProp$L(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$M = Object.defineProperty;
+var __defNormalProp$M = (obj, key, value) => key in obj ? __defProp$M(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$m = (obj, key, value) => {
-  __defNormalProp$L(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$M(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$H = (__this, __arguments, generator) => {
+var __async$I = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -7687,20 +7687,20 @@ class Electron {
     });
     this.electron.ipcRenderer.on(
       "add-persistent-content-pack",
-      (filePath) => __async$H(this, null, function* () {
+      (filePath) => __async$I(this, null, function* () {
         yield this.loadingContentPacksAllowed;
         if (!this.$store) {
           this.pendingContentPacks.push(filePath);
           return;
         }
-        yield transaction(() => __async$H(this, null, function* () {
+        yield transaction(() => __async$I(this, null, function* () {
           yield this.$store.dispatch("content/loadContentPacks", filePath);
         }));
       })
     );
     this.electron.ipcRenderer.on(
       "add-persistent-background",
-      (filepath) => __async$H(this, null, function* () {
+      (filepath) => __async$I(this, null, function* () {
         const name = "persistentBg-" + filepath;
         const parts = filepath.split("/");
         yield registerAssetWithURL(name, filepath);
@@ -7724,10 +7724,10 @@ class Electron {
     );
     this.electron.ipcRenderer.onConversation(
       "load-packs",
-      (packIds) => __async$H(this, null, function* () {
+      (packIds) => __async$I(this, null, function* () {
         const repo = yield Repo.getInstance();
         const packUrls = yield Promise.all(
-          packIds.map((compoundId) => __async$H(this, null, function* () {
+          packIds.map((compoundId) => __async$I(this, null, function* () {
             const [id, url] = compoundId.split(";", 2);
             if (url != null && !repo.hasPack(id)) {
               yield repo.loadTempPack(url);
@@ -7740,7 +7740,7 @@ class Electron {
           packUrls.forEach((url) => this.pendingContentPacks.push(url));
           return;
         }
-        yield transaction(() => __async$H(this, null, function* () {
+        yield transaction(() => __async$I(this, null, function* () {
           yield this.$store.dispatch("content/loadContentPacks", packUrls);
         }));
       })
@@ -7751,12 +7751,12 @@ class Electron {
         this.state.autoAdd = packIds;
       }
     );
-    this.electron.ipcRenderer.onConversation("reload-repo", () => __async$H(this, null, function* () {
+    this.electron.ipcRenderer.onConversation("reload-repo", () => __async$I(this, null, function* () {
       yield (yield Repo.getInstance()).reloadLocalRepo();
     }));
     this.electron.ipcRenderer.onConversation(
       "replace-pack",
-      (contentPack) => __async$H(this, null, function* () {
+      (contentPack) => __async$I(this, null, function* () {
         const action = {
           processed: false,
           contentPack
@@ -7764,7 +7764,7 @@ class Electron {
         if (!this.$store) {
           this.pendingContentPacksReplace.push(action);
         } else {
-          yield transaction(() => __async$H(this, null, function* () {
+          yield transaction(() => __async$I(this, null, function* () {
             yield this.$store.dispatch("content/replaceContentPack", action);
           }));
         }
@@ -7832,7 +7832,7 @@ class Electron {
   onPanelChange(_handler) {
   }
   saveSettings(settings) {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       var _a2;
       yield this.electron.ipcRenderer.sendConvo(
         "config.set",
@@ -7852,18 +7852,18 @@ class Electron {
     });
   }
   loadGameMode() {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       this._gameMode = (yield this.electron.ipcRenderer.sendConvo("config.get", "gameMode")) || "ddlc";
     });
   }
   setGameMode(mode) {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo("config.set", "gameMode", mode);
       this.electron.ipcRenderer.send("reload");
     });
   }
   loadSettings() {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       var _a2, _b, _c;
       return {
         lq: false,
@@ -7877,7 +7877,7 @@ class Electron {
     });
   }
   localRepoInstall(url, repo, authors) {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo(
         "repo.install",
         url,
@@ -7887,24 +7887,24 @@ class Electron {
     });
   }
   localRepoUninstall(id) {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo("repo.uninstall", id);
     });
   }
   autoLoadAdd(id) {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo("auto-load.add", id);
     });
   }
   autoLoadRemove(id) {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       yield this.electron.ipcRenderer.sendConvo("auto-load.remove", id);
     });
   }
   saveToFile(downloadCanvas, filename, format = "image/png", quality = 1) {
     return new Promise((resolve, reject) => {
       downloadCanvas.toBlob(
-        (blob) => __async$H(this, null, function* () {
+        (blob) => __async$I(this, null, function* () {
           if (!blob) {
             reject();
             return;
@@ -7923,7 +7923,7 @@ class Electron {
     });
   }
   prompt(message, defaultValue) {
-    return __async$H(this, null, function* () {
+    return __async$I(this, null, function* () {
       return yield this.electron.ipcRenderer.sendConvo(
         "show-prompt",
         message,
@@ -7934,7 +7934,7 @@ class Electron {
   connectToStore(store2) {
     this.$store = store2;
     this.invalidateInstalledBGs();
-    transaction(() => __async$H(this, null, function* () {
+    transaction(() => __async$I(this, null, function* () {
       if (this.pendingContentPacks.length > 0) {
         yield this.$store.dispatch(
           "content/loadContentPacks",
@@ -7964,7 +7964,7 @@ class Electron {
     }
     if (!this.$store)
       return;
-    transaction(() => __async$H(this, null, function* () {
+    transaction(() => __async$I(this, null, function* () {
       yield this.$store.dispatch("content/replaceContentPack", {
         contentPack: installedBackgroundsPack
       });
@@ -7983,24 +7983,24 @@ function chooseEnv() {
 const envX = chooseEnv();
 window.toast = envX;
 const MissingImage = "" + new URL("missing_image.480f7f62.svg", import.meta.url).href;
-var __defProp$K = Object.defineProperty;
-var __getOwnPropSymbols$s = Object.getOwnPropertySymbols;
-var __hasOwnProp$s = Object.prototype.hasOwnProperty;
-var __propIsEnum$s = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$K = (obj, key, value) => key in obj ? __defProp$K(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$s = (a, b) => {
+var __defProp$L = Object.defineProperty;
+var __getOwnPropSymbols$t = Object.getOwnPropertySymbols;
+var __hasOwnProp$t = Object.prototype.hasOwnProperty;
+var __propIsEnum$t = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$L = (obj, key, value) => key in obj ? __defProp$L(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$t = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$s.call(b, prop))
-      __defNormalProp$K(a, prop, b[prop]);
-  if (__getOwnPropSymbols$s)
-    for (var prop of __getOwnPropSymbols$s(b)) {
-      if (__propIsEnum$s.call(b, prop))
-        __defNormalProp$K(a, prop, b[prop]);
+    if (__hasOwnProp$t.call(b, prop))
+      __defNormalProp$L(a, prop, b[prop]);
+  if (__getOwnPropSymbols$t)
+    for (var prop of __getOwnPropSymbols$t(b)) {
+      if (__propIsEnum$t.call(b, prop))
+        __defNormalProp$L(a, prop, b[prop]);
     }
   return a;
 };
 var __publicField$l = (obj, key, value) => {
-  __defNormalProp$K(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$L(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 class ImageAsset {
@@ -8012,21 +8012,21 @@ class ImageAsset {
     this.height = html.height;
   }
   paintOnto(fsCtx, opts = {}) {
-    const { w, h: h2 } = __spreadValues$s({
+    const { w, h: h2 } = __spreadValues$t({
       w: this.width,
       h: this.height
     }, opts);
-    const { x, y } = __spreadValues$s({
+    const { x, y } = __spreadValues$t({
       x: -w / 2,
       y: -h2 / 2
     }, opts);
     fsCtx.drawImage(this.html, x, y, w, h2);
   }
 }
-var __defProp$J = Object.defineProperty;
-var __defNormalProp$J = (obj, key, value) => key in obj ? __defProp$J(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$K = Object.defineProperty;
+var __defNormalProp$K = (obj, key, value) => key in obj ? __defProp$K(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$k = (obj, key, value) => {
-  __defNormalProp$J(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$K(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 let missing_image = null;
@@ -8048,13 +8048,13 @@ class ErrorAsset {
     }
   }
 }
-var __defProp$I = Object.defineProperty;
-var __defNormalProp$I = (obj, key, value) => key in obj ? __defProp$I(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$J = Object.defineProperty;
+var __defNormalProp$J = (obj, key, value) => key in obj ? __defProp$J(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$j = (obj, key, value) => {
-  __defNormalProp$I(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$J(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
-var __async$G = (__this, __arguments, generator) => {
+var __async$H = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -8083,7 +8083,7 @@ function isWebPSupported() {
   }
   const losslessCode = "data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA=";
   const transparentCode = "data:image/webp;base64,UklGRogAAABXRUJQVlA4THwAAAAv/8SzAA/wGbPPmH3GbP7jAQSSNu9f+rzDwYj+G23bpt3Gx3xD8353j73f5b87+e9OALmT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9OAriT/+7kvzv5704CuJP/7uS/O/nvTgK4k//u5L87+e9O/rsTwe7kvzsL";
-  return webpSupportPromise = (() => __async$G(this, null, function* () {
+  return webpSupportPromise = (() => __async$H(this, null, function* () {
     const ret = yield Promise.all([
       canLoadImg(losslessCode, 1, 2),
       canLoadImg(transparentCode, 720, 1280)
@@ -8107,7 +8107,7 @@ let heifSupportPromise;
 function isHeifSupported() {
   if (heifSupportPromise)
     return heifSupportPromise;
-  return heifSupportPromise = (() => __async$G(this, null, function* () {
+  return heifSupportPromise = (() => __async$H(this, null, function* () {
     const losslessCode = "data:image/heic;base64,AAAAGGZ0eXBoZWljAAAAAG1pZjFoZWljAAAAsW1ldGEAAAAAAAAAIWhkbHIAAAAAAAAAAHBpY3QAXABjAGMAcwBsAGEAAAAADnBpdG0AAAAAAAEAAAAQaWxvYwAAAABEQAAAAAAAI2lpbmYAAAAAAAEAAAAVaW5mZQIAAAAAAQAAaHZjMQAAAABDaXBycAAAACdpcGNvAAAAH2h2Y0NmzGx1ci0AAAAAAABv9HP+//v9bjr3AAAAABRpcG1hAAAAAAAAAAEAAQGBAAAACG1kYXQ=";
     return yield canLoadImg(losslessCode, 1, 2);
   }))();
@@ -8168,13 +8168,13 @@ function getAssetByUrl(url) {
 }
 const baseUrl = "./";
 function getBuildInAsset(asset, hq = true) {
-  return __async$G(this, null, function* () {
+  return __async$H(this, null, function* () {
     const url = `${baseUrl}assets/${asset}${hq ? "" : ".lq"}${(yield isWebPSupported()) ? ".webp" : ".png"}`.replace(/\/+/, "/");
     return yield getAssetCache().get(url);
   });
 }
 function getBuildInAssetUrl(asset, hq = true) {
-  return __async$G(this, null, function* () {
+  return __async$H(this, null, function* () {
     return `${baseUrl}assets/${asset}${envX.supports.lq && !hq ? ".lq" : ""}${(yield isWebPSupported()) ? ".webp" : ".png"}`.replace(/\/+/, "/");
   });
 }
@@ -8182,11 +8182,11 @@ function registerAssetWithURL(asset, url) {
   customUrl[asset] = url;
 }
 function requestAssetByUrl(url) {
-  return __async$G(this, null, function* () {
+  return __async$H(this, null, function* () {
     const isCustom = !!customUrl[url];
     if (isCustom)
       url = customUrl[url];
-    return yield (() => __async$G(this, null, function* () {
+    return yield (() => __async$H(this, null, function* () {
       try {
         return yield imagePromise(url);
       } catch (e) {
@@ -8228,1252 +8228,6 @@ function imagePromise(url, noCache = false) {
     document.body.appendChild(img);
   });
 }
-const screenWidth$1 = 1280;
-const screenHeight$1 = 720;
-const wheelInnerRadius$1 = 128;
-const wheelWidth$1 = 32;
-const WheelBackground$1 = "rgba(60,60,60,0.8)";
-const positions$1 = [
-  "4-1",
-  "3-1",
-  "2-1",
-  "4-2",
-  "center",
-  "4-3",
-  "2-2",
-  "3-3",
-  "4-4"
-];
-const sdCharacterScaleFactor$1 = 1;
-const hdCharacterScaleFactor$1 = 1 / 1.5;
-const CloseUpYOffset$1 = -74;
-const BaseCharacterYPos$1 = 358;
-const characterPositions$1 = [
-  200,
-  240,
-  400,
-  493,
-  640,
-  786,
-  880,
-  1040,
-  1080
-];
-const Base$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  screenWidth: screenWidth$1,
-  screenHeight: screenHeight$1,
-  wheelInnerRadius: wheelInnerRadius$1,
-  wheelWidth: wheelWidth$1,
-  WheelBackground: WheelBackground$1,
-  positions: positions$1,
-  sdCharacterScaleFactor: sdCharacterScaleFactor$1,
-  hdCharacterScaleFactor: hdCharacterScaleFactor$1,
-  CloseUpYOffset: CloseUpYOffset$1,
-  BaseCharacterYPos: BaseCharacterYPos$1,
-  characterPositions: characterPositions$1
-}, Symbol.toStringTag, { value: "Module" }));
-var __defProp$H = Object.defineProperty;
-var __defNormalProp$H = (obj, key, value) => key in obj ? __defProp$H(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$i = (obj, key, value) => {
-  __defNormalProp$H(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-const _RGBAColor = class {
-  constructor(r, g, b, a) {
-    this.r = r;
-    this.g = g;
-    this.b = b;
-    this.a = a;
-    Object.freeze(this);
-  }
-  static validCss(str) {
-    return this.validCssRgb(str) || this.validHex(str);
-  }
-  static fromCss(str) {
-    if (this.validCssRgb(str)) {
-      return this.fromCssRgb(str);
-    }
-    if (this.validHex(str)) {
-      return this.fromHex(str);
-    }
-    throw new Error("Invalid RGB color format");
-  }
-  static validCssRgb(str) {
-    return this.rgbEx.test(str) || this.rgbaEx.test(str);
-  }
-  static fromCssRgb(str) {
-    if (!this.validCssRgb(str))
-      throw new Error("Invalid RGB color format");
-    const rgbHead = str.slice(0, -1);
-    const parentesisPos = rgbHead.indexOf("(");
-    const rbgTail = rgbHead.slice(parentesisPos + 1);
-    const elements = rbgTail.split(",").map((x) => parseFloat(x.trim()));
-    return new _RGBAColor(
-      elements[0],
-      elements[1],
-      elements[2],
-      elements.length === 4 ? elements[3] : 1
-    );
-  }
-  static validHex(str) {
-    return this.hexShortEx.test(str) || this.hexLongEx.test(str);
-  }
-  static fromHex(str) {
-    if (!this.validHex(str))
-      throw new Error("Invalid Hex color format");
-    const hexTail = str.slice(1);
-    if (hexTail.length === 3) {
-      return new _RGBAColor(
-        parseInt(hexTail[0] + hexTail[0], 16),
-        parseInt(hexTail[1] + hexTail[1], 16),
-        parseInt(hexTail[2] + hexTail[2], 16),
-        1
-      );
-    }
-    if (hexTail.length === 4) {
-      return new _RGBAColor(
-        parseInt(hexTail[0] + hexTail[0], 16),
-        parseInt(hexTail[1] + hexTail[1], 16),
-        parseInt(hexTail[2] + hexTail[2], 16),
-        parseInt(hexTail[3] + hexTail[3], 16) / 255
-      );
-    }
-    if (hexTail.length === 6) {
-      return new _RGBAColor(
-        parseInt(hexTail[0] + hexTail[1], 16),
-        parseInt(hexTail[2] + hexTail[3], 16),
-        parseInt(hexTail[4] + hexTail[5], 16),
-        1
-      );
-    }
-    if (hexTail.length === 8) {
-      return new _RGBAColor(
-        parseInt(hexTail[0] + hexTail[1], 16),
-        parseInt(hexTail[2] + hexTail[3], 16),
-        parseInt(hexTail[4] + hexTail[5], 16),
-        parseInt(hexTail[6] + hexTail[7], 16) / 255
-      );
-    }
-    throw new Error("Invalid Hex color format length");
-  }
-  toCss() {
-    if (this.a > 1) {
-      return `rgb(${this.r},${this.g},${this.b})`;
-    }
-    return `rgba(${this.r},${this.g},${this.b},${this.a})`;
-  }
-  toHex() {
-    return `#${Math.round(this.r).toString(16).padStart(2, "0")}${Math.round(
-      this.g
-    ).toString(16).padStart(2, "0")}${Math.round(this.b).toString(16).padStart(2, "0")}${Math.round(this.a * 255).toString(16).padStart(2, "0")}`;
-  }
-  toRgb() {
-    return this;
-  }
-  toHSL() {
-    let { r, g, b } = this;
-    const { a } = this;
-    r /= 255;
-    g /= 255;
-    b /= 255;
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    let h2;
-    let s;
-    const l = (max + min) / 2;
-    if (max === min) {
-      h2 = s = 0;
-    } else {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      switch (max) {
-        case r:
-          h2 = (g - b) / d + (g < b ? 6 : 0);
-          break;
-        case g:
-          h2 = (b - r) / d + 2;
-          break;
-        case b:
-          h2 = (r - g) / d + 4;
-          break;
-      }
-      h2 /= 6;
-    }
-    return new HSLAColor(h2, s, l, a);
-  }
-  get luminance() {
-    return Math.sqrt(
-      Math.pow(0.299 * (this.r / 255), 2) + Math.pow(0.587 * (this.g / 255), 2) + Math.pow(0.114 * (this.b / 255), 2)
-    );
-  }
-};
-let RGBAColor = _RGBAColor;
-__publicField$i(RGBAColor, "rgbEx", /^rgb\((\d*?),(\d*?),(\d*?)\)$/i);
-__publicField$i(RGBAColor, "rgbaEx", /^rgba\((\d{1,3}),(\d{1,3}),(\d{1,3}),([\d.]+)\)$/i);
-__publicField$i(RGBAColor, "hexShortEx", /^#[0-9A-F]{3,4}$/i);
-__publicField$i(RGBAColor, "hexLongEx", /^#[0-9A-F]{6,8}$/i);
-class HSLAColor {
-  constructor(h2, s, l, a) {
-    this.h = h2;
-    this.s = s;
-    this.l = l;
-    this.a = a;
-    Object.freeze(this);
-  }
-  toCss() {
-    if (this.a >= 1) {
-      return `hsl(${this.h}, ${this.s}, ${this.l})`;
-    }
-    return `hsla(${this.h}, ${this.s}, ${this.l}, ${this.a})`;
-  }
-  shift(deltas) {
-    let { h: h2, s, l, a } = this;
-    h2 += deltas.h;
-    if (h2 >= 1) {
-      h2 -= 1;
-    } else if (h2 < 0) {
-      h2 += 1;
-    }
-    if (s + deltas.s > 1) {
-      s -= deltas.s;
-    } else {
-      s += deltas.s;
-      if (s < 0) {
-        s = 0;
-      }
-    }
-    if (l + deltas.l > 1 || l + deltas.l < 0) {
-      l -= deltas.l;
-    } else {
-      l += deltas.l;
-    }
-    if (a + deltas.a > 1 || a + deltas.a < 0) {
-      a -= deltas.a;
-    } else {
-      a += deltas.a;
-    }
-    return new HSLAColor(h2, s, l, a);
-  }
-  toRgb() {
-    const { h: h2, s, l, a } = this;
-    let r;
-    let g;
-    let b;
-    if (s === 0) {
-      r = g = b = l;
-    } else {
-      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-      const p2 = 2 * l - q;
-      r = HSLAColor.hue2rgb(p2, q, h2 + 1 / 3);
-      g = HSLAColor.hue2rgb(p2, q, h2);
-      b = HSLAColor.hue2rgb(p2, q, h2 - 1 / 3);
-    }
-    return new RGBAColor(
-      Math.round(r * 255),
-      Math.round(g * 255),
-      Math.round(b * 255),
-      a
-    );
-  }
-  toHSL() {
-    return this;
-  }
-  static hue2rgb(p2, q, t) {
-    if (t < 0)
-      t += 1;
-    if (t > 1)
-      t -= 1;
-    if (t < 1 / 6)
-      return p2 + (q - p2) * 6 * t;
-    if (t < 1 / 2)
-      return q;
-    if (t < 2 / 3)
-      return p2 + (q - p2) * (2 / 3 - t) * 6;
-    return p2;
-  }
-}
-const nameboxTextOutlineDelta$3 = new HSLAColor(
-  -0.03065134099616873,
-  -0.5714285714285714,
-  -0.29607843137254897,
-  0
-);
-const ChoiceButtonColor$1 = "#ffe6f4";
-const ChoiceButtonBorderColor$1 = "#ffbde1";
-const ChoiceButtonWidth$1 = 420;
-const ChoiceSpacing$1 = 22;
-const ChoiceX$1 = 640;
-const ChoiceYOffset$1 = 270;
-const ChoicePadding$1 = 7;
-const Outline$1 = 3;
-const ChoiceOuterPadding$1 = Math.ceil(Outline$1 / 2);
-const ChoiceY$1 = (screenHeight$1 - ChoiceYOffset$1) / 2;
-const ChoiceTextStyle$1 = {
-  alpha: 1,
-  color: "black",
-  fontName: "aller",
-  fontSize: 24,
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 0,
-  lineSpacing: 1,
-  strokeColor: "",
-  strokeWidth: 0
-};
-const Choices$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  nameboxTextOutlineDelta: nameboxTextOutlineDelta$3,
-  ChoiceButtonColor: ChoiceButtonColor$1,
-  ChoiceButtonBorderColor: ChoiceButtonBorderColor$1,
-  ChoiceButtonWidth: ChoiceButtonWidth$1,
-  ChoiceSpacing: ChoiceSpacing$1,
-  ChoiceX: ChoiceX$1,
-  ChoiceYOffset: ChoiceYOffset$1,
-  ChoicePadding: ChoicePadding$1,
-  Outline: Outline$1,
-  ChoiceOuterPadding: ChoiceOuterPadding$1,
-  ChoiceY: ChoiceY$1,
-  ChoiceTextStyle: ChoiceTextStyle$1
-}, Symbol.toStringTag, { value: "Module" }));
-const textboxDefaultColor$1 = "#ffa8d2";
-const controlsDefaultColor$1 = "#552222";
-const nameboxDefaultColor$1 = "#ffeef6";
-const nameboxStrokeDefaultColor$1 = "#bb5599";
-const nameboxTextOutlineDelta$2 = new HSLAColor(
-  -0.03065134099616873,
-  -0.5714285714285714,
-  -0.29607843137254897,
-  0
-);
-const nameboxBackgroundDelta$1 = new HSLAColor(
-  0.002028397565922768,
-  0,
-  0.13725490196078438,
-  0
-);
-const nameboxGradientMiddleStopPosition$1 = 0.82;
-const nameboxGradientEndDelta$1 = new HSLAColor(
-  -0.004901960784313708,
-  -0.8599999999999999,
-  -0.16274509803921566,
-  0
-);
-const nameboxRounding$1 = 12;
-const nameboxRoundingBuffer$1 = 1.5;
-const textboxRounding$1 = 12;
-const textboxRoundingBuffer$1 = 1.5;
-const nameColorThreshold$1 = 0.6;
-const controlColorDelta$1 = new HSLAColor(
-  0.08045977011494243,
-  -0.5714285714285714,
-  -0.5960784313725489,
-  0
-);
-const controlDisableColorDelta$1 = new HSLAColor(
-  0,
-  -0.14285714285714296,
-  0.3,
-  0
-);
-const dotColorDelta$1 = new HSLAColor(
-  0.004269293924466178,
-  -0.01869158878504662,
-  -0.039215686274509665,
-  0
-);
-const dotRadius$1 = 9.5;
-const dotPatternSize$1 = 47;
-const textboxOutlineColorDelta$1 = new HSLAColor(
-  0.0023347701149424305,
-  0,
-  0.10784313725490202,
-  0
-);
-const textboxOutlineWidth$1 = 3;
-const CustomTBConstants$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  textboxDefaultColor: textboxDefaultColor$1,
-  controlsDefaultColor: controlsDefaultColor$1,
-  nameboxDefaultColor: nameboxDefaultColor$1,
-  nameboxStrokeDefaultColor: nameboxStrokeDefaultColor$1,
-  nameboxTextOutlineDelta: nameboxTextOutlineDelta$2,
-  nameboxBackgroundDelta: nameboxBackgroundDelta$1,
-  nameboxGradientMiddleStopPosition: nameboxGradientMiddleStopPosition$1,
-  nameboxGradientEndDelta: nameboxGradientEndDelta$1,
-  nameboxRounding: nameboxRounding$1,
-  nameboxRoundingBuffer: nameboxRoundingBuffer$1,
-  textboxRounding: textboxRounding$1,
-  textboxRoundingBuffer: textboxRoundingBuffer$1,
-  nameColorThreshold: nameColorThreshold$1,
-  controlColorDelta: controlColorDelta$1,
-  controlDisableColorDelta: controlDisableColorDelta$1,
-  dotColorDelta: dotColorDelta$1,
-  dotRadius: dotRadius$1,
-  dotPatternSize: dotPatternSize$1,
-  textboxOutlineColorDelta: textboxOutlineColorDelta$1,
-  textboxOutlineWidth: textboxOutlineWidth$1
-}, Symbol.toStringTag, { value: "Module" }));
-var __defProp$G = Object.defineProperty;
-var __defProps$n = Object.defineProperties;
-var __getOwnPropDescs$n = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$r = Object.getOwnPropertySymbols;
-var __hasOwnProp$r = Object.prototype.hasOwnProperty;
-var __propIsEnum$r = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$G = (obj, key, value) => key in obj ? __defProp$G(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$r = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$r.call(b, prop))
-      __defNormalProp$G(a, prop, b[prop]);
-  if (__getOwnPropSymbols$r)
-    for (var prop of __getOwnPropSymbols$r(b)) {
-      if (__propIsEnum$r.call(b, prop))
-        __defNormalProp$G(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$n = (a, b) => __defProps$n(a, __getOwnPropDescs$n(b));
-const TextBoxWidth$1 = 816;
-const TextBoxCorruptedWidth$1 = 900;
-const TextBoxHeight$1 = 146;
-const TextBoxKerning$1 = 0;
-const TextBoxLineHeight$1 = 29;
-const TextBoxCorruptedKerning$1 = 8;
-const TextBoxTextXOffset$1 = 38;
-const TextBoxTextYOffset$1 = 44;
-const TextBoxBottomSpacing$1 = 6;
-const HdSpacing = 93;
-const HdSideMargin = 404;
-const TextBoxTextCorruptedXOffset$1 = 9;
-const TextBoxTextCorruptedYOffset$1 = 9;
-const NameboxHeight$1 = 39;
-const NameboxWidth$1 = 168;
-const NameboxXOffset$1 = 34;
-const NameboxTextYOffset$1 = 29;
-const ControlsYBottomOffset$1 = 12;
-const ControlsXHistoryOffset$1 = -126;
-const ControlsXSkipOffset$1 = -72;
-const ControlsXStuffOffset$1 = -38;
-const ArrowXRightOffset$1 = 30.75;
-const ArrowYBottomOffset$1 = 26;
-const GlowRX$1 = 426;
-const GlowRY$1 = 58;
-const BaseTextStyle$1 = {
-  alpha: 1,
-  color: "black",
-  fontName: "aller",
-  fontSize: 24,
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 0,
-  lineSpacing: 1,
-  strokeColor: "",
-  strokeWidth: 0
-};
-const NameboxTextStyle$1 = __spreadProps$n(__spreadValues$r({}, BaseTextStyle$1), {
-  fontName: "riffic",
-  fontSize: 24,
-  strokeColor: nameboxStrokeDefaultColor$1,
-  strokeWidth: 6,
-  color: "white",
-  letterSpacing: 1
-});
-const ControlsTextStyle$1 = {
-  align: "left",
-  font: "13px aller",
-  fill: {
-    style: "#522"
-  }
-};
-const ControlsTextDisabledStyle$1 = __spreadProps$n(__spreadValues$r({}, ControlsTextStyle$1), {
-  fill: {
-    style: "#a66"
-  }
-});
-const TextBoxCorruptedStyle$1 = {
-  align: "left",
-  font: "24px verily",
-  outline: {
-    style: "#000",
-    width: 20
-  },
-  fill: {
-    style: "#fff"
-  }
-};
-const TextBoxStyle$1 = {
-  alpha: 1,
-  color: "#ffffff",
-  fontName: "aller",
-  fontSize: 24,
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 0,
-  strokeColor: "#523140",
-  strokeWidth: 4,
-  lineSpacing: 1.2
-};
-const TextBoxX$1 = screenWidth$1 / 2 - TextBoxWidth$1 / 2;
-const TextBoxCorruptedX$1 = screenWidth$1 / 2 - TextBoxCorruptedWidth$1 / 2;
-const TextBoxTextX$1 = TextBoxX$1 + TextBoxTextXOffset$1;
-const NameboxX$1 = TextBoxX$1 + NameboxXOffset$1;
-const NameboxTextX$1 = NameboxX$1 + NameboxWidth$1 / 2;
-const ControlsXHistory$1 = TextBoxX$1 + ControlsXHistoryOffset$1;
-const ControlsXSkip$1 = TextBoxX$1 + ControlsXSkipOffset$1;
-const ControlsXStuff$1 = TextBoxX$1 + ControlsXStuffOffset$1;
-const DefaultTextboxStyle$1 = "normal";
-const TextBox$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  TextBoxWidth: TextBoxWidth$1,
-  TextBoxCorruptedWidth: TextBoxCorruptedWidth$1,
-  TextBoxHeight: TextBoxHeight$1,
-  TextBoxKerning: TextBoxKerning$1,
-  TextBoxLineHeight: TextBoxLineHeight$1,
-  TextBoxCorruptedKerning: TextBoxCorruptedKerning$1,
-  TextBoxTextXOffset: TextBoxTextXOffset$1,
-  TextBoxTextYOffset: TextBoxTextYOffset$1,
-  TextBoxBottomSpacing: TextBoxBottomSpacing$1,
-  HdSpacing,
-  HdSideMargin,
-  TextBoxTextCorruptedXOffset: TextBoxTextCorruptedXOffset$1,
-  TextBoxTextCorruptedYOffset: TextBoxTextCorruptedYOffset$1,
-  NameboxHeight: NameboxHeight$1,
-  NameboxWidth: NameboxWidth$1,
-  NameboxXOffset: NameboxXOffset$1,
-  NameboxTextYOffset: NameboxTextYOffset$1,
-  ControlsYBottomOffset: ControlsYBottomOffset$1,
-  ControlsXHistoryOffset: ControlsXHistoryOffset$1,
-  ControlsXSkipOffset: ControlsXSkipOffset$1,
-  ControlsXStuffOffset: ControlsXStuffOffset$1,
-  ArrowXRightOffset: ArrowXRightOffset$1,
-  ArrowYBottomOffset: ArrowYBottomOffset$1,
-  GlowRX: GlowRX$1,
-  GlowRY: GlowRY$1,
-  BaseTextStyle: BaseTextStyle$1,
-  NameboxTextStyle: NameboxTextStyle$1,
-  ControlsTextStyle: ControlsTextStyle$1,
-  ControlsTextDisabledStyle: ControlsTextDisabledStyle$1,
-  TextBoxCorruptedStyle: TextBoxCorruptedStyle$1,
-  TextBoxStyle: TextBoxStyle$1,
-  TextBoxX: TextBoxX$1,
-  TextBoxCorruptedX: TextBoxCorruptedX$1,
-  TextBoxTextX: TextBoxTextX$1,
-  NameboxX: NameboxX$1,
-  NameboxTextX: NameboxTextX$1,
-  ControlsXHistory: ControlsXHistory$1,
-  ControlsXSkip: ControlsXSkip$1,
-  ControlsXStuff: ControlsXStuff$1,
-  DefaultTextboxStyle: DefaultTextboxStyle$1
-}, Symbol.toStringTag, { value: "Module" }));
-var __defProp$F = Object.defineProperty;
-var __defProps$m = Object.defineProperties;
-var __getOwnPropDescs$m = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$q = Object.getOwnPropertySymbols;
-var __hasOwnProp$q = Object.prototype.hasOwnProperty;
-var __propIsEnum$q = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$F = (obj, key, value) => key in obj ? __defProp$F(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$q = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$q.call(b, prop))
-      __defNormalProp$F(a, prop, b[prop]);
-  if (__getOwnPropSymbols$q)
-    for (var prop of __getOwnPropSymbols$q(b)) {
-      if (__propIsEnum$q.call(b, prop))
-        __defNormalProp$F(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$m = (a, b) => __defProps$m(a, __getOwnPropDescs$m(b));
-const NotificationBackgroundColor$1 = "#ffe6f4";
-const NotificationBorderColor$1 = "#ffbde1";
-const NotificationBackdropColor$1 = "rgba(255,255,255,0.6)";
-const NotificationPadding$1 = 40;
-const NotificationSpacing$1 = 30;
-const NotificationOkTextStyle$1 = __spreadProps$m(__spreadValues$q({}, BaseTextStyle$1), {
-  fontName: "riffic",
-  fontSize: 24,
-  strokeColor: nameboxStrokeDefaultColor$1,
-  strokeWidth: 8,
-  letterSpacing: 1,
-  color: "white"
-});
-const NotificationTextStyle$1 = {
-  alpha: 1,
-  color: "black",
-  fontName: "aller",
-  fontSize: 24,
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 0,
-  lineSpacing: 1.2,
-  strokeColor: "",
-  strokeWidth: 0
-};
-const Notification$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  NotificationBackgroundColor: NotificationBackgroundColor$1,
-  NotificationBorderColor: NotificationBorderColor$1,
-  NotificationBackdropColor: NotificationBackdropColor$1,
-  NotificationPadding: NotificationPadding$1,
-  NotificationSpacing: NotificationSpacing$1,
-  NotificationOkTextStyle: NotificationOkTextStyle$1,
-  NotificationTextStyle: NotificationTextStyle$1
-}, Symbol.toStringTag, { value: "Module" }));
-var __defProp$E = Object.defineProperty;
-var __defProps$l = Object.defineProperties;
-var __getOwnPropDescs$l = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$p = Object.getOwnPropertySymbols;
-var __hasOwnProp$p = Object.prototype.hasOwnProperty;
-var __propIsEnum$p = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$E = (obj, key, value) => key in obj ? __defProp$E(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$p = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$p.call(b, prop))
-      __defNormalProp$E(a, prop, b[prop]);
-  if (__getOwnPropSymbols$p)
-    for (var prop of __getOwnPropSymbols$p(b)) {
-      if (__propIsEnum$p.call(b, prop))
-        __defNormalProp$E(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$l = (a, b) => __defProps$l(a, __getOwnPropDescs$l(b));
-const poemBackgrounds$1 = [
-  { name: "Normal paper", file: "poem.jpg" },
-  { name: "Lightly soiled paper", file: "poem_y1.jpg" },
-  { name: "Heavily soiled paper", file: "poem_y2.jpg" },
-  { name: "Console", file: "internal:console" },
-  { name: "Transparent", file: "internal:transparent" }
-];
-const defaultPoemBackground$1 = 0;
-const defaultPoemStyle$1 = 0;
-const defaultX$1 = screenWidth$1 / 2;
-const defaultY$1 = screenHeight$1 / 2;
-const poemTopPadding$1 = 33;
-const poemBottomPadding$1 = 100;
-const poemPadding$1 = 30;
-const defaultPoemWidth$1 = 800;
-const defaultPoemHeight$1 = 720;
-const backgroundScale$1 = sdCharacterScaleFactor$1;
-const consoleBackgroundColor$1 = "#333333bf";
-const consoleWidth$1 = 480;
-const consoleHeight$1 = 180;
-const defaultConsoleBackground$1 = 3;
-const defaultConsoleStyle$1 = 7;
-const BasePoemStyle$1 = {
-  alpha: 1,
-  color: "black",
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 0,
-  lineSpacing: 1.2,
-  strokeColor: "",
-  strokeWidth: 0,
-  fontName: "aller",
-  fontSize: 12
-};
-const poemTextStyles$1 = [
-  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
-    name: "Sayori",
-    fontName: "hashtag",
-    fontSize: 34,
-    lineSpacing: 1.05,
-    letterSpacing: 0
-  }),
-  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
-    name: "Natsuki",
-    fontName: "ammy_handwriting",
-    fontSize: 28
-  }),
-  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
-    name: "Monika",
-    fontName: "journal",
-    fontSize: 34
-  }),
-  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
-    name: "Yuri",
-    fontName: "jp_hand_slanted",
-    lineSpacing: 1.5,
-    fontSize: 32
-  }),
-  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
-    name: "Yuri Act 2",
-    fontName: "damagrafik_script",
-    fontSize: 18,
-    letterSpacing: -8
-  }),
-  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
-    name: "Yuri Unused",
-    fontName: "as_i_lay_dying",
-    fontSize: 40
-  }),
-  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
-    name: "MC",
-    fontName: "halogen",
-    fontSize: 30,
-    lineSpacing: 1.53
-  }),
-  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
-    name: "Console",
-    fontName: "f25_bank_printer",
-    fontSize: 18,
-    color: "white",
-    lineSpacing: 1.1
-  })
-];
-const Poem$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  poemBackgrounds: poemBackgrounds$1,
-  defaultPoemBackground: defaultPoemBackground$1,
-  defaultPoemStyle: defaultPoemStyle$1,
-  defaultX: defaultX$1,
-  defaultY: defaultY$1,
-  poemTopPadding: poemTopPadding$1,
-  poemBottomPadding: poemBottomPadding$1,
-  poemPadding: poemPadding$1,
-  defaultPoemWidth: defaultPoemWidth$1,
-  defaultPoemHeight: defaultPoemHeight$1,
-  backgroundScale: backgroundScale$1,
-  consoleBackgroundColor: consoleBackgroundColor$1,
-  consoleWidth: consoleWidth$1,
-  consoleHeight: consoleHeight$1,
-  defaultConsoleBackground: defaultConsoleBackground$1,
-  defaultConsoleStyle: defaultConsoleStyle$1,
-  poemTextStyles: poemTextStyles$1
-}, Symbol.toStringTag, { value: "Module" }));
-const Ddlc = {
-  Base: Base$1,
-  Choices: Choices$1,
-  Notification: Notification$2,
-  Poem: Poem$2,
-  TextBox: TextBox$2,
-  TextBoxCustom: CustomTBConstants$1
-};
-const screenWidth = 1920;
-const screenHeight = 1080;
-const wheelInnerRadius = 128;
-const wheelWidth = 32;
-const WheelBackground = "rgba(60,60,60,0.8)";
-const positions = [
-  "4-1",
-  "3-1",
-  "2-1",
-  "4-2",
-  "center",
-  "4-3",
-  "2-2",
-  "3-3",
-  "4-4"
-];
-const sdCharacterScaleFactor = 1.5;
-const hdCharacterScaleFactor = 1;
-const CloseUpYOffset = -111;
-const BaseCharacterYPos = -39;
-const characterPositions = [
-  300,
-  360,
-  600,
-  740,
-  960,
-  1180,
-  1320,
-  1560,
-  1620
-];
-const Base = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  screenWidth,
-  screenHeight,
-  wheelInnerRadius,
-  wheelWidth,
-  WheelBackground,
-  positions,
-  sdCharacterScaleFactor,
-  hdCharacterScaleFactor,
-  CloseUpYOffset,
-  BaseCharacterYPos,
-  characterPositions
-}, Symbol.toStringTag, { value: "Module" }));
-const nameboxTextOutlineDelta$1 = new HSLAColor(
-  -0.03065134099616873,
-  -0.5714285714285714,
-  -0.29607843137254897,
-  0
-);
-const ChoiceButtonColor = "#ffe6f4";
-const ChoiceButtonBorderColor = "#ffbde1";
-const ChoiceButtonWidth = 630;
-const ChoiceSpacing = 33;
-const ChoiceX = 960;
-const ChoiceYOffset = 405;
-const ChoicePadding = 10.5;
-const Outline = 4.5;
-const ChoiceOuterPadding = Math.ceil(Outline / 2);
-const ChoiceY = (screenHeight - ChoiceYOffset) / 2;
-const ChoiceTextStyle = {
-  alpha: 1,
-  color: "black",
-  fontName: "aller",
-  fontSize: 36,
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 0,
-  lineSpacing: 1,
-  strokeColor: "",
-  strokeWidth: 0
-};
-const Choices = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  nameboxTextOutlineDelta: nameboxTextOutlineDelta$1,
-  ChoiceButtonColor,
-  ChoiceButtonBorderColor,
-  ChoiceButtonWidth,
-  ChoiceSpacing,
-  ChoiceX,
-  ChoiceYOffset,
-  ChoicePadding,
-  Outline,
-  ChoiceOuterPadding,
-  ChoiceY,
-  ChoiceTextStyle
-}, Symbol.toStringTag, { value: "Module" }));
-const textboxDefaultColor = "#ffa8d2";
-const controlsDefaultColor = "#552222";
-const nameboxDefaultColor = "#ffeef6";
-const nameboxStrokeDefaultColor = "#bb5599";
-const nameboxTextOutlineDelta = new HSLAColor(
-  -0.03065134099616873,
-  -0.5714285714285714,
-  -0.29607843137254897,
-  0
-);
-const nameboxBackgroundDelta = new HSLAColor(
-  0.002028397565922768,
-  0,
-  0.13725490196078438,
-  0
-);
-const nameboxGradientMiddleStopPosition = 0.82;
-const nameboxGradientEndDelta = new HSLAColor(
-  -0.004901960784313708,
-  -0.8599999999999999,
-  -0.16274509803921566,
-  0
-);
-const nameboxRounding = 15;
-const nameboxRoundingBuffer = 1.5;
-const textboxRounding = 19;
-const textboxRoundingBuffer = 1.5;
-const nameColorThreshold = 0.6;
-const controlColorDelta = new HSLAColor(
-  0.08045977011494243,
-  -0.5714285714285714,
-  -0.5960784313725489,
-  0
-);
-const controlDisableColorDelta = new HSLAColor(
-  0,
-  -0.14285714285714296,
-  0.3,
-  0
-);
-const dotColorDelta = new HSLAColor(
-  0.004269293924466178,
-  -0.01869158878504662,
-  -0.039215686274509665,
-  0
-);
-const dotRadius = 9.5 * 1.5;
-const dotPatternSize = 47 * 1.5;
-const textboxOutlineColorDelta = new HSLAColor(
-  0.0023347701149424305,
-  0,
-  0.10784313725490202,
-  0
-);
-const textboxOutlineWidth = 5;
-const CustomTBConstants = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  textboxDefaultColor,
-  controlsDefaultColor,
-  nameboxDefaultColor,
-  nameboxStrokeDefaultColor,
-  nameboxTextOutlineDelta,
-  nameboxBackgroundDelta,
-  nameboxGradientMiddleStopPosition,
-  nameboxGradientEndDelta,
-  nameboxRounding,
-  nameboxRoundingBuffer,
-  textboxRounding,
-  textboxRoundingBuffer,
-  nameColorThreshold,
-  controlColorDelta,
-  controlDisableColorDelta,
-  dotColorDelta,
-  dotRadius,
-  dotPatternSize,
-  textboxOutlineColorDelta,
-  textboxOutlineWidth
-}, Symbol.toStringTag, { value: "Module" }));
-var __defProp$D = Object.defineProperty;
-var __defProps$k = Object.defineProperties;
-var __getOwnPropDescs$k = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$o = Object.getOwnPropertySymbols;
-var __hasOwnProp$o = Object.prototype.hasOwnProperty;
-var __propIsEnum$o = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$D = (obj, key, value) => key in obj ? __defProp$D(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$o = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$o.call(b, prop))
-      __defNormalProp$D(a, prop, b[prop]);
-  if (__getOwnPropSymbols$o)
-    for (var prop of __getOwnPropSymbols$o(b)) {
-      if (__propIsEnum$o.call(b, prop))
-        __defNormalProp$D(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$k = (a, b) => __defProps$k(a, __getOwnPropDescs$k(b));
-const TextBoxWidth = 1220;
-const TextBoxCorruptedWidth = 900;
-const TextBoxHeight = 219;
-const TextBoxKerning = 0;
-const TextBoxLineHeight = 29;
-const TextBoxCorruptedKerning = 8;
-const TextBoxTextXOffset = 57;
-const TextBoxTextYOffset = 68;
-const TextBoxBottomSpacing = 54;
-const TextBoxTextCorruptedXOffset = 9;
-const TextBoxTextCorruptedYOffset = 9;
-const NameboxHeight = 59;
-const NameboxWidth = 252;
-const NameboxXOffset = 49;
-const NameboxTextYOffset = 43;
-const ControlsYBottomOffset = 12 * 1.5;
-const ControlsXHistoryOffset = -126 * 1.5;
-const ControlsXSkipOffset = -72 * 1.5;
-const ControlsXStuffOffset = -38 * 1.5;
-const ArrowXRightOffset = 30.75 * 1.5;
-const ArrowYBottomOffset = 26 * 1.5;
-const GlowRX = 426 * 1.5;
-const GlowRY = 58 * 1.5;
-const BaseTextStyle = {
-  alpha: 1,
-  color: "black",
-  fontName: "aller",
-  fontSize: 24,
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 1,
-  lineSpacing: 1.2,
-  strokeColor: "",
-  strokeWidth: 0
-};
-const NameboxTextStyle = __spreadProps$k(__spreadValues$o({}, BaseTextStyle), {
-  fontName: "riffic",
-  fontSize: 36,
-  strokeColor: nameboxStrokeDefaultColor,
-  strokeWidth: 9,
-  color: "white",
-  letterSpacing: 2
-});
-const ControlsTextStyle = {
-  align: "left",
-  font: "24px aller",
-  fill: {
-    style: "#522"
-  }
-};
-const ControlsTextDisabledStyle = __spreadProps$k(__spreadValues$o({}, ControlsTextStyle), {
-  fill: {
-    style: "#a66"
-  }
-});
-const TextBoxStyle = {
-  alpha: 1,
-  color: "#ffffff",
-  fontName: "aller",
-  fontSize: 30,
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 0,
-  strokeColor: "#523140",
-  strokeWidth: 5,
-  lineSpacing: 1.2
-};
-const TextBoxCorruptedStyle = {
-  align: "left",
-  font: "24px verily",
-  outline: {
-    style: "#000",
-    width: 20
-  },
-  fill: {
-    style: "#fff"
-  }
-};
-const TextBoxX = screenWidth / 2 - TextBoxWidth / 2;
-const TextBoxCorruptedX = screenWidth / 2 - TextBoxCorruptedWidth / 2;
-const TextBoxTextX = TextBoxX + TextBoxTextXOffset;
-const NameboxX = TextBoxX + NameboxXOffset;
-const NameboxTextX = NameboxX + NameboxWidth / 2;
-const ControlsXHistory = TextBoxX + ControlsXHistoryOffset;
-const ControlsXSkip = TextBoxX + ControlsXSkipOffset;
-const ControlsXStuff = TextBoxX + ControlsXStuffOffset;
-const DefaultTextboxStyle = "custom_plus";
-const TextBox$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  TextBoxWidth,
-  TextBoxCorruptedWidth,
-  TextBoxHeight,
-  TextBoxKerning,
-  TextBoxLineHeight,
-  TextBoxCorruptedKerning,
-  TextBoxTextXOffset,
-  TextBoxTextYOffset,
-  TextBoxBottomSpacing,
-  TextBoxTextCorruptedXOffset,
-  TextBoxTextCorruptedYOffset,
-  NameboxHeight,
-  NameboxWidth,
-  NameboxXOffset,
-  NameboxTextYOffset,
-  ControlsYBottomOffset,
-  ControlsXHistoryOffset,
-  ControlsXSkipOffset,
-  ControlsXStuffOffset,
-  ArrowXRightOffset,
-  ArrowYBottomOffset,
-  GlowRX,
-  GlowRY,
-  BaseTextStyle,
-  NameboxTextStyle,
-  ControlsTextStyle,
-  ControlsTextDisabledStyle,
-  TextBoxStyle,
-  TextBoxCorruptedStyle,
-  TextBoxX,
-  TextBoxCorruptedX,
-  TextBoxTextX,
-  NameboxX,
-  NameboxTextX,
-  ControlsXHistory,
-  ControlsXSkip,
-  ControlsXStuff,
-  DefaultTextboxStyle
-}, Symbol.toStringTag, { value: "Module" }));
-var __defProp$C = Object.defineProperty;
-var __defProps$j = Object.defineProperties;
-var __getOwnPropDescs$j = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$n = Object.getOwnPropertySymbols;
-var __hasOwnProp$n = Object.prototype.hasOwnProperty;
-var __propIsEnum$n = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$C = (obj, key, value) => key in obj ? __defProp$C(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$n = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$n.call(b, prop))
-      __defNormalProp$C(a, prop, b[prop]);
-  if (__getOwnPropSymbols$n)
-    for (var prop of __getOwnPropSymbols$n(b)) {
-      if (__propIsEnum$n.call(b, prop))
-        __defNormalProp$C(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$j = (a, b) => __defProps$j(a, __getOwnPropDescs$j(b));
-const NotificationBackgroundColor = "#ffe6f4";
-const NotificationBorderColor = "#ffbde1";
-const NotificationBackdropColor = "rgba(255,255,255,0.6)";
-const NotificationPadding = 60;
-const NotificationSpacing = 45;
-const NotificationOkTextStyle = __spreadProps$j(__spreadValues$n({}, BaseTextStyle), {
-  fontName: "riffic",
-  fontSize: 36,
-  strokeColor: nameboxStrokeDefaultColor,
-  strokeWidth: 12,
-  letterSpacing: 1,
-  color: "white"
-});
-const NotificationTextStyle = {
-  alpha: 1,
-  color: "black",
-  fontName: "aller",
-  fontSize: 36,
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 0,
-  lineSpacing: 1.2,
-  strokeColor: "",
-  strokeWidth: 0
-};
-const Notification$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  NotificationBackgroundColor,
-  NotificationBorderColor,
-  NotificationBackdropColor,
-  NotificationPadding,
-  NotificationSpacing,
-  NotificationOkTextStyle,
-  NotificationTextStyle
-}, Symbol.toStringTag, { value: "Module" }));
-var __defProp$B = Object.defineProperty;
-var __defProps$i = Object.defineProperties;
-var __getOwnPropDescs$i = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$m = Object.getOwnPropertySymbols;
-var __hasOwnProp$m = Object.prototype.hasOwnProperty;
-var __propIsEnum$m = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$B = (obj, key, value) => key in obj ? __defProp$B(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$m = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp$m.call(b, prop))
-      __defNormalProp$B(a, prop, b[prop]);
-  if (__getOwnPropSymbols$m)
-    for (var prop of __getOwnPropSymbols$m(b)) {
-      if (__propIsEnum$m.call(b, prop))
-        __defNormalProp$B(a, prop, b[prop]);
-    }
-  return a;
-};
-var __spreadProps$i = (a, b) => __defProps$i(a, __getOwnPropDescs$i(b));
-const poemBackgrounds = [
-  { name: "Normal paper", file: "poem.jpg" },
-  { name: "Lightly soiled paper", file: "poem_y1.jpg" },
-  { name: "Heavily soiled paper", file: "poem_y2.jpg" },
-  { name: "Console", file: "internal:console" },
-  { name: "Transparent", file: "internal:transparent" }
-];
-const defaultPoemBackground = 0;
-const defaultPoemStyle = 0;
-const defaultX = screenWidth / 2;
-const defaultY = screenHeight / 2;
-const poemTopPadding = 26;
-const poemBottomPadding = 150;
-const poemPadding = 61;
-const defaultPoemWidth = 1200;
-const defaultPoemHeight = 1080;
-const backgroundScale = sdCharacterScaleFactor;
-const consoleBackgroundColor = "#333333bf";
-const consoleWidth = 720;
-const consoleHeight = 270;
-const defaultConsoleBackground = 3;
-const defaultConsoleStyle = 7;
-const BasePoemStyle = {
-  alpha: 1,
-  color: "black",
-  isBold: false,
-  isItalic: false,
-  isStrikethrough: false,
-  isUnderlined: false,
-  letterSpacing: 0,
-  lineSpacing: 1.2,
-  strokeColor: "",
-  strokeWidth: 0,
-  fontName: "aller",
-  fontSize: 18
-};
-const poemTextStyles = [
-  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
-    name: "Sayori",
-    fontName: "hashtag",
-    fontSize: 45,
-    lineSpacing: 0.95,
-    letterSpacing: 1
-  }),
-  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
-    name: "Natsuki",
-    fontName: "ammy_handwriting",
-    fontSize: 41,
-    letterSpacing: -0.5
-  }),
-  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
-    name: "Monika",
-    fontName: "journal",
-    fontSize: 36,
-    lineSpacing: 1.4,
-    letterSpacing: 0.5
-  }),
-  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
-    name: "Yuri",
-    fontName: "jp_hand_slanted",
-    lineSpacing: 1.55,
-    fontSize: 48
-  }),
-  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
-    name: "Yuri Act 2",
-    fontName: "damagrafik_script",
-    fontSize: 27,
-    letterSpacing: -12
-  }),
-  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
-    name: "Yuri Unused",
-    fontName: "as_i_lay_dying",
-    fontSize: 60
-  }),
-  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
-    name: "MC",
-    fontName: "halogen",
-    fontSize: 45,
-    lineSpacing: 1.53
-  }),
-  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
-    name: "Console",
-    fontName: "f25_bank_printer",
-    fontSize: 27,
-    color: "white",
-    lineSpacing: 1.1
-  })
-];
-const Poem$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  poemBackgrounds,
-  defaultPoemBackground,
-  defaultPoemStyle,
-  defaultX,
-  defaultY,
-  poemTopPadding,
-  poemBottomPadding,
-  poemPadding,
-  defaultPoemWidth,
-  defaultPoemHeight,
-  backgroundScale,
-  consoleBackgroundColor,
-  consoleWidth,
-  consoleHeight,
-  defaultConsoleBackground,
-  defaultConsoleStyle,
-  poemTextStyles
-}, Symbol.toStringTag, { value: "Module" }));
-const DdlcPlus = {
-  Base,
-  Choices,
-  Notification: Notification$1,
-  Poem: Poem$1,
-  TextBox: TextBox$1,
-  TextBoxCustom: CustomTBConstants
-};
-function getConstants() {
-  if (envX.gameMode === "ddlc_plus")
-    return DdlcPlus;
-  return Ddlc;
-}
 const NsfwPacks = {
   "dddg.buildin.backgrounds.nsfw": `${baseUrl}packs/buildin.base.backgrounds.nsfw.json`,
   "dddg.buildin.sayori.nsfw": `${baseUrl}packs/buildin.base.sayori.nsfw.json`,
@@ -9482,25 +8236,25 @@ const NsfwPacks = {
 };
 const NsfwNames = new Set(Object.keys(NsfwPacks));
 const NsfwPaths = Object.values(NsfwPacks);
-var __defProp$A = Object.defineProperty;
-var __defProps$h = Object.defineProperties;
-var __getOwnPropDescs$h = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$l = Object.getOwnPropertySymbols;
-var __hasOwnProp$l = Object.prototype.hasOwnProperty;
-var __propIsEnum$l = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$A = (obj, key, value) => key in obj ? __defProp$A(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$l = (a, b) => {
+var __defProp$I = Object.defineProperty;
+var __defProps$o = Object.defineProperties;
+var __getOwnPropDescs$o = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$s = Object.getOwnPropertySymbols;
+var __hasOwnProp$s = Object.prototype.hasOwnProperty;
+var __propIsEnum$s = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$I = (obj, key, value) => key in obj ? __defProp$I(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$s = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$l.call(b, prop))
-      __defNormalProp$A(a, prop, b[prop]);
-  if (__getOwnPropSymbols$l)
-    for (var prop of __getOwnPropSymbols$l(b)) {
-      if (__propIsEnum$l.call(b, prop))
-        __defNormalProp$A(a, prop, b[prop]);
+    if (__hasOwnProp$s.call(b, prop))
+      __defNormalProp$I(a, prop, b[prop]);
+  if (__getOwnPropSymbols$s)
+    for (var prop of __getOwnPropSymbols$s(b)) {
+      if (__propIsEnum$s.call(b, prop))
+        __defNormalProp$I(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$h = (a, b) => __defProps$h(a, __getOwnPropDescs$h(b));
+var __spreadProps$o = (a, b) => __defProps$o(a, __getOwnPropDescs$o(b));
 function mergeContentPacks(x, y) {
   return {
     backgrounds: mergeBackgrounds(x.backgrounds, y.backgrounds),
@@ -9510,7 +8264,7 @@ function mergeContentPacks(x, y) {
       x.fonts,
       y.fonts,
       (obj) => obj.id,
-      (xObj, yObj) => __spreadProps$h(__spreadValues$l({}, xObj), {
+      (xObj, yObj) => __spreadProps$o(__spreadValues$s({}, xObj), {
         files: mergeArrayUnique(xObj.files, yObj.files)
       })
     ),
@@ -9615,7 +8369,7 @@ function mergeCharacter(x, y) {
   };
 }
 function mergeStyleClasses(x, y) {
-  const ret = __spreadValues$l({}, x);
+  const ret = __spreadValues$s({}, x);
   for (const classKey in y) {
     if (!Object.prototype.hasOwnProperty.call(y, classKey))
       continue;
@@ -9626,7 +8380,7 @@ function mergeStyleClasses(x, y) {
   return ret;
 }
 function mergePose(x, y) {
-  const positions2 = __spreadValues$l({}, x.positions);
+  const positions2 = __spreadValues$s({}, x.positions);
   for (const key in y.positions) {
     if (positions2[key]) {
       positions2[key] = [...positions2[key], ...y.positions[key]];
@@ -9646,7 +8400,7 @@ function mergePose(x, y) {
   };
 }
 function mergeHeadCollections(x, y) {
-  const ret = __spreadValues$l({}, x);
+  const ret = __spreadValues$s({}, x);
   for (const headGroupKey in y) {
     if (!Object.prototype.hasOwnProperty.call(y, headGroupKey))
       continue;
@@ -9690,53 +8444,6 @@ function mergeIdArrays(x, y, getId2, merge2) {
     }
   }
   return ret;
-}
-function between(min, val, max) {
-  if (min > val)
-    return min;
-  if (val > max)
-    return max;
-  return val;
-}
-function mod(a, b) {
-  return (a % b + b) % b;
-}
-function matrixEquals(a, b) {
-  if (a === null && b === null)
-    return true;
-  if (a === null || b === null)
-    return false;
-  return a.a === b.a && a.b === b.b && a.c === b.c && a.d === b.d && a.e === b.e && a.f === b.f;
-}
-function decomposeMatrix(mat) {
-  const { a, b, c, d, e, f } = mat;
-  const delta = a * d - b * c;
-  const result = {
-    x: e,
-    y: f,
-    rotation: 0,
-    scaleX: 0,
-    scaleY: 0,
-    skewX: 0,
-    skewY: 0
-  };
-  if (a != 0 || b != 0) {
-    const r = Math.sqrt(a * a + b * b);
-    result.rotation = (b > 0 ? Math.acos(a / r) : -Math.acos(a / r)) / Math.PI * 180;
-    result.scaleX = r;
-    result.scaleY = delta / r;
-    result.skewX = Math.atan((a * c + b * d) / (r * r)) / Math.PI * 180;
-    result.skewY = 0;
-  } else if (c != 0 || d != 0) {
-    const s = Math.sqrt(c * c + d * d);
-    result.rotation = (Math.PI / 2 - (d > 0 ? Math.acos(-c / s) : -Math.acos(c / s))) / Math.PI * 180;
-    result.scaleX = delta / s;
-    result.scaleY = s;
-    result.skewX = 0;
-    result.skewY = Math.atan((a * c + b * d) / (s * s)) / Math.PI * 180;
-  } else
-    ;
-  return result;
 }
 function getDevtoolsGlobalHook() {
   return getTarget().__VUE_DEVTOOLS_GLOBAL_HOOK__;
@@ -11894,7 +10601,7 @@ function joinNormalize(base, sub, paths) {
     return sub;
   return base + sub;
 }
-var __async$F = (__this, __arguments, generator) => {
+var __async$G = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
       try {
@@ -11962,7 +10669,7 @@ const content = {
       dispatch2("panels/fixContentPackRemoval", oldState, { root: true });
     },
     replaceContentPack(_0, _1) {
-      return __async$F(this, arguments, function* ({ commit: commit2, state }, action) {
+      return __async$G(this, arguments, function* ({ commit: commit2, state }, action) {
         debugger;
         const convertedPack = action.processed ? action.contentPack : yield convertContentPack(action.contentPack);
         let packs = state.contentPacks;
@@ -11985,12 +10692,12 @@ const content = {
       });
     },
     loadContentPacks(_0, _1) {
-      return __async$F(this, arguments, function* ({ commit: commit2, state }, urls) {
+      return __async$G(this, arguments, function* ({ commit: commit2, state }, urls) {
         if (typeof urls === "string") {
           urls = [urls];
         }
         const contentPacks = yield Promise.all(
-          urls.map((url) => __async$F(this, null, function* () {
+          urls.map((url) => __async$G(this, null, function* () {
             return yield loadContentPack(url);
           }))
         );
@@ -12035,7 +10742,7 @@ const content = {
   }
 };
 function loadContentPack(url) {
-  return __async$F(this, null, function* () {
+  return __async$G(this, null, function* () {
     const response = yield fetch(url);
     if (!response.ok) {
       throw new Error(
@@ -12071,7 +10778,7 @@ function sortByDependencies(packs) {
   return packs;
 }
 function convertContentPack(pack) {
-  return __async$F(this, null, function* () {
+  return __async$G(this, null, function* () {
     const types = new Set(
       (yield isWebPSupported()) ? ["webp", ...baseTypes] : baseTypes
     );
@@ -12092,6 +10799,1396 @@ function convertContentPack(pack) {
       }
     );
   });
+}
+const screenWidth$1 = 1280;
+const screenHeight$1 = 720;
+const wheelInnerRadius$1 = 128;
+const wheelWidth$1 = 32;
+const WheelBackground$1 = "rgba(60,60,60,0.8)";
+const positions$1 = [
+  "4-1",
+  "3-1",
+  "2-1",
+  "4-2",
+  "center",
+  "4-3",
+  "2-2",
+  "3-3",
+  "4-4"
+];
+const sdCharacterScaleFactor$1 = 1;
+const hdCharacterScaleFactor$1 = 1 / 1.5;
+const CloseUpYOffset$1 = -74;
+const BaseCharacterYPos$1 = 358;
+const characterPositions$1 = [
+  200,
+  240,
+  400,
+  493,
+  640,
+  786,
+  880,
+  1040,
+  1080
+];
+const Base$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  screenWidth: screenWidth$1,
+  screenHeight: screenHeight$1,
+  wheelInnerRadius: wheelInnerRadius$1,
+  wheelWidth: wheelWidth$1,
+  WheelBackground: WheelBackground$1,
+  positions: positions$1,
+  sdCharacterScaleFactor: sdCharacterScaleFactor$1,
+  hdCharacterScaleFactor: hdCharacterScaleFactor$1,
+  CloseUpYOffset: CloseUpYOffset$1,
+  BaseCharacterYPos: BaseCharacterYPos$1,
+  characterPositions: characterPositions$1
+}, Symbol.toStringTag, { value: "Module" }));
+var __defProp$H = Object.defineProperty;
+var __defNormalProp$H = (obj, key, value) => key in obj ? __defProp$H(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$i = (obj, key, value) => {
+  __defNormalProp$H(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+const _RGBAColor = class {
+  constructor(r, g, b, a) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+    this.a = a;
+    Object.freeze(this);
+  }
+  static validCss(str) {
+    return this.validCssRgb(str) || this.validHex(str);
+  }
+  static fromCss(str) {
+    if (this.validCssRgb(str)) {
+      return this.fromCssRgb(str);
+    }
+    if (this.validHex(str)) {
+      return this.fromHex(str);
+    }
+    throw new Error("Invalid RGB color format");
+  }
+  static validCssRgb(str) {
+    return this.rgbEx.test(str) || this.rgbaEx.test(str);
+  }
+  static fromCssRgb(str) {
+    if (!this.validCssRgb(str))
+      throw new Error("Invalid RGB color format");
+    const rgbHead = str.slice(0, -1);
+    const parentesisPos = rgbHead.indexOf("(");
+    const rbgTail = rgbHead.slice(parentesisPos + 1);
+    const elements = rbgTail.split(",").map((x) => parseFloat(x.trim()));
+    return new _RGBAColor(
+      elements[0],
+      elements[1],
+      elements[2],
+      elements.length === 4 ? elements[3] : 1
+    );
+  }
+  static validHex(str) {
+    return this.hexShortEx.test(str) || this.hexLongEx.test(str);
+  }
+  static fromHex(str) {
+    if (!this.validHex(str))
+      throw new Error("Invalid Hex color format");
+    const hexTail = str.slice(1);
+    if (hexTail.length === 3) {
+      return new _RGBAColor(
+        parseInt(hexTail[0] + hexTail[0], 16),
+        parseInt(hexTail[1] + hexTail[1], 16),
+        parseInt(hexTail[2] + hexTail[2], 16),
+        1
+      );
+    }
+    if (hexTail.length === 4) {
+      return new _RGBAColor(
+        parseInt(hexTail[0] + hexTail[0], 16),
+        parseInt(hexTail[1] + hexTail[1], 16),
+        parseInt(hexTail[2] + hexTail[2], 16),
+        parseInt(hexTail[3] + hexTail[3], 16) / 255
+      );
+    }
+    if (hexTail.length === 6) {
+      return new _RGBAColor(
+        parseInt(hexTail[0] + hexTail[1], 16),
+        parseInt(hexTail[2] + hexTail[3], 16),
+        parseInt(hexTail[4] + hexTail[5], 16),
+        1
+      );
+    }
+    if (hexTail.length === 8) {
+      return new _RGBAColor(
+        parseInt(hexTail[0] + hexTail[1], 16),
+        parseInt(hexTail[2] + hexTail[3], 16),
+        parseInt(hexTail[4] + hexTail[5], 16),
+        parseInt(hexTail[6] + hexTail[7], 16) / 255
+      );
+    }
+    throw new Error("Invalid Hex color format length");
+  }
+  toCss() {
+    if (this.a > 1) {
+      return `rgb(${this.r},${this.g},${this.b})`;
+    }
+    return `rgba(${this.r},${this.g},${this.b},${this.a})`;
+  }
+  toHex() {
+    return `#${Math.round(this.r).toString(16).padStart(2, "0")}${Math.round(
+      this.g
+    ).toString(16).padStart(2, "0")}${Math.round(this.b).toString(16).padStart(2, "0")}${Math.round(this.a * 255).toString(16).padStart(2, "0")}`;
+  }
+  toRgb() {
+    return this;
+  }
+  toHSL() {
+    let { r, g, b } = this;
+    const { a } = this;
+    r /= 255;
+    g /= 255;
+    b /= 255;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h2;
+    let s;
+    const l = (max + min) / 2;
+    if (max === min) {
+      h2 = s = 0;
+    } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r:
+          h2 = (g - b) / d + (g < b ? 6 : 0);
+          break;
+        case g:
+          h2 = (b - r) / d + 2;
+          break;
+        case b:
+          h2 = (r - g) / d + 4;
+          break;
+      }
+      h2 /= 6;
+    }
+    return new HSLAColor(h2, s, l, a);
+  }
+  get luminance() {
+    return Math.sqrt(
+      Math.pow(0.299 * (this.r / 255), 2) + Math.pow(0.587 * (this.g / 255), 2) + Math.pow(0.114 * (this.b / 255), 2)
+    );
+  }
+};
+let RGBAColor = _RGBAColor;
+__publicField$i(RGBAColor, "rgbEx", /^rgb\((\d*?),(\d*?),(\d*?)\)$/i);
+__publicField$i(RGBAColor, "rgbaEx", /^rgba\((\d{1,3}),(\d{1,3}),(\d{1,3}),([\d.]+)\)$/i);
+__publicField$i(RGBAColor, "hexShortEx", /^#[0-9A-F]{3,4}$/i);
+__publicField$i(RGBAColor, "hexLongEx", /^#[0-9A-F]{6,8}$/i);
+class HSLAColor {
+  constructor(h2, s, l, a) {
+    this.h = h2;
+    this.s = s;
+    this.l = l;
+    this.a = a;
+    Object.freeze(this);
+  }
+  toCss() {
+    if (this.a >= 1) {
+      return `hsl(${this.h}, ${this.s}, ${this.l})`;
+    }
+    return `hsla(${this.h}, ${this.s}, ${this.l}, ${this.a})`;
+  }
+  shift(deltas) {
+    let { h: h2, s, l, a } = this;
+    h2 += deltas.h;
+    if (h2 >= 1) {
+      h2 -= 1;
+    } else if (h2 < 0) {
+      h2 += 1;
+    }
+    if (s + deltas.s > 1) {
+      s -= deltas.s;
+    } else {
+      s += deltas.s;
+      if (s < 0) {
+        s = 0;
+      }
+    }
+    if (l + deltas.l > 1 || l + deltas.l < 0) {
+      l -= deltas.l;
+    } else {
+      l += deltas.l;
+    }
+    if (a + deltas.a > 1 || a + deltas.a < 0) {
+      a -= deltas.a;
+    } else {
+      a += deltas.a;
+    }
+    return new HSLAColor(h2, s, l, a);
+  }
+  toRgb() {
+    const { h: h2, s, l, a } = this;
+    let r;
+    let g;
+    let b;
+    if (s === 0) {
+      r = g = b = l;
+    } else {
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p2 = 2 * l - q;
+      r = HSLAColor.hue2rgb(p2, q, h2 + 1 / 3);
+      g = HSLAColor.hue2rgb(p2, q, h2);
+      b = HSLAColor.hue2rgb(p2, q, h2 - 1 / 3);
+    }
+    return new RGBAColor(
+      Math.round(r * 255),
+      Math.round(g * 255),
+      Math.round(b * 255),
+      a
+    );
+  }
+  toHSL() {
+    return this;
+  }
+  static hue2rgb(p2, q, t) {
+    if (t < 0)
+      t += 1;
+    if (t > 1)
+      t -= 1;
+    if (t < 1 / 6)
+      return p2 + (q - p2) * 6 * t;
+    if (t < 1 / 2)
+      return q;
+    if (t < 2 / 3)
+      return p2 + (q - p2) * (2 / 3 - t) * 6;
+    return p2;
+  }
+}
+const nameboxTextOutlineDelta$3 = new HSLAColor(
+  -0.03065134099616873,
+  -0.5714285714285714,
+  -0.29607843137254897,
+  0
+);
+const ChoiceButtonColor$1 = "#ffe6f4";
+const ChoiceButtonBorderColor$1 = "#ffbde1";
+const ChoiceButtonWidth$1 = 420;
+const ChoiceSpacing$1 = 22;
+const ChoiceX$1 = 640;
+const ChoiceYOffset$1 = 270;
+const ChoicePadding$1 = 7;
+const Outline$1 = 3;
+const ChoiceOuterPadding$1 = Math.ceil(Outline$1 / 2);
+const ChoiceY$1 = (screenHeight$1 - ChoiceYOffset$1) / 2;
+const ChoiceTextStyle$1 = {
+  alpha: 1,
+  color: "black",
+  fontName: "aller",
+  fontSize: 24,
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 0,
+  lineSpacing: 1,
+  strokeColor: "",
+  strokeWidth: 0
+};
+const Choices$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  nameboxTextOutlineDelta: nameboxTextOutlineDelta$3,
+  ChoiceButtonColor: ChoiceButtonColor$1,
+  ChoiceButtonBorderColor: ChoiceButtonBorderColor$1,
+  ChoiceButtonWidth: ChoiceButtonWidth$1,
+  ChoiceSpacing: ChoiceSpacing$1,
+  ChoiceX: ChoiceX$1,
+  ChoiceYOffset: ChoiceYOffset$1,
+  ChoicePadding: ChoicePadding$1,
+  Outline: Outline$1,
+  ChoiceOuterPadding: ChoiceOuterPadding$1,
+  ChoiceY: ChoiceY$1,
+  ChoiceTextStyle: ChoiceTextStyle$1
+}, Symbol.toStringTag, { value: "Module" }));
+const textboxDefaultColor$1 = "#ffa8d2";
+const controlsDefaultColor$1 = "#552222";
+const nameboxDefaultColor$1 = "#ffeef6";
+const nameboxStrokeDefaultColor$1 = "#bb5599";
+const nameboxTextOutlineDelta$2 = new HSLAColor(
+  -0.03065134099616873,
+  -0.5714285714285714,
+  -0.29607843137254897,
+  0
+);
+const nameboxBackgroundDelta$1 = new HSLAColor(
+  0.002028397565922768,
+  0,
+  0.13725490196078438,
+  0
+);
+const nameboxGradientMiddleStopPosition$1 = 0.82;
+const nameboxGradientEndDelta$1 = new HSLAColor(
+  -0.004901960784313708,
+  -0.8599999999999999,
+  -0.16274509803921566,
+  0
+);
+const nameboxRounding$1 = 12;
+const nameboxRoundingBuffer$1 = 1.5;
+const textboxRounding$1 = 12;
+const textboxRoundingBuffer$1 = 1.5;
+const nameColorThreshold$1 = 0.6;
+const controlColorDelta$1 = new HSLAColor(
+  0.08045977011494243,
+  -0.5714285714285714,
+  -0.5960784313725489,
+  0
+);
+const controlDisableColorDelta$1 = new HSLAColor(
+  0,
+  -0.14285714285714296,
+  0.3,
+  0
+);
+const dotColorDelta$1 = new HSLAColor(
+  0.004269293924466178,
+  -0.01869158878504662,
+  -0.039215686274509665,
+  0
+);
+const dotRadius$1 = 9.5;
+const dotPatternSize$1 = 47;
+const textboxOutlineColorDelta$1 = new HSLAColor(
+  0.0023347701149424305,
+  0,
+  0.10784313725490202,
+  0
+);
+const textboxOutlineWidth$1 = 3;
+const CustomTBConstants$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  textboxDefaultColor: textboxDefaultColor$1,
+  controlsDefaultColor: controlsDefaultColor$1,
+  nameboxDefaultColor: nameboxDefaultColor$1,
+  nameboxStrokeDefaultColor: nameboxStrokeDefaultColor$1,
+  nameboxTextOutlineDelta: nameboxTextOutlineDelta$2,
+  nameboxBackgroundDelta: nameboxBackgroundDelta$1,
+  nameboxGradientMiddleStopPosition: nameboxGradientMiddleStopPosition$1,
+  nameboxGradientEndDelta: nameboxGradientEndDelta$1,
+  nameboxRounding: nameboxRounding$1,
+  nameboxRoundingBuffer: nameboxRoundingBuffer$1,
+  textboxRounding: textboxRounding$1,
+  textboxRoundingBuffer: textboxRoundingBuffer$1,
+  nameColorThreshold: nameColorThreshold$1,
+  controlColorDelta: controlColorDelta$1,
+  controlDisableColorDelta: controlDisableColorDelta$1,
+  dotColorDelta: dotColorDelta$1,
+  dotRadius: dotRadius$1,
+  dotPatternSize: dotPatternSize$1,
+  textboxOutlineColorDelta: textboxOutlineColorDelta$1,
+  textboxOutlineWidth: textboxOutlineWidth$1
+}, Symbol.toStringTag, { value: "Module" }));
+var __defProp$G = Object.defineProperty;
+var __defProps$n = Object.defineProperties;
+var __getOwnPropDescs$n = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$r = Object.getOwnPropertySymbols;
+var __hasOwnProp$r = Object.prototype.hasOwnProperty;
+var __propIsEnum$r = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$G = (obj, key, value) => key in obj ? __defProp$G(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$r = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$r.call(b, prop))
+      __defNormalProp$G(a, prop, b[prop]);
+  if (__getOwnPropSymbols$r)
+    for (var prop of __getOwnPropSymbols$r(b)) {
+      if (__propIsEnum$r.call(b, prop))
+        __defNormalProp$G(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$n = (a, b) => __defProps$n(a, __getOwnPropDescs$n(b));
+const TextBoxWidth$1 = 816;
+const TextBoxCorruptedWidth$1 = 900;
+const TextBoxHeight$1 = 146;
+const TextBoxKerning$1 = 0;
+const TextBoxLineHeight$1 = 29;
+const TextBoxCorruptedKerning$1 = 8;
+const TextBoxTextXOffset$1 = 38;
+const TextBoxTextYOffset$1 = 44;
+const TextBoxBottomSpacing$1 = 6;
+const HdSpacing = 93;
+const HdSideMargin = 404;
+const TextBoxTextCorruptedXOffset$1 = 9;
+const TextBoxTextCorruptedYOffset$1 = 9;
+const NameboxHeight$1 = 39;
+const NameboxWidth$1 = 168;
+const NameboxXOffset$1 = 34;
+const NameboxTextYOffset$1 = 29;
+const ControlsYBottomOffset$1 = 12;
+const ControlsXHistoryOffset$1 = -126;
+const ControlsXSkipOffset$1 = -72;
+const ControlsXStuffOffset$1 = -38;
+const ArrowXRightOffset$1 = 30.75;
+const ArrowYBottomOffset$1 = 26;
+const GlowRX$1 = 426;
+const GlowRY$1 = 58;
+const BaseTextStyle$1 = {
+  alpha: 1,
+  color: "black",
+  fontName: "aller",
+  fontSize: 24,
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 0,
+  lineSpacing: 1,
+  strokeColor: "",
+  strokeWidth: 0
+};
+const NameboxTextStyle$1 = __spreadProps$n(__spreadValues$r({}, BaseTextStyle$1), {
+  fontName: "riffic",
+  fontSize: 24,
+  strokeColor: nameboxStrokeDefaultColor$1,
+  strokeWidth: 6,
+  color: "white",
+  letterSpacing: 1
+});
+const ControlsTextStyle$1 = {
+  align: "left",
+  font: "13px aller",
+  fill: {
+    style: "#522"
+  }
+};
+const ControlsTextDisabledStyle$1 = __spreadProps$n(__spreadValues$r({}, ControlsTextStyle$1), {
+  fill: {
+    style: "#a66"
+  }
+});
+const TextBoxCorruptedStyle$1 = {
+  align: "left",
+  font: "24px verily",
+  outline: {
+    style: "#000",
+    width: 20
+  },
+  fill: {
+    style: "#fff"
+  }
+};
+const TextBoxStyle$1 = {
+  alpha: 1,
+  color: "#ffffff",
+  fontName: "aller",
+  fontSize: 24,
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 0,
+  strokeColor: "#523140",
+  strokeWidth: 4,
+  lineSpacing: 1.2
+};
+const TextBoxX$1 = screenWidth$1 / 2 - TextBoxWidth$1 / 2;
+const TextBoxCorruptedX$1 = screenWidth$1 / 2 - TextBoxCorruptedWidth$1 / 2;
+const TextBoxTextX$1 = TextBoxX$1 + TextBoxTextXOffset$1;
+const NameboxX$1 = TextBoxX$1 + NameboxXOffset$1;
+const NameboxTextX$1 = NameboxX$1 + NameboxWidth$1 / 2;
+const ControlsXHistory$1 = TextBoxX$1 + ControlsXHistoryOffset$1;
+const ControlsXSkip$1 = TextBoxX$1 + ControlsXSkipOffset$1;
+const ControlsXStuff$1 = TextBoxX$1 + ControlsXStuffOffset$1;
+const DefaultTextboxStyle$1 = "normal";
+const TextBox$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  TextBoxWidth: TextBoxWidth$1,
+  TextBoxCorruptedWidth: TextBoxCorruptedWidth$1,
+  TextBoxHeight: TextBoxHeight$1,
+  TextBoxKerning: TextBoxKerning$1,
+  TextBoxLineHeight: TextBoxLineHeight$1,
+  TextBoxCorruptedKerning: TextBoxCorruptedKerning$1,
+  TextBoxTextXOffset: TextBoxTextXOffset$1,
+  TextBoxTextYOffset: TextBoxTextYOffset$1,
+  TextBoxBottomSpacing: TextBoxBottomSpacing$1,
+  HdSpacing,
+  HdSideMargin,
+  TextBoxTextCorruptedXOffset: TextBoxTextCorruptedXOffset$1,
+  TextBoxTextCorruptedYOffset: TextBoxTextCorruptedYOffset$1,
+  NameboxHeight: NameboxHeight$1,
+  NameboxWidth: NameboxWidth$1,
+  NameboxXOffset: NameboxXOffset$1,
+  NameboxTextYOffset: NameboxTextYOffset$1,
+  ControlsYBottomOffset: ControlsYBottomOffset$1,
+  ControlsXHistoryOffset: ControlsXHistoryOffset$1,
+  ControlsXSkipOffset: ControlsXSkipOffset$1,
+  ControlsXStuffOffset: ControlsXStuffOffset$1,
+  ArrowXRightOffset: ArrowXRightOffset$1,
+  ArrowYBottomOffset: ArrowYBottomOffset$1,
+  GlowRX: GlowRX$1,
+  GlowRY: GlowRY$1,
+  BaseTextStyle: BaseTextStyle$1,
+  NameboxTextStyle: NameboxTextStyle$1,
+  ControlsTextStyle: ControlsTextStyle$1,
+  ControlsTextDisabledStyle: ControlsTextDisabledStyle$1,
+  TextBoxCorruptedStyle: TextBoxCorruptedStyle$1,
+  TextBoxStyle: TextBoxStyle$1,
+  TextBoxX: TextBoxX$1,
+  TextBoxCorruptedX: TextBoxCorruptedX$1,
+  TextBoxTextX: TextBoxTextX$1,
+  NameboxX: NameboxX$1,
+  NameboxTextX: NameboxTextX$1,
+  ControlsXHistory: ControlsXHistory$1,
+  ControlsXSkip: ControlsXSkip$1,
+  ControlsXStuff: ControlsXStuff$1,
+  DefaultTextboxStyle: DefaultTextboxStyle$1
+}, Symbol.toStringTag, { value: "Module" }));
+var __defProp$F = Object.defineProperty;
+var __defProps$m = Object.defineProperties;
+var __getOwnPropDescs$m = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$q = Object.getOwnPropertySymbols;
+var __hasOwnProp$q = Object.prototype.hasOwnProperty;
+var __propIsEnum$q = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$F = (obj, key, value) => key in obj ? __defProp$F(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$q = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$q.call(b, prop))
+      __defNormalProp$F(a, prop, b[prop]);
+  if (__getOwnPropSymbols$q)
+    for (var prop of __getOwnPropSymbols$q(b)) {
+      if (__propIsEnum$q.call(b, prop))
+        __defNormalProp$F(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$m = (a, b) => __defProps$m(a, __getOwnPropDescs$m(b));
+const NotificationBackgroundColor$1 = "#ffe6f4";
+const NotificationBorderColor$1 = "#ffbde1";
+const NotificationBackdropColor$1 = "rgba(255,255,255,0.6)";
+const NotificationPadding$1 = 40;
+const NotificationSpacing$1 = 30;
+const NotificationOkTextStyle$1 = __spreadProps$m(__spreadValues$q({}, BaseTextStyle$1), {
+  fontName: "riffic",
+  fontSize: 24,
+  strokeColor: nameboxStrokeDefaultColor$1,
+  strokeWidth: 8,
+  letterSpacing: 1,
+  color: "white"
+});
+const NotificationTextStyle$1 = {
+  alpha: 1,
+  color: "black",
+  fontName: "aller",
+  fontSize: 24,
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 0,
+  lineSpacing: 1.2,
+  strokeColor: "",
+  strokeWidth: 0
+};
+const Notification$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  NotificationBackgroundColor: NotificationBackgroundColor$1,
+  NotificationBorderColor: NotificationBorderColor$1,
+  NotificationBackdropColor: NotificationBackdropColor$1,
+  NotificationPadding: NotificationPadding$1,
+  NotificationSpacing: NotificationSpacing$1,
+  NotificationOkTextStyle: NotificationOkTextStyle$1,
+  NotificationTextStyle: NotificationTextStyle$1
+}, Symbol.toStringTag, { value: "Module" }));
+var __defProp$E = Object.defineProperty;
+var __defProps$l = Object.defineProperties;
+var __getOwnPropDescs$l = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$p = Object.getOwnPropertySymbols;
+var __hasOwnProp$p = Object.prototype.hasOwnProperty;
+var __propIsEnum$p = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$E = (obj, key, value) => key in obj ? __defProp$E(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$p = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$p.call(b, prop))
+      __defNormalProp$E(a, prop, b[prop]);
+  if (__getOwnPropSymbols$p)
+    for (var prop of __getOwnPropSymbols$p(b)) {
+      if (__propIsEnum$p.call(b, prop))
+        __defNormalProp$E(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$l = (a, b) => __defProps$l(a, __getOwnPropDescs$l(b));
+const poemBackgrounds$1 = [
+  { name: "Normal paper", file: "poem.jpg" },
+  { name: "Lightly soiled paper", file: "poem_y1.jpg" },
+  { name: "Heavily soiled paper", file: "poem_y2.jpg" },
+  { name: "Console", file: "internal:console" },
+  { name: "Transparent", file: "internal:transparent" }
+];
+const defaultPoemBackground$1 = 0;
+const defaultPoemStyle$1 = 0;
+const defaultX$1 = screenWidth$1 / 2;
+const defaultY$1 = screenHeight$1 / 2;
+const poemTopPadding$1 = 33;
+const poemBottomPadding$1 = 100;
+const poemPadding$1 = 30;
+const defaultPoemWidth$1 = 800;
+const defaultPoemHeight$1 = 720;
+const backgroundScale$1 = sdCharacterScaleFactor$1;
+const consoleBackgroundColor$1 = "#333333bf";
+const consoleWidth$1 = 480;
+const consoleHeight$1 = 180;
+const defaultConsoleBackground$1 = 3;
+const defaultConsoleStyle$1 = 7;
+const BasePoemStyle$1 = {
+  alpha: 1,
+  color: "black",
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 0,
+  lineSpacing: 1.2,
+  strokeColor: "",
+  strokeWidth: 0,
+  fontName: "aller",
+  fontSize: 12
+};
+const poemTextStyles$1 = [
+  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
+    name: "Sayori",
+    fontName: "hashtag",
+    fontSize: 34,
+    lineSpacing: 1.05,
+    letterSpacing: 0
+  }),
+  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
+    name: "Natsuki",
+    fontName: "ammy_handwriting",
+    fontSize: 28
+  }),
+  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
+    name: "Monika",
+    fontName: "journal",
+    fontSize: 34
+  }),
+  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
+    name: "Yuri",
+    fontName: "jp_hand_slanted",
+    lineSpacing: 1.5,
+    fontSize: 32
+  }),
+  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
+    name: "Yuri Act 2",
+    fontName: "damagrafik_script",
+    fontSize: 18,
+    letterSpacing: -8
+  }),
+  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
+    name: "Yuri Unused",
+    fontName: "as_i_lay_dying",
+    fontSize: 40
+  }),
+  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
+    name: "MC",
+    fontName: "halogen",
+    fontSize: 30,
+    lineSpacing: 1.53
+  }),
+  __spreadProps$l(__spreadValues$p({}, BasePoemStyle$1), {
+    name: "Console",
+    fontName: "f25_bank_printer",
+    fontSize: 18,
+    color: "white",
+    lineSpacing: 1.1
+  })
+];
+const Poem$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  poemBackgrounds: poemBackgrounds$1,
+  defaultPoemBackground: defaultPoemBackground$1,
+  defaultPoemStyle: defaultPoemStyle$1,
+  defaultX: defaultX$1,
+  defaultY: defaultY$1,
+  poemTopPadding: poemTopPadding$1,
+  poemBottomPadding: poemBottomPadding$1,
+  poemPadding: poemPadding$1,
+  defaultPoemWidth: defaultPoemWidth$1,
+  defaultPoemHeight: defaultPoemHeight$1,
+  backgroundScale: backgroundScale$1,
+  consoleBackgroundColor: consoleBackgroundColor$1,
+  consoleWidth: consoleWidth$1,
+  consoleHeight: consoleHeight$1,
+  defaultConsoleBackground: defaultConsoleBackground$1,
+  defaultConsoleStyle: defaultConsoleStyle$1,
+  poemTextStyles: poemTextStyles$1
+}, Symbol.toStringTag, { value: "Module" }));
+const Ddlc = {
+  Base: Base$1,
+  Choices: Choices$1,
+  Notification: Notification$2,
+  Poem: Poem$2,
+  TextBox: TextBox$2,
+  TextBoxCustom: CustomTBConstants$1
+};
+const screenWidth = 1920;
+const screenHeight = 1080;
+const wheelInnerRadius = 128;
+const wheelWidth = 32;
+const WheelBackground = "rgba(60,60,60,0.8)";
+const positions = [
+  "4-1",
+  "3-1",
+  "2-1",
+  "4-2",
+  "center",
+  "4-3",
+  "2-2",
+  "3-3",
+  "4-4"
+];
+const sdCharacterScaleFactor = 1.5;
+const hdCharacterScaleFactor = 1;
+const CloseUpYOffset = -111;
+const BaseCharacterYPos = 537;
+const characterPositions = [
+  300,
+  360,
+  600,
+  740,
+  960,
+  1180,
+  1320,
+  1560,
+  1620
+];
+const Base = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  screenWidth,
+  screenHeight,
+  wheelInnerRadius,
+  wheelWidth,
+  WheelBackground,
+  positions,
+  sdCharacterScaleFactor,
+  hdCharacterScaleFactor,
+  CloseUpYOffset,
+  BaseCharacterYPos,
+  characterPositions
+}, Symbol.toStringTag, { value: "Module" }));
+const nameboxTextOutlineDelta$1 = new HSLAColor(
+  -0.03065134099616873,
+  -0.5714285714285714,
+  -0.29607843137254897,
+  0
+);
+const ChoiceButtonColor = "#ffe6f4";
+const ChoiceButtonBorderColor = "#ffbde1";
+const ChoiceButtonWidth = 630;
+const ChoiceSpacing = 33;
+const ChoiceX = 960;
+const ChoiceYOffset = 405;
+const ChoicePadding = 10.5;
+const Outline = 4.5;
+const ChoiceOuterPadding = Math.ceil(Outline / 2);
+const ChoiceY = (screenHeight - ChoiceYOffset) / 2;
+const ChoiceTextStyle = {
+  alpha: 1,
+  color: "black",
+  fontName: "aller",
+  fontSize: 36,
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 0,
+  lineSpacing: 1,
+  strokeColor: "",
+  strokeWidth: 0
+};
+const Choices = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  nameboxTextOutlineDelta: nameboxTextOutlineDelta$1,
+  ChoiceButtonColor,
+  ChoiceButtonBorderColor,
+  ChoiceButtonWidth,
+  ChoiceSpacing,
+  ChoiceX,
+  ChoiceYOffset,
+  ChoicePadding,
+  Outline,
+  ChoiceOuterPadding,
+  ChoiceY,
+  ChoiceTextStyle
+}, Symbol.toStringTag, { value: "Module" }));
+const textboxDefaultColor = "#ffa8d2";
+const controlsDefaultColor = "#552222";
+const nameboxDefaultColor = "#ffeef6";
+const nameboxStrokeDefaultColor = "#bb5599";
+const nameboxTextOutlineDelta = new HSLAColor(
+  -0.03065134099616873,
+  -0.5714285714285714,
+  -0.29607843137254897,
+  0
+);
+const nameboxBackgroundDelta = new HSLAColor(
+  0.002028397565922768,
+  0,
+  0.13725490196078438,
+  0
+);
+const nameboxGradientMiddleStopPosition = 0.82;
+const nameboxGradientEndDelta = new HSLAColor(
+  -0.004901960784313708,
+  -0.8599999999999999,
+  -0.16274509803921566,
+  0
+);
+const nameboxRounding = 15;
+const nameboxRoundingBuffer = 1.5;
+const textboxRounding = 19;
+const textboxRoundingBuffer = 1.5;
+const nameColorThreshold = 0.6;
+const controlColorDelta = new HSLAColor(
+  0.08045977011494243,
+  -0.5714285714285714,
+  -0.5960784313725489,
+  0
+);
+const controlDisableColorDelta = new HSLAColor(
+  0,
+  -0.14285714285714296,
+  0.3,
+  0
+);
+const dotColorDelta = new HSLAColor(
+  0.004269293924466178,
+  -0.01869158878504662,
+  -0.039215686274509665,
+  0
+);
+const dotRadius = 9.5 * 1.5;
+const dotPatternSize = 47 * 1.5;
+const textboxOutlineColorDelta = new HSLAColor(
+  0.0023347701149424305,
+  0,
+  0.10784313725490202,
+  0
+);
+const textboxOutlineWidth = 5;
+const CustomTBConstants = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  textboxDefaultColor,
+  controlsDefaultColor,
+  nameboxDefaultColor,
+  nameboxStrokeDefaultColor,
+  nameboxTextOutlineDelta,
+  nameboxBackgroundDelta,
+  nameboxGradientMiddleStopPosition,
+  nameboxGradientEndDelta,
+  nameboxRounding,
+  nameboxRoundingBuffer,
+  textboxRounding,
+  textboxRoundingBuffer,
+  nameColorThreshold,
+  controlColorDelta,
+  controlDisableColorDelta,
+  dotColorDelta,
+  dotRadius,
+  dotPatternSize,
+  textboxOutlineColorDelta,
+  textboxOutlineWidth
+}, Symbol.toStringTag, { value: "Module" }));
+var __defProp$D = Object.defineProperty;
+var __defProps$k = Object.defineProperties;
+var __getOwnPropDescs$k = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$o = Object.getOwnPropertySymbols;
+var __hasOwnProp$o = Object.prototype.hasOwnProperty;
+var __propIsEnum$o = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$D = (obj, key, value) => key in obj ? __defProp$D(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$o = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$o.call(b, prop))
+      __defNormalProp$D(a, prop, b[prop]);
+  if (__getOwnPropSymbols$o)
+    for (var prop of __getOwnPropSymbols$o(b)) {
+      if (__propIsEnum$o.call(b, prop))
+        __defNormalProp$D(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$k = (a, b) => __defProps$k(a, __getOwnPropDescs$k(b));
+const TextBoxWidth = 1220;
+const TextBoxCorruptedWidth = 900;
+const TextBoxHeight = 219;
+const TextBoxKerning = 0;
+const TextBoxLineHeight = 29;
+const TextBoxCorruptedKerning = 8;
+const TextBoxTextXOffset = 57;
+const TextBoxTextYOffset = 68;
+const TextBoxBottomSpacing = 54;
+const TextBoxTextCorruptedXOffset = 9;
+const TextBoxTextCorruptedYOffset = 9;
+const NameboxHeight = 59;
+const NameboxWidth = 252;
+const NameboxXOffset = 49;
+const NameboxTextYOffset = 43;
+const ControlsYBottomOffset = 12 * 1.5;
+const ControlsXHistoryOffset = -126 * 1.5;
+const ControlsXSkipOffset = -72 * 1.5;
+const ControlsXStuffOffset = -38 * 1.5;
+const ArrowXRightOffset = 30.75 * 1.5;
+const ArrowYBottomOffset = 26 * 1.5;
+const GlowRX = 426 * 1.5;
+const GlowRY = 58 * 1.5;
+const BaseTextStyle = {
+  alpha: 1,
+  color: "black",
+  fontName: "aller",
+  fontSize: 24,
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 1,
+  lineSpacing: 1.2,
+  strokeColor: "",
+  strokeWidth: 0
+};
+const NameboxTextStyle = __spreadProps$k(__spreadValues$o({}, BaseTextStyle), {
+  fontName: "riffic",
+  fontSize: 36,
+  strokeColor: nameboxStrokeDefaultColor,
+  strokeWidth: 9,
+  color: "white",
+  letterSpacing: 2
+});
+const ControlsTextStyle = {
+  align: "left",
+  font: "24px aller",
+  fill: {
+    style: "#522"
+  }
+};
+const ControlsTextDisabledStyle = __spreadProps$k(__spreadValues$o({}, ControlsTextStyle), {
+  fill: {
+    style: "#a66"
+  }
+});
+const TextBoxStyle = {
+  alpha: 1,
+  color: "#ffffff",
+  fontName: "aller",
+  fontSize: 30,
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 0,
+  strokeColor: "#523140",
+  strokeWidth: 5,
+  lineSpacing: 1.2
+};
+const TextBoxCorruptedStyle = {
+  align: "left",
+  font: "24px verily",
+  outline: {
+    style: "#000",
+    width: 20
+  },
+  fill: {
+    style: "#fff"
+  }
+};
+const TextBoxX = screenWidth / 2 - TextBoxWidth / 2;
+const TextBoxCorruptedX = screenWidth / 2 - TextBoxCorruptedWidth / 2;
+const TextBoxTextX = TextBoxX + TextBoxTextXOffset;
+const NameboxX = TextBoxX + NameboxXOffset;
+const NameboxTextX = NameboxX + NameboxWidth / 2;
+const ControlsXHistory = TextBoxX + ControlsXHistoryOffset;
+const ControlsXSkip = TextBoxX + ControlsXSkipOffset;
+const ControlsXStuff = TextBoxX + ControlsXStuffOffset;
+const DefaultTextboxStyle = "custom_plus";
+const TextBox$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  TextBoxWidth,
+  TextBoxCorruptedWidth,
+  TextBoxHeight,
+  TextBoxKerning,
+  TextBoxLineHeight,
+  TextBoxCorruptedKerning,
+  TextBoxTextXOffset,
+  TextBoxTextYOffset,
+  TextBoxBottomSpacing,
+  TextBoxTextCorruptedXOffset,
+  TextBoxTextCorruptedYOffset,
+  NameboxHeight,
+  NameboxWidth,
+  NameboxXOffset,
+  NameboxTextYOffset,
+  ControlsYBottomOffset,
+  ControlsXHistoryOffset,
+  ControlsXSkipOffset,
+  ControlsXStuffOffset,
+  ArrowXRightOffset,
+  ArrowYBottomOffset,
+  GlowRX,
+  GlowRY,
+  BaseTextStyle,
+  NameboxTextStyle,
+  ControlsTextStyle,
+  ControlsTextDisabledStyle,
+  TextBoxStyle,
+  TextBoxCorruptedStyle,
+  TextBoxX,
+  TextBoxCorruptedX,
+  TextBoxTextX,
+  NameboxX,
+  NameboxTextX,
+  ControlsXHistory,
+  ControlsXSkip,
+  ControlsXStuff,
+  DefaultTextboxStyle
+}, Symbol.toStringTag, { value: "Module" }));
+var __defProp$C = Object.defineProperty;
+var __defProps$j = Object.defineProperties;
+var __getOwnPropDescs$j = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$n = Object.getOwnPropertySymbols;
+var __hasOwnProp$n = Object.prototype.hasOwnProperty;
+var __propIsEnum$n = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$C = (obj, key, value) => key in obj ? __defProp$C(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$n = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$n.call(b, prop))
+      __defNormalProp$C(a, prop, b[prop]);
+  if (__getOwnPropSymbols$n)
+    for (var prop of __getOwnPropSymbols$n(b)) {
+      if (__propIsEnum$n.call(b, prop))
+        __defNormalProp$C(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$j = (a, b) => __defProps$j(a, __getOwnPropDescs$j(b));
+const NotificationBackgroundColor = "#ffe6f4";
+const NotificationBorderColor = "#ffbde1";
+const NotificationBackdropColor = "rgba(255,255,255,0.6)";
+const NotificationPadding = 60;
+const NotificationSpacing = 45;
+const NotificationOkTextStyle = __spreadProps$j(__spreadValues$n({}, BaseTextStyle), {
+  fontName: "riffic",
+  fontSize: 36,
+  strokeColor: nameboxStrokeDefaultColor,
+  strokeWidth: 12,
+  letterSpacing: 1,
+  color: "white"
+});
+const NotificationTextStyle = {
+  alpha: 1,
+  color: "black",
+  fontName: "aller",
+  fontSize: 36,
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 0,
+  lineSpacing: 1.2,
+  strokeColor: "",
+  strokeWidth: 0
+};
+const Notification$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  NotificationBackgroundColor,
+  NotificationBorderColor,
+  NotificationBackdropColor,
+  NotificationPadding,
+  NotificationSpacing,
+  NotificationOkTextStyle,
+  NotificationTextStyle
+}, Symbol.toStringTag, { value: "Module" }));
+var __defProp$B = Object.defineProperty;
+var __defProps$i = Object.defineProperties;
+var __getOwnPropDescs$i = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$m = Object.getOwnPropertySymbols;
+var __hasOwnProp$m = Object.prototype.hasOwnProperty;
+var __propIsEnum$m = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$B = (obj, key, value) => key in obj ? __defProp$B(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$m = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$m.call(b, prop))
+      __defNormalProp$B(a, prop, b[prop]);
+  if (__getOwnPropSymbols$m)
+    for (var prop of __getOwnPropSymbols$m(b)) {
+      if (__propIsEnum$m.call(b, prop))
+        __defNormalProp$B(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$i = (a, b) => __defProps$i(a, __getOwnPropDescs$i(b));
+const poemBackgrounds = [
+  { name: "Normal paper", file: "poem.jpg" },
+  { name: "Lightly soiled paper", file: "poem_y1.jpg" },
+  { name: "Heavily soiled paper", file: "poem_y2.jpg" },
+  { name: "Console", file: "internal:console" },
+  { name: "Transparent", file: "internal:transparent" }
+];
+const defaultPoemBackground = 0;
+const defaultPoemStyle = 0;
+const defaultX = screenWidth / 2;
+const defaultY = screenHeight / 2;
+const poemTopPadding = 26;
+const poemBottomPadding = 150;
+const poemPadding = 61;
+const defaultPoemWidth = 1200;
+const defaultPoemHeight = 1080;
+const backgroundScale = sdCharacterScaleFactor;
+const consoleBackgroundColor = "#333333bf";
+const consoleWidth = 720;
+const consoleHeight = 270;
+const defaultConsoleBackground = 3;
+const defaultConsoleStyle = 7;
+const BasePoemStyle = {
+  alpha: 1,
+  color: "black",
+  isBold: false,
+  isItalic: false,
+  isStrikethrough: false,
+  isUnderlined: false,
+  letterSpacing: 0,
+  lineSpacing: 1.2,
+  strokeColor: "",
+  strokeWidth: 0,
+  fontName: "aller",
+  fontSize: 18
+};
+const poemTextStyles = [
+  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
+    name: "Sayori",
+    fontName: "hashtag",
+    fontSize: 45,
+    lineSpacing: 0.95,
+    letterSpacing: 1
+  }),
+  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
+    name: "Natsuki",
+    fontName: "ammy_handwriting",
+    fontSize: 41,
+    letterSpacing: -0.5
+  }),
+  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
+    name: "Monika",
+    fontName: "journal",
+    fontSize: 36,
+    lineSpacing: 1.4,
+    letterSpacing: 0.5
+  }),
+  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
+    name: "Yuri",
+    fontName: "jp_hand_slanted",
+    lineSpacing: 1.55,
+    fontSize: 48
+  }),
+  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
+    name: "Yuri Act 2",
+    fontName: "damagrafik_script",
+    fontSize: 27,
+    letterSpacing: -12
+  }),
+  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
+    name: "Yuri Unused",
+    fontName: "as_i_lay_dying",
+    fontSize: 60
+  }),
+  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
+    name: "MC",
+    fontName: "halogen",
+    fontSize: 45,
+    lineSpacing: 1.53
+  }),
+  __spreadProps$i(__spreadValues$m({}, BasePoemStyle), {
+    name: "Console",
+    fontName: "f25_bank_printer",
+    fontSize: 27,
+    color: "white",
+    lineSpacing: 1.1
+  })
+];
+const Poem$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  poemBackgrounds,
+  defaultPoemBackground,
+  defaultPoemStyle,
+  defaultX,
+  defaultY,
+  poemTopPadding,
+  poemBottomPadding,
+  poemPadding,
+  defaultPoemWidth,
+  defaultPoemHeight,
+  backgroundScale,
+  consoleBackgroundColor,
+  consoleWidth,
+  consoleHeight,
+  defaultConsoleBackground,
+  defaultConsoleStyle,
+  poemTextStyles
+}, Symbol.toStringTag, { value: "Module" }));
+const DdlcPlus = {
+  Base,
+  Choices,
+  Notification: Notification$1,
+  Poem: Poem$1,
+  TextBox: TextBox$1,
+  TextBoxCustom: CustomTBConstants
+};
+function getConstants() {
+  if (envX.gameMode === "ddlc_plus")
+    return DdlcPlus;
+  return Ddlc;
+}
+function between(min, val, max) {
+  if (min > val)
+    return min;
+  if (val > max)
+    return max;
+  return val;
+}
+function mod(a, b) {
+  return (a % b + b) % b;
+}
+function matrixEquals(a, b) {
+  if (a === null && b === null)
+    return true;
+  if (a === null || b === null)
+    return false;
+  return a.a === b.a && a.b === b.b && a.c === b.c && a.d === b.d && a.e === b.e && a.f === b.f;
+}
+function decomposeMatrix(mat) {
+  const { a, b, c, d, e, f } = mat;
+  const delta = a * d - b * c;
+  const result = {
+    x: e,
+    y: f,
+    rotation: 0,
+    scaleX: 0,
+    scaleY: 0,
+    skewX: 0,
+    skewY: 0
+  };
+  if (a != 0 || b != 0) {
+    const r = Math.sqrt(a * a + b * b);
+    result.rotation = (b > 0 ? Math.acos(a / r) : -Math.acos(a / r)) / Math.PI * 180;
+    result.scaleX = r;
+    result.scaleY = delta / r;
+    result.skewX = Math.atan((a * c + b * d) / (r * r)) / Math.PI * 180;
+    result.skewY = 0;
+  } else if (c != 0 || d != 0) {
+    const s = Math.sqrt(c * c + d * d);
+    result.rotation = (Math.PI / 2 - (d > 0 ? Math.acos(-c / s) : -Math.acos(c / s))) / Math.PI * 180;
+    result.scaleX = delta / s;
+    result.scaleY = s;
+    result.skewX = 0;
+    result.skewY = Math.atan((a * c + b * d) / (s * s)) / Math.PI * 180;
+  } else
+    ;
+  return result;
+}
+var __async$F = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
+function migrateSave2_5(data) {
+  var _a2, _b, _c, _d, _e, _f, _g;
+  const panels2 = Object.values(data.panels.panels);
+  if (panels2.find((x) => Object.values(x.objects).find((x2) => "scaleX" in x2)))
+    return;
+  for (const panel of panels2) {
+    for (const object of Object.values(panel.objects)) {
+      object.scaleX = (_a2 = object.zoom) != null ? _a2 : 1;
+      object.scaleY = (_b = object.zoom) != null ? _b : 1;
+      object.skewX = 0;
+      object.skewY = 0;
+      object.linkedTo = null;
+      const constants = getConstants();
+      if (object.type === "character") {
+        const character = object;
+        const charData = data.content.current.characters.find(
+          (c) => c.id === character.characterType
+        );
+        const size2 = (_f = (_e = (_d = (_c = charData == null ? void 0 : charData.styleGroups[character.styleGroupId]) == null ? void 0 : _c.styles[character.styleId]) == null ? void 0 : _d.poses[character.poseId]) == null ? void 0 : _e.size) != null ? _f : [960, 960];
+        adjustObjectSize2_5(character, (_g = object.zoom) != null ? _g : 1, size2);
+      }
+      if (object.type === "textBox") {
+        const textbox = object;
+        textbox.height += constants.TextBox.NameboxHeight;
+        textbox.y += textbox.height / 2;
+      }
+      if (object.type === "sprite") {
+        object.requireFixing25 = true;
+        data.requireFixing25 = true;
+      }
+      delete object.zoom;
+    }
+  }
+}
+function adjustObjectSize2_5(obj, zoom, size2) {
+  let a = new DOMMatrixReadOnly().translate(obj.x, obj.y + obj.height / 2);
+  a = a.translate(0, -obj.height / 2).scale(obj.width / size2[0], obj.height / size2[1]).translate(0, size2[1] / 2);
+  a = a.rotate(obj.flip ? -obj.rotation : obj.rotation);
+  a = a.translate(0, size2[1] / 2).scale(zoom).translate(0, -size2[1] / 2);
+  const oldRot = obj.rotation;
+  Object.assign(obj, decomposeMatrix(a));
+  obj.rotation = obj.flip ? 360 - oldRot : oldRot;
+  obj.skewX = 0;
+  obj.skewY = 0;
+  obj.width = size2[0];
+  obj.height = size2[1];
+}
+const rootStateMigrations2_5 = {
+  fixSprites2_5(state, data) {
+    for (const panel of Object.values(state.panels.panels)) {
+      for (const object of Object.values(panel.objects)) {
+        if (object.type !== "sprite" || !object.requireFixing25 || object.scaleX !== object.scaleY)
+          continue;
+        const sprite = object;
+        if (sprite.assets.length === 1 && sprite.assets[0].hq === data.url) {
+          adjustObjectSize2_5(sprite, object.scaleX, data.size);
+          delete object.requireFixing25;
+        }
+      }
+    }
+  }
+};
+function afterImageUpload2_5(rootState, commit2, assertUrl) {
+  return __async$F(this, null, function* () {
+    if ("requireFixing25" in rootState) {
+      const asset = yield getAssetByUrl(assertUrl);
+      commit2(
+        "fixSprites2_5",
+        { url: assertUrl, size: [asset.width, asset.height] },
+        { root: true }
+      );
+    }
+  });
+}
+function allowScaleModification(obj) {
+  return !obj.requireFixing25;
 }
 function arraySeeker(array, pos, delta) {
   let val = pos + delta;
@@ -12150,24 +12247,24 @@ window.addEventListener("unload", () => {
 });
 class RenderAbortedException {
 }
-var __defProp$z = Object.defineProperty;
-var __getOwnPropSymbols$k = Object.getOwnPropertySymbols;
-var __hasOwnProp$k = Object.prototype.hasOwnProperty;
-var __propIsEnum$k = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$z = (obj, key, value) => key in obj ? __defProp$z(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$k = (a, b) => {
+var __defProp$A = Object.defineProperty;
+var __getOwnPropSymbols$l = Object.getOwnPropertySymbols;
+var __hasOwnProp$l = Object.prototype.hasOwnProperty;
+var __propIsEnum$l = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$A = (obj, key, value) => key in obj ? __defProp$A(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$l = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$k.call(b, prop))
-      __defNormalProp$z(a, prop, b[prop]);
-  if (__getOwnPropSymbols$k)
-    for (var prop of __getOwnPropSymbols$k(b)) {
-      if (__propIsEnum$k.call(b, prop))
-        __defNormalProp$z(a, prop, b[prop]);
+    if (__hasOwnProp$l.call(b, prop))
+      __defNormalProp$A(a, prop, b[prop]);
+  if (__getOwnPropSymbols$l)
+    for (var prop of __getOwnPropSymbols$l(b)) {
+      if (__propIsEnum$l.call(b, prop))
+        __defNormalProp$A(a, prop, b[prop]);
     }
   return a;
 };
 var __publicField$h = (obj, key, value) => {
-  __defNormalProp$z(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$A(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$E = (__this, __arguments, generator) => {
@@ -12214,7 +12311,7 @@ class RenderContext {
       x = 0,
       y = 0,
       text = ""
-    } = __spreadValues$k(__spreadValues$k({}, {
+    } = __spreadValues$l(__spreadValues$l({}, {
       font: "20px aller",
       align: "left"
     }), params);
@@ -12240,7 +12337,7 @@ class RenderContext {
       font,
       align,
       text = ""
-    } = __spreadValues$k(__spreadValues$k({}, {
+    } = __spreadValues$l(__spreadValues$l({}, {
       font: "20px aller",
       align: "left"
     }), params);
@@ -12261,7 +12358,7 @@ class RenderContext {
   drawImage(params) {
     if (this.aborted)
       throw new RenderAbortedException();
-    const { image, flip, x, y, w, h: h2, filters, composite } = __spreadValues$k({
+    const { image, flip, x, y, w, h: h2, filters, composite } = __spreadValues$l({
       flip: false,
       w: params.image.width,
       h: params.image.height,
@@ -12455,10 +12552,10 @@ class RenderContext {
     this.aborted = true;
   }
 }
-var __defProp$y = Object.defineProperty;
-var __defNormalProp$y = (obj, key, value) => key in obj ? __defProp$y(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$z = Object.defineProperty;
+var __defNormalProp$z = (obj, key, value) => key in obj ? __defProp$z(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$g = (obj, key, value) => {
-  __defNormalProp$y(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$z(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$D = (__this, __arguments, generator) => {
@@ -12601,25 +12698,25 @@ function baseProps() {
     linkedTo: null
   };
 }
-var __defProp$x = Object.defineProperty;
-var __defProps$g = Object.defineProperties;
-var __getOwnPropDescs$g = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols$j = Object.getOwnPropertySymbols;
-var __hasOwnProp$j = Object.prototype.hasOwnProperty;
-var __propIsEnum$j = Object.prototype.propertyIsEnumerable;
-var __defNormalProp$x = (obj, key, value) => key in obj ? __defProp$x(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues$j = (a, b) => {
+var __defProp$y = Object.defineProperty;
+var __defProps$h = Object.defineProperties;
+var __getOwnPropDescs$h = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$k = Object.getOwnPropertySymbols;
+var __hasOwnProp$k = Object.prototype.hasOwnProperty;
+var __propIsEnum$k = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$y = (obj, key, value) => key in obj ? __defProp$y(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$k = (a, b) => {
   for (var prop in b || (b = {}))
-    if (__hasOwnProp$j.call(b, prop))
-      __defNormalProp$x(a, prop, b[prop]);
-  if (__getOwnPropSymbols$j)
-    for (var prop of __getOwnPropSymbols$j(b)) {
-      if (__propIsEnum$j.call(b, prop))
-        __defNormalProp$x(a, prop, b[prop]);
+    if (__hasOwnProp$k.call(b, prop))
+      __defNormalProp$y(a, prop, b[prop]);
+  if (__getOwnPropSymbols$k)
+    for (var prop of __getOwnPropSymbols$k(b)) {
+      if (__propIsEnum$k.call(b, prop))
+        __defNormalProp$y(a, prop, b[prop]);
     }
   return a;
 };
-var __spreadProps$g = (a, b) => __defProps$g(a, __getOwnPropDescs$g(b));
+var __spreadProps$h = (a, b) => __defProps$h(a, __getOwnPropDescs$h(b));
 var __async$C = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -12663,7 +12760,7 @@ const characterMutations = {
   },
   setPosePosition(state, command) {
     const obj = state.panels[command.panelId].objects[command.id];
-    obj.posePositions = __spreadValues$j(__spreadValues$j({}, obj.posePositions), command.posePositions);
+    obj.posePositions = __spreadValues$k(__spreadValues$k({}, obj.posePositions), command.posePositions);
     ++obj.version;
   },
   setFreeMove(state, command) {
@@ -12718,7 +12815,7 @@ const characterActions = {
     const char = getDataG(rootGetters, command.characterType);
     const charScale = char.hd ? constants.Base.hdCharacterScaleFactor : constants.Base.sdCharacterScaleFactor;
     commit2("create", {
-      object: __spreadProps$g(__spreadValues$j({}, baseProps()), {
+      object: __spreadProps$h(__spreadValues$k({}, baseProps()), {
         id,
         panelId: rootState.panels.currentPanel,
         onTop: false,
@@ -12964,7 +13061,7 @@ function buildPoseAndPositionData(character) {
     styleGroupId: character.styleGroupId,
     styleId: character.styleId,
     poseId: character.poseId,
-    posePositions: __spreadValues$j({}, character.posePositions)
+    posePositions: __spreadValues$k({}, character.posePositions)
   };
 }
 function commitPoseAndPositionChanges(commit2, character, poseAndPosition) {
@@ -13458,10 +13555,10 @@ function applyFilter(ctx, filters) {
     ctx.filter = (ctx.filter === "none" ? "" : ctx.filter) + filterStr.trimStart();
   }
 }
-var __defProp$w = Object.defineProperty;
-var __defNormalProp$w = (obj, key, value) => key in obj ? __defProp$w(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$x = Object.defineProperty;
+var __defNormalProp$x = (obj, key, value) => key in obj ? __defProp$x(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$f = (obj, key, value) => {
-  __defNormalProp$w(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$x(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 class Renderable {
@@ -13517,10 +13614,10 @@ class Renderable {
       if (obj.rotation !== 0) {
         transform = transform.rotate(0, 0, obj.rotation);
       }
-      if (obj.skewX !== 1) {
+      if (obj.skewX !== 0) {
         transform = transform.skewX(obj.skewX);
       }
-      if (obj.skewY !== 1) {
+      if (obj.skewY !== 0) {
         transform = transform.skewY(obj.skewY);
       }
       if (obj.flip) {
@@ -13549,11 +13646,22 @@ class Renderable {
   get linkedTo() {
     return this.obj.linkedTo;
   }
+  prepareData(panel, _store) {
+    this.refTextbox = null;
+    const inPanel = [...panel.order, ...panel.onTopOrder];
+    for (const key of inPanel) {
+      const obj = panel.objects[key];
+      if (obj.type === "textBox" && obj.talkingObjId === this.obj.id) {
+        this.refTextbox = obj;
+        return;
+      }
+    }
+  }
   prepareTransform(relative) {
     this.preparedTransform = relative.multiply(this.getTransfrom());
     return this.preparedTransform;
   }
-  prepareRender(panel, _store, _lq) {
+  prepareRender(_lq) {
     if (this.lastVersion !== this.obj.version) {
       this.localCanvasInvalid = true;
       this.lastVersion = this.obj.version;
@@ -13566,15 +13674,6 @@ class Renderable {
       }
     } else {
       this.lastLocalTransform = null;
-    }
-    this.refTextbox = null;
-    const inPanel = [...panel.order, ...panel.onTopOrder];
-    for (const key of inPanel) {
-      const obj = panel.objects[key];
-      if (obj.type === "textBox" && obj.talkingObjId === this.obj.id) {
-        this.refTextbox = obj;
-        return;
-      }
     }
   }
   render(ctx, selection, preview, hq, skipLocal) {
@@ -13653,10 +13752,10 @@ class Renderable {
     }
   }
 }
-var __defProp$v = Object.defineProperty;
-var __defNormalProp$v = (obj, key, value) => key in obj ? __defProp$v(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __defProp$w = Object.defineProperty;
+var __defNormalProp$w = (obj, key, value) => key in obj ? __defProp$w(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$e = (obj, key, value) => {
-  __defNormalProp$v(obj, typeof key !== "symbol" ? key + "" : key, value);
+  __defNormalProp$w(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 var __async$A = (__this, __arguments, generator) => {
@@ -13695,17 +13794,24 @@ class AssetListRenderable extends Renderable {
   get transformIsLocal() {
     return false;
   }
-  prepareRender(panel, store2, lq) {
-    super.prepareRender(panel, store2, lq);
-    let reloadAssets = !lq === this.lastHq;
+  prepareData(panel, store2) {
+    super.prepareData(panel, store2);
     if (this.missingAsset) {
       const uploadCount = Object.keys(store2.state.uploadUrls).length;
-      reloadAssets = uploadCount !== this.lastUploadCount;
+      if (uploadCount !== this.lastUploadCount) {
+        this.lastHq = null;
+      }
       this.lastUploadCount = uploadCount;
     }
+  }
+  prepareRender(lq) {
+    super.prepareRender(lq);
+    let reloadAssets = !lq !== this.lastHq;
     if (this.isAssetListOutdated()) {
       this.assetList = this.getAssetList();
-      reloadAssets = true;
+      reloadAssets = !!this.assetList.find(
+        (x) => !("loadedAssets" in x) || x.hasMissing
+      );
     }
     if (!reloadAssets)
       return;
@@ -13780,14 +13886,36 @@ class AssetListRenderable extends Renderable {
     }
   }
 }
+var __defProp$v = Object.defineProperty;
+var __defProps$g = Object.defineProperties;
+var __getOwnPropDescs$g = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols$j = Object.getOwnPropertySymbols;
+var __hasOwnProp$j = Object.prototype.hasOwnProperty;
+var __propIsEnum$j = Object.prototype.propertyIsEnumerable;
+var __defNormalProp$v = (obj, key, value) => key in obj ? __defProp$v(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues$j = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp$j.call(b, prop))
+      __defNormalProp$v(a, prop, b[prop]);
+  if (__getOwnPropSymbols$j)
+    for (var prop of __getOwnPropSymbols$j(b)) {
+      if (__propIsEnum$j.call(b, prop))
+        __defNormalProp$v(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps$g = (a, b) => __defProps$g(a, __getOwnPropDescs$g(b));
 class Character extends AssetListRenderable {
   constructor(obj, data) {
     super(obj);
     this.data = data;
   }
-  prepareRender(panel, store2, lq) {
+  prepareData(panel, store2) {
+    super.prepareData(panel, store2);
     this.data = getData(store2, this.obj);
-    return super.prepareRender(panel, store2, lq);
+  }
+  prepareRender(lq) {
+    return super.prepareRender(lq);
   }
   isAssetListOutdated() {
     return true;
@@ -13795,8 +13923,10 @@ class Character extends AssetListRenderable {
   getAssetList() {
     const pose = getPose(this.data, this.obj);
     const currentHeads = getHeads(this.data, this.obj);
-    const drawAssetsUnloaded = [];
+    const drawAssetsNew = [];
+    const oldAssets = this.assetList || [];
     for (const renderCommand of pose.renderCommands) {
+      let newAssets = null;
       switch (renderCommand.type) {
         case "head": {
           if (!currentHeads)
@@ -13804,19 +13934,11 @@ class Character extends AssetListRenderable {
           const headVariant = currentHeads.variants[this.obj.posePositions.head || 0];
           if (headVariant == null)
             continue;
-          drawAssetsUnloaded.push({
-            offset: renderCommand.offset,
-            composite: renderCommand.composite,
-            assets: headVariant
-          });
+          newAssets = headVariant;
           break;
         }
         case "image":
-          drawAssetsUnloaded.push({
-            offset: renderCommand.offset,
-            composite: renderCommand.composite,
-            assets: renderCommand.images
-          });
+          newAssets = renderCommand.images;
           break;
         case "pose-part": {
           const posePosition = pose.positions[renderCommand.part];
@@ -13826,16 +13948,27 @@ class Character extends AssetListRenderable {
           const partAssets = posePosition[this.obj.posePositions[renderCommand.part] || 0];
           if (!partAssets)
             break;
-          drawAssetsUnloaded.push({
-            offset: renderCommand.offset,
-            composite: renderCommand.composite,
-            assets: partAssets
-          });
+          newAssets = partAssets;
           break;
         }
       }
+      if (newAssets) {
+        const oldEntry = oldAssets.find((x) => x.assets === newAssets);
+        if (oldEntry) {
+          drawAssetsNew.push(__spreadProps$g(__spreadValues$j({}, oldEntry), {
+            offset: renderCommand.offset,
+            composite: renderCommand.composite
+          }));
+        } else {
+          drawAssetsNew.push({
+            assets: newAssets,
+            offset: renderCommand.offset,
+            composite: renderCommand.composite
+          });
+        }
+      }
     }
-    return drawAssetsUnloaded;
+    return drawAssetsNew;
   }
 }
 var __defProp$u = Object.defineProperty;
@@ -14626,7 +14759,7 @@ class Choice extends ScalingRenderable {
       y += height + constants.ChoicePadding * 2 + constants.ChoiceSpacing;
     }
   }
-  prepareRender(panel, store2, lq) {
+  prepareRender(lq) {
     const constants = getConstants();
     this.choiceRenderers = this.obj.choices.map(
       (choice) => new TextRenderer(choice.text || " ", constants.Choices.ChoiceTextStyle)
@@ -14636,7 +14769,7 @@ class Choice extends ScalingRenderable {
         (acc, renderer2) => acc + renderer2.getHeight(this.obj.autoWrap ? this.obj.width : 0) + constants.Choices.ChoicePadding * 2,
         0
       ) + this.obj.choiceDistance * (this.obj.choices.length - 1);
-      return super.prepareRender(panel, store2, lq);
+      return super.prepareRender(lq);
     };
     const fontLoaders = this.choiceRenderers.map((x) => x.loadFonts()).filter((x) => x !== void 0);
     if (fontLoaders.length === 0) {
@@ -14668,12 +14801,8 @@ class Notification extends ScalingRenderable {
     const constants = getConstants().Choices;
     return this._width + constants.ChoiceOuterPadding * 2;
   }
-  prepareRender(panel, store2, lq) {
-    const superRet = super.prepareRender(
-      panel,
-      store2,
-      lq
-    );
+  prepareRender(lq) {
+    const superRet = super.prepareRender(lq);
     const constants = getConstants().Notification;
     const textRenderer = this._textRenderer = new TextRenderer(
       this.obj.text,
@@ -14793,12 +14922,8 @@ class Poem extends ScalingRenderable {
     var _a2;
     return (_a2 = this._paperWidth) != null ? _a2 : this.obj.width;
   }
-  prepareRender(panel, store2, lq) {
-    const superRet = super.prepareRender(
-      panel,
-      store2,
-      lq
-    );
+  prepareRender(lq) {
+    const superRet = super.prepareRender(lq);
     const constants = getConstants().Poem;
     const bg = constants.poemBackgrounds[this.obj.background];
     const style = constants.poemTextStyles[this.obj.font];
@@ -15006,12 +15131,6 @@ class Default extends DdlcBase {
   get width() {
     return TextBoxWidth$1;
   }
-  get innerHeight() {
-    return this.height;
-  }
-  get innerWidth() {
-    return this.width;
-  }
   get nameboxWidth() {
     return NameboxWidth$1;
   }
@@ -15139,12 +15258,6 @@ class Custom extends DdlcBase {
   }
   get width() {
     return this.obj.width;
-  }
-  get innerHeight() {
-    return this.obj.height - textboxRoundingBuffer$1 * 2;
-  }
-  get innerWidth() {
-    return this.obj.width - textboxRoundingBuffer$1 * 2;
   }
   get nameboxWidth() {
     if (this.refObject && this.refObject.nameboxWidth !== null) {
@@ -15472,12 +15585,6 @@ class CustomPlus extends DdlcPlusBase {
   get width() {
     return this.obj.width;
   }
-  get innerHeight() {
-    return this.obj.height - textboxRoundingBuffer * 2;
-  }
-  get innerWidth() {
-    return this.obj.width - textboxRoundingBuffer * 2;
-  }
   get nameboxWidth() {
     if (this.refObject && this.refObject.nameboxWidth !== null) {
       return this.refObject.nameboxWidth;
@@ -15743,13 +15850,16 @@ class TextBox extends ScalingRenderable {
     var _a2, _b;
     return super.canSkipLocal && ((_b = (_a2 = this._lastRenderer) == null ? void 0 : _a2.allowSkippingLocal) != null ? _b : true);
   }
-  prepareRender(panel, store2, lq) {
+  prepareData(panel, store2) {
     var _a2;
-    const ret = super.prepareRender(panel, store2, lq);
-    const prepareRet = this.textboxRenderer.prepare();
+    super.prepareData(panel, store2);
     if (typeof this.obj.talkingObjId === "number") {
       this.refObject = (_a2 = panel.objects[this.obj.talkingObjId]) != null ? _a2 : null;
     }
+  }
+  prepareRender(lq) {
+    const ret = super.prepareRender(lq);
+    const prepareRet = this.textboxRenderer.prepare();
     const currentRefVars = this.getRefVars();
     if (currentRefVars !== this._lastRefVars) {
       this.localCanvasInvalid = true;
@@ -15929,6 +16039,7 @@ const _SceneRenderer = class {
       const waiting = /* @__PURE__ */ new Map();
       const processed = /* @__PURE__ */ new Map();
       for (const renderable of renderables) {
+        renderable.prepareData(this.panel, this.store);
         const linked = renderable.linkedTo;
         let linkTransform = new DOMMatrixReadOnly();
         if (linked != null) {
@@ -15950,7 +16061,7 @@ const _SceneRenderer = class {
       if (waiting.size > 0) {
         console.warn("Not all renderables processed. Infinite loop?");
       }
-      const promises = renderables.map((x) => x.prepareRender(this.panel, this.store, !rx.hq)).filter((x) => x !== void 0);
+      const promises = renderables.map((x) => x.prepareRender(!rx.hq)).filter((x) => x !== void 0);
       if (promises.length > 0) {
         yield Promise.all(promises);
       }
@@ -16393,15 +16504,6 @@ const spriteActions = {
     });
   }
 };
-function rotateAround(x, y, relX, relY, angle) {
-  const angleCos = Math.cos(angle);
-  const angleSin = Math.sin(angle);
-  const translatedX = x - relX;
-  const translatedY = y - relY;
-  const rotatedX = angleCos * translatedX - angleSin * translatedY + relX;
-  const rotatedY = angleSin * translatedX + angleCos * translatedY + relY;
-  return [rotatedX, rotatedY];
-}
 var __defProp$b = Object.defineProperty;
 var __defProps$8 = Object.defineProperties;
 var __getOwnPropDescs$8 = Object.getOwnPropertyDescriptors;
@@ -16462,6 +16564,10 @@ const textBoxMutations = {
     obj.height = command.resetBounds.height;
     obj.width = command.resetBounds.width;
     obj.rotation = command.resetBounds.rotation;
+    obj.skewX = command.resetBounds.skewX;
+    obj.skewY = command.resetBounds.skewY;
+    obj.scaleX = command.resetBounds.scaleX;
+    obj.scaleY = command.resetBounds.scaleY;
     ++obj.version;
   },
   setTextBoxProperty(state, command) {
@@ -16476,14 +16582,17 @@ const textBoxActions = {
     const constants = getConstants();
     const id = state.panels[command.panelId].lastObjId + 1;
     const style = constants.TextBox.DefaultTextboxStyle;
-    debugger;
     const renderer2 = rendererLookup[style];
     const resetBounds = command.resetBounds || {
       x: renderer2.defaultX,
       y: renderer2.defaultY,
       width: renderer2.defaultWidth,
       height: renderer2.defaultHeight,
-      rotation: 0
+      rotation: 0,
+      scaleX: 1,
+      scaleY: 1,
+      skewX: 0,
+      skewY: 0
     };
     commit2("create", {
       object: __spreadProps$8(__spreadValues$b(__spreadValues$b({}, baseProps()), resetBounds), {
@@ -16599,6 +16708,18 @@ const textBoxActions = {
       id: command.id,
       rotation: obj.resetBounds.rotation
     });
+    commit2("setObjectScale", {
+      panelId: command.panelId,
+      id: command.id,
+      scaleX: obj.resetBounds.scaleX,
+      scaleY: obj.resetBounds.scaleY
+    });
+    commit2("setObjectSkew", {
+      panelId: command.panelId,
+      id: command.id,
+      skewX: obj.resetBounds.skewX,
+      skewY: obj.resetBounds.skewY
+    });
   },
   splitTextbox(_0, _1) {
     return __async$s(this, arguments, function* ({ commit: commit2, state, dispatch: dispatch2 }, command) {
@@ -16607,34 +16728,39 @@ const textBoxActions = {
         return;
       const newWidth = (obj.width - splitTextboxSpacing) / 2;
       const centerDistance = newWidth / 2 + splitTextboxSpacing / 2;
-      const baseCenter = [obj.x, obj.y];
-      let boxOneCoords = [obj.x - centerDistance, obj.y];
-      let boxTwoCoords = [obj.x + centerDistance, obj.y];
+      let transform = new DOMMatrixReadOnly().translate(obj.x, obj.y);
       if (obj.rotation !== 0) {
-        boxOneCoords = rotateAround(
-          boxOneCoords[0],
-          boxOneCoords[1],
-          baseCenter[0],
-          baseCenter[1],
-          obj.rotation / 180 * Math.PI
-        );
-        boxTwoCoords = rotateAround(
-          boxTwoCoords[0],
-          boxTwoCoords[1],
-          baseCenter[0],
-          baseCenter[1],
-          obj.rotation / 180 * Math.PI
-        );
+        transform = transform.rotate(0, 0, obj.rotation);
       }
+      if (obj.skewX !== 0) {
+        transform = transform.skewX(obj.skewX);
+      }
+      if (obj.skewY !== 0) {
+        transform = transform.skewY(obj.skewY);
+      }
+      if (obj.flip) {
+        transform = transform.flipX();
+      }
+      transform = transform.scale(obj.scaleX, obj.scaleY);
+      const boxOneCoords = transform.transformPoint(
+        new DOMPointReadOnly(-centerDistance, 0)
+      );
+      const boxTwoCoords = transform.transformPoint(
+        new DOMPointReadOnly(centerDistance, 0)
+      );
       commit2("setResetBounds", {
         id: command.id,
         panelId: command.panelId,
         resetBounds: {
-          x: boxOneCoords[0],
-          y: boxOneCoords[1],
+          x: boxOneCoords.x,
+          y: boxOneCoords.y,
           width: newWidth,
           height: obj.height,
-          rotation: obj.rotation
+          rotation: obj.rotation,
+          scaleX: obj.scaleX,
+          scaleY: obj.scaleY,
+          skewX: obj.skewX,
+          skewY: obj.skewY
         }
       });
       const newStyle = obj.style === "custom_plus" ? "custom_plus" : "custom";
@@ -16646,11 +16772,15 @@ const textBoxActions = {
       const id = yield dispatch2("createTextBox", {
         panelId: command.panelId,
         resetBounds: {
-          x: boxTwoCoords[0],
-          y: boxTwoCoords[1],
+          x: boxTwoCoords.x,
+          y: boxTwoCoords.y,
           width: newWidth,
           height: obj.height,
-          rotation: obj.rotation
+          rotation: obj.rotation,
+          scaleX: obj.scaleX,
+          scaleY: obj.scaleY,
+          skewX: obj.skewX,
+          skewY: obj.skewY
         }
       });
       yield dispatch2("setStyle", {
@@ -16665,6 +16795,18 @@ const textBoxActions = {
           flip: obj.flip
         });
       }
+      commit2("setLink", {
+        id,
+        panelId: command.panelId,
+        link: obj.linkedTo,
+        rotation: obj.rotation,
+        scaleX: obj.scaleX,
+        scaleY: obj.scaleY,
+        skewX: obj.skewX,
+        skewY: obj.skewY,
+        x: boxTwoCoords.x,
+        y: boxTwoCoords.y
+      });
     });
   }
 };
@@ -17618,14 +17760,7 @@ const uploadUrls = {
         const assertUrl = "uploads:" + name;
         commit2("add", { name: assertUrl, url });
         registerAssetWithURL(assertUrl, url);
-        if ("requireFixing25" in rootState) {
-          const asset = yield getAssetByUrl(assertUrl);
-          commit2(
-            "fix25Sprites",
-            { url: assertUrl, size: [asset.width, asset.height] },
-            { root: true }
-          );
-        }
+        yield afterImageUpload2_5(rootState, commit2, assertUrl);
         return assertUrl;
       });
     }
@@ -17677,24 +17812,11 @@ const store = createStore({
   state: {
     unsafe: false
   },
-  mutations: {
+  mutations: __spreadValues$7({
     setUnsafe(state, unsafe) {
       state.unsafe = unsafe;
-    },
-    fix25Sprites(state, data) {
-      for (const panel of Object.values(state.panels.panels)) {
-        for (const object of Object.values(panel.objects)) {
-          if (object.type !== "sprite" || !object.requireFixing25 || object.scaleX !== object.scaleY)
-            continue;
-          const sprite = object;
-          if (sprite.assets.length === 1 && sprite.assets[0].hq === data.url) {
-            adjust25ObjectSize(sprite, object.scaleX, data.size);
-            delete object.requireFixing25;
-          }
-        }
-      }
     }
-  },
+  }, rootStateMigrations2_5),
   actions: {
     removePacks(_0, _1) {
       return __async$q(this, arguments, function* ({ dispatch: dispatch2, commit: commit2 }, { packs }) {
@@ -17804,7 +17926,7 @@ const store = createStore({
         }
         data.content.current = combinedPack;
         if (data.version == null || data.version < 2.5) {
-          migrate25(data);
+          migrateSave2_5(data);
         }
         this.replaceState(data);
         eventBus$1.fire(new InvalidateRenderEvent());
@@ -17813,53 +17935,6 @@ const store = createStore({
   },
   modules: { ui, panels, content, uploadUrls }
 });
-function migrate25(data) {
-  var _a2, _b, _c, _d, _e, _f, _g;
-  const panels2 = Object.values(data.panels.panels);
-  if (panels2.find((x) => Object.values(x.objects).find((x2) => "scaleX" in x2)))
-    return;
-  for (const panel of panels2) {
-    for (const object of Object.values(panel.objects)) {
-      object.scaleX = (_a2 = object.zoom) != null ? _a2 : 1;
-      object.scaleY = (_b = object.zoom) != null ? _b : 1;
-      object.skewX = 0;
-      object.skewY = 0;
-      object.linkedTo = null;
-      const constants = getConstants();
-      if (object.type === "character") {
-        const character = object;
-        const charData = data.content.current.characters.find(
-          (c) => c.id === character.characterType
-        );
-        const size2 = (_f = (_e = (_d = (_c = charData == null ? void 0 : charData.styleGroups[character.styleGroupId]) == null ? void 0 : _c.styles[character.styleId]) == null ? void 0 : _d.poses[character.poseId]) == null ? void 0 : _e.size) != null ? _f : [960, 960];
-        adjust25ObjectSize(object, (_g = object.zoom) != null ? _g : 1, size2);
-      }
-      if (object.type === "textBox") {
-        const textbox = object;
-        textbox.height += constants.TextBox.NameboxHeight;
-        textbox.y += textbox.height / 2;
-      }
-      if (object.type === "sprite") {
-        object.requireFixing25 = true;
-        data.requireFixing25 = true;
-      }
-      delete object.zoom;
-    }
-  }
-}
-function adjust25ObjectSize(obj, zoom, size2) {
-  let a = new DOMMatrixReadOnly().translate(obj.x, obj.y + obj.height / 2);
-  a = a.translate(0, -obj.height / 2).scale(obj.width / size2[0], obj.height / size2[1]).translate(0, size2[1] / 2);
-  a = a.rotate(obj.flip ? -obj.rotation : obj.rotation);
-  a = a.translate(0, size2[1] / 2).scale(zoom).translate(0, -size2[1] / 2);
-  const oldRot = obj.rotation;
-  Object.assign(obj, decomposeMatrix(a));
-  obj.rotation = obj.flip ? 360 - oldRot : oldRot;
-  obj.skewX = 0;
-  obj.skewY = 0;
-  obj.width = size2[0];
-  obj.height = size2[1];
-}
 var __async$p = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -22917,7 +22992,7 @@ var __async$7 = (__this, __arguments, generator) => {
     step((generator = generator.apply(__this, __arguments)).next());
   });
 };
-const _withScopeId$7 = (n) => (pushScopeId("data-v-b46f0fb4"), n = n(), popScopeId(), n);
+const _withScopeId$7 = (n) => (pushScopeId("data-v-c01bac78"), n = n(), popScopeId(), n);
 const _hoisted_1$b = /* @__PURE__ */ _withScopeId$7(() => /* @__PURE__ */ createBaseVNode("span", { class: "icon material-icons" }, "edit", -1));
 const _hoisted_2$b = /* @__PURE__ */ _withScopeId$7(() => /* @__PURE__ */ createBaseVNode("p", { class: "modal-text" }, "Enter the new name", -1));
 const _hoisted_3$7 = { class: "modal-text" };
@@ -23057,6 +23132,9 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
     );
     const canOverflow = computed(() => {
       return "overflow" in props.object;
+    });
+    const allowZoom = computed(() => {
+      return allowScaleModification(props.object);
     });
     const currentPanel = computed(() => {
       return store2.state["panels"].panels[props.object.panelId];
@@ -23356,7 +23434,7 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                     ])
                   ])
                 ]),
-                !__props.object.requireFixing25 ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
+                allowZoom.value ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
                   createBaseVNode("tr", null, [
                     createBaseVNode("td", null, [
                       createBaseVNode("label", _hoisted_9$5, toDisplayString(unref(easterEgg) ? "Zoom" : "Scale X"), 1)
@@ -23510,8 +23588,8 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const objectTool_vue_vue_type_style_index_0_scoped_b46f0fb4_lang = "";
-const ObjectTool = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["__scopeId", "data-v-b46f0fb4"]]);
+const objectTool_vue_vue_type_style_index_0_scoped_c01bac78_lang = "";
+const ObjectTool = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["__scopeId", "data-v-c01bac78"]]);
 var __async$6 = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -23578,7 +23656,6 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
         return null;
       for (const asset of heads.variants) {
         const url = getAAssetUrl(asset[0], false);
-        console.log(url);
         if (url.startsWith("uploads:"))
           return url.substring(8);
       }
@@ -23774,8 +23851,8 @@ const _sfc_main$a = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const character_vue_vue_type_style_index_0_scoped_4331b556_lang = "";
-const CharacterPanel = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["__scopeId", "data-v-4331b556"]]);
+const character_vue_vue_type_style_index_0_scoped_397a50d2_lang = "";
+const CharacterPanel = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["__scopeId", "data-v-397a50d2"]]);
 var __async$5 = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -26331,10 +26408,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box.e0ffb616.js"), true ? ["./single-box.e0ffb616.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box.60dd15b7.js"), true ? ["./single-box.60dd15b7.js","./single-box.8809abf1.css"] : void 0, import.meta.url)
     );
     const ExpressionBuilder = defineAsyncComponent(
-      () => __vitePreload(() => import("./index.e93c63ed.js"), true ? ["./index.e93c63ed.js","./index.a2d17a51.css"] : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index.faea2191.js"), true ? ["./index.faea2191.js","./index.57068694.css"] : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);
@@ -26783,8 +26860,8 @@ export {
   TransitionGroup as T,
   Character as U,
   VueErrorEvent as V,
-  ScalingModes as W,
-  AssetListRenderable as X,
+  AssetListRenderable as W,
+  ScalingModes as X,
   SelectedState as Y,
   _export_sfc as _,
   createElementBlock as a,

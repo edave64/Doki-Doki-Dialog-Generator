@@ -1,4 +1,4 @@
-import { I as reactive, d as defineComponent, c as computed, o as openBlock, a as createElementBlock, b as createBaseVNode, t as toDisplayString, q as normalizeStyle, s as withModifiers, _ as _export_sfc, J as renderSlot, u as useStore, r as ref, w as watch, m as createBlock, h as withCtx, F as Fragment, e as renderList, j as createTextVNode, l as _sfc_main$3, f as createCommentVNode, g as createVNode, K as DropTarget, k as unref, L as verticalScrollRedirect, n as normalizeClass, B as withDirectives, M as vModelSelect, C as vModelText, N as DFieldset, p as _sfc_main$4, O as getAssetByUrl, P as Renderer, Q as transaction, v as envX, x as pushScopeId, y as popScopeId, S as getAAssetUrl, U as Character, i as nextTick, W as ScalingModes, X as AssetListRenderable, Y as SelectedState } from "./index.51e188c0.js";
+import { I as reactive, d as defineComponent, c as computed, o as openBlock, a as createElementBlock, b as createBaseVNode, t as toDisplayString, q as normalizeStyle, s as withModifiers, _ as _export_sfc, J as renderSlot, u as useStore, r as ref, w as watch, m as createBlock, h as withCtx, F as Fragment, e as renderList, j as createTextVNode, l as _sfc_main$3, f as createCommentVNode, g as createVNode, K as DropTarget, k as unref, L as verticalScrollRedirect, n as normalizeClass, B as withDirectives, M as vModelSelect, C as vModelText, N as DFieldset, p as _sfc_main$4, O as getAssetByUrl, P as Renderer, Q as transaction, v as envX, x as pushScopeId, y as popScopeId, S as getAAssetUrl, U as Character, i as nextTick, W as AssetListRenderable, X as ScalingModes, Y as SelectedState } from "./index.2aedd05f.js";
 var __defProp$1 = Object.defineProperty;
 var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => {
@@ -240,7 +240,7 @@ var __async = (__this, __arguments, generator) => {
     step((generator = generator.apply(__this, __arguments)).next());
   });
 };
-const _withScopeId = (n) => (pushScopeId("data-v-dea9b0e3"), n = n(), popScopeId(), n);
+const _withScopeId = (n) => (pushScopeId("data-v-cce15f0b"), n = n(), popScopeId(), n);
 const _hoisted_1 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createBaseVNode("h1", null, "Add expressions", -1));
 const _hoisted_2 = {
   key: 0,
@@ -399,17 +399,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           const renderer = new Renderer(pose.width, pose.height);
           try {
             yield renderer.render((rx) => __async(this, null, function* () {
-              charRenderer.prepareTransform(new DOMMatrixReadOnly());
-              const background = {
-                color: "",
-                composite: "source-over",
-                current: "",
-                filters: [],
-                flipped: false,
-                scaling: ScalingModes.None,
-                variant: 0
-              };
-              yield AssetListRenderable.prototype.prepareRender.call(
+              AssetListRenderable.prototype.prepareData.call(
                 charRenderer,
                 {
                   background,
@@ -422,9 +412,19 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                   onTopOrder: [],
                   order: [previewChar.id]
                 },
-                store,
-                !rx.hq
+                store
               );
+              charRenderer.prepareTransform(new DOMMatrixReadOnly());
+              const background = {
+                color: "",
+                composite: "source-over",
+                current: "",
+                filters: [],
+                flipped: false,
+                scaling: ScalingModes.None,
+                variant: 0
+              };
+              yield charRenderer.prepareRender(!rx.hq);
               yield charRenderer.render(
                 rx.fsCtx,
                 SelectedState.None,
@@ -1000,8 +1000,8 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const index_vue_vue_type_style_index_0_scoped_dea9b0e3_lang = "";
-const index = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-dea9b0e3"]]);
+const index_vue_vue_type_style_index_0_scoped_cce15f0b_lang = "";
+const index = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-cce15f0b"]]);
 export {
   index as default
 };
