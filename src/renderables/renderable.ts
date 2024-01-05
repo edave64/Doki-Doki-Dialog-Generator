@@ -17,6 +17,13 @@ import { Store } from 'vuex';
  * This allows us to cache objects that didn't change between renders, as well as scale objects that consist of
  * multiple images (like characters) without any gaps from rounding errors in between. It also allows objects that
  * draw over the same pixels multiple times to work properly with reduced opacity.
+ *
+ * If you want to render an object, you need to call the following methods in the following order:
+ * - prepareData: Updates data from the vuex-store
+ * - prepareTransform: Sets a new transform. Needs the transform that was returned by the prepareTransform call
+ *                     of the object this object is linked to.
+ * - prepareRender: May return a promise that needs to be awaited that will fetch required assets.
+ * - render: Paints the object to a given canvas.
  */
 export abstract class Renderable<ObjectType extends IObject> {
 	public constructor(public obj: DeepReadonly<ObjectType>) {}
@@ -135,7 +142,38 @@ export abstract class Renderable<ObjectType extends IObject> {
 		return this.obj.linkedTo;
 	}
 
+	/**
+	 * Fetches changes in data from the vuex store.
+	 *
+	 * @param panel - The currently active panel
+	 * @param _store - The vuex store
+	 * @returns
+	 */
+	public prepareData(
+		panel: DeepReadonly<IPanel>,
+		_store: Store<DeepReadonly<IRootState>>
+	): void {
+		this.refTextbox = null;
+		const inPanel = [...panel.order, ...panel.onTopOrder];
+		for (const key of inPanel) {
+			const obj = panel.objects[key] as ITextBox;
+			if (obj.type === 'textBox' && obj.talkingObjId === this.obj.id) {
+				this.refTextbox = obj;
+				return;
+			}
+		}
+	}
+
 	public preparedTransform!: DOMMatrixReadOnly;
+	/**
+	 * Sets and returns a new 2D transform.
+	 * NOTE: Must be called after prepareData, so the "enlargeWithTalking" transform functions correctly.
+	 * NOTE: Must be called in order of linkage, so the this must be called after prepareTransform of the object it is
+	 *       linked to. The parameter "relative" needs to be the return value of that linkedTo prepareTransform.
+	 *
+	 * @param relative
+	 * @returns
+	 */
 	public prepareTransform(relative: DOMMatrixReadOnly): DOMMatrixReadOnly {
 		this.preparedTransform = relative.multiply(this.getTransfrom());
 		return this.preparedTransform;
@@ -146,15 +184,13 @@ export abstract class Renderable<ObjectType extends IObject> {
 	 * of linked objects, check if the object is talking, etc.
 	 * Also determines if, given it's newer information, the object needs to be repainted.
 	 *
+	 * NOTE: Needs to be called after `prepareTransform`, to properly decide if the local canvas needs to be invalidated
+	 *
 	 * @param panel - The state of the objects panel
 	 * @param renderables - All renderables in the current scene
 	 * @param renderables - All renderables in the current scene
 	 */
-	public prepareRender(
-		panel: DeepReadonly<IPanel>,
-		_store: Store<DeepReadonly<IRootState>>,
-		_lq: boolean
-	): void | Promise<unknown> {
+	public prepareRender(_lq: boolean): void | Promise<unknown> {
 		if (this.lastVersion !== this.obj.version) {
 			this.localCanvasInvalid = true;
 			this.lastVersion = this.obj.version;
@@ -167,16 +203,6 @@ export abstract class Renderable<ObjectType extends IObject> {
 			}
 		} else {
 			this.lastLocalTransform = null;
-		}
-
-		this.refTextbox = null;
-		const inPanel = [...panel.order, ...panel.onTopOrder];
-		for (const key of inPanel) {
-			const obj = panel.objects[key] as ITextBox;
-			if (obj.type === 'textBox' && obj.talkingObjId === this.obj.id) {
-				this.refTextbox = obj;
-				return;
-			}
 		}
 	}
 

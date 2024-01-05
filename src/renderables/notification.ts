@@ -2,11 +2,7 @@ import getConstants from '@/constants';
 import { SelectedState } from '@/constants/shared';
 import { ctxScope } from '@/renderer/canvas-tools';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
-import { IRootState } from '@/store';
 import { INotification } from '@/store/object-types/notification';
-import { IPanel } from '@/store/panels';
-import { DeepReadonly } from 'ts-essentials';
-import { Store } from 'vuex';
 import { ScalingRenderable } from './scaling-renderable';
 
 export class Notification extends ScalingRenderable<INotification> {
@@ -23,16 +19,8 @@ export class Notification extends ScalingRenderable<INotification> {
 
 	private _textRenderer: TextRenderer | null = null;
 	private _buttonRenderer: TextRenderer | null = null;
-	public prepareRender(
-		panel: DeepReadonly<IPanel>,
-		store: Store<IRootState>,
-		lq: boolean
-	): void | Promise<unknown> {
-		const superRet: void | Promise<unknown> = super.prepareRender(
-			panel,
-			store,
-			lq
-		);
+	public prepareRender(lq: boolean): void | Promise<unknown> {
+		const superRet: void | Promise<unknown> = super.prepareRender(lq);
 		const constants = getConstants().Notification;
 		const textRenderer = (this._textRenderer = new TextRenderer(
 			this.obj.text,

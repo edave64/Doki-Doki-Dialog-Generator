@@ -30,13 +30,13 @@ export class Character extends AssetListRenderable<ICharacter> {
 		super(obj);
 	}
 
-	public prepareRender(
-		panel: DeepReadonly<IPanel>,
-		store: Store<IRootState>,
-		lq: boolean
-	): void | Promise<unknown> {
+	public prepareData(panel: DeepReadonly<IPanel>, store: Store<IRootState>) {
+		super.prepareData(panel, store);
 		this.data = getData(store, this.obj);
-		return super.prepareRender(panel, store, lq);
+	}
+
+	public prepareRender(lq: boolean): void | Promise<unknown> {
+		return super.prepareRender(lq);
 	}
 
 	protected isAssetListOutdated(): boolean {

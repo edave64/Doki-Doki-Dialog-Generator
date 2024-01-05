@@ -21,8 +21,6 @@ import { ITextboxRenderer, TextBox } from '../textbox';
 export abstract class DdlcBase implements ITextboxRenderer {
 	public abstract readonly width: number;
 	public abstract readonly height: number;
-	public abstract readonly innerWidth: number;
-	public abstract readonly innerHeight: number;
 
 	public static get defaultWidth() {
 		return TextBoxWidth;

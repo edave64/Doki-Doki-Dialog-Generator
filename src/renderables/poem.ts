@@ -2,11 +2,7 @@ import { getAssetByUrl } from '@/asset-manager';
 import getConstants from '@/constants';
 import { IAsset } from '@/render-utils/assets/asset';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
-import { IRootState } from '@/store';
 import { IPoem } from '@/store/object-types/poem';
-import { IPanel } from '@/store/panels';
-import { DeepReadonly } from 'ts-essentials';
-import { Store } from 'vuex';
 import { ScalingRenderable } from './scaling-renderable';
 
 const consolePadding = -2;
@@ -27,16 +23,8 @@ export class Poem extends ScalingRenderable<IPoem> {
 
 	private _paper: IAsset | null = null;
 	private _lastPaperUrl: string | null = null;
-	public prepareRender(
-		panel: DeepReadonly<IPanel>,
-		store: Store<IRootState>,
-		lq: boolean
-	): void | Promise<unknown> {
-		const superRet: void | Promise<unknown> = super.prepareRender(
-			panel,
-			store,
-			lq
-		);
+	public prepareRender(lq: boolean): void | Promise<unknown> {
+		const superRet: void | Promise<unknown> = super.prepareRender(lq);
 		const constants = getConstants().Poem;
 		const bg = constants.poemBackgrounds[this.obj.background];
 		const style = constants.poemTextStyles[this.obj.font];

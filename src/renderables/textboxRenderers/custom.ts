@@ -50,14 +50,6 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 		return this.obj.width;
 	}
 
-	public get innerHeight() {
-		return this.obj.height - textboxRoundingBuffer * 2;
-	}
-
-	public get innerWidth() {
-		return this.obj.width - textboxRoundingBuffer * 2;
-	}
-
 	public get nameboxWidth() {
 		if (this.refObject && this.refObject.nameboxWidth !== null) {
 			return this.refObject.nameboxWidth;

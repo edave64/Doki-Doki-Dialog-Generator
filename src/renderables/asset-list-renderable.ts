@@ -31,18 +31,24 @@ export abstract class AssetListRenderable<
 		return false;
 	}
 
-	public prepareRender(
+	public prepareData(
 		panel: DeepReadonly<IPanel>,
-		store: Store<IRootState>,
-		lq: boolean
-	): void | Promise<unknown> {
-		super.prepareRender(panel, store, lq);
-		let reloadAssets = !lq !== this.lastHq;
+		store: Store<DeepReadonly<IRootState>>
+	): void {
+		super.prepareData(panel, store);
 		if (this.missingAsset) {
 			const uploadCount = Object.keys(store.state.uploadUrls).length;
-			reloadAssets = uploadCount !== this.lastUploadCount;
+			if (uploadCount !== this.lastUploadCount) {
+				// Force asset invalidation
+				this.lastHq = null!;
+			}
 			this.lastUploadCount = uploadCount;
 		}
+	}
+
+	public prepareRender(lq: boolean): void | Promise<unknown> {
+		super.prepareRender(lq);
+		let reloadAssets = !lq !== this.lastHq;
 		if (this.isAssetListOutdated()) {
 			this.assetList = this.getAssetList();
 			// reloadAssets = true;

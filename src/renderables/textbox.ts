@@ -81,17 +81,17 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		);
 	}
 
-	public prepareRender(
-		panel: DeepReadonly<IPanel>,
-		store: Store<IRootState>,
-		lq: boolean
-	): void | Promise<unknown> {
-		const ret = super.prepareRender(panel, store, lq);
-		const prepareRet = this.textboxRenderer.prepare();
+	public prepareData(panel: DeepReadonly<IPanel>, store: Store<IRootState>) {
+		super.prepareData(panel, store);
 
 		if (typeof this.obj.talkingObjId === 'number') {
 			this.refObject = panel.objects[this.obj.talkingObjId] ?? null;
 		}
+	}
+
+	public prepareRender(lq: boolean): void | Promise<unknown> {
+		const ret = super.prepareRender(lq);
+		const prepareRet = this.textboxRenderer.prepare();
 		const currentRefVars = this.getRefVars();
 		if (currentRefVars !== this._lastRefVars) {
 			this.localCanvasInvalid = true;
@@ -204,8 +204,6 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 export interface ITextboxRenderer {
 	readonly height: number;
 	readonly width: number;
-	readonly innerHeight: number;
-	readonly innerWidth: number;
 	readonly nameboxWidth: number;
 	readonly nameboxHeight: number;
 

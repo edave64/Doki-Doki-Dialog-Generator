@@ -299,18 +299,7 @@ async function redraw() {
 		const renderer = new Renderer(pose.width, pose.height);
 		try {
 			await renderer.render(async (rx) => {
-				charRenderer.prepareTransform(new DOMMatrixReadOnly());
-				const background: IPanel['background'] = {
-					color: '',
-					composite: 'source-over',
-					current: '',
-					filters: [],
-					flipped: false,
-					scaling: ScalingModes.None,
-					variant: 0,
-				};
-				// Skip reloading the character data.
-				await AssetListRenderable.prototype.prepareRender.call(
+				AssetListRenderable.prototype.prepareData.call(
 					charRenderer,
 					{
 						background,
@@ -323,9 +312,20 @@ async function redraw() {
 						onTopOrder: [],
 						order: [previewChar.id],
 					},
-					store,
-					!rx.hq
+					store
 				);
+				charRenderer.prepareTransform(new DOMMatrixReadOnly());
+				const background: IPanel['background'] = {
+					color: '',
+					composite: 'source-over',
+					current: '',
+					filters: [],
+					flipped: false,
+					scaling: ScalingModes.None,
+					variant: 0,
+				};
+				// Skip reloading the character data.
+				await charRenderer.prepareRender(!rx.hq);
 
 				await charRenderer.render(
 					rx.fsCtx,

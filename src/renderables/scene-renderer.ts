@@ -127,6 +127,7 @@ export class SceneRenderer {
 		const waiting: Map<IObject['id'], Array<Renderable<IObject>>> = new Map();
 		const processed: Map<IObject['id'], DOMMatrixReadOnly> = new Map();
 		for (const renderable of renderables) {
+			renderable.prepareData(this.panel!, this.store);
 			const linked = renderable.linkedTo;
 			let linkTransform = new DOMMatrixReadOnly();
 			if (linked != null) {
@@ -151,7 +152,7 @@ export class SceneRenderer {
 		}
 
 		const promises = renderables
-			.map((x) => x.prepareRender(this.panel!, this.store, !rx.hq))
+			.map((x) => x.prepareRender(!rx.hq))
 			.filter((x) => x !== undefined);
 		if (promises.length > 0) {
 			await Promise.all(promises);

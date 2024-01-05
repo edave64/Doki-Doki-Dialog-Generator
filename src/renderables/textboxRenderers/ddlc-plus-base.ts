@@ -17,8 +17,6 @@ import { ITextboxRenderer, TextBox } from '../textbox';
 export abstract class DdlcPlusBase implements ITextboxRenderer {
 	public abstract readonly width: number;
 	public abstract readonly height: number;
-	public abstract readonly innerWidth: number;
-	public abstract readonly innerHeight: number;
 
 	public static get resizable() {
 		return false;
