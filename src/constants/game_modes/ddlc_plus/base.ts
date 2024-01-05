@@ -22,7 +22,7 @@ export const sdCharacterScaleFactor = 1.5;
 export const hdCharacterScaleFactor = 1;
 
 export const CloseUpYOffset = -111;
-export const BaseCharacterYPos = -39;
+export const BaseCharacterYPos = 537;
 
 export const characterPositions = [
 	300, 360, 600, 740, 960, 1180, 1320, 1560, 1620,
