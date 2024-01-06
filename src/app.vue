@@ -50,11 +50,11 @@
 </template>
 
 <script lang="ts" setup>
-import { baseUrl } from '@/asset-manager';
 import MessageConsole from '@/components/message-console.vue';
 import ModalDialog from '@/components/modal-dialog.vue';
 import Render from '@/components/render.vue';
 import ToolBox from '@/components/toolbox/toolbox.vue';
+import { packsUrl } from '@/config';
 import environment from '@/environments/environment';
 import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 import { transaction } from '@/plugins/vuex-history';
@@ -463,17 +463,17 @@ onMounted(async () => {
 		);
 
 		await store.dispatch('content/loadContentPacks', [
-			`${baseUrl}packs/buildin.base.backgrounds.json`,
-			`${baseUrl}packs/buildin.base.monika.json`,
-			`${baseUrl}packs/buildin.base.sayori.json`,
-			`${baseUrl}packs/buildin.base.natsuki.json`,
-			`${baseUrl}packs/buildin.base.yuri.json`,
-			`${baseUrl}packs/buildin.extra.mc.json`,
-			`${baseUrl}packs/buildin.extra.concept_mc.json`,
-			`${baseUrl}packs/buildin.extra.mc_chad.json`,
-			`${baseUrl}packs/buildin.extra.femc.json`,
-			`${baseUrl}packs/buildin.extra.concept_femc.json`,
-			`${baseUrl}packs/buildin.extra.amy.json`,
+			`${packsUrl}buildin.base.backgrounds.json`,
+			`${packsUrl}buildin.base.monika.json`,
+			`${packsUrl}buildin.base.sayori.json`,
+			`${packsUrl}buildin.base.natsuki.json`,
+			`${packsUrl}buildin.base.yuri.json`,
+			`${packsUrl}buildin.extra.mc.json`,
+			`${packsUrl}buildin.extra.concept_mc.json`,
+			`${packsUrl}buildin.extra.mc_chad.json`,
+			`${packsUrl}buildin.extra.femc.json`,
+			`${packsUrl}buildin.extra.concept_femc.json`,
+			`${packsUrl}buildin.extra.amy.json`,
 		]);
 
 		await environment.loadContentPacks();

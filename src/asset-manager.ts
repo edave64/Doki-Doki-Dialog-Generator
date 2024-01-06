@@ -2,6 +2,7 @@
  * Loads assets from urls for use in canvas painting, keeps them cached, and loads webP images if supported.
  */
 
+import { assetUrl } from './config';
 import environment from './environments/environment';
 import EventBus, { AssetFailureEvent } from './eventbus/event-bus';
 import { IAsset } from './render-utils/assets/asset';
@@ -135,13 +136,11 @@ export function getAssetByUrl(url: string): Promise<IAsset> {
 	return getAssetCache().get(url);
 }
 
-export const baseUrl = './';
-
 export async function getBuildInAsset(
 	asset: string,
 	hq: boolean = true
 ): Promise<IAsset> {
-	const url = `${baseUrl}assets/${asset}${hq ? '' : '.lq'}${
+	const url = `${assetUrl}${asset}${hq ? '' : '.lq'}${
 		(await isWebPSupported()) ? '.webp' : '.png'
 	}`.replace(/\/+/, '/');
 	return await getAssetCache().get(url);
@@ -151,9 +150,9 @@ export async function getBuildInAssetUrl(
 	asset: string,
 	hq: boolean = true
 ): Promise<string> {
-	return `${baseUrl}assets/${asset}${
-		environment.supports.lq && !hq ? '.lq' : ''
-	}${(await isWebPSupported()) ? '.webp' : '.png'}`.replace(/\/+/, '/');
+	return `${assetUrl}${asset}${environment.supports.lq && !hq ? '.lq' : ''}${
+		(await isWebPSupported()) ? '.webp' : '.png'
+	}`.replace(/\/+/, '/');
 }
 
 export function registerAssetWithURL(asset: string, url: string) {
