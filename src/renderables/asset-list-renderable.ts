@@ -15,7 +15,7 @@ import { Renderable } from './renderable';
  * An abstraction over objects that are just a bunch of images drawn on top of each other. (Sprites and characters)
  */
 export abstract class AssetListRenderable<
-	Obj extends IObject
+	Obj extends IObject,
 > extends Renderable<Obj> {
 	protected refTextbox: ITextBox | null = null;
 	protected abstract getAssetList(): Array<IDrawAssetsUnloaded | IDrawAssets>;

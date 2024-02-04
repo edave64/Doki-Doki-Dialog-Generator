@@ -8,7 +8,7 @@ import { Renderable } from './renderable';
  * of the same size as the main canvas.
  */
 export abstract class ScalingRenderable<
-	Obj extends IObject
+	Obj extends IObject,
 > extends Renderable<Obj> {
 	protected get canSkipLocal(): boolean {
 		return (

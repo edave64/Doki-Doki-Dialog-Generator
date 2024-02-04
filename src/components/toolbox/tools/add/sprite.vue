@@ -262,7 +262,11 @@ input {
 	background-size: contain !important;
 	background-repeat: no-repeat !important;
 	background-position: center center !important;
-	text-shadow: 0 0 4px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+	text-shadow:
+		0 0 4px #000,
+		-1px -1px 0 #000,
+		1px -1px 0 #000,
+		-1px 1px 0 #000,
 		1px 1px 0 #000;
 	color: white;
 	display: flex;

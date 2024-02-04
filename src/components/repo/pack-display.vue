@@ -281,12 +281,19 @@ interface AuthorLink {
 		color: var(--text);
 
 		//noinspection CssOverwrittenProperties
-		text-shadow: 0 0 4px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff,
-			-1px 1px 0 #fff, 1px 1px 0 #fff;
+		text-shadow:
+			0 0 4px #fff,
+			-1px -1px 0 #fff,
+			1px -1px 0 #fff,
+			-1px 1px 0 #fff,
+			1px 1px 0 #fff;
 		//noinspection CssOverwrittenProperties
-		text-shadow: 0 0 4px var(--native-background),
-			-1px -1px 0 var(--native-background), 1px -1px 0 var(--native-background),
-			-1px 1px 0 var(--native-background), 1px 1px 0 var(--native-background);
+		text-shadow:
+			0 0 4px var(--native-background),
+			-1px -1px 0 var(--native-background),
+			1px -1px 0 var(--native-background),
+			-1px 1px 0 var(--native-background),
+			1px 1px 0 var(--native-background);
 	}
 
 	footer:last-child,

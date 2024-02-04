@@ -89,12 +89,12 @@ export class Default extends DdlcBase implements ITextboxRenderer {
 				? undefined
 				: (async () => {
 						this.backdropAsset = await getBuildInAsset(this.backgroundImage);
-				  })(),
+					})(),
 			this.nameBoxAsset instanceof ImageAsset
 				? undefined
 				: (async () => {
 						this.nameBoxAsset = await getBuildInAsset('namebox');
-				  })(),
+					})(),
 		]);
 	}
 }

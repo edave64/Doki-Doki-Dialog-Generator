@@ -4,7 +4,6 @@
 
 import eventBus, { FailureEvent } from '@/eventbus/event-bus';
 
-
 export async function safeAsync(name: string, callback: () => Promise<void>) {
 	try {
 		await callback();

@@ -172,8 +172,8 @@ export class SceneRenderer {
 				(selected
 					? SelectedState.Selected
 					: links.has(object.id)
-					? SelectedState.Indirectly
-					: SelectedState.None) +
+						? SelectedState.Indirectly
+						: SelectedState.None) +
 					(focused ? SelectedState.Focused : SelectedState.None),
 				rx.preview,
 				rx.hq,

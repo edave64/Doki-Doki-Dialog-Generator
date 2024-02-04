@@ -317,7 +317,7 @@ export class TextRenderer {
 				: TextRenderer.applyLineWrapping(
 						this.renderParts.slice(0),
 						maxLineWidth
-				  );
+					);
 
 		for (const item of renderParts) {
 			lineHeight = Math.max(lineHeight, item.height);

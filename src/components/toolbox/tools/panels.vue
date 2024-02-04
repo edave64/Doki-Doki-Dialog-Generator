@@ -694,7 +694,11 @@ watch(
 	display: flex;
 	flex-direction: column;
 
-	text-shadow: 0 0 4px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+	text-shadow:
+		0 0 4px #000,
+		-1px -1px 0 #000,
+		1px -1px 0 #000,
+		-1px 1px 0 #000,
 		1px 1px 0 #000;
 
 	&.active {

@@ -1,4 +1,5 @@
 import { getAAsset } from '@/asset-manager';
+import getConstants from '@/constants';
 import { ImageAsset } from '@/render-utils/assets/image-asset';
 import { ICreateObjectMutation, IObject } from '@/store/objects';
 import { ActionTree, MutationTree } from 'vuex';
@@ -6,7 +7,6 @@ import { IRootState } from '..';
 import { IAssetSwitch } from '../content';
 import { IPanel, IPanels } from '../panels';
 import { baseProps } from './base-object-props';
-import getConstants from "@/constants";
 
 export interface ISprite extends IObject {
 	type: 'sprite';

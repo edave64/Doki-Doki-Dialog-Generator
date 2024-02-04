@@ -9,7 +9,7 @@ import { RGBAColor } from './rgb';
  */
 export class HSLAColor implements IColor {
 	public constructor(
-		// The hue component 
+		// The hue component
 		public readonly h: number,
 		// The saturation component
 		public readonly s: number,

@@ -63,7 +63,7 @@ export type NotificationSimpleProperties = Exclude<
 >;
 
 export interface ISetNotificationProperty<
-	T extends NotificationSimpleProperties
+	T extends NotificationSimpleProperties,
 > extends IObjectMutation {
 	readonly key: T;
 	readonly value: INotification[T];

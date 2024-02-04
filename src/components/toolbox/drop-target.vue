@@ -57,10 +57,18 @@ div {
 	color: $default-native-background;
 	//noinspection CssOverwrittenProperties
 	color: var(--native-background);
-	text-shadow: 0 0 4px $default-text, -1px -1px 0 $default-text,
-		1px -1px 0 $default-text, -1px 1px 0 $default-text, 1px 1px 0 $default-text;
-	text-shadow: 0 0 4px var(--text), -1px -1px 0 var(--text),
-		1px -1px 0 var(--text), -1px 1px 0 var(--text), 1px 1px 0 var(--text);
+	text-shadow:
+		0 0 4px $default-text,
+		-1px -1px 0 $default-text,
+		1px -1px 0 $default-text,
+		-1px 1px 0 $default-text,
+		1px 1px 0 $default-text;
+	text-shadow:
+		0 0 4px var(--text),
+		-1px -1px 0 var(--text),
+		1px -1px 0 var(--text),
+		-1px 1px 0 var(--text),
+		1px 1px 0 var(--text);
 	font-size: 24px;
 	font-family: riffic, sans-serif;
 }
