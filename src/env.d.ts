@@ -7,6 +7,11 @@ interface ImportMetaEnv {
 	// more env variables...
 }
 
+// static replacements declared in vite.config.js
+declare const DDDG_ASSET_PATH: string;
+declare const DDDG_ALLOW_WEBP: boolean;
+declare const DDDG_ALLOW_LQ: boolean;
+
 interface ImportMeta {
 	readonly env: ImportMetaEnv;
 }

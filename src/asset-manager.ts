@@ -2,7 +2,7 @@
  * Loads assets from urls for use in canvas painting, keeps them cached, and loads webP images if supported.
  */
 
-import { assetUrl } from './config';
+import { allowLq, allowWebP, assetUrl } from './config';
 import environment from './environments/environment';
 import EventBus, { AssetFailureEvent } from './eventbus/event-bus';
 import { IAsset } from './render-utils/assets/asset';
@@ -17,7 +17,7 @@ let webpSupportPromise: Promise<boolean> | undefined;
  */
 export function isWebPSupported(): Promise<boolean> {
 	if (webpSupportPromise) return webpSupportPromise;
-	if (!environment.supports.allowWebP) {
+	if (!environment.supports.allowWebP || !allowWebP) {
 		return Promise.resolve(false);
 	}
 	const losslessCode =
@@ -126,7 +126,7 @@ export function getAAsset(
 }
 
 export function getAAssetUrl(asset: IAssetSwitch, hq: boolean = true): string {
-	const url = environment.supports.lq && !hq ? asset.lq : asset.hq;
+	const url = environment.supports.lq && allowLq && !hq ? asset.lq : asset.hq;
 	if (customUrl[url]) return customUrl[url];
 	return url;
 }
@@ -140,9 +140,9 @@ export async function getBuildInAsset(
 	asset: string,
 	hq: boolean = true
 ): Promise<IAsset> {
-	const url = `${assetUrl}${asset}${hq ? '' : '.lq'}${
-		(await isWebPSupported()) ? '.webp' : '.png'
-	}`.replace(/\/+/, '/');
+	const url = `${assetUrl}${asset}${
+		environment.supports.lq && allowLq && !hq ? '.lq' : ''
+	}${(await isWebPSupported()) ? '.webp' : '.png'}`.replace(/\/+/, '/');
 	return await getAssetCache().get(url);
 }
 
@@ -150,9 +150,9 @@ export async function getBuildInAssetUrl(
 	asset: string,
 	hq: boolean = true
 ): Promise<string> {
-	return `${assetUrl}${asset}${environment.supports.lq && !hq ? '.lq' : ''}${
-		(await isWebPSupported()) ? '.webp' : '.png'
-	}`.replace(/\/+/, '/');
+	return `${assetUrl}${asset}${
+		environment.supports.lq && allowLq && !hq ? '.lq' : ''
+	}${(await isWebPSupported()) ? '.webp' : '.png'}`.replace(/\/+/, '/');
 }
 
 export function registerAssetWithURL(asset: string, url: string) {

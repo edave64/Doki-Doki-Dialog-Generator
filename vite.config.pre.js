@@ -1,27 +1,14 @@
-import vue from '@vitejs/plugin-vue';
 import { defineConfig } from 'vite';
+import * as base from './vite.config.js';
 
 // https://vitejs.dev/config/
-export default defineConfig({
-	base: './',
-	resolve: {
-		alias: {
-			'@': '/src/',
-		},
-	},
-
-	css: {
-		preprocessorOptions: {
-			scss: {
-				additionalData: `@import '/src/styles/global_mixins.scss';`,
-			},
-		},
-	},
-
+/** @type {import('vite').UserConfigExport} */
+export const config = (opts) => ({
+	...base.config(opts),
 	build: {
 		minify: false,
 		target: 'es2015',
 	},
-	esbuild: { target: 'es2015' },
-	plugins: [vue()],
 });
+
+export default defineConfig(config);

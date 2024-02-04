@@ -12,6 +12,7 @@ import {
 import { Module } from 'vuex';
 // tslint:disable-next-line: max-line-length
 import { isWebPSupported } from '@/asset-manager';
+import { assetUrl } from '@/config';
 import { normalizeCharacter as normalizeCharacterV1 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v1/parser';
 import { IRootState } from '..';
 import { mergeContentPacks } from './merge';
@@ -194,7 +195,7 @@ export async function loadContentPack(
 	try {
 		const paths = {
 			'./': baseDir(url),
-			'/': baseDir(location.href) + 'assets/',
+			'/': assetUrl,
 		};
 		if (json.version === '2.0') {
 			return normalizeContentPack(json, paths) as ContentPack<string>;
