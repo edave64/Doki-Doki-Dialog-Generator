@@ -37,9 +37,7 @@ export const config = ({ mode }) => {
 			? {}
 			: {
 					esbuild: { target: 'es2015' },
-					build: {
-						target: 'es2015',
-					},
+					build: { target: 'es2015' },
 			  }),
 
 		plugins: [vue()],

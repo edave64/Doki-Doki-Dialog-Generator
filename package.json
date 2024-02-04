@@ -1,6 +1,7 @@
 {
 	"name": "doki-doki-dialog-generator",
 	"version": "2.5.1",
+	"type": "module",
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build",
@@ -27,16 +28,16 @@
 	"devDependencies": {
 		"@ls-lint/ls-lint": "^2.2.2",
 		"@rushstack/eslint-patch": "^1.5.1",
-		"@vitejs/plugin-vue": "^3.2.0",
-		"@vue/eslint-config-typescript": "^11.0.3",
+		"@vitejs/plugin-vue": "^5.0.3",
+		"@vue/eslint-config-typescript": "^12.0.0",
 		"@vue/typescript": "^1.8.20",
-		"eslint": "^8.53.0",
-		"eslint-config-prettier": "^8.10.0",
-		"eslint-plugin-prettier": "^4.2.1",
-		"prettier": "^2.8.8",
+		"eslint": "^8.56.0",
+		"eslint-config-prettier": "^9.1.0",
+		"eslint-plugin-prettier": "^5.1.3",
+		"prettier": "^3.2.5",
 		"prettier-plugin-organize-imports": "^3.2.4",
 		"sass": "^1.69.5",
 		"ts-essentials": "^9.4.1",
-		"vite": "^3.2.7"
+		"vite": "^5.0.12"
 	}
 }
