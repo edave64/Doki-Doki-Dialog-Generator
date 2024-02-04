@@ -48,7 +48,7 @@ export abstract class AssetListRenderable<
 
 	public prepareRender(lq: boolean): void | Promise<unknown> {
 		super.prepareRender(lq);
-		let reloadAssets = !lq !== this.lastHq;
+		let reloadAssets = false;
 		if (this.isAssetListOutdated()) {
 			this.assetList = this.getAssetList();
 			// reloadAssets = true;
@@ -57,12 +57,30 @@ export abstract class AssetListRenderable<
 			//       assetListOutdated check properly. In theory, this is not correct, it just detects if there are any
 			//       assets that weren't in the sprite previously. If one pose has just one asset fewer, like an
 			//       accessory, or has the same assets with different offsets, it will not update the local canvas.
-			reloadAssets = !!this.assetList.find(
+			reloadAssets ||= !!this.assetList.find(
 				(x) => !('loadedAssets' in x) || x.hasMissing
 			);
 		}
-		if (!reloadAssets) return;
+		if (!lq !== this.lastHq) {
+			for (let i = 0; i < this.assetList.length; ++i) {
+				const asset = this.assetList[i];
+				if (
+					'loadedAssets' in asset &&
+					!asset.assets.every((x) => x.hq === x.lq)
+				) {
+					// LQ/HQ mode has changed, and the some assets have different URLs in lq and hq mode:
+					// Demote those assets back to unloaded.
+					this.assetList[i] = {
+						assets: asset.assets,
+						offset: asset.offset,
+						composite: asset.composite,
+					} as IDrawAssetsUnloaded;
+					reloadAssets = true;
+				}
+			}
+		}
 		this.lastHq = !lq;
+		if (!reloadAssets) return;
 		this.localCanvasInvalid = true;
 		this._canSkipLocal = this.assetList.length <= 1;
 		return this.loadAssets(!lq);
