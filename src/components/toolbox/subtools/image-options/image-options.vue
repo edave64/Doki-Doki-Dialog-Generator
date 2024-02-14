@@ -483,7 +483,6 @@ function moveFilter(moveBy: number) {
 }
 
 function updateValue(event: Event) {
-	if (!(event instanceof InputEvent)) return;
 	let value = Number((event.target as HTMLInputElement).value);
 	if (isPercentFilter.value) {
 		value = value / 100;
