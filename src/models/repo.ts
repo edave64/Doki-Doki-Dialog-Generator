@@ -194,7 +194,7 @@ export class Repo {
 		return this.authors.value;
 	}
 
-	public async loadTempPack(url: string): Promise<string> {
+	public async loadTempPack(url: string): Promise<string | null> {
 		const req = fetch(url);
 		let res: Response;
 		try {
@@ -202,7 +202,7 @@ export class Repo {
 		} catch (e) {
 			throw new Error(`Failed to load '${url}'`);
 		}
-		let body: any;
+		let body: TempRepoFile;
 		try {
 			body = await res.json();
 		} catch (e) {
@@ -210,7 +210,7 @@ export class Repo {
 				`The contents of '${url}' is not a valid JSON: ${(e as Error).message}`
 			);
 		}
-		if (!body.pack) {
+		if (!body.pack && (!body.packs || body.packs.length === 0)) {
 			throw new Error(`The json file '${url}' does not contain any packages`);
 		}
 		if (body.authors) {
@@ -221,15 +221,50 @@ export class Repo {
 			}
 		}
 
-		const pack = body.pack;
-		pack.repoUrl = url;
+		let first: string | null = null;
+		if (body.pack) {
+			this.addTempPack(body.pack, url);
+			first = body.pack.id;
+		}
+		if (body.packs) {
+			for (const pack of body.packs) {
+				this.addTempPack(pack, url);
+				if (first === null) {
+					first = pack.id;
+				}
+			}
+		}
 
+		return first;
+	}
+
+	private addTempPack(
+		pack: IPrimitivePack & { repoUrl?: string },
+		baseUrl: string
+	) {
+		pack.repoUrl = baseUrl;
+		// Allow paths relative to the repo.json
+		if (pack.dddg1Path) {
+			pack.dddg1Path = new URL(pack.dddg1Path, baseUrl).toString();
+		}
+		if (pack.dddg2Path) {
+			pack.dddg2Path = new URL(pack.dddg2Path, baseUrl).toString();
+		}
+		if (pack.preview) {
+			for (let i = 0; i < pack.preview.length; ++i) {
+				pack.preview[i] = new URL(pack.preview[i], baseUrl).toString();
+			}
+		}
 		if (!this.tempRepo.packs.find((x) => x.id === pack.id)) {
 			this.tempRepo.packs.push(pack);
 		}
-
-		return pack.id;
 	}
+}
+
+export interface TempRepoFile {
+	pack?: IPrimitivePack & { repoUrl?: string };
+	packs?: (IPrimitivePack & { repoUrl?: string })[];
+	authors?: IAuthors;
 }
 
 export interface Pack extends IPrimitivePack {
