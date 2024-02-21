@@ -285,10 +285,7 @@ async function redraw() {
 	let charRenderer: Character;
 	const pose = previewPoses.value[previewPoseIdx.value];
 	try {
-		charRenderer = new Character(
-			previewChar,
-			await temporaryCharacterModel.value
-		);
+		charRenderer = new Character(previewChar, temporaryCharacterModel.value);
 	} catch (e) {
 		return;
 	}
@@ -299,6 +296,15 @@ async function redraw() {
 		const renderer = new Renderer(pose.width, pose.height);
 		try {
 			await renderer.render(async (rx) => {
+				const background: IPanel['background'] = {
+					color: '',
+					composite: 'source-over',
+					current: 'buildin.transparent',
+					filters: [],
+					flipped: false,
+					scaling: ScalingModes.None,
+					variant: 0,
+				};
 				AssetListRenderable.prototype.prepareData.call(
 					charRenderer,
 					{
@@ -315,15 +321,6 @@ async function redraw() {
 					store
 				);
 				charRenderer.prepareTransform(new DOMMatrixReadOnly());
-				const background: IPanel['background'] = {
-					color: '',
-					composite: 'source-over',
-					current: '',
-					filters: [],
-					flipped: false,
-					scaling: ScalingModes.None,
-					variant: 0,
-				};
 				// Skip reloading the character data.
 				await charRenderer.prepareRender(!rx.hq);
 
