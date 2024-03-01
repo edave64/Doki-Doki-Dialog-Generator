@@ -23,7 +23,7 @@
 			/>
 			<d-button icon="upload" class="upload-background" @click="upload.click()">
 				Upload
-				<input type="file" ref="upload" @change="onFileUpload" />
+				<input type="file" ref="upload" @change="onFileUpload" multiple />
 			</d-button>
 			<d-button icon="link" class="upload-background" @click="addByUrl">
 				Add by URL

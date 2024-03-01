@@ -37,7 +37,12 @@
 		@click="spriteUpload.click()"
 	>
 		Upload new sprite
-		<input type="file" ref="spriteUpload" @change="onSpriteFileUpload" />
+		<input
+			type="file"
+			ref="spriteUpload"
+			@change="onSpriteFileUpload"
+			multiple
+		/>
 	</d-button>
 	<d-button icon="insert_link" @click="uploadFromURL">
 		New sprite from URL
