@@ -40,6 +40,7 @@
 			v-for="styleComponent of styleComponents"
 			:key="styleComponent.name"
 			:title="styleComponent.label"
+			class="h-h100"
 		>
 			<d-flow noWraping>
 				<part-button
