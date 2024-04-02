@@ -153,7 +153,7 @@
 			</d-fieldset>
 			<div class="column">
 				<d-button icon="save" @click="save">Save</d-button>
-				<d-button class="v-bt0" icon="folder_open" @click="loadUpload.click()">
+				<d-button class="bt0" icon="folder_open" @click="loadUpload.click()">
 					Load
 					<input type="file" ref="loadUpload" @change="load" />
 				</d-button>
@@ -694,11 +694,7 @@ watch(
 	display: flex;
 	flex-direction: column;
 
-	text-shadow:
-		0 0 4px #000,
-		-1px -1px 0 #000,
-		1px -1px 0 #000,
-		-1px 1px 0 #000,
+	text-shadow: 0 0 4px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
 		1px 1px 0 #000;
 
 	&.active {

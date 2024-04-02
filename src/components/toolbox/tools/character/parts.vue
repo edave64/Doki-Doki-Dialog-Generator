@@ -1,26 +1,30 @@
 <template>
 	<d-flow no-wraping @keydown="onKeydown">
-		<button @click="emit('leave')">Back</button>
-		<d-button
-			icon="extension"
-			@click="
-				emit('show-expression-dialog', { character: character.characterType })
-			"
-			v-if="part === 'head'"
-		>
-			Create new expressions
-		</d-button>
-		<d-button
-			icon="extension"
-			@click="
-				emit(
-					'show-dialog',
-					`type: ${packSearchType} character: ${charData.label}`
-				)
-			"
-		>
-			Search in content packs
-		</d-button>
+		<button @click="emit('leave')" class="h-h100">Back</button>
+		<d-flow direction="vertical" class="parts-fnc-btns">
+			<d-button
+				icon="extension"
+				class="h-bl0 v-w100 v-bt0"
+				@click="
+					emit(
+						'show-dialog',
+						`type: ${packSearchType} character: ${charData.label}`
+					)
+				"
+			>
+				Search in content packs
+			</d-button>
+			<d-button
+				icon="extension"
+				class="h-bl0 h-bt0 v-w100 v-bt0"
+				@click="
+					emit('show-expression-dialog', { character: character.characterType })
+				"
+				v-if="part === 'head'"
+			>
+				Create new expressions
+			</d-button>
+		</d-flow>
 		<part-button
 			v-for="(part, index) of parts"
 			:key="index"
@@ -336,7 +340,15 @@ safeAsync('Initializing parts data', async () => {
 watch(() => props.character, updateStyleData, { immediate: true });
 </script>
 
+<style lang="scss"></style>
+
 <style lang="scss" scoped>
+.horizontal {
+	.parts-fnc-btns {
+		width: 130px;
+		justify-content: center;
+	}
+}
 .icon-button {
 	vertical-align: middle;
 	width: 100px;
