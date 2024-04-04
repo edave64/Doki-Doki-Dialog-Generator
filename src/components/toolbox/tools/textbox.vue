@@ -233,8 +233,11 @@ const colorSelect = ref(
 watch(
 	() => vertical.value,
 	() => {
-		textarea.value.style.height = '';
-		textarea.value.style.width = '';
+		const ta = textarea.value;
+		if (ta) {
+			ta.style.height = '';
+			ta.style.width = '';
+		}
 	}
 );
 
