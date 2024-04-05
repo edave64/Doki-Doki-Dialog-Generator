@@ -30,14 +30,17 @@
 				<i class="material-icons">remove</i>
 				Deactivate
 			</button>
-			<button v-if="installable" @click="install">
-				<i class="material-icons">add</i>
-				Store locally
-			</button>
-			<button v-if="uninstallable" @click="uninstall">
-				<i class="material-icons">remove</i>
-				Remove locally
-			</button>
+			<button v-if="processingPack" disabled>Processing...</button>
+			<template v-else>
+				<button v-if="installable" @click="install">
+					<i class="material-icons">add</i>
+					Store locally
+				</button>
+				<button v-if="uninstallable" @click="uninstall">
+					<i class="material-icons">remove</i>
+					Remove locally
+				</button>
+			</template>
 			<toggle
 				v-if="autoloadEnabled"
 				label="Load on startup"
@@ -83,8 +86,9 @@ import { Repo } from '@/models/repo';
 import { IRemovePacksAction, useStore } from '@/store';
 import { IAuthor, IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import { DeepReadonly } from 'ts-essentials';
-import { computed, defineComponent, PropType } from 'vue';
+import { computed, PropType, ref } from 'vue';
 import Toggle from '../toggle.vue';
+import { errorReport } from '@/util/errors';
 
 const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 	['reddit', 'https://reddit.com/u/%1', 'reddit.png'],
@@ -143,6 +147,7 @@ const autoload = computed({
 		}
 	},
 });
+const processingPack = ref(false);
 
 function authorName(authorId: string) {
 	const author = props.repo!.getAuthor(authorId);
@@ -166,7 +171,7 @@ function authorsLinks(authorId: string): AuthorLink[] {
 		});
 }
 
-function install(): void {
+async function install(): Promise<void> {
 	if (pack.value.installed) return;
 	const authors: IAuthors = {};
 	for (const key of pack.value.authors) {
@@ -179,11 +184,18 @@ function install(): void {
 	delete pack_.loaded;
 	delete pack_.installed;
 
-	environment.localRepoInstall(
-		pack.value.dddg2Path || pack.value.dddg1Path,
-		pack_,
-		authors
-	);
+	try {
+		processingPack.value = true;
+		await environment.localRepoInstall(
+			pack.value.dddg2Path || pack.value.dddg1Path,
+			pack_,
+			authors
+		);
+	} catch (e) {
+		errorReport(e);
+	} finally {
+		processingPack.value = false;
+	}
 }
 
 async function uninstall(): Promise<void> {
@@ -192,7 +204,12 @@ async function uninstall(): Promise<void> {
 	if (pack_.repoUrl && !props.repo?.hasPack(pack_.id, true)) {
 		await props.repo!.loadTempPack(pack_.repoUrl);
 	}
-	environment.localRepoUninstall(pack_.id);
+	try {
+		processingPack.value = true;
+		await environment.localRepoUninstall(pack_.id);
+	} finally {
+		processingPack.value = false;
+	}
 }
 
 async function remove(): Promise<void> {
@@ -281,19 +298,12 @@ interface AuthorLink {
 		color: var(--text);
 
 		//noinspection CssOverwrittenProperties
-		text-shadow:
-			0 0 4px #fff,
-			-1px -1px 0 #fff,
-			1px -1px 0 #fff,
-			-1px 1px 0 #fff,
-			1px 1px 0 #fff;
+		text-shadow: 0 0 4px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff,
+			-1px 1px 0 #fff, 1px 1px 0 #fff;
 		//noinspection CssOverwrittenProperties
-		text-shadow:
-			0 0 4px var(--native-background),
-			-1px -1px 0 var(--native-background),
-			1px -1px 0 var(--native-background),
-			-1px 1px 0 var(--native-background),
-			1px 1px 0 var(--native-background);
+		text-shadow: 0 0 4px var(--native-background),
+			-1px -1px 0 var(--native-background), 1px -1px 0 var(--native-background),
+			-1px 1px 0 var(--native-background), 1px 1px 0 var(--native-background);
 	}
 
 	footer:last-child,

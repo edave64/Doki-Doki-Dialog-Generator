@@ -201,8 +201,10 @@ export class Browser implements IEnvironment {
 		_url: string,
 		_repo: IPack,
 		_authors: IAuthors
-	): void {
-		throw new Error('This environment does not support a local repository');
+	): Promise<void> {
+		return Promise.reject(
+			new Error('This environment does not support a local repository')
+		);
 	}
 
 	public localRepoUninstall(_id: string): void {

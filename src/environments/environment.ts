@@ -49,7 +49,7 @@ export interface IEnvironment {
 	prompt(message: string, defaultValue?: string): Promise<string | null>;
 	onPanelChange(handler: (panel: string) => void): void;
 
-	localRepoInstall(url: string, repo: IPack, authors: IAuthors): void;
+	localRepoInstall(url: string, repo: IPack, authors: IAuthors): Promise<void>;
 	localRepoUninstall(id: string): void;
 	autoLoadAdd(id: string): Promise<void>;
 	autoLoadRemove(id: string): Promise<void>;

@@ -8,19 +8,23 @@ export async function safeAsync(name: string, callback: () => Promise<void>) {
 	try {
 		await callback();
 	} catch (e) {
-		console.error('Error in promise', name, e);
-		eventBus.fire(
-			new FailureEvent(
-				"Unexpected error! Please copy the following message and send it to /u/edave64: Error in '" +
-					name +
-					'", ' +
-					normalizeError(e)
-			)
-		);
+		errorReport(e);
 	}
 }
 
-function normalizeError(e: any): string {
+export function errorReport(e: any) {
+	console.error('Error in promise', name, e);
+	eventBus.fire(
+		new FailureEvent(
+			"Unexpected error! Please copy the following message and send it to /u/edave64: Error in '" +
+				name +
+				'", ' +
+				normalizeError(e)
+		)
+	);
+}
+
+export function normalizeError(e: any): string {
 	if (e instanceof Error) {
 		if (e.stack != null) {
 			const stackLines = e.stack.split('\n');
