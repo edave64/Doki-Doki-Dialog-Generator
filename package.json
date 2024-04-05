@@ -11,11 +11,12 @@
 		"assetConversions": "node ./scripts/asset-conversions.js",
 		"build:pre": "vite build -c vite.config.pre.js",
 		"build:web": "vite build",
-		"build:electron": "vite build",
+		"build:electron": "vite build --mode desktop",
 		"sync:release": "rsync -av --delete --exclude=assets/**.webp --exclude=assets/**.png ./dist/ ../dist/release/",
 		"sync:pre": "rsync -av --delete --exclude=assets/**.webp --exclude=assets/**.png --exclude=assets/**.txt ./dist/ ../dist/pre/",
 		"sync:win": "rsync -av --delete --exclude=assets/**.lq.webp --exclude=assets/**.png ./dist/ ../desktop-win/dddgWeb/",
-		"sync:linux": "rsync -av --delete --exclude=assets/**.lq.webp --exclude=assets/**.png ./dist/ ../desktop-linux/dddgWeb/"
+		"sync:linux": "rsync -av --delete --exclude=assets/**.lq.webp --exclude=assets/**.png ./dist/ ../desktop-linux/dddgWeb/",
+		"update:electron": "npm run build:electron && npm run sync:win & npm run sync:linux"
 	},
 	"dependencies": {
 		"@edave64/dddg-repo-filters": "^0.4.0",
