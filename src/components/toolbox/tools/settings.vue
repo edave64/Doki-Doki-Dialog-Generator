@@ -78,7 +78,10 @@
 		>
 			Deny saving options
 		</button>
-		<button @click="showModeDialog = true" class="bt0">
+		<button
+			@click="showModeDialog = true"
+			:class="savesEnabledInEnv ? 'bt0' : ''"
+		>
 			<template v-if="inPlusMode"> Enter Classic Mode </template>
 			<template v-else> Enter DDLC Plus Mode </template>
 		</button>
