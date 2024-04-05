@@ -40,6 +40,8 @@ export class Browser implements IEnvironment {
 	private readonly loadingContentPacksAllowed: Promise<void>;
 	public loadContentPacks!: () => void;
 
+	public updateProgress = null;
+
 	public get savingEnabled() {
 		return this.isSavingEnabled.value;
 	}
@@ -128,6 +130,7 @@ export class Browser implements IEnvironment {
 			}
 		});
 	}
+
 	storeSaveFile(saveBlob: Blob, defaultName: string): Promise<void> {
 		const a = document.createElement('a');
 		const url = URL.createObjectURL(saveBlob);

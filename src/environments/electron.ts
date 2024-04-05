@@ -12,7 +12,7 @@ import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { DeepReadonly } from 'ts-essentials';
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import { Store } from 'vuex';
 import { EnvCapabilities, Folder, IEnvironment, Settings } from './environment';
 
@@ -51,6 +51,11 @@ export class Electron implements IEnvironment {
 
 	private readonly loadingContentPacksAllowed: Promise<void>;
 	public loadContentPacks!: () => void;
+
+	public updateProgress = ref('wait' as const) as Exclude<
+		IEnvironment['updateProgress'],
+		null
+	>;
 
 	constructor() {
 		this.loadingContentPacksAllowed = new Promise((resolve, _reject) => {
@@ -162,23 +167,27 @@ export class Electron implements IEnvironment {
 		this.electron.ipcRenderer.on(
 			'update.progress',
 			(progress: number | 'done') => {
+				this.updateProgress.value = progress;
 				if (progress === 'done') {
 					updateNotified = false;
 					eventBus.fire(
 						new ShowMessageEvent(
-							'An update is ready and will be installed once DDDG closes.'
+							'An update is downloaded and will be installed once DDDG closes.'
 						)
 					);
 				} else if (!updateNotified) {
 					updateNotified = true;
 					eventBus.fire(
 						new ShowMessageEvent(
-							'An update is ready and will be installed once DDDG closes.'
+							'An update was found and will download in the background.'
 						)
 					);
 				}
 			}
 		);
+		this.electron.ipcRenderer.on('update.checkStopped', () => {
+			this.updateProgress.value = 'none';
+		});
 		this.electron.ipcRenderer.send('init-dddg');
 	}
 	storeSaveFile(saveBlob: Blob, defaultName: string): Promise<void> {

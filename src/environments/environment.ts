@@ -2,6 +2,7 @@ import { IRootState } from '@/store';
 import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 import { DeepReadonly } from 'ts-essentials';
+import { Ref } from 'vue';
 import { Store } from 'vuex';
 import { Browser } from './browser';
 import { OldEdge } from './edge';
@@ -36,6 +37,14 @@ export interface IEnvironment {
 	readonly gameMode: 'ddlc' | 'ddlc_plus' | null;
 	readonly state: EnvState;
 	readonly supports: DeepReadonly<EnvCapabilities>;
+	/**
+	 * null if updating isn't supported on the system.
+	 * ref('none') if no update is available
+	 * ref('wait') if we are currently checking if an update is available
+	 * ref('done') if there an update is successfully downloaded
+	 * ref(0-100)
+	 */
+	readonly updateProgress: Ref<number | 'done' | 'none' | 'wait'> | null;
 	savingEnabled: boolean;
 
 	saveToFile(

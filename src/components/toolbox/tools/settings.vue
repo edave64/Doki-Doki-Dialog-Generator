@@ -65,6 +65,14 @@
 				</div>
 			</modal-dialog>
 		</teleport>
+		<p v-if="updateProgress === 'done'">
+			Update is successfully downloaded. It will be installed once the
+			application is closed.
+		</p>
+		<p v-if="updateProgress === 'wait'">Checking for updates...</p>
+		<p v-if="typeof updateProgress === 'number'">
+			Downloading update ({{ updateProgress }}%)
+		</p>
 		<button v-if="waitOnSaveChange" disabled>Applying...</button>
 		<button
 			v-else-if="!savesAllowed && savesEnabledInEnv"
@@ -132,14 +140,16 @@ import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import ModalDialog from '@/components/modal-dialog.vue';
 import Toggle from '@/components/toggle.vue';
 import L from '@/components/ui/link.vue';
+import { Electron } from '@/environments/electron';
 import environment from '@/environments/environment';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import { safeAsync } from '@/util/errors';
-import { computed, ref, watch } from 'vue';
+import { Ref, computed, ref, watch } from 'vue';
 
 const store = useStore();
 const root = ref(null! as HTMLElement);
+const updateProgress = environment.updateProgress as Electron['updateProgress'];
 setupPanelMixin(root);
 
 function saveSettings() {
