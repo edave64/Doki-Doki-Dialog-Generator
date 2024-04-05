@@ -62,7 +62,7 @@ import {
 import { IPanel } from '@/store/panels';
 import { genericSetterMerged } from '@/util/simple-settable';
 import { DeepReadonly } from 'ts-essentials';
-import { ComponentCustomProperties, computed, defineComponent, ref } from 'vue';
+import { ComponentCustomProperties, computed, ref } from 'vue';
 import ObjectTool, { Handler } from './object-tool.vue';
 import { useStore } from '@/store';
 

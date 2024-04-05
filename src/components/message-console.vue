@@ -37,7 +37,7 @@ import EventBus, {
 	VueErrorEvent,
 } from '@/eventbus/event-bus';
 import { useStore } from '@/store';
-import { computed, defineComponent, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const shortHidingTime = 5000;
 const longHidingTime = 20000;
