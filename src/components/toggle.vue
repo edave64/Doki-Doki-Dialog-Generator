@@ -11,7 +11,7 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
-import uniqId from '@/util/uniqueId';
+import uniqId from '@/util/unique-id';
 
 const props = defineProps({
 	label: String,

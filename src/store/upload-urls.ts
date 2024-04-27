@@ -1,7 +1,7 @@
 import { registerAssetWithURL } from '@/asset-manager';
 import { Module } from 'vuex';
 import { IRootState } from '.';
-import { afterImageUpload2_5 } from './migrations/v2_5';
+import { afterImageUpload2_5 } from './migrations/v2-5';
 
 export type IUploadUrlState = {
 	[name: string]: string;

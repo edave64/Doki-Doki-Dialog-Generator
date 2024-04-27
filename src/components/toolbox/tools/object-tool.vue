@@ -233,7 +233,7 @@ import eventBus, { FailureEvent } from '@/eventbus/event-bus';
 import { SceneRenderer } from '@/renderables/scene-renderer';
 import { decomposeMatrix } from '@/util/math';
 import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
-import { allowScaleModification } from '@/store/migrations/v2_5';
+import { allowScaleModification } from '@/store/migrations/v2-5';
 
 const store = useStore();
 const root = ref(null! as HTMLElement);
@@ -268,7 +268,7 @@ const transformLink = computed({
 	set(value: IObject['id'] | '') {
 		const obj = props.object;
 		const link = value === '' ? null : value;
-		const currentSceneRenderer: SceneRenderer = getMainSceneRenderer(store);
+		const currentSceneRenderer: SceneRenderer = getMainSceneRenderer(store)!;
 		const objRender = currentSceneRenderer?.getLastRenderObject(obj.id);
 		const linkRender =
 			link === null
@@ -308,8 +308,12 @@ const transformLink = computed({
 					...decomposeMatrix(newTransform!),
 				} as ISetLinkMutation);
 			}
-		} catch (e: Error) {
-			eventBus.fire(new FailureEvent(e.message));
+		} catch (e) {
+			if (e instanceof Error) {
+				eventBus.fire(new FailureEvent(e.message));
+			} else {
+				eventBus.fire(new FailureEvent(''+e));
+			}
 		}
 	},
 });

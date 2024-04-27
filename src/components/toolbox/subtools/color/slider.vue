@@ -58,7 +58,7 @@
 
 <script lang="ts" setup>
 import { useStore } from '@/store';
-import uniqId from '@/util/uniqueId';
+import uniqId from '@/util/unique-id';
 import { computed, PropType, ref } from 'vue';
 
 const sliderLength = 255;

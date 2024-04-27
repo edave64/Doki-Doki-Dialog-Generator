@@ -63,7 +63,7 @@ import { computed, onMounted, onUnmounted, PropType, ref } from 'vue';
 import DButton from '../../../ui/d-button.vue';
 import SliderGroup from './slider-group.vue';
 import { useStore } from '@/store';
-import uniqId from '@/util/uniqueId';
+import uniqId from '@/util/unique-id';
 
 const generatedPackId = 'dddg.generated.colors';
 const id = uniqId();

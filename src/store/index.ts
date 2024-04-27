@@ -11,7 +11,7 @@ import content, {
 	IContentState,
 	loadContentPack,
 } from './content';
-import { migrateSave2_5, rootStateMigrations2_5 } from './migrations/v2_5';
+import { migrateSave2_5, rootStateMigrations2_5 } from './migrations/v2-5';
 import panels, { IPanels } from './panels';
 import ui, { getDefaultUiState, IUiState } from './ui';
 import uploadUrls, { IUploadUrlState } from './upload-urls';
