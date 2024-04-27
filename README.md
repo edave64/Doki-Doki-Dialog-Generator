@@ -24,13 +24,13 @@ This takes a while initialy, but only needs to be repeated when new pngs are add
 
 ### Compiles and hot-reloads for development
 
-```
+```sh
 npm run dev
 ```
 
 ### Compiles and minifies for production
 
-```
+```sh
 npm run build:web
 ```
 

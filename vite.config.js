@@ -6,6 +6,7 @@ import { defineConfig, loadEnv } from 'vite';
 /** @type {import('vite').UserConfigExport} */
 
 export const config = ({ mode }) => {
+	// load the enviroment variables from the .env files, according to the current mode (desktop, development, production)
 	const env = {
 		...process.env,
 		...loadEnv(mode, process.cwd()),
