@@ -494,7 +494,6 @@ export function fixContentPackRemoval(
 					obj.id,
 					oldContent
 				);
-				return;
 			}
 		}
 	}
