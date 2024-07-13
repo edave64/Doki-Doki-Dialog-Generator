@@ -1,6 +1,6 @@
-import { Module } from 'vuex';
-import { IRootState } from '.';
-import { IObject } from './objects';
+import type { Module } from 'vuex';
+import type { IRootState } from '.';
+import type { IObject } from './objects';
 
 export interface IUiState {
 	vertical: boolean;

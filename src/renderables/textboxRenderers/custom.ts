@@ -20,7 +20,7 @@ import {
 import { makeCanvas } from '@/util/canvas';
 import { HSLAColor } from '@/util/colors/hsl';
 import { RGBAColor } from '@/util/colors/rgb';
-import { ITextboxRenderer } from '../textbox';
+import type { ITextboxRenderer } from '../textbox';
 import { DdlcBase } from './ddlc-base';
 
 export class Custom extends DdlcBase implements ITextboxRenderer {

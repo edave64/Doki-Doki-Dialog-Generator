@@ -1,40 +1,32 @@
 import { registerAssetWithURL } from '@/asset-manager';
-import { EnvState } from '@/environments/env-state';
 import eventBus, {
 	ResolvableErrorEvent,
 	ShowMessageEvent,
 } from '@/eventbus/event-bus';
 import { Repo } from '@/models/repo';
 import { transaction } from '@/plugins/vuex-history';
-import { IRootState } from '@/store';
-import { ReplaceContentPackAction } from '@/store/content';
-import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
-import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
-import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { DeepReadonly } from 'ts-essentials';
+import type { IRootState } from '@/store';
+import type { ReplaceContentPackAction } from '@/store/content';
+import type { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
+import type { IPack } from '@edave64/dddg-repo-filters/dist/pack';
+import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import type { DeepReadonly } from 'ts-essentials';
 import { reactive, ref } from 'vue';
 import { Store } from 'vuex';
-import { EnvCapabilities, Folder, IEnvironment, Settings } from './environment';
-
-const installedBackgroundsPack: ContentPack<string> = {
-	packId: 'dddg.buildin.installedBackgrounds',
-	dependencies: [],
-	packCredits: [],
-	characters: [],
-	fonts: [],
-	sprites: [],
-	poemStyles: [],
-	poemBackgrounds: [],
-	backgrounds: [],
-	colors: [],
-};
+import type {
+	EnvCapabilities,
+	EnvState,
+	Folder,
+	IEnvironment,
+	Settings,
+} from './environment';
 
 export class Electron implements IEnvironment {
 	public readonly state: EnvState = reactive({
 		looseTextParsing: true,
 		autoAdd: [],
 		downloadLocation: '',
-	});
+	} as EnvState);
 	public readonly localRepositoryUrl = '/repo/';
 
 	public get gameMode(): 'ddlc' | 'ddlc_plus' | null {
@@ -80,7 +72,7 @@ export class Electron implements IEnvironment {
 			async (filepath: string) => {
 				const name = 'persistentBg-' + filepath;
 				const parts = filepath.split('/');
-				await registerAssetWithURL(name, filepath);
+				registerAssetWithURL(name, filepath);
 				installedBackgroundsPack.backgrounds.push({
 					id: name,
 					variants: [[name]],
@@ -376,6 +368,19 @@ export class Electron implements IEnvironment {
 		});
 	}
 }
+
+const installedBackgroundsPack: ContentPack<string> = {
+	packId: 'dddg.buildin.installedBackgrounds',
+	dependencies: [],
+	packCredits: [],
+	characters: [],
+	fonts: [],
+	sprites: [],
+	poemStyles: [],
+	poemBackgrounds: [],
+	backgrounds: [],
+	colors: [],
+};
 
 interface IElectronWindow {
 	isElectron: boolean;

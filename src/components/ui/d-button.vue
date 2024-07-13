@@ -23,7 +23,14 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted, PropType, ref, VNodeRef } from 'vue';
+import {
+	computed,
+	onMounted,
+	onUnmounted,
+	type PropType,
+	ref,
+	type VNodeRef,
+} from 'vue';
 
 const props = defineProps({
 	icon: {

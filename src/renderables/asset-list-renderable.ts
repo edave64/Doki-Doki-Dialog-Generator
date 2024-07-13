@@ -1,13 +1,13 @@
 import { getAAsset } from '@/asset-manager';
-import { IAsset } from '@/render-utils/assets/asset';
+import type { IAsset } from '@/render-utils/assets/asset';
 import { ErrorAsset } from '@/render-utils/assets/error-asset';
-import { IRootState } from '@/store';
-import { IAssetSwitch } from '@/store/content';
-import { ITextBox } from '@/store/object-types/textbox';
-import { IObject } from '@/store/objects';
-import { IPanel } from '@/store/panels';
-import { PoseRenderCommand } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { DeepReadonly } from 'ts-essentials';
+import type { IRootState } from '@/store';
+import type { IAssetSwitch } from '@/store/content';
+import type { ITextBox } from '@/store/object-types/textbox';
+import type { IObject } from '@/store/objects';
+import type { IPanel } from '@/store/panels';
+import type { PoseRenderCommand } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import type { DeepReadonly } from 'ts-essentials';
 import { Store } from 'vuex';
 import { Renderable } from './renderable';
 

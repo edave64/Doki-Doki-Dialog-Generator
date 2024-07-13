@@ -38,12 +38,12 @@ import { transaction } from '@/plugins/vuex-history';
 import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
 import { RenderContext } from '@/renderer/renderer-context';
 import { useStore } from '@/store';
-import { ICreateSpriteAction } from '@/store/object-types/sprite';
-import { IObject, ISetObjectPositionMutation } from '@/store/objects';
+import type { ICreateSpriteAction } from '@/store/object-types/sprite';
+import type { IObject, ISetObjectPositionMutation } from '@/store/objects';
 import { disposeCanvas } from '@/util/canvas';
-import { DeepReadonly } from 'ts-essentials';
+import type { DeepReadonly } from 'ts-essentials';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { MutationPayload } from 'vuex';
+import type { MutationPayload } from 'vuex';
 import * as Grabbies from './render-grabbies';
 
 const store = useStore();

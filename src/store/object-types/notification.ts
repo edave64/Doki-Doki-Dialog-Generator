@@ -1,12 +1,12 @@
 import getConstants from '@/constants';
-import {
+import type {
 	ICreateObjectMutation,
 	IObject,
 	IObjectMutation,
 } from '@/store/objects';
-import { IPanel, IPanels } from '@/store/panels';
-import { ActionTree, MutationTree } from 'vuex';
-import { IRootState } from '..';
+import type { IPanel, IPanels } from '@/store/panels';
+import type { ActionTree, MutationTree } from 'vuex';
+import type { IRootState } from '..';
 import { baseProps } from './base-object-props';
 
 export interface INotification extends IObject {

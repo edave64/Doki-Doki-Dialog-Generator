@@ -1,22 +1,22 @@
-import { IRootState } from '@/store';
-import { IAssetSwitch } from '@/store/content';
+import type { IRootState } from '@/store';
+import type { IAssetSwitch } from '@/store/content';
 import {
 	getData,
 	getHeads,
 	getPose,
-	ICharacter,
+	type ICharacter,
 } from '@/store/object-types/characters';
-import { IPanel } from '@/store/panels';
-import {
+import type { IPanel } from '@/store/panels';
+import type {
 	Character as CharacterModel,
 	Pose,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { DeepReadonly } from 'ts-essentials';
+import type { DeepReadonly } from 'ts-essentials';
 import { Store } from 'vuex';
 import {
 	AssetListRenderable,
-	IDrawAssets,
-	IDrawAssetsUnloaded,
+	type IDrawAssets,
+	type IDrawAssetsUnloaded,
 } from './asset-list-renderable';
 
 /**

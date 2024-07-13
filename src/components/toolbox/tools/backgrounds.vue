@@ -55,22 +55,22 @@
 
 <script lang="ts" setup>
 import DButton from '@/components/ui/d-button.vue';
-import environment, { Folder } from '@/environments/environment';
+import environment, { type Folder } from '@/environments/environment';
 import { transaction } from '@/plugins/vuex-history';
-import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
-import { ISetColorMutation, ISetCurrentMutation } from '@/store/panels';
-import {
+import { useStore } from '@/store';
+import type { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
+import type { ISetColorMutation, ISetCurrentMutation } from '@/store/panels';
+import type {
 	Background,
 	ContentPack,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { computed, ref } from 'vue';
+import { setupPanelMixin } from '../../mixins/panel-mixin';
 import DropTarget from '../drop-target.vue';
 import Color from '../subtools/color/color.vue';
 import ImageOptions from '../subtools/image-options/image-options.vue';
 import BackgroundButton from './background/button.vue';
 import BackgroundSettings from './background/settings.vue';
-import { setupPanelMixin } from '../../mixins/panel-mixin';
-import { useStore } from '@/store';
 
 const uploadedBackgroundsPackDefaults: ContentPack<string> = {
 	packId: 'dddg.uploads.backgrounds',

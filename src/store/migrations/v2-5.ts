@@ -8,11 +8,11 @@
 import { getAssetByUrl } from '@/asset-manager';
 import getConstants from '@/constants';
 import { decomposeMatrix } from '@/util/math';
-import { IRootState } from '..';
-import { ICharacter } from '../object-types/characters';
-import { ISprite } from '../object-types/sprite';
-import { ITextBox } from '../object-types/textbox';
-import { IObject } from '../objects';
+import type { IRootState } from '..';
+import type { ICharacter } from '../object-types/characters';
+import type { ISprite } from '../object-types/sprite';
+import type { ITextBox } from '../object-types/textbox';
+import type { IObject } from '../objects';
 
 /**
  * Take a save from a version before 2.5 and migrate it.

@@ -59,7 +59,7 @@
 <script lang="ts" setup>
 import { useStore } from '@/store';
 import uniqId from '@/util/unique-id';
-import { computed, PropType, ref } from 'vue';
+import { computed, type PropType, ref } from 'vue';
 
 const sliderLength = 255;
 const sliderOffset = 8;

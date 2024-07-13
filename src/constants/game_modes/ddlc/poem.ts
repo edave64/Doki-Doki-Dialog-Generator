@@ -1,4 +1,4 @@
-import { ITextStyle } from '@/renderer/text-renderer/text-renderer';
+import type { ITextStyle } from '@/renderer/text-renderer/text-renderer';
 import { screenHeight, screenWidth, sdCharacterScaleFactor } from './base';
 
 // tslint:disable: no-magic-numbers

@@ -1,8 +1,8 @@
 import { getAssetByUrl } from '@/asset-manager';
 import getConstants from '@/constants';
-import { IAsset } from '@/render-utils/assets/asset';
+import type { IAsset } from '@/render-utils/assets/asset';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
-import { IPoem } from '@/store/object-types/poem';
+import type { IPoem } from '@/store/object-types/poem';
 import { ScalingRenderable } from './scaling-renderable';
 
 const consolePadding = -2;

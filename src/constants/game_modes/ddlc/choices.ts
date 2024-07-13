@@ -1,4 +1,4 @@
-import { ITextStyle } from '@/renderer/text-renderer/text-renderer';
+import type { ITextStyle } from '@/renderer/text-renderer/text-renderer';
 import { HSLAColor } from '@/util/colors/hsl';
 import { screenHeight } from './base';
 

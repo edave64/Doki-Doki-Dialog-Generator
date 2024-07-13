@@ -177,8 +177,8 @@ import eventBus, {
 import { transaction } from '@/plugins/vuex-history';
 import { SceneRenderer } from '@/renderables/scene-renderer';
 import { useStore } from '@/store';
-import { IObject } from '@/store/objects';
-import {
+import type { IObject } from '@/store/objects';
+import type {
 	IDeletePanelAction,
 	IDuplicatePanelAction,
 	IMovePanelAction,
@@ -187,7 +187,7 @@ import {
 	ISetPanelPreviewMutation,
 } from '@/store/panels';
 import { safeAsync } from '@/util/errors';
-import { DeepReadonly } from 'ts-essentials';
+import type { DeepReadonly } from 'ts-essentials';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import ImageOptions from '../subtools/image-options/image-options.vue';
 
@@ -237,10 +237,10 @@ Promise.allSettled([isWebPSupported(), isHeifSupported()]).then(
 );
 //#endregion Format-Support
 //#region Panel-Buttons
-import { IChoices } from '@/store/object-types/choices';
-import { INotification } from '@/store/object-types/notification';
-import { IPoem } from '@/store/object-types/poem';
-import { ITextBox } from '@/store/object-types/textbox';
+import type { IChoices } from '@/store/object-types/choices';
+import type { INotification } from '@/store/object-types/notification';
+import type { IPoem } from '@/store/object-types/poem';
+import type { ITextBox } from '@/store/object-types/textbox';
 
 const canMoveAhead = computed((): boolean => {
 	const panelOrder = store.state.panels.panelOrder;
@@ -488,8 +488,8 @@ function moveBehind() {
 }
 //#endregion Actions
 //#region Thumbnails
-import { disposeCanvas, makeCanvas } from '@/util/canvas';
 import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
+import { disposeCanvas, makeCanvas } from '@/util/canvas';
 
 const thumbnailFactor = 1 / 4;
 const thumbnailQuality = 0.5;
@@ -511,7 +511,7 @@ async function renderCurrentThumbnail() {
 	// FIXME: This sadly makes it so the selection halo is visible in the thumbnails.
 	//        The renderer will lose that once the panels tab is selected, so maybe delay this?
 	const sceneRenderer = getMainSceneRenderer(store);
-
+	if (!sceneRenderer) return;
 	await renderPanelThumbnail(sceneRenderer);
 }
 
@@ -694,7 +694,11 @@ watch(
 	display: flex;
 	flex-direction: column;
 
-	text-shadow: 0 0 4px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+	text-shadow:
+		0 0 4px #000,
+		-1px -1px 0 #000,
+		1px -1px 0 #000,
+		-1px 1px 0 #000,
 		1px 1px 0 #000;
 
 	&.active {

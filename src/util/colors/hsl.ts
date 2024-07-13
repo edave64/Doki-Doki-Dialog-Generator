@@ -1,4 +1,4 @@
-import { IColor } from './color';
+import type { IColor } from './color';
 import { RGBAColor } from './rgb';
 
 // tslint:disable: no-magic-numbers

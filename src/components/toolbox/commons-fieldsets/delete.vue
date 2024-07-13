@@ -8,8 +8,8 @@
 <script lang="ts" setup>
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
-import { IObject, IRemoveObjectAction } from '@/store/objects';
-import { PropType } from 'vue';
+import type { IObject, IRemoveObjectAction } from '@/store/objects';
+import type { PropType } from 'vue';
 
 const store = useStore();
 const props = defineProps({

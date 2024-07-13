@@ -56,15 +56,15 @@ import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
-import { IAssetSwitch } from '@/store/content';
-import {
+import type { IAssetSwitch } from '@/store/content';
+import type {
 	ISeekVariantAction,
 	ISetColorMutation,
 	ISetFlipMutation,
 	ISetScalingMutation,
 } from '@/store/panels';
-import { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { DeepReadonly } from 'ts-essentials';
+import type { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import type { DeepReadonly } from 'ts-essentials';
 import { computed } from 'vue';
 
 const store = useStore();

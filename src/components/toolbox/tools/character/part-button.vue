@@ -12,10 +12,10 @@
 
 <script lang="ts" setup>
 import { getAAssetUrl, getBuildInAssetUrl } from '@/asset-manager';
-import { IAssetSwitch } from '@/store/content';
+import type { IAssetSwitch } from '@/store/content';
 import { safeAsync } from '@/util/errors';
-import { DeepReadonly } from 'ts-essentials';
-import { computed, PropType, ref } from 'vue';
+import type { DeepReadonly } from 'ts-essentials';
+import { computed, type PropType, ref } from 'vue';
 
 export interface IPartButtonImage {
 	images: IPartImage[];

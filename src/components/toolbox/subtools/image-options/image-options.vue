@@ -250,25 +250,31 @@ import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import L from '@/components/ui/link.vue';
 import { transaction } from '@/plugins/vuex-history';
-import { CompositeModes } from '@/renderer/renderer-context';
+import type { CompositeModes } from '@/renderer/renderer-context';
 import { useStore } from '@/store';
-import { IObject, ISetCompositionMutation } from '@/store/objects';
-import { IPanel } from '@/store/panels';
+import type { IObject, ISetCompositionMutation } from '@/store/objects';
+import type { IPanel } from '@/store/panels';
 import {
-	IAddFilterAction,
-	IDropShadowSpriteFilter,
-	IMoveFilterAction,
-	INumericSpriteFilter,
-	IRemoveFilterAction,
-	ISetFilterAction,
+	type IAddFilterAction,
+	type IDropShadowSpriteFilter,
+	type IMoveFilterAction,
+	type INumericSpriteFilter,
+	type IRemoveFilterAction,
+	type ISetFilterAction,
 	percentageValue,
-	SpriteFilter,
+	type SpriteFilter,
 } from '@/store/sprite-options';
 import { disposeCanvas, makeCanvas } from '@/util/canvas';
-import { IColor } from '@/util/colors/color';
+import type { IColor } from '@/util/colors/color';
 import { HSLAColor } from '@/util/colors/hsl';
 import { UnreachableCaseError } from 'ts-essentials';
-import { computed, Prop, PropType, ref, WritableComputedRef } from 'vue';
+import {
+	computed,
+	type Prop,
+	type PropType,
+	ref,
+	type WritableComputedRef,
+} from 'vue';
 
 const filterText: ReadonlyMap<SpriteFilter['type'], string> = new Map<
 	SpriteFilter['type'],

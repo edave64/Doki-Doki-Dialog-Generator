@@ -63,7 +63,8 @@ import {
 	poemTextStyles,
 } from '@/constants/game_modes/ddlc/poem';
 import { transaction } from '@/plugins/vuex-history';
-import {
+import { useStore } from '@/store';
+import type {
 	IPoem,
 	ISetTextBoxProperty,
 	PoemSimpleProperties,
@@ -71,8 +72,7 @@ import {
 import { genericSetterSplit } from '@/util/simple-settable';
 import { UnreachableCaseError } from 'ts-essentials';
 import { computed, ref, watch } from 'vue';
-import ObjectTool, { Handler } from './object-tool.vue';
-import { useStore } from '@/store';
+import ObjectTool, { type Handler } from './object-tool.vue';
 
 const store = useStore();
 const root = ref(null! as HTMLElement);

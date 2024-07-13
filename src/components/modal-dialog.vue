@@ -49,7 +49,7 @@ import {
 	onDeactivated,
 	onMounted,
 	onUnmounted,
-	PropType,
+	type PropType,
 	ref,
 } from 'vue';
 

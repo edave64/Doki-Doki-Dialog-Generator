@@ -9,12 +9,12 @@ import rotate from '@/assets/rotate_left.svg';
 import rotateDark from '@/assets/rotate_left_dark.svg';
 import getConstants from '@/constants';
 import { SelectedState } from '@/constants/shared';
-import { IAsset } from '@/render-utils/assets/asset';
+import type { IAsset } from '@/render-utils/assets/asset';
 import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
 import { Renderable } from '@/renderables/renderable';
 import { ctxScope } from '@/renderer/canvas-tools';
-import { RStore } from '@/store';
-import {
+import type { RStore } from '@/store';
+import type {
 	IObject,
 	ISetObjectScaleMutation,
 	ISetSpriteRotationMutation,

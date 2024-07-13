@@ -1,6 +1,6 @@
-import { IAsset } from '@/render-utils/assets/asset';
-import { SpriteFilter } from '@/store/sprite-options';
-import { DeepReadonly } from 'ts-essentials';
+import type { IAsset } from '@/render-utils/assets/asset';
+import type { SpriteFilter } from '@/store/sprite-options';
+import type { DeepReadonly } from 'ts-essentials';
 import { RenderAbortedException } from './render-aborted-exception';
 import { Renderer } from './renderer';
 

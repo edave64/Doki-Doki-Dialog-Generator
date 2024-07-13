@@ -1,11 +1,11 @@
 import { verticalScrollRedirect } from '@/components/mixins/vertical-scroll-redirect';
 import { useStore } from '@/store';
 import {
-	ComponentOptionsMixin,
-	ComponentPublicInstance,
+	type ComponentOptionsMixin,
+	type ComponentPublicInstance,
 	computed,
 	onMounted,
-	Ref,
+	type Ref,
 	watch,
 } from 'vue';
 

@@ -1,4 +1,4 @@
-import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
+import type { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 
 export interface SelectedEvent {
 	id: string;

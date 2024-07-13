@@ -92,7 +92,8 @@
 
 <script lang="ts" setup>
 import environment from '@/environments/environment';
-import { ObjectTypes } from '@/store/objects';
+import { useStore } from '@/store';
+import { type ObjectTypes } from '@/store/objects';
 import { computed, ref, watch } from 'vue';
 import DButton from '../ui/d-button.vue';
 import AddPanel from './tools/add.vue';
@@ -106,7 +107,6 @@ import PoemPanel from './tools/poem.vue';
 import SettingsPanel from './tools/settings.vue';
 import SpritePanel from './tools/sprite.vue';
 import TextBoxPanel from './tools/textbox.vue';
-import { useStore } from '@/store';
 
 type PanelNames =
 	| 'add'

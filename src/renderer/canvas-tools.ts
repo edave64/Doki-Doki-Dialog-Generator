@@ -1,5 +1,5 @@
-import { SpriteFilter } from '@/store/sprite-options';
-import { DeepReadonly } from 'ts-essentials';
+import type { SpriteFilter } from '@/store/sprite-options';
+import type { DeepReadonly } from 'ts-essentials';
 
 export function roundedRectangle(
 	ctx: CanvasPath,

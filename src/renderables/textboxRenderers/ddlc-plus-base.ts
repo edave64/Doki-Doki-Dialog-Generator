@@ -7,12 +7,12 @@ import {
 	TextBoxHeight,
 	TextBoxWidth,
 } from '@/constants/game_modes/ddlc_plus/text-box';
-import { IAsset } from '@/render-utils/assets/asset';
+import type { IAsset } from '@/render-utils/assets/asset';
 import { ImageAsset } from '@/render-utils/assets/image-asset';
 import { applyStyle } from '@/renderer/canvas-tools';
-import { ITextStyle } from '@/renderer/text-renderer/text-renderer';
-import { DeepReadonly } from 'vue';
-import { ITextboxRenderer, TextBox } from '../textbox';
+import type { ITextStyle } from '@/renderer/text-renderer/text-renderer';
+import type { DeepReadonly } from 'vue';
+import { type ITextboxRenderer, TextBox } from '../textbox';
 
 export abstract class DdlcPlusBase implements ITextboxRenderer {
 	public abstract readonly width: number;

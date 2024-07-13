@@ -53,19 +53,19 @@
 </template>
 
 <script lang="ts" setup>
-import { Pack, Repo } from '@/models/repo';
+import type { IPackWithState } from '@/components/repo/types';
+import { type Pack, Repo } from '@/models/repo';
 import run from '@edave64/dddg-repo-filters/dist/main';
-import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
-import { DeepReadonly } from 'ts-essentials';
+import type { IPack } from '@edave64/dddg-repo-filters/dist/pack';
+import type { DeepReadonly } from 'ts-essentials';
 import {
-	ComponentPublicInstance,
+	type ComponentPublicInstance,
 	computed,
 	nextTick,
-	PropType,
+	type PropType,
 	ref,
 	watch,
 } from 'vue';
-import { IPackWithState } from '@/components/repo/types';
 
 const pageKeyMoveBy = 10;
 const props = defineProps({

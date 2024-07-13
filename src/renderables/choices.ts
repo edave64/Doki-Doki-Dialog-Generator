@@ -1,6 +1,6 @@
 import getConstants from '@/constants';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
-import { IChoices } from '@/store/object-types/choices';
+import type { IChoices } from '@/store/object-types/choices';
 import { ScalingRenderable } from './scaling-renderable';
 
 export class Choice extends ScalingRenderable<IChoices> {

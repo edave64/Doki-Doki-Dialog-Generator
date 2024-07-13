@@ -212,9 +212,13 @@ import Color from '@/components/toolbox/subtools/color/color.vue';
 import ImageOptions from '@/components/toolbox/subtools/image-options/image-options.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import getConstants from '@/constants';
+import eventBus, { FailureEvent } from '@/eventbus/event-bus';
 import { transaction } from '@/plugins/vuex-history';
+import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
+import { SceneRenderer } from '@/renderables/scene-renderer';
 import { useStore } from '@/store';
-import {
+import { allowScaleModification } from '@/store/migrations/v2-5';
+import type {
 	ICopyObjectToClipboardAction,
 	IObject,
 	ISetLabelMutation,
@@ -226,14 +230,10 @@ import {
 	ISetRatioAction,
 	ISetTextBoxColor,
 } from '@/store/objects';
-import { genericSetterMerged } from '@/util/simple-settable';
-import { computed, PropType, ref } from 'vue';
-import TextEditor from '../subtools/text/text.vue';
-import eventBus, { FailureEvent } from '@/eventbus/event-bus';
-import { SceneRenderer } from '@/renderables/scene-renderer';
 import { decomposeMatrix } from '@/util/math';
-import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
-import { allowScaleModification } from '@/store/migrations/v2-5';
+import { genericSetterMerged } from '@/util/simple-settable';
+import { computed, type PropType, ref } from 'vue';
+import TextEditor from '../subtools/text/text.vue';
 
 const store = useStore();
 const root = ref(null! as HTMLElement);
@@ -312,7 +312,7 @@ const transformLink = computed({
 			if (e instanceof Error) {
 				eventBus.fire(new FailureEvent(e.message));
 			} else {
-				eventBus.fire(new FailureEvent(''+e));
+				eventBus.fire(new FailureEvent('' + e));
 			}
 		}
 	},

@@ -2,19 +2,19 @@ import { NsfwPacks } from '@/constants/nsfw';
 import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 import { Repo } from '@/models/repo';
 import { mergeContentPacks } from '@/store/content/merge';
-import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { createStore, Store, useStore as vuexUseStore } from 'vuex';
 import content, {
 	convertContentPack,
 	getDefaultContentState,
-	IAssetSwitch,
-	IContentState,
+	type IAssetSwitch,
+	type IContentState,
 	loadContentPack,
 } from './content';
 import { migrateSave2_5, rootStateMigrations2_5 } from './migrations/v2-5';
-import panels, { IPanels } from './panels';
-import ui, { getDefaultUiState, IUiState } from './ui';
-import uploadUrls, { IUploadUrlState } from './upload-urls';
+import panels, { type IPanels } from './panels';
+import ui, { getDefaultUiState, type IUiState } from './ui';
+import uploadUrls, { type IUploadUrlState } from './upload-urls';
 
 export interface IRootState {
 	ui: IUiState;

@@ -2,7 +2,7 @@ import getConstants from '@/constants';
 import { SelectedState } from '@/constants/shared';
 import { ctxScope } from '@/renderer/canvas-tools';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
-import { INotification } from '@/store/object-types/notification';
+import type { INotification } from '@/store/object-types/notification';
 import { ScalingRenderable } from './scaling-renderable';
 
 export class Notification extends ScalingRenderable<INotification> {

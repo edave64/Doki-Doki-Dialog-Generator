@@ -1,4 +1,4 @@
-import { ITextStyle } from './text-renderer';
+import type { ITextStyle } from './text-renderer';
 
 type Command = (style: ITextStyle, parameter: string) => ITextStyle;
 

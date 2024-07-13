@@ -1,5 +1,5 @@
 import envX from '@/environments/environment';
-import { IObject } from '@/store/objects';
+import type { IObject } from '@/store/objects';
 import { Renderable } from './renderable';
 
 /**

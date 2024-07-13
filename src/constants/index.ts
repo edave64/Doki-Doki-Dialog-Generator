@@ -1,9 +1,9 @@
 import environment from '@/environments/environment';
-import { ITextStyle } from '@/renderer/text-renderer/text-renderer';
-import { ITextBox } from '@/store/object-types/textbox';
+import type { ITextStyle } from '@/renderer/text-renderer/text-renderer';
+import type { ITextBox } from '@/store/object-types/textbox';
 import { HSLAColor } from '@/util/colors/hsl';
 import Ddlc from './game_modes/ddlc';
-import { IPoemTextStyle } from './game_modes/ddlc/poem';
+import type { IPoemTextStyle } from './game_modes/ddlc/poem';
 import DdlcPlus from './game_modes/ddlc_plus';
 
 export default function getConstants() {

@@ -44,9 +44,9 @@ import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
-import { IObject, IObjectShiftLayerAction } from '@/store/objects';
+import type { IObject, IObjectShiftLayerAction } from '@/store/objects';
 import { genericSetterMerged } from '@/util/simple-settable';
-import { computed, PropType } from 'vue';
+import { computed, type PropType } from 'vue';
 
 const store = useStore();
 const props = defineProps({

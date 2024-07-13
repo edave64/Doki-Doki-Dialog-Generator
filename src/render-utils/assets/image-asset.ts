@@ -1,4 +1,4 @@
-import { IAsset } from './asset';
+import type { IAsset } from './asset';
 
 export class ImageAsset implements IAsset {
 	public readonly width: number;

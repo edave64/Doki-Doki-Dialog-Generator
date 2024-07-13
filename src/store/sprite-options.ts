@@ -1,7 +1,7 @@
-import { CompositeModes } from '@/renderer/renderer-context';
+import type { CompositeModes } from '@/renderer/renderer-context';
 import { UnreachableCaseError } from 'ts-essentials';
-import { IObject, ISetFiltersMutation } from './objects';
-import { IPanel } from './panels';
+import type { IObject, ISetFiltersMutation } from './objects';
+import type { IPanel } from './panels';
 
 export type SpriteFilter =
 	| INumericSpriteFilter<'blur'>

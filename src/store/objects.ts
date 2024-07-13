@@ -1,10 +1,10 @@
 import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
-import { CompositeModes } from '@/renderer/renderer-context';
+import type { CompositeModes } from '@/renderer/renderer-context';
 import { decomposeMatrix } from '@/util/math';
-import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { ActionContext, ActionTree, MutationTree } from 'vuex';
-import { IRootState } from '.';
-import { IAssetSwitch } from './content';
+import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import type { ActionContext, ActionTree, MutationTree } from 'vuex';
+import type { IRootState } from '.';
+import type { IAssetSwitch } from './content';
 import {
 	characterActions,
 	characterMutations,
@@ -18,23 +18,23 @@ import {
 import { poemActions, poemMutations } from './object-types/poem';
 import { spriteActions, spriteMutations } from './object-types/sprite';
 import {
-	ISetTextBoxTalkingOtherMutation,
-	ITextBox,
+	type ISetTextBoxTalkingOtherMutation,
+	type ITextBox,
 	textBoxActions,
 	textBoxMutations,
 } from './object-types/textbox';
-import { IPanel, IPanels } from './panels';
+import type { IPanel, IPanels } from './panels';
 import {
 	addFilter,
-	IAddFilterAction,
-	IHasSpriteFilters,
-	IMoveFilterAction,
-	IRemoveFilterAction,
-	ISetFilterAction,
+	type IAddFilterAction,
+	type IHasSpriteFilters,
+	type IMoveFilterAction,
+	type IRemoveFilterAction,
+	type ISetFilterAction,
 	moveFilter,
 	removeFilter,
 	setFilter,
-	SpriteFilter,
+	type SpriteFilter,
 } from './sprite-options';
 
 export interface IObjectsState {

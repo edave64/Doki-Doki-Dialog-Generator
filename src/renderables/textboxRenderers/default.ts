@@ -1,9 +1,9 @@
 import { getBuildInAsset } from '@/asset-manager';
 import * as TBConstants from '@/constants/game_modes/ddlc/text-box';
-import { IAsset } from '@/render-utils/assets/asset';
+import type { IAsset } from '@/render-utils/assets/asset';
 import { ImageAsset } from '@/render-utils/assets/image-asset';
-import { ITextBox } from '@/store/object-types/textbox';
-import { ITextboxRenderer } from '../textbox';
+import type { ITextBox } from '@/store/object-types/textbox';
+import type { ITextboxRenderer } from '../textbox';
 import { DdlcBase } from './ddlc-base';
 
 export class Default extends DdlcBase implements ITextboxRenderer {

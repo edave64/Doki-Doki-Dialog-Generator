@@ -1,4 +1,4 @@
-import {
+import type {
 	Background,
 	Character,
 	ContentPack,
@@ -6,7 +6,7 @@ import {
 	Pose,
 	StyleClasses,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { IAssetSwitch } from '.';
+import type { IAssetSwitch } from '.';
 
 export function mergeContentPacks(
 	x: ContentPack<IAssetSwitch>,

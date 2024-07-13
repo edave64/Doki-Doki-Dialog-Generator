@@ -1,9 +1,19 @@
 import environment from '@/environments/environment';
 import eventBus, { ShowMessageEvent } from '@/eventbus/event-bus';
-import { IRootState } from '@/store';
-import { IAuthor, IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
-import { IPack as IPrimitivePack } from '@edave64/dddg-repo-filters/dist/pack';
-import { computed, ComputedRef, DeepReadonly, reactive, ref, Ref } from 'vue';
+import type { IRootState } from '@/store';
+import type {
+	IAuthor,
+	IAuthors,
+} from '@edave64/dddg-repo-filters/dist/authors';
+import type { IPack as IPrimitivePack } from '@edave64/dddg-repo-filters/dist/pack';
+import {
+	computed,
+	reactive,
+	ref,
+	type ComputedRef,
+	type DeepReadonly,
+	type Ref,
+} from 'vue';
 import { Store } from 'vuex';
 
 const repoUrl = 'https://edave64.github.io/Doki-Doki-Dialog-Generator-Packs/';

@@ -15,7 +15,10 @@
 		"paths": {
 			"@/*": ["src/*"]
 		},
-		"lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+		"lib": ["esnext", "dom", "dom.iterable"],
+		"forceConsistentCasingInFileNames": true,
+		"noEmit": true,
+		"verbatimModuleSyntax": true
 	},
 	"include": [
 		"src/**/*.js",

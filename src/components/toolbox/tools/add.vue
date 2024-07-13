@@ -48,12 +48,12 @@
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import DButton from '@/components/ui/d-button.vue';
 import { transaction } from '@/plugins/vuex-history';
-import { IPasteFromClipboardAction } from '@/store/objects';
+import { useStore } from '@/store';
+import type { IPasteFromClipboardAction } from '@/store/objects';
 import { computed, ref } from 'vue';
 import Characters from './add/character.vue';
 import Sprites from './add/sprite.vue';
 import UI from './add/ui.vue';
-import { useStore } from '@/store';
 
 type GroupNames = 'characters' | 'sprites' | 'ui';
 interface Group {

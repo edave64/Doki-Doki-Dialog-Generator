@@ -1,11 +1,11 @@
 import { getAAsset } from '@/asset-manager';
 import getConstants from '@/constants';
 import { ImageAsset } from '@/render-utils/assets/image-asset';
-import { ICreateObjectMutation, IObject } from '@/store/objects';
-import { ActionTree, MutationTree } from 'vuex';
-import { IRootState } from '..';
-import { IAssetSwitch } from '../content';
-import { IPanel, IPanels } from '../panels';
+import type { ICreateObjectMutation, IObject } from '@/store/objects';
+import type { ActionTree, MutationTree } from 'vuex';
+import type { IRootState } from '..';
+import type { IAssetSwitch } from '../content';
+import type { IPanel, IPanels } from '../panels';
 import { baseProps } from './base-object-props';
 
 export interface ISprite extends IObject {

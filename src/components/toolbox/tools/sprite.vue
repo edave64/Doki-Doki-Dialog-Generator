@@ -24,9 +24,9 @@ import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import ObjectTool from '@/components/toolbox/tools/object-tool.vue';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
-import { ISprite } from '@/store/object-types/sprite';
-import { IPanel } from '@/store/panels';
-import { DeepReadonly } from 'ts-essentials';
+import type { ISprite } from '@/store/object-types/sprite';
+import type { IPanel } from '@/store/panels';
+import type { DeepReadonly } from 'ts-essentials';
 import { computed, ref } from 'vue';
 
 const store = useStore();

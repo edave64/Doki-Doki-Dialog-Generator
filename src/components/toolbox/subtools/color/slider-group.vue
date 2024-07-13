@@ -31,10 +31,10 @@
 </template>
 
 <script lang="ts" setup>
-import { IColor } from '@/util/colors/color';
+import type { IColor } from '@/util/colors/color';
 import { HSLAColor } from '@/util/colors/hsl';
 import { RGBAColor } from '@/util/colors/rgb';
-import { computed, ComputedRef, PropType, ref, watch } from 'vue';
+import { computed, type ComputedRef, type PropType, ref, watch } from 'vue';
 import Slider from './slider.vue';
 
 const emit = defineEmits(['update:modelValue']);

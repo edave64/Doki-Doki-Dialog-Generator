@@ -1,10 +1,13 @@
 import { getAAsset } from '@/asset-manager';
 import getConstants from '@/constants';
-import { CompositeModes, RenderContext } from '@/renderer/renderer-context';
-import { IAssetSwitch } from '@/store/content';
+import {
+	RenderContext,
+	type CompositeModes,
+} from '@/renderer/renderer-context';
+import { type IAssetSwitch } from '@/store/content';
 import { ScalingModes } from '@/store/panels';
-import { SpriteFilter } from '@/store/sprite-options';
-import { DeepReadonly, UnreachableCaseError } from 'ts-essentials';
+import { type SpriteFilter } from '@/store/sprite-options';
+import { UnreachableCaseError, type DeepReadonly } from 'ts-essentials';
 
 export interface IBackgroundRenderer {
 	render(rx: RenderContext): Promise<void>;

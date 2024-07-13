@@ -120,31 +120,31 @@
 
 <script lang="ts" setup>
 import { getAAssetUrl, getAssetByUrl } from '@/asset-manager';
+import { verticalScrollRedirect } from '@/components/mixins/vertical-scroll-redirect';
 import ToggleBox from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import L from '@/components/ui/link.vue';
+import { SelectedState } from '@/constants/shared';
 import environment from '@/environments/environment';
+import { transaction } from '@/plugins/vuex-history';
+import { AssetListRenderable } from '@/renderables/asset-list-renderable';
 import { Character } from '@/renderables/character';
 import { Renderer } from '@/renderer/renderer';
-import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
+import { useStore } from '@/store';
+import type { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
+import type { ICharacter } from '@/store/object-types/characters';
+import { type IPanel, ScalingModes } from '@/store/panels';
 import { WorkBatch } from '@/util/workBatch';
-import {
+import type {
 	Character as CharacterModel,
 	ContentPack,
 	IHeadCommand,
 	Pose,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { DeepReadonly, computed, nextTick, ref, watch } from 'vue';
+import { type DeepReadonly, computed, nextTick, ref, watch } from 'vue';
 import DropTarget from '../../toolbox/drop-target.vue';
-import { transaction } from '@/plugins/vuex-history';
 import Selection from './selection.vue';
 import Selector from './selector.vue';
-import { useStore } from '@/store';
-import { verticalScrollRedirect } from '@/components/mixins/vertical-scroll-redirect';
-import { SelectedState } from '@/constants/shared';
-import { IPanel, ScalingModes } from '@/store/panels';
-import { ICharacter } from '@/store/object-types/characters';
-import { AssetListRenderable } from '@/renderables/asset-list-renderable';
 
 const uploadedExpressionsPackDefaults: ContentPack<IAssetSwitch> = {
 	packId: 'dddg.uploads.expressions',

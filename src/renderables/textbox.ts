@@ -1,13 +1,13 @@
 import environment from '@/environments/environment';
 import {
-	ITextStyle,
+	type ITextStyle,
 	TextRenderer,
 } from '@/renderer/text-renderer/text-renderer';
-import { IRootState } from '@/store';
-import { ITextBox } from '@/store/object-types/textbox';
-import { IObject } from '@/store/objects';
-import { IPanel } from '@/store/panels';
-import { DeepReadonly } from 'ts-essentials';
+import type { IRootState } from '@/store';
+import type { ITextBox } from '@/store/object-types/textbox';
+import type { IObject } from '@/store/objects';
+import type { IPanel } from '@/store/panels';
+import type { DeepReadonly } from 'ts-essentials';
 import { Store } from 'vuex';
 import { ScalingRenderable } from './scaling-renderable';
 import { Corrupted } from './textboxRenderers/corrupt';

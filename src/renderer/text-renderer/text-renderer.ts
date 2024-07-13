@@ -1,5 +1,5 @@
 import environment from '@/environments/environment';
-import { ICommandToken, Token, tokenize } from './tokenizer';
+import { type ICommandToken, type Token, tokenize } from './tokenizer';
 
 import { makeCanvas } from '@/util/canvas';
 import { UnreachableCaseError } from 'ts-essentials';

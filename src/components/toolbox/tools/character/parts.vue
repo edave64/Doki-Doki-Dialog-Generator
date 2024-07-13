@@ -62,21 +62,24 @@ import DButton from '@/components/ui/d-button.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import { transaction } from '@/plugins/vuex-history';
-import { IAssetSwitch } from '@/store/content';
+import { useStore } from '@/store';
+import type { IAssetSwitch } from '@/store/content';
 import {
 	getData,
 	getPose,
-	ICharacter,
-	ISetPartAction,
-	ISetPosePositionMutation,
-	ISetStyleAction,
+	type ICharacter,
+	type ISetPartAction,
+	type ISetPosePositionMutation,
+	type ISetStyleAction,
 } from '@/store/object-types/characters';
-import { Pose } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { DeepReadonly } from 'ts-essentials';
-import { computed, PropType, ref, watch } from 'vue';
-import PartButton, { IPartButtonImage, IPartImage } from './part-button.vue';
 import { safeAsync } from '@/util/errors';
-import { useStore } from '@/store';
+import { type Pose } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import { type DeepReadonly } from 'ts-essentials';
+import { computed, type PropType, ref, watch } from 'vue';
+import PartButton, {
+	type IPartButtonImage,
+	type IPartImage,
+} from './part-button.vue';
 
 interface IPartStyleGroup {
 	label: string;

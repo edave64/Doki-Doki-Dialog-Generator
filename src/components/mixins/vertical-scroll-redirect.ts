@@ -1,4 +1,4 @@
-import { ComponentOptionsMixin } from 'vue';
+import type { ComponentOptionsMixin } from 'vue';
 
 export const VerticalScrollRedirect: ComponentOptionsMixin = {
 	methods: {

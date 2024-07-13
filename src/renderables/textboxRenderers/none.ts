@@ -1,5 +1,5 @@
 import * as TBConstants from '@/constants/game_modes/ddlc/text-box';
-import { ITextboxRenderer } from '../textbox';
+import type { ITextboxRenderer } from '../textbox';
 import { DdlcBase } from './ddlc-base';
 
 export class None extends DdlcBase implements ITextboxRenderer {

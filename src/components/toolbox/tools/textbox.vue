@@ -203,23 +203,23 @@ import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import getConstants from '@/constants';
 import { transaction } from '@/plugins/vuex-history';
+import { useStore } from '@/store';
 import {
-	IResetTextboxBounds,
-	ISetTextBoxTalkingObjMutation,
-	ISplitTextbox,
-	ITextBox,
+	type IResetTextboxBounds,
+	type ISetTextBoxTalkingObjMutation,
+	type ISplitTextbox,
+	type ITextBox,
 	textboxProperty,
-	TextBoxSimpleProperties,
+	type TextBoxSimpleProperties,
 } from '@/store/object-types/textbox';
-import { IObject } from '@/store/objects';
+import { type IObject } from '@/store/objects';
 import {
-	genericSetterSplit,
 	genericSetterMerged,
+	genericSetterSplit,
 } from '@/util/simple-settable';
 import { UnreachableCaseError } from 'ts-essentials';
 import { computed, ref, watch } from 'vue';
-import ObjectTool, { Handler } from './object-tool.vue';
-import { useStore } from '@/store';
+import ObjectTool, { type Handler } from './object-tool.vue';
 
 const store = useStore();
 const root = ref(null! as HTMLElement);

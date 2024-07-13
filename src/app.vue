@@ -58,12 +58,12 @@ import { packsUrl } from '@/config';
 import environment from '@/environments/environment';
 import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 import { transaction } from '@/plugins/vuex-history';
-import {
+import type {
 	ICharacter,
 	IShiftCharacterSlotAction,
 } from '@/store/object-types/characters';
-import { ICreateTextBoxAction } from '@/store/object-types/textbox';
-import {
+import type { ICreateTextBoxAction } from '@/store/object-types/textbox';
+import type {
 	ICopyObjectToClipboardAction,
 	IObject,
 	IPasteFromClipboardAction,
@@ -71,7 +71,7 @@ import {
 	ISetObjectPositionMutation,
 	ISetSpriteRotationMutation,
 } from '@/store/objects';
-import { ISetCurrentMutation } from '@/store/panels';
+import type { ISetCurrentMutation } from '@/store/panels';
 import {
 	computed,
 	defineAsyncComponent,
@@ -82,7 +82,7 @@ import {
 	watch,
 } from 'vue';
 import { Repo } from './models/repo';
-import { IRemovePacksAction, useStore } from './store';
+import { type IRemovePacksAction, useStore } from './store';
 const SingleBox = defineAsyncComponent(
 	() => import('@/components/repo/layouts/single-box.vue')
 );

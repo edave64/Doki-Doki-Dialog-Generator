@@ -1,12 +1,17 @@
 import { Repo } from '@/models/repo';
 import { transaction } from '@/plugins/vuex-history';
-import { IRootState } from '@/store';
-import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
-import { IPack } from '@edave64/dddg-repo-filters/dist/pack';
-import { DeepReadonly, reactive, ref } from 'vue';
+import type { IRootState } from '@/store';
+import type { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
+import type { IPack } from '@edave64/dddg-repo-filters/dist/pack';
+import { reactive, ref, type DeepReadonly } from 'vue';
 import { Store } from 'vuex';
-import { EnvState } from './env-state';
-import { EnvCapabilities, Folder, IEnvironment, Settings } from './environment';
+import type {
+	EnvCapabilities,
+	EnvState,
+	Folder,
+	IEnvironment,
+	Settings,
+} from './environment';
 
 const ua = navigator.userAgent;
 const iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);

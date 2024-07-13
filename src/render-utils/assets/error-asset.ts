@@ -1,6 +1,6 @@
 import { getAssetByUrl } from '@/asset-manager';
 import MissingImage from '@/assets/missing_image.svg';
-import { IAsset } from './asset';
+import type { IAsset } from './asset';
 import { ImageAsset } from './image-asset';
 
 let missing_image: ImageAsset | null = null;

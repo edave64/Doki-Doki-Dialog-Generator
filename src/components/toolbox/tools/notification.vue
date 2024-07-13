@@ -24,14 +24,14 @@
 <script lang="ts" setup>
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import Toggle from '@/components/toggle.vue';
+import { useStore } from '@/store';
 import {
-	INotification,
-	NotificationSimpleProperties,
+	type INotification,
+	type NotificationSimpleProperties,
 } from '@/store/object-types/notification';
 import { genericSetterSplit } from '@/util/simple-settable';
 import { computed, ref } from 'vue';
-import ObjectTool, { Handler } from './object-tool.vue';
-import { useStore } from '@/store';
+import ObjectTool, { type Handler } from './object-tool.vue';
 
 const store = useStore();
 const root = ref(null! as HTMLElement);

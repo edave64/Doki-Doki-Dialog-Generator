@@ -64,16 +64,16 @@
 import { getAAssetUrl } from '@/asset-manager';
 import MissingImage from '@/assets/missing_image.svg';
 import DButton from '@/components/ui/d-button.vue';
-import environment, { Folder } from '@/environments/environment';
-import { transaction, TransactionLayer } from '@/plugins/vuex-history';
+import environment, { type Folder } from '@/environments/environment';
+import { transaction, type TransactionLayer } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
-import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
-import { ICreateSpriteAction } from '@/store/object-types/sprite';
-import {
+import type { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
+import type { ICreateSpriteAction } from '@/store/object-types/sprite';
+import type {
 	ContentPack,
 	Sprite,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { DeepReadonly } from 'ts-essentials';
+import type { DeepReadonly } from 'ts-essentials';
 import { computed, ref } from 'vue';
 import DropTarget from '../../drop-target.vue';
 

@@ -93,20 +93,20 @@ import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import { transaction } from '@/plugins/vuex-history';
+import { useStore } from '@/store';
 import {
 	getData,
 	getHeads,
 	getParts,
-	ICharacter,
-	ISeekPoseAction,
-	ISeekPosePartAction,
-	ISeekStyleAction,
+	type ICharacter,
+	type ISeekPoseAction,
+	type ISeekPosePartAction,
+	type ISeekStyleAction,
 } from '@/store/object-types/characters';
 import { genericSetterMerged } from '@/util/simple-settable';
 import { computed, ref, watch } from 'vue';
 import Parts from './character/parts.vue';
 import ObjectTool from './object-tool.vue';
-import { useStore } from '@/store';
 
 const store = useStore();
 

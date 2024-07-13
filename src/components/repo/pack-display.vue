@@ -83,12 +83,15 @@ import { sanitize } from '@/components/toolbox/tools/character-pack-sanitizer';
 import L from '@/components/ui/link.vue';
 import environment from '@/environments/environment';
 import { Repo } from '@/models/repo';
-import { IRemovePacksAction, useStore } from '@/store';
-import { IAuthor, IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
-import { DeepReadonly } from 'ts-essentials';
-import { computed, PropType, ref } from 'vue';
-import Toggle from '../toggle.vue';
+import { type IRemovePacksAction, useStore } from '@/store';
 import { errorReport } from '@/util/errors';
+import type {
+	IAuthor,
+	IAuthors,
+} from '@edave64/dddg-repo-filters/dist/authors';
+import type { DeepReadonly } from 'ts-essentials';
+import { computed, type PropType, ref } from 'vue';
+import Toggle from '../toggle.vue';
 
 const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 	['reddit', 'https://reddit.com/u/%1', 'reddit.png'],
@@ -298,12 +301,19 @@ interface AuthorLink {
 		color: var(--text);
 
 		//noinspection CssOverwrittenProperties
-		text-shadow: 0 0 4px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff,
-			-1px 1px 0 #fff, 1px 1px 0 #fff;
+		text-shadow:
+			0 0 4px #fff,
+			-1px -1px 0 #fff,
+			1px -1px 0 #fff,
+			-1px 1px 0 #fff,
+			1px 1px 0 #fff;
 		//noinspection CssOverwrittenProperties
-		text-shadow: 0 0 4px var(--native-background),
-			-1px -1px 0 var(--native-background), 1px -1px 0 var(--native-background),
-			-1px 1px 0 var(--native-background), 1px 1px 0 var(--native-background);
+		text-shadow:
+			0 0 4px var(--native-background),
+			-1px -1px 0 var(--native-background),
+			1px -1px 0 var(--native-background),
+			-1px 1px 0 var(--native-background),
+			1px 1px 0 var(--native-background);
 	}
 
 	footer:last-child,

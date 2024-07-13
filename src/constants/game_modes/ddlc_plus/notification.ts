@@ -1,4 +1,4 @@
-import { ITextStyle } from '@/renderer/text-renderer/text-renderer';
+import type { ITextStyle } from '@/renderer/text-renderer/text-renderer';
 import { BaseTextStyle } from './text-box';
 import { nameboxStrokeDefaultColor } from './text-box-custom';
 

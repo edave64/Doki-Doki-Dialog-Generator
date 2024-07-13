@@ -55,15 +55,15 @@
 import DFlow from '@/components/ui/d-flow.vue';
 import eventBus, { ColorPickedEvent } from '@/eventbus/event-bus';
 import { transaction } from '@/plugins/vuex-history';
-import { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
+import { useStore } from '@/store';
+import type { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
 import { RGBAColor } from '@/util/colors/rgb';
-import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { DeepReadonly } from 'ts-essentials';
-import { computed, onMounted, onUnmounted, PropType, ref } from 'vue';
+import uniqId from '@/util/unique-id';
+import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import type { DeepReadonly } from 'ts-essentials';
+import { computed, onMounted, onUnmounted, type PropType, ref } from 'vue';
 import DButton from '../../../ui/d-button.vue';
 import SliderGroup from './slider-group.vue';
-import { useStore } from '@/store';
-import uniqId from '@/util/unique-id';
 
 const generatedPackId = 'dddg.generated.colors';
 const id = uniqId();

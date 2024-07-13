@@ -1,5 +1,5 @@
 import getConstants from '@/constants';
-import { IRootState } from '@/store';
+import type { IRootState } from '@/store';
 import { Store } from 'vuex';
 import { SceneRenderer } from './scene-renderer';
 

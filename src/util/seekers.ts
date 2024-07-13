@@ -1,4 +1,4 @@
-import { DeepReadonly } from 'ts-essentials';
+import type { DeepReadonly } from 'ts-essentials';
 
 export function arraySeeker(
 	array: DeepReadonly<any[]>,

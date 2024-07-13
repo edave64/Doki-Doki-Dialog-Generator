@@ -1,5 +1,5 @@
-import { Module } from 'vuex';
-import { IRootState } from '.';
+import type { Module } from 'vuex';
+import type { IRootState } from '.';
 
 export interface ITempAssets {
 	assets: { [name: string]: string };

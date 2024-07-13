@@ -1,5 +1,5 @@
 import mitt from 'mitt';
-import { DeepReadonly } from 'ts-essentials';
+import type { DeepReadonly } from 'ts-essentials';
 
 const eventBus = mitt();
 

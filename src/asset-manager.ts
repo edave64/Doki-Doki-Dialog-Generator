@@ -5,10 +5,10 @@
 import { allowLq, allowWebP, assetUrl } from './config';
 import environment from './environments/environment';
 import EventBus, { AssetFailureEvent } from './eventbus/event-bus';
-import { IAsset } from './render-utils/assets/asset';
+import type { IAsset } from './render-utils/assets/asset';
 import { ErrorAsset } from './render-utils/assets/error-asset';
 import { ImageAsset } from './render-utils/assets/image-asset';
-import { IAssetSwitch } from './store/content';
+import type { IAssetSwitch } from './store/content';
 
 let webpSupportPromise: Promise<boolean> | undefined;
 

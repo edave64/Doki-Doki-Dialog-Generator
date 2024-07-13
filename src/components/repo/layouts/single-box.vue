@@ -39,15 +39,15 @@
 
 <script lang="ts" setup>
 import eventBus, { VueErrorEvent } from '@/eventbus/event-bus';
-import { Pack, Repo } from '@/models/repo';
-import { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
-import { DeepReadonly } from 'ts-essentials';
+import { type Pack, Repo } from '@/models/repo';
+import { safeAsync } from '@/util/errors';
+import type { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
+import type { DeepReadonly } from 'ts-essentials';
 import { computed, nextTick, onActivated, onMounted, ref } from 'vue';
 import List from '../list.vue';
 import PackDisplay from '../pack-display.vue';
 import SearchBar from '../search-bar.vue';
-import { SelectedEvent } from '../types';
-import { safeAsync } from '@/util/errors';
+import type { SelectedEvent } from '../types';
 
 const emit = defineEmits(['leave']);
 const searchBar = ref(null! as typeof SearchBar);

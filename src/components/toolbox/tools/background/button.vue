@@ -35,7 +35,7 @@
 import { getAAssetUrl } from '@/asset-manager';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
-import { BackgroundLookup } from '@/store/content';
+import type { BackgroundLookup } from '@/store/content';
 import { computed, ref } from 'vue';
 
 const store = useStore();

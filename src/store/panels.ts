@@ -1,24 +1,24 @@
 import { arraySeeker } from '@/util/seekers';
-import { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { Module } from 'vuex';
-import { IRootState } from '.';
-import { BackgroundLookup, IAssetSwitch } from './content';
-import { ITextBox } from './object-types/textbox';
+import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import type { Module } from 'vuex';
+import type { IRootState } from '.';
+import type { BackgroundLookup, IAssetSwitch } from './content';
+import type { ITextBox } from './object-types/textbox';
 import {
+	type IObject,
+	type ISetCompositionMutation,
+	type ISetFiltersMutation,
 	actions as objectActions,
-	fixContentPackRemoval as objectsFixContentPackRemoval,
-	IObject,
-	ISetCompositionMutation,
-	ISetFiltersMutation,
 	mutations as objectMutations,
+	fixContentPackRemoval as objectsFixContentPackRemoval,
 } from './objects';
 import {
 	addFilter,
-	IAddFilterAction,
-	IHasSpriteFilters,
-	IMoveFilterAction,
-	IRemoveFilterAction,
-	ISetFilterAction,
+	type IAddFilterAction,
+	type IHasSpriteFilters,
+	type IMoveFilterAction,
+	type IRemoveFilterAction,
+	type ISetFilterAction,
 	moveFilter,
 	removeFilter,
 	setFilter,

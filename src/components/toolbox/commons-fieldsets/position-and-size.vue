@@ -118,18 +118,18 @@ import { rendererLookup } from '@/renderables/textbox';
 import { useStore } from '@/store';
 import {
 	closestCharacterSlot,
-	ICharacter,
-	ISetFreeMoveMutation,
+	type ICharacter,
+	type ISetFreeMoveMutation,
 } from '@/store/object-types/characters';
-import { IPoem } from '@/store/object-types/poem';
-import { ITextBox } from '@/store/object-types/textbox';
-import {
+import type { IPoem } from '@/store/object-types/poem';
+import type { ITextBox } from '@/store/object-types/textbox';
+import type {
 	IObject,
 	ISetObjectPositionMutation,
 	ISetPositionAction,
 	ISetSpriteSizeMutation,
 } from '@/store/objects';
-import { computed, PropType } from 'vue';
+import { computed, type PropType } from 'vue';
 
 const store = useStore();
 const props = defineProps({

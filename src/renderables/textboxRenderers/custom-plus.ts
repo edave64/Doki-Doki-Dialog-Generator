@@ -18,7 +18,7 @@ import {
 	roundedTopRectangle,
 } from '@/renderer/canvas-tools';
 import { RGBAColor } from '@/util/colors/rgb';
-import { ITextboxRenderer } from '../textbox';
+import type { ITextboxRenderer } from '../textbox';
 import { Custom } from './custom';
 import { DdlcPlusBase } from './ddlc-plus-base';
 

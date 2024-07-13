@@ -53,18 +53,18 @@ import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import { transaction } from '@/plugins/vuex-history';
-import {
+import { useStore } from '@/store';
+import type {
 	IAddChoiceAction,
 	IChoice,
 	IChoices,
 	IRemoveChoiceAction,
 } from '@/store/object-types/choices';
-import { IPanel } from '@/store/panels';
+import type { IPanel } from '@/store/panels';
 import { genericSetterMerged } from '@/util/simple-settable';
-import { DeepReadonly } from 'ts-essentials';
-import { ComponentCustomProperties, computed, ref } from 'vue';
-import ObjectTool, { Handler } from './object-tool.vue';
-import { useStore } from '@/store';
+import type { DeepReadonly } from 'ts-essentials';
+import { type ComponentCustomProperties, computed, ref } from 'vue';
+import ObjectTool, { type Handler } from './object-tool.vue';
 
 const store = useStore();
 const root = ref(null! as HTMLElement);

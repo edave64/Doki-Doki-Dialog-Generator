@@ -1,13 +1,13 @@
 import getConstants from '@/constants';
 import { SelectedState, selectionColors } from '@/constants/shared';
 import { applyFilter, ctxScope } from '@/renderer/canvas-tools';
-import { IRootState } from '@/store';
-import { ITextBox } from '@/store/object-types/textbox';
-import { IObject } from '@/store/objects';
-import { IPanel } from '@/store/panels';
+import type { IRootState } from '@/store';
+import type { ITextBox } from '@/store/object-types/textbox';
+import type { IObject } from '@/store/objects';
+import type { IPanel } from '@/store/panels';
 import { makeCanvas } from '@/util/canvas';
 import { matrixEquals } from '@/util/math';
-import { DeepReadonly } from 'vue';
+import type { DeepReadonly } from 'vue';
 import { Store } from 'vuex';
 
 /**

@@ -145,7 +145,7 @@ import environment from '@/environments/environment';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import { safeAsync } from '@/util/errors';
-import { Ref, computed, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const store = useStore();
 const root = ref(null! as HTMLElement);

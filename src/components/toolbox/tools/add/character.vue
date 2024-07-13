@@ -25,9 +25,9 @@ import DButton from '@/components/ui/d-button.vue';
 import environment from '@/environments/environment';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
-import { IAssetSwitch } from '@/store/content';
-import { ICreateCharacterAction } from '@/store/object-types/characters';
-import { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import type { IAssetSwitch } from '@/store/content';
+import type { ICreateCharacterAction } from '@/store/object-types/characters';
+import type { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { computed } from 'vue';
 
 const store = useStore();
