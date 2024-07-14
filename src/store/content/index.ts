@@ -227,19 +227,16 @@ export async function convertContentPack(
 		['ext', '{lq:.lq:}.{format:webp:webp:png:png}'],
 	]);
 
-	return assetWalker(
-		pack,
-		(path: string, _type: 'image' | 'font'): IAssetSwitch => {
-			const hq = normalizePath(path, replacementMap, types, false);
-			const lq = normalizePath(path, replacementMap, types, true);
+	return assetWalker(pack, (path: string): IAssetSwitch => {
+		const hq = normalizePath(path, replacementMap, types, false);
+		const lq = normalizePath(path, replacementMap, types, true);
 
-			return {
-				hq,
-				lq,
-				sourcePack: pack.packId ?? 'buildIn',
-			};
-		}
-	) as ContentPack<IAssetSwitch>;
+		return {
+			hq,
+			lq,
+			sourcePack: pack.packId ?? 'buildIn',
+		};
+	}) as ContentPack<IAssetSwitch>;
 }
 
 export type ReplaceContentPackAction =

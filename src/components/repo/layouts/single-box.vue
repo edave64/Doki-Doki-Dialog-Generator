@@ -119,7 +119,7 @@ async function add_repo_pack() {
 		const repo = await Repo.getInstance();
 		const packId = await repo.loadTempPack(search.value);
 		search.value = '';
-		if (packId) {
+		if (packId != null) {
 			selected.value = packId;
 		}
 	} catch (e) {

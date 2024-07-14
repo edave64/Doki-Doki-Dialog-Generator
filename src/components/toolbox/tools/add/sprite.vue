@@ -130,10 +130,10 @@ function openSpritesFolder() {
 	environment.openFolder('sprites');
 }
 //#region Reupload missing sprite
-const missingSpriteUpload = ref(null! as HTMLInputElement);
-async function onMissingSpriteFileUpload(_e: Event) {
+const missingSpriteUpload = ref(null! as Uploader);
+async function onMissingSpriteFileUpload() {
 	const uploadInput = missingSpriteUpload.value;
-	const spriteName = (uploadInput as any).uploadingSprite;
+	const spriteName = uploadInput.uploadingSprite;
 	if (!uploadInput.files) return;
 	if (uploadInput.files.length !== 1) {
 		console.error('More than one file uploaded!');
@@ -151,7 +151,7 @@ async function onMissingSpriteFileUpload(_e: Event) {
 }
 function reuploadingSprite(sprite: DeepReadonly<ISprite>) {
 	const missingSpriteUpload_ = missingSpriteUpload.value;
-	(missingSpriteUpload_ as any).uploadingSprite = getAAssetUrl(
+	missingSpriteUpload_.uploadingSprite = getAAssetUrl(
 		sprite.variants[0][0]
 	).substring(8);
 	missingSpriteUpload_.click();
@@ -250,6 +250,10 @@ function hideDropTarget() {
 
 defineExpose({ showDropTarget, hideDropTarget });
 //#endregion Drag and Drop
+
+interface Uploader extends HTMLInputElement {
+	uploadingSprite: string;
+}
 </script>
 
 <style lang="scss" scoped>

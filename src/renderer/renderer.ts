@@ -5,7 +5,7 @@ import { RenderAbortedException } from './render-aborted-exception';
 import { RenderContext } from './renderer-context';
 
 export class Renderer {
-	private readonly previewCanvas: HTMLCanvasElement;
+	readonly previewCanvas: HTMLCanvasElement;
 	private runningContext: RenderContext | null = null;
 	private _disposed: boolean = false;
 

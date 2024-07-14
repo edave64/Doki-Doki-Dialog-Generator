@@ -5,7 +5,7 @@
 <template>
 	<div class="panel" ref="root">
 		<h1>Panels</h1>
-		<image-options
+		<ImageOptions
 			v-if="imageOptions"
 			type="panel"
 			title=""
@@ -290,7 +290,7 @@ function extractObjectText(obj: DeepReadonly<IObject>) {
 }
 function moveFocusToActivePanel() {
 	const active = getRoot().querySelector('.panel_button.active') as HTMLElement;
-	if (active) {
+	if (active != null) {
 		scrollIntoView(active);
 	}
 }

@@ -1,14 +1,11 @@
 import { Repo } from '@/models/repo';
 import { transaction } from '@/plugins/vuex-history';
 import type { IRootState } from '@/store';
-import type { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
-import type { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 import { reactive, ref, type DeepReadonly } from 'vue';
 import { Store } from 'vuex';
 import type {
 	EnvCapabilities,
 	EnvState,
-	Folder,
 	IEnvironment,
 	Settings,
 } from './environment';
@@ -85,7 +82,7 @@ export class Browser implements IEnvironment {
 				'Are you sure you want to leave? All your progress will be lost!';
 		});
 
-		this.loadingContentPacksAllowed = new Promise((resolve, _reject) => {
+		this.loadingContentPacksAllowed = new Promise((resolve) => {
 			this.loadContentPacks = () => resolve();
 		});
 
@@ -181,7 +178,7 @@ export class Browser implements IEnvironment {
 		throw new Error('Method not implemented.');
 	}
 
-	openFolder(_folder: Folder): void {
+	openFolder(): void {
 		throw new Error('Method not implemented.');
 	}
 
@@ -205,17 +202,13 @@ export class Browser implements IEnvironment {
 		return url;
 	}
 
-	public localRepoInstall(
-		_url: string,
-		_repo: IPack,
-		_authors: IAuthors
-	): Promise<void> {
+	public localRepoInstall(): Promise<void> {
 		return Promise.reject(
 			new Error('This environment does not support a local repository')
 		);
 	}
 
-	public localRepoUninstall(_id: string): void {
+	public localRepoUninstall(): Promise<void> {
 		throw new Error('This environment does not support a local repository');
 	}
 
@@ -280,14 +273,12 @@ export class Browser implements IEnvironment {
 		message: string,
 		defaultValue?: string
 	): Promise<string | null> {
-		return new Promise((resolve, _reject) => {
+		return new Promise((resolve) => {
 			resolve(prompt(message, defaultValue));
 		});
 	}
 
-	public onPanelChange(_handler: (panel: string) => void): void {
-		return;
-	}
+	public onPanelChange(): void {}
 
 	protected createObjectURL(
 		canvas: HTMLCanvasElement,
@@ -336,19 +327,26 @@ export class Browser implements IEnvironment {
 const IndexedDBHandler = {
 	indexedDB: (() => {
 		try {
-			return (window.indexedDB ??
-				(window as any).mozIndexedDB ??
-				(window as any).webkitIndexedDB ??
-				(window as any).msIndexedDB) as IDBFactory;
+			return (
+				window.indexedDB ??
+				window.mozIndexedDB ??
+				window.webkitIndexedDB ??
+				window.msIndexedDB ??
+				null
+			);
 		} catch (e) {
 			return null;
 		}
 	})(),
 	transaction: (() => {
 		try {
-			return ((window.IDBTransaction as any) ||
-				(window as any).webkitIDBTransaction ||
-				(window as any).msIDBTransaction) as IDBTransaction;
+			return (
+				window.IDBTransaction ??
+				window.mozIDBTransaction ??
+				window.webkitIDBTransaction ??
+				window.msIDBTransaction ??
+				null
+			);
 		} catch (e) {
 			return null;
 		}
@@ -377,8 +375,11 @@ const IndexedDBHandler = {
 				reject(event);
 			};
 			req.onupgradeneeded = (event) => {
-				const db = (event.target! as any).result as IDBDatabase;
-				const oldVer = event.oldVersion ?? ((event as any).version as number);
+				const db = req.result;
+				const oldVer =
+					event.oldVersion ??
+					// Fallback for old apis
+					event.version;
 				if (oldVer < 1) {
 					db.createObjectStore('settings');
 				}
@@ -387,7 +388,7 @@ const IndexedDBHandler = {
 					db.createObjectStore('settings');
 				}
 			};
-			req.onsuccess = (_event) => {
+			req.onsuccess = () => {
 				resolve(req.result);
 			};
 		}));
@@ -404,7 +405,7 @@ const IndexedDBHandler = {
 			req.onerror = (event) => {
 				reject(event);
 			};
-			req.onsuccess = (_event) => {
+			req.onsuccess = () => {
 				resolve();
 			};
 		});
@@ -444,21 +445,15 @@ const IndexedDBHandler = {
 		});
 	},
 
-	objectStorePromise<T>(
+	async objectStorePromise<T>(
 		mode: 'readonly' | 'readwrite',
 		callback: (store: IDBObjectStore) => Promise<T>
 	): Promise<T> {
-		if (!this.db) return Promise.reject(new Error('No database'));
-		return new Promise(async (resolve, reject) => {
-			const transact = (await this.db!).transaction(['settings'], mode);
-			const store = transact.objectStore('settings');
-
-			try {
-				resolve(await callback(store));
-			} catch (e) {
-				reject(e);
-			}
-		});
+		const db = await this.db;
+		if (!db) throw new Error('No database');
+		const transact = db.transaction(['settings'], mode);
+		const store = transact.objectStore('settings');
+		return await callback(store);
 	},
 
 	/**
@@ -469,7 +464,7 @@ const IndexedDBHandler = {
 			req.onerror = (error) => {
 				reject(error);
 			};
-			req.onsuccess = (_event) => {
+			req.onsuccess = () => {
 				resolve(req.result);
 			};
 		});

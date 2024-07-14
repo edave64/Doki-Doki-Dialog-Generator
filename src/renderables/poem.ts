@@ -54,7 +54,7 @@ export class Poem extends ScalingRenderable<IPoem> {
 		return;
 	}
 
-	protected renderLocal(ctx: CanvasRenderingContext2D, _hq: boolean): void {
+	protected renderLocal(ctx: CanvasRenderingContext2D): void {
 		const constants = getConstants().Poem;
 		const paper = constants.poemBackgrounds[this.obj.background];
 		const w = this.width;

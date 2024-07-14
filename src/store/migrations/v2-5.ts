@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * This file deals with safe file migration from version prior to 2.5
  *

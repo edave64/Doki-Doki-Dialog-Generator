@@ -82,7 +82,7 @@ function fireShortcut(e: KeyboardEvent) {
 }
 
 onMounted(() => {
-	if (!props.shortcut) return;
+	if (props.shortcut == null) return;
 	window.addEventListener('keydown', fireShortcut);
 });
 onUnmounted(() => {

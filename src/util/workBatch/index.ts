@@ -105,7 +105,10 @@ export class WorkBatch<P, R> {
 		this.runningDisposers.add(data);
 		try {
 			await this.disposer(data);
-		} catch (e) {}
+		} catch (e) {
+			console.error(e);
+			// Ignore
+		}
 		this.runningDisposers.delete(data);
 		this.restock();
 	}

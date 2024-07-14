@@ -64,7 +64,7 @@ export interface IEnvironment {
 	onPanelChange(handler: (panel: string) => void): void;
 
 	localRepoInstall(url: string, repo: IPack, authors: IAuthors): Promise<void>;
-	localRepoUninstall(id: string): void;
+	localRepoUninstall(id: string): Promise<void>;
 	autoLoadAdd(id: string): Promise<void>;
 	autoLoadRemove(id: string): Promise<void>;
 
@@ -81,7 +81,7 @@ export interface IEnvironment {
 }
 
 function chooseEnv(): IEnvironment {
-	if ((window as any).isElectron) {
+	if (window.isElectron) {
 		return new Electron();
 	}
 	if ('msSaveOrOpenBlob' in window.navigator) {
@@ -92,5 +92,4 @@ function chooseEnv(): IEnvironment {
 
 const envX = chooseEnv();
 
-(window as any).toast = envX;
 export default envX;

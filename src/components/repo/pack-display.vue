@@ -181,7 +181,7 @@ async function install(): Promise<void> {
 		authors[key] = { ...props.repo!.getAuthor(key) };
 	}
 
-	const pack_: any = JSON.parse(JSON.stringify(pack.value));
+	const pack_ = JSON.parse(JSON.stringify(pack.value));
 	delete pack_.autoloading;
 	delete pack_.online;
 	delete pack_.loaded;
@@ -195,7 +195,7 @@ async function install(): Promise<void> {
 			authors
 		);
 	} catch (e) {
-		errorReport(e);
+		errorReport('Installing pack', e);
 	} finally {
 		processingPack.value = false;
 	}
@@ -204,7 +204,7 @@ async function install(): Promise<void> {
 async function uninstall(): Promise<void> {
 	const pack_ = pack.value;
 	if (!pack_.installed) return;
-	if (pack_.repoUrl && !props.repo?.hasPack(pack_.id, true)) {
+	if (pack_.repoUrl != null && !props.repo?.hasPack(pack_.id, true)) {
 		await props.repo!.loadTempPack(pack_.repoUrl);
 	}
 	try {

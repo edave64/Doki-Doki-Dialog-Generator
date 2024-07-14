@@ -116,10 +116,9 @@ export interface ISetTextMutation extends IObjectMutation {
 	readonly text: IPoem['text'];
 }
 
-export type PoemSimpleProperties = Exclude<
-	keyof IPoem,
-	keyof IObject | 'subType' | 'overflow'
->;
+export type PoemSimpleProperties =
+	| Exclude<keyof IPoem, keyof IObject | 'subType'>
+	| 'overflow';
 
 export interface ISetTextBoxProperty<T extends PoemSimpleProperties>
 	extends IObjectMutation {

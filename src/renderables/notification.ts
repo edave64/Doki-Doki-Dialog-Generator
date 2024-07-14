@@ -85,7 +85,7 @@ export class Notification extends ScalingRenderable<INotification> {
 		return super.render(ctx, selection, preview, hq, skipLocal);
 	}
 
-	protected renderLocal(ctx: CanvasRenderingContext2D, _hq: boolean): void {
+	protected renderLocal(ctx: CanvasRenderingContext2D): void {
 		const constants = getConstants();
 		const lineWrap = this.obj.autoWrap
 			? this.obj.width - constants.Notification.NotificationPadding * 2

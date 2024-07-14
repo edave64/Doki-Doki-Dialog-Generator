@@ -361,10 +361,12 @@ export interface ISetResetBoundsMutation extends IObjectMutation {
 	readonly resetBounds: ITextBox['resetBounds'];
 }
 
-export type TextBoxSimpleProperties = Exclude<
-	keyof ITextBox,
-	keyof IObject | 'talkingObjId' | 'talkingOther' | 'resetBounds' | 'overflow'
->;
+export type TextBoxSimpleProperties =
+	| Exclude<keyof ITextBox, keyof IObject>
+	| 'overflow'
+	| 'talkingObjId'
+	| 'talkingOther'
+	| 'resetBounds';
 
 export function textboxProperty<T extends TextBoxSimpleProperties>(
 	panelId: IPanel['id'],

@@ -69,7 +69,7 @@ export function applyStyle(
 	if (params.align) {
 		ctx.textAlign = params.align;
 	}
-	if (params.font) {
+	if (params.font != null) {
 		ctx.font = params.font;
 	}
 	if (params.fill) {
@@ -85,8 +85,8 @@ export function applyFilter(
 	ctx: CanvasRenderingContext2D,
 	filters: DeepReadonly<SpriteFilter[]>
 ) {
-	// Safari fallback
-	if (!(('filter' in ctx) as any)) {
+	// Safari fallback - unknown is needed to avoid TS error
+	if (!(('filter' in ctx) as unknown)) {
 		let opacityCombined = 1;
 		for (const filter of filters) {
 			if (filter.type === 'opacity') {
@@ -118,9 +118,6 @@ interface IFill {
 
 interface IOOutline {
 	readonly outline?: IOutline;
-}
-interface IOFilters {
-	readonly filters?: DeepReadonly<SpriteFilter[]>;
 }
 
 interface IOutline {

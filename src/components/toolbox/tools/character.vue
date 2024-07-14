@@ -9,7 +9,7 @@
 		:showAltPanel="!!panelForParts"
 	>
 		<template v-slot:alt-panel>
-			<parts
+			<Parts
 				v-if="panelForParts"
 				:character="object"
 				:part="panelForParts"
@@ -161,7 +161,7 @@ function reuploadHead() {
 	missingHeadUpload.value.click();
 }
 
-async function onMissingHeadFileUpload(_e: Event) {
+async function onMissingHeadFileUpload() {
 	const uploadInput = missingHeadUpload.value;
 	if (!uploadInput.files) return;
 	if (uploadInput.files.length !== 1) {

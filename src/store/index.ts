@@ -33,7 +33,7 @@ export type RStore = Store<IRootState>;
 export default createStore({
 	state: {
 		unsafe: false,
-	} as any,
+	} as unknown as IRootState,
 	mutations: {
 		setUnsafe(state, unsafe: boolean) {
 			state.unsafe = unsafe;

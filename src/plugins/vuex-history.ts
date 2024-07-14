@@ -13,7 +13,7 @@ export function transactionLayer(): TransactionLayer {
 	let transactionRunning = false;
 
 	return function transaction(callback: TransactionCallback) {
-		return new Promise((resolve, _reject) => {
+		return new Promise((resolve) => {
 			const exec = async () => {
 				try {
 					// Don't create a new transaction layer if it won't be used.

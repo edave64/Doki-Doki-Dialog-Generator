@@ -139,7 +139,7 @@ function addSwatch() {
 				color: color.value,
 			},
 		],
-	} as any;
+	} as unknown as ContentPack<IAssetSwitch>;
 
 	transaction(async () => {
 		await store.dispatch('content/replaceContentPack', {

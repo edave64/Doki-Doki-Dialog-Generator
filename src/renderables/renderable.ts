@@ -8,7 +8,7 @@ import type { IPanel } from '@/store/panels';
 import { makeCanvas } from '@/util/canvas';
 import { matrixEquals } from '@/util/math';
 import type { DeepReadonly } from 'vue';
-import { Store } from 'vuex';
+import type { Store } from 'vuex';
 
 /**
  * An object that can be rendered onto the image. Every object type has it's own class that inherits from here.

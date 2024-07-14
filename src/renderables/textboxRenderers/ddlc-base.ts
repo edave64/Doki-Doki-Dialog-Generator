@@ -95,7 +95,7 @@ export abstract class DdlcBase implements ITextboxRenderer {
 	public abstract textOffsetY: number;
 
 	public nextArrow: IAsset | null = null;
-	public prepare(): Promise<void> | void {
+	public prepare(): Promise<unknown> | void {
 		if (this.nextArrow instanceof ImageAsset) return;
 		return (async () => {
 			this.nextArrow = await getBuildInAsset('next');

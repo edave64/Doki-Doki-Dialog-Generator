@@ -303,7 +303,9 @@ const filterTypes: ReadonlyArray<SpriteFilter['type']> = (() => {
 		if (hasFilter) {
 			return Array.from(filterText.keys()).sort();
 		}
-	} catch (e) {}
+	} catch (_e) {
+		// Ignore
+	}
 	return ['opacity'];
 })();
 
@@ -324,7 +326,7 @@ const props = defineProps({
 		default: false,
 	},
 });
-const emit = defineEmits(['leave']);
+defineEmits(['leave']);
 const store = useStore();
 
 const addEffectSelection = ref('' as SpriteFilter['type'] | '');
@@ -375,13 +377,13 @@ const currentFilter = computed(
 
 const isPercentFilter = computed(() => {
 	const filter = currentFilter.value;
-	if (!filter) return false;
+	if (filter == null) return false;
 	return percentageValue.has(filter.type);
 });
 
 const maxValue = computed(() => {
 	const filter = currentFilter.value;
-	if (!filter) return undefined;
+	if (filter == null) return undefined;
 
 	if (filter.type === 'hue-rotate') return 360;
 	if (
@@ -397,7 +399,7 @@ const maxValue = computed(() => {
 
 const minValue = computed((): number | undefined => {
 	const filter = currentFilter.value;
-	if (!filter) return undefined;
+	if (filter == null) return undefined;
 
 	switch (filter.type) {
 		case 'blur':
@@ -422,7 +424,7 @@ function getFilterLabel(type: SpriteFilter['type']): string {
 function getFilterText(filter: SpriteFilter): string {
 	if (percentageValue.has(filter.type)) {
 		return `${filterText.get(filter.type)} ${(
-			(filter as INumericSpriteFilter<any>).value * 100
+			(filter as INumericSpriteFilter<string>).value * 100
 		).toFixed()}%`;
 	} else if (filter.type === 'hue-rotate') {
 		return `${filterText.get(filter.type)} ${filter.value.toFixed()}°`;
@@ -534,10 +536,10 @@ function shadowProp<K extends keyof Omit<IDropShadowSpriteFilter, 'type'>>(
 ): WritableComputedRef<IDropShadowSpriteFilter[K]> {
 	return computed({
 		get(): IDropShadowSpriteFilter[K] {
-			const filter = currentFilter.value;
-			if (!filter || !(prop in filter))
+			const filter = currentFilter.value as IDropShadowSpriteFilter;
+			if (filter == null || !(prop in filter))
 				throw new Error('Tried reading shadow prop on a non shadow object');
-			return (filter as any)[prop];
+			return filter[prop];
 		},
 		set(value: IDropShadowSpriteFilter[K]) {
 			setFilterProperty({ [prop]: value });

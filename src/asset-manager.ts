@@ -43,7 +43,7 @@ function canLoadImg(
 	height: number,
 	width: number
 ): Promise<boolean> {
-	return new Promise((resolve, _reject) => {
+	return new Promise((resolve) => {
 		const img = document.createElement('img');
 		img.addEventListener('load', () => {
 			resolve(img.width === width && img.height === height);
@@ -72,7 +72,7 @@ export function isHeifSupported(): Promise<boolean> {
 /**
  * A cache that stores assets and keeps them loaded
  */
-class AssetCache {
+export class AssetCache {
 	private cache = new Map<string, Promise<IAsset>>();
 	get(url: string) {
 		const lookup = this.cache.get(url);
@@ -91,7 +91,7 @@ class AssetCache {
  * A cache that weakly stores assets only until the browser garbage collects them on it's own.
  * This is especially used on Safari, which imposes strict memory limits for images.
  */
-class TmpAssetCache {
+export class TmpAssetCache {
 	private cache = new Map<string, WeakRef<Promise<IAsset>>>();
 	get(url: string) {
 		const lookup = this.cache.get(url)?.deref();
@@ -110,7 +110,7 @@ let assetCache: AssetCache | TmpAssetCache | null = null;
 
 function getAssetCache(): AssetCache | TmpAssetCache {
 	if (assetCache) return assetCache;
-	return ((window as any).assetCache = assetCache =
+	return (window.assetCache = assetCache =
 		environment.supports.assetCaching || typeof WeakRef === 'undefined'
 			? new AssetCache()
 			: new TmpAssetCache());
@@ -185,7 +185,7 @@ async function requestAssetByUrl(url: string): Promise<IAsset> {
 }
 
 export function imagePromise(url: string, noCache = false): Promise<IAsset> {
-	return new Promise((resolve, _reject) => {
+	return new Promise((resolve) => {
 		const img = new Image();
 		img.addEventListener('load', () => {
 			resolve(new ImageAsset(img));
@@ -193,7 +193,7 @@ export function imagePromise(url: string, noCache = false): Promise<IAsset> {
 				document.body.removeChild(img);
 			}
 		});
-		img.addEventListener('error', (_e) => {
+		img.addEventListener('error', () => {
 			resolve(new ErrorAsset());
 			if (noCache || !environment.supports.assetCaching) {
 				document.body.removeChild(img);

@@ -69,5 +69,5 @@ export interface IConstants {
 	readonly TextBox: {
 		readonly DefaultTextboxStyle: ITextBox['style'];
 	};
-	readonly TextBoxCustom: {};
+	readonly TextBoxCustom: Record<string, never>;
 }

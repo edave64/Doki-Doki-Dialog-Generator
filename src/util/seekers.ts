@@ -1,10 +1,10 @@
 import type { DeepReadonly } from 'ts-essentials';
 
-export function arraySeeker(
-	array: DeepReadonly<any[]>,
+export function arraySeeker<T>(
+	array: DeepReadonly<T[]>,
 	pos: number,
 	delta: number
-) {
+): number {
 	let val = pos + delta;
 	const length = array.length;
 

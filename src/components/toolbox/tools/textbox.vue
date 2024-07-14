@@ -234,7 +234,7 @@ watch(
 	() => vertical.value,
 	() => {
 		const ta = textarea.value;
-		if (ta) {
+		if (ta != null) {
 			ta.style.height = '';
 			ta.style.width = '';
 		}

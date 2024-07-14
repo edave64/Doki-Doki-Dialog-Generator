@@ -80,7 +80,7 @@ export class Default extends DdlcBase implements ITextboxRenderer {
 
 	private nameBoxAsset: null | IAsset = null;
 	private backdropAsset: null | IAsset = null;
-	public prepare(): Promise<any> | void {
+	public prepare(): Promise<unknown> | void {
 		const prep = super.prepare();
 		if (!prep && this.backdropAsset && this.nameBoxAsset) return;
 		return Promise.all([

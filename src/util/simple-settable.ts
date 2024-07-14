@@ -3,7 +3,7 @@
 import { transaction } from '@/plugins/vuex-history';
 import type { IRootState } from '@/store';
 import type { IObject } from '@/store/objects';
-import { type ComponentCustomProperties, computed, type Ref } from 'vue';
+import { computed, type Ref } from 'vue';
 import { Store } from 'vuex';
 
 export function genericSetterSplit<T extends IObject, K extends keyof T>(
@@ -50,8 +50,4 @@ export function genericSetterMerged<T extends IObject, K extends keyof T>(
 			});
 		},
 	});
-}
-
-interface IThis<T extends IObject> extends ComponentCustomProperties {
-	object: T;
 }

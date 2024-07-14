@@ -116,9 +116,9 @@
 <script lang="ts" setup>
 import getConstants from '@/constants';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
+import { useStore } from '@/store';
 import { computed, nextTick, ref, watch } from 'vue';
 import Color from '../color/color.vue';
-import { useStore } from '@/store';
 
 defineOptions({
 	inheritAttrs: false,
@@ -149,7 +149,7 @@ watch(
 	() => vertical.value,
 	() => {
 		const ta = textArea.value;
-		if (ta) {
+		if (ta != null) {
 			ta.style.height = '';
 			ta.style.width = '';
 		}
@@ -190,7 +190,7 @@ function applyColor() {
 	const colorSelector_ = colorSelector.value;
 	const apply = () => {
 		const el = textArea.value;
-		if (!el) {
+		if (el == null) {
 			nextTick(apply);
 			return;
 		}
@@ -214,7 +214,7 @@ function insertText(text: string) {
 	onValueChanged();
 }
 
-function insertCommand(command: string, arg?: any) {
+function insertCommand(command: string, arg?: string | number) {
 	const el = textArea.value;
 	const val = el.value;
 	const selStart = el.selectionStart;
@@ -223,7 +223,7 @@ function insertCommand(command: string, arg?: any) {
 	const before = val.slice(0, selStart);
 	const after = val.slice(selEnd);
 	let commandOpen = command;
-	if (arg) {
+	if (arg != null) {
 		commandOpen += '=' + arg;
 	}
 	el.value = `${before}{${commandOpen}}${selectedText}{/${command}}${after}`;
@@ -370,45 +370,158 @@ function insertCommand(command: string, arg?: any) {
 
 .edited-style {
 	color: white;
-	text-shadow: 0 6px 0.3px #000, 1px 6px 0.3px #000, 2px 5px 0.3px #000,
-		3px 5px 0.3px #000, 4px 4px 0.3px #000, 5px 3px 0.3px #000,
-		5px 2px 0.3px #000, 7px 1px 0.3px #000, 6px 0 0.3px #000,
-		6px -1px 0.3px #000, 5px -2px 0.3px #000, 5px -3px 0.3px #000,
-		4px -4px 0.3px #000, 3px -5px 0.3px #000, 2px -5px 0.3px #000,
-		1px -6px 0.3px #000, 0 -6px 0.3px #000, -1px -6px 0.3px #000,
-		-2px -5px 0.3px #000, -3px -5px 0.3px #000, -4px -4px 0.3px #000,
-		-5px -3px 0.3px #000, -5px -2px 0.3px #000, -6px -1px 0.3px #000,
-		-6px 0 0.3px #000, -6px 1px 0.3px #000, -5px 2px 0.3px #000,
-		-5px 3px 0.3px #000, -4px 4px 0.3px #000, -3px 5px 0.3px #000,
-		-2px 5px 0.3px #000, -1px 6px 0.3px #000, 0 6px 0 #000, 1px 6px 0 #000,
-		2px 5px 0 #000, 3px 5px 0 #000, 4px 4px 0 #000, 5px 3px 0 #000,
-		5px 2px 0 #000, 7px 1px 0 #000, 6px 0 0 #000, 6px -1px 0 #000,
-		5px -2px 0 #000, 5px -3px 0 #000, 4px -4px 0 #000, 3px -5px 0 #000,
-		2px -5px 0 #000, 1px -6px 0 #000, 0 -6px 0 #000, -1px -6px 0 #000,
-		-2px -5px 0 #000, -3px -5px 0 #000, -4px -4px 0 #000, -5px -3px 0 #000,
-		-5px -2px 0 #000, -6px -1px 0 #000, -6px 0 0 #000, -6px 1px 0 #000,
-		-5px 2px 0 #000, -5px 3px 0 #000, -4px 4px 0 #000, -3px 5px 0 #000,
-		-2px 5px 0 #000, -1px 6px 0 #000, 0 5px 0 #000, 1px 5px 0 #000,
-		2px 4px 0 #000, 3px 4px 0 #000, 4px 3px 0 #000, 4px 2px 0 #000,
-		5px 1px 0 #000, 5px 0 0 #000, 5px -1px 0 #000, 4px -2px 0 #000,
-		4px -3px 0 #000, 3px -4px 0 #000, 2px -4px 0 #000, 1px -5px 0 #000,
-		0 -5px 0 #000, -1px -5px 0 #000, -2px -4px 0 #000, -3px -4px 0 #000,
-		-4px -3px 0 #000, -4px -2px 0 #000, -5px -1px 0 #000, -5px 0 0 #000,
-		-5px 1px 0 #000, -4px 2px 0 #000, -4px 3px 0 #000, -3px 4px 0 #000,
-		-2px 4px 0 #000, -1px 5px 0 #000, 0 4px 0 #000, 1px 4px 0 #000,
-		2px 3px 0 #000, 3px 3px 0 #000, 3px 2px 0 #000, 4px 1px 0 #000, 4px 0 0 #000,
-		4px -1px 0 #000, 3px -2px 0 #000, 3px -3px 0 #000, 2px -3px 0 #000,
-		1px -4px 0 #000, 0 -4px 0 #000, -1px -4px 0 #000, -2px -3px 0 #000,
-		-3px -3px 0 #000, -3px -2px 0 #000, -4px -1px 0 #000, -4px 0 0 #000,
-		-4px 1px 0 #000, -3px 2px 0 #000, -3px 3px 0 #000, -2px 3px 0 #000,
-		-1px 4px 0 #000, 0 3px 0 #000, 1px 3px 0 #000, 2px 2px 0 #000,
-		3px 1px 0 #000, 3px 0 0 #000, 1px -3px 0 #000, 2px -2px 0 #000,
-		3px -1px 0 #000, 0 -3px 0 #000, -1px -3px 0 #000, -2px -2px 0 #000,
-		-3px -1px 0 #000, -3px 0 0 #000, -1px 3px 0 #000, -2px 2px 0 #000,
-		-3px 1px 0 #000, 0 2px 0 #000, 1px 2px 0 #000, 2px 1px 0 #000, 2px 0 0 #000,
-		1px -2px 0 #000, 2px -1px 0 #000, 0 -2px 0 #000, -1px -2px 0 #000,
-		-2px -1px 0 #000, -2px 0 0 #000, -1px 2px 0 #000, -2px 1px 0 #000,
-		0 1px 0 #000, 1px 1px 0 #000, 1px 0 0 #000, 1px -1px 0 #000, 0 -1px 0 #000,
-		-1px -1px 0 #000, -1px 0 0 #000, -1px 1px 0 #000;
+	text-shadow:
+		0 6px 0.3px #000,
+		1px 6px 0.3px #000,
+		2px 5px 0.3px #000,
+		3px 5px 0.3px #000,
+		4px 4px 0.3px #000,
+		5px 3px 0.3px #000,
+		5px 2px 0.3px #000,
+		7px 1px 0.3px #000,
+		6px 0 0.3px #000,
+		6px -1px 0.3px #000,
+		5px -2px 0.3px #000,
+		5px -3px 0.3px #000,
+		4px -4px 0.3px #000,
+		3px -5px 0.3px #000,
+		2px -5px 0.3px #000,
+		1px -6px 0.3px #000,
+		0 -6px 0.3px #000,
+		-1px -6px 0.3px #000,
+		-2px -5px 0.3px #000,
+		-3px -5px 0.3px #000,
+		-4px -4px 0.3px #000,
+		-5px -3px 0.3px #000,
+		-5px -2px 0.3px #000,
+		-6px -1px 0.3px #000,
+		-6px 0 0.3px #000,
+		-6px 1px 0.3px #000,
+		-5px 2px 0.3px #000,
+		-5px 3px 0.3px #000,
+		-4px 4px 0.3px #000,
+		-3px 5px 0.3px #000,
+		-2px 5px 0.3px #000,
+		-1px 6px 0.3px #000,
+		0 6px 0 #000,
+		1px 6px 0 #000,
+		2px 5px 0 #000,
+		3px 5px 0 #000,
+		4px 4px 0 #000,
+		5px 3px 0 #000,
+		5px 2px 0 #000,
+		7px 1px 0 #000,
+		6px 0 0 #000,
+		6px -1px 0 #000,
+		5px -2px 0 #000,
+		5px -3px 0 #000,
+		4px -4px 0 #000,
+		3px -5px 0 #000,
+		2px -5px 0 #000,
+		1px -6px 0 #000,
+		0 -6px 0 #000,
+		-1px -6px 0 #000,
+		-2px -5px 0 #000,
+		-3px -5px 0 #000,
+		-4px -4px 0 #000,
+		-5px -3px 0 #000,
+		-5px -2px 0 #000,
+		-6px -1px 0 #000,
+		-6px 0 0 #000,
+		-6px 1px 0 #000,
+		-5px 2px 0 #000,
+		-5px 3px 0 #000,
+		-4px 4px 0 #000,
+		-3px 5px 0 #000,
+		-2px 5px 0 #000,
+		-1px 6px 0 #000,
+		0 5px 0 #000,
+		1px 5px 0 #000,
+		2px 4px 0 #000,
+		3px 4px 0 #000,
+		4px 3px 0 #000,
+		4px 2px 0 #000,
+		5px 1px 0 #000,
+		5px 0 0 #000,
+		5px -1px 0 #000,
+		4px -2px 0 #000,
+		4px -3px 0 #000,
+		3px -4px 0 #000,
+		2px -4px 0 #000,
+		1px -5px 0 #000,
+		0 -5px 0 #000,
+		-1px -5px 0 #000,
+		-2px -4px 0 #000,
+		-3px -4px 0 #000,
+		-4px -3px 0 #000,
+		-4px -2px 0 #000,
+		-5px -1px 0 #000,
+		-5px 0 0 #000,
+		-5px 1px 0 #000,
+		-4px 2px 0 #000,
+		-4px 3px 0 #000,
+		-3px 4px 0 #000,
+		-2px 4px 0 #000,
+		-1px 5px 0 #000,
+		0 4px 0 #000,
+		1px 4px 0 #000,
+		2px 3px 0 #000,
+		3px 3px 0 #000,
+		3px 2px 0 #000,
+		4px 1px 0 #000,
+		4px 0 0 #000,
+		4px -1px 0 #000,
+		3px -2px 0 #000,
+		3px -3px 0 #000,
+		2px -3px 0 #000,
+		1px -4px 0 #000,
+		0 -4px 0 #000,
+		-1px -4px 0 #000,
+		-2px -3px 0 #000,
+		-3px -3px 0 #000,
+		-3px -2px 0 #000,
+		-4px -1px 0 #000,
+		-4px 0 0 #000,
+		-4px 1px 0 #000,
+		-3px 2px 0 #000,
+		-3px 3px 0 #000,
+		-2px 3px 0 #000,
+		-1px 4px 0 #000,
+		0 3px 0 #000,
+		1px 3px 0 #000,
+		2px 2px 0 #000,
+		3px 1px 0 #000,
+		3px 0 0 #000,
+		1px -3px 0 #000,
+		2px -2px 0 #000,
+		3px -1px 0 #000,
+		0 -3px 0 #000,
+		-1px -3px 0 #000,
+		-2px -2px 0 #000,
+		-3px -1px 0 #000,
+		-3px 0 0 #000,
+		-1px 3px 0 #000,
+		-2px 2px 0 #000,
+		-3px 1px 0 #000,
+		0 2px 0 #000,
+		1px 2px 0 #000,
+		2px 1px 0 #000,
+		2px 0 0 #000,
+		1px -2px 0 #000,
+		2px -1px 0 #000,
+		0 -2px 0 #000,
+		-1px -2px 0 #000,
+		-2px -1px 0 #000,
+		-2px 0 0 #000,
+		-1px 2px 0 #000,
+		-2px 1px 0 #000,
+		0 1px 0 #000,
+		1px 1px 0 #000,
+		1px 0 0 #000,
+		1px -1px 0 #000,
+		0 -1px 0 #000,
+		-1px -1px 0 #000,
+		-1px 0 0 #000,
+		-1px 1px 0 #000;
 }
 </style>

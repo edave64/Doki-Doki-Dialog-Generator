@@ -605,8 +605,7 @@ async function finishUpload() {
 
 	let headGroup_ = character.heads[headGroup.value!.name];
 	const storeHeadGroup = storeCharacter.heads[headGroup.value!.name];
-	// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-	if (!headGroup_) {
+	if (headGroup_ == null) {
 		headGroup_ = {
 			previewSize:
 				storeHeadGroup.previewSize as (typeof headGroup_)['previewSize'],
@@ -707,8 +706,8 @@ const listPaths: { [s: string]: string | undefined } = {
 	'dddg.buildin.mc_chad:ddlc.fan.mc_chad:straight_red': `${baseUrl}chad/red`,
 };
 
-const charDefDefaults = {
-	type: 'character' as 'character',
+const charDefDefaults: ICharacter = {
+	type: 'character',
 	characterType: '',
 	freeMove: false,
 	close: false,
@@ -718,22 +717,34 @@ const charDefDefaults = {
 	posePositions: {},
 	panelId: 0,
 	id: 0,
+	x: 0,
 	y: 0,
 	rotation: 0,
 	preserveRatio: true,
 	ratio: 1,
-	opacity: 100,
 	version: 1,
 	flip: false,
 	onTop: false,
-	composite: 'source-over' as 'source-over',
+	composite: 'source-over',
 	filters: [],
+	linkedTo: null,
+	skewX: 0,
+	skewY: 0,
+	enlargeWhenTalking: false,
+	nameboxWidth: null,
+	scaleX: 1,
+	scaleY: 1,
+	height: 0,
+	width: 0,
+	label: null,
+	textboxColor: null,
+	overflow: false,
 };
 //#endregion Constants
 //#region data
 const previewCharacter = computed((): ICharacter => {
 	const pose = previewPoses.value[previewPoseIdx.value];
-	if (pose == null) return charDefDefaults as any;
+	if (pose == null) return charDefDefaults;
 	return {
 		...charDefDefaults,
 		characterType: props.character,
@@ -759,7 +770,6 @@ const previewCharacter = computed((): ICharacter => {
 });
 //#endregion data
 //#region init
-(window as any).exp = this;
 if (props.initHeadGroup != null) {
 	headGroup.value = availableHeadGroups.value.find(
 		(group) => group.name === props.initHeadGroup

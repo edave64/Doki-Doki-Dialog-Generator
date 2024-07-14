@@ -43,5 +43,5 @@ export class None extends DdlcBase implements ITextboxRenderer {
 		return TBConstants.TextBoxStyle;
 	}
 
-	public async render(_rx: CanvasRenderingContext2D): Promise<void> {}
+	public async render(): Promise<void> {}
 }

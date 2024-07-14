@@ -18,7 +18,7 @@ export class Choice extends ScalingRenderable<IChoices> {
 
 	private choiceRenderers: TextRenderer[] = [];
 
-	protected renderLocal(ctx: CanvasRenderingContext2D, _hq: boolean): void {
+	protected renderLocal(ctx: CanvasRenderingContext2D): void {
 		const constants = getConstants().Choices;
 		const w = this.obj.width;
 		const x = constants.ChoiceOuterPadding;

@@ -156,7 +156,7 @@ export class RenderContext {
 			flip: false,
 			w: params.image.width,
 			h: params.image.height,
-			composite: 'source-over' as 'source-over',
+			composite: 'source-over' as const,
 			...params,
 		};
 
@@ -165,7 +165,7 @@ export class RenderContext {
 
 		if (filters) {
 			// Safari fallback
-			if (!(('filter' in this.fsCtx) as any)) {
+			if (!('filter' in this.fsCtx) as unknown) {
 				let opacityCombined = 1;
 				for (const filter of filters) {
 					if (filter.type === 'opacity') {
@@ -297,16 +297,13 @@ export class RenderContext {
 	}
 
 	public patternFrom(
-		image: HTMLImageElement | Renderer,
+		image: HTMLImageElement | Renderer | HTMLCanvasElement,
 		repetition: 'repeat' | 'repeat-x' | 'repeat-y' | 'no-repeat' = 'repeat'
 	): CanvasPattern {
 		if (image instanceof Renderer) {
-			image = (image as any).previewCanvas;
+			image = image.previewCanvas;
 		}
-		return this.fsCtx.createPattern(
-			image as any as CanvasImageSource,
-			repetition
-		)!;
+		return this.fsCtx.createPattern(image, repetition)!;
 	}
 
 	public async customTransform(

@@ -8,7 +8,7 @@ import type { ITextBox } from '@/store/object-types/textbox';
 import type { IObject } from '@/store/objects';
 import type { IPanel } from '@/store/panels';
 import type { DeepReadonly } from 'ts-essentials';
-import { Store } from 'vuex';
+import type { Store } from 'vuex';
 import { ScalingRenderable } from './scaling-renderable';
 import { Corrupted } from './textboxRenderers/corrupt';
 import { Custom } from './textboxRenderers/custom';
@@ -89,7 +89,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		}
 	}
 
-	public prepareRender(lq: boolean): void | Promise<unknown> {
+	public override prepareRender(lq: boolean): void | Promise<unknown> {
 		const ret = super.prepareRender(lq);
 		const prepareRet = this.textboxRenderer.prepare();
 		const currentRefVars = this.getRefVars();
@@ -113,7 +113,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		return Promise.all([ret, prepareRet, nameFontLoad, textFontLoad]);
 	}
 
-	protected renderLocal(ctx: CanvasRenderingContext2D, _hq: boolean): void {
+	protected renderLocal(ctx: CanvasRenderingContext2D): void {
 		const styleRenderer = this.textboxRenderer;
 		const w = styleRenderer.width;
 
@@ -217,7 +217,7 @@ export interface ITextboxRenderer {
 
 	readonly allowSkippingLocal: boolean;
 
-	prepare(): void | Promise<any>;
+	prepare(): void | Promise<unknown>;
 	render(rx: CanvasRenderingContext2D): void;
 }
 

@@ -8,11 +8,11 @@ export async function safeAsync(name: string, callback: () => Promise<void>) {
 	try {
 		await callback();
 	} catch (e) {
-		errorReport(e);
+		errorReport(name, e);
 	}
 }
 
-export function errorReport(e: any) {
+export function errorReport(name: string, e: unknown) {
 	console.error('Error in promise', name, e);
 	eventBus.fire(
 		new FailureEvent(
@@ -24,7 +24,7 @@ export function errorReport(e: any) {
 	);
 }
 
-export function normalizeError(e: any): string {
+export function normalizeError(e: unknown): string {
 	if (e instanceof Error) {
 		if (e.stack != null) {
 			const stackLines = e.stack.split('\n');

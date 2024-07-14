@@ -43,11 +43,9 @@ export default defineComponent({
 	},
 	render(): VNode {
 		const wrapingClass = this.noWraping ? 'no-wraping' : 'wraping';
-		const attrs: { [s: string]: any } = {};
 		const flowContainer = h(
 			'div',
 			{
-				...attrs,
 				class: ['d-flow', this.finalDirection, wrapingClass],
 				style: {
 					gap: this.gap,
@@ -79,6 +77,7 @@ export default defineComponent({
 		if (this.$refs.scrollContainer) {
 			(this.$refs.scrollContainer as HTMLDivElement).addEventListener(
 				'wheel',
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				(this as any).verticalScrollRedirect
 			);
 		}

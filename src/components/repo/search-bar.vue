@@ -106,7 +106,7 @@ const lastSend = ref('');
 
 function focus() {
 	const ele = input.value;
-	if (ele) {
+	if (ele != null) {
 		ele.focus();
 	}
 }
@@ -145,7 +145,7 @@ function doUpdate() {
 watch(() => props.modelValue, updateInternalValue, { immediate: true });
 //#region Help Popup
 const showHelp = ref(false);
-function documentClickHandler(event: MouseEvent) {
+function documentClickHandler() {
 	showHelp.value = false;
 }
 

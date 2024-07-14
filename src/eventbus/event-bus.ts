@@ -12,6 +12,7 @@ export default {
 		eventType: IEventClass<T>,
 		handler: (ev: T) => void
 	) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		eventBus.on(eventType.kind, handler as any);
 	},
 
@@ -19,6 +20,7 @@ export default {
 		eventType: IEventClass<T>,
 		handler: (ev: T) => void
 	) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		eventBus.off(eventType.kind, handler as any);
 	},
 };
@@ -29,6 +31,7 @@ interface IEvent {
 
 interface IEventClass<T> {
 	kind: string;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	new (...args: any[]): T;
 }
 

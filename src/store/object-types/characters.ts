@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import getConstants from '@/constants';
 import type {
 	ICreateObjectMutation,

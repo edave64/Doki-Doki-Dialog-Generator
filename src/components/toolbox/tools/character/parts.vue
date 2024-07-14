@@ -177,16 +177,17 @@ const parts = computed((): { [id: string]: DeepReadonly<IPartButtonImage> } => {
 				];
 			for (let poseIdx = 0; poseIdx < currentStyle.poses.length; ++poseIdx) {
 				const pose = currentStyle.poses[poseIdx];
-				ret[poseIdx] = generatePosePreview(pose);
-				(ret[poseIdx] as any).active = poseIdx === props.character.poseId;
+				const preview = generatePosePreview(pose);
+				ret[poseIdx] = preview;
+				preview.active = poseIdx === props.character.poseId;
 			}
 			return ret;
 		case 'style':
 			for (let styleIdx = 0; styleIdx < data.styleGroups.length; ++styleIdx) {
 				const styleGroup = data.styleGroups[styleIdx];
-				ret[styleGroup.id] = generatePosePreview(styleGroup.styles[0].poses[0]);
-				(ret[styleGroup.id] as any).active =
-					styleIdx === props.character.styleGroupId;
+				const preview = generatePosePreview(styleGroup.styles[0].poses[0]);
+				ret[styleGroup.id] = preview;
+				preview.active = styleIdx === props.character.styleGroupId;
 			}
 			return ret;
 
@@ -224,7 +225,7 @@ function updateStyleData(): void {
 
 function generatePosePreview(
 	pose: DeepReadonly<Pose<IAssetSwitch>>
-): DeepReadonly<IPartButtonImage> {
+): IPartButtonImage {
 	const data = charData.value;
 	let images: Array<IPartImage> = [];
 

@@ -27,7 +27,7 @@ export class Repo {
 	private static instance: null | Promise<Repo>;
 	public static setStore: ($store: Store<DeepReadonly<IRootState>>) => void;
 	private static $store: Promise<Store<DeepReadonly<IRootState>>> = new Promise(
-		(resolve, _reject) => {
+		(resolve) => {
 			Repo.setStore = resolve;
 		}
 	);
@@ -85,7 +85,7 @@ export class Repo {
 		localRepo: LoadedRepo | null,
 		private $store: Store<DeepReadonly<IRootState>>
 	) {
-		(window as any).repo = this;
+		window.repo = this;
 		if (!onlineRepo) {
 			onlineRepo = { authors: {}, packs: [] };
 			eventBus.fire(new ShowMessageEvent("Couldn't load remote repository."));
@@ -260,6 +260,7 @@ export class Repo {
 		if (pack.dddg2Path) {
 			pack.dddg2Path = new URL(pack.dddg2Path, baseUrl).toString();
 		}
+		// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 		if (pack.preview) {
 			for (let i = 0; i < pack.preview.length; ++i) {
 				pack.preview[i] = new URL(pack.preview[i], baseUrl).toString();

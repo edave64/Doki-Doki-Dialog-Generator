@@ -15,7 +15,7 @@ export class OldEdge extends Browser {
 		}
 
 		// IE-specific code
-		(window.navigator as any).msSaveBlob(blob, filename);
+		window.navigator.msSaveBlob!(blob, filename);
 		return Promise.resolve(url);
 	}
 }

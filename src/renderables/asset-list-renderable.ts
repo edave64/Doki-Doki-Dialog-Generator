@@ -31,7 +31,7 @@ export abstract class AssetListRenderable<
 		return false;
 	}
 
-	public prepareData(
+	public override prepareData(
 		panel: DeepReadonly<IPanel>,
 		store: Store<DeepReadonly<IRootState>>
 	): void {
@@ -123,11 +123,11 @@ export abstract class AssetListRenderable<
 		return Promise.all(promises);
 	}
 	protected assetList: (IDrawAssetsUnloaded | IDrawAssets)[] = [];
-	protected isAssetListOutdated() {
+	protected isAssetListOutdated(): boolean {
 		return this.assetList.length === 0;
 	}
 
-	protected renderLocal(ctx: CanvasRenderingContext2D, hq: boolean) {
+	protected override renderLocal(ctx: CanvasRenderingContext2D): void {
 		console.log('rerendering local');
 
 		for (const loadedDraw of this.assetList) {
@@ -157,7 +157,7 @@ export abstract class AssetListRenderable<
 export interface IDrawAssetsUnloaded {
 	offset: DeepReadonly<[number, number]>;
 	assets: DeepReadonly<IAssetSwitch[]>;
-	composite?: PoseRenderCommand<any>['composite'];
+	composite?: PoseRenderCommand<unknown>['composite'];
 }
 
 export interface IDrawAssets {
@@ -165,5 +165,5 @@ export interface IDrawAssets {
 	offset: DeepReadonly<[number, number]>;
 	assets: DeepReadonly<IAssetSwitch[]>;
 	loadedAssets: DeepReadonly<IAsset[]>;
-	composite?: PoseRenderCommand<any>['composite'];
+	composite?: PoseRenderCommand<unknown>['composite'];
 }

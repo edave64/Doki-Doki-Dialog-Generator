@@ -99,5 +99,5 @@ export const color = {
 export const transparent = {
 	id: 'buildin.transparent',
 	name: 'Transparent',
-	async render(_rx: RenderContext) {},
+	async render() {},
 };

@@ -62,11 +62,11 @@ export class TextboxStylePack implements ITextboxRenderer {
 		return false;
 	}
 
-	prepare(): void | Promise<any> {
+	prepare(): void | Promise<unknown> {
 		throw new Error('Method not implemented.');
 	}
 
-	render(rx: CanvasRenderingContext2D): void {
+	render(): void {
 		throw new Error('Method not implemented.');
 	}
 }

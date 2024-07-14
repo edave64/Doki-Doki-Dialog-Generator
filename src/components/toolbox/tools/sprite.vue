@@ -55,7 +55,7 @@ function reupload() {
 	missingSpriteUpload.value.click();
 }
 
-async function onMissingSpriteFileUpload(_e: Event) {
+async function onMissingSpriteFileUpload() {
 	const uploadInput = missingSpriteUpload.value;
 	if (!uploadInput.files) return;
 	if (uploadInput.files.length !== 1) {

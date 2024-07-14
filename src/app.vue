@@ -444,8 +444,8 @@ watch(
 //#region initialize
 Repo.setStore(store);
 
-(window as any).store = store;
-(window as any).env = environment;
+window.store = store;
+window.env = environment;
 
 onMounted(async () => {
 	await environment.loadGameMode();

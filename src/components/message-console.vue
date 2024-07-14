@@ -67,7 +67,7 @@ EventBus.subscribe(AssetFailureEvent, (ev) => {
 	}, shortHidingTime);
 });
 
-EventBus.subscribe(CustomAssetFailureEvent, (_ev) => {
+EventBus.subscribe(CustomAssetFailureEvent, () => {
 	messages.value.push(
 		'Failed to load custom asset. Try to download it manually and then upload it.'
 	);

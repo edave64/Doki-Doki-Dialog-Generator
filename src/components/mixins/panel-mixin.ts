@@ -39,6 +39,8 @@ export const PanelMixin: ComponentOptionsMixin = {
 	},
 	watch: {
 		vertical() {
+			// stupid issue with vue mixins
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(this as any).updateVertical();
 		},
 	},
@@ -52,7 +54,7 @@ export function setupPanelMixin(
 
 	function getRoot(): HTMLElement {
 		const rootV = root.value;
-		if (!rootV) return null!;
+		if (rootV == null) return null!;
 		if ((rootV as ComponentPublicInstance).$el) {
 			return (rootV as ComponentPublicInstance).$el;
 		}
@@ -60,7 +62,7 @@ export function setupPanelMixin(
 	}
 
 	function updateVertical() {
-		if (!root.value) return;
+		if (root.value == null) return;
 		getRoot().classList.toggle('vertical', vertical.value);
 	}
 

@@ -102,9 +102,9 @@ const list = computed((): DeepReadonly<Pack[]> => {
 			sortFunc = (a, b) => a.name.localeCompare(b.name);
 		} else if (filtered[0][sort_] instanceof Array) {
 			sortFunc = (a, b) =>
-				(a as any)[sort_]
+				(a[sort_] as string[])
 					.join(', ')
-					.localeCompare((b as any)[sort_].join(', '));
+					.localeCompare((b[sort_] as string[]).join(', '));
 		}
 		if (sortFunc) {
 			if (desc.value) {
@@ -114,7 +114,7 @@ const list = computed((): DeepReadonly<Pack[]> => {
 			filtered.sort(sortFunc);
 		}
 	}
-	return filtered;
+	return filtered as Pack[];
 });
 
 function focus(): void {
@@ -238,13 +238,13 @@ function sortBy(by: keyof IPackWithState) {
 	}
 }
 
-function filterList(list: DeepReadonly<Array<Pack>>, search: string) {
-	if (!search) return [...list];
+function filterList(list: DeepReadonly<Array<Pack>>, search: string): IPack[] {
+	if (!search) return [...(list as Pack[])];
 	return run(
 		search,
 		props.repo ? props.repo!.getAuthors() : {},
-		list as any
-	) as Pack[];
+		list as Pack[]
+	);
 }
 
 function translatePackState(state: DeepReadonly<Pack>) {

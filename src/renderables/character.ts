@@ -47,7 +47,7 @@ export class Character extends AssetListRenderable<ICharacter> {
 		const pose = getPose(this.data, this.obj) as Pose<IAssetSwitch>;
 		const currentHeads = getHeads(this.data, this.obj);
 		const drawAssetsNew: Array<IDrawAssetsUnloaded | IDrawAssets> = [];
-		const oldAssets = this.assetList || [];
+		const oldAssets = this.assetList ?? [];
 
 		for (const renderCommand of pose.renderCommands) {
 			let newAssets: IDrawAssetsUnloaded['assets'] | null = null;

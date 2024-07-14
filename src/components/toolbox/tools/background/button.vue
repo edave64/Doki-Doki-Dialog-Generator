@@ -120,7 +120,7 @@ function reuploadingBackground() {
 	const missingSpriteUpload_ = missingBackgroundUpload.value;
 	missingSpriteUpload_.click();
 }
-async function backgroundReupload(_e: Event) {
+async function backgroundReupload() {
 	const uploadInput = missingBackgroundUpload.value;
 	const spriteName = missing.value;
 	if (!uploadInput.files) return;

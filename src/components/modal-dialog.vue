@@ -53,7 +53,7 @@ import {
 	ref,
 } from 'vue';
 
-const isDialogSupported = (window as any).HTMLDialogElement != null;
+const isDialogSupported = typeof HTMLDialogElement !== 'undefined';
 const props = defineProps({
 	noBaseSize: Boolean,
 	options: {
@@ -67,7 +67,7 @@ const emit = defineEmits(['leave', 'option']);
 function open() {
 	if (isDialogSupported) {
 		const ele = dialog.value;
-		if (ele && !ele.open) {
+		if (ele != null && !ele.open) {
 			ele.showModal();
 		}
 	}
@@ -76,7 +76,7 @@ function open() {
 function close() {
 	if (isDialogSupported) {
 		const ele = dialog.value;
-		if (ele && ele.open) {
+		if (ele != null && ele.open) {
 			ele.close();
 		}
 		emit('leave');
@@ -85,7 +85,7 @@ function close() {
 }
 function clickSomewhere(e: MouseEvent) {
 	const ele = dialog.value;
-	if (ele && ele.open) {
+	if (ele != null && ele.open) {
 		if (e.target === ele) {
 			close();
 			e.preventDefault();

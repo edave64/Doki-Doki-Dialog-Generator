@@ -131,7 +131,7 @@ function openBackgroundFolder() {
 }
 //#region Uploads
 const upload = ref(null! as HTMLInputElement);
-function onFileUpload(_e: Event) {
+function onFileUpload() {
 	const uploadInput = upload.value;
 	if (!uploadInput.files) return;
 	for (const file of uploadInput.files) {

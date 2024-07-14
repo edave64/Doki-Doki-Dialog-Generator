@@ -34,7 +34,7 @@ export function paint(ctx: CanvasRenderingContext2D, center: DOMPointReadOnly) {
 
 		ctx.translate(dragData.lastPos.x, dragData.lastPos.y);
 		ctx.scale(pixelRatio, pixelRatio);
-		drawGrabby(ctx, dragData.grabby, new DOMPointReadOnly());
+		drawGrabby(ctx, dragData.grabby as Grabby, new DOMPointReadOnly());
 	} else {
 		const constants = getConstants();
 		ctx.translate(offsetCenter.x, offsetCenter.y);
@@ -50,7 +50,7 @@ export function paint(ctx: CanvasRenderingContext2D, center: DOMPointReadOnly) {
 			if (!grabby.pos) {
 				grabby.pos = getRadialPos(rotationOneSixth * (i + 1));
 			}
-			drawGrabby(ctx, grabby, grabby.pos!);
+			drawGrabby(ctx, grabby as Grabby, grabby.pos!);
 		}
 	}
 	ctx.restore();
@@ -73,7 +73,7 @@ export function paint(ctx: CanvasRenderingContext2D, center: DOMPointReadOnly) {
 
 const tau = 2 * Math.PI;
 
-const grabbies: Grabby[] = [
+const grabbies = [
 	{
 		icon: rotate,
 		iconDark: rotateDark,
@@ -85,7 +85,7 @@ const grabbies: Grabby[] = [
 				pointsToVector(center, lastPos!)
 			);
 			const constants = getConstants().Base;
-			let normAngle = mod(initialDragAngle - angle, tau);
+			const normAngle = mod(initialDragAngle - angle, tau);
 
 			ctx.beginPath();
 			ctx.moveTo(center.x, center.y);
@@ -106,7 +106,7 @@ const grabbies: Grabby[] = [
 			ctx.fill();
 			ctx.globalCompositeOperation = 'source-over';
 		},
-		onStartMove(store: RStore, obj: IObject, dragData: IRotationDragData) {
+		onStartMove(_store: RStore, obj: IObject, dragData: IRotationDragData) {
 			dragData.initalObjRotation = obj.rotation;
 			const { angle } = vectorToAngleAndDistance(
 				pointsToVector(dragData.center, dragData.lastPos)
@@ -139,7 +139,7 @@ const grabbies: Grabby[] = [
 				rotation,
 			} as ISetSpriteRotationMutation);
 		},
-	},
+	} as Grabby<IRotationDragData>,
 	{
 		icon: scale,
 		iconDark: scaleDark,
@@ -147,7 +147,7 @@ const grabbies: Grabby[] = [
 			ctx: CanvasRenderingContext2D,
 			{ renderObj, originalObjTransform }: IScaleDragData
 		) {
-			if (!originalObjTransform) return;
+			if (originalObjTransform == null) return;
 			const currentTransform = renderObj.preparedTransform;
 			try {
 				renderObj.preparedTransform = originalObjTransform;
@@ -236,7 +236,7 @@ const grabbies: Grabby[] = [
 				scaleY,
 			} as ISetObjectScaleMutation);
 		},
-	},
+	} as Grabby<IScaleDragData>,
 ];
 
 let dragData: IDragData | null = null;
@@ -255,7 +255,7 @@ export function onDown(pos: DOMPointReadOnly) {
 		dragData = {
 			lastPos: pos,
 			started: false,
-			grabby: grabbyHit,
+			grabby: grabbyHit as Grabby,
 			center: null!,
 			renderObj: null!,
 		};
@@ -272,7 +272,7 @@ export function onMove(store: RStore, pos: DOMPointReadOnly, shift: boolean) {
 	if (!dragData.started) {
 		dragData.started = true;
 		const sceneRenderer = getMainSceneRenderer(store);
-		const renderObj = sceneRenderer?.getLastRenderObject(obj.id)!;
+		const renderObj = sceneRenderer!.getLastRenderObject(obj.id)!;
 		const linkedTransform =
 			sceneRenderer?.getLastRenderObject(obj.linkedTo!)?.preparedTransform ??
 			new DOMMatrixReadOnly();
@@ -301,7 +301,7 @@ for (const grabby of grabbies) {
 		(async (grabby: Grabby) => {
 			grabbyIcons.set(grabby.icon, await getAssetByUrl(grabby.icon));
 			grabbyIcons.set(grabby.iconDark, await getAssetByUrl(grabby.iconDark));
-		}).bind(this, grabby)
+		}).bind(this, grabby as Grabby)
 	);
 }
 
@@ -341,12 +341,12 @@ function drawGrabby(
 	ctx.restore();
 }
 
-interface Grabby {
+interface Grabby<T extends IDragData = IDragData> {
 	icon: string;
 	iconDark: string;
-	onStartMove: (store: RStore, obj: IObject, dragData: any) => void;
-	onMove: (store: RStore, obj: IObject, shift: boolean, dragData: any) => void;
-	paint: (ctx: CanvasRenderingContext2D, dragData: any) => void;
+	onStartMove: (store: RStore, obj: IObject, dragData: T) => void;
+	onMove: (store: RStore, obj: IObject, shift: boolean, dragData: T) => void;
+	paint: (ctx: CanvasRenderingContext2D, dragData: T) => void;
 	pos?: DOMPointReadOnly;
 	lastDrawPos?: DOMPointReadOnly;
 }
@@ -392,7 +392,7 @@ interface IDragData {
 	lastPos: DOMPointReadOnly;
 	center: DOMPointReadOnly;
 	started: boolean;
-	grabby: Grabby;
+	grabby: Grabby<IDragData>;
 	renderObj: Renderable<IObject>;
 }
 

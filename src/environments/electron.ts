@@ -34,7 +34,7 @@ export class Electron implements IEnvironment {
 	}
 
 	private _gameMode: 'ddlc' | 'ddlc_plus' | null = null;
-	private readonly electron = window as any as IElectronWindow;
+	private readonly electron = window as unknown as IElectronWindow;
 
 	private $store: Store<DeepReadonly<IRootState>> | null = null;
 	private bgInvalidation: number | null = null;
@@ -50,7 +50,7 @@ export class Electron implements IEnvironment {
 	>;
 
 	constructor() {
-		this.loadingContentPacksAllowed = new Promise((resolve, _reject) => {
+		this.loadingContentPacksAllowed = new Promise((resolve) => {
 			this.loadContentPacks = () => resolve();
 		});
 
@@ -142,7 +142,7 @@ export class Electron implements IEnvironment {
 		this.electron.ipcRenderer.onConversation(
 			'resolvable-error',
 			(message: string, actions: string[]) => {
-				return new Promise((resolve, _reject) => {
+				return new Promise((resolve) => {
 					eventBus.fire(
 						new ResolvableErrorEvent(
 							message,
@@ -202,7 +202,7 @@ export class Electron implements IEnvironment {
 		this.electron.ipcRenderer.send('open-folder', folder);
 	}
 
-	public onPanelChange(_handler: (panel: string) => void): void {}
+	public onPanelChange(): void {}
 
 	public readonly supports: EnvCapabilities = {
 		autoLoading: true,
@@ -302,7 +302,7 @@ export class Electron implements IEnvironment {
 						reject();
 						return;
 					}
-					const buffer = await (blob as any).arrayBuffer();
+					const buffer = await blob.arrayBuffer();
 					await this.electron.ipcRenderer.sendConvo(
 						'save-file',
 						filename,
@@ -388,11 +388,12 @@ interface IElectronWindow {
 }
 
 interface IpcRenderer {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	on(channel: string, listener: (...args: any[]) => void): void;
-
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	onConversation(channel: string, listener: (...args: any[]) => void): void;
-
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	send(channel: string, ...args: any[]): void;
-
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	sendConvo<T>(channel: string, ...args: any[]): Promise<T>;
 }
