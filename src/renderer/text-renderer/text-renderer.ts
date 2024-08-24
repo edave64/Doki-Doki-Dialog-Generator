@@ -330,24 +330,33 @@ export class TextRenderer {
 		// Joins blocks of text on the same line with the same alignment.
 		// Also includes the automatic line break logic.
 		const layoutParts: LayoutPart[] = [];
-		const newLayoutGroup = (): LayoutGroup => ({
-			type: 'group',
-			renderParts: [],
-			height: 0,
-			width: 0,
-		});
-		let currentLayoutGroup = newLayoutGroup();
-		let remainingLineWidth = w;
-		let breakablePosition = -1;
-		layoutParts.push(currentLayoutGroup);
+		let currentLayoutGroup: LayoutGroup = null!;
+		let remainingLineWidth: number = 0;
+		let breakablePosition: number = 0;
+
+		const startNewLayoutGroup = (): void => {
+			currentLayoutGroup = {
+				type: 'group',
+				renderParts: [],
+				height: 0,
+				width: 0,
+			};
+			remainingLineWidth = w;
+			breakablePosition = -1;
+			layoutParts.push(currentLayoutGroup);
+		};
+		startNewLayoutGroup();
 
 		for (const item of renderParts) {
 			if (item.type === 'newline' || item.type === 'alignment') {
 				layoutParts.push(item);
-				remainingLineWidth = w;
-				currentLayoutGroup = newLayoutGroup();
-				breakablePosition = -1;
-				layoutParts.push(currentLayoutGroup);
+				if (item.type === 'alignment' && automaticLineBreak) {
+					const lineWidth = remainingLineWidth;
+					startNewLayoutGroup();
+					remainingLineWidth = lineWidth;
+				} else {
+					startNewLayoutGroup();
+				}
 			} else {
 				if (remainingLineWidth < item.width && automaticLineBreak) {
 					const newLine: INewlineItem = {
@@ -359,10 +368,7 @@ export class TextRenderer {
 					};
 					if (item.character === ' ') {
 						layoutParts.push(newLine);
-						currentLayoutGroup = newLayoutGroup();
-						remainingLineWidth = w;
-						breakablePosition = -1;
-						layoutParts.push(currentLayoutGroup);
+						startNewLayoutGroup();
 						// Spaces that overflow the line are skipped.
 						continue;
 					} else if (breakablePosition !== -1) {
@@ -372,13 +378,23 @@ export class TextRenderer {
 							.splice(breakablePosition)
 							.slice(1);
 						const wordWidth = wordParts.reduce((a, b) => a + b.width, 0);
+						const wordHeight = wordParts.reduce(
+							(a, b) => (a > b.height ? a : b.height),
+							0
+						);
 						currentLayoutGroup.width -= wordWidth;
+						if (currentLayoutGroup.height === wordHeight) {
+							currentLayoutGroup.height = currentLayoutGroup.renderParts.reduce(
+								(a, b) => (a > b.height ? a : b.height),
+								0
+							);
+						}
 						layoutParts.push(newLine);
-						currentLayoutGroup = newLayoutGroup();
+						startNewLayoutGroup();
 						currentLayoutGroup.renderParts = wordParts;
-						remainingLineWidth = w - wordWidth;
-						breakablePosition = -1;
-						layoutParts.push(currentLayoutGroup);
+						currentLayoutGroup.width = wordWidth;
+						currentLayoutGroup.height = wordHeight;
+						remainingLineWidth -= wordWidth;
 					}
 				} else {
 					if (item.character === ' ') {
