@@ -103,6 +103,12 @@
 					Halogen (MC)
 				</option>
 			</select>
+			<select v-model="selectedAlignment" class="style-button">
+				<option value>Alignment</option>
+				<option value="left" style="text-align: left">Left</option>
+				<option value="right" style="text-align: right">Right</option>
+				<option value="center" style="text-align: center">Center</option>
+			</select>
 			<button @click="selectColor('text')" class="style-button">
 				Text color
 			</button>
@@ -139,6 +145,7 @@ const textArea = ref(null! as HTMLTextAreaElement);
 const colorSelector = ref('' as '' | 'text' | 'outline');
 const selectedFont = ref('');
 const selectedColor = ref('#000000');
+const selectedAlignment = ref('');
 const rememberedStart = ref(0);
 const rememberedEnd = ref(0);
 const error = ref('');
@@ -162,6 +169,15 @@ watch(
 		if (selectedFont.value === '') return;
 		insertCommand('font', selectedFont.value);
 		selectedFont.value = '';
+	}
+);
+
+watch(
+	() => selectedAlignment.value,
+	() => {
+		if (selectedAlignment.value === '') return;
+		insertText(`{align=${selectedAlignment.value}}`);
+		selectedAlignment.value = '';
 	}
 );
 
