@@ -132,6 +132,13 @@
 				</td>
 			</tr>
 		</table>
+
+		<template v-if="savesAllowed">
+			<button @click="saveDefaultTemplate">Save as template</button>
+			<button @click="clearDefaultTemplate" v-if="hasTemplate">
+				Clear template
+			</button>
+		</template>
 	</div>
 </template>
 
@@ -292,6 +299,17 @@ function openDownloadFolder() {
 	environment.openFolder('downloads');
 }
 //#endregion Download folder
+//#region Template
+const hasTemplate = computed(() => environment.state.hasTemplate);
+
+function saveDefaultTemplate() {
+	environment.saveDefaultTemplate();
+}
+
+function clearDefaultTemplate() {
+	environment.clearDefaultTemplate();
+}
+//#endregion Template
 </script>
 
 <style lang="scss" scoped>

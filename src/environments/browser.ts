@@ -21,6 +21,7 @@ export class Browser implements IEnvironment {
 		looseTextParsing: true,
 		autoAdd: [],
 		downloadLocation: 'Default download folder',
+		hasTemplate: false,
 	});
 	public readonly supports: DeepReadonly<EnvCapabilities>;
 
@@ -264,6 +265,34 @@ export class Browser implements IEnvironment {
 		await IndexedDBHandler.saveSettings(settings);
 	}
 
+	public async loadDefaultTemplate(): Promise<boolean> {
+		await this.loading;
+		await this.creatingDB;
+		if (!this.isSavingEnabled.value) return false;
+		const data = await IndexedDBHandler.loadTemplate();
+		if (data == null) return false;
+		this.state.hasTemplate = true;
+		await this.$store?.dispatch('loadSave', data);
+		return true;
+	}
+
+	public async saveDefaultTemplate(): Promise<void> {
+		await this.loading;
+		await this.creatingDB;
+		if (!this.isSavingEnabled.value) return;
+		const data: string = await this.$store?.dispatch('getSave', true);
+		IndexedDBHandler.saveTemplate(data);
+		this.state.hasTemplate = true;
+	}
+
+	public async clearDefaultTemplate(): Promise<void> {
+		await this.loading;
+		await this.creatingDB;
+		if (!this.isSavingEnabled.value) return;
+		await IndexedDBHandler.saveTemplate(null);
+		this.state.hasTemplate = false;
+	}
+
 	public async isInitialized(): Promise<void> {
 		await this.loading;
 		await this.creatingDB;
@@ -430,6 +459,22 @@ const IndexedDBHandler = {
 	saveGameMode(mode: IEnvironment['gameMode']): Promise<void> {
 		return this.objectStorePromise('readwrite', async (store) => {
 			await this.reqPromise(store.put(mode, 'gameMode'));
+		});
+	},
+
+	saveTemplate(data: string | null): Promise<void> {
+		return this.objectStorePromise('readwrite', async (store) => {
+			if (data == null) {
+				await this.reqPromise(store.delete('template'));
+			} else {
+				await this.reqPromise(store.put(data, 'template'));
+			}
+		});
+	},
+
+	loadTemplate(): Promise<string> {
+		return this.objectStorePromise('readonly', async (store) => {
+			return await this.reqPromise<string>(store.get('template'));
 		});
 	},
 

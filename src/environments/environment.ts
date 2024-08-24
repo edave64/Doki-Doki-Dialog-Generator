@@ -14,6 +14,7 @@ export interface EnvState {
 	looseTextParsing: boolean;
 	autoAdd: string[];
 	downloadLocation: string;
+	hasTemplate: boolean;
 }
 
 export interface EnvCapabilities {
@@ -67,6 +68,10 @@ export interface IEnvironment {
 	localRepoUninstall(id: string): Promise<void>;
 	autoLoadAdd(id: string): Promise<void>;
 	autoLoadRemove(id: string): Promise<void>;
+
+	loadDefaultTemplate(): Promise<boolean>;
+	saveDefaultTemplate(): Promise<void>;
+	clearDefaultTemplate(): Promise<void>;
 
 	loadContentPacks(): void;
 

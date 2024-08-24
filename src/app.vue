@@ -476,24 +476,28 @@ onMounted(async () => {
 			`${packsUrl}buildin.extra.amy.json`,
 		]);
 
-		await environment.loadContentPacks();
+		if (!(await environment.loadDefaultTemplate())) {
+			await environment.loadContentPacks();
 
-		const panelId = await store.dispatch('panels/createPanel');
-		if (Object.keys(store.state.panels.panels[panelId].objects).length === 0) {
-			await store.dispatch('panels/createTextBox', {
-				panelId,
-				text:
-					'Hi! Click here to edit this textbox! ' +
-					`${store.state.ui.vertical ? 'To the right' : 'At the bottom'}` +
-					' you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more! Use the camera icon to download the image.',
-			} as ICreateTextBoxAction);
+			const panelId = await store.dispatch('panels/createPanel');
+			if (
+				Object.keys(store.state.panels.panels[panelId].objects).length === 0
+			) {
+				await store.dispatch('panels/createTextBox', {
+					panelId,
+					text:
+						'Hi! Click here to edit this textbox! ' +
+						`${store.state.ui.vertical ? 'To the right' : 'At the bottom'}` +
+						' you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more! Use the camera icon to download the image.',
+				} as ICreateTextBoxAction);
+			}
+			store.commit('panels/setCurrentBackground', {
+				current: 'dddg.buildin.backgrounds:ddlc.clubroom',
+				panelId: store.state.panels.currentPanel,
+			} as ISetCurrentMutation);
+
+			store.commit('ui/setNsfw', settings.nsfw ?? false);
 		}
-		store.commit('panels/setCurrentBackground', {
-			current: 'dddg.buildin.backgrounds:ddlc.clubroom',
-			panelId: store.state.panels.currentPanel,
-		} as ISetCurrentMutation);
-
-		store.commit('ui/setNsfw', settings.nsfw ?? false);
 	});
 });
 //#endregion Initialize
