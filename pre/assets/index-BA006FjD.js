@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./single-box-V1w05XVo.js","./single-box-CmTb7p6M.css","./index-D2XTn3ml.js","./index-C9Z0hIQS.css"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./single-box-Cb44umBO.js","./single-box-CmTb7p6M.css","./index-BY9DQvqY.js","./index-C9Z0hIQS.css"])))=>i.map(i=>d[i]);
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -8496,7 +8496,8 @@ class Browser {
     __publicField$o(this, "state", reactive({
       looseTextParsing: true,
       autoAdd: [],
-      downloadLocation: "Default download folder"
+      downloadLocation: "Default download folder",
+      hasTemplate: false
     }));
     __publicField$o(this, "supports");
     __publicField$o(this, "_gameMode", null);
@@ -8707,6 +8708,39 @@ class Browser {
       yield IndexedDBHandler.saveSettings(settings);
     });
   }
+  loadDefaultTemplate() {
+    return __async$K(this, null, function* () {
+      var _a2;
+      yield this.loading;
+      yield this.creatingDB;
+      if (!this.isSavingEnabled.value) return false;
+      const data = yield IndexedDBHandler.loadTemplate();
+      if (data == null) return false;
+      this.state.hasTemplate = true;
+      yield (_a2 = this.$store) == null ? void 0 : _a2.dispatch("loadSave", data);
+      return true;
+    });
+  }
+  saveDefaultTemplate() {
+    return __async$K(this, null, function* () {
+      var _a2;
+      yield this.loading;
+      yield this.creatingDB;
+      if (!this.isSavingEnabled.value) return;
+      const data = yield (_a2 = this.$store) == null ? void 0 : _a2.dispatch("getSave", true);
+      IndexedDBHandler.saveTemplate(data);
+      this.state.hasTemplate = true;
+    });
+  }
+  clearDefaultTemplate() {
+    return __async$K(this, null, function* () {
+      yield this.loading;
+      yield this.creatingDB;
+      if (!this.isSavingEnabled.value) return;
+      yield IndexedDBHandler.saveTemplate(null);
+      this.state.hasTemplate = false;
+    });
+  }
   isInitialized() {
     return __async$K(this, null, function* () {
       yield this.loading;
@@ -8845,6 +8879,20 @@ const IndexedDBHandler = {
   saveGameMode(mode) {
     return this.objectStorePromise("readwrite", (store2) => __async$K(this, null, function* () {
       yield this.reqPromise(store2.put(mode, "gameMode"));
+    }));
+  },
+  saveTemplate(data) {
+    return this.objectStorePromise("readwrite", (store2) => __async$K(this, null, function* () {
+      if (data == null) {
+        yield this.reqPromise(store2.delete("template"));
+      } else {
+        yield this.reqPromise(store2.put(data, "template"));
+      }
+    }));
+  },
+  loadTemplate() {
+    return this.objectStorePromise("readonly", (store2) => __async$K(this, null, function* () {
+      return yield this.reqPromise(store2.get("template"));
     }));
   },
   saveSettings(settings) {
@@ -16657,19 +16705,22 @@ class TextBox extends ScalingRenderable {
     }
     styleRenderer.render(ctx);
     if (this.obj.talkingObjId !== null) {
-      this.renderName(ctx, styleRenderer.nameboxOffsetX, 0);
+      this.renderName(ctx);
     }
     this.renderText(ctx, 0, 0, w);
   }
-  renderName(rx, x, y) {
+  renderName(rx) {
     const styleRenderer = this.textboxRenderer;
     const w = styleRenderer.nameboxWidth;
-    this.nbTextRenderer.fixAlignment(
+    const x = styleRenderer.nameboxOffsetX;
+    const padding = styleRenderer.nameboxOffsetX / 2;
+    console.log("rendering name", rx.getTransform());
+    this.nbTextRenderer.applyLayout(
       "center",
-      x,
-      x + w,
-      y + styleRenderer.nameboxOffsetY,
-      0
+      x + padding,
+      styleRenderer.nameboxOffsetY,
+      w - padding * 2,
+      false
     );
     this.nbTextRenderer.render(rx);
   }
@@ -23582,7 +23633,7 @@ var __async$7 = (__this, __arguments, generator) => {
     step((generator = generator.apply(__this, __arguments)).next());
   });
 };
-const _withScopeId$7 = (n) => (pushScopeId("data-v-38f714c1"), n = n(), popScopeId(), n);
+const _withScopeId$7 = (n) => (pushScopeId("data-v-abc89c3e"), n = n(), popScopeId(), n);
 const _hoisted_1$b = /* @__PURE__ */ _withScopeId$7(() => /* @__PURE__ */ createBaseVNode("span", { class: "icon material-icons" }, "edit", -1));
 const _hoisted_2$b = /* @__PURE__ */ _withScopeId$7(() => /* @__PURE__ */ createBaseVNode("p", { class: "modal-text" }, "Enter the new name", -1));
 const _hoisted_3$7 = { class: "modal-text" };
@@ -23724,7 +23775,7 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
       "enlargeWhenTalking",
       "panels/setEnlargeWhenTalking"
     );
-    const canOverflow = computed(() => {
+    computed(() => {
       return "overflow" in props.object;
     });
     const allowZoom = computed(() => {
@@ -23744,7 +23795,7 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
       return ret;
     });
     const easterEgg = location.search.includes("alex");
-    const overflow = computed({
+    computed({
       get() {
         var _a2;
         return (_a2 = props.object.overflow) != null ? _a2 : false;
@@ -23973,13 +24024,6 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
           onLeave: _cache[7] || (_cache[7] = ($event) => imageOptionsOpen.value = false)
         }, null, 8, ["panel-id", "id"])) : __props.showAltPanel ? renderSlot(_ctx.$slots, "alt-panel", { key: 3 }, void 0, true) : (openBlock(), createElementBlock(Fragment, { key: 4 }, [
           renderSlot(_ctx.$slots, "default", {}, void 0, true),
-          canOverflow.value ? (openBlock(), createBlock(_sfc_main$k, {
-            key: 0,
-            modelValue: overflow.value,
-            "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => overflow.value = $event),
-            label: "Overflow",
-            title: "Allow the text to move outside of the textbox"
-          }, null, 8, ["modelValue"])) : createCommentVNode("", true),
           createVNode(PositionAndSize, { obj: __props.object }, null, 8, ["obj"]),
           createVNode(Layers, { object: __props.object }, null, 8, ["object"]),
           createVNode(DFieldset, {
@@ -23989,15 +24033,15 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
             default: withCtx(() => [
               createVNode(_sfc_main$k, {
                 modelValue: unref(flip),
-                "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => isRef(flip) ? flip.value = $event : null),
+                "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => isRef(flip) ? flip.value = $event : null),
                 label: "Flip?"
               }, null, 8, ["modelValue"]),
               _hoisted_4$7,
               withDirectives(createBaseVNode("select", {
                 id: "linked_to",
                 class: "v-w100",
-                "onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => transformLink.value = $event),
-                onKeydown: _cache[11] || (_cache[11] = withModifiers(() => {
+                "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => transformLink.value = $event),
+                onKeydown: _cache[10] || (_cache[10] = withModifiers(() => {
                 }, ["stop"]))
               }, [
                 _hoisted_5$6,
@@ -24018,8 +24062,8 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                       id: "rotation",
                       class: "smol v-w100",
                       type: "number",
-                      "onUpdate:modelValue": _cache[12] || (_cache[12] = ($event) => isRef(rotation) ? rotation.value = $event : null),
-                      onKeydown: _cache[13] || (_cache[13] = withModifiers(() => {
+                      "onUpdate:modelValue": _cache[11] || (_cache[11] = ($event) => isRef(rotation) ? rotation.value = $event : null),
+                      onKeydown: _cache[12] || (_cache[12] = withModifiers(() => {
                       }, ["stop"]))
                     }, null, 544), [
                       [vModelText, unref(rotation)]
@@ -24038,8 +24082,8 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                         class: "smol v-w100",
                         step: "1",
                         min: "0",
-                        "onUpdate:modelValue": _cache[14] || (_cache[14] = ($event) => scaleX.value = $event),
-                        onKeydown: _cache[15] || (_cache[15] = withModifiers(() => {
+                        "onUpdate:modelValue": _cache[13] || (_cache[13] = ($event) => scaleX.value = $event),
+                        onKeydown: _cache[14] || (_cache[14] = withModifiers(() => {
                         }, ["stop"]))
                       }, null, 544), [
                         [vModelText, scaleX.value]
@@ -24055,8 +24099,8 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                         class: "smol v-w100",
                         step: "1",
                         min: "0",
-                        "onUpdate:modelValue": _cache[16] || (_cache[16] = ($event) => scaleY.value = $event),
-                        onKeydown: _cache[17] || (_cache[17] = withModifiers(() => {
+                        "onUpdate:modelValue": _cache[15] || (_cache[15] = ($event) => scaleY.value = $event),
+                        onKeydown: _cache[16] || (_cache[16] = withModifiers(() => {
                         }, ["stop"]))
                       }, null, 544), [
                         [vModelText, scaleY.value]
@@ -24072,8 +24116,8 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                       type: "number",
                       class: "smol v-w100",
                       step: "1",
-                      "onUpdate:modelValue": _cache[18] || (_cache[18] = ($event) => skewX.value = $event),
-                      onKeydown: _cache[19] || (_cache[19] = withModifiers(() => {
+                      "onUpdate:modelValue": _cache[17] || (_cache[17] = ($event) => skewX.value = $event),
+                      onKeydown: _cache[18] || (_cache[18] = withModifiers(() => {
                       }, ["stop"]))
                     }, null, 544), [
                       [vModelText, skewX.value]
@@ -24088,8 +24132,8 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                       type: "number",
                       class: "smol v-w100",
                       step: "1",
-                      "onUpdate:modelValue": _cache[20] || (_cache[20] = ($event) => skewY.value = $event),
-                      onKeydown: _cache[21] || (_cache[21] = withModifiers(() => {
+                      "onUpdate:modelValue": _cache[19] || (_cache[19] = ($event) => skewY.value = $event),
+                      onKeydown: _cache[20] || (_cache[20] = withModifiers(() => {
                       }, ["stop"]))
                     }, null, 544), [
                       [vModelText, skewY.value]
@@ -24100,7 +24144,7 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                   !unref(easterEgg) ? (openBlock(), createElementBlock("td", _hoisted_14$4, [
                     createVNode(_sfc_main$k, {
                       modelValue: preserveRatio.value,
-                      "onUpdate:modelValue": _cache[22] || (_cache[22] = ($event) => preserveRatio.value = $event),
+                      "onUpdate:modelValue": _cache[21] || (_cache[21] = ($event) => preserveRatio.value = $event),
                       label: "Lock scale ratio?"
                     }, null, 8, ["modelValue"])
                   ])) : createCommentVNode("", true)
@@ -24112,7 +24156,7 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
           }),
           renderSlot(_ctx.$slots, "options", {}, void 0, true),
           hasLabel.value ? (openBlock(), createBlock(DFieldset, {
-            key: 1,
+            key: 0,
             title: "Textbox settings"
           }, {
             default: withCtx(() => {
@@ -24122,12 +24166,12 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                   key: 0,
                   label: "Enlarge when talking",
                   modelValue: unref(enlargeWhenTalking),
-                  "onUpdate:modelValue": _cache[23] || (_cache[23] = ($event) => isRef(enlargeWhenTalking) ? enlargeWhenTalking.value = $event : null)
+                  "onUpdate:modelValue": _cache[22] || (_cache[22] = ($event) => isRef(enlargeWhenTalking) ? enlargeWhenTalking.value = $event : null)
                 }, null, 8, ["modelValue"])) : createCommentVNode("", true),
                 createVNode(_sfc_main$k, {
                   label: "Own textbox color",
                   modelValue: useCustomTextboxColor.value,
-                  "onUpdate:modelValue": _cache[24] || (_cache[24] = ($event) => useCustomTextboxColor.value = $event)
+                  "onUpdate:modelValue": _cache[23] || (_cache[23] = ($event) => useCustomTextboxColor.value = $event)
                 }, null, 8, ["modelValue"]),
                 createBaseVNode("table", null, [
                   useCustomTextboxColor.value ? (openBlock(), createElementBlock("tr", _hoisted_15$3, [
@@ -24148,7 +24192,7 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
                         id: "namebox_width",
                         type: "number",
                         placeholder: defaultNameboxWidth.value + "",
-                        "onUpdate:modelValue": _cache[25] || (_cache[25] = ($event) => nameboxWidth.value = $event)
+                        "onUpdate:modelValue": _cache[24] || (_cache[24] = ($event) => nameboxWidth.value = $event)
                       }, null, 8, _hoisted_18$3), [
                         [
                           vModelText,
@@ -24165,7 +24209,7 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
             _: 1
           })) : createCommentVNode("", true),
           createBaseVNode("button", {
-            onClick: _cache[26] || (_cache[26] = ($event) => imageOptionsOpen.value = true)
+            onClick: _cache[25] || (_cache[25] = ($event) => imageOptionsOpen.value = true)
           }, "Image options"),
           createBaseVNode("button", {
             class: "v-bt0",
@@ -24180,7 +24224,7 @@ const _sfc_main$b = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const ObjectTool = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["__scopeId", "data-v-38f714c1"]]);
+const ObjectTool = /* @__PURE__ */ _export_sfc(_sfc_main$b, [["__scopeId", "data-v-abc89c3e"]]);
 var __async$6 = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -25870,7 +25914,7 @@ var __async$3 = (__this, __arguments, generator) => {
     step((generator = generator.apply(__this, __arguments)).next());
   });
 };
-const _withScopeId$1 = (n) => (pushScopeId("data-v-c5c51928"), n = n(), popScopeId(), n);
+const _withScopeId$1 = (n) => (pushScopeId("data-v-ae0e37ce"), n = n(), popScopeId(), n);
 const _hoisted_1$4 = /* @__PURE__ */ _withScopeId$1(() => /* @__PURE__ */ createBaseVNode("h1", null, "Settings", -1));
 const _hoisted_2$4 = { class: "modal-scroll-area" };
 const _hoisted_3$2 = /* @__PURE__ */ _withScopeId$1(() => /* @__PURE__ */ createBaseVNode("p", null, "Do you want to allow DDDG to save settings on your device?", -1));
@@ -26034,6 +26078,13 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
     function openDownloadFolder() {
       envX.openFolder("downloads");
     }
+    const hasTemplate = computed(() => envX.state.hasTemplate);
+    function saveDefaultTemplate() {
+      envX.saveDefaultTemplate();
+    }
+    function clearDefaultTemplate() {
+      envX.clearDefaultTemplate();
+    }
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
         class: "panel",
@@ -26174,12 +26225,19 @@ const _sfc_main$4 = /* @__PURE__ */ defineComponent({
               createBaseVNode("button", { onClick: openDownloadFolder }, "Open")
             ])
           ])
-        ])) : createCommentVNode("", true)
+        ])) : createCommentVNode("", true),
+        savesAllowed.value ? (openBlock(), createElementBlock(Fragment, { key: 8 }, [
+          createBaseVNode("button", { onClick: saveDefaultTemplate }, "Save as template"),
+          hasTemplate.value ? (openBlock(), createElementBlock("button", {
+            key: 0,
+            onClick: clearDefaultTemplate
+          }, " Clear template ")) : createCommentVNode("", true)
+        ], 64)) : createCommentVNode("", true)
       ], 512);
     };
   }
 });
-const SettingsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["__scopeId", "data-v-c5c51928"]]);
+const SettingsPanel = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["__scopeId", "data-v-ae0e37ce"]]);
 var __async$2 = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -26962,10 +27020,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = /* @__PURE__ */ defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box-V1w05XVo.js"), true ? __vite__mapDeps([0,1]) : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box-Cb44umBO.js"), true ? __vite__mapDeps([0,1]) : void 0, import.meta.url)
     );
     const ExpressionBuilder = /* @__PURE__ */ defineAsyncComponent(
-      () => __vitePreload(() => import("./index-D2XTn3ml.js"), true ? __vite__mapDeps([2,3]) : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index-BY9DQvqY.js"), true ? __vite__mapDeps([2,3]) : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);
@@ -27301,19 +27359,21 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           `${packsUrl}buildin.extra.concept_femc.json`,
           `${packsUrl}buildin.extra.amy.json`
         ]);
-        yield envX.loadContentPacks();
-        const panelId = yield store2.dispatch("panels/createPanel");
-        if (Object.keys(store2.state.panels.panels[panelId].objects).length === 0) {
-          yield store2.dispatch("panels/createTextBox", {
-            panelId,
-            text: `Hi! Click here to edit this textbox! ${store2.state.ui.vertical ? "To the right" : "At the bottom"} you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more! Use the camera icon to download the image.`
+        if (!(yield envX.loadDefaultTemplate())) {
+          yield envX.loadContentPacks();
+          const panelId = yield store2.dispatch("panels/createPanel");
+          if (Object.keys(store2.state.panels.panels[panelId].objects).length === 0) {
+            yield store2.dispatch("panels/createTextBox", {
+              panelId,
+              text: `Hi! Click here to edit this textbox! ${store2.state.ui.vertical ? "To the right" : "At the bottom"} you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more! Use the camera icon to download the image.`
+            });
+          }
+          store2.commit("panels/setCurrentBackground", {
+            current: "dddg.buildin.backgrounds:ddlc.clubroom",
+            panelId: store2.state.panels.currentPanel
           });
+          store2.commit("ui/setNsfw", (_d = settings.nsfw) != null ? _d : false);
         }
-        store2.commit("panels/setCurrentBackground", {
-          current: "dddg.buildin.backgrounds:ddlc.clubroom",
-          panelId: store2.state.panels.currentPanel
-        });
-        store2.commit("ui/setNsfw", (_d = settings.nsfw) != null ? _d : false);
       }));
     }));
     return (_ctx, _cache) => {
