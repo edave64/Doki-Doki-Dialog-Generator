@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./single-box-Cb44umBO.js","./single-box-CmTb7p6M.css","./index-BY9DQvqY.js","./index-C9Z0hIQS.css"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./single-box-A0Q-CGt8.js","./single-box-CmTb7p6M.css","./index-qSW4-bJO.js","./index-C9Z0hIQS.css"])))=>i.map(i=>d[i]);
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -11718,9 +11718,7 @@ const nameboxGradientEndDelta$1 = new HSLAColor(
   0
 );
 const nameboxRounding$1 = 12;
-const nameboxRoundingBuffer$1 = 1.5;
 const textboxRounding$1 = 12;
-const textboxRoundingBuffer$1 = 1.5;
 const nameColorThreshold$1 = 0.6;
 const controlColorDelta$1 = new HSLAColor(
   0.08045977011494243,
@@ -11763,14 +11761,12 @@ const CustomTBConstants$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object
   nameboxGradientEndDelta: nameboxGradientEndDelta$1,
   nameboxGradientMiddleStopPosition: nameboxGradientMiddleStopPosition$1,
   nameboxRounding: nameboxRounding$1,
-  nameboxRoundingBuffer: nameboxRoundingBuffer$1,
   nameboxStrokeDefaultColor: nameboxStrokeDefaultColor$1,
   nameboxTextOutlineDelta: nameboxTextOutlineDelta$2,
   textboxDefaultColor: textboxDefaultColor$1,
   textboxOutlineColorDelta: textboxOutlineColorDelta$1,
   textboxOutlineWidth: textboxOutlineWidth$1,
-  textboxRounding: textboxRounding$1,
-  textboxRoundingBuffer: textboxRoundingBuffer$1
+  textboxRounding: textboxRounding$1
 }, Symbol.toStringTag, { value: "Module" }));
 var __defProp$F = Object.defineProperty;
 var __defProps$m = Object.defineProperties;
@@ -12230,9 +12226,7 @@ const nameboxGradientEndDelta = new HSLAColor(
   0
 );
 const nameboxRounding = 15;
-const nameboxRoundingBuffer = 1.5;
 const textboxRounding = 19;
-const textboxRoundingBuffer = 1.5;
 const nameColorThreshold = 0.6;
 const controlColorDelta = new HSLAColor(
   0.08045977011494243,
@@ -12275,14 +12269,12 @@ const CustomTBConstants = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.d
   nameboxGradientEndDelta,
   nameboxGradientMiddleStopPosition,
   nameboxRounding,
-  nameboxRoundingBuffer,
   nameboxStrokeDefaultColor,
   nameboxTextOutlineDelta,
   textboxDefaultColor,
   textboxOutlineColorDelta,
   textboxOutlineWidth,
-  textboxRounding,
-  textboxRoundingBuffer
+  textboxRounding
 }, Symbol.toStringTag, { value: "Module" }));
 var __defProp$C = Object.defineProperty;
 var __defProps$j = Object.defineProperties;
@@ -15200,23 +15192,31 @@ class TextRenderer {
   applyLayout(defaultAlignment, xStart, yStart, w, automaticLineBreak) {
     const renderParts = this.renderParts;
     const layoutParts = [];
-    const newLayoutGroup = () => ({
-      type: "group",
-      renderParts: [],
-      height: 0,
-      width: 0
-    });
-    let currentLayoutGroup = newLayoutGroup();
-    let remainingLineWidth = w;
-    let breakablePosition = -1;
-    layoutParts.push(currentLayoutGroup);
+    let currentLayoutGroup = null;
+    let remainingLineWidth = 0;
+    let breakablePosition = 0;
+    const startNewLayoutGroup = () => {
+      currentLayoutGroup = {
+        type: "group",
+        renderParts: [],
+        height: 0,
+        width: 0
+      };
+      remainingLineWidth = w;
+      breakablePosition = -1;
+      layoutParts.push(currentLayoutGroup);
+    };
+    startNewLayoutGroup();
     for (const item of renderParts) {
       if (item.type === "newline" || item.type === "alignment") {
         layoutParts.push(item);
-        remainingLineWidth = w;
-        currentLayoutGroup = newLayoutGroup();
-        breakablePosition = -1;
-        layoutParts.push(currentLayoutGroup);
+        if (item.type === "alignment" && automaticLineBreak) {
+          const lineWidth = remainingLineWidth;
+          startNewLayoutGroup();
+          remainingLineWidth = lineWidth;
+        } else {
+          startNewLayoutGroup();
+        }
       } else {
         if (remainingLineWidth < item.width && automaticLineBreak) {
           const newLine = {
@@ -15228,21 +15228,28 @@ class TextRenderer {
           };
           if (item.character === " ") {
             layoutParts.push(newLine);
-            currentLayoutGroup = newLayoutGroup();
-            remainingLineWidth = w;
-            breakablePosition = -1;
-            layoutParts.push(currentLayoutGroup);
+            startNewLayoutGroup();
             continue;
           } else if (breakablePosition !== -1) {
             const wordParts = currentLayoutGroup.renderParts.splice(breakablePosition).slice(1);
             const wordWidth = wordParts.reduce((a, b) => a + b.width, 0);
+            const wordHeight = wordParts.reduce(
+              (a, b) => a > b.height ? a : b.height,
+              0
+            );
             currentLayoutGroup.width -= wordWidth;
+            if (currentLayoutGroup.height === wordHeight) {
+              currentLayoutGroup.height = currentLayoutGroup.renderParts.reduce(
+                (a, b) => a > b.height ? a : b.height,
+                0
+              );
+            }
             layoutParts.push(newLine);
-            currentLayoutGroup = newLayoutGroup();
+            startNewLayoutGroup();
             currentLayoutGroup.renderParts = wordParts;
-            remainingLineWidth = w - wordWidth;
-            breakablePosition = -1;
-            layoutParts.push(currentLayoutGroup);
+            currentLayoutGroup.width = wordWidth;
+            currentLayoutGroup.height = wordHeight;
+            remainingLineWidth -= wordWidth;
           }
         } else {
           if (item.character === " ") {
@@ -15828,12 +15835,12 @@ class Poem extends ScalingRenderable {
     }
     const style = constants.poemTextStyles[this.obj.font];
     const render = new TextRenderer(this.obj.text, style);
-    render.fixAlignment(
+    render.applyLayout(
       "left",
       poemTopMargin + padding,
-      padding,
-      topPadding + padding,
-      this.obj.autoWrap ? this.width - lineWrapPadding : 0
+      padding + topPadding,
+      this.width - lineWrapPadding,
+      this.obj.autoWrap
     );
     render.render(ctx);
   }
@@ -16092,12 +16099,11 @@ class Custom extends DdlcBase {
     return this.obj.width;
   }
   get nameboxWidth() {
+    var _a2;
     if (this.refObject && this.refObject.nameboxWidth !== null) {
       return this.refObject.nameboxWidth;
     }
-    if (this.obj.customNameboxWidth !== null)
-      return this.obj.customNameboxWidth;
-    return NameboxWidth$1;
+    return (_a2 = this.obj.customNameboxWidth) != null ? _a2 : NameboxWidth$1;
   }
   get nameboxHeight() {
     return NameboxHeight$1;
@@ -16162,11 +16168,19 @@ class Custom extends DdlcBase {
   renderBackdrop(rx, y) {
     const customColor = RGBAColor.fromCss(this.customColor);
     const hslColor = customColor.toHSL();
-    const h2 = this.obj.height - textboxRoundingBuffer$1 * 2 - y;
-    const w = this.obj.width - textboxRoundingBuffer$1 * 2;
+    const h2 = this.obj.height - y;
+    const w = this.obj.width;
+    const borderRect = () => roundedRectangle(
+      rx,
+      textboxOutlineWidth$1 / 2,
+      y + textboxOutlineWidth$1 / 2,
+      w - textboxOutlineWidth$1,
+      h2 - textboxOutlineWidth$1,
+      textboxRounding$1
+    );
     ctxScope(rx, () => {
       rx.beginPath();
-      roundedRectangle(rx, 0, y, w, h2, textboxRounding$1);
+      borderRect();
       rx.clip();
       const gradient = rx.createLinearGradient(0, y, 0, h2);
       gradient.addColorStop(0, customColor.toCss());
@@ -16182,7 +16196,7 @@ class Custom extends DdlcBase {
         rx.translate(0, y);
         rx.fillStyle = this.getDotPattern();
         rx.globalCompositeOperation = "source-atop";
-        rx.fillRect(-textboxRoundingBuffer$1, -textboxRoundingBuffer$1, w, h2);
+        rx.fillRect(0, 0, w, h2);
       });
       const glowGradient = rx.createLinearGradient(
         0,
@@ -16211,13 +16225,12 @@ class Custom extends DdlcBase {
     rx.strokeStyle = outlineColor;
     rx.lineWidth = textboxOutlineWidth$1;
     rx.beginPath();
-    roundedRectangle(rx, 0, y, w, h2, textboxRounding$1);
+    borderRect();
     rx.stroke();
   }
   render(rx) {
-    const h2 = this.obj.height - textboxRoundingBuffer$1 * 2;
-    const w = this.obj.width - textboxRoundingBuffer$1 * 2;
-    rx.translate(textboxRoundingBuffer$1, textboxRoundingBuffer$1);
+    const h2 = this.obj.height;
+    const w = this.obj.width;
     if (this.obj.talkingObjId !== null) {
       this.renderNamebox(rx, this.nameboxOffsetX, 0);
     }
@@ -16235,6 +16248,7 @@ class Custom extends DdlcBase {
   getDotPattern(constants = CustomTBConstants$1) {
     if (this._dotPattern && this._lastColor === this.customColor)
       return this._dotPattern;
+    this._lastColor = this.customColor;
     const { dotPatternSize: dotPatternSize2, dotColorDelta: dotColorDelta2, dotRadius: dotRadius2 } = constants;
     const hslColor = RGBAColor.fromCss(this.customColor).toHSL();
     const dotPattern = makeCanvas();
@@ -16479,12 +16493,20 @@ class CustomPlus extends DdlcPlusBase {
     });
   }
   renderBackdrop(rx, y) {
-    const h2 = this.obj.height - textboxRoundingBuffer * 2 - y;
-    const w = this.obj.width - textboxRoundingBuffer * 2;
+    const h2 = this.obj.height - y;
+    const w = this.obj.width;
     const hslColor = RGBAColor.fromCss(this.customColor).toHSL();
+    const borderRect = () => roundedRectangle(
+      rx,
+      textboxOutlineWidth / 2,
+      y + textboxOutlineWidth / 2,
+      w - textboxOutlineWidth,
+      h2 - textboxOutlineWidth,
+      textboxRounding
+    );
     ctxScope(rx, () => {
       rx.beginPath();
-      roundedRectangle(rx, 0, y, w, h2, textboxRounding);
+      borderRect();
       rx.clip();
       const gradient = rx.createLinearGradient(0, y, 0, y + h2);
       const color2 = RGBAColor.fromHex(this.customColor);
@@ -16525,13 +16547,12 @@ class CustomPlus extends DdlcPlusBase {
     rx.strokeStyle = outlineColor;
     rx.lineWidth = textboxOutlineWidth;
     rx.beginPath();
-    roundedRectangle(rx, 0, y, w, h2, textboxRounding);
+    borderRect();
     rx.stroke();
   }
   render(rx) {
-    const h2 = this.obj.height - textboxRoundingBuffer * 2;
-    const w = this.obj.width - textboxRoundingBuffer * 2;
-    rx.translate(textboxRoundingBuffer, textboxRoundingBuffer);
+    const h2 = this.obj.height;
+    const w = this.obj.width;
     if (this.obj.talkingObjId !== null) {
       this.renderNamebox(rx, this.nameboxOffsetX, 0);
     }
@@ -16996,6 +17017,16 @@ const _SceneRenderer = class _SceneRenderer2 {
   dispose() {
     this._disposed = true;
     this.renderer.dispose();
+  }
+  drawDebugZoom(rx, x, y, w, h2, zoom = 7) {
+    const section = rx.fsCtx.getImageData(x, y, w, h2);
+    const img = document.createElement("canvas");
+    img.width = w;
+    img.height = h2;
+    const subCtx = img.getContext("2d");
+    subCtx.putImageData(section, 0, 0);
+    rx.fsCtx.imageSmoothingEnabled = false;
+    rx.fsCtx.drawImage(img, 0, 0, w * zoom, h2 * zoom);
   }
 };
 __publicField(_SceneRenderer, "FocusProp", typeof CSS !== "undefined" && CSS.supports("selector(:focus-visible)") ? ":focus-visible" : ":focus");
@@ -27020,10 +27051,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = /* @__PURE__ */ defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box-Cb44umBO.js"), true ? __vite__mapDeps([0,1]) : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box-A0Q-CGt8.js"), true ? __vite__mapDeps([0,1]) : void 0, import.meta.url)
     );
     const ExpressionBuilder = /* @__PURE__ */ defineAsyncComponent(
-      () => __vitePreload(() => import("./index-BY9DQvqY.js"), true ? __vite__mapDeps([2,3]) : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index-qSW4-bJO.js"), true ? __vite__mapDeps([2,3]) : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);
