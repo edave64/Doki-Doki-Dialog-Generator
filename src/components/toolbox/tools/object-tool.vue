@@ -50,12 +50,6 @@
 		<slot v-else-if="showAltPanel" name="alt-panel" />
 		<template v-else>
 			<slot />
-			<toggle
-				v-if="canOverflow"
-				v-model="overflow"
-				label="Overflow"
-				title="Allow the text to move outside of the textbox"
-			/>
 			<position-and-size :obj="object" />
 			<layers :object="object" />
 			<d-fieldset title="Transform" class="transforms">
