@@ -37,7 +37,12 @@ interface INewlineItem extends ITextRenderItem {
 	type: 'newline';
 }
 
-type RenderItem = IDrawCharacterItem | INewlineItem;
+interface IAlignmentItem extends ITextRenderItem {
+	type: 'alignment';
+	alignment: 'left' | 'center' | 'right';
+}
+
+type RenderItem = IDrawCharacterItem | INewlineItem | IAlignmentItem;
 
 // const widthCache = new Map<ITextStyle, Map<string, number>>();
 // const heightCache = new Map<ITextStyle, number>();
@@ -116,7 +121,7 @@ export class TextRenderer {
 		ctx.save();
 		let currentStyle: ITextStyle | null = null;
 		for (const part of this.renderParts) {
-			if (part.type === 'newline') continue;
+			if (part.type !== 'character') continue;
 			if (part.style !== currentStyle) {
 				currentStyle = part.style;
 				applyTextStyleToCanvas(currentStyle, ctx);
@@ -126,7 +131,7 @@ export class TextRenderer {
 			}
 		}
 		for (const part of this.renderParts) {
-			if (part.type === 'newline') continue;
+			if (part.type !== 'character') continue;
 			if (part.style !== currentStyle) {
 				currentStyle = part.style;
 				applyTextStyleToCanvas(currentStyle, ctx);
@@ -308,6 +313,150 @@ export class TextRenderer {
 		fixLine();
 	}
 
+	private lastLayoutHeight: number | null = null;
+	private lastLayoutWidth: number | null = null;
+
+	public applyLayout(
+		defaultAlignment: 'left' | 'center' | 'right',
+		xStart: number,
+		yStart: number,
+		w: number,
+		automaticLineBreak: boolean
+	) {
+		// Sorry for the long function, layouting is complicated.
+		const renderParts = this.renderParts;
+
+		// build layout groups
+		// Joins blocks of text on the same line with the same alignment.
+		// Also includes the automatic line break logic.
+		const layoutParts: LayoutPart[] = [];
+		const newLayoutGroup = (): LayoutGroup => ({
+			type: 'group',
+			renderParts: [],
+			height: 0,
+			width: 0,
+		});
+		let currentLayoutGroup = newLayoutGroup();
+		let remainingLineWidth = w;
+		let breakablePosition = -1;
+		layoutParts.push(currentLayoutGroup);
+
+		for (const item of renderParts) {
+			if (item.type === 'newline' || item.type === 'alignment') {
+				layoutParts.push(item);
+				remainingLineWidth = w;
+				currentLayoutGroup = newLayoutGroup();
+				breakablePosition = -1;
+				layoutParts.push(currentLayoutGroup);
+			} else {
+				if (remainingLineWidth < item.width && automaticLineBreak) {
+					const newLine: INewlineItem = {
+						type: 'newline',
+						height: item.height,
+						width: item.height,
+						x: 0,
+						y: 0,
+					};
+					if (item.character === ' ') {
+						layoutParts.push(newLine);
+						currentLayoutGroup = newLayoutGroup();
+						remainingLineWidth = w;
+						breakablePosition = -1;
+						layoutParts.push(currentLayoutGroup);
+						// Spaces that overflow the line are skipped.
+						continue;
+					} else if (breakablePosition !== -1) {
+						// The current letter would overflow the line, so we need to extract the
+						// last word and insert a newline before it.
+						const wordParts = currentLayoutGroup.renderParts
+							.splice(breakablePosition)
+							.slice(1);
+						const wordWidth = wordParts.reduce((a, b) => a + b.width, 0);
+						currentLayoutGroup.width -= wordWidth;
+						layoutParts.push(newLine);
+						currentLayoutGroup = newLayoutGroup();
+						currentLayoutGroup.renderParts = wordParts;
+						remainingLineWidth = w - wordWidth;
+						breakablePosition = -1;
+						layoutParts.push(currentLayoutGroup);
+					}
+				} else {
+					if (item.character === ' ') {
+						breakablePosition = currentLayoutGroup.renderParts.length;
+					}
+				}
+				currentLayoutGroup.renderParts.push(item);
+				currentLayoutGroup.height = Math.max(
+					currentLayoutGroup.height,
+					item.height
+				);
+				currentLayoutGroup.width += item.width;
+				remainingLineWidth -= item.width;
+			}
+		}
+
+		// Calculate the height of each line.
+		// We need these in advance, so e.g. a chunk of larger text on a line doesn't move from the baseline.
+		const lineHeights = [];
+		let lineHeight = 0;
+
+		for (const item of layoutParts) {
+			lineHeight = Math.max(lineHeight, item.height);
+
+			if (item.type === 'newline') {
+				lineHeights.push(lineHeight);
+				lineHeight = 0;
+			}
+		}
+		lineHeights.push(lineHeight);
+
+		// Actually place the layout groups.
+		let lineNr = 0;
+		let currentAlignment = defaultAlignment;
+		let y = yStart;
+		let start = 0;
+		let end = w;
+
+		for (const item of layoutParts) {
+			if (item.type === 'newline') {
+				y += lineHeights[++lineNr] || 0;
+				start = 0;
+				end = w;
+				continue;
+			}
+			if (item.type === 'alignment') {
+				currentAlignment = item.alignment;
+				continue;
+			}
+
+			switch (currentAlignment) {
+				case 'left':
+					placeLayoutGroup(item, start, y);
+					start += item.width;
+					break;
+				case 'center':
+					placeLayoutGroup(item, start + (end - start) / 2 - item.width / 2, y);
+					break;
+				case 'right':
+					placeLayoutGroup(item, end - item.width, y);
+					end -= item.width;
+					break;
+			}
+		}
+
+		this.lastLayoutHeight = y;
+		this.lastLayoutWidth = w;
+
+		function placeLayoutGroup(group: LayoutGroup, startX: number, y: number) {
+			let x = startX;
+			for (const part of group.renderParts) {
+				part.y = y;
+				part.x = xStart + x;
+				x += part.width;
+			}
+		}
+	}
+
 	public getHeight(maxLineWidth: number) {
 		let lineHeight = 0;
 		let height = 0;
@@ -385,7 +534,31 @@ export class TextRenderer {
 			const type = token.type;
 			switch (type) {
 				case 'command':
-					if (textCommands.has(token.commandName)) {
+					if (token.commandName === 'align') {
+						const alignment = token.argument.toLowerCase();
+						if (
+							alignment !== 'left' &&
+							alignment !== 'center' &&
+							alignment !== 'right'
+						) {
+							if (loose) {
+								pushCharacters('{align=' + token.argument + '}');
+								continue;
+							} else {
+								throw new Error(
+									`There is no text command called '${token.commandName}' at position ${token.pos}.`
+								);
+							}
+						}
+						renderParts.push({
+							type: 'alignment',
+							alignment,
+							height: currentStyleHeight,
+							width: 0,
+							x: 0,
+							y: 0,
+						});
+					} else if (textCommands.has(token.commandName)) {
 						styleStack.push(currentStyle);
 						tagStack.push(currentTag);
 						currentStyle = textCommands.get(token.commandName)!(
@@ -582,3 +755,12 @@ function applyTextStyleToCanvas(
 	ctx.globalAlpha = style.alpha || 0;
 	ctx.fillStyle = style.color;
 }
+
+interface LayoutGroup {
+	type: 'group';
+	renderParts: RenderItem[];
+	height: number;
+	width: number;
+}
+
+type LayoutPart = LayoutGroup | INewlineItem | IAlignmentItem;

@@ -126,22 +126,28 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		styleRenderer.render(ctx);
 
 		if (this.obj.talkingObjId !== null) {
-			this.renderName(ctx, styleRenderer.nameboxOffsetX, 0);
+			this.renderName(ctx);
 		}
 
-		this.renderText(ctx, 0, 0, this.obj.autoWrap ? w : 0);
+		this.renderText(ctx, 0, 0, w);
 	}
 
-	private renderName(rx: CanvasRenderingContext2D, x: number, y: number) {
+	private renderName(rx: CanvasRenderingContext2D) {
 		const styleRenderer = this.textboxRenderer;
 		const w = styleRenderer.nameboxWidth;
+		const x = styleRenderer.nameboxOffsetX;
+		// Normally, DDLC nameboxes don't have padding, since they are centered. We cheat one in
+		// here to make them look better when not centered.
+		const padding = styleRenderer.nameboxOffsetX / 2;
 
-		this.nbTextRenderer.fixAlignment(
+		console.log('rendering name', rx.getTransform());
+
+		this.nbTextRenderer.applyLayout(
 			'center',
-			x,
-			x + w,
-			y + styleRenderer.nameboxOffsetY,
-			0
+			x + padding,
+			styleRenderer.nameboxOffsetY,
+			w - padding * 2,
+			false
 		);
 
 		this.nbTextRenderer.render(rx);
@@ -159,12 +165,12 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 			render.quote();
 		}
 
-		render.fixAlignment(
+		render.applyLayout(
 			'left',
 			baseX + textboxRenderer.textOffsetX,
-			0,
 			baseY + textboxRenderer.nameboxHeight + textboxRenderer.textOffsetY,
-			maxLineWidth - textboxRenderer.textOffsetX * 2
+			maxLineWidth - textboxRenderer.textOffsetX * 2,
+			this.obj.autoWrap
 		);
 
 		render.render(rx);
