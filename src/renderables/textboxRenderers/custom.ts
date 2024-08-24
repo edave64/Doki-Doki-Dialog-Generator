@@ -10,7 +10,6 @@ import {
 	textboxOutlineColorDelta,
 	textboxOutlineWidth,
 	textboxRounding,
-	textboxRoundingBuffer,
 } from '@/constants/game_modes/ddlc/text-box-custom';
 import {
 	ctxScope,
@@ -54,9 +53,7 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 		if (this.refObject && this.refObject.nameboxWidth !== null) {
 			return this.refObject.nameboxWidth;
 		}
-		if (this.obj.customNameboxWidth !== null)
-			return this.obj.customNameboxWidth;
-		return TBConstants.NameboxWidth;
+		return this.obj.customNameboxWidth ?? TBConstants.NameboxWidth;
 	}
 
 	public get nameboxHeight() {
@@ -136,12 +133,22 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 	protected renderBackdrop(rx: CanvasRenderingContext2D, y: number) {
 		const customColor = RGBAColor.fromCss(this.customColor);
 		const hslColor = customColor.toHSL();
-		const h = this.obj.height - textboxRoundingBuffer * 2 - y;
-		const w = this.obj.width - textboxRoundingBuffer * 2;
+		const h = this.obj.height - y;
+		const w = this.obj.width;
+
+		const borderRect = () =>
+			roundedRectangle(
+				rx,
+				textboxOutlineWidth / 2,
+				y + textboxOutlineWidth / 2,
+				w - textboxOutlineWidth,
+				h - textboxOutlineWidth,
+				textboxRounding
+			);
 
 		ctxScope(rx, () => {
 			rx.beginPath();
-			roundedRectangle(rx, 0, y, w, h, textboxRounding);
+			borderRect();
 			rx.clip();
 			const gradient = rx.createLinearGradient(0, y, 0, h);
 			gradient.addColorStop(0, customColor.toCss());
@@ -158,7 +165,7 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 				rx.translate(0, y);
 				rx.fillStyle = this.getDotPattern();
 				rx.globalCompositeOperation = 'source-atop';
-				rx.fillRect(-textboxRoundingBuffer, -textboxRoundingBuffer, w, h);
+				rx.fillRect(0, 0, w, h);
 			});
 			const glowGradient = rx.createLinearGradient(
 				0,
@@ -192,15 +199,13 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 		rx.strokeStyle = outlineColor;
 		rx.lineWidth = textboxOutlineWidth;
 		rx.beginPath();
-		roundedRectangle(rx, 0, y, w, h, textboxRounding);
+		borderRect();
 		rx.stroke();
 	}
 
 	public render(rx: CanvasRenderingContext2D) {
-		const h = this.obj.height - textboxRoundingBuffer * 2;
-		const w = this.obj.width - textboxRoundingBuffer * 2;
-
-		rx.translate(textboxRoundingBuffer, textboxRoundingBuffer);
+		const h = this.obj.height;
+		const w = this.obj.width;
 
 		if (this.obj.talkingObjId !== null) {
 			this.renderNamebox(rx, this.nameboxOffsetX, 0);
@@ -230,6 +235,7 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 	): CanvasPattern {
 		if (this._dotPattern && this._lastColor === this.customColor)
 			return this._dotPattern;
+		this._lastColor = this.customColor;
 		const { dotPatternSize, dotColorDelta, dotRadius } = constants;
 		const hslColor = RGBAColor.fromCss(this.customColor).toHSL();
 

@@ -30,10 +30,7 @@ export const nameboxGradientEndDelta = new HSLAColor(
 );
 
 export const nameboxRounding = 12;
-export const nameboxRoundingBuffer = 1.5;
-
 export const textboxRounding = 12;
-export const textboxRoundingBuffer = 1.5;
 
 export const nameColorThreshold = 0.6;
 

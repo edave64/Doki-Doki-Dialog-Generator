@@ -301,4 +301,22 @@ export class SceneRenderer {
 		this._disposed = true;
 		this.renderer.dispose();
 	}
+
+	private drawDebugZoom(
+		rx: RenderContext,
+		x: number,
+		y: number,
+		w: number,
+		h: number,
+		zoom = 7
+	) {
+		const section = rx.fsCtx.getImageData(x, y, w, h);
+		const img = document.createElement('canvas');
+		img.width = w;
+		img.height = h;
+		const subCtx = img.getContext('2d')!;
+		subCtx.putImageData(section, 0, 0);
+		rx.fsCtx.imageSmoothingEnabled = false;
+		rx.fsCtx.drawImage(img, 0, 0, w * zoom, h * zoom);
+	}
 }

@@ -10,7 +10,6 @@ import {
 	textboxOutlineColorDelta,
 	textboxOutlineWidth,
 	textboxRounding,
-	textboxRoundingBuffer,
 } from '@/constants/game_modes/ddlc_plus/text-box-custom';
 import {
 	ctxScope,
@@ -136,13 +135,23 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 	}
 
 	protected renderBackdrop(rx: CanvasRenderingContext2D, y: number) {
-		const h = this.obj.height - textboxRoundingBuffer * 2 - y;
-		const w = this.obj.width - textboxRoundingBuffer * 2;
+		const h = this.obj.height - y;
+		const w = this.obj.width;
 		const hslColor = RGBAColor.fromCss(this.customColor).toHSL();
+
+		const borderRect = () =>
+			roundedRectangle(
+				rx,
+				textboxOutlineWidth / 2,
+				y + textboxOutlineWidth / 2,
+				w - textboxOutlineWidth,
+				h - textboxOutlineWidth,
+				textboxRounding
+			);
 
 		ctxScope(rx, () => {
 			rx.beginPath();
-			roundedRectangle(rx, 0, y, w, h, textboxRounding);
+			borderRect();
 			rx.clip();
 			const gradient = rx.createLinearGradient(0, y, 0, y + h);
 			const color = RGBAColor.fromHex(this.customColor);
@@ -189,15 +198,13 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 		rx.strokeStyle = outlineColor;
 		rx.lineWidth = textboxOutlineWidth;
 		rx.beginPath();
-		roundedRectangle(rx, 0, y, w, h, textboxRounding);
+		borderRect();
 		rx.stroke();
 	}
 
 	public render(rx: CanvasRenderingContext2D) {
-		const h = this.obj.height - textboxRoundingBuffer * 2;
-		const w = this.obj.width - textboxRoundingBuffer * 2;
-
-		rx.translate(textboxRoundingBuffer, textboxRoundingBuffer);
+		const h = this.obj.height;
+		const w = this.obj.width;
 
 		if (this.obj.talkingObjId !== null) {
 			this.renderNamebox(rx, this.nameboxOffsetX, 0);
