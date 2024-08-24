@@ -86,12 +86,12 @@ export class Poem extends ScalingRenderable<IPoem> {
 
 		const style = constants.poemTextStyles[this.obj.font];
 		const render = new TextRenderer(this.obj.text, style);
-		render.fixAlignment(
+		render.applyLayout(
 			'left',
 			poemTopMargin + padding,
-			padding,
-			topPadding + padding,
-			this.obj.autoWrap ? this.width - lineWrapPadding : 0
+			padding + topPadding,
+			this.width - lineWrapPadding,
+			this.obj.autoWrap
 		);
 		render.render(ctx);
 	}
