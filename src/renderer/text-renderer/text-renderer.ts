@@ -302,12 +302,6 @@ export class TextRenderer {
 				lineWidth = 0;
 				lineHeight = 0;
 				currentLine = [];
-			} else if (item.type === 'character') {
-				const lastItem = currentLine[currentLine.length - 1];
-				if (lastItem.type === 'character') {
-					lineWidth += lastItem.style.letterSpacing;
-					lastItem.width += lastItem.style.letterSpacing;
-				}
 			}
 		}
 		fixLine();
@@ -500,7 +494,6 @@ export class TextRenderer {
 	public getWidth() {
 		let lineWidth = 0;
 		let maxLineWidth = 0;
-		let lastItemInLine: RenderItem | null = null;
 
 		for (const item of this.renderParts) {
 			lineWidth += item.width;
@@ -508,12 +501,6 @@ export class TextRenderer {
 			if (item.type === 'newline') {
 				maxLineWidth = Math.max(maxLineWidth, lineWidth);
 				lineWidth = 0;
-				lastItemInLine = null;
-			} else if (item.type === 'character') {
-				if (lastItemInLine && lastItemInLine.type === 'character') {
-					lineWidth += lastItemInLine.style.letterSpacing;
-				}
-				lastItemInLine = item;
 			}
 		}
 		maxLineWidth = Math.max(maxLineWidth, lineWidth);
@@ -668,6 +655,10 @@ export class TextRenderer {
 				currentLineWidth = 0;
 				lastBreakLineWidth = 0;
 				newParts.push(item);
+			} else if (item.type === 'alignment') {
+				// IDK.
+				// Texts that support alignment don't use this function.
+				console.error("Alignment in context where it's not supported.");
 			} else if (item.type === 'character') {
 				if (item.character === ' ') {
 					if (currentLineWidth > maxLineWidth) {
@@ -726,7 +717,11 @@ function measureWidth(textStyle: ITextStyle, character: string): number {
 		applyTextStyleToCanvas(textStyle, tmpContext);
 		lastStyle = textStyle;
 	}
-	return tmpContext.measureText(character).width;
+	let spacing = textStyle.letterSpacing;
+	if (typeof spacing !== 'number' || isNaN(spacing) || !isFinite(spacing)) {
+		spacing = 0;
+	}
+	return tmpContext.measureText(character).width + spacing;
 }
 
 const heightCache = new Map<string, number>();
