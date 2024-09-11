@@ -1,4 +1,4 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./single-box-A0Q-CGt8.js","./single-box-CmTb7p6M.css","./index-qSW4-bJO.js","./index-C9Z0hIQS.css"])))=>i.map(i=>d[i]);
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["./single-box-2D0xE5zG.js","./single-box-CmTb7p6M.css","./index-DhddCrG2.js","./index-C9Z0hIQS.css"])))=>i.map(i=>d[i]);
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -15179,12 +15179,6 @@ class TextRenderer {
         lineWidth = 0;
         lineHeight = 0;
         currentLine = [];
-      } else if (item.type === "character") {
-        const lastItem = currentLine[currentLine.length - 1];
-        if (lastItem.type === "character") {
-          lineWidth += lastItem.style.letterSpacing;
-          lastItem.width += lastItem.style.letterSpacing;
-        }
       }
     }
     fixLine();
@@ -15336,18 +15330,11 @@ class TextRenderer {
   getWidth() {
     let lineWidth = 0;
     let maxLineWidth = 0;
-    let lastItemInLine = null;
     for (const item of this.renderParts) {
       lineWidth += item.width;
       if (item.type === "newline") {
         maxLineWidth = Math.max(maxLineWidth, lineWidth);
         lineWidth = 0;
-        lastItemInLine = null;
-      } else if (item.type === "character") {
-        if (lastItemInLine && lastItemInLine.type === "character") {
-          lineWidth += lastItemInLine.style.letterSpacing;
-        }
-        lastItemInLine = item;
       }
     }
     maxLineWidth = Math.max(maxLineWidth, lineWidth);
@@ -15400,12 +15387,26 @@ class TextRenderer {
           } else if (textCommands.has(token.commandName)) {
             styleStack.push(currentStyle);
             tagStack.push(currentTag);
-            currentStyle = textCommands.get(token.commandName)(
-              currentStyle,
-              token.argument
-            );
-            currentStyleHeight = measureHeight(currentStyle);
-            currentTag = token;
+            try {
+              currentStyle = textCommands.get(token.commandName)(
+                currentStyle,
+                token.argument
+              );
+              currentStyleHeight = measureHeight(currentStyle);
+              currentTag = token;
+            } catch (e) {
+              if (loose) {
+                styleStack.pop();
+                tagStack.pop();
+                pushCharacters(
+                  "{" + token.commandName + (token.argument ? "=" + token.argument : "") + "}"
+                );
+                console.error("Parsing error", e);
+                continue;
+              } else {
+                throw e;
+              }
+            }
           } else {
             if (loose) {
               pushCharacters("{" + token.commandName + "}");
@@ -15469,6 +15470,8 @@ class TextRenderer {
         currentLineWidth = 0;
         lastBreakLineWidth = 0;
         newParts.push(item);
+      } else if (item.type === "alignment") {
+        console.error("Alignment in context where it's not supported.");
       } else if (item.type === "character") {
         if (item.character === " ") {
           if (currentLineWidth > maxLineWidth) {
@@ -15523,7 +15526,11 @@ function measureWidth(textStyle, character) {
     applyTextStyleToCanvas(textStyle, tmpContext);
     lastStyle = textStyle;
   }
-  return tmpContext.measureText(character).width;
+  let spacing = textStyle.letterSpacing;
+  if (typeof spacing !== "number" || isNaN(spacing) || !isFinite(spacing)) {
+    spacing = 0;
+  }
+  return tmpContext.measureText(character).width + spacing;
 }
 const heightCache = /* @__PURE__ */ new Map();
 function measureHeight(textStyle) {
@@ -27051,10 +27058,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "app",
   setup(__props) {
     const SingleBox = /* @__PURE__ */ defineAsyncComponent(
-      () => __vitePreload(() => import("./single-box-A0Q-CGt8.js"), true ? __vite__mapDeps([0,1]) : void 0, import.meta.url)
+      () => __vitePreload(() => import("./single-box-2D0xE5zG.js"), true ? __vite__mapDeps([0,1]) : void 0, import.meta.url)
     );
     const ExpressionBuilder = /* @__PURE__ */ defineAsyncComponent(
-      () => __vitePreload(() => import("./index-qSW4-bJO.js"), true ? __vite__mapDeps([2,3]) : void 0, import.meta.url)
+      () => __vitePreload(() => import("./index-DhddCrG2.js"), true ? __vite__mapDeps([2,3]) : void 0, import.meta.url)
     );
     const store2 = useStore();
     const preLoading = ref(true);
