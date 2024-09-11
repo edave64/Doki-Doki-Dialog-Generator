@@ -577,12 +577,29 @@ export class TextRenderer {
 					} else if (textCommands.has(token.commandName)) {
 						styleStack.push(currentStyle);
 						tagStack.push(currentTag);
-						currentStyle = textCommands.get(token.commandName)!(
-							currentStyle,
-							token.argument
-						);
-						currentStyleHeight = measureHeight(currentStyle);
-						currentTag = token;
+						try {
+							currentStyle = textCommands.get(token.commandName)!(
+								currentStyle,
+								token.argument
+							);
+							currentStyleHeight = measureHeight(currentStyle);
+							currentTag = token;
+						} catch (e) {
+							if (loose) {
+								styleStack.pop();
+								tagStack.pop();
+								pushCharacters(
+									'{' +
+										token.commandName +
+										(token.argument ? '=' + token.argument : '') +
+										'}'
+								);
+								console.error('Parsing error', e);
+								continue;
+							} else {
+								throw e;
+							}
+						}
 					} else {
 						if (loose) {
 							pushCharacters('{' + token.commandName + '}');
