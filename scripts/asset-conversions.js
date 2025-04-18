@@ -1,6 +1,6 @@
-const fs = require('fs');
-const path = require('path');
-const { exec } = require('child_process');
+import { exec } from 'child_process';
+import fs from 'fs/promises';
+import path from 'path';
 
 /**
  * @typedef IFolder
@@ -14,49 +14,31 @@ const { exec } = require('child_process');
  * @param {string} folderName
  * @returns {Promise<IFolder>}
  */
-function scanFolder(folderName) {
-	return new Promise((resolve, reject) => {
-		/** @type {IFolder[]} */ const subFolders = [];
-		/** @type {string[]} */ const subFiles = [];
-		fs.readdir(folderName, (err, files) => {
-			if (err) {
-				reject(err);
-				return;
+async function scanFolder(folderName) {
+	/** @type {IFolder[]} */
+	const subFolders = [];
+	/** @type {string[]} */
+	const subFiles = [];
+	const files = await fs.readdir(folderName);
+
+	await Promise.all(
+		files.map(async (file) => {
+			const stat = await fs.lstat(path.join(folderName, file));
+
+			if (stat.isDirectory()) {
+				if (file === 'mask') return;
+				subFolders.push(await scanFolder(path.join(folderName, file) + '/'));
+			} else {
+				subFiles.push(file);
 			}
-			const subPromises = files.map((file) => {
-				return new Promise((subResolve, subReject) => {
-					fs.lstat(path.join(folderName, file), (statErr, stat) => {
-						if (statErr) {
-							subReject(err);
-						}
+		})
+	);
 
-						if (stat.isDirectory()) {
-							if (file === 'mask') return;
-							scanFolder(path.join(folderName, file) + '/')
-								.then((subFolder) => {
-									subFolders.push(subFolder);
-									subResolve();
-								})
-								.catch(() => subReject());
-						} else {
-							subFiles.push(file);
-							subResolve();
-						}
-					});
-				});
-			});
-
-			Promise.all(subPromises)
-				.then(() =>
-					resolve({
-						name: folderName,
-						files: subFiles,
-						subfolders: subFolders,
-					})
-				)
-				.catch((reason) => reject(reason));
-		});
-	});
+	return {
+		name: folderName,
+		files: subFiles,
+		subfolders: subFolders,
+	};
 }
 
 /**
@@ -81,7 +63,7 @@ function queueAssetConversions(folder) {
 			console.log(pngWithoutLQ);
 			ret.push(async () => {
 				await runOnConsole(
-					`pngquant -ext .lq.tmp.png ${folder.name}/${pngWithoutLQ}.png`
+					`pngquant --ext .lq.tmp.png ${folder.name}/${pngWithoutLQ}.png`
 				);
 				await runOnConsole(
 					`zopflipng ${folder.name}/${pngWithoutLQ}.lq.tmp.png ${folder.name}/${pngWithoutLQ}.lq.png`
@@ -153,4 +135,4 @@ async function run() {
 	for (let i = 0; i < 10; ++i) runner(queue);
 }
 
-run();
+await run();
