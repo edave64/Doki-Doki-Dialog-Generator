@@ -32,11 +32,11 @@ export class Choice extends ScalingRenderable<IChoices> {
 
 			ctx.fillRect(x, y, w, height + constants.ChoicePadding * 2);
 			ctx.strokeRect(x, y, w, height + constants.ChoicePadding * 2);
-			choiceRenderer.fixAlignment(
+			choiceRenderer.applyLayout(
 				'center',
-				x,
-				w,
+				x + constants.ChoicePadding,
 				y + constants.ChoiceSpacing * 1.25,
+				w - constants.ChoicePadding * 2,
 				this.obj.autoWrap ? w : 0
 			);
 			choiceRenderer.render(ctx);
