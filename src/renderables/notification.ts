@@ -102,20 +102,20 @@ export class Notification extends ScalingRenderable<INotification> {
 		ctx.lineWidth = constants.Choices.Outline;
 		ctx.fillRect(p, p, w, h);
 		ctx.strokeRect(p, p, w, h);
-		textRenderer.fixAlignment(
+		textRenderer.applyLayout(
 			'center',
-			p,
-			w + p,
+			p + constants.Notification.NotificationPadding,
 			p + constants.Notification.NotificationPadding * 1.5,
-			lineWrap
+			w - constants.Notification.NotificationPadding * 2,
+			false
 		);
 		textRenderer.render(ctx);
-		buttonRenderer.fixAlignment(
+		buttonRenderer.applyLayout(
 			'center',
 			p,
-			w + p,
 			p + h - constants.Notification.NotificationPadding,
-			lineWrap
+			w + p,
+			false
 		);
 		buttonRenderer.render(ctx);
 	}
