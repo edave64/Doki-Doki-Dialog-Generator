@@ -1,0 +1,390 @@
+{
+	"$schema": "https://raw.githubusercontent.com/edave64/doki-doki-dialog-generator-pack-format/master/src/v2/schema.json",
+	"version": "2.0",
+	"packId": "dddg.buildin.concept_mc",
+	"packCredits": "",
+	"folder": "/concept_mc_v2/",
+	"characters": [
+		{
+			"id": "ddlc.fan.concept_mc",
+			"label": "MC",
+			"chibi": "chibi{ext}",
+			"styleGroups": [
+				{
+					"id": "uniform",
+					"styleComponents": [
+						{
+							"id": "eyes",
+							"label": "Eyes",
+							"variants": {
+								"brown": "preview-brown{ext}",
+								"yellow": "preview-yellow{ext}",
+								"red": "preview-red{ext}"
+							}
+						}
+					],
+					"styles": [
+						{
+							"components": {
+								"eyes": "brown"
+							},
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_brown", "straight_eyes_closed"],
+									"positions": {
+										"Left": [["1l{ext}"], ["2l{ext}"], ["3l{ext}"]],
+										"Right": [["1r{ext}"], ["2r{ext}"]]
+									}
+								},
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_brown", "straight_eyes_closed"],
+									"positions": {
+										"Variant": [["4{ext}"]]
+									}
+								}
+							]
+						},
+						{
+							"components": {
+								"eyes": "yellow"
+							},
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": [
+										"straight_yellow",
+										"straight_eyes_closed"
+									],
+									"positions": {
+										"Left": [["1l{ext}"], ["2l{ext}"], ["3l{ext}"]],
+										"Right": [["1r{ext}"], ["2r{ext}"]]
+									}
+								},
+								{
+									"id": "normal",
+									"compatibleHeads": [
+										"straight_yellow",
+										"straight_eyes_closed"
+									],
+									"positions": {
+										"Variant": [["4{ext}"]]
+									}
+								}
+							]
+						},
+						{
+							"components": {
+								"eyes": "red"
+							},
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_red", "straight_eyes_closed"],
+									"positions": {
+										"Left": [["1l{ext}"], ["2l{ext}"], ["3l{ext}"]],
+										"Right": [["1r{ext}"], ["2r{ext}"]]
+									}
+								},
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_red", "straight_eyes_closed"],
+									"positions": {
+										"Variant": [["4{ext}"]]
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"id": "casual",
+					"styleComponents": [
+						{
+							"id": "eyes",
+							"label": "Eyes",
+							"variants": {
+								"brown": "preview-brown{ext}",
+								"yellow": "preview-yellow{ext}",
+								"red": "preview-red{ext}"
+							}
+						}
+					],
+					"styles": [
+						{
+							"components": {
+								"eyes": "brown"
+							},
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_brown", "straight_eyes_closed"],
+									"positions": {
+										"Left": [["1bl{ext}"], ["2bl{ext}"], ["3bl{ext}"]],
+										"Right": [["1br{ext}"], ["2br{ext}"]]
+									}
+								},
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_brown", "straight_eyes_closed"],
+									"positions": {
+										"Variant": [["4b{ext}"]]
+									}
+								}
+							]
+						},
+						{
+							"components": {
+								"eyes": "yellow"
+							},
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": [
+										"straight_yellow",
+										"straight_eyes_closed"
+									],
+									"positions": {
+										"Left": [["1bl{ext}"], ["2bl{ext}"], ["3bl{ext}"]],
+										"Right": [["1br{ext}"], ["2br{ext}"]]
+									}
+								},
+								{
+									"id": "normal",
+									"compatibleHeads": [
+										"straight_yellow",
+										"straight_eyes_closed"
+									],
+									"positions": {
+										"Variant": [["4b{ext}"]]
+									}
+								}
+							]
+						},
+						{
+							"components": {
+								"eyes": "red"
+							},
+							"poses": [
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_red", "straight_eyes_closed"],
+									"positions": {
+										"Left": [["1bl{ext}"], ["2bl{ext}"], ["3bl{ext}"]],
+										"Right": [["1br{ext}"], ["2br{ext}"]]
+									}
+								},
+								{
+									"id": "normal",
+									"compatibleHeads": ["straight_red", "straight_eyes_closed"],
+									"positions": {
+										"Variant": [["4b{ext}"]]
+									}
+								}
+							]
+						}
+					]
+				}
+			],
+			"heads": {
+				"straight_eyes_closed": {
+					"folder": "closed/",
+					"variants": [
+						["../facebase{ext}", "neut_cm_ce{ext}"],
+						["../facebase{ext}", "happ_cm_ce{ext}"],
+						["../facebase{ext}", "laug_om_ce{ext}"],
+						["../facebase{ext}", "happ_om_ce{ext}"],
+						["../facebase{ext}", "laug_cm_ce{ext}"],
+						["../facebase{ext}", "neut_om_ce{ext}"],
+						["../facebase{ext}", "angr_cm_ce{ext}"],
+						["../facebase{ext}", "angr_om_ce{ext}"],
+						["../facebase{ext}", "anno_cm_ce{ext}"],
+						["../facebase{ext}", "anno_om_ce{ext}"],
+						["../facebase{ext}", "cry_cm_ce{ext}"],
+						["../facebase{ext}", "cry_om_ce{ext}"],
+						["../facebase{ext}", "curi_cm_ce{ext}"],
+						["../facebase{ext}", "curi_om_ce{ext}"],
+						["../facebase{ext}", "dist_cm_ce{ext}"],
+						["../facebase{ext}", "dist_om_ce{ext}"],
+						["../facebase{ext}", "doub_cm_ce{ext}"],
+						["../facebase{ext}", "doub_om_ce{ext}"],
+						["../facebase{ext}", "flus_cm_ce{ext}"],
+						["../facebase{ext}", "flus_om_ce{ext}"],
+						["../facebase{ext}", "lsur_cm_ce{ext}"],
+						["../facebase{ext}", "lsur_om_ce{ext}"],
+						["../facebase{ext}", "nerv_cm_ce{ext}"],
+						["../facebase{ext}", "nerv_om_ce{ext}"],
+						["../facebase{ext}", "pani_cm_ce{ext}"],
+						["../facebase{ext}", "pani_om_ce{ext}"],
+						["../facebase{ext}", "pout_cm_ce{ext}"],
+						["../facebase{ext}", "pout_om_ce{ext}"],
+						["../facebase{ext}", "sad_cm_ce{ext}"],
+						["../facebase{ext}", "sad_om_ce{ext}"],
+						["../facebase{ext}", "scream_cm_ce{ext}"],
+						["../facebase{ext}", "scream_om_ce{ext}"],
+						["../facebase{ext}", "sedu_cm_ce{ext}"],
+						["../facebase{ext}", "sedu_om_ce{ext}"],
+						["../facebase{ext}", "shoc_cm_ce{ext}"],
+						["../facebase{ext}", "shoc_om_ce{ext}"],
+						["../facebase{ext}", "vang_cm_ce{ext}"],
+						["../facebase{ext}", "vang_om_ce{ext}"],
+						["../facebase{ext}", "vsur_cm_ce{ext}"],
+						["../facebase{ext}", "vsur_om_ce{ext}"],
+						["../facebase{ext}", "worr_cm_ce{ext}"],
+						["../facebase{ext}", "worr_om_ce{ext}"],
+						["../facebase{ext}", "yand_cm_ce{ext}"],
+						["../facebase{ext}", "yand_om_ce{ext}"]
+					]
+				},
+				"straight_brown": {
+					"folder": "brown/",
+					"variants": [
+						["../facebase{ext}", "neut_cm_oe{ext}"],
+						["../facebase{ext}", "happ_cm_oe{ext}"],
+						["../facebase{ext}", "happ_om_oe{ext}"],
+						["../facebase{ext}", "neut_om_oe{ext}"],
+						["../facebase{ext}", "curi_cm_oe{ext}"],
+						["../facebase{ext}", "curi_cm_oe{ext}"],
+						["../facebase{ext}", "worr_cm_oe{ext}"],
+						["../facebase{ext}", "vsur_cm_oe{ext}"],
+						["../facebase{ext}", "vsur_om_oe{ext}"],
+						["../facebase{ext}", "sad_om_oe{ext}"],
+						["../facebase{ext}", "sad_cm_oe{ext}"],
+						["../facebase{ext}", "worr_om_oe{ext}"],
+						["../facebase{ext}", "angr_cm_oe{ext}"],
+						["../facebase{ext}", "vang_cm_oe{ext}"],
+						["../facebase{ext}", "vang_om_oe{ext}"],
+						["../facebase{ext}", "angr_om_oe{ext}"],
+						["../facebase{ext}", "shoc_cm_oe{ext}"],
+						["../facebase{ext}", "shoc_om_oe{ext}"],
+						["../facebase{ext}", "anno_cm_oe{ext}"],
+						["../facebase{ext}", "anno_om_oe{ext}"],
+						["../facebase{ext}", "laug_om_oe{ext}"],
+						["../facebase{ext}", "nerv_om_oe{ext}"],
+						["../facebase{ext}", "flus_cm_oe{ext}"],
+						["../facebase{ext}", "flus_om_oe{ext}"],
+						["../facebase{ext}", "sedu_om_oe{ext}"],
+						["../facebase{ext}", "cry_cm_oe{ext}"],
+						["../facebase{ext}", "sedu_cm_oe{ext}"],
+						["../facebase{ext}", "laug_cm_oe{ext}"],
+						["../facebase{ext}", "scream_cm_oe{ext}"],
+						["../facebase{ext}", "scream_om_oe{ext}"],
+						["../facebase{ext}", "dist_cm_oe{ext}"],
+						["../facebase{ext}", "dist_om_oe{ext}"],
+						["../facebase{ext}", "cry_om_oe{ext}"],
+						["../facebase{ext}", "nerv_cm_oe{ext}"],
+						["../facebase{ext}", "doubt_cm_oe{ext}"],
+						["../facebase{ext}", "doubt_om_oe{ext}"],
+						["../facebase{ext}", "lsur_cm_oe{ext}"],
+						["../facebase{ext}", "lsur_om_oe{ext}"],
+						["../facebase{ext}", "pani_cm_oe{ext}"],
+						["../facebase{ext}", "pani_om_oe{ext}"],
+						["../facebase{ext}", "pout_cm_oe{ext}"],
+						["../facebase{ext}", "pout_om_oe{ext}"],
+						["../facebase{ext}", "yand_cm_oe{ext}"],
+						["../facebase{ext}", "yand_om_oe{ext}"]
+					]
+				},
+				"straight_yellow": {
+					"folder": "yellow/",
+					"variants": [
+						["../facebase{ext}", "neut_cm_oe{ext}"],
+						["../facebase{ext}", "happ_cm_oe{ext}"],
+						["../facebase{ext}", "happ_om_oe{ext}"],
+						["../facebase{ext}", "neut_om_oe{ext}"],
+						["../facebase{ext}", "curi_cm_oe{ext}"],
+						["../facebase{ext}", "curi_cm_oe{ext}"],
+						["../facebase{ext}", "worr_cm_oe{ext}"],
+						["../facebase{ext}", "vsur_cm_oe{ext}"],
+						["../facebase{ext}", "vsur_om_oe{ext}"],
+						["../facebase{ext}", "sad_om_oe{ext}"],
+						["../facebase{ext}", "sad_cm_oe{ext}"],
+						["../facebase{ext}", "worr_om_oe{ext}"],
+						["../facebase{ext}", "angr_cm_oe{ext}"],
+						["../facebase{ext}", "vang_cm_oe{ext}"],
+						["../facebase{ext}", "vang_om_oe{ext}"],
+						["../facebase{ext}", "angr_om_oe{ext}"],
+						["../facebase{ext}", "shoc_cm_oe{ext}"],
+						["../facebase{ext}", "shoc_om_oe{ext}"],
+						["../facebase{ext}", "anno_cm_oe{ext}"],
+						["../facebase{ext}", "anno_om_oe{ext}"],
+						["../facebase{ext}", "laug_om_oe{ext}"],
+						["../facebase{ext}", "nerv_om_oe{ext}"],
+						["../facebase{ext}", "flus_cm_oe{ext}"],
+						["../facebase{ext}", "flus_om_oe{ext}"],
+						["../facebase{ext}", "sedu_om_oe{ext}"],
+						["../facebase{ext}", "cry_cm_oe{ext}"],
+						["../facebase{ext}", "sedu_cm_oe{ext}"],
+						["../facebase{ext}", "laug_cm_oe{ext}"],
+						["../facebase{ext}", "scream_cm_oe{ext}"],
+						["../facebase{ext}", "scream_om_oe{ext}"],
+						["../facebase{ext}", "dist_cm_oe{ext}"],
+						["../facebase{ext}", "dist_om_oe{ext}"],
+						["../facebase{ext}", "cry_om_oe{ext}"],
+						["../facebase{ext}", "nerv_cm_oe{ext}"],
+						["../facebase{ext}", "doubt_cm_oe{ext}"],
+						["../facebase{ext}", "doubt_om_oe{ext}"],
+						["../facebase{ext}", "lsur_cm_oe{ext}"],
+						["../facebase{ext}", "lsur_om_oe{ext}"],
+						["../facebase{ext}", "pani_cm_oe{ext}"],
+						["../facebase{ext}", "pani_om_oe{ext}"],
+						["../facebase{ext}", "pout_cm_oe{ext}"],
+						["../facebase{ext}", "pout_om_oe{ext}"],
+						["../facebase{ext}", "yand_cm_oe{ext}"],
+						["../facebase{ext}", "yand_om_oe{ext}"]
+					]
+				},
+				"straight_red": {
+					"folder": "red/",
+					"variants": [
+						["../facebase{ext}", "neut_cm_oe{ext}"],
+						["../facebase{ext}", "happ_cm_oe{ext}"],
+						["../facebase{ext}", "happ_om_oe{ext}"],
+						["../facebase{ext}", "neut_om_oe{ext}"],
+						["../facebase{ext}", "curi_cm_oe{ext}"],
+						["../facebase{ext}", "curi_cm_oe{ext}"],
+						["../facebase{ext}", "worr_cm_oe{ext}"],
+						["../facebase{ext}", "vsur_cm_oe{ext}"],
+						["../facebase{ext}", "vsur_om_oe{ext}"],
+						["../facebase{ext}", "sad_om_oe{ext}"],
+						["../facebase{ext}", "sad_cm_oe{ext}"],
+						["../facebase{ext}", "worr_om_oe{ext}"],
+						["../facebase{ext}", "angr_cm_oe{ext}"],
+						["../facebase{ext}", "vang_cm_oe{ext}"],
+						["../facebase{ext}", "vang_om_oe{ext}"],
+						["../facebase{ext}", "angr_om_oe{ext}"],
+						["../facebase{ext}", "shoc_cm_oe{ext}"],
+						["../facebase{ext}", "shoc_om_oe{ext}"],
+						["../facebase{ext}", "anno_cm_oe{ext}"],
+						["../facebase{ext}", "anno_om_oe{ext}"],
+						["../facebase{ext}", "laug_om_oe{ext}"],
+						["../facebase{ext}", "nerv_om_oe{ext}"],
+						["../facebase{ext}", "flus_cm_oe{ext}"],
+						["../facebase{ext}", "flus_om_oe{ext}"],
+						["../facebase{ext}", "sedu_om_oe{ext}"],
+						["../facebase{ext}", "cry_cm_oe{ext}"],
+						["../facebase{ext}", "sedu_cm_oe{ext}"],
+						["../facebase{ext}", "laug_cm_oe{ext}"],
+						["../facebase{ext}", "scream_cm_oe{ext}"],
+						["../facebase{ext}", "scream_om_oe{ext}"],
+						["../facebase{ext}", "dist_cm_oe{ext}"],
+						["../facebase{ext}", "dist_om_oe{ext}"],
+						["../facebase{ext}", "cry_om_oe{ext}"],
+						["../facebase{ext}", "nerv_cm_oe{ext}"],
+						["../facebase{ext}", "doubt_cm_oe{ext}"],
+						["../facebase{ext}", "doubt_om_oe{ext}"],
+						["../facebase{ext}", "lsur_cm_oe{ext}"],
+						["../facebase{ext}", "lsur_om_oe{ext}"],
+						["../facebase{ext}", "pani_cm_oe{ext}"],
+						["../facebase{ext}", "pani_om_oe{ext}"],
+						["../facebase{ext}", "pout_cm_oe{ext}"],
+						["../facebase{ext}", "pout_om_oe{ext}"],
+						["../facebase{ext}", "yand_cm_oe{ext}"],
+						["../facebase{ext}", "yand_om_oe{ext}"]
+					]
+				}
+			}
+		}
+	]
+}
