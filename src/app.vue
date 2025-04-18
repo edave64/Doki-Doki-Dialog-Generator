@@ -469,7 +469,7 @@ onMounted(async () => {
 			`${packsUrl}buildin.base.natsuki.json`,
 			`${packsUrl}buildin.base.yuri.json`,
 			`${packsUrl}buildin.extra.mc.json`,
-			`${packsUrl}buildin.extra.concept_mc.json`,
+			`${packsUrl}buildin.extra.concept_mc_v2.json`,
 			`${packsUrl}buildin.extra.mc_chad.json`,
 			`${packsUrl}buildin.extra.femc.json`,
 			`${packsUrl}buildin.extra.concept_femc.json`,
