@@ -76,10 +76,9 @@
 			<br />MC Casual Sprite by SlightlySimple <br />MC Chibi by SlightlySimple
 		</p>
 		<p>
-			<l to="https://www.reddit.com/ofkg59">Concept MC</l> by StormBlazed76,
-			<l to="https://www.reddit.com/og6shh">red</l> and
-			<l to="https://www.reddit.com/oft3vb">yellow</l> eyes by YinuS_WinneR,
-			<l to="https://www.reddit.com/ofof3o">chibi</l> by Hadrosaur838
+			<L to="https://www.reddit.com/r/DDLCMods/comments/1hhmu77/">Concept MC</L>
+			by StormBlazed76, <l to="https://www.reddit.com/ofof3o">chibi</l> by
+			Hadrosaur838
 		</p>
 		<p>
 			MC Chad Sprite by Cylent-Nite
