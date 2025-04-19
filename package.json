@@ -27,7 +27,8 @@
 		"@edave64/doki-doki-dialog-generator-pack-format": "^2.0.0",
 		"prettier-plugin-organize-imports": "^4.1.0",
 		"vue": "^3.5.13",
-		"vuex": "^4.1.0"
+		"vuex": "^4.1.0",
+		"mitt": "^3.0.1"
 	},
 	"devDependencies": {
 		"@tsconfig/node22": "^22.0.1",

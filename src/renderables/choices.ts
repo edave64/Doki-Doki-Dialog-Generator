@@ -37,7 +37,7 @@ export class Choice extends ScalingRenderable<IChoices> {
 				x + constants.ChoicePadding,
 				y + constants.ChoiceSpacing * 1.25,
 				w - constants.ChoicePadding * 2,
-				this.obj.autoWrap ? w : 0
+				this.obj.autoWrap
 			);
 			choiceRenderer.render(ctx);
 			y += height + constants.ChoicePadding * 2 + constants.ChoiceSpacing;

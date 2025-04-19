@@ -105,7 +105,7 @@ export class WorkBatch<P, R> {
 	}
 
 	private async startDisposer() {
-		const data = this.remainingDisposers.values().next().value;
+		const data = this.remainingDisposers.values().next().value!;
 		this.remainingDisposers.delete(data);
 		this.runningDisposers.add(data);
 		try {
