@@ -52,7 +52,7 @@
 			<button
 				@click="insertCommand('k', 2)"
 				class="style-button"
-				style="letter-spacing: 5px"
+				style="letter-spacing: 5px; padding-right: 0"
 			>
 				Kerning
 			</button>
@@ -251,6 +251,10 @@ function insertCommand(command: string, arg?: string | number) {
 </script>
 
 <style lang="scss" scoped>
+button {
+	line-height: 100%;
+}
+
 .text-subpanel {
 	display: flex;
 	flex-wrap: wrap;
