@@ -67,86 +67,88 @@
 					</option>
 				</select>
 				<table class="input-table v-w100">
-					<tr>
-						<td>
-							<label for="rotation" class="v-w100">Rotation:&nbsp;°</label>
-						</td>
-						<td>
-							<input
-								id="rotation"
-								class="smol v-w100"
-								type="number"
-								v-model="rotation"
-								@keydown.stop
-							/>
-						</td>
-					</tr>
-					<!-- A sprite that hasn't yet been reimported from an old version should not be resized -->
-					<template v-if="allowZoom">
+					<tbody>
 						<tr>
 							<td>
-								<label for="zoom" class="v-w100">{{
-									easterEgg ? 'Zoom' : 'Scale X'
-								}}</label>
+								<label for="rotation" class="v-w100">Rotation:&nbsp;°</label>
 							</td>
+							<td>
+								<input
+									id="rotation"
+									class="smol v-w100"
+									type="number"
+									v-model="rotation"
+									@keydown.stop
+								/>
+							</td>
+						</tr>
+						<!-- A sprite that hasn't yet been reimported from an old version should not be resized -->
+						<template v-if="allowZoom">
+							<tr>
+								<td>
+									<label for="zoom" class="v-w100">{{
+										easterEgg ? 'Zoom' : 'Scale X'
+									}}</label>
+								</td>
+								<td>
+									<input
+										id="zoom"
+										type="number"
+										class="smol v-w100"
+										step="1"
+										min="0"
+										v-model="scaleX"
+										@keydown.stop
+									/>
+								</td>
+							</tr>
+							<tr v-if="!easterEgg">
+								<td><label for="zoom" class="v-w100">Scale Y: </label></td>
+								<td>
+									<input
+										id="zoom"
+										type="number"
+										class="smol v-w100"
+										step="1"
+										min="0"
+										v-model="scaleY"
+										@keydown.stop
+									/>
+								</td>
+							</tr>
+						</template>
+						<tr>
+							<td><label for="zoom" class="v-w100">Skew X: </label></td>
 							<td>
 								<input
 									id="zoom"
 									type="number"
 									class="smol v-w100"
 									step="1"
-									min="0"
-									v-model="scaleX"
+									v-model="skewX"
 									@keydown.stop
 								/>
 							</td>
 						</tr>
-						<tr v-if="!easterEgg">
-							<td><label for="zoom" class="v-w100">Scale Y: </label></td>
+						<tr>
+							<td><label for="zoom" class="v-w100">Skew Y: </label></td>
 							<td>
 								<input
 									id="zoom"
 									type="number"
 									class="smol v-w100"
 									step="1"
-									min="0"
-									v-model="scaleY"
+									v-model="skewY"
 									@keydown.stop
 								/>
 							</td>
 						</tr>
-					</template>
-					<tr>
-						<td><label for="zoom" class="v-w100">Skew X: </label></td>
-						<td>
-							<input
-								id="zoom"
-								type="number"
-								class="smol v-w100"
-								step="1"
-								v-model="skewX"
-								@keydown.stop
-							/>
-						</td>
-					</tr>
-					<tr>
-						<td><label for="zoom" class="v-w100">Skew Y: </label></td>
-						<td>
-							<input
-								id="zoom"
-								type="number"
-								class="smol v-w100"
-								step="1"
-								v-model="skewY"
-								@keydown.stop
-							/>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="2" v-if="!easterEgg">
-							<toggle v-model="preserveRatio" label="Lock scale ratio?" />
-						</td>
-					</tr>
+						<tr>
+							<td colspan="2" v-if="!easterEgg">
+								<toggle v-model="preserveRatio" label="Lock scale ratio?" />
+							</td>
+						</tr>
+					</tbody>
 				</table>
 				<slot name="transform" />
 			</d-fieldset>
@@ -160,32 +162,34 @@
 				/>
 				<toggle label="Own textbox color" v-model="useCustomTextboxColor" />
 				<table>
-					<tr v-if="useCustomTextboxColor">
-						<td>
-							<label for="textbox_color">Color:</label>
-						</td>
-						<td>
-							<button
-								id="textbox_color"
-								class="color-button"
-								:style="{ background: object.textboxColor ?? '' }"
-								@click="selectTextboxColor"
-							/>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<label for="namebox_width">Namebox width:</label>
-						</td>
-						<td>
-							<input
-								id="namebox_width"
-								type="number"
-								:placeholder="defaultNameboxWidth + ''"
-								v-model.lazy="nameboxWidth"
-							/>
-						</td>
-					</tr>
+					<tbody>
+						<tr v-if="useCustomTextboxColor">
+							<td>
+								<label for="textbox_color">Color:</label>
+							</td>
+							<td>
+								<button
+									id="textbox_color"
+									class="color-button"
+									:style="{ background: object.textboxColor ?? '' }"
+									@click="selectTextboxColor"
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label for="namebox_width">Namebox width:</label>
+							</td>
+							<td>
+								<input
+									id="namebox_width"
+									type="number"
+									:placeholder="defaultNameboxWidth + ''"
+									v-model.lazy="nameboxWidth"
+								/>
+							</td>
+						</tr>
+					</tbody>
 				</table>
 			</d-fieldset>
 			<button @click="imageOptionsOpen = true">Image options</button>

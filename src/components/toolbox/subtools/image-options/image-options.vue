@@ -107,136 +107,138 @@
 					</div>
 				</d-flow>
 				<table v-if="currentFilter" class="value-input-table">
-					<template v-if="currentFilter.type === 'drop-shadow'">
-						<tr>
-							<td>
-								<label for="shadow_color">Color:</label>
-							</td>
-							<td>
-								<button
-									id="shadow_color"
-									class="color-button"
-									:style="{ background: shadowColor }"
-									@click="showShadowColor = true"
-								>
-									&nbsp;
-								</button>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<label for="filter_x">X:</label>
-							</td>
-							<td>
-								<input
-									id="filter_x"
-									type="number"
-									v-model.number="shadowX"
-									@keydown.stop
-								/>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<label for="filter_y">Y:</label>
-							</td>
-							<td>
-								<input
-									id="filter_y"
-									type="number"
-									v-model.number="shadowY"
-									@keydown.stop
-								/>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<label for="filter_blur">Blur:</label>
-							</td>
-							<td>
-								<input
-									id="filter_blur"
-									type="number"
-									v-model.number="shadowBlur"
-									@keydown.stop
-								/>
-							</td>
-						</tr>
-					</template>
-					<template v-else-if="isPercentFilter">
-						<tr>
-							<td>
-								<label for="filter_value">Value:</label>
-							</td>
-							<td>
-								<!--suppress XmlDuplicatedId -->
-								<input
-									id="filter_value"
-									:value="(currentFilter.value * 100).toFixed()"
-									type="number"
-									:max="maxValue"
-									:min="minValue"
-									@input="updateValue"
-									@keydown.stop
-								/>%
-							</td>
-						</tr>
-						<tr v-if="minValue === 0 && maxValue !== undefined">
-							<td colspan="2">
-								<slider
-									:gradientStops="['#000000', '#ffffff']"
-									label=""
-									:maxValue="maxValue"
-									:modelValue="currentFilter.value * 100"
-									no-input
-									@update:modelValue="
-										setFilterProperty({ value: Math.round($event) / 100 })
-									"
-								/>
-							</td>
-						</tr>
-					</template>
-					<template v-else>
-						<tr>
-							<td>
-								<label for="filter_value">Value:</label>
-							</td>
-							<td>
-								<input
-									id="filter_value"
-									:value="currentFilter.value"
-									type="number"
-									:max="maxValue"
-									:min="minValue"
-									@input="updateValue"
-									@keydown.stop
-								/>
-							</td>
-						</tr>
-						<tr v-if="minValue === 0 && maxValue !== undefined">
-							<td colspan="2">
-								<slider
-									:gradientStops="hueStops"
-									label=""
-									:maxValue="maxValue"
-									:modelValue="currentFilter.value"
-									no-input
-									@update:modelValue="
-										setFilterProperty({ value: Math.round($event) })
-									"
-								/>
-								<slider
-									:gradientStops="hueStops"
-									label=""
-									:maxValue="maxValue"
-									:modelValue="currentFilter.value"
-									shift-gradient
-									no-input
-									disabled
-								/>
-							</td>
-						</tr>
-					</template>
+					<tbody>
+						<template v-if="currentFilter.type === 'drop-shadow'">
+							<tr>
+								<td>
+									<label for="shadow_color">Color:</label>
+								</td>
+								<td>
+									<button
+										id="shadow_color"
+										class="color-button"
+										:style="{ background: shadowColor }"
+										@click="showShadowColor = true"
+									>
+										&nbsp;
+									</button>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<label for="filter_x">X:</label>
+								</td>
+								<td>
+									<input
+										id="filter_x"
+										type="number"
+										v-model.number="shadowX"
+										@keydown.stop
+									/>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<label for="filter_y">Y:</label>
+								</td>
+								<td>
+									<input
+										id="filter_y"
+										type="number"
+										v-model.number="shadowY"
+										@keydown.stop
+									/>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<label for="filter_blur">Blur:</label>
+								</td>
+								<td>
+									<input
+										id="filter_blur"
+										type="number"
+										v-model.number="shadowBlur"
+										@keydown.stop
+									/>
+								</td>
+							</tr>
+						</template>
+						<template v-else-if="isPercentFilter">
+							<tr>
+								<td>
+									<label for="filter_value">Value:</label>
+								</td>
+								<td>
+									<!--suppress XmlDuplicatedId -->
+									<input
+										id="filter_value"
+										:value="(currentFilter.value * 100).toFixed()"
+										type="number"
+										:max="maxValue"
+										:min="minValue"
+										@input="updateValue"
+										@keydown.stop
+									/>%
+								</td>
+							</tr>
+							<tr v-if="minValue === 0 && maxValue !== undefined">
+								<td colspan="2">
+									<slider
+										:gradientStops="['#000000', '#ffffff']"
+										label=""
+										:maxValue="maxValue"
+										:modelValue="currentFilter.value * 100"
+										no-input
+										@update:modelValue="
+											setFilterProperty({ value: Math.round($event) / 100 })
+										"
+									/>
+								</td>
+							</tr>
+						</template>
+						<template v-else>
+							<tr>
+								<td>
+									<label for="filter_value">Value:</label>
+								</td>
+								<td>
+									<input
+										id="filter_value"
+										:value="currentFilter.value"
+										type="number"
+										:max="maxValue"
+										:min="minValue"
+										@input="updateValue"
+										@keydown.stop
+									/>
+								</td>
+							</tr>
+							<tr v-if="minValue === 0 && maxValue !== undefined">
+								<td colspan="2">
+									<slider
+										:gradientStops="hueStops"
+										label=""
+										:maxValue="maxValue"
+										:modelValue="currentFilter.value"
+										no-input
+										@update:modelValue="
+											setFilterProperty({ value: Math.round($event) })
+										"
+									/>
+									<slider
+										:gradientStops="hueStops"
+										label=""
+										:maxValue="maxValue"
+										:modelValue="currentFilter.value"
+										shift-gradient
+										no-input
+										disabled
+									/>
+								</td>
+							</tr>
+						</template>
+					</tbody>
 				</table>
 			</d-flow>
 		</d-fieldset>

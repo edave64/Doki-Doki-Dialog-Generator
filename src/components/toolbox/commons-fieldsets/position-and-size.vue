@@ -6,105 +6,109 @@
 <template>
 	<d-fieldset :title="'Position' + (allowSize ? '/Size' : '')">
 		<table class="v-w100">
-			<tr>
-				<td colspan="2">
-					<toggle
-						v-if="allowStepMove"
-						v-model="freeMove"
-						label="Move freely?"
-					/>
-				</td>
-			</tr>
-			<tr v-if="allowStepMove && !freeMove">
-				<td colspan="2">
-					<table class="v-w100 button-tbl">
-						<tr>
-							<td class="arrow-col">
-								<button @click="--pos" :disabled="isFirstPos">&lt;</button>
-							</td>
-							<td>
-								<select
-									id="current_talking"
-									class="v-w100"
-									style="text-align: center"
-									v-model.number="pos"
-								>
-									<option
-										v-for="(val, key) of positionNames"
-										:key="key"
-										:value="key"
-									>
-										{{ val }}
-									</option>
-								</select>
-							</td>
-							<td class="arrow-col">
-								<button @click="++pos" :disabled="isLastPos">&gt;</button>
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<template v-else>
+			<tbody>
 				<tr>
-					<td class="v-w50">
-						<label for="sprite_x">X:</label>
-					</td>
-					<td class="v-w50">
-						<input
-							id="sprite_x"
-							class="w100"
-							type="number"
-							v-model.number="x"
-							@keydown.stop
+					<td colspan="2">
+						<toggle
+							v-if="allowStepMove"
+							v-model="freeMove"
+							label="Move freely?"
 						/>
 					</td>
 				</tr>
-				<tr>
-					<td class="v-w50">
-						<label for="sprite_y">Y:</label>
-					</td>
-					<td class="v-w50">
-						<input
-							class="w100"
-							id="sprite_y"
-							type="number"
-							v-model.number="y"
-							@keydown.stop
-						/>
-					</td>
-				</tr>
-			</template>
-			<template v-if="allowSize">
-				<tr>
-					<td class="v-w50">
-						<label for="sprite_w">Width:</label>
-					</td>
-					<td class="v-w50">
-						<input
-							id="sprite_w"
-							min="0"
-							type="number"
-							v-model.number="width"
-							@keydown.stop
-						/>
-					</td>
-				</tr>
-				<tr>
-					<td class="v-w50">
-						<label for="sprite_h">Height:</label>
-					</td>
-					<td class="v-w50">
-						<input
-							id="sprite_h"
-							min="0"
-							type="number"
-							v-model.number="height"
-							@keydown.stop
-						/>
+				<tr v-if="allowStepMove && !freeMove">
+					<td colspan="2">
+						<table class="v-w100 button-tbl">
+							<tbody>
+								<tr>
+									<td class="arrow-col">
+										<button @click="--pos" :disabled="isFirstPos">&lt;</button>
+									</td>
+									<td>
+										<select
+											id="current_talking"
+											class="v-w100"
+											style="text-align: center"
+											v-model.number="pos"
+										>
+											<option
+												v-for="(val, key) of positionNames"
+												:key="key"
+												:value="key"
+											>
+												{{ val }}
+											</option>
+										</select>
+									</td>
+									<td class="arrow-col">
+										<button @click="++pos" :disabled="isLastPos">&gt;</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
 					</td>
 				</tr>
-			</template>
+				<template v-else>
+					<tr>
+						<td class="v-w50">
+							<label for="sprite_x">X:</label>
+						</td>
+						<td class="v-w50">
+							<input
+								id="sprite_x"
+								class="w100"
+								type="number"
+								v-model.number="x"
+								@keydown.stop
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td class="v-w50">
+							<label for="sprite_y">Y:</label>
+						</td>
+						<td class="v-w50">
+							<input
+								class="w100"
+								id="sprite_y"
+								type="number"
+								v-model.number="y"
+								@keydown.stop
+							/>
+						</td>
+					</tr>
+				</template>
+				<template v-if="allowSize">
+					<tr>
+						<td class="v-w50">
+							<label for="sprite_w">Width:</label>
+						</td>
+						<td class="v-w50">
+							<input
+								id="sprite_w"
+								min="0"
+								type="number"
+								v-model.number="width"
+								@keydown.stop
+							/>
+						</td>
+					</tr>
+					<tr>
+						<td class="v-w50">
+							<label for="sprite_h">Height:</label>
+						</td>
+						<td class="v-w50">
+							<input
+								id="sprite_h"
+								min="0"
+								type="number"
+								v-model.number="height"
+								@keydown.stop
+							/>
+						</td>
+					</tr>
+				</template>
+			</tbody>
 		</table>
 	</d-fieldset>
 </template>

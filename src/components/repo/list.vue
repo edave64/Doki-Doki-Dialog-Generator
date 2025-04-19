@@ -25,6 +25,7 @@
 			</thead>
 			<transition-group
 				name="tbody-group"
+				key="list-transition"
 				tag="tbody"
 				ref="tbody"
 				:tabindex="disabled ? -1 : 0"

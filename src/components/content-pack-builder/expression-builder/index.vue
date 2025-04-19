@@ -62,24 +62,26 @@
 							</select>
 							<d-fieldset title="Offset">
 								<table>
-									<tr>
-										<th>X:</th>
-										<td>
-											<input
-												type="number"
-												v-model.number="offsetX"
-												@keydown.stop
-											/>
-										</td>
-										<th>Y:</th>
-										<td>
-											<input
-												type="number"
-												v-model.number="offsetY"
-												@keydown.stop
-											/>
-										</td>
-									</tr>
+									<tbody>
+										<tr>
+											<th>X:</th>
+											<td>
+												<input
+													type="number"
+													v-model.number="offsetX"
+													@keydown.stop
+												/>
+											</td>
+											<th>Y:</th>
+											<td>
+												<input
+													type="number"
+													v-model.number="offsetY"
+													@keydown.stop
+												/>
+											</td>
+										</tr>
+									</tbody>
 								</table>
 								<p v-if="offsetX !== 0 || offsetY !== 0">
 									WARNING: Offsets will be lost when saving/loading.

@@ -7,14 +7,16 @@
 		<h2>{{ title }}</h2>
 		<button @click="$emit('leave')">OK</button>
 		<table>
-			<tr>
-				<td>
-					<button @click="mode = 'hsla'">HSLA</button>
-				</td>
-				<td>
-					<button @click="mode = 'rgba'">RGBA</button>
-				</td>
-			</tr>
+			<tbody>
+				<tr>
+					<td>
+						<button @click="mode = 'hsla'">HSLA</button>
+					</td>
+					<td>
+						<button @click="mode = 'rgba'">RGBA</button>
+					</td>
+				</tr>
+			</tbody>
 		</table>
 
 		<div class="v-w100 h-h100">

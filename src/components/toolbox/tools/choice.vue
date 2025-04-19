@@ -22,23 +22,25 @@
 		</d-fieldset>
 		<d-fieldset class="current_button" title="Current button:">
 			<table>
-				<tr>
-					<td colspan="2">
-						<label for="choice-button-input">Text</label>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<input
-							id="choice-button-input"
-							v-model="buttonText"
-							@keydown.stop
-						/>
-					</td>
-					<td>
-						<button @click="textEditor = true">...</button>
-					</td>
-				</tr>
+				<tbody>
+					<tr>
+						<td colspan="2">
+							<label for="choice-button-input">Text</label>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input
+								id="choice-button-input"
+								v-model="buttonText"
+								@keydown.stop
+							/>
+						</td>
+						<td>
+							<button @click="textEditor = true">...</button>
+						</td>
+					</tr>
+				</tbody>
 			</table>
 		</d-fieldset>
 		<button @click="addChoice">Add</button>

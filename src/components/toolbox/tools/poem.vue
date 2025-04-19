@@ -38,18 +38,20 @@
 		</template>
 		<template v-else>
 			<table>
-				<tr>
-					<td style="width: 0">Color:</td>
-					<td class="v-w100">
-						<button
-							id="console_color"
-							class="w100"
-							:style="{ background: object.consoleColor }"
-							style="min-width: 64px"
-							@click="colorSelect = 'base'"
-						></button>
-					</td>
-				</tr>
+				<tbody>
+					<tr>
+						<td style="width: 0">Color:</td>
+						<td class="v-w100">
+							<button
+								id="console_color"
+								class="w100"
+								:style="{ background: object.consoleColor }"
+								style="min-width: 64px"
+								@click="colorSelect = 'base'"
+							></button>
+						</td>
+					</tr>
+				</tbody>
 			</table>
 		</template>
 	</object-tool>

@@ -36,43 +36,46 @@
 				following prefixes:
 			</p>
 			<table>
-				<tr>
-					<th>Prefix</th>
-					<th>Description</th>
-					<th>Example</th>
-				</tr>
-				<tr>
-					<td>Character:</td>
-					<td></td>
-					<td><code>Character: Monika</code></td>
-				</tr>
-				<tr>
-					<td>Artist:</td>
-					<td></td>
-					<td><code>Artist: edave64</code></td>
-				</tr>
-				<tr>
-					<td>Type:</td>
-					<td>
-						<code>Backgrounds</code>, <code>Sprites</code>,
-						<code>Expressions</code>, <code>Styles</code>, <code>Poses</code> or
-						<code>Characters</code>
-					</td>
-					<td><code>Type: Poses</code></td>
-				</tr>
-				<tr>
-					<td>Engine:</td>
-					<td>
-						<code>Doki Doki Dialog Generator</code>, <code>DDDG</code> or
-						<code>Doki Doki Comic Club</code>, <code>DDCC</code>
-					</td>
-					<td><code>Engine: DDCC</code></td>
-				</tr>
-				<tr>
-					<td>Pack:</td>
-					<td>The pack itself must contain the text</td>
-					<td><code>Pack: Angry</code></td>
-				</tr>
+				<tbody>
+					<tr>
+						<th>Prefix</th>
+						<th>Description</th>
+						<th>Example</th>
+					</tr>
+					<tr>
+						<td>Character:</td>
+						<td></td>
+						<td><code>Character: Monika</code></td>
+					</tr>
+					<tr>
+						<td>Artist:</td>
+						<td></td>
+						<td><code>Artist: edave64</code></td>
+					</tr>
+					<tr>
+						<td>Type:</td>
+						<td>
+							<code>Backgrounds</code>, <code>Sprites</code>,
+							<code>Expressions</code>, <code>Styles</code>,
+							<code>Poses</code> or
+							<code>Characters</code>
+						</td>
+						<td><code>Type: Poses</code></td>
+					</tr>
+					<tr>
+						<td>Engine:</td>
+						<td>
+							<code>Doki Doki Dialog Generator</code>, <code>DDDG</code> or
+							<code>Doki Doki Comic Club</code>, <code>DDCC</code>
+						</td>
+						<td><code>Engine: DDCC</code></td>
+					</tr>
+					<tr>
+						<td>Pack:</td>
+						<td>The pack itself must contain the text</td>
+						<td><code>Pack: Angry</code></td>
+					</tr>
+				</tbody>
 			</table>
 
 			<p>

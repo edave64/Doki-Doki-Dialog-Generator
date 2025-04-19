@@ -72,83 +72,85 @@
 			</div>
 			<d-fieldset title="Export" class="h-h100">
 				<table class="v-w100">
-					<tr>
-						<td>
-							<label for="export_format">Format</label>
-						</td>
-						<td>
-							<select id="export_format" v-model="format">
-								<option value="image/png">PNG (lossless)</option>
-								<option value="image/webp" v-if="webpSupport">
-									WebP (lossy)
-								</option>
-								<option value="image/heif" v-if="heifSupport">
-									HEIF (lossy)
-								</option>
-								<option value="image/jpeg">JPEG (lossy)</option>
-								<!-- <option value="image/jpeg">WebM (lossy, video)</option>-->
-							</select>
-						</td>
-					</tr>
-					<tr v-if="isLossy">
-						<td>
-							<label for="export_quality">Quality:</label>
-						</td>
-						<td>
-							<input
-								id="export_quality"
-								type="number"
-								min="0"
-								max="100"
-								v-model.number="quality"
-								@keydown.stop
-							/>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<label for="export_ppi">
-								Panels per image:
-								<small v-if="!isLossy || vertical"
-									><br />(0 for one single image)</small
-								>
-							</label>
-						</td>
-						<td>
-							<input
-								id="export_ppi"
-								type="number"
-								min="0"
-								v-model.number="ppi"
-								@keydown.stop
-								@blur="if (emptyStringInInt(ppi)) ppi = 0;"
-							/>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<label for="export_pages">
-								Panels to export:
-								<small v-if="!isLossy || vertical"
-									><br />(Leave empty for all)</small
-								>
-							</label>
-						</td>
-						<td>
-							<input
-								id="export_pages"
-								v-model="pages"
-								placeholder="E.g. 1-5, 8, 11-13"
-							/>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="2">
-							<d-button icon="photo_camera" class="w100" @click="download">
-								Download
-							</d-button>
-						</td>
-					</tr>
+					<tbody>
+						<tr>
+							<td>
+								<label for="export_format">Format</label>
+							</td>
+							<td>
+								<select id="export_format" v-model="format">
+									<option value="image/png">PNG (lossless)</option>
+									<option value="image/webp" v-if="webpSupport">
+										WebP (lossy)
+									</option>
+									<option value="image/heif" v-if="heifSupport">
+										HEIF (lossy)
+									</option>
+									<option value="image/jpeg">JPEG (lossy)</option>
+									<!-- <option value="image/jpeg">WebM (lossy, video)</option>-->
+								</select>
+							</td>
+						</tr>
+						<tr v-if="isLossy">
+							<td>
+								<label for="export_quality">Quality:</label>
+							</td>
+							<td>
+								<input
+									id="export_quality"
+									type="number"
+									min="0"
+									max="100"
+									v-model.number="quality"
+									@keydown.stop
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label for="export_ppi">
+									Panels per image:
+									<small v-if="!isLossy || vertical"
+										><br />(0 for one single image)</small
+									>
+								</label>
+							</td>
+							<td>
+								<input
+									id="export_ppi"
+									type="number"
+									min="0"
+									v-model.number="ppi"
+									@keydown.stop
+									@blur="if (emptyStringInInt(ppi)) ppi = 0;"
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<label for="export_pages">
+									Panels to export:
+									<small v-if="!isLossy || vertical"
+										><br />(Leave empty for all)</small
+									>
+								</label>
+							</td>
+							<td>
+								<input
+									id="export_pages"
+									v-model="pages"
+									placeholder="E.g. 1-5, 8, 11-13"
+								/>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<d-button icon="photo_camera" class="w100" @click="download">
+									Download
+								</d-button>
+							</td>
+						</tr>
+					</tbody>
 				</table>
 			</d-fieldset>
 			<div class="column">

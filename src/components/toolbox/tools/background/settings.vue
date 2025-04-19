@@ -13,40 +13,42 @@
 			/>
 		</template>
 		<table v-if="isVariant">
-			<tr>
-				<td colspan="3">
-					<toggle v-model="flipped" label="Flipped?" />
-				</td>
-			</tr>
-			<tr v-if="hasVariants">
-				<td class="arrow-col">
-					<button class="small-button" @click="seekVariant(-1)">&lt;</button>
-				</td>
-				<td style="text-align: center">Variant</td>
-				<td class="arrow-col">
-					<button class="small-button" @click="seekVariant(1)">&gt;</button>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="3">
-					<select v-model="scaling" @keydown.stop>
-						<option value="0">None</option>
-						<option value="1">Stretch</option>
-						<option value="2">Cover</option>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="3">
-					<button
-						id="image_options_button"
-						class="v-w100"
-						@click="emit('open-image-options')"
-					>
-						Image options
-					</button>
-				</td>
-			</tr>
+			<tbody>
+				<tr>
+					<td colspan="3">
+						<toggle v-model="flipped" label="Flipped?" />
+					</td>
+				</tr>
+				<tr v-if="hasVariants">
+					<td class="arrow-col">
+						<button class="small-button" @click="seekVariant(-1)">&lt;</button>
+					</td>
+					<td style="text-align: center">Variant</td>
+					<td class="arrow-col">
+						<button class="small-button" @click="seekVariant(1)">&gt;</button>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="3">
+						<select v-model="scaling" @keydown.stop>
+							<option value="0">None</option>
+							<option value="1">Stretch</option>
+							<option value="2">Cover</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="3">
+						<button
+							id="image_options_button"
+							class="v-w100"
+							@click="emit('open-image-options')"
+						>
+							Image options
+						</button>
+					</td>
+				</tr>
+			</tbody>
 		</table>
 	</d-fieldset>
 </template>

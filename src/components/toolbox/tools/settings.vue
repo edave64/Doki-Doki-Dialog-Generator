@@ -110,27 +110,31 @@
 			v-model="looseTextParsing"
 		/>
 		<table class="v-w100">
-			<tr>
-				<td><label>Theme:</label></td>
-				<td>
-					<select v-model="theme" class="v-w100">
-						<option :value="null">System</option>
-						<option :value="false">Light</option>
-						<option :value="true">Dark</option>
-					</select>
-				</td>
-			</tr>
+			<tbody>
+				<tr>
+					<td><label>Theme:</label></td>
+					<td>
+						<select v-model="theme" class="v-w100">
+							<option :value="null">System</option>
+							<option :value="false">Light</option>
+							<option :value="true">Dark</option>
+						</select>
+					</td>
+				</tr>
+			</tbody>
 		</table>
 
 		<table v-if="showDownloadFolder" class="downloadTable">
-			<tr>
-				<td><label>Download folder:</label></td>
-				<td>{{ downloadFolder }}</td>
-				<td>
-					<button @click="setDownloadFolder">Set</button>
-					<button @click="openDownloadFolder">Open</button>
-				</td>
-			</tr>
+			<tbody>
+				<tr>
+					<td><label>Download folder:</label></td>
+					<td>{{ downloadFolder }}</td>
+					<td>
+						<button @click="setDownloadFolder">Set</button>
+						<button @click="openDownloadFolder">Open</button>
+					</td>
+				</tr>
+			</tbody>
 		</table>
 
 		<template v-if="savesAllowed">
