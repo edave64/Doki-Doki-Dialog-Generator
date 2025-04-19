@@ -111,7 +111,11 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 	protected backgroundImage = 'textbox';
 	protected xOffset = 0;
 
-	protected renderNamebox(rx: CanvasRenderingContext2D, x: number, y: number) {
+	protected renderNamebox(
+		rx: CanvasRenderingContext2D,
+		x: number,
+		y: number
+	) {
 		ctxScope(rx, () => {
 			const w = this.nameboxWidth;
 			const h = this.nameboxHeight;
@@ -121,9 +125,15 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 			const gradient = rx.createLinearGradient(x, y, x, y + h);
 			const baseBG = RGBAColor.fromCss(this.nameboxBackgroundColor);
 			const color = new RGBAColor(baseBG.r, baseBG.g, baseBG.b, 0.95);
-			const targetColor = color.toHSL().shift(nameboxGradientEndDelta).toRgb();
+			const targetColor = color
+				.toHSL()
+				.shift(nameboxGradientEndDelta)
+				.toRgb();
 			gradient.addColorStop(0, color.toCss());
-			gradient.addColorStop(nameboxGradientMiddleStopPosition, color.toCss());
+			gradient.addColorStop(
+				nameboxGradientMiddleStopPosition,
+				color.toCss()
+			);
 			gradient.addColorStop(1, targetColor.toCss());
 			rx.fillStyle = gradient;
 			rx.fillRect(x, y, this.obj.width, h);
@@ -263,7 +273,9 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 
 		const pattern = dotRx.createPattern(dotPattern, 'repeat');
 		if (!pattern)
-			throw new Error('Failed to create textbox dot-pattern. Out of memory?');
+			throw new Error(
+				'Failed to create textbox dot-pattern. Out of memory?'
+			);
 		this._dotPattern = pattern;
 		return pattern;
 	}

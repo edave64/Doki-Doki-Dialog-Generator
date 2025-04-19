@@ -1,11 +1,11 @@
+import { fileURLToPath, URL } from 'node:url';
+
 import vue from '@vitejs/plugin-vue';
 import { defineConfig, loadEnv } from 'vite';
+import vueDevTools from 'vite-plugin-vue-devtools';
 
-// https://vitejs.dev/config/
-
-/** @type {import('vite').UserConfigExport} */
-
-export const config = ({ mode }) => {
+// https://vite.dev/config/
+export default defineConfig(({ mode }) => {
 	// load the enviroment variables from the .env files, according to the current mode (desktop, development, production)
 	const env = {
 		...process.env,
@@ -14,9 +14,11 @@ export const config = ({ mode }) => {
 	return {
 		base: './',
 
+		plugins: [vue(), vueDevTools()],
+
 		resolve: {
 			alias: {
-				'@': '/src/',
+				'@': fileURLToPath(new URL('./src', import.meta.url)),
 			},
 		},
 
@@ -25,23 +27,5 @@ export const config = ({ mode }) => {
 			DDDG_ALLOW_WEBP: env.VITE_ALLOW_WEBP !== 'false',
 			DDDG_ASSET_PATH: JSON.stringify(env.VITE_ASSET_PATH || './'),
 		},
-
-		css: {
-			preprocessorOptions: {
-				scss: {
-					additionalData: `@import '/src/styles/global_mixins.scss';`,
-				},
-			},
-		},
-
-		...(mode.mode === 'development'
-			? {}
-			: {
-					esbuild: { target: 'es2015' },
-					build: { target: 'es2015' },
-				}),
-
-		plugins: [vue()],
 	};
-};
-export default defineConfig(config);
+});

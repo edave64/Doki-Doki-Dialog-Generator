@@ -21,7 +21,9 @@ export default {
 			{ name, url }: { name: string; url: string }
 		) {
 			if (state[name]) {
-				throw new Error(`There is already an uploaded file called "${name}"`);
+				throw new Error(
+					`There is already an uploaded file called "${name}"`
+				);
 			}
 			const assertUrl = 'uploads:' + name;
 			commit('add', { name: assertUrl, url });

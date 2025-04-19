@@ -14,7 +14,9 @@
 		:style="icon ? 'height: auto' : ''"
 		ref="btn"
 	>
-		<div class="material-icons" aria-hidden="true" v-if="icon">{{ icon }}</div>
+		<div class="material-icons" aria-hidden="true" v-if="icon">
+			{{ icon }}
+		</div>
 		<div class="content">
 			<slot />
 		</div>
@@ -93,9 +95,7 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 //noinspection CssOverwrittenProperties
 button {
-	border: 2px solid $default-border;
 	border: 2px solid var(--border);
-	background: $default-accent-background;
 	background: var(--accent-background);
 	padding: 1px;
 	display: flex;
@@ -117,7 +117,6 @@ button {
 	}
 
 	&:active {
-		background: $default-border;
 		background: var(--border);
 	}
 }

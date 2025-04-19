@@ -26,11 +26,10 @@ export type LoadedRepo = {
 export class Repo {
 	private static instance: null | Promise<Repo>;
 	public static setStore: ($store: Store<DeepReadonly<IRootState>>) => void;
-	private static $store: Promise<Store<DeepReadonly<IRootState>>> = new Promise(
-		(resolve) => {
+	private static $store: Promise<Store<DeepReadonly<IRootState>>> =
+		new Promise((resolve) => {
 			Repo.setStore = resolve;
-		}
-	);
+		});
 
 	public static getInstance(): Promise<Repo> {
 		if (!Repo.instance) Repo.instance = this.createInstance();
@@ -88,12 +87,16 @@ export class Repo {
 		window.repo = this;
 		if (!onlineRepo) {
 			onlineRepo = { authors: {}, packs: [] };
-			eventBus.fire(new ShowMessageEvent("Couldn't load remote repository."));
+			eventBus.fire(
+				new ShowMessageEvent("Couldn't load remote repository.")
+			);
 		}
 		if (!localRepo) {
 			localRepo = { authors: {}, packs: [] };
 			if (environment.supports.localRepo) {
-				eventBus.fire(new ShowMessageEvent("Couldn't load local repository."));
+				eventBus.fire(
+					new ShowMessageEvent("Couldn't load local repository.")
+				);
 			}
 		}
 		this.onlineRepo = ref(onlineRepo);
@@ -114,7 +117,9 @@ export class Repo {
 
 			const tempRepo = this.tempRepo;
 			const tempPacks = tempRepo.packs;
-			const tempRepoLookup = new Map(tempPacks.map((pack) => [pack.id, pack]));
+			const tempRepoLookup = new Map(
+				tempPacks.map((pack) => [pack.id, pack])
+			);
 
 			const autoloads = new Set(environment.state.autoAdd);
 			const loadedPackOrder = this.$store.state.content.contentPacks
@@ -153,7 +158,9 @@ export class Repo {
 						...(tempRepoLookup.get(packId) ?? {}),
 						autoloading: autoloads.has(packId),
 						installed: localRepoLookup.has(packId),
-						online: onlineRepoLookup.has(packId) || tempRepoLookup.has(packId),
+						online:
+							onlineRepoLookup.has(packId) ||
+							tempRepoLookup.has(packId),
 						loaded: loadedPacksSet.has(packId),
 					} as Pack;
 				});
@@ -187,7 +194,9 @@ export class Repo {
 
 	public hasPack(id: string, onlineOnly: boolean = false): boolean {
 		if (onlineOnly) {
-			return !!this.onlineRepo.value?.packs.find((pack) => pack.id === id);
+			return !!this.onlineRepo.value?.packs.find(
+				(pack) => pack.id === id
+			);
 		}
 		return !!this.getPacks().find((pack) => pack.id === id);
 	}
@@ -221,7 +230,9 @@ export class Repo {
 			);
 		}
 		if (!body.pack && (!body.packs || body.packs.length === 0)) {
-			throw new Error(`The json file '${url}' does not contain any packages`);
+			throw new Error(
+				`The json file '${url}' does not contain any packages`
+			);
 		}
 		if (body.authors) {
 			for (const key in body.authors) {

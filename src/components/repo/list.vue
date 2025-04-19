@@ -18,7 +18,9 @@
 					>
 						<div>
 							<div>{{ header[1] }}</div>
-							<div v-if="sort === header[0]">{{ desc ? '▼' : '▲' }}</div>
+							<div v-if="sort === header[0]">
+								{{ desc ? '▼' : '▲' }}
+							</div>
 						</div>
 					</th>
 				</tr>
@@ -40,7 +42,9 @@
 						focused: focusedItem === pack.id,
 					}"
 					@mousedown="focusedItem = pack.id"
-					@click="emit('selected', { id: pack.id, source: 'pointer' })"
+					@click="
+						emit('selected', { id: pack.id, source: 'pointer' })
+					"
 				>
 					<td>{{ pack.name }}</td>
 					<td>{{ pack.characters.join(', ') }}</td>
@@ -123,7 +127,9 @@ function focus(): void {
 }
 
 function keydownHandler(event: KeyboardEvent) {
-	const indexOf = list.value.findIndex((pack) => pack.id === focusedItem.value);
+	const indexOf = list.value.findIndex(
+		(pack) => pack.id === focusedItem.value
+	);
 	switch (event.key) {
 		case 'Enter':
 			emit('selected', { id: focusedItem.value, source: 'keyboard' });
@@ -208,7 +214,8 @@ function updateFocusedItem() {
 			| HTMLDivElement
 			| undefined;
 
-		const containerHeight = root.value.offsetHeight - header.value.offsetHeight;
+		const containerHeight =
+			root.value.offsetHeight - header.value.offsetHeight;
 		const scrollTop = root.value.scrollTop;
 		const scrollBottom = scrollTop + containerHeight;
 
@@ -285,13 +292,9 @@ table {
 	border-collapse: collapse;
 	min-width: 100%;
 	user-select: none;
-	//noinspection CssOverwrittenProperties
-	color: $default-text;
-	//noinspection CssOverwrittenProperties
 	color: var(--text);
 
 	.focused {
-		background: $default-accent-background;
 		background: var(--accent-background);
 	}
 }
@@ -300,14 +303,12 @@ tbody:focus {
 	outline: 0;
 
 	.focused {
-		background: $default-border;
 		background: var(--border);
 	}
 }
 
 tr:hover,
 th:hover {
-	background: $default-accent-background;
 	background: var(--accent-background);
 	cursor: pointer;
 }
@@ -319,17 +320,10 @@ td {
 }
 
 th {
-	background: $default-native-background;
 	background: var(--native-background);
 	position: sticky;
 	top: 0;
-	//noinspection CssOverwrittenProperties
-	color: $default-text;
-	//noinspection CssOverwrittenProperties
 	color: var(--text);
-	//noinspection CssOverwrittenProperties
-	box-shadow: 0 2px 2px -1px $default-text;
-	//noinspection CssOverwrittenProperties
 	box-shadow: 0 2px 2px -1px var(--text);
 
 	> div {

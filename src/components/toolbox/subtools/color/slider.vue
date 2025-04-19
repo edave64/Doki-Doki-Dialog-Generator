@@ -26,7 +26,9 @@
 						<stop
 							v-for="(color, idx) in gradientStops"
 							:key="idx"
-							:offset="(idx / (gradientStops.length - 1)) * 100 + '%'"
+							:offset="
+								(idx / (gradientStops.length - 1)) * 100 + '%'
+							"
 							:style="'stop-color:' + color"
 						/>
 					</linearGradient>
@@ -38,7 +40,11 @@
 						paint-order="fill stroke markers"
 						:fill="`url(#gradient${id})`"
 					/>
-					<path :d="pointerPath" stroke-width="2" class="slider-pointer" />
+					<path
+						:d="pointerPath"
+						stroke-width="2"
+						class="slider-pointer"
+					/>
 				</g>
 			</svg>
 		</div>
@@ -133,8 +139,9 @@ function moveDrag(event: MouseEvent | TouchEvent) {
 	const bounding = svgE.getBoundingClientRect();
 	const scale = bounding.width / (sliderOffset + sliderLength + sliderOffset);
 	const x =
-		(event instanceof MouseEvent ? event.clientX : event.touches[0].clientX) -
-		bounding.x;
+		(event instanceof MouseEvent
+			? event.clientX
+			: event.touches[0].clientX) - bounding.x;
 	const scaledX = x / scale;
 	const value =
 		(Math.max(Math.min(scaledX - sliderOffset, sliderLength), 0) /
@@ -189,15 +196,9 @@ function endDrag() {
 }
 
 svg g {
-	//noinspection CssOverwrittenProperties
-	stroke: $default-border;
-	//noinspection CssOverwrittenProperties
 	stroke: var(--border);
 
 	.slider-pointer {
-		//noinspection CssOverwrittenProperties
-		fill: $default-text;
-		//noinspection CssOverwrittenProperties
 		fill: var(--text);
 	}
 }

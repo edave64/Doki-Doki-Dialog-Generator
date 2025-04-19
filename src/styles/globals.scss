@@ -38,26 +38,17 @@ body {
 
 h1 {
 	font-size: 24px;
-	//noinspection CssOverwrittenProperties
-	color: $default-text;
-	//noinspection CssOverwrittenProperties
 	color: var(--text);
 	font-family: riffic, sans-serif;
 	text-align: center;
 }
 
 h2 {
-	//noinspection CssOverwrittenProperties
-	color: $default-text;
-	//noinspection CssOverwrittenProperties
 	color: var(--text);
 }
 
 input,
 textarea {
-	//noinspection CssOverwrittenProperties
-	border: 2px solid $default-border;
-	//noinspection CssOverwrittenProperties
 	border: 2px solid var(--border);
 }
 
@@ -66,22 +57,12 @@ select,
 .btn {
 	padding: 1px;
 
-	//noinspection CssOverwrittenProperties
-	border: 2px solid $default-border;
-	//noinspection CssOverwrittenProperties
 	border: 2px solid var(--border);
 
-	//noinspection CssOverwrittenProperties
-	background: $default-accent-background;
-	//noinspection CssOverwrittenProperties
 	background: var(--accent-background);
-	//noinspection CssOverwrittenProperties
-	color: $default-text;
-	//noinspection CssOverwrittenProperties
 	color: var(--text);
 
 	&:active {
-		background: $default-border;
 		background: var(--border);
 	}
 }
@@ -89,11 +70,7 @@ select,
 button:disabled,
 select:disabled,
 .btn:disabled {
-	background: $default-border;
 	background: var(--border);
-	//noinspection CssOverwrittenProperties
-	color: $default-text-disabled;
-	//noinspection CssOverwrittenProperties
 	color: var(--text-disabled);
 }
 
@@ -127,19 +104,12 @@ input[type='number'] {
 
 input,
 textarea {
-	background: $default-native-background;
 	background: var(--native-background);
-	//noinspection CssOverwrittenProperties
-	color: $default-text;
-	//noinspection CssOverwrittenProperties
 	color: var(--text);
 }
 
 input:disabled,
 textarea:disabled {
-	//noinspection CssOverwrittenProperties
-	color: $default-text-disabled;
-	//noinspection CssOverwrittenProperties
 	color: var(--text-disabled);
 }
 
@@ -148,9 +118,6 @@ a {
 }
 
 p {
-	//noinspection CssOverwrittenProperties
-	color: $default-text;
-	//noinspection CssOverwrittenProperties
 	color: var(--text);
 }
 
@@ -167,12 +134,7 @@ body {
 	--modal-backdrop: rgba(0, 0, 0, 0.5);
 	--modal-backdrop-light: rgba(0, 0, 0, 0.25);
 
-	//noinspection CssOverwrittenProperties
-	color: $default-text;
-	//noinspection CssOverwrittenProperties
 	color: var(--text);
-
-	background: $default-native-background;
 	background: var(--native-background);
 }
 
@@ -251,9 +213,6 @@ button.bl0 {
 	border-collapse: collapse;
 	width: 100%;
 	td {
-		//noinspection CssOverwrittenProperties
-		border: 2px solid $default-border;
-		//noinspection CssOverwrittenProperties
 		border: 2px solid var(--border);
 
 		> * {

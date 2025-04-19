@@ -22,18 +22,21 @@
 			</button>
 		</div>
 		<div class="info-area" v-if="showHelp" @click.stop>
-			<p>Enter the text you want to search for. E.g. <code>Monika</code></p>
+			<p>
+				Enter the text you want to search for. E.g. <code>Monika</code>
+			</p>
 			<p>
 				If multiple words are given, each word must be found. E.g.
 				<code>Monika Pose</code>
 			</p>
 			<p>
-				To search phrases with spaces, surround them with double quotes. E.g.
+				To search phrases with spaces, surround them with double quotes.
+				E.g.
 				<code>"Monika R63" Pose</code>
 			</p>
 			<p>
-				To limit your search to specific attributes of a pack, you can use the
-				following prefixes:
+				To limit your search to specific attributes of a pack, you can
+				use the following prefixes:
 			</p>
 			<table>
 				<tbody>
@@ -65,7 +68,8 @@
 					<tr>
 						<td>Engine:</td>
 						<td>
-							<code>Doki Doki Dialog Generator</code>, <code>DDDG</code> or
+							<code>Doki Doki Dialog Generator</code>,
+							<code>DDDG</code> or
 							<code>Doki Doki Comic Club</code>, <code>DDCC</code>
 						</td>
 						<td><code>Engine: DDCC</code></td>
@@ -79,8 +83,9 @@
 			</table>
 
 			<p>
-				Prefixes can be shorted, so <code>Character: Monika</code> can be
-				shortend to <code>C: Monika</code>
+				Prefixes can be shorted, so <code>Character: Monika</code> can
+				be shortend to
+				<code>C: Monika</code>
 			</p>
 		</div>
 	</div>
@@ -203,12 +208,7 @@ a {
 	left: 8px;
 	right: 8px;
 	z-index: 2;
-	border: 2px solid $default-border;
-	//noinspection CssOverwrittenProperties
 	border: 2px solid var(--border);
-	//noinspection CssOverwrittenProperties
-	background-color: $default-native-background;
-	//noinspection CssOverwrittenProperties
 	background-color: var(--native-background);
 	max-height: calc(100vh - 56px);
 	overflow: auto;
@@ -216,7 +216,6 @@ a {
 
 	code {
 		padding: 2px;
-		background: $default-accent-background;
 		background: var(--accent-background);
 		font-family: monospace;
 		white-space: nowrap;
@@ -226,15 +225,10 @@ a {
 .help {
 	height: 42px;
 	width: 40px;
-	border: 2px solid $default-border;
-	//noinspection CssOverwrittenProperties
 	border: 2px solid var(--border);
 	border-left: 0;
 
 	&.toggled {
-		//noinspection CssOverwrittenProperties
-		background-color: $default-border;
-		//noinspection CssOverwrittenProperties
 		background-color: var(--border);
 	}
 }
@@ -242,14 +236,10 @@ a {
 .input {
 	display: block;
 	width: calc(100% - 40px);
-	border: 2px solid $default-border;
-	//noinspection CssOverwrittenProperties
 	border: 2px solid var(--border);
 	height: 42px;
 	overflow: hidden;
 	white-space: nowrap;
-	background: $default-accent-background;
-	//noinspection CssOverwrittenProperties
 	background: var(--accent-background);
 	background-repeat: no-repeat;
 	background-size: contain;
@@ -260,7 +250,6 @@ a {
 .suggestions {
 	border: 2px black solid;
 	border-top: 0;
-	background: $default-native-background;
 	background: var(--native-background);
 
 	.suggestion {

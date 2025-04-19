@@ -30,7 +30,12 @@ export class Renderer {
 		}
 
 		const ctx = this.previewCanvas.getContext('2d')!;
-		ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
+		ctx.clearRect(
+			0,
+			0,
+			this.previewCanvas.width,
+			this.previewCanvas.height
+		);
 		const context = (this.runningContext = RenderContext.makeWithContext(
 			this.previewCanvas,
 			ctx,
@@ -100,7 +105,12 @@ export class Renderer {
 		downloadCanvas.height = this.previewCanvas.height;
 
 		const ctx = downloadCanvas.getContext('2d')!;
-		ctx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
+		ctx.clearRect(
+			0,
+			0,
+			this.previewCanvas.width,
+			this.previewCanvas.height
+		);
 		await renderCallback(
 			RenderContext.makeWithContext(downloadCanvas, ctx, true, false)
 		);

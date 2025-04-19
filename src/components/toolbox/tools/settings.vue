@@ -13,19 +13,25 @@
 				no-base-size
 			>
 				<div class="modal-scroll-area">
-					<p>Do you want to allow DDDG to save settings on your device?</p>
 					<p>
-						By choosing to enable saving settings, DDDG can save data to your
-						device, and nowhere else. However, your browser and any installed
-						browser extensions might possibly read and send this data to other
-						servers, e.g. to sync between devices. This is outside of our
-						control. But in general, we recommend only using browsers and
-						browser extensions that you trust with your personal data.
+						Do you want to allow DDDG to save settings on your
+						device?
+					</p>
+					<p>
+						By choosing to enable saving settings, DDDG can save
+						data to your device, and nowhere else. However, your
+						browser and any installed browser extensions might
+						possibly read and send this data to other servers, e.g.
+						to sync between devices. This is outside of our control.
+						But in general, we recommend only using browsers and
+						browser extensions that you trust with your personal
+						data.
 					</p>
 					<p>You can revoke this permission at any time.</p>
 					<p>
-						Our usual <l to="wiki://Privacy Statement">privacy policy</l> still
-						applies.
+						Our usual
+						<l to="wiki://Privacy Statement">privacy policy</l>
+						still applies.
 					</p>
 				</div>
 			</modal-dialog>
@@ -37,13 +43,18 @@
 				no-base-size
 			>
 				<div class="modal-scroll-area">
-					<p>Do you want to deny DDDG from saving settings on your device?</p>
 					<p>
-						This will cause all your settings to reset when leaving the page.
+						Do you want to deny DDDG from saving settings on your
+						device?
 					</p>
 					<p>
-						Our usual <l to="wiki://Privacy Statement">privacy policy</l> still
-						applies.
+						This will cause all your settings to reset when leaving
+						the page.
+					</p>
+					<p>
+						Our usual
+						<l to="wiki://Privacy Statement">privacy policy</l>
+						still applies.
 					</p>
 				</div>
 			</modal-dialog>
@@ -59,8 +70,8 @@
 			>
 				<div class="modal-scroll-area">
 					<p>
-						WARNING: Swiching modes will discard everything you have done in
-						this session. All dialouge will be lost!
+						WARNING: Swiching modes will discard everything you have
+						done in this session. All dialouge will be lost!
 					</p>
 				</div>
 			</modal-dialog>

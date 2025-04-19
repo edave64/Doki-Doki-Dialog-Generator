@@ -21,11 +21,15 @@
 				</tr>
 				<tr v-if="hasVariants">
 					<td class="arrow-col">
-						<button class="small-button" @click="seekVariant(-1)">&lt;</button>
+						<button class="small-button" @click="seekVariant(-1)">
+							&lt;
+						</button>
 					</td>
 					<td style="text-align: center">Variant</td>
 					<td class="arrow-col">
-						<button class="small-button" @click="seekVariant(1)">&gt;</button>
+						<button class="small-button" @click="seekVariant(1)">
+							&gt;
+						</button>
 					</td>
 				</tr>
 				<tr>
@@ -147,8 +151,10 @@ function seekVariant(delta: 1 | -1) {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/fixes.scss';
+
 .bg-settings:not(.vertical) {
-	@include height-100();
+	@include fixes.height-100();
 }
 
 .small-button {

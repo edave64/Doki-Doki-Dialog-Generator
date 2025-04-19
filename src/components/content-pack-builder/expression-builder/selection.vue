@@ -47,9 +47,6 @@ const background = computed(() => {
 		1px 1px 0 #000;
 	color: white;
 	align-items: center;
-	//noinspection CssOverwrittenProperties
-	box-shadow: inset 0 0 1px 3px $default-modal-backdrop;
-	//noinspection CssOverwrittenProperties
 	box-shadow: inset 0 0 1px 3px var(--modal-backdrop);
 	user-select: none;
 }

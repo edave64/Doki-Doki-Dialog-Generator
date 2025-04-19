@@ -68,7 +68,9 @@ function paramlessOp(
 		name,
 		(style: ITextStyle, parameter: string) => {
 			if (parameter !== '') {
-				throw new Error(`Operator '${name}' does not take any arguments.`);
+				throw new Error(
+					`Operator '${name}' does not take any arguments.`
+				);
 			}
 			return op(style);
 		},

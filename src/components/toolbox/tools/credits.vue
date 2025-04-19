@@ -8,8 +8,8 @@
 		<l class="btn" to="github://">Fork me on GitHub</l>
 		<l class="btn" to="wiki://Privacy Statement">Privacy Statement</l>
 		<p>
-			All assets used are IP of Team Salvato and created by them, unless noted
-			otherwise.
+			All assets used are IP of Team Salvato and created by them, unless
+			noted otherwise.
 		</p>
 		<p>
 			Doki Doki Dialog Generator developed by EDave64
@@ -29,7 +29,9 @@
 		</p>
 		<p>
 			Riffic Bold Font by
-			<l to="https://www.fontspring.com/fonts/inky-type/riffic">InkyType</l>
+			<l to="https://www.fontspring.com/fonts/inky-type/riffic"
+				>InkyType</l
+			>
 		</p>
 		<p>
 			Verily Serif Mono Font by
@@ -53,15 +55,21 @@
 		</p>
 		<p>
 			JP Hand Slanted Font by
-			<l to="https://www.dafont.com/jp-hand-slanted.font">Jonathan Paterson</l>
+			<l to="https://www.dafont.com/jp-hand-slanted.font"
+				>Jonathan Paterson</l
+			>
 		</p>
 		<p>
 			As I Lay Dying Font by
-			<l to="https://www.dafont.com/as-i-lay-dying.font">Moises Esqueda</l>
+			<l to="https://www.dafont.com/as-i-lay-dying.font"
+				>Moises Esqueda</l
+			>
 		</p>
 		<p>
 			Damagrafik Script Font by
-			<l to="https://www.dafont.com/damagrafik-script.font">Davide Terenzi</l>
+			<l to="https://www.dafont.com/damagrafik-script.font"
+				>Davide Terenzi</l
+			>
 		</p>
 		<p>
 			Ammy's Handwriting Font by
@@ -73,24 +81,28 @@
 		</p>
 		<p>
 			MC Sprite by Childish-N
-			<br />MC Casual Sprite by SlightlySimple <br />MC Chibi by SlightlySimple
+			<br />MC Casual Sprite by SlightlySimple <br />MC Chibi by
+			SlightlySimple
 		</p>
 		<p>
-			<L to="https://www.reddit.com/r/DDLCMods/comments/1hhmu77/">Concept MC</L>
+			<L to="https://www.reddit.com/r/DDLCMods/comments/1hhmu77/"
+				>Concept MC</L
+			>
 			by StormBlazed76, <l to="https://www.reddit.com/ofof3o">chibi</l> by
 			Hadrosaur838
 		</p>
 		<p>
 			MC Chad Sprite by Cylent-Nite
-			<br />MC Chad Poses and expressions by SlightlySimple <br />MC Chad Poses
-			and chibi by Meddy-sin
+			<br />MC Chad Poses and expressions by SlightlySimple <br />MC Chad
+			Poses and chibi by Meddy-sin
 		</p>
 		<p>
 			FeMC Sprite by Meddy-sin
 			<br />FeMC Casual Sprite by SlightlySimple
 		</p>
 		<p>
-			<l to="https://www.reddit.com/oizaow">Concept FeMC</l> by ShidoDraws,
+			<l to="https://www.reddit.com/oizaow">Concept FeMC</l> by
+			ShidoDraws,
 			<l to="https://www.reddit.com/oosuxu"
 				>additional poses, expressions and chibi</l
 			>
@@ -99,8 +111,8 @@
 		<p>Amy Sprite by Meddy-sin and SlightlySimple</p>
 		<p>Special thanks to SlightlySimple for testing and technical help</p>
 		<p>
-			Atlas421, T-Rex Harris, smearglexd and Tactical Cupcakes for suggestions
-			and testing
+			Atlas421, T-Rex Harris, smearglexd and Tactical Cupcakes for
+			suggestions and testing
 		</p>
 	</div>
 </template>

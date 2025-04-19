@@ -1,6 +1,10 @@
 <template>
 	<div class="pages" @keydown="keydownHandler">
-		<div class="page fly-left" :class="{ blured: selected }" v-if="!selected">
+		<div
+			class="page fly-left"
+			:class="{ blured: selected }"
+			v-if="!selected"
+		>
 			<search-bar
 				class="search-bar"
 				ref="searchBar"
@@ -63,7 +67,8 @@ const selected = ref(null as string | null);
 const isRepoUrl = computed(() => {
 	return (
 		search.value.endsWith('.json') &&
-		(search.value.startsWith('http://') || search.value.startsWith('https://'))
+		(search.value.startsWith('http://') ||
+			search.value.startsWith('https://'))
 	);
 });
 
@@ -157,9 +162,6 @@ safeAsync('Initializing repo list', async () => {
 }
 
 .ask-download {
-	//noinspection CssOverwrittenProperties
-	color: $default-text;
-	//noinspection CssOverwrittenProperties
 	color: var(--text);
 	display: flex;
 	justify-content: center;

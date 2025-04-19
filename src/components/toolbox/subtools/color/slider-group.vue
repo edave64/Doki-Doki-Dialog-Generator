@@ -187,7 +187,7 @@ function stop({ rgba, hsla }: { rgba: IConfig; hsla: IConfig }): {
 	stops: ComputedRef<string[]>;
 } {
 	const maxValue = computed(() =>
-		props.mode === 'rgba' ? 255 : hsla.max ?? 100
+		props.mode === 'rgba' ? 255 : (hsla.max ?? 100)
 	);
 	const label = computed(() =>
 		props.mode === 'rgba' ? rgba.label : hsla.label

@@ -60,18 +60,24 @@ const splitTextboxSpacing = 4;
 
 export const textBoxMutations: MutationTree<IPanels> = {
 	setTalkingObject(state, command: ISetTextBoxTalkingObjMutation) {
-		const obj = state.panels[command.panelId].objects[command.id] as ITextBox;
+		const obj = state.panels[command.panelId].objects[
+			command.id
+		] as ITextBox;
 		obj.talkingObjId = command.talkingObjId;
 		++obj.version;
 	},
 	setTalkingOther(state, command: ISetTextBoxTalkingOtherMutation) {
-		const obj = state.panels[command.panelId].objects[command.id] as ITextBox;
+		const obj = state.panels[command.panelId].objects[
+			command.id
+		] as ITextBox;
 		obj.talkingOther = command.talkingOther;
 		obj.talkingObjId = '$other$';
 		++obj.version;
 	},
 	setResetBounds(state, command: ISetResetBoundsMutation) {
-		const obj = state.panels[command.panelId].objects[command.id] as ITextBox;
+		const obj = state.panels[command.panelId].objects[
+			command.id
+		] as ITextBox;
 		obj.resetBounds = command.resetBounds;
 		obj.x = command.resetBounds.x;
 		obj.y = command.resetBounds.y;
@@ -88,7 +94,9 @@ export const textBoxMutations: MutationTree<IPanels> = {
 		state: IPanels,
 		command: ISetTextBoxProperty<T>
 	) {
-		const obj = state.panels[command.panelId].objects[command.id] as ITextBox;
+		const obj = state.panels[command.panelId].objects[
+			command.id
+		] as ITextBox;
 		obj[command.key] = command.value;
 		++obj.version;
 	},
@@ -132,10 +140,12 @@ export const textBoxActions: ActionTree<IPanels, IRootState> = {
 				overrideColor: false,
 				customColor: constants.TextBoxCustom.textboxDefaultColor,
 				deriveCustomColors: true,
-				customControlsColor: constants.TextBoxCustom.controlsDefaultColor,
+				customControlsColor:
+					constants.TextBoxCustom.controlsDefaultColor,
 				customNameboxColor: constants.TextBoxCustom.nameboxDefaultColor,
 				customNameboxWidth: null,
-				customNameboxStroke: constants.TextBoxCustom.nameboxStrokeDefaultColor,
+				customNameboxStroke:
+					constants.TextBoxCustom.nameboxStrokeDefaultColor,
 				talkingObjId: null,
 				talkingOther: '',
 				text: command.text ?? 'Click here to edit the textbox',
@@ -148,7 +158,9 @@ export const textBoxActions: ActionTree<IPanels, IRootState> = {
 
 	setStyle({ state, commit }, command: ISetTextBoxStyleAction) {
 		const constants = getConstants();
-		const obj = state.panels[command.panelId].objects[command.id] as ITextBox;
+		const obj = state.panels[command.panelId].objects[
+			command.id
+		] as ITextBox;
 		const oldRenderer = rendererLookup[obj.style];
 		const newRenderer = rendererLookup[command.style];
 
@@ -224,7 +236,9 @@ export const textBoxActions: ActionTree<IPanels, IRootState> = {
 	},
 
 	resetTextboxBounds({ commit, state }, command: IResetTextboxBounds) {
-		const obj = state.panels[command.panelId].objects[command.id] as ITextBox;
+		const obj = state.panels[command.panelId].objects[
+			command.id
+		] as ITextBox;
 		commit('setPosition', {
 			panelId: command.panelId,
 			id: command.id,
@@ -257,7 +271,9 @@ export const textBoxActions: ActionTree<IPanels, IRootState> = {
 	},
 
 	async splitTextbox({ commit, state, dispatch }, command: ISplitTextbox) {
-		const obj = state.panels[command.panelId].objects[command.id] as ITextBox;
+		const obj = state.panels[command.panelId].objects[
+			command.id
+		] as ITextBox;
 		if (obj.type !== 'textBox') return;
 
 		const newWidth = (obj.width - splitTextboxSpacing) / 2;

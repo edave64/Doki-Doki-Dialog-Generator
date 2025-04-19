@@ -37,7 +37,9 @@ export class Notification extends ScalingRenderable<INotification> {
 			const lineWrap = this.obj.autoWrap
 				? this.obj.width - constants.NotificationPadding * 2
 				: 0;
-			const textWidth = this.obj.autoWrap ? lineWrap : textRenderer.getWidth();
+			const textWidth = this.obj.autoWrap
+				? lineWrap
+				: textRenderer.getWidth();
 			const textHeight = textRenderer.getHeight(lineWrap);
 			const buttonWidth = this.obj.autoWrap
 				? lineWrap
@@ -45,7 +47,8 @@ export class Notification extends ScalingRenderable<INotification> {
 			const buttonHeight = buttonRenderer.getHeight(lineWrap);
 
 			this._width =
-				Math.max(textWidth, buttonWidth) + constants.NotificationPadding * 2;
+				Math.max(textWidth, buttonWidth) +
+				constants.NotificationPadding * 2;
 			this._height =
 				textHeight +
 				constants.NotificationPadding * 2 +
@@ -73,7 +76,8 @@ export class Notification extends ScalingRenderable<INotification> {
 			ctxScope(ctx, () => {
 				const constants = getConstants();
 				ctx.resetTransform();
-				ctx.fillStyle = constants.Notification.NotificationBackdropColor;
+				ctx.fillStyle =
+					constants.Notification.NotificationBackdropColor;
 				ctx.fillRect(
 					0,
 					0,

@@ -62,10 +62,13 @@ export default createStore({
 									x.packId?.endsWith('.nsfw')
 							)
 							.map((x) => {
-								let id = x.packId?.startsWith('dddg.uploads.') ? x : x.packId;
+								let id = x.packId?.startsWith('dddg.uploads.')
+									? x
+									: x.packId;
 								if (x.packId != null) {
 									const pack = repo.getPack(x.packId);
-									if (pack && pack.repoUrl != null) id += `;${pack.repoUrl}`;
+									if (pack && pack.repoUrl != null)
+										id += `;${pack.repoUrl}`;
 								}
 								return id;
 							});
@@ -92,7 +95,8 @@ export default createStore({
 					) !== undefined,
 				clipboard: state.ui.clipboard,
 				useDarkTheme: state.ui.useDarkTheme,
-				defaultCharacterTalkingZoom: state.ui.defaultCharacterTalkingZoom,
+				defaultCharacterTalkingZoom:
+					state.ui.defaultCharacterTalkingZoom,
 			};
 			data.uploadUrls = {};
 			data.content = getDefaultContentState();
@@ -114,11 +118,15 @@ export default createStore({
 							} else {
 								packId = x;
 							}
-							const alreadyLoaded = state.content.contentPacks.find(
-								(pack) => pack.packId === packId
-							);
+							const alreadyLoaded =
+								state.content.contentPacks.find(
+									(pack) => pack.packId === packId
+								);
 							if (alreadyLoaded) return alreadyLoaded;
-							if (x.startsWith('dddg.buildin.') && x.endsWith('.nsfw')) {
+							if (
+								x.startsWith('dddg.buildin.') &&
+								x.endsWith('.nsfw')
+							) {
 								const loaded = await loadContentPack(
 									(NsfwPacks as { [id: string]: string })[x]
 								);

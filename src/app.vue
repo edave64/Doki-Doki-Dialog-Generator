@@ -72,6 +72,7 @@ import type {
 	ISetSpriteRotationMutation,
 } from '@/store/objects';
 import type { ISetCurrentMutation } from '@/store/panels';
+import '@/styles/globals.scss';
 import {
 	computed,
 	defineAsyncComponent,
@@ -83,11 +84,13 @@ import {
 } from 'vue';
 import { Repo } from './models/repo';
 import { type IRemovePacksAction, useStore } from './store';
+
 const SingleBox = defineAsyncComponent(
 	() => import('@/components/repo/layouts/single-box.vue')
 );
 const ExpressionBuilder = defineAsyncComponent(
-	() => import('@/components/content-pack-builder/expression-builder/index.vue')
+	() =>
+		import('@/components/content-pack-builder/expression-builder/index.vue')
 );
 const arrowMoveStepSize = 20;
 const store = useStore();
@@ -193,7 +196,6 @@ if (window.matchMedia != null) {
 	const handler = (match: MediaQueryListEvent) =>
 		(systemPrefersDarkMode.value = match.matches);
 
-	// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 	if (matcher.addEventListener) {
 		matcher.addEventListener('change', handler);
 	} else {
@@ -432,7 +434,9 @@ watch(
 	() => store.state.ui.selection,
 	(id) => {
 		if (document.activeElement?.getAttribute('data-obj-id') !== '' + id) {
-			(document.querySelector(`*[data-obj-id='${id}']`) as HTMLElement)?.focus({
+			(
+				document.querySelector(`*[data-obj-id='${id}']`) as HTMLElement
+			)?.focus({
 				focusVisible: false,
 				preventScroll: true,
 			});
@@ -481,7 +485,8 @@ onMounted(async () => {
 
 			const panelId = await store.dispatch('panels/createPanel');
 			if (
-				Object.keys(store.state.panels.panels[panelId].objects).length === 0
+				Object.keys(store.state.panels.panels[panelId].objects)
+					.length === 0
 			) {
 				await store.dispatch('panels/createTextBox', {
 					panelId,
@@ -509,8 +514,6 @@ export interface IShowExpressionDialogEvent {
 </script>
 
 <style lang="scss">
-@import '@/styles/globals.scss';
-
 .hidden-selectors {
 	opacity: 0;
 	pointer-events: none;

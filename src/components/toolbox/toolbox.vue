@@ -181,12 +181,7 @@ environment.onPanelChange((panel: string) => {
 <style lang="scss">
 #panels {
 	position: fixed;
-	//noinspection CssOverwrittenProperties
-	background-color: $default-native-background;
-	//noinspection CssOverwrittenProperties
 	background-color: var(--native-background);
-	border: 3px solid $default-border;
-	//noinspection CssOverwrittenProperties
 	border: 3px solid var(--border);
 	display: flex;
 	height: 100%;
@@ -240,7 +235,6 @@ environment.onPanelChange((panel: string) => {
 				border-left: none;
 
 				&.active {
-					border-right-color: $default-native-background;
 					border-right-color: var(--native-background);
 				}
 			}
@@ -251,7 +245,6 @@ environment.onPanelChange((panel: string) => {
 				border-right: none;
 
 				&.active {
-					border-left-color: $default-native-background;
 					border-left-color: var(--native-background);
 				}
 			}
@@ -303,7 +296,6 @@ environment.onPanelChange((panel: string) => {
 				border-top: none;
 
 				&.active {
-					border-bottom-color: $default-native-background;
 					border-bottom-color: var(--native-background);
 				}
 			}
@@ -314,7 +306,6 @@ environment.onPanelChange((panel: string) => {
 				border-bottom: none;
 
 				&.active {
-					border-top-color: $default-native-background;
 					border-top-color: var(--native-background);
 				}
 			}
@@ -324,12 +315,7 @@ environment.onPanelChange((panel: string) => {
 	#toolbar button,
 	#toolbar-end button {
 		outline: 0;
-		//noinspection CssOverwrittenProperties
-		background-color: $default-accent-background;
-		//noinspection CssOverwrittenProperties
 		background-color: var(--accent-background);
-		border: 3px solid $default-border;
-		//noinspection CssOverwrittenProperties
 		border: 3px solid var(--border);
 		position: relative;
 
@@ -338,7 +324,6 @@ environment.onPanelChange((panel: string) => {
 		}
 
 		&.active {
-			background: $default-native-background;
 			background: var(--native-background);
 		}
 

@@ -43,9 +43,7 @@ legend {
 	user-select: none;
 }
 
-//noinspection CssOverwrittenProperties
 fieldset {
-	border: 3px solid $default-border-fieldset;
 	border: 3px solid var(--border-fieldset);
 	height: 100%;
 }

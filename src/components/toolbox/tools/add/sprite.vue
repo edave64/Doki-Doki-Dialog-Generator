@@ -264,7 +264,6 @@ input {
 }
 
 .sprite {
-	box-shadow: inset 0 0 1px 3px $default-modal-backdrop;
 	box-shadow: inset 0 0 1px 3px var(--modal-backdrop);
 	height: 198px;
 	width: 198px;

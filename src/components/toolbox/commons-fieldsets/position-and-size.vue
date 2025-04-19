@@ -22,7 +22,12 @@
 							<tbody>
 								<tr>
 									<td class="arrow-col">
-										<button @click="--pos" :disabled="isFirstPos">&lt;</button>
+										<button
+											@click="--pos"
+											:disabled="isFirstPos"
+										>
+											&lt;
+										</button>
 									</td>
 									<td>
 										<select
@@ -32,7 +37,9 @@
 											v-model.number="pos"
 										>
 											<option
-												v-for="(val, key) of positionNames"
+												v-for="(
+													val, key
+												) of positionNames"
 												:key="key"
 												:value="key"
 											>
@@ -41,7 +48,12 @@
 										</select>
 									</td>
 									<td class="arrow-col">
-										<button @click="++pos" :disabled="isLastPos">&gt;</button>
+										<button
+											@click="++pos"
+											:disabled="isLastPos"
+										>
+											&gt;
+										</button>
 									</td>
 								</tr>
 							</tbody>
@@ -147,7 +159,9 @@ const props = defineProps({
 const height = computed({
 	get(): number {
 		const constants = getConstants().TextBox;
-		return props.obj.height - (easterEgg.value ? constants.NameboxHeight : 0);
+		return (
+			props.obj.height - (easterEgg.value ? constants.NameboxHeight : 0)
+		);
 	},
 	set(height: number) {
 		const constants = getConstants().TextBox;
@@ -155,7 +169,8 @@ const height = computed({
 			store.commit('panels/setSize', {
 				id: props.obj.id,
 				panelId: props.obj.panelId,
-				height: height + (easterEgg.value ? constants.NameboxHeight : 0),
+				height:
+					height + (easterEgg.value ? constants.NameboxHeight : 0),
 				width: props.obj.width,
 			} as ISetSpriteSizeMutation);
 		});

@@ -17,11 +17,17 @@
 							<label for="text_style">Style:</label>
 						</td>
 						<td colspan="2">
-							<select id="text_style" v-model="textBoxStyle" @keydown.stop>
+							<select
+								id="text_style"
+								v-model="textBoxStyle"
+								@keydown.stop
+							>
 								<option value="normal">Normal</option>
 								<option value="corrupt">Corrupt</option>
 								<option value="custom">Custom</option>
-								<option value="custom_plus">Custom (Plus)</option>
+								<option value="custom_plus">
+									Custom (Plus)
+								</option>
 								<option value="none">None</option>
 							</select>
 						</td>
@@ -31,9 +37,17 @@
 							<label for="current_talking">Person talking:</label>
 						</td>
 						<td>
-							<select id="current_talking" v-model="talkingObjId" @keydown.stop>
+							<select
+								id="current_talking"
+								v-model="talkingObjId"
+								@keydown.stop
+							>
 								<option value="$null$">No-one</option>
-								<option v-for="[id, label] in nameList" :key="id" :value="id">
+								<option
+									v-for="[id, label] in nameList"
+									:key="id"
+									:value="id"
+								>
 									{{ label }}
 								</option>
 								<option value="$other$">Other</option>
@@ -44,7 +58,8 @@
 								title="Jump to talking character"
 								@click="jumpToCharacter"
 								:disabled="
-									talkingObjId === '$null$' || talkingObjId === '$other$'
+									talkingObjId === '$null$' ||
+									talkingObjId === '$other$'
 								"
 							>
 								>
@@ -56,7 +71,11 @@
 							<label for="custom_name">Other name:</label>
 						</td>
 						<td>
-							<input id="custom_name" v-model="talkingOther" @keydown.stop />
+							<input
+								id="custom_name"
+								v-model="talkingOther"
+								@keydown.stop
+							/>
 						</td>
 						<td>
 							<button @click="textEditor = 'name'">...</button>
@@ -102,12 +121,17 @@
 				<d-flow direction="vertical" maxSize="100%" no-wraping>
 					<toggle label="Controls visible?" v-model="showControls" />
 					<toggle label="Able to skip?" v-model="allowSkipping" />
-					<toggle label="Continue arrow?" v-model="showContinueArrow" />
+					<toggle
+						label="Continue arrow?"
+						v-model="showContinueArrow"
+					/>
 					<table v-if="customizable">
 						<tbody>
 							<tr>
 								<td>
-									<label for="custom_namebox_width">Namebox width:</label>
+									<label for="custom_namebox_width"
+										>Namebox width:</label
+									>
 								</td>
 								<td>
 									<input
@@ -122,7 +146,10 @@
 							</tr>
 							<tr>
 								<td colspan="2">
-									<toggle v-model="overrideColor" label="Override color" />
+									<toggle
+										v-model="overrideColor"
+										label="Override color"
+									/>
 								</td>
 							</tr>
 							<tr v-if="overrideColor">
@@ -133,7 +160,9 @@
 									<button
 										id="textbox_color"
 										class="color-button"
-										:style="{ background: object.customColor }"
+										:style="{
+											background: object.customColor,
+										}"
 										@click="colorSelect = 'base'"
 									/>
 								</td>
@@ -147,29 +176,41 @@
 									/>
 								</td>
 							</tr>
-							<template v-if="overrideColor && !deriveCustomColors">
+							<template
+								v-if="overrideColor && !deriveCustomColors"
+							>
 								<tr>
 									<td>
-										<label for="custom_controls_color">Controls color:</label>
+										<label for="custom_controls_color"
+											>Controls color:</label
+										>
 									</td>
 									<td>
 										<button
 											id="custom_controls_color"
 											class="color-button"
-											:style="{ background: object.customControlsColor }"
+											:style="{
+												background:
+													object.customControlsColor,
+											}"
 											@click="colorSelect = 'controls'"
 										/>
 									</td>
 								</tr>
 								<tr>
 									<td>
-										<label for="custom_namebox_color">Namebox color:</label>
+										<label for="custom_namebox_color"
+											>Namebox color:</label
+										>
 									</td>
 									<td>
 										<button
 											id="custom_namebox_color"
 											class="color-button"
-											:style="{ background: object.customNameboxColor }"
+											:style="{
+												background:
+													object.customNameboxColor,
+											}"
 											@click="colorSelect = 'namebox'"
 										/>
 									</td>
@@ -184,8 +225,13 @@
 										<button
 											id="custom_namebox_stroke"
 											class="color-button"
-											:style="{ background: object.customNameboxStroke }"
-											@click="colorSelect = 'nameboxStroke'"
+											:style="{
+												background:
+													object.customNameboxStroke,
+											}"
+											@click="
+												colorSelect = 'nameboxStroke'
+											"
 										/>
 									</td>
 								</tr>
@@ -303,7 +349,7 @@ const colorHandler = computed((): Handler | undefined => {
 			transaction(() => {
 				const panelId = currentPanel.value.id;
 				const id = object.value.id;
-				let colorKey = {
+				const colorKey = {
 					base: 'customColor',
 					controls: 'customControlsColor',
 					namebox: 'customNameboxColor',
@@ -428,6 +474,8 @@ function jumpToCharacter(): void {
 //#endregion Actions
 </script>
 <style lang="scss" scoped>
+@use '@/styles/fixes.scss';
+
 .panel {
 	table {
 		input,
@@ -450,7 +498,7 @@ function jumpToCharacter(): void {
 		}
 
 		.customization-set {
-			@include height-100();
+			@include fixes.height-100();
 		}
 	}
 }

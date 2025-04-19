@@ -54,7 +54,9 @@ export class Character extends AssetListRenderable<ICharacter> {
 			switch (renderCommand.type) {
 				case 'head': {
 					if (!currentHeads) continue;
-					const headVariant: DeepReadonly<IAssetSwitch[]> | undefined =
+					const headVariant:
+						| DeepReadonly<IAssetSwitch[]>
+						| undefined =
 						currentHeads.variants[this.obj.posePositions.head || 0];
 					if (headVariant == null) continue;
 					newAssets = headVariant;
@@ -70,7 +72,9 @@ export class Character extends AssetListRenderable<ICharacter> {
 						break;
 					}
 					const partAssets =
-						posePosition[this.obj.posePositions[renderCommand.part] || 0];
+						posePosition[
+							this.obj.posePositions[renderCommand.part] || 0
+						];
 					// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 					if (!partAssets) break;
 					newAssets = partAssets;

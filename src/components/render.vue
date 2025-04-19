@@ -7,7 +7,11 @@
 		ref="sd"
 		:height="bitmapHeight"
 		:width="bitmapWidth"
-		:style="{ width: canvasWidth + 'px', height: canvasHeight + 'px', cursor }"
+		:style="{
+			width: canvasWidth + 'px',
+			height: canvasHeight + 'px',
+			cursor,
+		}"
 		draggable="true"
 		@click="onUiClick"
 		@touchstart="onTouchStart"
@@ -372,10 +376,13 @@ async function onDrop(e: DragEvent) {
 			const file = item.getAsFile()!;
 			const url = URL.createObjectURL(file);
 			try {
-				const assetUrl: string = await store.dispatch('uploadUrls/add', {
-					name: file.name,
-					url,
-				});
+				const assetUrl: string = await store.dispatch(
+					'uploadUrls/add',
+					{
+						name: file.name,
+						url,
+					}
+				);
 
 				await transaction(async () => {
 					await store.dispatch('panels/createSprite', {

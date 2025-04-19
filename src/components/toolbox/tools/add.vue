@@ -37,7 +37,11 @@
 				@show-dialog="$emit('show-dialog', $event)"
 			/>
 			<UI v-else-if="group === 'ui'" />
-			<button class="v-w100" @click="paste" :disabled="!hasClipboardContent">
+			<button
+				class="v-w100"
+				@click="paste"
+				:disabled="!hasClipboardContent"
+			>
 				Paste
 			</button>
 		</div>
@@ -104,6 +108,8 @@ function paste() {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/fixes.scss';
+
 #panels {
 	&:not(.vertical) .panel {
 		justify-content: center;
@@ -123,7 +129,7 @@ function paste() {
 	}
 
 	&:not(.vertical) {
-		@include height-100();
+		@include fixes.height-100();
 		flex-direction: column;
 	}
 
@@ -131,7 +137,6 @@ function paste() {
 		flex-grow: 1;
 
 		&.active {
-			background: $default-native-background;
 			background: var(--native-background);
 		}
 	}
@@ -150,7 +155,7 @@ function paste() {
 
 	&:not(.vertical) {
 		margin-left: 4px;
-		@include height-100();
+		@include fixes.height-100();
 		flex-direction: column;
 	}
 }

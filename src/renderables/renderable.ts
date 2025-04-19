@@ -70,7 +70,10 @@ export abstract class Renderable<ObjectType extends IObject> {
 		transform = transform.translate(this.x, this.y);
 		const h2 = (this.height / 2) * obj.scaleX;
 		if ('close' in obj && obj.close) {
-			transform = transform.translate(0, getConstants().Base.CloseUpYOffset);
+			transform = transform.translate(
+				0,
+				getConstants().Base.CloseUpYOffset
+			);
 			// const scaleOffset = 1.03 * this.height;
 			transform = transform.translate(0, -h2);
 			transform = transform.scale(2, 2);
@@ -240,7 +243,9 @@ export abstract class Renderable<ObjectType extends IObject> {
 			this.localCanvas.height = localCanvasSize.y;
 			const localCtx = this.localCanvas.getContext('2d');
 			if (!localCtx)
-				throw new Error('No canvas context received. Possibly out of memory?');
+				throw new Error(
+					'No canvas context received. Possibly out of memory?'
+				);
 			if (this.transformIsLocal) {
 				localCtx.setTransform(transform);
 			}
@@ -334,7 +339,12 @@ export abstract class Renderable<ObjectType extends IObject> {
 			const ctx = this.localCanvas.getContext('2d', {
 				willReadFrequently: true,
 			})!;
-			const data = ctx.getImageData(target.x | 0, target.y | 0, 1, 1).data;
+			const data = ctx.getImageData(
+				target.x | 0,
+				target.y | 0,
+				1,
+				1
+			).data;
 			// Return if the image isn't completely transparent
 			return data[3] !== 0;
 		} catch (e) {

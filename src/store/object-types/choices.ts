@@ -27,7 +27,9 @@ export const choiceMutations: MutationTree<IPanels> = {
 		state: IPanels,
 		command: ISetChoicesProperty<T>
 	) {
-		const obj = state.panels[command.panelId].objects[command.id] as IChoices;
+		const obj = state.panels[command.panelId].objects[
+			command.id
+		] as IChoices;
 		obj[command.key] = command.value;
 		++obj.version;
 	},
@@ -35,12 +37,16 @@ export const choiceMutations: MutationTree<IPanels> = {
 		state: IPanels,
 		command: ISetChoiceProperty<T>
 	) {
-		const obj = state.panels[command.panelId].objects[command.id] as IChoices;
+		const obj = state.panels[command.panelId].objects[
+			command.id
+		] as IChoices;
 		obj.choices[command.choiceIdx][command.key] = command.value;
 		++obj.version;
 	},
 	setChoices(state, command: ISetChoicesMutation) {
-		const obj = state.panels[command.panelId].objects[command.id] as IChoices;
+		const obj = state.panels[command.panelId].objects[
+			command.id
+		] as IChoices;
 		obj.choices = command.choices;
 		++obj.version;
 	},
@@ -78,7 +84,9 @@ export const choiceActions: ActionTree<IPanels, IRootState> = {
 	},
 
 	addChoice({ state, commit }, command: IAddChoiceAction) {
-		const obj = state.panels[command.panelId].objects[command.id] as IChoices;
+		const obj = state.panels[command.panelId].objects[
+			command.id
+		] as IChoices;
 		commit('setChoices', {
 			id: command.id,
 			panelId: command.panelId,
@@ -93,7 +101,9 @@ export const choiceActions: ActionTree<IPanels, IRootState> = {
 	},
 
 	removeChoice({ state, commit }, command: IRemoveChoiceAction) {
-		const obj = state.panels[command.panelId].objects[command.id] as IChoices;
+		const obj = state.panels[command.panelId].objects[
+			command.id
+		] as IChoices;
 		const choices = [...obj.choices];
 		choices.splice(command.choiceIdx, 1);
 		// Do not allow empty choices

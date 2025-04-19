@@ -111,8 +111,8 @@ export default {
 			commit('setContentPacks', packs);
 			commit(
 				'setCurrentContent',
-				(packs as Array<ContentPack<IAssetSwitch>>).reduce((acc, value) =>
-					mergeContentPacks(acc, value)
+				(packs as Array<ContentPack<IAssetSwitch>>).reduce(
+					(acc, value) => mergeContentPacks(acc, value)
 				)
 			);
 		},
@@ -126,10 +126,14 @@ export default {
 			);
 
 			const convertedPacks = await Promise.all(
-				contentPacks.map((contentPack) => convertContentPack(contentPack))
+				contentPacks.map((contentPack) =>
+					convertContentPack(contentPack)
+				)
 			);
 
-			const existingPacks = new Set(state.contentPacks.map((x) => x.packId!));
+			const existingPacks = new Set(
+				state.contentPacks.map((x) => x.packId!)
+			);
 			let combinedPack = state.current;
 
 			for (const convertedPack of convertedPacks) {
@@ -142,7 +146,10 @@ export default {
 				}
 				combinedPack = mergeContentPacks(combinedPack, convertedPack);
 			}
-			commit('setContentPacks', [...state.contentPacks, ...convertedPacks]);
+			commit('setContentPacks', [
+				...state.contentPacks,
+				...convertedPacks,
+			]);
 			commit('setCurrentContent', combinedPack);
 
 			return contentPacks.map((x) => x.packId);

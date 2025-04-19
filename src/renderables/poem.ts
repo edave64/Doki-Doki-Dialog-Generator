@@ -38,8 +38,10 @@ export class Poem extends ScalingRenderable<IPoem> {
 						`assets/poemBackgrounds/${bg.file}`
 					);
 					this._lastPaperUrl = bg.file;
-					this._paperHeight = this._paper.height * constants.backgroundScale;
-					this._paperWidth = this._paper.width * constants.backgroundScale;
+					this._paperHeight =
+						this._paper.height * constants.backgroundScale;
+					this._paperWidth =
+						this._paper.width * constants.backgroundScale;
 				})();
 			}
 		} else {
@@ -64,7 +66,8 @@ export class Poem extends ScalingRenderable<IPoem> {
 		let lineWrapPadding = padding * 2;
 
 		if (paper.file === 'internal:console') {
-			ctx.fillStyle = this.obj.consoleColor || constants.consoleBackgroundColor;
+			ctx.fillStyle =
+				this.obj.consoleColor || constants.consoleBackgroundColor;
 			ctx.fillRect(0, 0, w, h);
 			padding = consolePadding;
 			topPadding = consoleTopPadding;

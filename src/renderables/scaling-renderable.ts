@@ -12,7 +12,8 @@ export abstract class ScalingRenderable<
 > extends Renderable<Obj> {
 	protected get canSkipLocal(): boolean {
 		return (
-			this.obj.composite === 'source-over' && this.obj.filters.length === 0
+			this.obj.composite === 'source-over' &&
+			this.obj.filters.length === 0
 		);
 	}
 	protected get transformIsLocal(): boolean {

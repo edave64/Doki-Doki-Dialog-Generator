@@ -2,12 +2,21 @@
 	A tab that allows selecting a background
 -->
 <template>
-	<div class="panel" ref="root" @dragenter="dragEnter" @mouseleave="dt.hide()">
+	<div
+		class="panel"
+		ref="root"
+		@dragenter="dragEnter"
+		@mouseleave="dt.hide()"
+	>
 		<drop-target ref="dt" class="drop-target" @drop="addImageFile"
 			>Drop here to add as a new background
 		</drop-target>
 		<h1>Background</h1>
-		<color v-if="colorSelect" v-model="bgColor" @leave="colorSelect = false" />
+		<color
+			v-if="colorSelect"
+			v-model="bgColor"
+			@leave="colorSelect = false"
+		/>
 		<image-options
 			v-else-if="imageOptions"
 			type="background"
@@ -21,9 +30,18 @@
 				@change-color="colorSelect = true"
 				@open-image-options="imageOptions = true"
 			/>
-			<d-button icon="upload" class="upload-background" @click="upload.click()">
+			<d-button
+				icon="upload"
+				class="upload-background"
+				@click="upload.click()"
+			>
 				Upload
-				<input type="file" ref="upload" @change="onFileUpload" multiple />
+				<input
+					type="file"
+					ref="upload"
+					@change="onFileUpload"
+					multiple
+				/>
 			</d-button>
 			<d-button icon="link" class="upload-background" @click="addByUrl">
 				Add by URL
@@ -93,8 +111,8 @@ const colorSelect = ref(false);
 const imageOptions = ref(false);
 const bgColor = computed({
 	get(): string {
-		return store.state.panels.panels[store.state.panels.currentPanel].background
-			.color;
+		return store.state.panels.panels[store.state.panels.currentPanel]
+			.background.color;
 	},
 	set(color: string) {
 		transaction(() => {

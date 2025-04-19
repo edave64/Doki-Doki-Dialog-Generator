@@ -60,7 +60,11 @@ export class RenderContext {
 	}
 
 	public drawText(
-		params: { text: string; align?: CanvasTextAlign; font?: string } & IRPos &
+		params: {
+			text: string;
+			align?: CanvasTextAlign;
+			font?: string;
+		} & IRPos &
 			IOOutline &
 			IOFill
 	) {
@@ -185,7 +189,9 @@ export class RenderContext {
 					} else if (filter.type === 'blur') {
 						filterList.push(`blur(${filter.value}px)`);
 					} else {
-						filterList.push(`${filter.type}(${filter.value * 100}%)`);
+						filterList.push(
+							`${filter.type}(${filter.value * 100}%)`
+						);
 					}
 				}
 				this.fsCtx.filter = filterList.join(' ');

@@ -163,6 +163,8 @@ interface IThis extends ComponentCustomProperties {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/fixes.scss';
+
 .choiceBtn {
 	overflow: hidden;
 	width: 100%;
@@ -171,9 +173,7 @@ interface IThis extends ComponentCustomProperties {
 	text-overflow: ellipsis;
 	padding: 2px;
 
-	//noinspection CssOverwrittenProperties
 	&.active {
-		background-color: $default-border;
 		background-color: var(--border);
 	}
 }
@@ -203,7 +203,7 @@ interface IThis extends ComponentCustomProperties {
 
 .panel:not(.vertical) {
 	.buttons {
-		@include height-100();
+		@include fixes.height-100();
 		width: 161px;
 	}
 }

@@ -33,10 +33,14 @@ export default defineComponent({
 	computed: {
 		finalDirection(): 'horizontal' | 'vertical' {
 			if (this.direction === 'global') {
-				return this.$store.state.ui.vertical ? 'vertical' : 'horizontal';
+				return this.$store.state.ui.vertical
+					? 'vertical'
+					: 'horizontal';
 			}
 			if (this.direction === 'inverted') {
-				return this.$store.state.ui.vertical ? 'horizontal' : 'vertical';
+				return this.$store.state.ui.vertical
+					? 'horizontal'
+					: 'vertical';
 			}
 			return this.direction;
 		},
@@ -64,8 +68,9 @@ export default defineComponent({
 					ref: 'scrollContainer',
 					class: ['d-flow-scroll-container', this.finalDirection],
 					style: {
-						[this.finalDirection === 'horizontal' ? 'maxWidth' : 'maxHeight']:
-							maxSize,
+						[this.finalDirection === 'horizontal'
+							? 'maxWidth'
+							: 'maxHeight']: maxSize,
 					},
 				},
 				[flowContainer]
@@ -87,6 +92,8 @@ export default defineComponent({
 
 <!--suppress CssUnusedSymbol -->
 <style lang="scss" scoped>
+@use '@/styles/fixes.scss';
+
 .d-flow-scroll-container {
 	&.horizontal {
 		height: 100%;
@@ -135,10 +142,10 @@ export default defineComponent({
 
 		&.no-wraping {
 			align-items: center;
-			@include height-100();
+			@include fixes.height-100();
 
 			> * {
-				@include height-100();
+				@include fixes.height-100();
 			}
 		}
 	}

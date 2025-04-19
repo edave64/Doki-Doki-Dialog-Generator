@@ -43,7 +43,9 @@ export interface ICharacter extends IObject {
 
 export const characterMutations: MutationTree<IPanels> = {
 	setPose(state, command: ISetPoseMutation) {
-		const obj = state.panels[command.panelId].objects[command.id] as ICharacter;
+		const obj = state.panels[command.panelId].objects[
+			command.id
+		] as ICharacter;
 		obj.poseId = command.poseId;
 		++obj.version;
 	},
@@ -61,12 +63,16 @@ export const characterMutations: MutationTree<IPanels> = {
 		++obj.version;
 	},
 	setClose(state, command: ISetCloseMutation) {
-		const obj = state.panels[command.panelId].objects[command.id] as ICharacter;
+		const obj = state.panels[command.panelId].objects[
+			command.id
+		] as ICharacter;
 		obj.close = command.close;
 		++obj.version;
 	},
 	setPosePosition(state, command: ISetPosePositionMutation) {
-		const obj = state.panels[command.panelId].objects[command.id] as ICharacter;
+		const obj = state.panels[command.panelId].objects[
+			command.id
+		] as ICharacter;
 		obj.posePositions = {
 			...obj.posePositions,
 			...command.posePositions,
@@ -74,11 +80,14 @@ export const characterMutations: MutationTree<IPanels> = {
 		++obj.version;
 	},
 	setFreeMove(state, command: ISetFreeMoveMutation) {
-		const obj = state.panels[command.panelId].objects[command.id] as ICharacter;
+		const obj = state.panels[command.panelId].objects[
+			command.id
+		] as ICharacter;
 		obj.freeMove = command.freeMove;
 		if (!obj.freeMove) {
 			const constants = getConstants();
-			obj.x = constants.Base.characterPositions[closestCharacterSlot(obj.x)];
+			obj.x =
+				constants.Base.characterPositions[closestCharacterSlot(obj.x)];
 			obj.y = constants.Base.BaseCharacterYPos;
 		}
 	},
@@ -218,7 +227,8 @@ export const characterActions: ActionTree<IPanels, IRootState> = {
 	) {
 		const obj = state.panels[panelId].objects[id] as Readonly<ICharacter>;
 		const data = getDataG(rootGetters, obj.characterType);
-		const poses = data.styleGroups[obj.styleGroupId].styles[obj.styleId].poses;
+		const poses =
+			data.styleGroups[obj.styleGroupId].styles[obj.styleId].poses;
 		mutatePoseAndPositions(commit, obj, data, (change) => {
 			change.poseId = arraySeeker(poses, change.poseId, delta);
 		});
@@ -410,7 +420,9 @@ export async function fixContentPackRemovalFromCharacter(
 	poseAndPositionChange.styleId = newStyleIdx === -1 ? 0 : newStyleIdx;
 
 	const newStyle = newStyleGroup.styles[poseAndPositionChange.styleId];
-	const newPoseIdx = newStyle.poses.findIndex((pose) => pose.id === oldPose.id);
+	const newPoseIdx = newStyle.poses.findIndex(
+		(pose) => pose.id === oldPose.id
+	);
 	poseAndPositionChange.poseId = newPoseIdx === -1 ? 0 : newPoseIdx;
 
 	// Styles and poses have been restored. Proceding with pose parts
@@ -419,7 +431,8 @@ export async function fixContentPackRemovalFromCharacter(
 	const newPosePositions: ICharacter['posePositions'] = {};
 
 	for (const key in newPose.positions) {
-		if (!Object.prototype.hasOwnProperty.call(newPose.positions, key)) continue;
+		if (!Object.prototype.hasOwnProperty.call(newPose.positions, key))
+			continue;
 		const newPosition = newPose.positions[key];
 
 		// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
@@ -565,7 +578,9 @@ function mutatePoseAndPositions(
 		if (!pose.positions[positionKey]) continue;
 		if (
 			// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-			!pose.positions[positionKey][poseAndPosition.posePositions[positionKey]]
+			!pose.positions[positionKey][
+				poseAndPosition.posePositions[positionKey]
+			]
 		) {
 			poseAndPosition.posePositions[positionKey] = 0;
 		}
@@ -573,9 +588,8 @@ function mutatePoseAndPositions(
 
 	// restore head group
 	const oldPose =
-		data.styleGroups[character.styleGroupId].styles[character.styleId].poses[
-			character.poseId
-		];
+		data.styleGroups[character.styleGroupId].styles[character.styleId]
+			.poses[character.poseId];
 	const oldHeadCollection =
 		oldPose.compatibleHeads[character.posePositions.headType || 0];
 	const newHeadCollectionNr = pose.compatibleHeads.indexOf(oldHeadCollection);

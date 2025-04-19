@@ -60,7 +60,9 @@ export class WorkBatch<P, R> {
 
 	private get remainingCapacity() {
 		return (
-			this.parallel - this.currentlyRunning.size - this.runningDisposers.size
+			this.parallel -
+			this.currentlyRunning.size -
+			this.runningDisposers.size
 		);
 	}
 
@@ -90,7 +92,10 @@ export class WorkBatch<P, R> {
 			++this.state.completed;
 			this.returnData[idx] = ret;
 			this.currentlyRunning.delete(data);
-			if (this.currentlyRunning.size === 0 && this.pendingData.length === 0) {
+			if (
+				this.currentlyRunning.size === 0 &&
+				this.pendingData.length === 0
+			) {
 				this.resolve();
 			}
 		} else if (ret !== undefined) {

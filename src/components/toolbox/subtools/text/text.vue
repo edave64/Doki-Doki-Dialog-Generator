@@ -20,9 +20,15 @@
 		</div>
 		<div class="column error-col" v-if="error">{{ error }}</div>
 		<div class="column">
-			<button @click="insertText('\\\\')" class="style-button">Insert \</button>
-			<button @click="insertText('\\{')" class="style-button">Insert {</button>
-			<button @click="insertText('\\}')" class="style-button">Insert }</button>
+			<button @click="insertText('\\\\')" class="style-button">
+				Insert \
+			</button>
+			<button @click="insertText('\\{')" class="style-button">
+				Insert {
+			</button>
+			<button @click="insertText('\\}')" class="style-button">
+				Insert }
+			</button>
 		</div>
 		<p class="hint-col">Apply style to selected text:</p>
 		<div class="column">
@@ -81,13 +87,19 @@
 				<option value="hashtag" style="font-family: hashtag">
 					Hashtag (Sayori)
 				</option>
-				<option value="ammy_handwriting" style="font-family: ammy_handwriting">
+				<option
+					value="ammy_handwriting"
+					style="font-family: ammy_handwriting"
+				>
 					Ammy's Handwriting (Natsuki)
 				</option>
 				<option value="journal" style="font-family: journal">
 					Journal (Monika)
 				</option>
-				<option value="jp_hand_slanted" style="font-family: jp_hand_slanted">
+				<option
+					value="jp_hand_slanted"
+					style="font-family: jp_hand_slanted"
+				>
 					JP Hand Slanted (Yuri)
 				</option>
 				<option
@@ -96,7 +108,10 @@
 				>
 					Damagrafik (Yuri, Act 2)
 				</option>
-				<option value="as_i_lay_dying" style="font-family: as_i_lay_dying">
+				<option
+					value="as_i_lay_dying"
+					style="font-family: as_i_lay_dying"
+				>
 					As I Lay Dying (Yuri, Act Unused)
 				</option>
 				<option value="halogen" style="font-family: halogen">
@@ -107,7 +122,9 @@
 				<option value>Alignment</option>
 				<option value="left" style="text-align: left">Left</option>
 				<option value="right" style="text-align: right">Right</option>
-				<option value="center" style="text-align: center">Center</option>
+				<option value="center" style="text-align: center">
+					Center
+				</option>
 			</select>
 			<button @click="selectColor('text')" class="style-button">
 				Text color
@@ -212,7 +229,10 @@ function applyColor() {
 		}
 		el.selectionStart = rememberedStart.value;
 		el.selectionEnd = rememberedEnd.value;
-		insertCommand(colorSelector_ === 'text' ? 'color' : 'outlinecolor', color);
+		insertCommand(
+			colorSelector_ === 'text' ? 'color' : 'outlinecolor',
+			color
+		);
 	};
 	nextTick(apply);
 	selectedColor.value = '#000000';
@@ -251,6 +271,8 @@ function insertCommand(command: string, arg?: string | number) {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/fixes.scss';
+
 button {
 	line-height: 100%;
 }
@@ -262,9 +284,6 @@ button {
 
 	h2 {
 		font-size: 20px;
-		//noinspection CssOverwrittenProperties
-		color: $default-text;
-		//noinspection CssOverwrittenProperties
 		color: var(--text);
 		font-family: riffic, sans-serif;
 		text-align: center;
@@ -294,7 +313,7 @@ button {
 
 	&:not(.vertical) {
 		flex-direction: column;
-		@include height-100();
+		@include fixes.height-100();
 
 		h2 {
 			writing-mode: vertical-rl;
@@ -304,12 +323,12 @@ button {
 
 		.column {
 			display: flex;
-			@include height-100();
+			@include fixes.height-100();
 			flex-direction: column;
 			flex-wrap: wrap;
 
 			textarea {
-				@include height-100();
+				@include fixes.height-100();
 			}
 		}
 
@@ -327,7 +346,7 @@ button {
 			width: 32px;
 
 			button {
-				@include height-100();
+				@include fixes.height-100();
 			}
 		}
 	}

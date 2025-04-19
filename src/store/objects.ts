@@ -245,9 +245,8 @@ export const actions: ActionTree<IPanels, IRootState> = {
 			if (otherObject.linkedTo === obj.id) {
 				// Begging that no linked objects will get removed before the render.vue initializes the main renderer.
 				const currentSceneRenderer = getMainSceneRenderer(null!);
-				const otherObjRender = currentSceneRenderer?.getLastRenderObject(
-					otherObject.id
-				);
+				const otherObjRender =
+					currentSceneRenderer?.getLastRenderObject(otherObject.id);
 				if (otherObjRender) {
 					commit('setLink', {
 						panelId: command.panelId,

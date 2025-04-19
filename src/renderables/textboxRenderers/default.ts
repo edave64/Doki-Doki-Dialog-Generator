@@ -47,10 +47,18 @@ export class Default extends DdlcBase implements ITextboxRenderer {
 	protected backgroundImage = 'textbox';
 	protected xOffset = 0;
 
-	protected renderNamebox(rx: CanvasRenderingContext2D, x: number, y: number) {
+	protected renderNamebox(
+		rx: CanvasRenderingContext2D,
+		x: number,
+		y: number
+	) {
 		this.nameBoxAsset?.paintOnto(rx, { x, y });
 	}
-	protected renderBackdrop(rx: CanvasRenderingContext2D, x: number, y: number) {
+	protected renderBackdrop(
+		rx: CanvasRenderingContext2D,
+		x: number,
+		y: number
+	) {
 		x += this.xOffset;
 		this.backdropAsset?.paintOnto(rx, { x, y });
 	}
@@ -88,7 +96,9 @@ export class Default extends DdlcBase implements ITextboxRenderer {
 			this.backdropAsset instanceof ImageAsset
 				? undefined
 				: (async () => {
-						this.backdropAsset = await getBuildInAsset(this.backgroundImage);
+						this.backdropAsset = await getBuildInAsset(
+							this.backgroundImage
+						);
 					})(),
 			this.nameBoxAsset instanceof ImageAsset
 				? undefined

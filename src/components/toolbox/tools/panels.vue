@@ -17,7 +17,10 @@
 			"
 		/>
 		<template v-else>
-			<d-fieldset class="existing_panels_fieldset" title="Existing Panels">
+			<d-fieldset
+				class="existing_panels_fieldset"
+				title="Existing Panels"
+			>
 				<d-flow no-wraping maxSize="350px">
 					<div
 						v-for="(panel, idx) of panelButtons"
@@ -40,7 +43,9 @@
 				</d-flow>
 			</d-fieldset>
 			<div class="column">
-				<d-button icon="add_to_queue" @click="addNewPanel"> Add new</d-button>
+				<d-button icon="add_to_queue" @click="addNewPanel">
+					Add new</d-button
+				>
 				<d-button
 					icon="remove_from_queue"
 					class="bt0"
@@ -66,7 +71,11 @@
 				>
 					Move behind
 				</d-button>
-				<d-button class="bt0" icon="color_lens" @click="imageOptions = true">
+				<d-button
+					class="bt0"
+					icon="color_lens"
+					@click="imageOptions = true"
+				>
 					Image options
 				</d-button>
 			</div>
@@ -79,14 +88,24 @@
 							</td>
 							<td>
 								<select id="export_format" v-model="format">
-									<option value="image/png">PNG (lossless)</option>
-									<option value="image/webp" v-if="webpSupport">
+									<option value="image/png">
+										PNG (lossless)
+									</option>
+									<option
+										value="image/webp"
+										v-if="webpSupport"
+									>
 										WebP (lossy)
 									</option>
-									<option value="image/heif" v-if="heifSupport">
+									<option
+										value="image/heif"
+										v-if="heifSupport"
+									>
 										HEIF (lossy)
 									</option>
-									<option value="image/jpeg">JPEG (lossy)</option>
+									<option value="image/jpeg">
+										JPEG (lossy)
+									</option>
 									<!-- <option value="image/jpeg">WebM (lossy, video)</option>-->
 								</select>
 							</td>
@@ -145,7 +164,11 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<d-button icon="photo_camera" class="w100" @click="download">
+								<d-button
+									icon="photo_camera"
+									class="w100"
+									@click="download"
+								>
 									Download
 								</d-button>
 							</td>
@@ -155,7 +178,11 @@
 			</d-fieldset>
 			<div class="column">
 				<d-button icon="save" @click="save">Save</d-button>
-				<d-button class="bt0" icon="folder_open" @click="loadUpload.click()">
+				<d-button
+					class="bt0"
+					icon="folder_open"
+					@click="loadUpload.click()"
+				>
 					Load
 					<input type="file" ref="loadUpload" @change="load" />
 				</d-button>
@@ -291,7 +318,9 @@ function extractObjectText(obj: DeepReadonly<IObject>) {
 	return '';
 }
 function moveFocusToActivePanel() {
-	const active = getRoot().querySelector('.panel_button.active') as HTMLElement;
+	const active = getRoot().querySelector(
+		'.panel_button.active'
+	) as HTMLElement;
 	if (active != null) {
 		scrollIntoView(active);
 	}
@@ -400,7 +429,9 @@ function getLimitedPanelList(): DeepReadonly<IPanel['id'][]> {
 		if (!match) {
 			if (trimmedPart !== '') {
 				eventBus.fire(
-					new ShowMessageEvent(`Could not read '${part}' in the page list.`)
+					new ShowMessageEvent(
+						`Could not read '${part}' in the page list.`
+					)
 				);
 			}
 			continue;
@@ -678,6 +709,8 @@ watch(
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/fixes.scss';
+
 .panel_button {
 	height: 150px;
 	width: 150px;
@@ -686,12 +719,7 @@ watch(
 	background-size: contain;
 	background-position: center center;
 	background-repeat: no-repeat;
-	//noinspection CssOverwrittenProperties
-	background-color: $default-native-background;
-	//noinspection CssOverwrittenProperties
 	background-color: var(--native-background);
-	border: 2px solid $default-border;
-	//noinspection CssOverwrittenProperties
 	border: 2px solid var(--border);
 	display: flex;
 	flex-direction: column;
@@ -704,9 +732,6 @@ watch(
 		1px 1px 0 #000;
 
 	&.active {
-		//noinspection CssOverwrittenProperties
-		background-color: $default-border;
-		//noinspection CssOverwrittenProperties
 		background-color: var(--border);
 	}
 
@@ -801,7 +826,7 @@ small {
 	&:not(.vertical) {
 		.column {
 			display: flex;
-			@include height-100();
+			@include fixes.height-100();
 			flex-direction: column;
 			flex-wrap: wrap;
 
@@ -811,7 +836,7 @@ small {
 		}
 
 		.existing_panels_fieldset {
-			@include height-100();
+			@include fixes.height-100();
 		}
 
 		fieldset {

@@ -15,14 +15,18 @@
 				:part="panelForParts"
 				@leave="panelForParts = null"
 				@show-dialog="$emit('show-dialog', $event)"
-				@show-expression-dialog="$emit('show-expression-dialog', $event)"
+				@show-expression-dialog="
+					$emit('show-expression-dialog', $event)
+				"
 			/>
 		</template>
 		<template v-slot:default>
 			<template v-if="missingHead">
 				<p class="warning">
 					MISSING Head sprite! Click below to re-upload
-					<span style="word-wrap: break-word">"{{ missingHead }}"</span>.
+					<span style="word-wrap: break-word"
+						>"{{ missingHead }}"</span
+					>.
 				</p>
 				<button @click="reuploadHead()">Re-Upload</button>
 				<input
@@ -43,7 +47,10 @@
 								<button @click="seekStyle(-1)">&lt;</button>
 							</td>
 							<td>
-								<button class="middle-button" @click="panelForParts = 'style'">
+								<button
+									class="middle-button"
+									@click="panelForParts = 'style'"
+								>
 									Style
 								</button>
 							</td>
@@ -56,7 +63,10 @@
 								<button @click="seekPose(-1)">&lt;</button>
 							</td>
 							<td>
-								<button class="middle-button" @click="panelForParts = 'pose'">
+								<button
+									class="middle-button"
+									@click="panelForParts = 'pose'"
+								>
 									Pose
 								</button>
 							</td>
@@ -66,10 +76,15 @@
 						</tr>
 						<tr v-for="part of parts" :key="part">
 							<td class="arrow-col">
-								<button @click="seekPart(part, -1)">&lt;</button>
+								<button @click="seekPart(part, -1)">
+									&lt;
+								</button>
 							</td>
 							<td>
-								<button class="middle-button" @click="panelForParts = part">
+								<button
+									class="middle-button"
+									@click="panelForParts = part"
+								>
 									{{ captialize(part) }}
 								</button>
 							</td>
@@ -148,8 +163,8 @@ const label = computed(() => charData.value.label ?? '');
 const parts = computed(() => getParts(charData.value, object.value));
 const hasMultipleStyles = computed(
 	() =>
-		charData.value.styleGroups[object.value.styleGroupId].styles.length > 1 ||
-		charData.value.styleGroups.length > 1
+		charData.value.styleGroups[object.value.styleGroupId].styles.length >
+			1 || charData.value.styleGroups.length > 1
 );
 const hasMultiplePoses = computed(() => {
 	const styleGroup = charData.value.styleGroups[object.value.styleGroupId];

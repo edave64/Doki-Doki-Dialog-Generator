@@ -10,8 +10,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
 import uniqId from '@/util/unique-id';
+import { computed, ref } from 'vue';
 
 const props = defineProps({
 	label: String,

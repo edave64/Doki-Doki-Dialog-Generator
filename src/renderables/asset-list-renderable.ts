@@ -103,7 +103,8 @@ export abstract class AssetListRenderable<
 		const promises: Promise<unknown>[] = [];
 		this.missingAsset = false;
 		for (const assetEntry of this.assetList) {
-			if ('loadedAssets' in assetEntry && !assetEntry.hasMissing) continue;
+			if ('loadedAssets' in assetEntry && !assetEntry.hasMissing)
+				continue;
 			promises.push(
 				(async (
 					assetEntry: IDrawAssets | IDrawAssetsUnloaded
@@ -113,7 +114,9 @@ export abstract class AssetListRenderable<
 					);
 					const out = assetEntry as IDrawAssets;
 					out.loadedAssets = assets;
-					out.hasMissing = assets.some((x) => x instanceof ErrorAsset);
+					out.hasMissing = assets.some(
+						(x) => x instanceof ErrorAsset
+					);
 					this.missingAsset ||= out.hasMissing;
 					return;
 				})(assetEntry)
@@ -134,7 +137,8 @@ export abstract class AssetListRenderable<
 			if (!('loadedAssets' in loadedDraw)) continue;
 			for (const asset of loadedDraw.loadedAssets) {
 				if (!this.canSkipLocal) {
-					ctx.globalCompositeOperation = loadedDraw.composite ?? 'source-over';
+					ctx.globalCompositeOperation =
+						loadedDraw.composite ?? 'source-over';
 				}
 				if (asset instanceof ErrorAsset) {
 					asset.paintOnto(ctx, {

@@ -306,17 +306,21 @@ export class TextRenderer {
 						const wordParts = currentLayoutGroup.renderParts
 							.splice(breakablePosition)
 							.slice(1);
-						const wordWidth = wordParts.reduce((a, b) => a + b.width, 0);
+						const wordWidth = wordParts.reduce(
+							(a, b) => a + b.width,
+							0
+						);
 						const wordHeight = wordParts.reduce(
 							(a, b) => (a > b.height ? a : b.height),
 							0
 						);
 						currentLayoutGroup.width -= wordWidth;
 						if (currentLayoutGroup.height === wordHeight) {
-							currentLayoutGroup.height = currentLayoutGroup.renderParts.reduce(
-								(a, b) => (a > b.height ? a : b.height),
-								0
-							);
+							currentLayoutGroup.height =
+								currentLayoutGroup.renderParts.reduce(
+									(a, b) => (a > b.height ? a : b.height),
+									0
+								);
 						}
 						layoutParts.push(newLine);
 						startNewLayoutGroup();
@@ -327,7 +331,8 @@ export class TextRenderer {
 					}
 				} else {
 					if (item.character === ' ') {
-						breakablePosition = currentLayoutGroup.renderParts.length;
+						breakablePosition =
+							currentLayoutGroup.renderParts.length;
 					}
 				}
 				currentLayoutGroup.renderParts.push(item);
@@ -380,7 +385,11 @@ export class TextRenderer {
 					start += item.width;
 					break;
 				case 'center':
-					placeLayoutGroup(item, start + (end - start) / 2 - item.width / 2, y);
+					placeLayoutGroup(
+						item,
+						start + (end - start) / 2 - item.width / 2,
+						y
+					);
 					break;
 				case 'right':
 					placeLayoutGroup(item, end - item.width, y);
@@ -392,7 +401,11 @@ export class TextRenderer {
 		this.lastLayoutHeight = y;
 		this.lastLayoutWidth = w;
 
-		function placeLayoutGroup(group: LayoutGroup, startX: number, y: number) {
+		function placeLayoutGroup(
+			group: LayoutGroup,
+			startX: number,
+			y: number
+		) {
 			let x = startX;
 			for (const part of group.renderParts) {
 				part.y = y;
@@ -480,7 +493,9 @@ export class TextRenderer {
 							alignment !== 'right'
 						) {
 							if (loose) {
-								pushCharacters('{align=' + token.argument + '}');
+								pushCharacters(
+									'{align=' + token.argument + '}'
+								);
 								continue;
 							} else {
 								throw new Error(
@@ -513,7 +528,9 @@ export class TextRenderer {
 								pushCharacters(
 									'{' +
 										token.commandName +
-										(token.argument ? '=' + token.argument : '') +
+										(token.argument
+											? '=' + token.argument
+											: '') +
 										'}'
 								);
 								console.error('Parsing error', e);
@@ -616,7 +633,10 @@ export class TextRenderer {
 				} else {
 					currentLineWidth += item.width;
 
-					if (currentLineWidth > maxLineWidth && lastBreakPoint !== -1) {
+					if (
+						currentLineWidth > maxLineWidth &&
+						lastBreakPoint !== -1
+					) {
 						currentLineWidth -= lastBreakLineWidth;
 						newParts.splice(lastBreakPoint, 1, {
 							type: 'newline',

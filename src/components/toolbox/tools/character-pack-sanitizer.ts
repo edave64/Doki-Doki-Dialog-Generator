@@ -71,7 +71,10 @@ function sanitizeElement(node: Node): Node[] {
 			if (!allowedAttrs.includes(attr.name)) continue;
 			if (schemaLimitedAttributes.includes(attr.name)) {
 				const protocolMatch = attr.value.match(protocolMatcher);
-				if (protocolMatch && !allowedSchemas.includes(protocolMatch[1])) {
+				if (
+					protocolMatch &&
+					!allowedSchemas.includes(protocolMatch[1])
+				) {
 					continue;
 				}
 			}
@@ -80,7 +83,8 @@ function sanitizeElement(node: Node): Node[] {
 		const enforce = enforceAttributes[tagName];
 		if (enforce) {
 			for (const attrName in enforce) {
-				if (!Object.prototype.hasOwnProperty.call(enforce, attrName)) continue;
+				if (!Object.prototype.hasOwnProperty.call(enforce, attrName))
+					continue;
 				newEl.setAttribute(attrName, enforce[attrName]);
 			}
 		}

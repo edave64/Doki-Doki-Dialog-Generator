@@ -19,7 +19,11 @@
 				to="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation#Types"
 				>[?]
 			</l>
-			<select id="compositionSelect" v-model="compositionMode" @keydown.stop>
+			<select
+				id="compositionSelect"
+				v-model="compositionMode"
+				@keydown.stop
+			>
 				<option value="source-over">Normal</option>
 				<!--
 				<option value="source-in">source-in</option>
@@ -53,7 +57,11 @@
 			<d-flow class="filter-flow" no-wraping gap="8px">
 				<d-flow direction="vertical" no-wraping>
 					<label for="addEffect">Add new effect</label>
-					<select id="addEffect" v-model="addEffectSelection" @keydown.stop>
+					<select
+						id="addEffect"
+						v-model="addEffectSelection"
+						@keydown.stop
+					>
 						<option
 							v-for="filterType of filterTypes"
 							:key="filterType"
@@ -85,7 +93,8 @@
 					</button>
 					<button
 						:disabled="
-							currentFilterIdx === filters.length - 1 || filters.length === 0
+							currentFilterIdx === filters.length - 1 ||
+							filters.length === 0
 						"
 						@click="moveFilter(1)"
 						@keydown.stop
@@ -97,7 +106,10 @@
 					<div
 						v-for="(filter, filterIdx) in filters"
 						:key="filterIdx"
-						:class="{ choiceBtn: true, active: filterIdx === currentFilterIdx }"
+						:class="{
+							choiceBtn: true,
+							active: filterIdx === currentFilterIdx,
+						}"
 						tabindex="0"
 						@click="selectFilter(filterIdx)"
 						@keydown.enter="selectFilter(filterIdx)"
@@ -173,7 +185,11 @@
 									<!--suppress XmlDuplicatedId -->
 									<input
 										id="filter_value"
-										:value="(currentFilter.value * 100).toFixed()"
+										:value="
+											(
+												currentFilter.value * 100
+											).toFixed()
+										"
 										type="number"
 										:max="maxValue"
 										:min="minValue"
@@ -191,7 +207,9 @@
 										:modelValue="currentFilter.value * 100"
 										no-input
 										@update:modelValue="
-											setFilterProperty({ value: Math.round($event) / 100 })
+											setFilterProperty({
+												value: Math.round($event) / 100,
+											})
 										"
 									/>
 								</td>
@@ -223,7 +241,9 @@
 										:modelValue="currentFilter.value"
 										no-input
 										@update:modelValue="
-											setFilterProperty({ value: Math.round($event) })
+											setFilterProperty({
+												value: Math.round($event),
+											})
 										"
 									/>
 									<slider
@@ -441,7 +461,11 @@ function objectTypeScope(command: string): string {
 		case 'object':
 			return 'panels/object_' + command;
 		case 'background':
-			return 'panels/background' + command[0].toUpperCase() + command.slice(1);
+			return (
+				'panels/background' +
+				command[0].toUpperCase() +
+				command.slice(1)
+			);
 		case 'panel':
 			return 'panels/' + command;
 	}
@@ -540,7 +564,9 @@ function shadowProp<K extends keyof Omit<IDropShadowSpriteFilter, 'type'>>(
 		get(): IDropShadowSpriteFilter[K] {
 			const filter = currentFilter.value as IDropShadowSpriteFilter;
 			if (filter == null || !(prop in filter))
-				throw new Error('Tried reading shadow prop on a non shadow object');
+				throw new Error(
+					'Tried reading shadow prop on a non shadow object'
+				);
 			return filter[prop];
 		},
 		set(value: IDropShadowSpriteFilter[K]) {
@@ -552,11 +578,10 @@ function shadowProp<K extends keyof Omit<IDropShadowSpriteFilter, 'type'>>(
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/fixes.scss';
+
 h2 {
 	text-align: center;
-	//noinspection CssOverwrittenProperties
-	color: $default-text;
-	//noinspection CssOverwrittenProperties
 	color: var(--text);
 }
 
@@ -582,7 +607,7 @@ h2 {
 
 		.column {
 			display: flex;
-			@include height-100();
+			@include fixes.height-100();
 			flex-direction: column;
 			flex-wrap: wrap;
 			margin-left: 8px;
@@ -592,7 +617,7 @@ h2 {
 			width: 42px;
 
 			button {
-				@include height-100();
+				@include fixes.height-100();
 			}
 		}
 
@@ -612,9 +637,6 @@ h2 {
 	padding: 2px;
 
 	&.active {
-		//noinspection CssOverwrittenProperties
-		background-color: $default-border;
-		//noinspection CssOverwrittenProperties
 		background-color: var(--border);
 	}
 

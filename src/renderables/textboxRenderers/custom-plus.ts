@@ -115,7 +115,11 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 	protected backgroundImage = 'textbox';
 	protected xOffset = 0;
 
-	protected renderNamebox(rx: CanvasRenderingContext2D, x: number, y: number) {
+	protected renderNamebox(
+		rx: CanvasRenderingContext2D,
+		x: number,
+		y: number
+	) {
 		ctxScope(rx, () => {
 			const w = this.nameboxWidth;
 			const h = this.nameboxHeight;
@@ -125,9 +129,15 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 			const gradient = rx.createLinearGradient(x, y, x, y + h);
 			const baseBG = RGBAColor.fromCss(this.nameboxBackgroundColor);
 			const color = new RGBAColor(baseBG.r, baseBG.g, baseBG.b, 0.95);
-			const targetColor = color.toHSL().shift(nameboxGradientEndDelta).toRgb();
+			const targetColor = color
+				.toHSL()
+				.shift(nameboxGradientEndDelta)
+				.toRgb();
 			gradient.addColorStop(0, color.toCss());
-			gradient.addColorStop(nameboxGradientMiddleStopPosition, color.toCss());
+			gradient.addColorStop(
+				nameboxGradientMiddleStopPosition,
+				color.toCss()
+			);
 			gradient.addColorStop(1, targetColor.toCss());
 			rx.fillStyle = gradient;
 			rx.fillRect(x, y, this.obj.width, h);
@@ -156,7 +166,10 @@ export class CustomPlus extends DdlcPlusBase implements ITextboxRenderer {
 			const gradient = rx.createLinearGradient(0, y, 0, y + h);
 			const color = RGBAColor.fromHex(this.customColor);
 			gradient.addColorStop(0, color.toCss());
-			gradient.addColorStop(1, `rgba(${color.r},${color.g},${color.b},0.6667)`);
+			gradient.addColorStop(
+				1,
+				`rgba(${color.r},${color.g},${color.b},0.6667)`
+			);
 			rx.fillStyle = gradient;
 			rx.strokeStyle = '#ffdfee';
 			rx.lineWidth = 6;

@@ -24,19 +24,30 @@
 					>Drop here to add as a new expression
 				</drop-target>
 				<div class="expression_list_wrapper">
-					<div class="expression_list" @wheel.passive="verticalScrollRedirect">
+					<div
+						class="expression_list"
+						@wheel.passive="verticalScrollRedirect"
+					>
 						<button @click="upload.click()">
 							Upload expression
-							<input type="file" ref="upload" multiple @change="addByUpload" />
+							<input
+								type="file"
+								ref="upload"
+								multiple
+								@change="addByUpload"
+							/>
 						</button>
-						<button @click="addByUrl">Add expression from URL</button>
+						<button @click="addByUrl">
+							Add expression from URL
+						</button>
 						<div
 							v-for="(expression, idx) of uploadedExpressions"
 							:key="idx"
 							:style="{ backgroundImage: `url('${expression}')` }"
 							:class="{
 								expression_item: true,
-								active: currentUploadedExpression === expression,
+								active:
+									currentUploadedExpression === expression,
 							}"
 							@click="currentUploadedExpression = expression"
 						></div>
@@ -84,18 +95,23 @@
 									</tbody>
 								</table>
 								<p v-if="offsetX !== 0 || offsetY !== 0">
-									WARNING: Offsets will be lost when saving/loading.
+									WARNING: Offsets will be lost when
+									saving/loading.
 								</p>
 							</d-fieldset>
 							<toggle-box
 								label="Reduce to fit DDDG standard"
-								v-if="headGroup.imagePatching && headGroup.imagePatching.mask"
+								v-if="
+									headGroup.imagePatching &&
+									headGroup.imagePatching.mask
+								"
 								v-model="addMask"
 							/>
 							<toggle-box
 								label="Add new parts to fit DDDG standard"
 								v-if="
-									headGroup.imagePatching && headGroup.imagePatching.addition
+									headGroup.imagePatching &&
+									headGroup.imagePatching.addition
 								"
 								v-model="addExtras"
 							/>
@@ -113,7 +129,8 @@
 			</div>
 			<div v-else>
 				<h2>
-					Finishing up images. {{ Math.round(batchRunner.percentage * 100) }}%
+					Finishing up images.
+					{{ Math.round(batchRunner.percentage * 100) }}%
 				</h2>
 			</div>
 		</template>
@@ -197,7 +214,9 @@ const availableHeadGroups = computed(() => {
 
 		return {
 			name: headTypeKey,
-			preview: headType.variants[0].map((asset) => getAAssetUrl(asset, false)),
+			preview: headType.variants[0].map((asset) =>
+				getAAssetUrl(asset, false)
+			),
 			partsFiles: partFiles[headTypeKey] || [],
 			imagePatching: {
 				mask: masks[headTypeKey],
@@ -239,7 +258,9 @@ function normalizeName(name: string): string {
 	let actualName = parts[parts.length - 1];
 	const packId = parts.length > 1 ? parts[0].trim() : '';
 
-	actualName = (actualName[0].toUpperCase() + actualName.slice(1).toLowerCase())
+	actualName = (
+		actualName[0].toUpperCase() + actualName.slice(1).toLowerCase()
+	)
 		.split('_')
 		.join(' ');
 	if (packId.startsWith('dddg.') || packId === '') {
@@ -287,7 +308,10 @@ async function redraw() {
 	let charRenderer: Character;
 	const pose = previewPoses.value[previewPoseIdx.value];
 	try {
-		charRenderer = new Character(previewChar, temporaryCharacterModel.value);
+		charRenderer = new Character(
+			previewChar,
+			temporaryCharacterModel.value
+		);
 	} catch (e) {
 		return;
 	}
@@ -361,7 +385,11 @@ const previewPoses = computed((): IPose[] => {
 		++styleGroupIdx
 	) {
 		const styleGroup = character.styleGroups[styleGroupIdx];
-		for (let styleIdx = 0; styleIdx < styleGroup.styles.length; ++styleIdx) {
+		for (
+			let styleIdx = 0;
+			styleIdx < styleGroup.styles.length;
+			++styleIdx
+		) {
 			const style = styleGroup.styles[styleIdx];
 			for (let poseIdx = 0; poseIdx < style.poses.length; ++poseIdx) {
 				const pose = style.poses[poseIdx];
@@ -419,10 +447,13 @@ const temporaryCharacterModel = computed((): CharacterModel<IAssetSwitch> => {
 					{
 						components: {},
 						poses: poses.map((pose, idx) => {
-							const styleGroup = character.styleGroups[pose.styleGroupId];
+							const styleGroup =
+								character.styleGroups[pose.styleGroupId];
 							const style = styleGroup.styles[pose.styleId];
 							const renderCommands =
-								style.poses[pose.poseId].renderCommands.slice(0);
+								style.poses[pose.poseId].renderCommands.slice(
+									0
+								);
 							let headIdx = renderCommands.findIndex(
 								(command) => command.type === 'head'
 							);
@@ -457,7 +488,11 @@ const temporaryCharacterModel = computed((): CharacterModel<IAssetSwitch> => {
 									offset: headRenderCommand.offset,
 								});
 							} else {
-								renderCommands.splice(headIdx, 1, newHeadCommand);
+								renderCommands.splice(
+									headIdx,
+									1,
+									newHeadCommand
+								);
 							}
 
 							if (
@@ -466,7 +501,8 @@ const temporaryCharacterModel = computed((): CharacterModel<IAssetSwitch> => {
 								headGroup.value.imagePatching &&
 								headGroup.value.imagePatching.addition != null
 							) {
-								const add = headGroup.value.imagePatching.addition;
+								const add =
+									headGroup.value.imagePatching.addition;
 								renderCommands.splice(headIdx + 1, 0, {
 									type: 'image',
 									images: [
@@ -529,7 +565,9 @@ async function processExpression(
 			headGroup.value.imagePatching &&
 			headGroup.value.imagePatching.mask != null
 		) {
-			const mask = await getAssetByUrl(headGroup.value.imagePatching.mask);
+			const mask = await getAssetByUrl(
+				headGroup.value.imagePatching.mask
+			);
 			if (!isRunning()) return undefined;
 			rx.drawImage({
 				image: mask,
@@ -757,7 +795,9 @@ const previewCharacter = computed((): ICharacter => {
 		y: pose.height / 2,
 		posePositions: {
 			headGroup: 0,
-			head: uploadedExpressions.value.indexOf(currentUploadedExpression.value!),
+			head: uploadedExpressions.value.indexOf(
+				currentUploadedExpression.value!
+			),
 		},
 		label: null,
 		textboxColor: null,

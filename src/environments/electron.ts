@@ -39,7 +39,8 @@ export class Electron implements IEnvironment {
 	private $store: Store<DeepReadonly<IRootState>> | null = null;
 	private bgInvalidation: number | null = null;
 	private readonly pendingContentPacks: string[] = [];
-	private readonly pendingContentPacksReplace: ReplaceContentPackAction[] = [];
+	private readonly pendingContentPacksReplace: ReplaceContentPackAction[] =
+		[];
 
 	private readonly loadingContentPacksAllowed: Promise<void>;
 	public loadContentPacks!: () => void;
@@ -63,7 +64,10 @@ export class Electron implements IEnvironment {
 					return;
 				}
 				await transaction(async () => {
-					await this.$store!.dispatch('content/loadContentPacks', filePath);
+					await this.$store!.dispatch(
+						'content/loadContentPacks',
+						filePath
+					);
 				});
 			}
 		);
@@ -97,7 +101,10 @@ export class Electron implements IEnvironment {
 				const repo = await Repo.getInstance();
 				const packUrls = await Promise.all(
 					packIds.map(async (compoundId) => {
-						const [id, url] = compoundId.split(';', 2) as [string, string?];
+						const [id, url] = compoundId.split(';', 2) as [
+							string,
+							string?,
+						];
 						if (url != null && !repo.hasPack(id)) {
 							await repo.loadTempPack(url);
 						}
@@ -106,11 +113,16 @@ export class Electron implements IEnvironment {
 					})
 				);
 				if (!this.$store) {
-					packUrls.forEach((url) => this.pendingContentPacks.push(url));
+					packUrls.forEach((url) =>
+						this.pendingContentPacks.push(url)
+					);
 					return;
 				}
 				await transaction(async () => {
-					await this.$store!.dispatch('content/loadContentPacks', packUrls);
+					await this.$store!.dispatch(
+						'content/loadContentPacks',
+						packUrls
+					);
 				});
 			}
 		);
@@ -134,7 +146,10 @@ export class Electron implements IEnvironment {
 					this.pendingContentPacksReplace.push(action);
 				} else {
 					await transaction(async () => {
-						await this.$store!.dispatch('content/replaceContentPack', action);
+						await this.$store!.dispatch(
+							'content/replaceContentPack',
+							action
+						);
 					});
 				}
 			}
@@ -238,12 +253,18 @@ export class Electron implements IEnvironment {
 
 	public async loadGameMode() {
 		this._gameMode =
-			(await this.electron.ipcRenderer.sendConvo('config.get', 'gameMode')) ||
-			'ddlc';
+			(await this.electron.ipcRenderer.sendConvo(
+				'config.get',
+				'gameMode'
+			)) || 'ddlc';
 	}
 
 	public async setGameMode(mode: Electron['gameMode']): Promise<void> {
-		await this.electron.ipcRenderer.sendConvo('config.set', 'gameMode', mode);
+		await this.electron.ipcRenderer.sendConvo(
+			'config.set',
+			'gameMode',
+			mode
+		);
 		this.electron.ipcRenderer.send('reload');
 	}
 
@@ -251,11 +272,15 @@ export class Electron implements IEnvironment {
 		return {
 			lq: false,
 			nsfw:
-				(await this.electron.ipcRenderer.sendConvo('config.get', 'nsfw')) ??
-				false,
+				(await this.electron.ipcRenderer.sendConvo(
+					'config.get',
+					'nsfw'
+				)) ?? false,
 			darkMode:
-				(await this.electron.ipcRenderer.sendConvo('config.get', 'darkMode')) ??
-				undefined,
+				(await this.electron.ipcRenderer.sendConvo(
+					'config.get',
+					'darkMode'
+				)) ?? undefined,
 			defaultCharacterTalkingZoom:
 				(await this.electron.ipcRenderer.sendConvo(
 					'config.get',
@@ -340,7 +365,10 @@ export class Electron implements IEnvironment {
 			}
 			if (this.pendingContentPacksReplace.length > 0) {
 				for (const action of this.pendingContentPacksReplace) {
-					await this.$store!.dispatch('content/replaceContentPack', action);
+					await this.$store!.dispatch(
+						'content/replaceContentPack',
+						action
+					);
 				}
 			}
 		});

@@ -229,7 +229,9 @@ export default {
 					id,
 					lastObjId,
 					objects: newObjects,
-					order: newPanel.order.map((oldId) => transationTable.get(oldId)),
+					order: newPanel.order.map((oldId) =>
+						transationTable.get(oldId)
+					),
 					onTopOrder: newPanel.onTopOrder.map((oldId) =>
 						transationTable.get(oldId)
 					),
@@ -304,7 +306,8 @@ export default {
 				if (!newBackground) {
 					if (rootState.content.current.backgrounds.length > 0) {
 						commit('setCurrentBackground', {
-							current: rootState.content.current.backgrounds[0].id,
+							current:
+								rootState.content.current.backgrounds[0].id,
 							panelId: panel.id,
 						} as ISetCurrentMutation);
 					} else {
@@ -338,7 +341,9 @@ export default {
 			collection.splice(oldIdx, 1);
 			const newIdx = Math.max(oldIdx + delta, 0);
 			collection.splice(newIdx, 0, panelId);
-			commit('setPanelOrder', { panelOrder: collection } as ISetPanelOrder);
+			commit('setPanelOrder', {
+				panelOrder: collection,
+			} as ISetPanelOrder);
 		},
 		addFilter({ state, commit }, action: IAddFilterAction) {
 			addFilter(

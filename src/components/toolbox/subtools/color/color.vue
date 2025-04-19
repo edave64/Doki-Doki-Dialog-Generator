@@ -175,6 +175,8 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/fixes.scss';
+
 .color {
 	display: flex;
 	flex-wrap: wrap;
@@ -182,7 +184,6 @@ onUnmounted(() => {
 	//noinspection CssOverwrittenProperties
 	h2 {
 		font-size: 20px;
-		color: $default-text;
 		color: var(--text);
 		font-family: riffic, sans-serif;
 		text-align: center;
@@ -242,7 +243,7 @@ onUnmounted(() => {
 
 	&:not(.vertical) {
 		margin-left: 4px;
-		@include height-100();
+		@include fixes.height-100();
 		flex-direction: column;
 	}
 

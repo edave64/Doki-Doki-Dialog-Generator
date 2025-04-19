@@ -18,7 +18,9 @@
 				icon="extension"
 				class="h-bl0 h-bt0 v-w100 v-bt0"
 				@click="
-					emit('show-expression-dialog', { character: character.characterType })
+					emit('show-expression-dialog', {
+						character: character.characterType,
+					})
 				"
 				v-if="part === 'head'"
 			>
@@ -145,7 +147,8 @@ const parts = computed((): { [id: string]: DeepReadonly<IPartButtonImage> } => {
 	const currentPose = getPose(data, props.character);
 	switch (props.part) {
 		case 'head': {
-			const activeHeadTypeIdx = props.character.posePositions.headType || 0;
+			const activeHeadTypeIdx =
+				props.character.posePositions.headType || 0;
 			const activeHeadIdx = props.character.posePositions.head || 0;
 			for (
 				let headKeyIdx = 0;
@@ -154,16 +157,24 @@ const parts = computed((): { [id: string]: DeepReadonly<IPartButtonImage> } => {
 			) {
 				const headKey = currentPose.compatibleHeads[headKeyIdx];
 				const heads = data.heads[headKey];
-				for (let headIdx = 0; headIdx < heads.variants.length; ++headIdx) {
+				for (
+					let headIdx = 0;
+					headIdx < heads.variants.length;
+					++headIdx
+				) {
 					const headImages = heads.variants[headIdx];
 					ret[`${headKeyIdx}_${headIdx}`] = {
 						size: heads.previewSize,
 						offset: heads.previewOffset,
 						images: headImages.map(
-							(image): IPartImage => ({ asset: image, offset: [0, 0] })
+							(image): IPartImage => ({
+								asset: image,
+								offset: [0, 0],
+							})
 						),
 						active:
-							activeHeadIdx === headIdx && activeHeadTypeIdx === headKeyIdx,
+							activeHeadIdx === headIdx &&
+							activeHeadTypeIdx === headKeyIdx,
 					};
 				}
 			}
@@ -175,7 +186,11 @@ const parts = computed((): { [id: string]: DeepReadonly<IPartButtonImage> } => {
 				data.styleGroups[props.character.styleGroupId].styles[
 					props.character.styleId
 				];
-			for (let poseIdx = 0; poseIdx < currentStyle.poses.length; ++poseIdx) {
+			for (
+				let poseIdx = 0;
+				poseIdx < currentStyle.poses.length;
+				++poseIdx
+			) {
 				const pose = currentStyle.poses[poseIdx];
 				const preview = generatePosePreview(pose);
 				ret[poseIdx] = preview;
@@ -183,9 +198,15 @@ const parts = computed((): { [id: string]: DeepReadonly<IPartButtonImage> } => {
 			}
 			return ret;
 		case 'style':
-			for (let styleIdx = 0; styleIdx < data.styleGroups.length; ++styleIdx) {
+			for (
+				let styleIdx = 0;
+				styleIdx < data.styleGroups.length;
+				++styleIdx
+			) {
 				const styleGroup = data.styleGroups[styleIdx];
-				const preview = generatePosePreview(styleGroup.styles[0].poses[0]);
+				const preview = generatePosePreview(
+					styleGroup.styles[0].poses[0]
+				);
 				ret[styleGroup.id] = preview;
 				preview.active = styleIdx === props.character.styleGroupId;
 			}
@@ -206,7 +227,8 @@ const parts = computed((): { [id: string]: DeepReadonly<IPartButtonImage> } => {
 			})),
 			size,
 			offset,
-			active: partIdx === (props.character.posePositions[props.part] || 0),
+			active:
+				partIdx === (props.character.posePositions[props.part] || 0),
 		};
 	}
 	return ret;
@@ -253,7 +275,10 @@ function generatePosePreview(
 			}
 			case 'image':
 				images = images.concat(
-					command.images.map((x) => ({ asset: x, offset: command.offset }))
+					command.images.map((x) => ({
+						asset: x,
+						offset: command.offset,
+					}))
 				);
 				break;
 		}

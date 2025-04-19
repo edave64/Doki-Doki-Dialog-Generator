@@ -124,7 +124,10 @@ export class SceneRenderer {
 		// Step 1: Prepare the matrix transformation of all objects.
 		// Resolves all transforms in order, so that objects that are linked by other objects are always resolved
 		// before their dependencies.
-		const waiting: Map<IObject['id'], Array<Renderable<IObject>>> = new Map();
+		const waiting: Map<
+			IObject['id'],
+			Array<Renderable<IObject>>
+		> = new Map();
 		const processed: Map<IObject['id'], DOMMatrixReadOnly> = new Map();
 		for (const renderable of renderables) {
 			renderable.prepareData(this.panel!, this.store);
@@ -192,7 +195,10 @@ export class SceneRenderer {
 			});
 		}
 
-		function fetchLinks(objId: IObject['id'], links: Set<IObject['id']>): void {
+		function fetchLinks(
+			objId: IObject['id'],
+			links: Set<IObject['id']>
+		): void {
 			links.add(objId);
 
 			for (const obj of renderables.filter((x) => x.linkedTo === objId)) {
@@ -240,17 +246,26 @@ export class SceneRenderer {
 						break;
 					case 'character': {
 						const char = obj as DeepReadonly<ICharacter>;
-						renderObject = new Character(char, getData(this.store, char));
+						renderObject = new Character(
+							char,
+							getData(this.store, char)
+						);
 						break;
 					}
 					case 'textBox':
-						renderObject = new TextBox(obj as DeepReadonly<ITextBox>);
+						renderObject = new TextBox(
+							obj as DeepReadonly<ITextBox>
+						);
 						break;
 					case 'choice':
-						renderObject = new Choice(obj as DeepReadonly<IChoices>);
+						renderObject = new Choice(
+							obj as DeepReadonly<IChoices>
+						);
 						break;
 					case 'notification':
-						renderObject = new Notification(obj as DeepReadonly<INotification>);
+						renderObject = new Notification(
+							obj as DeepReadonly<INotification>
+						);
 						break;
 					case 'poem':
 						renderObject = new Poem(obj as DeepReadonly<IPoem>);

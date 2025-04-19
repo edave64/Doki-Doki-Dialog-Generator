@@ -124,7 +124,8 @@ const grabbies = [
 			);
 
 			let rotation = mod(
-				initalObjRotation + ((angle - initialDragAngle) / Math.PI) * 180,
+				initalObjRotation +
+					((angle - initialDragAngle) / Math.PI) * 180,
 				360
 			);
 
@@ -153,7 +154,13 @@ const grabbies = [
 				renderObj.preparedTransform = originalObjTransform;
 				ctxScope(ctx, () => {
 					ctx.globalAlpha = 0.5;
-					renderObj.render(ctx, SelectedState.None, true, false, true);
+					renderObj.render(
+						ctx,
+						SelectedState.None,
+						true,
+						false,
+						true
+					);
 					ctx.globalAlpha = 1;
 				});
 			} finally {
@@ -161,10 +168,14 @@ const grabbies = [
 			}
 		},
 		onStartMove(store: RStore, obj: IObject, dragData: IScaleDragData) {
-			dragData.originalObjTransform = dragData.renderObj.preparedTransform;
+			dragData.originalObjTransform =
+				dragData.renderObj.preparedTransform;
 			dragData.initialScaleX = obj.scaleX;
 			dragData.initialScaleY = obj.scaleY;
-			dragData.initialDelta = pointsToVector(dragData.center, dragData.lastPos);
+			dragData.initialDelta = pointsToVector(
+				dragData.center,
+				dragData.lastPos
+			);
 		},
 		onMove(
 			store: RStore,
@@ -274,8 +285,8 @@ export function onMove(store: RStore, pos: DOMPointReadOnly, shift: boolean) {
 		const sceneRenderer = getMainSceneRenderer(store);
 		const renderObj = sceneRenderer!.getLastRenderObject(obj.id)!;
 		const linkedTransform =
-			sceneRenderer?.getLastRenderObject(obj.linkedTo!)?.preparedTransform ??
-			new DOMMatrixReadOnly();
+			sceneRenderer?.getLastRenderObject(obj.linkedTo!)
+				?.preparedTransform ?? new DOMMatrixReadOnly();
 
 		dragData.renderObj = renderObj;
 		dragData.center = linkedTransform.transformPoint(
@@ -300,7 +311,10 @@ for (const grabby of grabbies) {
 		'Loading grabby icon',
 		(async (grabby: Grabby) => {
 			grabbyIcons.set(grabby.icon, await getAssetByUrl(grabby.icon));
-			grabbyIcons.set(grabby.iconDark, await getAssetByUrl(grabby.iconDark));
+			grabbyIcons.set(
+				grabby.iconDark,
+				await getAssetByUrl(grabby.iconDark)
+			);
 		}).bind(this, grabby as Grabby)
 	);
 }
@@ -354,7 +368,8 @@ interface Grabby<T extends IDragData = IDragData> {
 function movePointIntoView(center: DOMPointReadOnly): DOMPointReadOnly {
 	const constants = getConstants();
 	const fullRadius =
-		constants.Base.wheelWidth + constants.Base.wheelInnerRadius * pixelRatio;
+		constants.Base.wheelWidth +
+		constants.Base.wheelInnerRadius * pixelRatio;
 	return new DOMPointReadOnly(
 		between(fullRadius, center.x, constants.Base.screenWidth - fullRadius),
 		between(fullRadius, center.y, constants.Base.screenHeight - fullRadius)

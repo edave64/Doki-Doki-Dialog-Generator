@@ -81,7 +81,8 @@ export abstract class DdlcPlusBase implements ITextboxRenderer {
 
 		const spacing = Math.min((w - combinedLength) / (texts.length + 2), 78);
 
-		let controlX = x + (w - combinedLength - spacing * (texts.length - 1)) / 2;
+		let controlX =
+			x + (w - combinedLength - spacing * (texts.length - 1)) / 2;
 		for (let i = 0; i < texts.length; ++i) {
 			const text = texts[i];
 			const textWidth = textWidths[i];

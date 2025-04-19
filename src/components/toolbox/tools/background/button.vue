@@ -70,7 +70,8 @@ const missing = computed(() => {
 });
 
 const bgData = computed(() => {
-	const backgrounds: BackgroundLookup = store.getters['content/getBackgrounds'];
+	const backgrounds: BackgroundLookup =
+		store.getters['content/getBackgrounds'];
 	return backgrounds.get(props.backgroundId) || null;
 });
 
@@ -154,7 +155,6 @@ async function backgroundReupload() {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	box-shadow: inset 0 0 1px 3px $default-modal-backdrop;
 	box-shadow: inset 0 0 1px 3px var(--modal-backdrop);
 	height: 48px;
 	min-height: 48px;
@@ -163,7 +163,6 @@ async function backgroundReupload() {
 	margin-top: 4px;
 	margin-right: 4px !important;
 	&.active {
-		box-shadow: inset 0 0 1px 3px $default-modal-backdrop-light;
 		box-shadow: inset 0 0 1px 3px var(--modal-backdrop-light);
 	}
 }

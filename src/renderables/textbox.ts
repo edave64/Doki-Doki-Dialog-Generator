@@ -72,12 +72,13 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 	public getName(): string {
 		return this.obj.talkingObjId === '$other$'
 			? this.obj.talkingOther
-			: this.refObject?.label ?? 'Missing name';
+			: (this.refObject?.label ?? 'Missing name');
 	}
 
 	protected get canSkipLocal(): boolean {
 		return (
-			super.canSkipLocal && (this._lastRenderer?.allowSkippingLocal ?? true)
+			super.canSkipLocal &&
+			(this._lastRenderer?.allowSkippingLocal ?? true)
 		);
 	}
 

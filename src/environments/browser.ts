@@ -119,7 +119,10 @@ export class Browser implements IEnvironment {
 				const repo = await Repo.getInstance();
 				const packUrls = await Promise.all(
 					autoload.map(async (compoundId) => {
-						const [id, url] = compoundId.split(';', 2) as [string, string?];
+						const [id, url] = compoundId.split(';', 2) as [
+							string,
+							string?,
+						];
 						if (url != null && !repo.hasPack(id)) {
 							await repo.loadTempPack(url);
 						}
@@ -128,7 +131,10 @@ export class Browser implements IEnvironment {
 					})
 				);
 				await transaction(async () => {
-					await this.$store!.dispatch('content/loadContentPacks', packUrls);
+					await this.$store!.dispatch(
+						'content/loadContentPacks',
+						packUrls
+					);
 				});
 			}
 		});

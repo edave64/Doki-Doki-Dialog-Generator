@@ -123,9 +123,6 @@ dialog {
 	max-width: 90vw;
 	max-height: 90vh;
 	background-attachment: scroll;
-	//noinspection CssOverwrittenProperties
-	background-color: $default-native-background;
-	//noinspection CssOverwrittenProperties
 	background-color: var(--native-background);
 	background-position: right center;
 	background-repeat: no-repeat;
@@ -135,14 +132,8 @@ dialog {
 	align-self: center;
 	overflow: hidden;
 	padding: 0;
-	border: 4px solid $default-border;
-	//noinspection CssOverwrittenProperties
 	border: 4px solid var(--border);
-	//noinspection CssOverwrittenProperties
 	overflow: hidden;
-	//noinspection CssOverwrittenProperties
-	color: $default-text;
-	//noinspection CssOverwrittenProperties
 	color: var(--text);
 	justify-self: center;
 	margin: auto;

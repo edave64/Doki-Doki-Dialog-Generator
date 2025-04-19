@@ -11,8 +11,15 @@
 	>
 		<div id="poem_text" class="v-w100">
 			<label for="poem_text">Text:</label>
-			<textarea class="v-w100" ref="textarea" v-model="text" @keydown.stop />
-			<button class="w100 bt0" @click="textEditor = true">Formatting</button>
+			<textarea
+				class="v-w100"
+				ref="textarea"
+				v-model="text"
+				@keydown.stop
+			/>
+			<button class="w100 bt0" @click="textEditor = true">
+				Formatting
+			</button>
 		</div>
 		<toggle label="Auto line wrap?" v-model="autoWrap" />
 		<toggle
@@ -31,7 +38,11 @@
 				</option>
 			</select>
 			<select v-model="poemStyle" @keydown.stop>
-				<option v-for="(style, idx) of poemTextStyles" :value="idx" :key="idx">
+				<option
+					v-for="(style, idx) of poemTextStyles"
+					:value="idx"
+					:key="idx"
+				>
 					{{ style.name }}
 				</option>
 			</select>

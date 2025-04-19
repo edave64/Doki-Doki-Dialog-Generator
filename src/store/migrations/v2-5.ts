@@ -43,9 +43,9 @@ export function migrateSave2_5(data: IRootState) {
 				const charData = data.content.current.characters.find(
 					(c) => c.id === character.characterType
 				);
-				const size = charData?.styleGroups[character.styleGroupId]?.styles[
-					character.styleId
-				]?.poses[character.poseId]?.size ?? [960, 960];
+				const size = charData?.styleGroups[character.styleGroupId]
+					?.styles[character.styleId]?.poses[character.poseId]
+					?.size ?? [960, 960];
 				adjustObjectSize2_5(character, object.zoom ?? 1, size);
 			}
 			if (object.type === 'textBox') {
@@ -123,7 +123,10 @@ export const rootStateMigrations2_5 = {
 				)
 					continue;
 				const sprite = object as ISprite;
-				if (sprite.assets.length === 1 && sprite.assets[0].hq === data.url) {
+				if (
+					sprite.assets.length === 1 &&
+					sprite.assets[0].hq === data.url
+				) {
 					adjustObjectSize2_5(sprite, object.scaleX, data.size);
 					delete (object as any).requireFixing25;
 				}

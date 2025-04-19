@@ -48,7 +48,10 @@ export class Choice extends ScalingRenderable<IChoices> {
 		const constants = getConstants();
 		this.choiceRenderers = this.obj.choices.map(
 			(choice) =>
-				new TextRenderer(choice.text || ' ', constants.Choices.ChoiceTextStyle)
+				new TextRenderer(
+					choice.text || ' ',
+					constants.Choices.ChoiceTextStyle
+				)
 		);
 
 		const computeHeight = () => {
@@ -56,7 +59,9 @@ export class Choice extends ScalingRenderable<IChoices> {
 				this.choiceRenderers.reduce(
 					(acc, renderer) =>
 						acc +
-						renderer.getHeight(this.obj.autoWrap ? this.obj.width : 0) +
+						renderer.getHeight(
+							this.obj.autoWrap ? this.obj.width : 0
+						) +
 						constants.Choices.ChoicePadding * 2,
 					0
 				) +

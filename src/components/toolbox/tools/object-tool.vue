@@ -62,7 +62,11 @@
 					@keydown.stop
 				>
 					<option value="">None</option>
-					<option v-for="[id, label] in linkObjectList" :key="id" :value="id">
+					<option
+						v-for="[id, label] in linkObjectList"
+						:key="id"
+						:value="id"
+					>
 						{{ label }}
 					</option>
 				</select>
@@ -70,7 +74,9 @@
 					<tbody>
 						<tr>
 							<td>
-								<label for="rotation" class="v-w100">Rotation:&nbsp;°</label>
+								<label for="rotation" class="v-w100"
+									>Rotation:&nbsp;°</label
+								>
 							</td>
 							<td>
 								<input
@@ -103,7 +109,11 @@
 								</td>
 							</tr>
 							<tr v-if="!easterEgg">
-								<td><label for="zoom" class="v-w100">Scale Y: </label></td>
+								<td>
+									<label for="zoom" class="v-w100"
+										>Scale Y:
+									</label>
+								</td>
 								<td>
 									<input
 										id="zoom"
@@ -118,7 +128,11 @@
 							</tr>
 						</template>
 						<tr>
-							<td><label for="zoom" class="v-w100">Skew X: </label></td>
+							<td>
+								<label for="zoom" class="v-w100"
+									>Skew X:
+								</label>
+							</td>
 							<td>
 								<input
 									id="zoom"
@@ -131,7 +145,11 @@
 							</td>
 						</tr>
 						<tr>
-							<td><label for="zoom" class="v-w100">Skew Y: </label></td>
+							<td>
+								<label for="zoom" class="v-w100"
+									>Skew Y:
+								</label>
+							</td>
 							<td>
 								<input
 									id="zoom"
@@ -145,7 +163,10 @@
 						</tr>
 						<tr>
 							<td colspan="2" v-if="!easterEgg">
-								<toggle v-model="preserveRatio" label="Lock scale ratio?" />
+								<toggle
+									v-model="preserveRatio"
+									label="Lock scale ratio?"
+								/>
 							</td>
 						</tr>
 					</tbody>
@@ -158,9 +179,14 @@
 				<toggle
 					label="Enlarge when talking"
 					v-model="enlargeWhenTalking"
-					v-if="object.type === 'character' || object.type === 'sprite'"
+					v-if="
+						object.type === 'character' || object.type === 'sprite'
+					"
 				/>
-				<toggle label="Own textbox color" v-model="useCustomTextboxColor" />
+				<toggle
+					label="Own textbox color"
+					v-model="useCustomTextboxColor"
+				/>
 				<table>
 					<tbody>
 						<tr v-if="useCustomTextboxColor">
@@ -171,14 +197,18 @@
 								<button
 									id="textbox_color"
 									class="color-button"
-									:style="{ background: object.textboxColor ?? '' }"
+									:style="{
+										background: object.textboxColor ?? '',
+									}"
 									@click="selectTextboxColor"
 								/>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<label for="namebox_width">Namebox width:</label>
+								<label for="namebox_width"
+									>Namebox width:</label
+								>
 							</td>
 							<td>
 								<input
@@ -266,7 +296,8 @@ const transformLink = computed({
 	set(value: IObject['id'] | '') {
 		const obj = props.object;
 		const link = value === '' ? null : value;
-		const currentSceneRenderer: SceneRenderer = getMainSceneRenderer(store)!;
+		const currentSceneRenderer: SceneRenderer =
+			getMainSceneRenderer(store)!;
 		const objRender = currentSceneRenderer?.getLastRenderObject(obj.id);
 		const linkRender =
 			link === null
@@ -295,9 +326,13 @@ const transformLink = computed({
 				} as ISetLinkMutation);
 			} else {
 				const inverse = linkRender.preparedTransform.inverse();
-				const newTransform = inverse.multiply(objRender.preparedTransform);
+				const newTransform = inverse.multiply(
+					objRender.preparedTransform
+				);
 				console.log(objRender.preparedTransform);
-				console.log(linkRender.preparedTransform.multiply(newTransform));
+				console.log(
+					linkRender.preparedTransform.multiply(newTransform)
+				);
 				console.log(newTransform);
 				store.commit('panels/setLink', {
 					panelId: currentPanel.value.id,
