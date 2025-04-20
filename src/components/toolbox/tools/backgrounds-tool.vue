@@ -61,7 +61,7 @@
 			>
 				Open backgrounds folder
 			</d-button>
-			<background-button
+			<bg-button
 				v-for="background of backgrounds"
 				:key="background"
 				:backgroundId="background"
@@ -87,7 +87,7 @@ import { setupPanelMixin } from '../../mixins/panel-mixin';
 import DropTarget from '../drop-target.vue';
 import Color from '../subtools/color/color.vue';
 import ImageOptions from '../subtools/image-options/image-options.vue';
-import BackgroundButton from './background/button.vue';
+import BgButton from './background/bg-button.vue';
 import BackgroundSettings from './background/settings.vue';
 
 const uploadedBackgroundsPackDefaults: ContentPack<string> = {
