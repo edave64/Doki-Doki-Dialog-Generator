@@ -30,7 +30,9 @@
 					<p>You can revoke this permission at any time.</p>
 					<p>
 						Our usual
-						<l to="wiki://Privacy Statement">privacy policy</l>
+						<external-link to="wiki://Privacy Statement"
+							>privacy policy</external-link
+						>
 						still applies.
 					</p>
 				</div>
@@ -53,7 +55,9 @@
 					</p>
 					<p>
 						Our usual
-						<l to="wiki://Privacy Statement">privacy policy</l>
+						<external-link to="wiki://Privacy Statement"
+							>privacy policy</external-link
+						>
 						still applies.
 					</p>
 				</div>
@@ -161,7 +165,7 @@
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import ModalDialog from '@/components/modal-dialog.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
-import L from '@/components/ui/link.vue';
+import ExternalLink from '@/components/ui/external-link.vue';
 import { Electron } from '@/environments/electron';
 import environment from '@/environments/environment';
 import { transaction } from '@/plugins/vuex-history';

@@ -17,8 +17,12 @@
 			<div v-if="!uploadsFinished" class="page">
 				<h2>
 					Upload new '{{ normalizeName(headGroup.name) }}' expressions
-					<l v-if="downloadLink" :to="downloadLink">(Template)</l>
-					<l v-if="listLink" :to="listLink">(List)</l>
+					<external-link v-if="downloadLink" :to="downloadLink"
+						>(Template)</external-link
+					>
+					<external-link v-if="listLink" :to="listLink"
+						>(List)</external-link
+					>
 				</h2>
 				<drop-target ref="dt" class="drop-target" @drop="addByImageFile"
 					>Drop here to add as a new expression
@@ -142,7 +146,7 @@ import { getAAssetUrl, getAssetByUrl } from '@/asset-manager';
 import { verticalScrollRedirect } from '@/components/mixins/vertical-scroll-redirect';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
-import L from '@/components/ui/link.vue';
+import ExternalLink from '@/components/ui/external-link.vue';
 import { SelectedState } from '@/constants/shared';
 import environment from '@/environments/environment';
 import { transaction } from '@/plugins/vuex-history';

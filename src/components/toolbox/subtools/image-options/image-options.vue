@@ -15,10 +15,10 @@
 		</div>
 		<div class="column" v-if="!noComposition">
 			<label for="compositionSelect">Compositing Mode:</label>
-			<l
+			<external-link
 				to="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation#Types"
 				>[?]
-			</l>
+			</external-link>
 			<select
 				id="compositionSelect"
 				v-model="compositionMode"
@@ -270,7 +270,7 @@ import Color from '@/components/toolbox/subtools/color/color.vue';
 import Slider from '@/components/toolbox/subtools/color/slider.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
-import L from '@/components/ui/link.vue';
+import ExternalLink from '@/components/ui/external-link.vue';
 import { transaction } from '@/plugins/vuex-history';
 import type { CompositeModes } from '@/renderer/renderer-context';
 import { useStore } from '@/store';

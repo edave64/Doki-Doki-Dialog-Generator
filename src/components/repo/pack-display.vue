@@ -19,7 +19,7 @@
 			v-html="sanitize(pack.disclaimer as string)"
 		/>
 		<section v-if="pack.source">
-			<l :to="pack.source as string">Source</l>
+			<external-link :to="pack.source as string">Source</external-link>
 		</section>
 		<section>
 			<button v-if="addable" @click="add">
@@ -54,7 +54,7 @@
 					<tr v-for="authorId of pack.authors" :key="authorId">
 						<td>{{ authorName(authorId) }}</td>
 						<td>
-							<l
+							<external-link
 								v-for="link of authorsLinks(authorId)"
 								:key="link.target"
 								:to="link.target"
@@ -65,7 +65,7 @@
 									height="32"
 									width="32"
 									alt=""
-							/></l>
+							/></external-link>
 						</td>
 					</tr>
 				</tbody>
@@ -80,7 +80,7 @@
 
 <script lang="ts" setup>
 import { sanitize } from '@/components/toolbox/tools/character-pack-sanitizer';
-import L from '@/components/ui/link.vue';
+import ExternalLink from '@/components/ui/external-link.vue';
 import environment from '@/environments/environment';
 import { Repo } from '@/models/repo';
 import { type IRemovePacksAction, useStore } from '@/store';
