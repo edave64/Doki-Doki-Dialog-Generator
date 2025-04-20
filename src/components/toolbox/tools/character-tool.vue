@@ -9,7 +9,7 @@
 		:showAltPanel="!!panelForParts"
 	>
 		<template v-slot:alt-panel>
-			<Parts
+			<part-selection
 				v-if="panelForParts"
 				:character="object"
 				:part="panelForParts"
@@ -120,7 +120,7 @@ import {
 } from '@/store/object-types/characters';
 import { genericSetterMerged } from '@/util/simple-settable';
 import { computed, ref, watch } from 'vue';
-import Parts from './character/parts.vue';
+import PartSelection from './character/part-selection.vue';
 import ObjectTool from './object-tool.vue';
 
 const store = useStore();
