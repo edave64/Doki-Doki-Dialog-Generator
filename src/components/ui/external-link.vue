@@ -1,9 +1,9 @@
 <!--
 	A link to another website. Supports special prefixes "wiki:" to reference the github wiki and "github:" to link the
 	projects github page.
-    a-tag links by default kinda suck for web apps, since they leave the current
-    page and do funny stuff with shared javascript contexts.
-    This takes care of the boilerplate
+	a-tag links by default kinda suck for web apps, since they leave the current
+	page and do funny stuff with shared javascript contexts.
+	This takes care of the boilerplate
 -->
 <template>
 	<a target="_blank" rel="noopener noreferrer" ref="root" :href="href">

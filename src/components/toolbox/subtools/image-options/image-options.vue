@@ -26,8 +26,8 @@
 			>
 				<option value="source-over">Normal</option>
 				<!--
-				<option value="source-in">source-in</option>
-				<option value="source-out">source-out</option>
+					<option value="source-in">source-in</option>
+					<option value="source-out">source-out</option>
 				-->
 				<option value="source-atop">source-atop</option>
 				<option value="destination-over">destination-over</option>

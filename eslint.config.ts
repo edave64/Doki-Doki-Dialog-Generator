@@ -55,6 +55,7 @@ export default defineConfigWithVueTs(
 			],
 			'vue/define-props-declaration': 'error',
 			'vue/html-comment-content-spacing': 'error',
+			'vue/html-comment-indent': ['error', 'tab'],
 		},
 	}
 );
