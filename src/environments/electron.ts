@@ -26,6 +26,7 @@ export class Electron implements IEnvironment {
 		looseTextParsing: true,
 		autoAdd: [],
 		downloadLocation: '',
+		hasTemplate: false,
 	} as EnvState);
 	public readonly localRepositoryUrl = '/repo/';
 
@@ -196,6 +197,15 @@ export class Electron implements IEnvironment {
 			this.updateProgress.value = 'none';
 		});
 		this.electron.ipcRenderer.send('init-dddg');
+	}
+	loadDefaultTemplate(): Promise<boolean> {
+		throw new Error('Method not implemented.');
+	}
+	saveDefaultTemplate(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	clearDefaultTemplate(): Promise<void> {
+		throw new Error('Method not implemented.');
 	}
 	storeSaveFile(saveBlob: Blob, defaultName: string): Promise<void> {
 		const a = document.createElement('a');
