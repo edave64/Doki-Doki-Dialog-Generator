@@ -12,7 +12,7 @@
 				@keydown.space.prevent="select(obj)"
 			></div>
 		</div>
-		<render
+		<preview-render
 			ref="renderer"
 			:canvasWidth="canvasWidth"
 			:canvasHeight="canvasHeight"
@@ -52,7 +52,7 @@
 <script lang="ts" setup>
 import MessageConsole from '@/components/message-console.vue';
 import ModalDialog from '@/components/modal-dialog.vue';
-import Render from '@/components/render.vue';
+import PreviewRender from '@/components/preview-render.vue';
 import ToolBox from '@/components/toolbox/toolbox.vue';
 import { packsUrl } from '@/config';
 import environment from '@/environments/environment';
@@ -97,7 +97,7 @@ const ExpressionBuilder = defineAsyncComponent(
 const arrowMoveStepSize = 20;
 const store = useStore();
 const preLoading = ref(true);
-const renderer = ref(null! as typeof Render);
+const renderer = ref(null! as typeof PreviewRender);
 
 const objects = computed(() => {
 	const panels = store.state.panels;

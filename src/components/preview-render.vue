@@ -247,7 +247,6 @@ async function blendOver(url: string) {
 		});
 		inBlendOver.value = true;
 	}
-	sdCtx.value;
 }
 //#endregion Blend over
 //#endregion picker
