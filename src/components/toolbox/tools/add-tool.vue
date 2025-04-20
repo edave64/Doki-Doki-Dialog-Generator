@@ -66,6 +66,8 @@ interface Group {
 	shortcut: string;
 }
 
+const store = useStore();
+
 const groups = {
 	characters: {
 		icon: 'emoji_people',
@@ -87,7 +89,6 @@ const groups = {
 const root = ref(null! as HTMLElement);
 const group = ref('characters' as GroupNames);
 const sprites = ref(null! as typeof SpritesTab | null);
-const store = useStore();
 const { vertical } = setupPanelMixin(root);
 
 const currentPanel = computed(() => {

@@ -98,6 +98,7 @@ const props = defineProps<{
 	repo: DeepReadonly<Repo> | null;
 	showBack?: boolean;
 }>();
+const store = useStore();
 
 const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 	['reddit', 'https://reddit.com/u/%1', 'reddit.png'],
@@ -110,7 +111,6 @@ const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 	['website', '%1', 'website.svg'],
 ];
 
-const store = useStore();
 const pack = computed(() => props.repo!.getPack(props.selected)!);
 const backgroundImage = computed(() =>
 	pack.value.preview.map((preview) => `url('${preview}')`).join(',')

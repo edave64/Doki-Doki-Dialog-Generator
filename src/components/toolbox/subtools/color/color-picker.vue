@@ -81,10 +81,10 @@ const model = defineModel<string>({
 const emit = defineEmits<{
 	leave: [];
 }>();
+const store = useStore();
 
 const generatedPackId = 'dddg.generated.colors';
 const id = uniqId();
-const store = useStore();
 const mode = ref('hsla' as 'hsla' | 'rgba' | undefined);
 const vertical = computed(() => store.state.ui.vertical);
 const color = computed({

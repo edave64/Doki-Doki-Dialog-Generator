@@ -78,12 +78,12 @@ const props = withDefaults(
 	{ noInput: false, shiftGradient: false }
 );
 const model = defineModel<number>({ required: true });
+const store = useStore();
 
 const sliderLength = 255;
 const sliderOffset = 8;
 const id = uniqId();
 
-const store = useStore();
 const vertical = computed(() => store.state.ui.vertical);
 const svg = ref(null! as SVGElement);
 

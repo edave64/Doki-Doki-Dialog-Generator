@@ -226,11 +226,12 @@ interface IPanelButton {
 	text: string;
 }
 
+const store = useStore();
+
 const qualityFactor = 100;
 const defaultQuality = 90;
 const qualityWarningThreshold = 70;
 
-const store = useStore();
 const root = ref(null! as HTMLElement);
 const { vertical, getRoot } = setupPanelMixin(root);
 

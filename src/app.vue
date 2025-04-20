@@ -85,6 +85,8 @@ import {
 import { Repo } from './models/repo';
 import { type IRemovePacksAction, useStore } from './store';
 
+const store = useStore();
+
 const SingleBox = defineAsyncComponent(
 	() => import('@/components/repo/layouts/single-box.vue')
 );
@@ -95,7 +97,6 @@ const ExpressionBuilder = defineAsyncComponent(
 		)
 );
 const arrowMoveStepSize = 20;
-const store = useStore();
 const preLoading = ref(true);
 const renderer = ref(null! as typeof PreviewRender);
 

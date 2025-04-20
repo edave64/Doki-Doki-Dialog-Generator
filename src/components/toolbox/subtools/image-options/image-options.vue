@@ -301,6 +301,7 @@ const props = defineProps<{
 const emit = defineEmits<{
 	leave: [];
 }>();
+const store = useStore();
 
 const filterText: ReadonlyMap<SpriteFilter['type'], string> = new Map<
 	SpriteFilter['type'],
@@ -334,8 +335,6 @@ const filterTypes: ReadonlyArray<SpriteFilter['type']> = (() => {
 	}
 	return ['opacity'];
 })();
-
-const store = useStore();
 
 const addEffectSelection = ref('' as SpriteFilter['type'] | '');
 const currentFilterIdx = ref(0);

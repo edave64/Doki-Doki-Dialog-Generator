@@ -90,6 +90,8 @@ import ImageOptions from '../subtools/image-options/image-options.vue';
 import BgButton from './background/bg-button.vue';
 import BgSettings from './background/bg-settings.vue';
 
+const store = useStore();
+
 const uploadedBackgroundsPackDefaults: ContentPack<string> = {
 	packId: 'dddg.uploads.backgrounds',
 	dependencies: [],
@@ -103,7 +105,6 @@ const uploadedBackgroundsPackDefaults: ContentPack<string> = {
 	colors: [],
 };
 
-const store = useStore();
 const root = ref(null! as HTMLElement);
 setupPanelMixin(root);
 

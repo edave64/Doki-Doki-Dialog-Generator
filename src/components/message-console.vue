@@ -42,12 +42,12 @@ import { computed, ref, watch } from 'vue';
 const props = defineProps<{
 	loading?: boolean;
 }>();
+const store = useStore();
 
 const shortHidingTime = 5000;
 const longHidingTime = 20000;
 const hideShowTimeouts = 100;
 
-const store = useStore();
 const messages = ref([] as string[]);
 const errors = ref([] as string[]);
 const resolvableErrors = ref([] as ResolvableErrorEvent[]);

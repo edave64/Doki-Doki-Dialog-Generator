@@ -49,6 +49,7 @@ export default defineConfigWithVueTs(
 						'defineModel',
 						'defineEmits',
 						'defineSlots',
+						'useStore',
 					],
 					defineExposeLast: true,
 				},

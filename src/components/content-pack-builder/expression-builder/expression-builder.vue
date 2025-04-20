@@ -176,6 +176,7 @@ const props = defineProps<{
 const emit = defineEmits<{
 	leave: [];
 }>();
+const store = useStore();
 
 const uploadedExpressionsPackDefaults: ContentPack<IAssetSwitch> = {
 	packId: 'dddg.uploads.expressions',
@@ -192,7 +193,6 @@ const uploadedExpressionsPackDefaults: ContentPack<IAssetSwitch> = {
 
 const partFiles: { [s: string]: string[] | undefined } = {};
 
-const store = useStore();
 const target = ref(null! as HTMLCanvasElement);
 const headGroup = ref(null as null | IHeadGroup);
 const uploadedExpressions = ref([] as string[]);
