@@ -41,7 +41,7 @@
 					Remove locally
 				</button>
 			</template>
-			<toggle
+			<toggle-box
 				v-if="autoloadEnabled"
 				label="Load on startup"
 				v-model="autoload"
@@ -91,7 +91,7 @@ import type {
 } from '@edave64/dddg-repo-filters/dist/authors';
 import type { DeepReadonly } from 'ts-essentials';
 import { computed, type PropType, ref } from 'vue';
-import Toggle from '../toggle.vue';
+import ToggleBox from '../ui/d-toggle.vue';
 
 const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 	['reddit', 'https://reddit.com/u/%1', 'reddit.png'],

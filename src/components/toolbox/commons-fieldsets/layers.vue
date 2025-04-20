@@ -33,15 +33,15 @@
 				title="Move to front"
 			/>
 		</d-flow>
-		<toggle v-model="onTop" label="In front?" />
+		<toggle-box v-model="onTop" label="In front?" />
 	</d-fieldset>
 </template>
 
 <script lang="ts" setup>
-import Toggle from '@/components/toggle.vue';
 import DButton from '@/components/ui/d-button.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
+import ToggleBox from '@/components/ui/d-toggle.vue';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { IObject, IObjectShiftLayerAction } from '@/store/objects';

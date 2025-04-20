@@ -53,7 +53,7 @@
 			<position-and-size :obj="object" />
 			<layers :object="object" />
 			<d-fieldset title="Transform" class="transforms">
-				<toggle v-model="flip" label="Flip?" />
+				<toggle-box v-model="flip" label="Flip?" />
 				<label for="linked_to" class="v-w100">Linked with:</label>
 				<select
 					id="linked_to"
@@ -163,7 +163,7 @@
 						</tr>
 						<tr>
 							<td colspan="2" v-if="!easterEgg">
-								<toggle
+								<toggle-box
 									v-model="preserveRatio"
 									label="Lock scale ratio?"
 								/>
@@ -176,14 +176,14 @@
 
 			<slot name="options" />
 			<d-fieldset v-if="hasLabel" title="Textbox settings">
-				<toggle
+				<toggle-box
 					label="Enlarge when talking"
 					v-model="enlargeWhenTalking"
 					v-if="
 						object.type === 'character' || object.type === 'sprite'
 					"
 				/>
-				<toggle
+				<toggle-box
 					label="Own textbox color"
 					v-model="useCustomTextboxColor"
 				/>
@@ -232,13 +232,13 @@
 <script lang="ts" setup>
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import ModalDialog from '@/components/modal-dialog.vue';
-import Toggle from '@/components/toggle.vue';
 import Delete from '@/components/toolbox/commons-fieldsets/delete.vue';
 import Layers from '@/components/toolbox/commons-fieldsets/layers.vue';
 import PositionAndSize from '@/components/toolbox/commons-fieldsets/position-and-size.vue';
 import Color from '@/components/toolbox/subtools/color/color.vue';
 import ImageOptions from '@/components/toolbox/subtools/image-options/image-options.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
+import ToggleBox from '@/components/ui/d-toggle.vue';
 import getConstants from '@/constants';
 import eventBus, { FailureEvent } from '@/eventbus/event-bus';
 import { transaction } from '@/plugins/vuex-history';
@@ -254,7 +254,6 @@ import type {
 	ISetNameboxWidthMutation,
 	ISetObjectScaleMutation,
 	ISetObjectSkewMutation,
-	ISetOverflowMutation,
 	ISetRatioAction,
 	ISetTextBoxColor,
 } from '@/store/objects';
@@ -362,10 +361,6 @@ const enlargeWhenTalking = setable(
 	'panels/setEnlargeWhenTalking'
 );
 
-const canOverflow = computed(() => {
-	return 'overflow' in props.object;
-});
-
 const allowZoom = computed(() => {
 	return allowScaleModification(props.object);
 });
@@ -389,21 +384,6 @@ const linkObjectList = computed((): [IObject['id'], string][] => {
 
 // Don't think about it. Don't question it.
 const easterEgg = location.search.includes('alex');
-
-const overflow = computed({
-	get(): boolean {
-		return props.object.overflow ?? false;
-	},
-	set(overflow: boolean) {
-		transaction(async () => {
-			await store.commit('panels/setOverflow', {
-				id: props.object.id,
-				panelId: props.object.panelId,
-				overflow,
-			} as ISetOverflowMutation);
-		});
-	},
-});
 
 const preserveRatio = computed({
 	get(): boolean {

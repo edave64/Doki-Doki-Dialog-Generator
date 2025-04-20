@@ -16,14 +16,14 @@
 			</div>
 		</template>
 		<template v-slot:options>
-			<toggle v-model="renderBackdrop" label="Show backdrop?" />
+			<toggle-box v-model="renderBackdrop" label="Show backdrop?" />
 		</template>
 	</object-tool>
 </template>
 
 <script lang="ts" setup>
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
-import Toggle from '@/components/toggle.vue';
+import ToggleBox from '@/components/ui/d-toggle.vue';
 import { useStore } from '@/store';
 import {
 	type INotification,

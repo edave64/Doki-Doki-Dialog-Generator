@@ -104,18 +104,18 @@
 			<template v-if="inPlusMode"> Enter Classic Mode </template>
 			<template v-else> Enter DDLC Plus Mode </template>
 		</button>
-		<toggle
+		<toggle-box
 			v-if="lqAllowed"
 			label="Low quality preview?"
 			title="Reduces the quality of the preview images to speed up the user experience and consume less data. Does not effect final render."
 			v-model="lqRendering"
 		/>
-		<toggle label="NSFW Mode?" v-model="nsfw" />
-		<toggle
+		<toggle-box label="NSFW Mode?" v-model="nsfw" />
+		<toggle-box
 			label="Enlarge talking objects? (Default value)"
 			v-model="defaultCharacterTalkingZoom"
 		/>
-		<toggle
+		<toggle-box
 			label="Fault tolerant text parsing"
 			title="Silently ignore parse errors in texts. (Like unexpected '{' characters) Prevents beginners from getting stuck working with textboxes, but also makes it harder to understand what you are doing wrong."
 			v-model="looseTextParsing"
@@ -160,7 +160,7 @@
 <script lang="ts" setup>
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import ModalDialog from '@/components/modal-dialog.vue';
-import Toggle from '@/components/toggle.vue';
+import ToggleBox from '@/components/ui/d-toggle.vue';
 import L from '@/components/ui/link.vue';
 import { Electron } from '@/environments/electron';
 import environment from '@/environments/environment';

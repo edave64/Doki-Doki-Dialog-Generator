@@ -140,8 +140,8 @@
 <script lang="ts" setup>
 import { getAAssetUrl, getAssetByUrl } from '@/asset-manager';
 import { verticalScrollRedirect } from '@/components/mixins/vertical-scroll-redirect';
-import ToggleBox from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
+import ToggleBox from '@/components/ui/d-toggle.vue';
 import L from '@/components/ui/link.vue';
 import { SelectedState } from '@/constants/shared';
 import environment from '@/environments/environment';

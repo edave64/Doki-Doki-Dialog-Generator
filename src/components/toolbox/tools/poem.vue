@@ -21,8 +21,8 @@
 				Formatting
 			</button>
 		</div>
-		<toggle label="Auto line wrap?" v-model="autoWrap" />
-		<toggle
+		<toggle-box label="Auto line wrap?" v-model="autoWrap" />
+		<toggle-box
 			label="Allow overflow?"
 			v-model="overflow"
 			title="When text is too long, it is shown outside the container. Uses more memory"
@@ -70,7 +70,7 @@
 
 <script lang="ts" setup>
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
-import Toggle from '@/components/toggle.vue';
+import ToggleBox from '@/components/ui/d-toggle.vue';
 import {
 	poemBackgrounds,
 	poemTextStyles,

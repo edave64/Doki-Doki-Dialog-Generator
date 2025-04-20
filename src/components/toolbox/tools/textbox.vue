@@ -84,17 +84,17 @@
 				</tbody>
 			</table>
 
-			<toggle
+			<toggle-box
 				label="Auto quoting?"
 				v-model="autoQuoting"
 				title="Try to automatically fix missing/unclosed quotation marks when a character is speaking"
 			/>
-			<toggle
+			<toggle-box
 				label="Auto line wrap?"
 				v-model="autoWrap"
 				title="Automatically insert line breaks when a line of text is larger than the textbox"
 			/>
-			<toggle
+			<toggle-box
 				label="Allow overflow?"
 				v-model="overflow"
 				title="When text is too long, it is shown outside the textbox. Uses more memory"
@@ -119,9 +119,12 @@
 				:class="customizable ? 'customization-set' : ''"
 			>
 				<d-flow direction="vertical" maxSize="100%" no-wraping>
-					<toggle label="Controls visible?" v-model="showControls" />
-					<toggle label="Able to skip?" v-model="allowSkipping" />
-					<toggle
+					<toggle-box
+						label="Controls visible?"
+						v-model="showControls"
+					/>
+					<toggle-box label="Able to skip?" v-model="allowSkipping" />
+					<toggle-box
 						label="Continue arrow?"
 						v-model="showContinueArrow"
 					/>
@@ -146,7 +149,7 @@
 							</tr>
 							<tr>
 								<td colspan="2">
-									<toggle
+									<toggle-box
 										v-model="overrideColor"
 										label="Override color"
 									/>
@@ -169,7 +172,7 @@
 							</tr>
 							<tr v-if="overrideColor">
 								<td colspan="2">
-									<toggle
+									<toggle-box
 										id="derive_custom_colors"
 										v-model="deriveCustomColors"
 										label="Derive other colors"
@@ -248,9 +251,9 @@
 
 <script lang="ts" setup>
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
-import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
+import ToggleBox from '@/components/ui/d-toggle.vue';
 import getConstants from '@/constants';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';

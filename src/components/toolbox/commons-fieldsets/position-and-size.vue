@@ -9,7 +9,7 @@
 			<tbody>
 				<tr>
 					<td colspan="2">
-						<toggle
+						<toggle-box
 							v-if="allowStepMove"
 							v-model="freeMove"
 							label="Move freely?"
@@ -126,8 +126,8 @@
 </template>
 
 <script lang="ts" setup>
-import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
+import ToggleBox from '@/components/ui/d-toggle.vue';
 import getConstants from '@/constants';
 import { transaction } from '@/plugins/vuex-history';
 import { rendererLookup } from '@/renderables/textbox';

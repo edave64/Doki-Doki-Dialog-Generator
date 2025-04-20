@@ -16,7 +16,7 @@
 			<tbody>
 				<tr>
 					<td colspan="3">
-						<toggle v-model="flipped" label="Flipped?" />
+						<toggle-box v-model="flipped" label="Flipped?" />
 					</td>
 				</tr>
 				<tr v-if="hasVariants">
@@ -58,8 +58,8 @@
 </template>
 
 <script lang="ts" setup>
-import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
+import ToggleBox from '@/components/ui/d-toggle.vue';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { IAssetSwitch } from '@/store/content';

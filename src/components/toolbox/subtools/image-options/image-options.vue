@@ -325,7 +325,7 @@ const filterTypes: ReadonlyArray<SpriteFilter['type']> = (() => {
 		if (hasFilter) {
 			return Array.from(filterText.keys()).sort();
 		}
-	} catch (_e) {
+	} catch {
 		// Ignore
 	}
 	return ['opacity'];

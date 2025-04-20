@@ -45,15 +45,15 @@
 		</d-fieldset>
 		<button @click="addChoice">Add</button>
 		<button @click="removeChoice">Remove</button>
-		<toggle label="Auto line wrap?" v-model="autoWrap" />
+		<toggle-box label="Auto line wrap?" v-model="autoWrap" />
 	</object-tool>
 </template>
 
 <script lang="ts" setup>
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
-import Toggle from '@/components/toggle.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
+import ToggleBox from '@/components/ui/d-toggle.vue';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type {
