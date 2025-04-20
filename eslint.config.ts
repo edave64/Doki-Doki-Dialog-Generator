@@ -26,5 +26,20 @@ export default defineConfigWithVueTs(
 		files: ['src/**/__tests__/*'],
 	},
 	...pluginOxlint.configs['flat/recommended'],
-	skipFormatting
+	skipFormatting,
+	{
+		rules: {
+			'vue/component-name-in-template-casing': ['error', 'kebab-case', { registeredComponentsOnly: false }],
+			"vue/component-options-name-casing": ["error", "PascalCase"],
+			"vue/custom-event-name-casing": ["error","kebab-case"],
+			/*'vue/define-emits-declaration': 'error',
+			"vue/define-macros-order": ["error", {
+				"order": ["defineProps", "defineEmits"],
+				"defineExposeLast": true
+			}],
+			'vue/define-props-declaration': 'error',
+			'vue/html-comment-content-spacing': 'error',
+			'vue/html-comment-indent*/
+		},
+	}
 );
