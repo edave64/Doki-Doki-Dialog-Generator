@@ -33,7 +33,7 @@
 			@update:modelValue="textHandler.set($event)"
 			@leave="textHandler.leave()"
 		/>
-		<color
+		<color-picker
 			v-else-if="finalColorHandler"
 			:title="finalColorHandler.title"
 			:modelValue="finalColorHandler.get()"
@@ -235,7 +235,7 @@ import ModalDialog from '@/components/modal-dialog.vue';
 import DeleteBtn from '@/components/toolbox/commons-fieldsets/delete-btn.vue';
 import LayerBtns from '@/components/toolbox/commons-fieldsets/layer-btns.vue';
 import PositionAndSize from '@/components/toolbox/commons-fieldsets/position-and-size.vue';
-import Color from '@/components/toolbox/subtools/color/color.vue';
+import ColorPicker from '@/components/toolbox/subtools/color/color-picker.vue';
 import ImageOptions from '@/components/toolbox/subtools/image-options/image-options.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';

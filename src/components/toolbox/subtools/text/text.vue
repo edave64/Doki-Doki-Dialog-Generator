@@ -2,7 +2,7 @@
 	An advanced text-entry that helps with formatting.
 -->
 <template>
-	<color v-if="colorSelector" v-model="selectedColor" @leave="applyColor" />
+	<color-picker v-if="colorSelector" v-model="selectedColor" @leave="applyColor" />
 	<div v-else :class="{ 'text-subpanel': true, vertical }">
 		<h2>{{ title }}</h2>
 		<div class="column ok-col">
@@ -141,7 +141,7 @@ import getConstants from '@/constants';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
 import { useStore } from '@/store';
 import { computed, nextTick, ref, watch } from 'vue';
-import Color from '../color/color.vue';
+import ColorPicker from '../color/color-picker.vue';
 
 defineOptions({
 	inheritAttrs: false,

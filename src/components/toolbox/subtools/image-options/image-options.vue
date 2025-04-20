@@ -2,7 +2,7 @@
 	Allows picking different effects that can be applied to an object
 -->
 <template>
-	<color
+	<color-picker
 		v-if="showShadowColor"
 		v-model="shadowColor"
 		format="rgb"
@@ -266,7 +266,7 @@
 </template>
 
 <script lang="ts" setup>
-import Color from '@/components/toolbox/subtools/color/color.vue';
+import ColorPicker from '@/components/toolbox/subtools/color/color-picker.vue';
 import Slider from '@/components/toolbox/subtools/color/slider.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';

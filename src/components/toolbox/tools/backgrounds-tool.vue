@@ -12,7 +12,7 @@
 			>Drop here to add as a new background
 		</drop-target>
 		<h1>Background</h1>
-		<color
+		<color-picker
 			v-if="colorSelect"
 			v-model="bgColor"
 			@leave="colorSelect = false"
@@ -85,7 +85,7 @@ import type {
 import { computed, ref } from 'vue';
 import { setupPanelMixin } from '../../mixins/panel-mixin';
 import DropTarget from '../drop-target.vue';
-import Color from '../subtools/color/color.vue';
+import ColorPicker from '../subtools/color/color-picker.vue';
 import ImageOptions from '../subtools/image-options/image-options.vue';
 import BgButton from './background/bg-button.vue';
 import BgSettings from './background/bg-settings.vue';
