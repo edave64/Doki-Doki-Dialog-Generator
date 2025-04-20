@@ -26,7 +26,7 @@
 				</p>
 			</modal-dialog>
 		</teleport>
-		<text-editor
+		<text-formatting
 			v-if="textHandler"
 			:title="textHandler.title"
 			:modelValue="textHandler.get()"
@@ -260,7 +260,7 @@ import type {
 import { decomposeMatrix } from '@/util/math';
 import { genericSetterMerged } from '@/util/simple-settable';
 import { computed, type PropType, ref } from 'vue';
-import TextEditor from '../subtools/text/text.vue';
+import TextFormatting from '../subtools/text/text-formatting.vue';
 
 const store = useStore();
 const root = ref(null! as HTMLElement);
