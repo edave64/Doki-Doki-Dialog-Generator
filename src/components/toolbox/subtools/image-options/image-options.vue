@@ -182,7 +182,7 @@
 									<label for="filter_value">Value:</label>
 								</td>
 								<td>
-									<!--suppress XmlDuplicatedId -->
+									<!-- suppress XmlDuplicatedId -->
 									<input
 										id="filter_value"
 										:value="

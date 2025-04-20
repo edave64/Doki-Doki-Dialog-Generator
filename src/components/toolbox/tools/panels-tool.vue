@@ -106,7 +106,7 @@
 									<option value="image/jpeg">
 										JPEG (lossy)
 									</option>
-									<!-- <option value="image/jpeg">WebM (lossy, video)</option>-->
+									<!-- <option value="image/jpeg">WebM (lossy, video)</option> -->
 								</select>
 							</td>
 						</tr>
