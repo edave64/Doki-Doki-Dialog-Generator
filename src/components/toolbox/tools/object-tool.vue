@@ -224,7 +224,7 @@
 			</d-fieldset>
 			<button @click="imageOptionsOpen = true">Image options</button>
 			<button class="v-bt0" @click="copy">Copy</button>
-			<delete class="v-bt0" :obj="object" />
+			<delete-btn class="v-bt0" :obj="object" />
 		</template>
 	</div>
 </template>
@@ -232,7 +232,7 @@
 <script lang="ts" setup>
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import ModalDialog from '@/components/modal-dialog.vue';
-import Delete from '@/components/toolbox/commons-fieldsets/delete.vue';
+import DeleteBtn from '@/components/toolbox/commons-fieldsets/delete-btn.vue';
 import Layers from '@/components/toolbox/commons-fieldsets/layers.vue';
 import PositionAndSize from '@/components/toolbox/commons-fieldsets/position-and-size.vue';
 import Color from '@/components/toolbox/subtools/color/color.vue';
