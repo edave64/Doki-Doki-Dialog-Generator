@@ -9,8 +9,8 @@
 	<button
 		:class="[iconPos]"
 		:disabled="disabled"
-		:title="title ?? undefined"
-		:aria-label="title ?? undefined"
+		:title="title"
+		:aria-label="title"
 		:style="icon ? 'height: auto' : ''"
 		ref="btn"
 	>
@@ -25,37 +25,21 @@
 </template>
 
 <script lang="ts" setup>
-import {
-	computed,
-	onMounted,
-	onUnmounted,
-	type PropType,
-	ref,
-	type VNodeRef,
-} from 'vue';
+import { computed, onMounted, onUnmounted, ref, type VNodeRef } from 'vue';
 
-const props = defineProps({
-	icon: {
-		type: String,
-		required: true,
-	},
-	iconPos: {
-		type: String as PropType<'left' | 'top'>,
-		default: 'left',
-	},
-	disabled: {
-		type: Boolean,
-		default: false,
-	},
-	shortcut: {
-		type: String as PropType<string | null>,
-		default: null,
-	},
-	title: {
-		type: String as PropType<string | null>,
-		default: null,
-	},
-});
+const props = withDefaults(
+	defineProps<{
+		icon: string;
+		iconPos?: 'left' | 'top';
+		disabled?: boolean;
+		shortcut?: string;
+		title?: string;
+	}>(),
+	{
+		iconPos: 'left',
+		disabled: false,
+	}
+);
 const btn = ref(null! as VNodeRef);
 const showPopup = computed(
 	() => props.shortcut != null && !props.shortcut.startsWith('!')

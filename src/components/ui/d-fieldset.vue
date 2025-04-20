@@ -24,12 +24,9 @@
 </template>
 
 <script lang="ts" setup>
-const props = defineProps({
-	title: {
-		required: true,
-		type: String,
-	},
-});
+const props = defineProps<{
+	title: string;
+}>();
 </script>
 
 <style lang="scss" scoped>

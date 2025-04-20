@@ -145,14 +145,11 @@ import type {
 	ISetPositionAction,
 	ISetSpriteSizeMutation,
 } from '@/store/objects';
-import { computed, type PropType } from 'vue';
+import { computed } from 'vue';
 
-const props = defineProps({
-	obj: {
-		required: true,
-		type: Object as PropType<IObject>,
-	},
-});
+const props = defineProps<{
+	obj: IObject;
+}>();
 
 const store = useStore();
 //#region Size

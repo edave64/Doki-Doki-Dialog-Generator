@@ -259,23 +259,21 @@ import type {
 } from '@/store/objects';
 import { decomposeMatrix } from '@/util/math';
 import { genericSetterMerged } from '@/util/simple-settable';
-import { computed, type PropType, ref } from 'vue';
+import { computed, ref } from 'vue';
 import TextFormatting from '../subtools/text/text-formatting.vue';
 
-const props = defineProps({
-	object: {
-		type: Object as PropType<IObject>,
-		required: true,
-	},
-	title: String,
-	textHandler: {
-		type: Object as PropType<Handler>,
-	},
-	colorHandler: {
-		type: Object as PropType<Handler>,
-	},
-	showAltPanel: Boolean,
-});
+const props = withDefaults(
+	defineProps<{
+		object: IObject;
+		title: string;
+		textHandler?: Handler;
+		colorHandler?: Handler;
+		showAltPanel?: boolean;
+	}>(),
+	{
+		showAltPanel: false,
+	}
+);
 
 const store = useStore();
 const root = ref(null! as HTMLElement);

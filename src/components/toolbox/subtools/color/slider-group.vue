@@ -34,22 +34,21 @@
 import type { IColor } from '@/util/colors/color';
 import { HSLAColor } from '@/util/colors/hsl';
 import { RGBAColor } from '@/util/colors/rgb';
-import { computed, type ComputedRef, type PropType, ref, watch } from 'vue';
+import { computed, type ComputedRef, ref, watch } from 'vue';
 import ColorSlider from './color-slider.vue';
 
-const props = defineProps({
-	modelValue: {
-		type: String,
-		validator: (val: string): boolean => !!val.match(/^#[0-9a-f]{6,8}$/i),
-	},
-	mode: {
-		type: String as PropType<'hsla' | 'rgba'>,
-	},
-	relative: Boolean,
+const props = withDefaults(
+	defineProps<{
+		mode?: 'hsla' | 'rgba';
+		relative?: boolean;
+	}>(),
+	{ mode: 'hsla', relative: false }
+);
+
+const model = defineModel<string>({
+	required: true,
+	validator: (val: string): boolean => !!val.match(/^#[0-9a-f]{6,8}$/i),
 });
-const emit = defineEmits<{
-	'update:modelValue': [value: string];
-}>();
 
 const lastRGBEmit = ref(null as string | null);
 const v1 = ref(0);
@@ -116,7 +115,7 @@ const slider3 = stop({
 });
 
 const stopsAlpha = computed((): string[] => {
-	const color = RGBAColor.fromHex(props.modelValue!);
+	const color = RGBAColor.fromHex(model.value);
 	return [
 		new RGBAColor(color.r, color.g, color.b, 0).toCss(),
 		new RGBAColor(color.r, color.g, color.b, 1).toCss(),
@@ -124,7 +123,7 @@ const stopsAlpha = computed((): string[] => {
 });
 
 function valueChanged() {
-	if (props.modelValue === lastRGBEmit.value) return;
+	if (model.value === lastRGBEmit.value) return;
 	initValues();
 }
 
@@ -146,11 +145,11 @@ function updateValue() {
 		throw new Error(`Invalid color code: ${rgbColor}`);
 	}
 	lastRGBEmit.value = rgbColor;
-	emit('update:modelValue', rgbColor);
+	model.value = rgbColor;
 }
 
 function initValues() {
-	const color = RGBAColor.fromHex(props.modelValue!);
+	const color = RGBAColor.fromHex(model.value);
 	lastRGBEmit.value = color.toHex();
 	a.value = color.a * 255;
 	if (props.mode === 'hsla') {
@@ -173,7 +172,7 @@ function eightsStops(gen: (i: number) => IColor): IColor[] {
 	return stops;
 }
 
-watch(() => props.modelValue, valueChanged);
+watch(() => model.value, valueChanged);
 watch(() => props.mode, initValues, { immediate: true });
 watch(() => [v1.value, v2.value, v3.value, a.value], updateValue);
 

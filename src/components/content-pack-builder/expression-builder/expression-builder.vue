@@ -169,13 +169,10 @@ import DropTarget from '../../toolbox/drop-target.vue';
 import ExpressionOption from './expression-option.vue';
 import ExpressionSelect from './expression-select.vue';
 
-const props = defineProps({
-	character: {
-		type: String,
-		required: true,
-	},
-	initHeadGroup: String,
-});
+const props = defineProps<{
+	character: string;
+	initHeadGroup?: string;
+}>();
 const emit = defineEmits<{
 	leave: [];
 }>();

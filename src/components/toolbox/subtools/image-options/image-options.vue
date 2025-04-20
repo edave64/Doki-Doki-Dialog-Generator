@@ -290,31 +290,14 @@ import { disposeCanvas, makeCanvas } from '@/util/canvas';
 import type { IColor } from '@/util/colors/color';
 import { HSLAColor } from '@/util/colors/hsl';
 import { UnreachableCaseError } from 'ts-essentials';
-import {
-	computed,
-	type Prop,
-	type PropType,
-	ref,
-	type WritableComputedRef,
-} from 'vue';
+import { computed, ref, type WritableComputedRef } from 'vue';
 
-const props = defineProps({
-	type: {
-		type: String as PropType<'object' | 'background' | 'panel'>,
-		required: true,
-	},
-	title: {
-		type: String,
-	},
-	id: {} as Prop<IObject['id']>,
-	panelId: {
-		required: true,
-	} as Prop<IPanel['id']>,
-	noComposition: {
-		type: Boolean,
-		default: false,
-	},
-});
+const props = defineProps<{
+	type: 'object' | 'background' | 'panel';
+	id?: IObject['id'];
+	panelId: IPanel['id'];
+	noComposition?: boolean;
+}>();
 const emit = defineEmits<{
 	leave: [];
 }>();

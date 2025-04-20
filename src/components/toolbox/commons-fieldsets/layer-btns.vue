@@ -46,14 +46,11 @@ import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { IObject, IObjectShiftLayerAction } from '@/store/objects';
 import { genericSetterMerged } from '@/util/simple-settable';
-import { computed, type PropType } from 'vue';
+import { computed } from 'vue';
 
-const props = defineProps({
-	object: {
-		required: true,
-		type: Object as PropType<IObject>,
-	},
-});
+const props = defineProps<{
+	object: IObject;
+}>();
 
 const store = useStore();
 const onTop = genericSetterMerged(

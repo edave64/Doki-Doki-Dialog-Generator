@@ -16,7 +16,7 @@
 			<textarea
 				class="v-w100"
 				ref="textArea"
-				:value="modelValue"
+				:value="model"
 				@input="onValueChanged"
 				@keydown.stop
 				@keypress.stop
@@ -150,18 +150,11 @@ import ColorPicker from '../color/color-picker.vue';
 defineOptions({
 	inheritAttrs: false,
 });
-defineProps({
-	modelValue: {
-		type: String,
-		required: true,
-	},
-	title: {
-		type: String,
-		default: '',
-	},
-});
+defineProps<{
+	title: string;
+}>();
+const model = defineModel<string>({ required: true });
 const emit = defineEmits<{
-	'update:modelValue': [value: string];
 	leave: [];
 }>();
 
@@ -216,7 +209,7 @@ function onValueChanged() {
 	} catch (e) {
 		error.value = (e as Error).message;
 	}
-	emit('update:modelValue', val);
+	model.value = val;
 }
 
 function selectColor(colorSelector_: '' | 'text' | 'outline') {

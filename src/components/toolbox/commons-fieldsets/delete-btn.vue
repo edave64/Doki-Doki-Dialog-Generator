@@ -9,14 +9,10 @@
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { IObject, IRemoveObjectAction } from '@/store/objects';
-import type { PropType } from 'vue';
 
-const props = defineProps({
-	obj: {
-		required: true,
-		type: Object as PropType<IObject>,
-	},
-});
+const props = defineProps<{
+	obj: IObject;
+}>();
 
 const store = useStore();
 function onClick() {

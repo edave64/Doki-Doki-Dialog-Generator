@@ -61,7 +61,7 @@ const dialog = ref(null! as typeof PackDisplay);
 const search = ref('');
 const packs = ref([] as DeepReadonly<Pack[]>);
 const authors = ref({} as IAuthors);
-const repo = ref(null as null | Repo);
+const repo = ref(null as null | DeepReadonly<Repo>);
 const selected = ref(null as string | null);
 
 const isRepoUrl = computed(() => {

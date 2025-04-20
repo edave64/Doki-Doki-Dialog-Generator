@@ -77,7 +77,7 @@ import {
 import { safeAsync } from '@/util/errors';
 import { type Pose } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { type DeepReadonly } from 'ts-essentials';
-import { computed, type PropType, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import PartButton, {
 	type IPartButtonImage,
 	type IPartImage,
@@ -89,16 +89,10 @@ interface IPartStyleGroup {
 	buttons: { [id: string]: IPartButtonImage };
 }
 
-const props = defineProps({
-	character: {
-		type: Object as PropType<DeepReadonly<ICharacter>>,
-		required: true,
-	},
-	part: {
-		required: true,
-		type: String as PropType<string | 'pose' | 'style'>,
-	},
-});
+const props = defineProps<{
+	character: DeepReadonly<ICharacter>;
+	part: string | 'pose' | 'style';
+}>();
 const emit = defineEmits<{
 	leave: [];
 	'show-dialog': [searchString: string];

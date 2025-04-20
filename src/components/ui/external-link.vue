@@ -14,12 +14,9 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
 
-const props = defineProps({
-	to: {
-		type: String,
-		required: true,
-	},
-});
+const props = defineProps<{
+	to: string;
+}>();
 
 const root = ref(null! as HTMLElement);
 const href = computed((): string => {

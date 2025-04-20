@@ -1,6 +1,9 @@
 import pluginVitest from '@vitest/eslint-plugin';
 import skipFormatting from '@vue/eslint-config-prettier/skip-formatting';
-import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript';
+import {
+	defineConfigWithVueTs,
+	vueTsConfigs,
+} from '@vue/eslint-config-typescript';
 import pluginOxlint from 'eslint-plugin-oxlint';
 import pluginVue from 'eslint-plugin-vue';
 import { globalIgnores } from 'eslint/config';
@@ -29,14 +32,28 @@ export default defineConfigWithVueTs(
 	skipFormatting,
 	{
 		rules: {
-			'vue/component-name-in-template-casing': ['error', 'kebab-case', { registeredComponentsOnly: false }],
-			"vue/component-options-name-casing": ["error", "PascalCase"],
-			"vue/custom-event-name-casing": ["error","kebab-case"],
+			'vue/component-name-in-template-casing': [
+				'error',
+				'kebab-case',
+				{ registeredComponentsOnly: false },
+			],
+			'vue/component-options-name-casing': ['error', 'PascalCase'],
+			'vue/custom-event-name-casing': ['error', 'kebab-case'],
 			'vue/define-emits-declaration': 'error',
-			"vue/define-macros-order": ["error", {
-				"order": ["defineOptions","defineProps", "defineModel", "defineEmits", "defineSlots"],
-				"defineExposeLast": true
-			}],
+			'vue/define-macros-order': [
+				'error',
+				{
+					order: [
+						'defineOptions',
+						'defineProps',
+						'defineModel',
+						'defineEmits',
+						'defineSlots',
+					],
+					defineExposeLast: true,
+				},
+			],
+			'vue/define-props-declaration': 'error',
 		},
 	}
 );

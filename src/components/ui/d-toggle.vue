@@ -3,7 +3,7 @@
 -->
 <template>
 	<div class="toggle_box">
-		<input :id="id" type="checkbox" ref="checkbox" v-model="value" />
+		<input :id="id" type="checkbox" ref="checkbox" v-model="model" />
 		<label :for="id" class="switch"></label>
 		<label :for="id" class="toggle_label">{{ label }}</label>
 	</div>
@@ -11,25 +11,13 @@
 
 <script lang="ts" setup>
 import uniqId from '@/util/unique-id';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 
-const props = defineProps({
-	label: String,
-	modelValue: { type: Boolean, default: false },
-});
-const emit = defineEmits<{
-	'update:modelValue': [value: boolean];
+defineProps<{
+	label: string;
 }>();
-
+const model = defineModel<boolean>({ default: false });
 const id = uniqId();
-const value = computed({
-	get(): boolean {
-		return props.modelValue;
-	},
-	set(value: boolean) {
-		emit('update:modelValue', value);
-	},
-});
 const checkbox = ref(null! as HTMLInputElement);
 </script>
 

@@ -44,22 +44,15 @@
 </template>
 
 <script lang="ts" setup>
-import {
-	onActivated,
-	onDeactivated,
-	onMounted,
-	onUnmounted,
-	type PropType,
-	ref,
-} from 'vue';
+import { onActivated, onDeactivated, onMounted, onUnmounted, ref } from 'vue';
 
-const props = defineProps({
-	noBaseSize: Boolean,
-	options: {
-		type: Array as PropType<string[]>,
-		default: [] as string[],
-	},
-});
+const props = withDefaults(
+	defineProps<{
+		noBaseSize?: boolean;
+		options?: string[];
+	}>(),
+	{ noBaseSize: false, options: () => [] }
+);
 const emit = defineEmits<{
 	leave: [];
 	option: [option: string];

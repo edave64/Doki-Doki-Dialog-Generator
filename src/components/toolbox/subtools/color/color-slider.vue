@@ -53,7 +53,7 @@
 			class="sliderInput"
 			min="0"
 			:max="maxValue"
-			:value="modelValue"
+			:value="model"
 			type="number"
 			v-if="!noInput"
 			@input="onInput"
@@ -65,37 +65,19 @@
 <script lang="ts" setup>
 import { useStore } from '@/store';
 import uniqId from '@/util/unique-id';
-import { computed, type PropType, ref } from 'vue';
+import { computed, ref } from 'vue';
 
-const props = defineProps({
-	label: {
-		type: String,
-		required: true,
-	},
-	gradientStops: {
-		required: true,
-		type: Array as PropType<string[]>,
-	},
-	modelValue: {
-		type: Number,
-		required: true,
-	},
-	maxValue: {
-		type: Number,
-		required: true,
-	},
-	shiftGradient: {
-		type: Boolean,
-		default: false,
-	},
-	noInput: {
-		type: Boolean,
-		default: false,
-	},
-});
-const emit = defineEmits<{
-	'update:modelValue': [value: number];
-}>();
+const props = withDefaults(
+	defineProps<{
+		label: string;
+		gradientStops: string[];
+		maxValue: number;
+		shiftGradient?: boolean;
+		noInput?: boolean;
+	}>(),
+	{ noInput: false, shiftGradient: false }
+);
+const model = defineModel<number>({ required: true });
 
 const sliderLength = 255;
 const sliderOffset = 8;
@@ -106,20 +88,17 @@ const vertical = computed(() => store.state.ui.vertical);
 const svg = ref(null! as SVGElement);
 
 const pointerPath = computed(() => {
-	const val = (props.modelValue / props.maxValue) * sliderLength;
+	const val = (model.value / props.maxValue) * sliderLength;
 	return `M${val} 0L${val + 14} 0L${val + 7} 12Z`;
 });
 const gradientOffset = computed(() => {
 	if (!props.shiftGradient) return 0;
-	if (props.modelValue === 0) return 0;
-	return props.modelValue / props.maxValue;
+	if (model.value === 0) return 0;
+	return model.value / props.maxValue;
 });
 
 function onInput(event: Event) {
-	emit(
-		'update:modelValue',
-		parseFloat((event.target as HTMLInputElement).value)
-	);
+	model.value = parseFloat((event.target as HTMLInputElement).value);
 }
 //#region Drag and Drop
 const dragActive = ref(false);
@@ -151,7 +130,7 @@ function moveDrag(event: MouseEvent | TouchEvent) {
 		(Math.max(Math.min(scaledX - sliderOffset, sliderLength), 0) /
 			sliderLength) *
 		props.maxValue;
-	emit('update:modelValue', value);
+	model.value = value;
 	event.preventDefault();
 }
 function endDrag() {

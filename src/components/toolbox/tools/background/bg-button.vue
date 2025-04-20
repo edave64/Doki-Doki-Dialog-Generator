@@ -38,12 +38,9 @@ import { useStore } from '@/store';
 import type { BackgroundLookup } from '@/store/content';
 import { computed, ref } from 'vue';
 
-const props = defineProps({
-	backgroundId: {
-		type: String,
-		required: true,
-	},
-});
+const props = defineProps<{
+	backgroundId: string;
+}>();
 
 const store = useStore();
 const background = computed(() => {

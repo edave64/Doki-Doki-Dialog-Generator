@@ -63,24 +63,22 @@ import { RGBAColor } from '@/util/colors/rgb';
 import uniqId from '@/util/unique-id';
 import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import type { DeepReadonly } from 'ts-essentials';
-import { computed, onMounted, onUnmounted, type PropType, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import DButton from '../../../ui/d-button.vue';
 import SliderGroup from './slider-group.vue';
 
 defineOptions({ inheritAttrs: false });
-const props = defineProps({
-	modelValue: {
-		required: true,
-		type: String,
-	},
-	title: { default: '' },
-	format: {
-		type: String as PropType<'rgb' | 'hex'>,
-		default: 'hex',
-	},
+const props = withDefaults(
+	defineProps<{
+		title?: string;
+		format?: 'rgb' | 'hex';
+	}>(),
+	{ format: 'hex', title: '' }
+);
+const model = defineModel<string>({
+	required: true,
 });
 const emit = defineEmits<{
-	'update:modelValue': [value: string];
 	leave: [];
 }>();
 
@@ -92,18 +90,18 @@ const vertical = computed(() => store.state.ui.vertical);
 const color = computed({
 	get(): string {
 		if (props.format === 'rgb') {
-			const rgb = RGBAColor.fromCss(props.modelValue);
+			const rgb = RGBAColor.fromCss(model.value);
 			return rgb.toHex();
 		} else {
-			return props.modelValue;
+			return model.value;
 		}
 	},
 	set(newColor: string) {
 		if (props.format === 'rgb') {
 			const rgb = RGBAColor.fromCss(newColor);
-			emit('update:modelValue', rgb.toCss());
+			model.value = rgb.toCss();
 		} else {
-			emit('update:modelValue', newColor);
+			model.value = newColor;
 		}
 	},
 });

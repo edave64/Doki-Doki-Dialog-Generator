@@ -39,12 +39,9 @@ import EventBus, {
 import { useStore } from '@/store';
 import { computed, ref, watch } from 'vue';
 
-const props = defineProps({
-	loading: {
-		default: false,
-		type: Boolean,
-	},
-});
+const props = defineProps<{
+	loading?: boolean;
+}>();
 
 const shortHidingTime = 5000;
 const longHidingTime = 20000;

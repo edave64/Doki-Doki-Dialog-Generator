@@ -90,23 +90,14 @@ import type {
 	IAuthors,
 } from '@edave64/dddg-repo-filters/dist/authors';
 import type { DeepReadonly } from 'ts-essentials';
-import { computed, type PropType, ref } from 'vue';
+import { computed, ref } from 'vue';
 import ToggleBox from '../ui/d-toggle.vue';
 
-const props = defineProps({
-	selected: {
-		type: String,
-		required: true,
-	},
-	repo: {
-		type: Object as PropType<DeepReadonly<Repo> | null>,
-		require: true,
-	},
-	showBack: {
-		type: Boolean,
-		require: false,
-	},
-});
+const props = defineProps<{
+	selected: string;
+	repo: DeepReadonly<Repo> | null;
+	showBack?: boolean;
+}>();
 
 const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 	['reddit', 'https://reddit.com/u/%1', 'reddit.png'],

@@ -50,11 +50,14 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import type { MutationPayload } from 'vuex';
 import * as Grabbies from './render-grabbies';
 
-const props = defineProps({
-	canvasWidth: { default: 0 },
-	canvasHeight: { default: 0 },
-	preLoading: { type: Boolean },
-});
+const props = withDefaults(
+	defineProps<{
+		canvasWidth?: number;
+		canvasHeight?: number;
+		preLoading?: boolean;
+	}>(),
+	{ preLoading: false, canvasWidth: 0, canvasHeight: 0 }
+);
 
 const store = useStore();
 const sd = ref(null! as HTMLCanvasElement);

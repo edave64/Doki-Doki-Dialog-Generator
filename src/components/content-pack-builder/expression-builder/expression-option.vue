@@ -12,13 +12,11 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 
-const props = defineProps({
-	icon: String,
-	label: String,
-	images: {
-		default: [] as string[],
-	},
-});
+const props = defineProps<{
+	icon?: string;
+	label: string;
+	images: string[];
+}>();
 
 const background = computed(() => {
 	return props.images

@@ -15,7 +15,7 @@ import { getAAssetUrl, getBuildInAssetUrl } from '@/asset-manager';
 import type { IAssetSwitch } from '@/store/content';
 import { safeAsync } from '@/util/errors';
 import type { DeepReadonly } from 'ts-essentials';
-import { computed, type PropType, ref } from 'vue';
+import { computed, ref } from 'vue';
 
 export interface IPartButtonImage {
 	images: IPartImage[];
@@ -29,19 +29,13 @@ export interface IPartImage {
 	offset: DeepReadonly<[number, number]>;
 }
 
-const props = defineProps({
-	part: {
-		required: true,
-		type: Object as PropType<DeepReadonly<IPartButtonImage>>,
-	},
-	value: {
-		required: true,
-	},
-	size: {
-		type: Number,
-		default: 150,
-	},
-});
+const props = withDefaults(
+	defineProps<{
+		part: DeepReadonly<IPartButtonImage>;
+		size?: number;
+	}>(),
+	{ size: 150 }
+);
 const emit = defineEmits<{
 	click: [];
 	'quick-click': [];

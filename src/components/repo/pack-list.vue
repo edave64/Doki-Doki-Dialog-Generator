@@ -67,21 +67,18 @@ import {
 	type ComponentPublicInstance,
 	computed,
 	nextTick,
-	type PropType,
 	ref,
 	watch,
 } from 'vue';
 
-const props = defineProps({
-	search: { type: String, required: true },
-	repo: {
-		type: Object as PropType<DeepReadonly<Repo> | null>,
-	},
-	disabled: {
-		type: Boolean,
-		default: false,
-	},
-});
+const props = withDefaults(
+	defineProps<{
+		search: string;
+		repo: DeepReadonly<Repo> | null;
+		disabled?: boolean;
+	}>(),
+	{ disabled: false }
+);
 const emit = defineEmits<{
 	selected: [{ id: string; source: 'pointer' | 'keyboard' }];
 	'select-search-bar': [];

@@ -94,20 +94,13 @@
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 
-const props = defineProps({
-	disabled: {
-		type: Boolean,
-		default: false,
-	},
-	modelValue: {
-		type: String,
-		default: '',
-	},
-});
+defineProps<{
+	disabled?: boolean;
+}>();
+const model = defineModel<string>({ default: '' });
 const emit = defineEmits<{
 	leave: [];
 	'focus-list': [];
-	'update:modelValue': [value: string];
 }>();
 
 const debounce = 250;
@@ -133,11 +126,11 @@ function keydownHandler(event: KeyboardEvent) {
 }
 
 function updateInternalValue() {
-	if (lastSend.value === props.modelValue) {
+	if (lastSend.value === model.value) {
 		lastSend.value = '';
 		return;
 	}
-	message.value = props.modelValue;
+	message.value = model.value;
 }
 
 function onUpdate() {
@@ -151,10 +144,10 @@ function doUpdate() {
 	const div = document.createElement('div');
 	div.innerHTML = message.value;
 	lastSend.value = div.innerText;
-	emit('update:modelValue', div.innerText);
+	model.value = div.innerText;
 }
 
-watch(() => props.modelValue, updateInternalValue, { immediate: true });
+watch(() => model.value, updateInternalValue, { immediate: true });
 //#region Help Popup
 const showHelp = ref(false);
 function documentClickHandler() {
