@@ -3,25 +3,25 @@
 -->
 <template>
 	<div>
-		<slider
+		<color-slider
 			:label="slider1.label.value"
 			v-model="v1"
 			:max-value="slider1.maxValue.value"
 			:gradient-stops="slider1.stops.value"
 		/>
-		<slider
+		<color-slider
 			:label="slider2.label.value"
 			v-model="v2"
 			:max-value="slider2.maxValue.value"
 			:gradient-stops="slider2.stops.value"
 		/>
-		<slider
+		<color-slider
 			:label="slider3.label.value"
 			v-model="v3"
 			:max-value="slider3.maxValue.value"
 			:gradient-stops="slider3.stops.value"
 		/>
-		<slider
+		<color-slider
 			label="Alpha"
 			v-model="a"
 			:max-value="255"
@@ -35,7 +35,7 @@ import type { IColor } from '@/util/colors/color';
 import { HSLAColor } from '@/util/colors/hsl';
 import { RGBAColor } from '@/util/colors/rgb';
 import { computed, type ComputedRef, type PropType, ref, watch } from 'vue';
-import Slider from './slider.vue';
+import ColorSlider from './color-slider.vue';
 
 const emit = defineEmits(['update:modelValue']);
 const props = defineProps({

@@ -89,9 +89,11 @@ const props = defineProps({
 		required: true,
 	},
 	shiftGradient: {
+		type: Boolean,
 		default: false,
 	},
 	noInput: {
+		type: Boolean,
 		default: false,
 	},
 });

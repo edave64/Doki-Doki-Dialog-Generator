@@ -200,7 +200,7 @@
 							</tr>
 							<tr v-if="minValue === 0 && maxValue !== undefined">
 								<td colspan="2">
-									<slider
+									<color-slider
 										:gradientStops="['#000000', '#ffffff']"
 										label=""
 										:maxValue="maxValue"
@@ -234,7 +234,7 @@
 							</tr>
 							<tr v-if="minValue === 0 && maxValue !== undefined">
 								<td colspan="2">
-									<slider
+									<color-slider
 										:gradientStops="hueStops"
 										label=""
 										:maxValue="maxValue"
@@ -246,7 +246,7 @@
 											})
 										"
 									/>
-									<slider
+									<color-slider
 										:gradientStops="hueStops"
 										label=""
 										:maxValue="maxValue"
@@ -267,7 +267,7 @@
 
 <script lang="ts" setup>
 import ColorPicker from '@/components/toolbox/subtools/color/color-picker.vue';
-import Slider from '@/components/toolbox/subtools/color/slider.vue';
+import ColorSlider from '@/components/toolbox/subtools/color/color-slider.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import ExternalLink from '@/components/ui/external-link.vue';
