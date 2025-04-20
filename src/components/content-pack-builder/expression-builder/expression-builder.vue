@@ -1,18 +1,18 @@
 <template>
 	<div class="wrapper" @dragenter="dragEnter" @mouseleave="dt?.hide()">
 		<h1>Add expressions</h1>
-		<selector
+		<expression-select
 			v-if="!headGroup"
 			label="What kind of expression would you like to add?"
 		>
-			<selection
+			<expression-option
 				v-for="headgroup of availableHeadGroups"
 				:key="headgroup.name"
 				:label="normalizeName(headgroup.name)"
 				:images="headgroup.preview"
 				@selected="headGroup = headgroup"
 			/>
-		</selector>
+		</expression-select>
 		<template v-else>
 			<div v-if="!uploadsFinished" class="page">
 				<h2>
@@ -162,8 +162,8 @@ import type {
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { type DeepReadonly, computed, nextTick, ref, watch } from 'vue';
 import DropTarget from '../../toolbox/drop-target.vue';
-import Selection from './selection.vue';
-import Selector from './selector.vue';
+import ExpressionOption from './expression-option.vue';
+import ExpressionSelect from './expression-select.vue';
 
 const uploadedExpressionsPackDefaults: ContentPack<IAssetSwitch> = {
 	packId: 'dddg.uploads.expressions',

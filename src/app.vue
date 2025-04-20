@@ -90,7 +90,9 @@ const SingleBox = defineAsyncComponent(
 );
 const ExpressionBuilder = defineAsyncComponent(
 	() =>
-		import('@/components/content-pack-builder/expression-builder/index.vue')
+		import(
+			'@/components/content-pack-builder/expression-builder/expression-builder.vue'
+		)
 );
 const arrowMoveStepSize = 20;
 const store = useStore();
