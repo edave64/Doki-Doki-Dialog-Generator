@@ -27,16 +27,16 @@
 			</d-button>
 		</div>
 		<div :class="{ 'item-grid': true, vertical }">
-			<Characters
+			<characters-tab
 				v-if="group === 'characters'"
 				@show-dialog="$emit('show-dialog', $event)"
 			/>
-			<Sprites
+			<sprites-tab
 				v-else-if="group === 'sprites'"
 				ref="sprites"
 				@show-dialog="$emit('show-dialog', $event)"
 			/>
-			<UI v-else-if="group === 'ui'" />
+			<ui-tab v-else-if="group === 'ui'" />
 			<button
 				class="v-w100"
 				@click="paste"
@@ -55,9 +55,9 @@ import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { IPasteFromClipboardAction } from '@/store/objects';
 import { computed, ref } from 'vue';
-import Characters from './add/character.vue';
-import Sprites from './add/sprite.vue';
-import UI from './add/ui.vue';
+import CharactersTab from './add/characters-tab.vue';
+import SpritesTab from './add/sprites-tab.vue';
+import UiTab from './add/ui-tab.vue';
 
 type GroupNames = 'characters' | 'sprites' | 'ui';
 interface Group {
@@ -86,7 +86,7 @@ const groups = {
 
 const root = ref(null! as HTMLElement);
 const group = ref('characters' as GroupNames);
-const sprites = ref(null! as typeof Sprites | null);
+const sprites = ref(null! as typeof SpritesTab | null);
 const store = useStore();
 const { vertical } = setupPanelMixin(root);
 
