@@ -26,7 +26,7 @@
 			@leave="imageOptions = false"
 		/>
 		<template v-else>
-			<background-settings
+			<bg-settings
 				@change-color="colorSelect = true"
 				@open-image-options="imageOptions = true"
 			/>
@@ -88,7 +88,7 @@ import DropTarget from '../drop-target.vue';
 import Color from '../subtools/color/color.vue';
 import ImageOptions from '../subtools/image-options/image-options.vue';
 import BgButton from './background/bg-button.vue';
-import BackgroundSettings from './background/settings.vue';
+import BgSettings from './background/bg-settings.vue';
 
 const uploadedBackgroundsPackDefaults: ContentPack<string> = {
 	packId: 'dddg.uploads.backgrounds',
