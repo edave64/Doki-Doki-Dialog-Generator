@@ -53,7 +53,7 @@
 import MessageConsole from '@/components/message-console.vue';
 import ModalDialog from '@/components/modal-dialog.vue';
 import PreviewRender from '@/components/preview-render.vue';
-import ToolBox from '@/components/toolbox/toolbox.vue';
+import ToolBox from '@/components/toolbox/tool-box.vue';
 import { packsUrl } from '@/config';
 import environment from '@/environments/environment';
 import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
