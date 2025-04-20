@@ -37,24 +37,24 @@
 				@click="setPanel('settings')"
 			/>
 		</div>
-		<settings-panel v-if="panel === 'settings'" />
-		<backgrounds-panel
+		<app-settings v-if="panel === 'settings'" />
+		<backgrounds-tool
 			v-else-if="panel === 'backgrounds'"
 			@show-dialog="emit('show-dialog', $event)"
 		/>
-		<credits-panel v-else-if="panel === 'help_credits'" />
-		<character-panel
+		<app-credits v-else-if="panel === 'help_credits'" />
+		<character-tool
 			v-else-if="panel === 'character'"
 			@show-dialog="emit('show-dialog', $event)"
 			@show-expression-dialog="emit('show-expression-dialog', $event)"
 		/>
-		<sprite-panel v-else-if="panel === 'sprite'" />
-		<text-box-panel v-else-if="panel === 'textBox'" />
-		<choice-panel v-else-if="panel === 'choice'" />
-		<panels-panel v-else-if="panel === 'panels'" />
-		<notification-panel v-else-if="panel === 'notification'" />
-		<poem-panel v-else-if="panel === 'poem'" />
-		<add-panel v-else @show-dialog="emit('show-dialog', $event)" />
+		<sprite-tool v-else-if="panel === 'sprite'" />
+		<textbox-tool v-else-if="panel === 'textBox'" />
+		<choice-tool v-else-if="panel === 'choice'" />
+		<panels-tool v-else-if="panel === 'panels'" />
+		<notification-tool v-else-if="panel === 'notification'" />
+		<poem-tool v-else-if="panel === 'poem'" />
+		<add-tool v-else @show-dialog="emit('show-dialog', $event)" />
 		<div id="toolbar-end">
 			<d-button
 				icon="help"
@@ -96,17 +96,17 @@ import { useStore } from '@/store';
 import { type ObjectTypes } from '@/store/objects';
 import { computed, ref, watch } from 'vue';
 import DButton from '../ui/d-button.vue';
-import AddPanel from './tools/add.vue';
-import BackgroundsPanel from './tools/backgrounds.vue';
-import CharacterPanel from './tools/character.vue';
-import ChoicePanel from './tools/choice.vue';
-import CreditsPanel from './tools/credits.vue';
-import NotificationPanel from './tools/notification.vue';
-import PanelsPanel from './tools/panels.vue';
-import PoemPanel from './tools/poem.vue';
-import SettingsPanel from './tools/settings.vue';
-import SpritePanel from './tools/sprite.vue';
-import TextBoxPanel from './tools/textbox.vue';
+import AddTool from './tools/add-tool.vue';
+import BackgroundsTool from './tools/backgrounds-tool.vue';
+import CharacterTool from './tools/character-tool.vue';
+import ChoiceTool from './tools/choice-tool.vue';
+import AppCredits from './tools/app-credits.vue';
+import NotificationTool from './tools/notification-tool.vue';
+import PanelsTool from './tools/panels-tool.vue';
+import PoemTool from './tools/poem-tool.vue';
+import AppSettings from './tools/app-settings.vue';
+import SpriteTool from './tools/sprite-tool.vue';
+import TextboxTool from './tools/textbox-tool.vue';
 
 type PanelNames =
 	| 'add'
