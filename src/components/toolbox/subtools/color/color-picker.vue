@@ -67,14 +67,7 @@ import { computed, onMounted, onUnmounted, type PropType, ref } from 'vue';
 import DButton from '../../../ui/d-button.vue';
 import SliderGroup from './slider-group.vue';
 
-const generatedPackId = 'dddg.generated.colors';
-const id = uniqId();
-const store = useStore();
 defineOptions({ inheritAttrs: false });
-const emit = defineEmits<{
-	'update:modelValue': [value: string];
-	leave: [];
-}>();
 const props = defineProps({
 	modelValue: {
 		required: true,
@@ -86,7 +79,14 @@ const props = defineProps({
 		default: 'hex',
 	},
 });
+const emit = defineEmits<{
+	'update:modelValue': [value: string];
+	leave: [];
+}>();
 
+const generatedPackId = 'dddg.generated.colors';
+const id = uniqId();
+const store = useStore();
 const mode = ref('hsla' as 'hsla' | 'rgba' | undefined);
 const vertical = computed(() => store.state.ui.vertical);
 const color = computed({

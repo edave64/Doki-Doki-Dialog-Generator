@@ -30,11 +30,11 @@ import type { ICreateCharacterAction } from '@/store/object-types/characters';
 import type { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { computed } from 'vue';
 
-const store = useStore();
 const emit = defineEmits<{
 	'show-dialog': [search: string];
 }>();
 
+const store = useStore();
 const characters = computed(() => {
 	return store.state.content.current.characters;
 });

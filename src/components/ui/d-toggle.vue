@@ -17,10 +17,11 @@ const props = defineProps({
 	label: String,
 	modelValue: { type: Boolean, default: false },
 });
-const id = uniqId();
 const emit = defineEmits<{
 	'update:modelValue': [value: boolean];
 }>();
+
+const id = uniqId();
 const value = computed({
 	get(): boolean {
 		return props.modelValue;

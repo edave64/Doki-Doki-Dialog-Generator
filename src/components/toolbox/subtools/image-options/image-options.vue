@@ -298,6 +298,27 @@ import {
 	type WritableComputedRef,
 } from 'vue';
 
+const props = defineProps({
+	type: {
+		type: String as PropType<'object' | 'background' | 'panel'>,
+		required: true,
+	},
+	title: {
+		type: String,
+	},
+	id: {} as Prop<IObject['id']>,
+	panelId: {
+		required: true,
+	} as Prop<IPanel['id']>,
+	noComposition: {
+		type: Boolean,
+		default: false,
+	},
+});
+const emit = defineEmits<{
+	leave: [];
+}>();
+
 const filterText: ReadonlyMap<SpriteFilter['type'], string> = new Map<
 	SpriteFilter['type'],
 	string
@@ -331,26 +352,6 @@ const filterTypes: ReadonlyArray<SpriteFilter['type']> = (() => {
 	return ['opacity'];
 })();
 
-const props = defineProps({
-	type: {
-		type: String as PropType<'object' | 'background' | 'panel'>,
-		required: true,
-	},
-	title: {
-		type: String,
-	},
-	id: {} as Prop<IObject['id']>,
-	panelId: {
-		required: true,
-	} as Prop<IPanel['id']>,
-	noComposition: {
-		type: Boolean,
-		default: false,
-	},
-});
-const emit = defineEmits<{
-	leave: [];
-}>();
 const store = useStore();
 
 const addEffectSelection = ref('' as SpriteFilter['type'] | '');

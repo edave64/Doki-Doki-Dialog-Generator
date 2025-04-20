@@ -48,7 +48,6 @@ import type { IObject, IObjectShiftLayerAction } from '@/store/objects';
 import { genericSetterMerged } from '@/util/simple-settable';
 import { computed, type PropType } from 'vue';
 
-const store = useStore();
 const props = defineProps({
 	object: {
 		required: true,
@@ -56,6 +55,7 @@ const props = defineProps({
 	},
 });
 
+const store = useStore();
 const onTop = genericSetterMerged(
 	store,
 	computed(() => props.object),

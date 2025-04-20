@@ -99,7 +99,6 @@ const props = defineProps({
 		type: String as PropType<string | 'pose' | 'style'>,
 	},
 });
-const store = useStore();
 const emit = defineEmits<{
 	leave: [];
 	'show-dialog': [searchString: string];
@@ -110,6 +109,7 @@ const emit = defineEmits<{
 	];
 }>();
 
+const store = useStore();
 const isWebPSupported = ref(null as boolean | null);
 // [styleComponentKey, styleComponentValue]
 const stylePriorities = ref([] as Array<[string, string]>);

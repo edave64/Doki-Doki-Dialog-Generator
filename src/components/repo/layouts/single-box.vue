@@ -76,7 +76,6 @@ function setSearch(str: string): void {
 	selected.value = null;
 	search.value = str;
 }
-defineExpose({ setSearch });
 
 function leavePackDisplay(moveFocus: boolean) {
 	selected.value = null;
@@ -144,6 +143,8 @@ safeAsync('Initializing repo list', async () => {
 	packs.value = repo_.getPacks();
 	authors.value = repo_.getAuthors();
 });
+
+defineExpose({ setSearch });
 </script>
 
 <style lang="scss" scoped>

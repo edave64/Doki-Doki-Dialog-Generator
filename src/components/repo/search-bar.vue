@@ -94,7 +94,6 @@
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 
-const debounce = 250;
 const props = defineProps({
 	disabled: {
 		type: Boolean,
@@ -110,6 +109,8 @@ const emit = defineEmits<{
 	'focus-list': [];
 	'update:modelValue': [value: string];
 }>();
+
+const debounce = 250;
 const input = ref(null! as HTMLInputElement);
 
 const message = ref('');
@@ -122,7 +123,6 @@ function focus() {
 		ele.focus();
 	}
 }
-defineExpose({ focus });
 
 function keydownHandler(event: KeyboardEvent) {
 	if (event.key === 'ArrowDown') {
@@ -169,6 +169,8 @@ onUnmounted(() => {
 	document.body.removeEventListener('click', documentClickHandler);
 });
 //#endregion Help Popup
+
+defineExpose({ focus });
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

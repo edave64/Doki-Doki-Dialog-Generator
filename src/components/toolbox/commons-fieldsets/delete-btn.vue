@@ -11,7 +11,6 @@ import { useStore } from '@/store';
 import type { IObject, IRemoveObjectAction } from '@/store/objects';
 import type { PropType } from 'vue';
 
-const store = useStore();
 const props = defineProps({
 	obj: {
 		required: true,
@@ -19,6 +18,7 @@ const props = defineProps({
 	},
 });
 
+const store = useStore();
 function onClick() {
 	transaction(async () => {
 		await store.dispatch('panels/removeObject', {

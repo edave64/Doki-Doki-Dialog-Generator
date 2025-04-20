@@ -33,6 +33,10 @@ export default defineConfigWithVueTs(
 			"vue/component-options-name-casing": ["error", "PascalCase"],
 			"vue/custom-event-name-casing": ["error","kebab-case"],
 			'vue/define-emits-declaration': 'error',
+			"vue/define-macros-order": ["error", {
+				"order": ["defineOptions","defineProps", "defineModel", "defineEmits", "defineSlots"],
+				"defineExposeLast": true
+			}],
 		},
 	}
 );

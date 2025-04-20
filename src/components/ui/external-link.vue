@@ -14,7 +14,6 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
 
-const root = ref(null! as HTMLElement);
 const props = defineProps({
 	to: {
 		type: String,
@@ -22,6 +21,7 @@ const props = defineProps({
 	},
 });
 
+const root = ref(null! as HTMLElement);
 const href = computed((): string => {
 	let to = props.to;
 	to = to.replace(

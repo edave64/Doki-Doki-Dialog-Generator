@@ -262,8 +262,6 @@ import { genericSetterMerged } from '@/util/simple-settable';
 import { computed, type PropType, ref } from 'vue';
 import TextFormatting from '../subtools/text/text-formatting.vue';
 
-const store = useStore();
-const root = ref(null! as HTMLElement);
 const props = defineProps({
 	object: {
 		type: Object as PropType<IObject>,
@@ -278,6 +276,9 @@ const props = defineProps({
 	},
 	showAltPanel: Boolean,
 });
+
+const store = useStore();
+const root = ref(null! as HTMLElement);
 const setable = <K extends keyof IObject>(prop: K, message: string) =>
 	genericSetterMerged(
 		store,

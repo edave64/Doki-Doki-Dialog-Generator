@@ -119,13 +119,14 @@ type PanelNames =
 	| 'notification'
 	| 'poem';
 
-const store = useStore();
 const emit = defineEmits<{
 	'show-dialog': [search?: string];
 	'show-prev-render': [];
 	download: [];
 	'show-expression-dialog': [settings: { character: string }];
 }>();
+
+const store = useStore();
 const panels = ref(null! as HTMLDivElement);
 
 const panelSelection = ref('add' as PanelNames);

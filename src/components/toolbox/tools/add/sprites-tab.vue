@@ -77,11 +77,11 @@ import type { DeepReadonly } from 'ts-essentials';
 import { computed, ref } from 'vue';
 import DropTarget from '../../drop-target.vue';
 
-const store = useStore();
 const emit = defineEmits<{
 	'show-dialog': [search: string];
 }>();
 
+const store = useStore();
 interface ISprite extends Sprite<IAssetSwitch> {
 	missing: string | null;
 	urls: string[];
@@ -250,12 +250,13 @@ function hideDropTarget() {
 	spriteDt.value.hide();
 }
 
-defineExpose({ showDropTarget, hideDropTarget });
 //#endregion Drag and Drop
 
 interface Uploader extends HTMLInputElement {
 	uploadingSprite: string;
 }
+
+defineExpose({ showDropTarget, hideDropTarget });
 </script>
 
 <style lang="scss" scoped>

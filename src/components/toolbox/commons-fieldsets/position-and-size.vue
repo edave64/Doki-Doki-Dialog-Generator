@@ -147,7 +147,6 @@ import type {
 } from '@/store/objects';
 import { computed, type PropType } from 'vue';
 
-const store = useStore();
 const props = defineProps({
 	obj: {
 		required: true,
@@ -155,6 +154,7 @@ const props = defineProps({
 	},
 });
 
+const store = useStore();
 //#region Size
 const height = computed({
 	get(): number {

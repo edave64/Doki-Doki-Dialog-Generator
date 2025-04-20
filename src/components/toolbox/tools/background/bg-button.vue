@@ -38,7 +38,6 @@ import { useStore } from '@/store';
 import type { BackgroundLookup } from '@/store/content';
 import { computed, ref } from 'vue';
 
-const store = useStore();
 const props = defineProps({
 	backgroundId: {
 		type: String,
@@ -46,6 +45,7 @@ const props = defineProps({
 	},
 });
 
+const store = useStore();
 const background = computed(() => {
 	const currentPanel = store.state.panels.currentPanel;
 	return store.state.panels.panels[currentPanel].background;

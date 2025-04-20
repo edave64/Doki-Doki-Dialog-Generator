@@ -73,11 +73,12 @@ import type { Background } from '@edave64/doki-doki-dialog-generator-pack-format
 import type { DeepReadonly } from 'ts-essentials';
 import { computed } from 'vue';
 
-const store = useStore();
 const emit = defineEmits<{
 	'open-image-options': [];
 	'change-color': [];
 }>();
+
+const store = useStore();
 const vertical = computed(() => store.state.ui.vertical);
 const background = computed(() => {
 	const currentPanel = store.state.panels.currentPanel;

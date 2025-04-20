@@ -160,11 +160,12 @@ defineProps({
 		default: '',
 	},
 });
-const store = useStore();
 const emit = defineEmits<{
 	'update:modelValue': [value: string];
 	leave: [];
 }>();
+
+const store = useStore();
 const textArea = ref(null! as HTMLTextAreaElement);
 const colorSelector = ref('' as '' | 'text' | 'outline');
 const selectedFont = ref('');

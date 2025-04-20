@@ -53,7 +53,6 @@ import {
 	ref,
 } from 'vue';
 
-const isDialogSupported = typeof HTMLDialogElement !== 'undefined';
 const props = defineProps({
 	noBaseSize: Boolean,
 	options: {
@@ -61,12 +60,13 @@ const props = defineProps({
 		default: [] as string[],
 	},
 });
-const dialog = ref(null! as HTMLDialogElement);
 const emit = defineEmits<{
 	leave: [];
 	option: [option: string];
 }>();
 
+const isDialogSupported = typeof HTMLDialogElement !== 'undefined';
+const dialog = ref(null! as HTMLDialogElement);
 function open() {
 	if (isDialogSupported) {
 		const ele = dialog.value;

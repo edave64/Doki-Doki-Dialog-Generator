@@ -72,7 +72,6 @@ import {
 	watch,
 } from 'vue';
 
-const pageKeyMoveBy = 10;
 const props = defineProps({
 	search: { type: String, required: true },
 	repo: {
@@ -87,6 +86,8 @@ const emit = defineEmits<{
 	selected: [{ id: string; source: 'pointer' | 'keyboard' }];
 	'select-search-bar': [];
 }>();
+
+const pageKeyMoveBy = 10;
 const root = ref(null! as HTMLDivElement);
 const tbody = ref(null! as ComponentPublicInstance);
 const header = ref(null! as HTMLTableRowElement);

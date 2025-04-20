@@ -29,7 +29,6 @@ export interface IPartImage {
 	offset: DeepReadonly<[number, number]>;
 }
 
-const spriteSize = 960;
 const props = defineProps({
 	part: {
 		required: true,
@@ -47,6 +46,8 @@ const emit = defineEmits<{
 	click: [];
 	'quick-click': [];
 }>();
+
+const spriteSize = 960;
 const lookups = ref([] as string[]);
 
 const scaleX = computed((): number => {

@@ -50,13 +50,13 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import type { MutationPayload } from 'vuex';
 import * as Grabbies from './render-grabbies';
 
-const store = useStore();
 const props = defineProps({
 	canvasWidth: { default: 0 },
 	canvasHeight: { default: 0 },
 	preLoading: { type: Boolean },
 });
 
+const store = useStore();
 const sd = ref(null! as HTMLCanvasElement);
 const sdCtx = ref(null! as CanvasRenderingContext2D);
 const queuedRender = ref(null as null | number);

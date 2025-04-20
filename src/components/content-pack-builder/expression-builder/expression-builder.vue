@@ -169,6 +169,17 @@ import DropTarget from '../../toolbox/drop-target.vue';
 import ExpressionOption from './expression-option.vue';
 import ExpressionSelect from './expression-select.vue';
 
+const props = defineProps({
+	character: {
+		type: String,
+		required: true,
+	},
+	initHeadGroup: String,
+});
+const emit = defineEmits<{
+	leave: [];
+}>();
+
 const uploadedExpressionsPackDefaults: ContentPack<IAssetSwitch> = {
 	packId: 'dddg.uploads.expressions',
 	dependencies: [],
@@ -184,19 +195,8 @@ const uploadedExpressionsPackDefaults: ContentPack<IAssetSwitch> = {
 
 const partFiles: { [s: string]: string[] | undefined } = {};
 
-const props = defineProps({
-	character: {
-		type: String,
-		required: true,
-	},
-	initHeadGroup: String,
-});
 const store = useStore();
 const target = ref(null! as HTMLCanvasElement);
-const emit = defineEmits<{
-	leave: [];
-}>();
-
 const headGroup = ref(null as null | IHeadGroup);
 const uploadedExpressions = ref([] as string[]);
 const currentUploadedExpression = ref(null as string | null);

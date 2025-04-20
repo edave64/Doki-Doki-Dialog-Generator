@@ -93,18 +93,6 @@ import type { DeepReadonly } from 'ts-essentials';
 import { computed, type PropType, ref } from 'vue';
 import ToggleBox from '../ui/d-toggle.vue';
 
-const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
-	['reddit', 'https://reddit.com/u/%1', 'reddit.png'],
-	['deviantart', 'https://www.deviantart.com/%1', 'deviantart.png'],
-	['twitter', 'https://twitter.com/%1', 'twitter.svg'],
-	['pixiv', 'https://www.pixiv.net/users/%1', 'pixiv.ico'],
-	['patreon', 'https://www.patreon.com/%1', 'patreon.png'],
-	['facebook', 'https://www.facebook.com/%1', 'facebook.png'],
-	['github', 'https://github.com/%1', 'github.png'],
-	['website', '%1', 'website.svg'],
-];
-
-const store = useStore();
 const props = defineProps({
 	selected: {
 		type: String,
@@ -120,6 +108,18 @@ const props = defineProps({
 	},
 });
 
+const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
+	['reddit', 'https://reddit.com/u/%1', 'reddit.png'],
+	['deviantart', 'https://www.deviantart.com/%1', 'deviantart.png'],
+	['twitter', 'https://twitter.com/%1', 'twitter.svg'],
+	['pixiv', 'https://www.pixiv.net/users/%1', 'pixiv.ico'],
+	['patreon', 'https://www.patreon.com/%1', 'patreon.png'],
+	['facebook', 'https://www.facebook.com/%1', 'facebook.png'],
+	['github', 'https://github.com/%1', 'github.png'],
+	['website', '%1', 'website.svg'],
+];
+
+const store = useStore();
 const pack = computed(() => props.repo!.getPack(props.selected)!);
 const backgroundImage = computed(() =>
 	pack.value.preview.map((preview) => `url('${preview}')`).join(',')

@@ -67,10 +67,6 @@ import { useStore } from '@/store';
 import uniqId from '@/util/unique-id';
 import { computed, type PropType, ref } from 'vue';
 
-const sliderLength = 255;
-const sliderOffset = 8;
-const id = uniqId();
-
 const props = defineProps({
 	label: {
 		type: String,
@@ -97,11 +93,15 @@ const props = defineProps({
 		default: false,
 	},
 });
-
-const store = useStore();
 const emit = defineEmits<{
 	'update:modelValue': [value: number];
 }>();
+
+const sliderLength = 255;
+const sliderOffset = 8;
+const id = uniqId();
+
+const store = useStore();
 const vertical = computed(() => store.state.ui.vertical);
 const svg = ref(null! as SVGElement);
 
