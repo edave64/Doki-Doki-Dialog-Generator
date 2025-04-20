@@ -193,7 +193,9 @@ const props = defineProps({
 });
 const store = useStore();
 const target = ref(null! as HTMLCanvasElement);
-const emit = defineEmits(['leave']);
+const emit = defineEmits<{
+	leave: [];
+}>();
 
 const headGroup = ref(null as null | IHeadGroup);
 const uploadedExpressions = ref([] as string[]);

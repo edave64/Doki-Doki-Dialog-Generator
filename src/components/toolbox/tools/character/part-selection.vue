@@ -100,7 +100,15 @@ const props = defineProps({
 	},
 });
 const store = useStore();
-const emit = defineEmits(['leave', 'show-dialog', 'show-expression-dialog']);
+const emit = defineEmits<{
+	leave: [];
+	'show-dialog': [searchString: string];
+	'show-expression-dialog': [
+		config: {
+			character: string;
+		},
+	];
+}>();
 
 const isWebPSupported = ref(null as boolean | null);
 // [styleComponentKey, styleComponentValue]

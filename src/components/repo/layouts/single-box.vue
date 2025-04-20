@@ -53,7 +53,7 @@ import PackList from '../pack-list.vue';
 import SearchBar from '../search-bar.vue';
 import type { SelectedEvent } from '../types';
 
-const emit = defineEmits(['leave']);
+const emit = defineEmits<{ leave: [] }>();
 const searchBar = ref(null! as typeof SearchBar);
 const list = ref(null! as typeof PackList);
 const dialog = ref(null! as typeof PackDisplay);

@@ -5,7 +5,7 @@
 <template>
 	<div :class="{ color: true, vertical }" class="v-w100 h-h100">
 		<h2>{{ title }}</h2>
-		<button @click="$emit('leave')">OK</button>
+		<button @click="emit('leave')">OK</button>
 		<table>
 			<tbody>
 				<tr>
@@ -71,7 +71,10 @@ const generatedPackId = 'dddg.generated.colors';
 const id = uniqId();
 const store = useStore();
 defineOptions({ inheritAttrs: false });
-const emit = defineEmits(['leave', 'update:modelValue']);
+const emit = defineEmits<{
+	'update:modelValue': [value: string];
+	leave: [];
+}>();
 const props = defineProps({
 	modelValue: {
 		required: true,

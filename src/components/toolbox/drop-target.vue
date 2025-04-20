@@ -15,7 +15,9 @@
 import { useStore } from '@/store';
 import { computed, ref } from 'vue';
 
-const emit = defineEmits(['drop']);
+const emit = defineEmits<{
+	drop: [file: File];
+}>();
 const store = useStore();
 const visible = ref(false);
 const vertical = computed(() => store.state.ui.vertical);
@@ -35,7 +37,10 @@ function drop(e: DragEvent): void {
 
 	for (const item of e.dataTransfer.items) {
 		if (item.kind === 'file' && item.type.match(/image.*/)) {
-			emit('drop', item.getAsFile());
+			const file = item.getAsFile();
+			if (file != null) {
+				emit('drop', file);
+			}
 		}
 	}
 }

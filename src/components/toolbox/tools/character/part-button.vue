@@ -43,7 +43,10 @@ const props = defineProps({
 		default: 150,
 	},
 });
-const emit = defineEmits(['quick-click', 'click']);
+const emit = defineEmits<{
+	click: [];
+	'quick-click': [];
+}>();
 const lookups = ref([] as string[]);
 
 const scaleX = computed((): number => {

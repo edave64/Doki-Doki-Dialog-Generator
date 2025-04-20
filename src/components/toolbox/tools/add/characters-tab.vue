@@ -31,7 +31,9 @@ import type { Character } from '@edave64/doki-doki-dialog-generator-pack-format/
 import { computed } from 'vue';
 
 const store = useStore();
-const emit = defineEmits(['show-dialog']);
+const emit = defineEmits<{
+	'show-dialog': [search: string];
+}>();
 
 const characters = computed(() => {
 	return store.state.content.current.characters;

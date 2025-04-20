@@ -37,7 +37,9 @@ import { RGBAColor } from '@/util/colors/rgb';
 import { computed, type ComputedRef, type PropType, ref, watch } from 'vue';
 import ColorSlider from './color-slider.vue';
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits<{
+	'update:modelValue': [value: string];
+}>();
 const props = defineProps({
 	modelValue: {
 		type: String,

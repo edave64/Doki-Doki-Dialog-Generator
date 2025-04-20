@@ -74,7 +74,10 @@ import type { DeepReadonly } from 'ts-essentials';
 import { computed } from 'vue';
 
 const store = useStore();
-const emit = defineEmits(['open-image-options', 'change-color']);
+const emit = defineEmits<{
+	'open-image-options': [];
+	'change-color': [];
+}>();
 const vertical = computed(() => store.state.ui.vertical);
 const background = computed(() => {
 	const currentPanel = store.state.panels.currentPanel;

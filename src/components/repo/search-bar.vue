@@ -17,7 +17,7 @@
 			>
 				<i class="material-icons">info</i>
 			</button>
-			<button class="exit-button" @click="emit('leave', true)">
+			<button class="exit-button" @click="emit('leave')">
 				<i class="material-icons">clear</i>
 			</button>
 		</div>
@@ -105,7 +105,11 @@ const props = defineProps({
 		default: '',
 	},
 });
-const emit = defineEmits(['leave', 'focus-list', 'update:modelValue']);
+const emit = defineEmits<{
+	leave: [];
+	'focus-list': [];
+	'update:modelValue': [value: string];
+}>();
 const input = ref(null! as HTMLInputElement);
 
 const message = ref('');

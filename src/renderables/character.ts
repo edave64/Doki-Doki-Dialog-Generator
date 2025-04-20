@@ -67,7 +67,7 @@ export class Character extends AssetListRenderable<ICharacter> {
 					break;
 				case 'pose-part': {
 					const posePosition = pose.positions[renderCommand.part];
-					 
+
 					if (!posePosition || posePosition.length === 0) {
 						break;
 					}
@@ -75,7 +75,7 @@ export class Character extends AssetListRenderable<ICharacter> {
 						posePosition[
 							this.obj.posePositions[renderCommand.part] || 0
 						];
-					 
+
 					if (!partAssets) break;
 					newAssets = partAssets;
 					break;

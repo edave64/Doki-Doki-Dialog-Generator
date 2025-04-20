@@ -18,7 +18,9 @@ const props = defineProps({
 	modelValue: { type: Boolean, default: false },
 });
 const id = uniqId();
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits<{
+	'update:modelValue': [value: boolean];
+}>();
 const value = computed({
 	get(): boolean {
 		return props.modelValue;

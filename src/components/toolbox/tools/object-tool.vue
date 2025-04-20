@@ -526,7 +526,7 @@ function enableNameEdit() {
 	showRename.value = true;
 }
 
-function renameOption(option: 'Apply' | 'Cancel') {
+function renameOption(option: string) {
 	showRename.value = false;
 	if (option === 'Apply') {
 		transaction(() => {

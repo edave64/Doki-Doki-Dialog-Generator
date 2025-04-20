@@ -2,7 +2,11 @@
 	An advanced text-entry that helps with formatting.
 -->
 <template>
-	<color-picker v-if="colorSelector" v-model="selectedColor" @leave="applyColor" />
+	<color-picker
+		v-if="colorSelector"
+		v-model="selectedColor"
+		@leave="applyColor"
+	/>
 	<div v-else :class="{ 'text-subpanel': true, vertical }">
 		<h2>{{ title }}</h2>
 		<div class="column ok-col">
@@ -157,7 +161,10 @@ defineProps({
 	},
 });
 const store = useStore();
-const emit = defineEmits(['update:modelValue', 'leave']);
+const emit = defineEmits<{
+	'update:modelValue': [value: string];
+	leave: [];
+}>();
 const textArea = ref(null! as HTMLTextAreaElement);
 const colorSelector = ref('' as '' | 'text' | 'outline');
 const selectedFont = ref('');

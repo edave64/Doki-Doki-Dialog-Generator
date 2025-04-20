@@ -99,7 +99,9 @@ const props = defineProps({
 });
 
 const store = useStore();
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits<{
+	'update:modelValue': [value: number];
+}>();
 const vertical = computed(() => store.state.ui.vertical);
 const svg = ref(null! as SVGElement);
 

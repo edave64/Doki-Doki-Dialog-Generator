@@ -21,7 +21,7 @@
 			</button>
 		</div>
 	</dialog>
-	<div class="dialog-wrapper" @click="$emit('leave')" v-else>
+	<div class="dialog-wrapper" @click="emit('leave')" v-else>
 		<dialog
 			ref="dialog"
 			open
@@ -62,7 +62,10 @@ const props = defineProps({
 	},
 });
 const dialog = ref(null! as HTMLDialogElement);
-const emit = defineEmits(['leave', 'option']);
+const emit = defineEmits<{
+	leave: [];
+	option: [option: string];
+}>();
 
 function open() {
 	if (isDialogSupported) {
@@ -133,7 +136,6 @@ dialog {
 	overflow: hidden;
 	padding: 0;
 	border: 4px solid var(--border);
-	overflow: hidden;
 	color: var(--text);
 	justify-self: center;
 	margin: auto;

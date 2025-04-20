@@ -97,14 +97,14 @@ import { type ObjectTypes } from '@/store/objects';
 import { computed, ref, watch } from 'vue';
 import DButton from '../ui/d-button.vue';
 import AddTool from './tools/add-tool.vue';
+import AppCredits from './tools/app-credits.vue';
+import AppSettings from './tools/app-settings.vue';
 import BackgroundsTool from './tools/backgrounds-tool.vue';
 import CharacterTool from './tools/character-tool.vue';
 import ChoiceTool from './tools/choice-tool.vue';
-import AppCredits from './tools/app-credits.vue';
 import NotificationTool from './tools/notification-tool.vue';
 import PanelsTool from './tools/panels-tool.vue';
 import PoemTool from './tools/poem-tool.vue';
-import AppSettings from './tools/app-settings.vue';
 import SpriteTool from './tools/sprite-tool.vue';
 import TextboxTool from './tools/textbox-tool.vue';
 
@@ -120,12 +120,12 @@ type PanelNames =
 	| 'poem';
 
 const store = useStore();
-const emit = defineEmits([
-	'show-dialog',
-	'show-prev-render',
-	'download',
-	'show-expression-dialog',
-]);
+const emit = defineEmits<{
+	'show-dialog': [search?: string];
+	'show-prev-render': [];
+	download: [];
+	'show-expression-dialog': [settings: { character: string }];
+}>();
 const panels = ref(null! as HTMLDivElement);
 
 const panelSelection = ref('add' as PanelNames);

@@ -14,10 +14,8 @@
 				:character="object"
 				:part="panelForParts"
 				@leave="panelForParts = null"
-				@show-dialog="$emit('show-dialog', $event)"
-				@show-expression-dialog="
-					$emit('show-expression-dialog', $event)
-				"
+				@show-dialog="emit('show-dialog', $event)"
+				@show-expression-dialog="emit('show-expression-dialog', $event)"
 			/>
 		</template>
 		<template v-slot:default>
@@ -122,6 +120,15 @@ import { genericSetterMerged } from '@/util/simple-settable';
 import { computed, ref, watch } from 'vue';
 import PartSelection from './character/part-selection.vue';
 import ObjectTool from './object-tool.vue';
+
+const emit = defineEmits<{
+	'show-dialog': [searchString: string];
+	'show-expression-dialog': [
+		config: {
+			character: string;
+		},
+	];
+}>();
 
 const store = useStore();
 

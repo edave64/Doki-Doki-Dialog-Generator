@@ -11,7 +11,7 @@
 	<d-flow v-else no-wraping class="image-options-subpanel">
 		<h2>Image options</h2>
 		<div class="column ok-col">
-			<button @click="$emit('leave')">Back</button>
+			<button @click="emit('leave')">Back</button>
 		</div>
 		<div class="column" v-if="!noComposition">
 			<label for="compositionSelect">Compositing Mode:</label>
@@ -348,7 +348,9 @@ const props = defineProps({
 		default: false,
 	},
 });
-defineEmits(['leave']);
+const emit = defineEmits<{
+	leave: [];
+}>();
 const store = useStore();
 
 const addEffectSelection = ref('' as SpriteFilter['type'] | '');

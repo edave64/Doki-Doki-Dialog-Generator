@@ -204,14 +204,14 @@ const savesAllowed = computed({
 	},
 });
 
-function allowSaves(choice: 'Allow' | 'Deny') {
+function allowSaves(choice: string) {
 	allowSavesModal.value = false;
 	if (choice === 'Allow') {
 		savesAllowed.value = true;
 	}
 }
 
-function denySaves(choice: 'Deny' | 'Cancel') {
+function denySaves(choice: string) {
 	denySavesModal.value = false;
 	if (choice === 'Deny') {
 		savesAllowed.value = false;
@@ -226,7 +226,7 @@ watch(
 //#region Mode changer
 const showModeDialog = ref(false);
 const inPlusMode = computed(() => environment.gameMode === 'ddlc_plus');
-function modeChange(choice: 'Enter Classic Mode' | 'Enter Plus mode' | 'Stay') {
+function modeChange(choice: string) {
 	safeAsync('changing modes', async () => {
 		if (choice === 'Enter Classic Mode') {
 			await environment.setGameMode('ddlc');

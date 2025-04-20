@@ -83,7 +83,10 @@ const props = defineProps({
 		default: false,
 	},
 });
-const emit = defineEmits(['selected', 'select-search-bar']);
+const emit = defineEmits<{
+	selected: [{ id: string; source: 'pointer' | 'keyboard' }];
+	'select-search-bar': [];
+}>();
 const root = ref(null! as HTMLDivElement);
 const tbody = ref(null! as ComponentPublicInstance);
 const header = ref(null! as HTMLTableRowElement);

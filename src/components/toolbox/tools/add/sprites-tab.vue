@@ -78,7 +78,9 @@ import { computed, ref } from 'vue';
 import DropTarget from '../../drop-target.vue';
 
 const store = useStore();
-const emit = defineEmits(['show-dialog']);
+const emit = defineEmits<{
+	'show-dialog': [search: string];
+}>();
 
 interface ISprite extends Sprite<IAssetSwitch> {
 	missing: string | null;
