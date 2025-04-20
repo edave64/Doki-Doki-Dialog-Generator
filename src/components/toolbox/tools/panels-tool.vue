@@ -5,14 +5,14 @@
 <template>
 	<div class="panel" ref="root">
 		<h1>Panels</h1>
-		<ImageOptions
-			v-if="imageOptions"
+		<image-options
+			v-if="imageOptionsActive"
 			type="panel"
 			title=""
 			:panel-id="currentPanel.id"
 			no-composition
 			@leave="
-				imageOptions = false;
+				imageOptionsActive = false;
 				renderCurrentThumbnail();
 			"
 		/>
@@ -74,7 +74,7 @@
 				<d-button
 					class="bt0"
 					icon="color_lens"
-					@click="imageOptions = true"
+					@click="imageOptionsActive = true"
 				>
 					Image options
 				</d-button>
@@ -238,7 +238,7 @@ const ppi = ref(environment.supports.limitedCanvasSpace ? 10 : 0);
 const pages = ref('');
 const format = ref('image/png');
 const quality = ref(defaultQuality);
-const imageOptions = ref(false);
+const imageOptionsActive = ref(false);
 const loadUpload = ref(null! as HTMLInputElement);
 const baseConst = getConstants().Base;
 
