@@ -409,6 +409,8 @@ export interface ISetTextBoxStyleAction extends IObjectMutation {
 	readonly style: ITextBox['style'];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ISplitTextbox extends IObjectMutation {}
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface IResetTextboxBounds extends IObjectMutation {}

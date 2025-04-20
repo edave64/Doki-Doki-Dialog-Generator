@@ -616,7 +616,9 @@ export interface ISetRatioAction extends IObjectMutation {
 	readonly preserveRatio: boolean;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface IRemoveObjectMutation extends IObjectMutation {}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface IRemoveObjectAction extends IObjectMutation {}
 
 export interface ISetPositionAction extends IObjectMutation {
