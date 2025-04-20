@@ -13,22 +13,22 @@
 		</drop-target>
 		<h1>Background</h1>
 		<color-picker
-			v-if="colorSelect"
+			v-if="colorPickerActive"
 			v-model="bgColor"
-			@leave="colorSelect = false"
+			@leave="colorPickerActive = false"
 		/>
 		<image-options
-			v-else-if="imageOptions"
+			v-else-if="imageOptionsActive"
 			type="background"
 			title=""
 			:panel-id="store.state.panels.currentPanel"
 			no-composition
-			@leave="imageOptions = false"
+			@leave="imageOptionsActive = false"
 		/>
 		<template v-else>
 			<bg-settings
-				@change-color="colorSelect = true"
-				@open-image-options="imageOptions = true"
+				@change-color="colorPickerActive = true"
+				@open-image-options="imageOptionsActive = true"
 			/>
 			<d-button
 				icon="upload"
@@ -107,8 +107,8 @@ const store = useStore();
 const root = ref(null! as HTMLElement);
 setupPanelMixin(root);
 
-const colorSelect = ref(false);
-const imageOptions = ref(false);
+const colorPickerActive = ref(false);
+const imageOptionsActive = ref(false);
 const bgColor = computed({
 	get(): string {
 		return store.state.panels.panels[store.state.panels.currentPanel]
