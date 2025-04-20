@@ -51,7 +51,7 @@
 		<template v-else>
 			<slot />
 			<position-and-size :obj="object" />
-			<layers :object="object" />
+			<layer-btns :object="object" />
 			<d-fieldset title="Transform" class="transforms">
 				<toggle-box v-model="flip" label="Flip?" />
 				<label for="linked_to" class="v-w100">Linked with:</label>
@@ -233,7 +233,7 @@
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import ModalDialog from '@/components/modal-dialog.vue';
 import DeleteBtn from '@/components/toolbox/commons-fieldsets/delete-btn.vue';
-import Layers from '@/components/toolbox/commons-fieldsets/layers.vue';
+import LayerBtns from '@/components/toolbox/commons-fieldsets/layer-btns.vue';
 import PositionAndSize from '@/components/toolbox/commons-fieldsets/position-and-size.vue';
 import Color from '@/components/toolbox/subtools/color/color.vue';
 import ImageOptions from '@/components/toolbox/subtools/image-options/image-options.vue';
