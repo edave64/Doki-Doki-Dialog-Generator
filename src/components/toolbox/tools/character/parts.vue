@@ -125,7 +125,6 @@ const styleComponents = computed(() => {
 	return styleComponents.styleComponents.map((component) => {
 		const buttons: IPartStyleGroup['buttons'] = {};
 		for (const key in component.variants) {
-			// eslint-disable-next-line no-prototype-builtins
 			if (!component.variants.hasOwnProperty(key)) continue;
 			const variant = component.variants[key];
 			buttons[key] = {
@@ -181,7 +180,6 @@ const parts = computed((): { [id: string]: DeepReadonly<IPartButtonImage> } => {
 			return ret;
 		}
 		case 'pose':
-			// eslint-disable-next-line no-case-declarations
 			const currentStyle =
 				data.styleGroups[props.character.styleGroupId].styles[
 					props.character.styleId
@@ -254,7 +252,6 @@ function generatePosePreview(
 	for (const command of pose.renderCommands) {
 		switch (command.type) {
 			case 'pose-part':
-				// eslint-disable-next-line no-case-declarations
 				const part = pose.positions[command.part];
 				if (part == null || part.length === 0) break;
 				images = images.concat(

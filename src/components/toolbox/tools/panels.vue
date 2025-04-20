@@ -468,7 +468,7 @@ function getPanelDistibution(): DeepReadonly<IPanel['id'][][]> {
 	for (let imageI = 0; imageI < panelOrder.length / ppi.value; ++imageI) {
 		const sliceStart = imageI * ppi.value;
 		const sliceEnd = sliceStart + ppi.value;
-		images.push([...panelOrder.slice(sliceStart, sliceEnd)]);
+		images.push(panelOrder.slice(sliceStart, sliceEnd));
 	}
 	return images;
 }

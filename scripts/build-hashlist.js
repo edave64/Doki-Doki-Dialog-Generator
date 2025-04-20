@@ -1,7 +1,6 @@
-const fs = require('fs');
-const { join } = require('path');
-const { exec } = require('child_process');
-const crypto = require('crypto');
+import crypto from 'crypto';
+import fs from 'fs';
+import { join } from 'path';
 
 /**
  * @typedef IFolder
@@ -84,7 +83,8 @@ async function queueAssetConversions(folder, hashes) {
 	if (folder.subfolders) {
 		await Promise.all(
 			folder.subfolders.map(
-				async (subfolder) => await queueAssetConversions(subfolder, hashes)
+				async (subfolder) =>
+					await queueAssetConversions(subfolder, hashes)
 			)
 		);
 	}

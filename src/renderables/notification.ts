@@ -91,9 +91,6 @@ export class Notification extends ScalingRenderable<INotification> {
 
 	protected renderLocal(ctx: CanvasRenderingContext2D): void {
 		const constants = getConstants();
-		const lineWrap = this.obj.autoWrap
-			? this.obj.width - constants.Notification.NotificationPadding * 2
-			: 0;
 
 		const textRenderer = this._textRenderer!;
 		const buttonRenderer = this._buttonRenderer!;
@@ -101,8 +98,8 @@ export class Notification extends ScalingRenderable<INotification> {
 		const h = this._height;
 		const p = constants.Choices.ChoiceOuterPadding;
 
-		(ctx.fillStyle = constants.Choices.ChoiceButtonColor),
-			(ctx.strokeStyle = constants.Choices.ChoiceButtonBorderColor);
+		ctx.fillStyle = constants.Choices.ChoiceButtonColor;
+		ctx.strokeStyle = constants.Choices.ChoiceButtonBorderColor;
 		ctx.lineWidth = constants.Choices.Outline;
 		ctx.fillRect(p, p, w, h);
 		ctx.strokeRect(p, p, w, h);

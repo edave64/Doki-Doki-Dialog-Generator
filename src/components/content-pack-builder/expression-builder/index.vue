@@ -304,7 +304,7 @@ function dragEnter(e: DragEvent) {
 //#endregion Drag and Drop
 //#region Preview
 async function redraw() {
-	let previewChar = previewCharacter.value;
+	const previewChar = previewCharacter.value;
 	let charRenderer: Character;
 	const pose = previewPoses.value[previewPoseIdx.value];
 	try {
@@ -312,7 +312,7 @@ async function redraw() {
 			previewChar,
 			temporaryCharacterModel.value
 		);
-	} catch (e) {
+	} catch {
 		return;
 	}
 

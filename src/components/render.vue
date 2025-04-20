@@ -76,11 +76,13 @@ function getSceneRender() {
 }
 const bitmapHeight = computed(() => {
 	// Stupid hack to make vue reevaluate this property when loading is done.
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	props.preLoading;
 	return getConstants().Base.screenHeight;
 });
 const bitmapWidth = computed(() => {
 	// Stupid hack to make vue reevaluate this property when loading is done.
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	props.preLoading;
 	return getConstants().Base.screenWidth;
 });
@@ -396,7 +398,7 @@ async function onDrop(e: DragEvent) {
 						],
 					} as ICreateSpriteAction);
 				});
-			} catch (e) {
+			} catch {
 				URL.revokeObjectURL(url);
 			}
 		}

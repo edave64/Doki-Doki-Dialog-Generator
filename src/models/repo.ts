@@ -58,7 +58,7 @@ export class Repo {
 				Repo.fetchJSON<IAuthors>(repo + 'people.json'),
 			]);
 			return { packs, authors };
-		} catch (e) {
+		} catch {
 			return null;
 		}
 	}
@@ -154,8 +154,8 @@ export class Repo {
 							kind: [],
 							authors: [],
 						}),
-						...(localRepoLookup.get(packId) ?? {}),
-						...(tempRepoLookup.get(packId) ?? {}),
+						...localRepoLookup.get(packId),
+						...tempRepoLookup.get(packId),
 						autoloading: autoloads.has(packId),
 						installed: localRepoLookup.has(packId),
 						online:
@@ -218,7 +218,7 @@ export class Repo {
 		let res: Response;
 		try {
 			res = await req;
-		} catch (e) {
+		} catch {
 			throw new Error(`Failed to load '${url}'`);
 		}
 		let body: TempRepoFile;
@@ -271,7 +271,7 @@ export class Repo {
 		if (pack.dddg2Path) {
 			pack.dddg2Path = new URL(pack.dddg2Path, baseUrl).toString();
 		}
-		// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+
 		if (pack.preview) {
 			for (let i = 0; i < pack.preview.length; ++i) {
 				pack.preview[i] = new URL(pack.preview[i], baseUrl).toString();

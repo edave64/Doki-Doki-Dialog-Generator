@@ -151,7 +151,6 @@ function mergePose<A>(x: Pose<A>, y: Pose<A>): Pose<A> {
 	const positions: Pose<A>['positions'] = { ...x.positions };
 
 	for (const key in y.positions) {
-		// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
 		if (positions[key]) {
 			positions[key] = [...positions[key], ...y.positions[key]] as A[][];
 		} else {
@@ -180,7 +179,7 @@ function mergeHeadCollections<A>(
 	for (const headGroupKey in y) {
 		if (!Object.prototype.hasOwnProperty.call(y, headGroupKey)) continue;
 		const headGroup = y[headGroupKey];
-		// eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+
 		if (ret[headGroupKey]) {
 			const oldHeadGroup = ret[headGroupKey];
 			ret[headGroupKey] = {

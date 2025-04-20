@@ -78,10 +78,8 @@ export class RenderContext {
 			y = 0,
 			text = '',
 		} = {
-			...{
-				font: '20px aller',
-				align: 'left' as CanvasTextAlign,
-			},
+			font: '20px aller',
+			align: 'left' as CanvasTextAlign,
 			...params,
 		};
 
@@ -119,10 +117,8 @@ export class RenderContext {
 			align,
 			text = '',
 		} = {
-			...{
-				font: '20px aller',
-				align: 'left' as CanvasTextAlign,
-			},
+			font: '20px aller',
+			align: 'left' as CanvasTextAlign,
 			...params,
 		};
 

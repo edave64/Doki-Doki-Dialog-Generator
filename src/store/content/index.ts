@@ -194,7 +194,7 @@ export async function loadContentPack(
 	let json;
 	try {
 		json = await response.json();
-	} catch (e) {
+	} catch {
 		throw new Error('Content pack is not valid json!');
 	}
 
@@ -212,7 +212,7 @@ export async function loadContentPack(
 				false
 			) as ContentPack<string>;
 		}
-	} catch (e) {
+	} catch {
 		throw new Error('Content pack is not in a valid format!');
 	}
 }

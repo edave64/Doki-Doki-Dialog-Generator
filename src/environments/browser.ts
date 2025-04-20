@@ -71,11 +71,10 @@ export class Browser implements IEnvironment {
 	}
 
 	constructor() {
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
-		const self = this;
 		const canSave = IndexedDBHandler.canSave();
+		const isSavingEnabled = this.isSavingEnabled;
 
-		window.addEventListener('beforeunload', function (e) {
+		window.addEventListener('beforeunload', (e) => {
 			// Cancel the event
 			e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
 			// Chrome requires returnValue to be set
@@ -90,7 +89,7 @@ export class Browser implements IEnvironment {
 		this.supports = reactive({
 			optionalSaving: canSave,
 			get autoLoading(): boolean {
-				return canSave && self.isSavingEnabled.value;
+				return canSave && isSavingEnabled.value;
 			},
 			backgroundInstall: false,
 			localRepo: false,
@@ -369,7 +368,7 @@ const IndexedDBHandler = {
 				window.msIndexedDB ??
 				null
 			);
-		} catch (e) {
+		} catch {
 			return null;
 		}
 	})(),
@@ -382,7 +381,7 @@ const IndexedDBHandler = {
 				window.msIDBTransaction ??
 				null
 			);
-		} catch (e) {
+		} catch {
 			return null;
 		}
 	})(),

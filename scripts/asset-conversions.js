@@ -27,7 +27,9 @@ async function scanFolder(folderName) {
 
 			if (stat.isDirectory()) {
 				if (file === 'mask') return;
-				subFolders.push(await scanFolder(path.join(folderName, file) + '/'));
+				subFolders.push(
+					await scanFolder(path.join(folderName, file) + '/')
+				);
 			} else {
 				subFiles.push(file);
 			}
@@ -68,7 +70,9 @@ function queueAssetConversions(folder) {
 				await runOnConsole(
 					`zopflipng ${folder.name}/${pngWithoutLQ}.lq.tmp.png ${folder.name}/${pngWithoutLQ}.lq.png`
 				);
-				await runOnConsole(`rm ${folder.name}/${pngWithoutLQ}.lq.tmp.png`);
+				await runOnConsole(
+					`rm ${folder.name}/${pngWithoutLQ}.lq.tmp.png`
+				);
 			});
 		}
 	}
@@ -107,7 +111,7 @@ function queueAssetConversions(folder) {
 function runOnConsole(command) {
 	return new Promise((resolve, reject) => {
 		console.log(command);
-		exec(command, (error, stdout) => {
+		exec(command, (error) => {
 			if (error) {
 				console.error(error);
 				reject();

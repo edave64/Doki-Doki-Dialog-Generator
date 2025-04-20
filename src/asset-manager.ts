@@ -165,12 +165,12 @@ async function requestAssetByUrl(url: string): Promise<IAsset> {
 	return await (async (): Promise<IAsset> => {
 		try {
 			return await imagePromise(url);
-		} catch (e) {
+		} catch {
 			// Webp files sometimes fail to load on safari. Fallback to png
 			if (url.endsWith('.webp') && !isCustom) {
 				try {
 					return await imagePromise(url.replace(/\.webp$/, '.png'));
-				} catch (e) {
+				} catch {
 					EventBus.fire(new AssetFailureEvent(url));
 					getAssetCache().remove(url);
 					return new ErrorAsset();
