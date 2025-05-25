@@ -1,5 +1,5 @@
 import { isWebPSupported } from '@/asset-manager';
-import { assetUrl } from '@/config';
+import { allowLq, assetUrl } from '@/config';
 import { normalizeCharacter as normalizeCharacterV1 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v1/parser';
 import { convert as convertV1 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/convertV1';
 import type {
@@ -235,7 +235,7 @@ export async function convertContentPack(
 
 	return assetWalker(pack, (path: string): IAssetSwitch => {
 		const hq = normalizePath(path, replacementMap, types, false);
-		const lq = normalizePath(path, replacementMap, types, true);
+		const lq = normalizePath(path, replacementMap, types, allowLq && true);
 
 		return {
 			hq,
