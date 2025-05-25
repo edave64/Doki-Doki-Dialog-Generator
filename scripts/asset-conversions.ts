@@ -1,6 +1,8 @@
-import { exec } from 'child_process';
-import fs from 'fs/promises';
-import path from 'path';
+import { exec } from 'node:child_process';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import process from 'node:process';
+import readline from 'node:readline';
 
 const webp = {
 	type: 'none' as 'none' | 'cwebp' | 'ffmpeg',
@@ -19,9 +21,9 @@ const pngQuantizer = {
 
 async function run() {
 	await runDetection();
-	// const assetFolder = await scanFolder('./public/assets/');
-	// const queue = queueAssetConversions(assetFolder);
-	// for (let i = 0; i < 10; ++i) runner(queue);
+	const assetFolder = await scanFolder('./public/assets/');
+	const queue = queueAssetConversions(assetFolder);
+	for (let i = 0; i < 10; ++i) runner(queue);
 }
 
 async function runDetection() {
@@ -30,6 +32,29 @@ async function runDetection() {
 	await detectWebP();
 	await detectOptimizer();
 	await detectQuantizer();
+
+	if (pngOptimizer.type === 'none' && pngQuantizer.type !== 'none') {
+		console.warn(
+			'[WARN] A pnq quantizer was found, but no optimizer. This can lead to suboptimal low-quality pngs and cannot be fixed by re-running the asset conversion.'
+		);
+		await new Promise((resolve, _reject) => {
+			const rl = readline.createInterface(process.stdin, process.stdout);
+			rl.question(
+				'Do you want to run asset conversion without a png optimizer? (y/N)',
+				(answer) => {
+					rl.close();
+					answer = answer.toLowerCase();
+
+					if (answer !== '' && 'yes'.startsWith(answer)) {
+						resolve();
+						return;
+					}
+
+					process.exit(0);
+				}
+			);
+		});
+	}
 }
 
 async function detectWebP() {
@@ -56,6 +81,7 @@ async function detectWebP() {
 	console.log(
 		'[SKIP] WebP: none - To enable WebP, install either cwebp or ffmpeg (Or place portable versions in this folder).'
 	);
+	webp.type = 'none';
 }
 
 async function detectOptimizer() {
@@ -77,6 +103,7 @@ async function detectOptimizer() {
 	console.log(
 		'[SKIP] PNG optimizer: none - To improve PNG compression, install either zopflipng or oxipng (Or place portable versions in this folder).'
 	);
+	pngOptimizer.type = 'none';
 }
 
 async function detectQuantizer() {
@@ -92,6 +119,7 @@ async function detectQuantizer() {
 	console.log(
 		'[SKIP] PNG quantizer: none - To allow lower quality PNGs, install pngquant (Or place portable versions in this folder).'
 	);
+	pngQuantizer.type = 'none';
 }
 
 async function detectTool(
@@ -164,12 +192,14 @@ function queueAssetConversions(folder: IFolder): (() => Promise<void>)[] {
 		);
 		if (pngsWithoutLQ.length > 0) {
 			for (const pngWithoutLQ of pngsWithoutLQ) {
-				console.log(pngWithoutLQ);
 				ret.push(async () => {
 					const inFile = `${folder.name}/${pngWithoutLQ}.png`;
 					const outFile = `${folder.name}/${pngWithoutLQ}.lq.png`;
 					if (pngOptimizer.type !== 'none') {
 						const tempFile = `${folder.name}/${pngWithoutLQ}.lq.tmp.png`;
+						try {
+							await fs.unlink(tempFile);
+						} catch {}
 						await runPngQuantizer(inFile, tempFile);
 						await runPngOptimizer(tempFile, outFile);
 						await runOnConsole(`rm ${tempFile}`);
@@ -246,15 +276,16 @@ async function runPngOptimizer(inFile: string, outFile: string): Promise<void> {
 	if (pngOptimizer.type === 'zopflipng') {
 		await runOnConsole(`zopflipng ${inFile} ${outFile}`);
 	} else if (pngOptimizer.type === 'oxipng') {
-		await runOnConsole(`oxipng -o ${outFile} ${inFile}`);
+		await runOnConsole(`oxipng --out ${outFile} ${inFile}`);
 	}
 }
 
 function runOnConsole(command: string): Promise<string> {
 	return new Promise((resolve, reject) => {
+		console.log(command);
 		exec(command, (error, stdout) => {
 			if (error) {
-				//console.error(error);
+				console.error(error);
 				reject();
 			}
 			resolve(stdout);

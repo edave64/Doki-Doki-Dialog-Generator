@@ -12,7 +12,7 @@
 		"lint:eslint": "eslint . --fix",
 		"lint": "run-s lint:*",
 		"format": "prettier --write src/",
-		"assetConversions": "node ./scripts/asset-conversions.js",
+		"assetConversions": "node ./scripts/asset-conversions.ts",
 		"build:web": "vite build",
 		"build:electron": "vite build --mode desktop",
 		"sync:release": "rsync -av --delete --exclude=assets/**.webp --exclude=assets/**.png ./dist/ ../dist/release/",
