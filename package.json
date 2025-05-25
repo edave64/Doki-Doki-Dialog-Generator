@@ -12,7 +12,7 @@
 		"lint:eslint": "eslint . --fix",
 		"lint": "run-s lint:*",
 		"format": "prettier --write src/",
-		"assetConversions": "node ./scripts/asset-conversions.js",
+		"assetConversions": "node ./scripts/asset-conversions.ts",
 		"build:web": "vite build",
 		"build:electron": "vite build --mode desktop",
 		"sync:release": "rsync -av --delete --exclude=assets/**.webp --exclude=assets/**.png ./dist/ ../dist/release/",
@@ -25,10 +25,11 @@
 	"dependencies": {
 		"@edave64/dddg-repo-filters": "^0.4.0",
 		"@edave64/doki-doki-dialog-generator-pack-format": "^2.0.0",
+		"mitt": "^3.0.1",
+		"pinia": "^3.0.2",
 		"prettier-plugin-organize-imports": "^4.1.0",
 		"vue": "^3.5.13",
-		"vuex": "^4.1.0",
-		"mitt": "^3.0.1"
+		"vuex": "^4.1.0"
 	},
 	"devDependencies": {
 		"@tsconfig/node22": "^22.0.1",
