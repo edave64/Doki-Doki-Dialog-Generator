@@ -2,7 +2,6 @@ import type { ITextStyle } from '@/renderer/text-renderer/text-renderer';
 import { BaseTextStyle } from './text-box';
 import { nameboxStrokeDefaultColor } from './text-box-custom';
 
-// tslint:disable: no-magic-numbers
 export const NotificationBackgroundColor = '#ffe6f4';
 export const NotificationBorderColor = '#ffbde1';
 export const NotificationBackdropColor = 'rgba(255,255,255,0.6)';

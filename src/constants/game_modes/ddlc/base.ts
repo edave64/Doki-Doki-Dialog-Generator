@@ -1,4 +1,3 @@
-// tslint:disable: no-magic-numbers
 export const screenWidth = 1280;
 export const screenHeight = 720;
 

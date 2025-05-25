@@ -1,7 +1,5 @@
 import { HSLAColor } from './hsl';
 
-// tslint:disable: no-magic-numbers
-
 /**
  * A class representing an RGBA color value.
  * Allows for easier color-space conversion and color math.

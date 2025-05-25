@@ -2,7 +2,6 @@ import { screenWidth } from '@/constants/game_modes/ddlc_plus/base';
 import type { ITextStyle } from '@/renderer/text-renderer/text-renderer';
 import { nameboxStrokeDefaultColor } from './text-box-custom';
 
-// tslint:disable: no-magic-numbers
 export const TextBoxWidth = 1220;
 export const TextBoxCorruptedWidth = 900;
 export const TextBoxHeight = 219;

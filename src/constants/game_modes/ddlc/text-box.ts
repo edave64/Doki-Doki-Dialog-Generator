@@ -2,7 +2,6 @@ import type { ITextStyle } from '@/renderer/text-renderer/text-renderer';
 import { screenWidth } from './base';
 import { nameboxStrokeDefaultColor } from './text-box-custom';
 
-// tslint:disable: no-magic-numbers
 export const TextBoxWidth = 816;
 export const TextBoxCorruptedWidth = 900;
 export const TextBoxHeight = 146;

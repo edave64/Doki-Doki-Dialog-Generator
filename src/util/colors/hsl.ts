@@ -1,8 +1,6 @@
 import type { IColor } from './color';
 import { RGBAColor } from './rgb';
 
-// tslint:disable: no-magic-numbers
-
 /**
  * A class representing a HSLA (Hue/Saturation/Lightness) color value.
  * Allows for easier color-space conversion and color math.

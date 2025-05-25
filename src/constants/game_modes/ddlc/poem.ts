@@ -1,7 +1,6 @@
 import type { ITextStyle } from '@/renderer/text-renderer/text-renderer';
 import { screenHeight, screenWidth, sdCharacterScaleFactor } from './base';
 
-// tslint:disable: no-magic-numbers
 export const poemBackgrounds = [
 	{ name: 'Normal paper', file: 'poem.jpg' },
 	{ name: 'Lightly soiled paper', file: 'poem_y1.jpg' },

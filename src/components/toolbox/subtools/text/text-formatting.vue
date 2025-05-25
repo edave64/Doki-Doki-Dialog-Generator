@@ -214,7 +214,6 @@ function onValueChanged() {
 	const constants = getConstants();
 	const val = textArea.value.value;
 	try {
-		// tslint:disable-next-line: no-unused-expression
 		new TextRenderer(val, constants.TextBox.NameboxTextStyle);
 		error.value = '';
 	} catch (e) {

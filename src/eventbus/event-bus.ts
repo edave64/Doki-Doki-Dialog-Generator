@@ -35,8 +35,6 @@ interface IEventClass<T> {
 	new (...args: any[]): T;
 }
 
-// tslint:disable: max-classes-per-file
-
 export class AssetFailureEvent implements IEvent {
 	public static readonly kind = 'AssetFailureEvent';
 	public readonly kind = 'AssetFailureEvent';

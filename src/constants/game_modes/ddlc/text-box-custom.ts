@@ -5,7 +5,6 @@ export const controlsDefaultColor = '#552222';
 export const nameboxDefaultColor = '#ffeef6';
 export const nameboxStrokeDefaultColor = '#bb5599';
 
-// tslint:disable: no-magic-numbers
 export const nameboxTextOutlineDelta = new HSLAColor(
 	-0.03065134099616873,
 	-0.5714285714285714,

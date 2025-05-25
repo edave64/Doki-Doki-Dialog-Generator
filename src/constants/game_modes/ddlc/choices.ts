@@ -2,7 +2,6 @@ import type { ITextStyle } from '@/renderer/text-renderer/text-renderer';
 import { HSLAColor } from '@/util/colors/hsl';
 import { screenHeight } from './base';
 
-// tslint:disable: no-magic-numbers
 export const nameboxTextOutlineDelta = new HSLAColor(
 	-0.03065134099616873,
 	-0.5714285714285714,

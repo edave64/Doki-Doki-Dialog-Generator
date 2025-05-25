@@ -1,3 +1,6 @@
+import { isWebPSupported } from '@/asset-manager';
+import { assetUrl } from '@/config';
+import { normalizeCharacter as normalizeCharacterV1 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v1/parser';
 import { convert as convertV1 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/convertV1';
 import type {
 	Background,
@@ -10,10 +13,6 @@ import {
 	normalizePath,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/util';
 import type { Module } from 'vuex';
-// tslint:disable-next-line: max-line-length
-import { isWebPSupported } from '@/asset-manager';
-import { assetUrl } from '@/config';
-import { normalizeCharacter as normalizeCharacterV1 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v1/parser';
 import type { IRootState } from '..';
 import { mergeContentPacks } from './merge';
 
