@@ -194,7 +194,18 @@ watch(
 	() => selectedAlignment.value,
 	() => {
 		if (selectedAlignment.value === '') return;
-		insertText(`{align=${selectedAlignment.value}}`);
+		const ta = textArea.value;
+		const oldSelectionStart = ta?.selectionStart;
+		const oldSelectionEnd = ta?.selectionEnd;
+		if (ta) {
+			ta.selectionEnd = ta.selectionStart;
+		}
+		const command = `{align=${selectedAlignment.value}}`;
+		insertText(command);
+		if (ta) {
+			ta.selectionStart = oldSelectionStart + command.length;
+			ta.selectionEnd = oldSelectionEnd + command.length;
+		}
 		selectedAlignment.value = '';
 	}
 );
