@@ -1,5 +1,8 @@
 import { NsfwPacks } from '@/constants/nsfw';
-import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
+import eventBus, {
+	FailureEvent,
+	InvalidateRenderEvent,
+} from '@/eventbus/event-bus';
 import { Repo } from '@/models/repo';
 import { mergeContentPacks } from '@/store/content/merge';
 import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
@@ -102,53 +105,62 @@ export default createStore({
 			data.content = getDefaultContentState();
 
 			const repo = await Repo.getInstance();
+			const loadedIds = new Set<string>();
+
+			const contentPackLoads = await Promise.allSettled(
+				contentData.map(async (x) => {
+					if (typeof x !== 'string') return x;
+					let url: string | null = null;
+					let packId: string;
+					if (x.indexOf(';') >= 0) {
+						[packId, url] = x.split(';');
+					} else {
+						packId = x;
+					}
+					if (loadedIds.has(packId)) return null;
+					loadedIds.add(packId);
+					const alreadyLoaded = state.content.contentPacks.find(
+						(pack) => pack.packId === packId
+					);
+					if (alreadyLoaded) return alreadyLoaded;
+					if (x.startsWith('dddg.buildin.') && x.endsWith('.nsfw')) {
+						const loaded = await loadContentPack(
+							(NsfwPacks as { [id: string]: string })[x]
+						);
+
+						return await convertContentPack(loaded);
+					}
+					if (url != null && !repo.hasPack(packId)) {
+						await repo.loadTempPack(url);
+					}
+					const pack = repo.getPack(packId);
+					if (!pack) {
+						console.warn(`Pack Id ${x} not found!`);
+						return null!;
+					}
+					const loaded = await loadContentPack(
+						pack.dddg2Path || pack.dddg1Path
+					);
+
+					return await convertContentPack(loaded);
+				})
+			);
+
+			for (const contentPack of contentPackLoads) {
+				if (contentPack.status === 'rejected') {
+					eventBus.fire(new FailureEvent('' + contentPack.reason));
+					console.error(contentPack.reason);
+				}
+			}
 
 			data.content.contentPacks = [
 				...state.content.contentPacks.filter((x) =>
 					x.packId?.startsWith('dddg.buildin.')
 				),
-				...(
-					await Promise.all(
-						contentData.map(async (x) => {
-							if (typeof x !== 'string') return x;
-							let url: string | null = null;
-							let packId: string;
-							if (x.indexOf(';') >= 0) {
-								[packId, url] = x.split(';');
-							} else {
-								packId = x;
-							}
-							const alreadyLoaded =
-								state.content.contentPacks.find(
-									(pack) => pack.packId === packId
-								);
-							if (alreadyLoaded) return alreadyLoaded;
-							if (
-								x.startsWith('dddg.buildin.') &&
-								x.endsWith('.nsfw')
-							) {
-								const loaded = await loadContentPack(
-									(NsfwPacks as { [id: string]: string })[x]
-								);
-
-								return await convertContentPack(loaded);
-							}
-							if (url != null && !repo.hasPack(packId)) {
-								await repo.loadTempPack(url);
-							}
-							const pack = repo.getPack(packId);
-							if (!pack) {
-								console.warn(`Pack Id ${x} not found!`);
-								return null!;
-							}
-							const loaded = await loadContentPack(
-								pack.dddg2Path || pack.dddg1Path
-							);
-
-							return await convertContentPack(loaded);
-						})
-					)
-				).filter((x) => x !== null),
+				...contentPackLoads
+					.filter((x) => x.status === 'fulfilled')
+					.map((x) => x.value)
+					.filter((x) => x !== null),
 			];
 
 			let combinedPack = data.content.current;
