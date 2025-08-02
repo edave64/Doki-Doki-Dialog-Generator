@@ -221,6 +221,16 @@ export class Repo {
 		} catch {
 			throw new Error(`Failed to load '${url}'`);
 		}
+
+		if (!res.ok) {
+			if (res.status === 404) {
+				throw new Error(`The pack '${url}' does not exist anymore.`);
+			}
+			throw new Error(
+				`Failed to load '${url}': ${res.statusText || res.status}`
+			);
+		}
+
 		let body: TempRepoFile;
 		try {
 			body = await res.json();
