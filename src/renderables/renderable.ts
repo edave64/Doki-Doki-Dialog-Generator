@@ -269,7 +269,13 @@ export abstract class Renderable<ObjectType extends IObject> {
 			if (skipLocal) {
 				this.renderLocal(ctx, hq);
 			} else {
-				ctx.drawImage(this.localCanvas!, 0, 0);
+				if (
+					this.localCanvas &&
+					this.localCanvas.height !== 0 &&
+					this.localCanvas.width !== 0
+				) {
+					ctx.drawImage(this.localCanvas!, 0, 0);
+				}
 			}
 			/*
 			for (const pos of [
