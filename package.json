@@ -25,10 +25,10 @@
 	"dependencies": {
 		"@edave64/dddg-repo-filters": "^0.4.0",
 		"@edave64/doki-doki-dialog-generator-pack-format": "^2.0.0",
+		"mitt": "^3.0.1",
 		"prettier-plugin-organize-imports": "^4.1.0",
 		"vue": "^3.5.13",
-		"vuex": "^4.1.0",
-		"mitt": "^3.0.1"
+		"vuex": "^4.1.0"
 	},
 	"devDependencies": {
 		"@tsconfig/node22": "^22.0.1",
@@ -50,7 +50,7 @@
 		"prettier": "3.5.3",
 		"sass-embedded": "^1.86.3",
 		"ts-essentials": "^10.0.4",
-		"typescript": "~5.8.0",
+		"typescript": "^5.8.3",
 		"vite": "^6.3.4",
 		"vite-plugin-vue-devtools": "^7.7.2",
 		"vitest": "^3.1.1",
