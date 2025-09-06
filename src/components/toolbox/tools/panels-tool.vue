@@ -79,9 +79,20 @@
 					Image options
 				</d-button>
 			</div>
-			<d-fieldset title="Export" class="h-h100">
+			<d-fieldset title="Export" class="h-h100 export_settings">
 				<table class="v-w100">
 					<tbody>
+						<tr>
+							<td colspan="2">
+								<d-button
+									icon="photo_camera"
+									class="w100"
+									@click="download"
+								>
+									Download
+								</d-button>
+							</td>
+						</tr>
 						<tr>
 							<td>
 								<label for="export_format">Format</label>
@@ -164,13 +175,11 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<d-button
-									icon="photo_camera"
-									class="w100"
-									@click="download"
-								>
-									Download
-								</d-button>
+								<toggle-box
+									v-model="horizontalExport"
+									label="Horizontal arrangement?"
+									title="Order panels side by side instead of top to bottom"
+								/>
 							</td>
 						</tr>
 					</tbody>
@@ -196,6 +205,7 @@ import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import DButton from '@/components/ui/d-button.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
+import ToggleBox from '@/components/ui/d-toggle.vue';
 import getConstants from '@/constants';
 import environment from '@/environments/environment';
 import eventBus, {
@@ -239,6 +249,7 @@ const ppi = ref(environment.supports.limitedCanvasSpace ? 10 : 0);
 const pages = ref('');
 const format = ref('image/png');
 const quality = ref(defaultQuality);
+const horizontalExport = ref(false);
 const imageOptionsActive = ref(false);
 const loadUpload = ref(null! as HTMLInputElement);
 const baseConst = getConstants().Base;
@@ -358,10 +369,12 @@ async function download() {
 		const extension = format.value.split('/')[1];
 		const format_ = format.value;
 		const quality_ = quality.value;
+		const horizontal_ = horizontalExport.value;
 		const prefix = getDownloadFilenamePrefix();
 		await renderObjects(
 			distribution,
 			true,
+			horizontal_,
 			async (imageIdx: number, canvasEle: HTMLCanvasElement) => {
 				await environment.saveToFile(
 					canvasEle,
@@ -376,6 +389,7 @@ async function download() {
 async function renderObjects<T>(
 	distribution: DeepReadonly<IPanel['id'][][]>,
 	hq: boolean,
+	horizontal: boolean,
 	mapper: (imageIdx: number, canvas: HTMLCanvasElement) => Promise<T>
 ): Promise<T[]> {
 	const baseConst = getConstants().Base;
@@ -383,8 +397,12 @@ async function renderObjects<T>(
 	for (let imageIdx = 0; imageIdx < distribution.length; ++imageIdx) {
 		const image = distribution[imageIdx];
 		const targetCanvas = document.createElement('canvas');
-		targetCanvas.width = baseConst.screenWidth;
-		targetCanvas.height = baseConst.screenHeight * image.length;
+		targetCanvas.width = horizontal
+			? baseConst.screenWidth * image.length
+			: baseConst.screenWidth;
+		targetCanvas.height = horizontal
+			? baseConst.screenHeight
+			: baseConst.screenHeight * image.length;
 		try {
 			const context = targetCanvas.getContext('2d')!;
 
@@ -400,8 +418,8 @@ async function renderObjects<T>(
 					await sceneRenderer.render(hq, false, true);
 
 					sceneRenderer.paintOnto(context, {
-						x: 0,
-						y: baseConst.screenHeight * panelIdx,
+						x: horizontal ? baseConst.screenWidth * panelIdx : 0,
+						y: horizontal ? 0 : baseConst.screenHeight * panelIdx,
 						w: baseConst.screenWidth,
 						h: baseConst.screenHeight,
 					});
@@ -838,6 +856,15 @@ small {
 
 		.existing_panels_fieldset {
 			@include fixes.height-100();
+		}
+
+		.export_settings {
+			height: 100%;
+			:deep(fieldset) {
+				max-height: 100%;
+				height: 100%;
+				overflow: auto;
+			}
 		}
 
 		fieldset {
