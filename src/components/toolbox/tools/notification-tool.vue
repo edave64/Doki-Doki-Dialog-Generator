@@ -24,13 +24,14 @@
 <script lang="ts" setup>
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import ToggleBox from '@/components/ui/d-toggle.vue';
+import type { Viewport } from '@/newStore/viewport';
 import { useStore } from '@/store';
 import {
 	type INotification,
 	type NotificationSimpleProperties,
 } from '@/store/object-types/notification';
 import { genericSetterSplit } from '@/util/simple-settable';
-import { computed, ref } from 'vue';
+import { computed, inject, ref, type Ref } from 'vue';
 import ObjectTool, { type Handler } from './object-tool.vue';
 
 const store = useStore();
@@ -38,11 +39,13 @@ const root = ref(null! as HTMLElement);
 
 setupPanelMixin(root);
 
+const viewport = inject<Ref<Viewport>>('viewport')!;
+
 const currentPanel = computed(() => {
-	return store.state.panels.panels[store.state.panels.currentPanel];
+	return store.state.panels.panels[viewport.value.currentPanel];
 });
 const object = computed((): INotification => {
-	const obj = currentPanel.value.objects[store.state.ui.selection!];
+	const obj = currentPanel.value.objects[viewport.value.selection!];
 	if (obj.type !== 'notification') return undefined!;
 	return obj as INotification;
 });

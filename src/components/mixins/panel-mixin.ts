@@ -1,9 +1,8 @@
 import { verticalScrollRedirect } from '@/components/mixins/vertical-scroll-redirect';
-import { useStore } from '@/store';
+import { useVertical } from '@/hooks/use-viewport';
 import {
 	type ComponentOptionsMixin,
 	type ComponentPublicInstance,
-	computed,
 	onMounted,
 	type Ref,
 	watch,
@@ -49,8 +48,7 @@ export const PanelMixin: ComponentOptionsMixin = {
 export function setupPanelMixin(
 	root: Ref<HTMLElement | ComponentPublicInstance>
 ) {
-	const store = useStore();
-	const vertical = computed(() => store.state.ui.vertical);
+	const vertical = useVertical();
 
 	function getRoot(): HTMLElement {
 		const rootV = root.value;

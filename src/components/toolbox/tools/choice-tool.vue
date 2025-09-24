@@ -54,6 +54,7 @@ import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
+import type { Viewport } from '@/newStore/viewport';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type {
@@ -65,17 +66,26 @@ import type {
 import type { IPanel } from '@/store/panels';
 import { genericSetterMerged } from '@/util/simple-settable';
 import type { DeepReadonly } from 'ts-essentials';
-import { type ComponentCustomProperties, computed, ref } from 'vue';
+import {
+	type ComponentCustomProperties,
+	computed,
+	inject,
+	type Ref,
+	ref,
+} from 'vue';
 import ObjectTool, { type Handler } from './object-tool.vue';
 
 const store = useStore();
 const root = ref(null! as HTMLElement);
+
+const viewport = inject<Ref<Viewport>>('viewport')!;
+
 setupPanelMixin(root);
 const currentPanel = computed((): DeepReadonly<IPanel> => {
-	return store.state.panels.panels[store.state.panels.currentPanel];
+	return store.state.panels.panels[viewport.value.currentPanel];
 });
 const object = computed((): IChoices => {
-	const obj = currentPanel.value.objects[store.state.ui.selection!];
+	const obj = currentPanel.value.objects[viewport.value.selection!];
 	if (obj.type !== 'choice') return undefined!;
 	return obj as IChoices;
 });

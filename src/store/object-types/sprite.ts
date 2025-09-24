@@ -30,7 +30,7 @@ export const spriteActions: ActionTree<IPanels, IRootState> = {
 				height: asset.height,
 				width: asset.width,
 				id,
-				panelId: rootState.panels.currentPanel,
+				panelId: command.panelId,
 				onTop: false,
 				type: 'sprite',
 				y: getConstants().Base.screenHeight / 2,

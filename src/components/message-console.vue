@@ -36,13 +36,12 @@ import EventBus, {
 	ShowMessageEvent,
 	VueErrorEvent,
 } from '@/eventbus/event-bus';
-import { useStore } from '@/store';
-import { computed, ref, watch } from 'vue';
+import { useVertical } from '@/hooks/use-viewport';
+import { ref, watch } from 'vue';
 
 const props = defineProps<{
 	loading?: boolean;
 }>();
-const store = useStore();
 
 const shortHidingTime = 5000;
 const longHidingTime = 20000;
@@ -55,7 +54,7 @@ const showLoading = ref(false);
 const showLoadingTimeout = ref(0);
 const hideLoadingTimeout = ref(0);
 
-const vertical = computed(() => store.state.ui.vertical);
+const vertical = useVertical();
 
 onLoadingChange(props.loading);
 EventBus.subscribe(AssetFailureEvent, (ev) => {

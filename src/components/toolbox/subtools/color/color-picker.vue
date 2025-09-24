@@ -56,6 +56,7 @@
 <script lang="ts" setup>
 import DFlow from '@/components/ui/d-flow.vue';
 import eventBus, { ColorPickedEvent } from '@/eventbus/event-bus';
+import { useVertical } from '@/hooks/use-viewport';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
@@ -86,7 +87,7 @@ const store = useStore();
 const generatedPackId = 'dddg.generated.colors';
 const id = uniqId();
 const mode = ref('hsla' as 'hsla' | 'rgba' | undefined);
-const vertical = computed(() => store.state.ui.vertical);
+const vertical = useVertical();
 const color = computed({
 	get(): string {
 		if (props.format === 'rgb') {

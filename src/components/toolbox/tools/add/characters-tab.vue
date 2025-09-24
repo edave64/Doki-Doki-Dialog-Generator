@@ -23,6 +23,7 @@
 <script lang="ts" setup>
 import DButton from '@/components/ui/d-button.vue';
 import environment from '@/environments/environment';
+import { useViewport } from '@/hooks/use-viewport';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { IAssetSwitch } from '@/store/content';
@@ -35,6 +36,7 @@ const emit = defineEmits<{
 }>();
 
 const store = useStore();
+const viewport = useViewport();
 const characters = computed(() => {
 	return store.state.content.current.characters;
 });
@@ -51,7 +53,7 @@ function onChosen(id: string) {
 	transaction(async () => {
 		await store.dispatch('panels/createCharacters', {
 			characterType: id,
-			panelId: store.state.panels.currentPanel,
+			panelId: viewport.value.currentPanel,
 		} as ICreateCharacterAction);
 	});
 }

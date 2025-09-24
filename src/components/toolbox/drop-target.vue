@@ -12,15 +12,14 @@
 	</div>
 </template>
 <script lang="ts" setup>
-import { useStore } from '@/store';
-import { computed, ref } from 'vue';
+import { useVertical } from '@/hooks/use-viewport';
+import { ref } from 'vue';
 
 const emit = defineEmits<{
 	drop: [file: File];
 }>();
-const store = useStore();
 const visible = ref(false);
-const vertical = computed(() => store.state.ui.vertical);
+const vertical = useVertical();
 
 function show(): void {
 	visible.value = true;

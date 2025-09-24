@@ -65,6 +65,7 @@ import { getAAssetUrl } from '@/asset-manager';
 import MissingImage from '@/assets/missing_image.svg';
 import DButton from '@/components/ui/d-button.vue';
 import environment, { type Folder } from '@/environments/environment';
+import { useViewport } from '@/hooks/use-viewport';
 import { transaction, type TransactionLayer } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
@@ -82,6 +83,7 @@ const emit = defineEmits<{
 }>();
 
 const store = useStore();
+const viewport = useViewport();
 interface ISprite extends Sprite<IAssetSwitch> {
 	missing: string | null;
 	urls: string[];
@@ -123,7 +125,7 @@ function assetSpriteBackground(sprite: DeepReadonly<Sprite<IAssetSwitch>>) {
 async function addSpriteToScene(sprite: DeepReadonly<ISprite>) {
 	await transaction(async () => {
 		await store.dispatch('panels/createSprite', {
-			panelId: store.state.panels.currentPanel,
+			panelId: viewport.value.currentPanel,
 			assets: sprite.variants[0],
 		} as ICreateSpriteAction);
 	});

@@ -60,6 +60,7 @@
 <script lang="ts" setup>
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
+import { useVertical, useViewport } from '@/hooks/use-viewport';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { IAssetSwitch } from '@/store/content';
@@ -79,9 +80,11 @@ const emit = defineEmits<{
 }>();
 
 const store = useStore();
-const vertical = computed(() => store.state.ui.vertical);
+
+const viewport = useViewport();
+const vertical = useVertical();
 const background = computed(() => {
-	const currentPanel = store.state.panels.currentPanel;
+	const currentPanel = viewport.value.currentPanel;
 	return store.state.panels.panels[currentPanel].background;
 });
 const flipped = computed({
@@ -92,7 +95,7 @@ const flipped = computed({
 		transaction(() => {
 			store.commit('panels/setBackgroundFlipped', {
 				flipped,
-				panelId: store.state.panels.currentPanel,
+				panelId: viewport.value.currentPanel,
 			} as ISetFlipMutation);
 		});
 	},
@@ -106,7 +109,7 @@ const scaling = computed({
 		transaction(() => {
 			store.commit('panels/setBackgroundScaling', {
 				scaling: parseInt(scaling, 10),
-				panelId: store.state.panels.currentPanel,
+				panelId: viewport.value.currentPanel,
 			} as ISetScalingMutation);
 		});
 	},
@@ -131,7 +134,7 @@ const color = computed({
 		transaction(() => {
 			store.commit('panels/setBackgroundColor', {
 				color,
-				panelId: store.state.panels.currentPanel,
+				panelId: viewport.value.currentPanel,
 			} as ISetColorMutation);
 		});
 	},
@@ -147,7 +150,7 @@ function seekVariant(delta: 1 | -1) {
 	transaction(async () => {
 		await store.dispatch('panels/seekBackgroundVariant', {
 			delta,
-			panelId: store.state.panels.currentPanel,
+			panelId: viewport.value.currentPanel,
 		} as ISeekVariantAction);
 	});
 }

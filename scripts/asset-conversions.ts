@@ -37,7 +37,7 @@ async function runDetection() {
 		console.warn(
 			'[WARN] A pnq quantizer was found, but no optimizer. This can lead to suboptimal low-quality pngs and cannot be fixed by re-running the asset conversion.'
 		);
-		await new Promise((resolve, _reject) => {
+		await new Promise<void>((resolve, _reject) => {
 			const rl = readline.createInterface(process.stdin, process.stdout);
 			rl.question(
 				'Do you want to run asset conversion without a png optimizer? (y/N)',

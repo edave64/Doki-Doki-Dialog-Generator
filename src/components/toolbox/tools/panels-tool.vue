@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/html-comment-indent -->
 <!--
 	A tab allowing you create, delete, switch and export panels.
 	Also allows to save the entire custom dialog.
@@ -117,7 +118,9 @@
 									<option value="image/jpeg">
 										JPEG (lossy)
 									</option>
-									<!-- <option value="image/jpeg">WebM (lossy, video)</option> -->
+									<option value="image/jpeg">
+										WebM (lossy, video)
+									</option>
 								</select>
 							</td>
 						</tr>
@@ -222,7 +225,6 @@ import type {
 	IDuplicatePanelAction,
 	IMovePanelAction,
 	IPanel,
-	ISetCurrentPanelMutation,
 	ISetPanelPreviewMutation,
 } from '@/store/panels';
 import { safeAsync } from '@/util/errors';
@@ -255,7 +257,7 @@ const loadUpload = ref(null! as HTMLInputElement);
 const baseConst = getConstants().Base;
 
 const currentPanel = computed(
-	() => store.state.panels.panels[store.state.panels.currentPanel]
+	() => store.state.panels.panels[viewport.value.currentPanel]
 );
 const isLossy = computed(() => format.value !== 'image/png');
 const canDeletePanel = computed(() => panelButtons.value.length > 1);
@@ -339,7 +341,7 @@ function moveFocusToActivePanel() {
 }
 function scrollIntoView(ele: HTMLElement) {
 	const parent = ele.parentElement!.parentElement!;
-	if (store.state.ui.vertical) {
+	if (vertical.value) {
 		parent.scrollTop = ele.offsetTop - parent.clientHeight / 2;
 		parent.scrollLeft = 0;
 	} else {
@@ -394,6 +396,8 @@ async function renderObjects<T>(
 ): Promise<T[]> {
 	const baseConst = getConstants().Base;
 	const ret = [];
+	const xOffset = horizontal ? baseConst.screenWidth : 0;
+	const yOffset = horizontal ? 0 : baseConst.screenHeight;
 	for (let imageIdx = 0; imageIdx < distribution.length; ++imageIdx) {
 		const image = distribution[imageIdx];
 		const targetCanvas = document.createElement('canvas');
@@ -418,8 +422,8 @@ async function renderObjects<T>(
 					await sceneRenderer.render(hq, false, true);
 
 					sceneRenderer.paintOnto(context, {
-						x: horizontal ? baseConst.screenWidth * panelIdx : 0,
-						y: horizontal ? 0 : baseConst.screenHeight * panelIdx,
+						x: xOffset * panelIdx,
+						y: yOffset * panelIdx,
 						w: baseConst.screenWidth,
 						h: baseConst.screenHeight,
 					});
@@ -496,17 +500,16 @@ function getPanelDistibution(): DeepReadonly<IPanel['id'][][]> {
 async function addNewPanel(): Promise<void> {
 	await transaction(async () => {
 		await store.dispatch('panels/duplicatePanel', {
-			panelId: store.state.panels.currentPanel,
+			panelId: viewport.value.currentPanel,
 		} as IDuplicatePanelAction);
+		viewport.value.currentPanel = store.state.panels.lastPanelId;
 	});
 	await nextTick();
 	moveFocusToActivePanel();
 }
 function updateCurrentPanel(panelId: IPanel['id']) {
 	transaction(() => {
-		store.commit('panels/setCurrentPanel', {
-			panelId,
-		} as ISetCurrentPanelMutation);
+		viewport.value.currentPanel = panelId;
 	});
 	nextTick(() => {
 		moveFocusToActivePanel();
@@ -515,7 +518,7 @@ function updateCurrentPanel(panelId: IPanel['id']) {
 function deletePanel() {
 	transaction(async () => {
 		await store.dispatch('panels/delete', {
-			panelId: store.state.panels.currentPanel,
+			panelId: viewport.value.currentPanel,
 		} as IDeletePanelAction);
 	});
 	nextTick(() => {
@@ -540,6 +543,7 @@ function moveBehind() {
 }
 //#endregion Actions
 //#region Thumbnails
+import { useViewport } from '@/hooks/use-viewport';
 import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
 import { disposeCanvas, makeCanvas } from '@/util/canvas';
 
@@ -550,6 +554,7 @@ targetCanvas.width = baseConst.screenWidth * thumbnailFactor;
 targetCanvas.height = baseConst.screenHeight * thumbnailFactor;
 const thumbnailCtx = targetCanvas.getContext('2d')!;
 const isMounted = ref(false);
+const viewport = useViewport();
 
 const missingThumbnails = computed((): IPanel['id'][] => {
 	const panelOrder = store.state.panels.panelOrder;
@@ -562,7 +567,7 @@ const missingThumbnails = computed((): IPanel['id'][] => {
 async function renderCurrentThumbnail() {
 	// FIXME: This sadly makes it so the selection halo is visible in the thumbnails.
 	//        The renderer will lose that once the panels tab is selected, so maybe delay this?
-	const sceneRenderer = getMainSceneRenderer(store);
+	const sceneRenderer = getMainSceneRenderer(store, viewport.value);
 	if (!sceneRenderer) return;
 	await renderPanelThumbnail(sceneRenderer);
 }

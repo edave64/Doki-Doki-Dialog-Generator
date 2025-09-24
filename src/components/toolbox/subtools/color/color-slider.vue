@@ -63,7 +63,8 @@
 </template>
 
 <script lang="ts" setup>
-import { useStore } from '@/store';
+import { useVertical } from '@/hooks/use-viewport';
+import { isMouseEvent } from '@/util/cross-realm';
 import uniqId from '@/util/unique-id';
 import { computed, ref } from 'vue';
 
@@ -78,13 +79,12 @@ const props = withDefaults(
 	{ noInput: false, shiftGradient: false }
 );
 const model = defineModel<number>({ required: true });
-const store = useStore();
 
 const sliderLength = 255;
 const sliderOffset = 8;
 const id = uniqId();
 
-const vertical = computed(() => store.state.ui.vertical);
+const vertical = useVertical();
 const svg = ref(null! as SVGElement);
 
 const pointerPath = computed(() => {
@@ -105,7 +105,7 @@ const dragActive = ref(false);
 function startDrag(event: MouseEvent | TouchEvent): void {
 	dragActive.value = true;
 	moveDrag(event);
-	if (event instanceof MouseEvent) {
+	if (isMouseEvent(event)) {
 		window.addEventListener('mousemove', moveDrag);
 		window.addEventListener('mouseup', endDrag);
 	}
@@ -114,7 +114,7 @@ function startDrag(event: MouseEvent | TouchEvent): void {
 function moveDrag(event: MouseEvent | TouchEvent) {
 	if (!dragActive.value) return;
 	const svgE = svg.value;
-	if (event instanceof MouseEvent && event.buttons === 0) {
+	if (isMouseEvent(event) && event.buttons === 0) {
 		endDrag();
 		return;
 	}
@@ -122,9 +122,8 @@ function moveDrag(event: MouseEvent | TouchEvent) {
 	const bounding = svgE.getBoundingClientRect();
 	const scale = bounding.width / (sliderOffset + sliderLength + sliderOffset);
 	const x =
-		(event instanceof MouseEvent
-			? event.clientX
-			: event.touches[0].clientX) - bounding.x;
+		(isMouseEvent(event) ? event.clientX : event.touches[0].clientX) -
+		bounding.x;
 	const scaledX = x / scale;
 	const value =
 		(Math.max(Math.min(scaledX - sliderOffset, sliderLength), 0) /

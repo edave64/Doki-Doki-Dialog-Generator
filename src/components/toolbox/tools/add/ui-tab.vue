@@ -7,10 +7,12 @@
 </template>
 
 <script lang="ts" setup>
+import { useViewport } from '@/hooks/use-viewport';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 
 const store = useStore();
+const viewport = useViewport();
 async function addTextBox() {
 	return await createUiElement('createTextBox');
 }
@@ -29,7 +31,7 @@ async function addConsole() {
 async function createUiElement(messageName: string): Promise<void> {
 	await transaction(async () => {
 		await store.dispatch(`panels/${messageName}`, {
-			panelId: store.state.panels.currentPanel,
+			panelId: viewport.value.currentPanel,
 		});
 	});
 }

@@ -1,5 +1,6 @@
 import { getBuildInAsset } from '@/asset-manager';
 import { SelectedState } from '@/constants/shared';
+import { Viewport } from '@/newStore/viewport';
 import { Renderer } from '@/renderer/renderer';
 import { RenderContext } from '@/renderer/renderer-context';
 import type { IRootState } from '@/store';
@@ -41,7 +42,8 @@ export class SceneRenderer {
 		private store: Store<DeepReadonly<IRootState>>,
 		private _panelId: IPanel['id'],
 		readonly canvasWidth: number,
-		readonly canvasHeight: number
+		readonly canvasHeight: number,
+		readonly viewport?: Viewport
 	) {
 		this.renderer = new Renderer(canvasWidth, canvasHeight);
 	}
@@ -161,7 +163,8 @@ export class SceneRenderer {
 			await Promise.all(promises);
 		}
 
-		const selection = this.store.state.ui.selection;
+		// TODO: support multiple viewports
+		const selection = this.viewport?.selection ?? null;
 		const links = new Set<IObject['id']>();
 		if (selection !== null) fetchLinks(selection, links);
 		const focusedObjId = document

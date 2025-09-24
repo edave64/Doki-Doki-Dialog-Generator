@@ -87,6 +87,8 @@ export interface IEnvironment {
 	storeSaveFile(save: Blob, defaultName: string): Promise<void>;
 
 	connectToStore(store: Store<DeepReadonly<IRootState>>): void;
+
+	openNewWindow(): Window | null;
 }
 
 function chooseEnv(): IEnvironment {

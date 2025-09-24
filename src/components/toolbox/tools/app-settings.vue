@@ -108,6 +108,9 @@
 			<template v-if="inPlusMode"> Enter Classic Mode </template>
 			<template v-else> Enter DDLC Plus Mode </template>
 		</button>
+		<button class="bt0" @click="spawnChildWindow" style="height: auto">
+			Open additional window
+		</button>
 		<toggle-box
 			v-if="lqAllowed"
 			label="Low quality preview?"
@@ -162,16 +165,18 @@
 </template>
 
 <script lang="ts" setup>
+import App from '@/app.vue';
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import ModalDialog from '@/components/modal-dialog.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
 import ExternalLink from '@/components/ui/external-link.vue';
 import { Electron } from '@/environments/electron';
 import environment from '@/environments/environment';
+import eventBus, { FailureEvent } from '@/eventbus/event-bus';
 import { transaction } from '@/plugins/vuex-history';
-import { useStore } from '@/store';
+import rootStore, { useStore } from '@/store';
 import { safeAsync } from '@/util/errors';
-import { computed, ref, watch } from 'vue';
+import { computed, createApp, ref, watch } from 'vue';
 
 const store = useStore();
 const root = ref(null! as HTMLElement);
@@ -329,6 +334,37 @@ function clearDefaultTemplate() {
 	environment.clearDefaultTemplate();
 }
 //#endregion Template
+//#region Spawn child window
+function spawnChildWindow() {
+	const win = environment.openNewWindow();
+	if (!win) {
+		eventBus.fire(
+			new FailureEvent(
+				'Failed to open new window. You may need to enable popups.'
+			)
+		);
+		return;
+	}
+	const wrapper = win.document.createElement('div');
+	win.document.body.appendChild(wrapper);
+
+	for (const child of document.head.querySelectorAll(
+		'style,link[rel=stylesheet]'
+	)) {
+		win.document.head.appendChild(child.cloneNode(true));
+	}
+
+	if (document.body.classList.contains('dark-theme')) {
+		win.document.body.classList.add('dark-theme');
+	}
+
+	const title = win.document.createElement('title');
+	win.document.title = 'DDLC child';
+	win.document.head.appendChild(title);
+
+	createApp(App).use(rootStore).mount(wrapper);
+}
+//#endregion Spawn child window
 </script>
 
 <style lang="scss" scoped>
