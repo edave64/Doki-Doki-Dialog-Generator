@@ -67,16 +67,17 @@ const sdCtx = ref(null! as CanvasRenderingContext2D);
 const queuedRender = ref(null as null | number);
 const showingLast = ref(false);
 const dropPreventClick = ref(false);
+const viewport = useViewport();
 
 const selection = useSelection();
 const currentPanel = computed(
-	() => store.state.panels.panels[store.state.panels.currentPanel]
+	() => store.state.panels.panels[viewport.value.currentPanel]
 );
 const lqRendering = computed(() => store.state.ui.lqRendering);
 function getSceneRender() {
 	if (props.preLoading) return null!;
 	const renderer = getMainSceneRenderer(store, viewport.value);
-	renderer?.setPanelId(store.state.panels.currentPanel);
+	renderer?.setPanelId(viewport.value.currentPanel);
 	return renderer;
 }
 const bitmapHeight = computed(() => {
@@ -228,7 +229,7 @@ store.subscribe((mut: MutationPayload) => {
 });
 
 watch(
-	() => selection.value,
+	() => [selection.value, viewport.value.currentPanel],
 	() => {
 		invalidateRender();
 	}
@@ -263,7 +264,6 @@ async function blendOver(url: string) {
 //#endregion Blend over
 //#endregion picker
 //#region picker
-const viewport = useViewport();
 const pickerMode = computed(() => viewport.value.pickColor);
 const cursor = computed((): 'default' | 'crosshair' =>
 	pickerMode.value ? 'crosshair' : 'default'
@@ -401,7 +401,7 @@ async function onDrop(e: DragEvent) {
 
 				await transaction(async () => {
 					await store.dispatch('panels/createSprite', {
-						panelId: store.state.panels.currentPanel,
+						panelId: viewport.value.currentPanel,
 						assets: [
 							{
 								hq: assetUrl,

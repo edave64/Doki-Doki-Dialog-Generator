@@ -432,10 +432,13 @@ export const actions: ActionTree<IPanels, IRootState> = {
 		}
 		commit('ui/setClipboard', JSON.stringify(objects), { root: true });
 	},
-	pasteObjectFromClipboard({ commit, state, rootState }) {
+	pasteObjectFromClipboard(
+		{ commit, state, rootState },
+		{ panelId }: IPasteFromClipboardAction
+	) {
 		if (rootState.ui.clipboard == null) return;
 		const newObjects: IObject[] = JSON.parse(rootState.ui.clipboard);
-		const panel = state.panels[state.currentPanel];
+		const panel = state.panels[panelId];
 		const newIds = new Map<IObject['id'], IObject['id']>();
 		let id = panel.lastObjId;
 
@@ -453,7 +456,7 @@ export const actions: ActionTree<IPanels, IRootState> = {
 			commit('create', {
 				object: {
 					...obj,
-					panelId: state.currentPanel,
+					panelId,
 				},
 			} as ICreateObjectMutation);
 		}

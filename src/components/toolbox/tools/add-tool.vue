@@ -51,6 +51,7 @@
 <script lang="ts" setup>
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import DButton from '@/components/ui/d-button.vue';
+import { useViewport } from '@/hooks/use-viewport';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { IPasteFromClipboardAction } from '@/store/objects';
@@ -90,10 +91,7 @@ const root = ref(null! as HTMLElement);
 const group = ref('characters' as GroupNames);
 const sprites = ref(null! as typeof SpritesTab | null);
 const { vertical } = setupPanelMixin(root);
-
-const currentPanel = computed(() => {
-	return store.state.panels.panels[store.state.panels.currentPanel];
-});
+const viewport = useViewport();
 
 const hasClipboardContent = computed(() => {
 	return store.state.ui.clipboard != null;
@@ -102,7 +100,7 @@ const hasClipboardContent = computed(() => {
 function paste() {
 	transaction(async () => {
 		await store.dispatch('panels/pasteObjectFromClipboard', {
-			panelId: currentPanel.value.id,
+			panelId: viewport.value.currentPanel,
 		} as IPasteFromClipboardAction);
 	});
 }

@@ -284,7 +284,7 @@ export function onMove(
 ) {
 	if (!dragData) return false;
 	const panels = store.state.panels;
-	const currentPanel = panels.panels[panels.currentPanel];
+	const currentPanel = panels.panels[viewport.currentPanel];
 	const obj = currentPanel.objects[viewport.selection!];
 	if (!dragData.started) {
 		dragData.started = true;

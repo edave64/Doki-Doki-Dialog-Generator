@@ -1,5 +1,6 @@
 import { CanvasAspectRatio, ToolboxSize } from '@/constants/ui';
 import type { IObject } from '@/store/objects';
+import type { IPanel } from '@/store/panels';
 import { defineStore } from 'pinia';
 import { markRaw, ref, type Raw, type Ref } from 'vue';
 
@@ -29,6 +30,7 @@ export function setUpViewport(doc: Document): Raw<Viewport> {
 export class Viewport {
 	public _selection: Ref<IObject['id'] | null> = ref(null);
 	public _pickColor = ref(false);
+	public _currentPanel: Ref<IPanel['id']> = ref(null!);
 
 	private _width: Ref<number>;
 	private _height: Ref<number>;
@@ -36,6 +38,11 @@ export class Viewport {
 	constructor(public readonly doc: Document) {
 		this._width = ref(doc.documentElement.clientWidth);
 		this._height = ref(doc.documentElement.clientHeight);
+
+		const store = useViewportStore();
+		if (store.viewports[0]?.currentPanel != null) {
+			this._currentPanel.value = store.viewports[0].currentPanel;
+		}
 
 		doc.defaultView!.addEventListener('resize', () => {
 			this._width.value = doc.documentElement.clientWidth;
@@ -57,6 +64,14 @@ export class Viewport {
 
 	public set selection(newValue: IObject['id'] | null) {
 		this._selection.value = newValue;
+	}
+
+	public get currentPanel(): IPanel['id'] {
+		return this._currentPanel.value;
+	}
+
+	public set currentPanel(newValue: IPanel['id']) {
+		this._currentPanel.value = newValue;
 	}
 
 	public get pickColor(): boolean {

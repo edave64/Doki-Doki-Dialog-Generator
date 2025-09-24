@@ -138,12 +138,11 @@ const missingHeadUpload = ref(null! as HTMLInputElement);
 setupPanelMixin(root);
 
 const panelForParts = ref(null as string | null);
+const viewport = inject<Ref<Viewport>>('viewport')!;
 
 const currentPanel = computed(
-	() => store.state.panels.panels[store.state.panels.currentPanel]
+	() => store.state.panels.panels[viewport.value.currentPanel]
 );
-
-const viewport = inject<Ref<Viewport>>('viewport')!;
 
 const selection = computed(() => viewport.value.selection!);
 const object = computed(() => {

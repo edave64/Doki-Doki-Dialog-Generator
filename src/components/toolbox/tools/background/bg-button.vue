@@ -33,6 +33,7 @@
 
 <script lang="ts" setup>
 import { getAAssetUrl } from '@/asset-manager';
+import { useViewport } from '@/hooks/use-viewport';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { BackgroundLookup } from '@/store/content';
@@ -43,8 +44,9 @@ const props = defineProps<{
 }>();
 
 const store = useStore();
+const viewport = useViewport();
 const background = computed(() => {
-	const currentPanel = store.state.panels.currentPanel;
+	const currentPanel = viewport.value.currentPanel;
 	return store.state.panels.panels[currentPanel].background;
 });
 

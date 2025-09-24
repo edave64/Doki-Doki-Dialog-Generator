@@ -127,7 +127,7 @@ export const textBoxActions: ActionTree<IPanels, IRootState> = {
 			object: {
 				...baseProps(),
 				...resetBounds,
-				panelId: rootState.panels.currentPanel,
+				panelId: command.panelId,
 				id,
 				onTop: true,
 				type: 'textBox',

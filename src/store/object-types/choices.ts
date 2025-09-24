@@ -54,7 +54,7 @@ export const choiceMutations: MutationTree<IPanels> = {
 
 export const choiceActions: ActionTree<IPanels, IRootState> = {
 	createChoice(
-		{ commit, rootState, state },
+		{ commit, state },
 		command: ICreateChoicesAction
 	): IObject['id'] {
 		const constants = getConstants();
@@ -65,7 +65,7 @@ export const choiceActions: ActionTree<IPanels, IRootState> = {
 				y: constants.Choices.ChoiceY,
 				width: constants.Choices.ChoiceButtonWidth,
 				height: 0,
-				panelId: rootState.panels.currentPanel,
+				panelId: command.panelId,
 				id,
 				onTop: true,
 				autoWrap: true,

@@ -43,7 +43,7 @@ export const notificationActions: ActionTree<IPanels, IRootState> = {
 				y: constants.Base.screenHeight / 2,
 				width: constants.Choices.ChoiceButtonWidth,
 				height: 0,
-				panelId: rootState.panels.currentPanel,
+				panelId: command.panelId,
 				autoWrap: false,
 				id,
 				onTop: true,

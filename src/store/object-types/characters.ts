@@ -171,7 +171,7 @@ export const characterActions: ActionTree<IPanels, IRootState> = {
 			object: {
 				...baseProps(),
 				id,
-				panelId: rootState.panels.currentPanel,
+				panelId: command.panelId,
 				onTop: false,
 				type: 'character',
 				y: constants.Base.BaseCharacterYPos,

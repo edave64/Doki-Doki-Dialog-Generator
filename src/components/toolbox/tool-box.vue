@@ -134,7 +134,7 @@ const panels = ref(null! as HTMLDivElement);
 const panelSelection = ref('add' as PanelNames);
 
 const currentPanel = computed(() => {
-	return store.state.panels.panels[store.state.panels.currentPanel];
+	return store.state.panels.panels[viewport.value.currentPanel];
 });
 const viewport = useViewport();
 const vertical = useVertical();

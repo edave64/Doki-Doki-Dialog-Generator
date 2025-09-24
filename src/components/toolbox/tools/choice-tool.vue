@@ -82,7 +82,7 @@ const viewport = inject<Ref<Viewport>>('viewport')!;
 
 setupPanelMixin(root);
 const currentPanel = computed((): DeepReadonly<IPanel> => {
-	return store.state.panels.panels[store.state.panels.currentPanel];
+	return store.state.panels.panels[viewport.value.currentPanel];
 });
 const object = computed((): IChoices => {
 	const obj = currentPanel.value.objects[viewport.value.selection!];

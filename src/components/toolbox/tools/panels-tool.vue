@@ -225,7 +225,6 @@ import type {
 	IDuplicatePanelAction,
 	IMovePanelAction,
 	IPanel,
-	ISetCurrentPanelMutation,
 	ISetPanelPreviewMutation,
 } from '@/store/panels';
 import { safeAsync } from '@/util/errors';
@@ -258,7 +257,7 @@ const loadUpload = ref(null! as HTMLInputElement);
 const baseConst = getConstants().Base;
 
 const currentPanel = computed(
-	() => store.state.panels.panels[store.state.panels.currentPanel]
+	() => store.state.panels.panels[viewport.value.currentPanel]
 );
 const isLossy = computed(() => format.value !== 'image/png');
 const canDeletePanel = computed(() => panelButtons.value.length > 1);
@@ -501,17 +500,16 @@ function getPanelDistibution(): DeepReadonly<IPanel['id'][][]> {
 async function addNewPanel(): Promise<void> {
 	await transaction(async () => {
 		await store.dispatch('panels/duplicatePanel', {
-			panelId: store.state.panels.currentPanel,
+			panelId: viewport.value.currentPanel,
 		} as IDuplicatePanelAction);
+		viewport.value.currentPanel = store.state.panels.lastPanelId;
 	});
 	await nextTick();
 	moveFocusToActivePanel();
 }
 function updateCurrentPanel(panelId: IPanel['id']) {
 	transaction(() => {
-		store.commit('panels/setCurrentPanel', {
-			panelId,
-		} as ISetCurrentPanelMutation);
+		viewport.value.currentPanel = panelId;
 	});
 	nextTick(() => {
 		moveFocusToActivePanel();
@@ -520,7 +518,7 @@ function updateCurrentPanel(panelId: IPanel['id']) {
 function deletePanel() {
 	transaction(async () => {
 		await store.dispatch('panels/delete', {
-			panelId: store.state.panels.currentPanel,
+			panelId: viewport.value.currentPanel,
 		} as IDeletePanelAction);
 	});
 	nextTick(() => {

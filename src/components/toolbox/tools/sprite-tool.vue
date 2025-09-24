@@ -46,7 +46,7 @@ const missing = computed((): string | null => {
 	return null;
 });
 const currentPanel = computed((): DeepReadonly<IPanel> => {
-	return store.state.panels.panels[store.state.panels.currentPanel];
+	return store.state.panels.panels[viewport.value.currentPanel];
 });
 const object = computed((): ISprite => {
 	const obj = currentPanel.value.objects[viewport.value.selection!];

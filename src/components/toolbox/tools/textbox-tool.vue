@@ -298,7 +298,7 @@ watch(
 const viewport = inject<Ref<Viewport>>('viewport')!;
 
 const currentPanel = computed(
-	() => store.state.panels.panels[store.state.panels.currentPanel]
+	() => store.state.panels.panels[viewport.value.currentPanel]
 );
 const object = computed((): ITextBox => {
 	const obj = currentPanel.value.objects[viewport.value.selection!];

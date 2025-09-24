@@ -103,13 +103,6 @@ const arrowMoveStepSize = 20;
 const preLoading = ref(true);
 const renderer = ref(null! as typeof PreviewRender);
 
-const objects = computed(() => {
-	const panels = store.state.panels;
-	const currentPanel = panels.panels[panels.currentPanel];
-	if (currentPanel == null) return [];
-	return [...currentPanel.order, ...currentPanel.onTopOrder];
-});
-
 function drawLastDownload(): void {
 	const last = store.state.ui.lastDownload;
 	if (last == null) return;
@@ -217,6 +210,14 @@ onUnmounted(() => {
 	unregisterGlobalEvents(doc);
 });
 //#endregion responsive layouting
+
+const objects = computed(() => {
+	const panels = store.state.panels;
+	const currentPanel = panels.panels[viewport.value.currentPanel];
+	if (currentPanel == null) return [];
+	return [...currentPanel.order, ...currentPanel.onTopOrder];
+});
+
 //#region drag-and-drop
 function cancleEvent(e: Event) {
 	e.preventDefault();
@@ -336,7 +337,7 @@ function onKeydown(e: KeyboardEvent) {
 			return;
 		}
 		const selectionPanel =
-			store.state.panels.panels[store.state.panels.currentPanel];
+			store.state.panels.panels[viewport.value.currentPanel];
 		const selection = selectionPanel.objects[viewport.value.selection!];
 		if (selection == null) return;
 		if (ctrl) {
@@ -522,6 +523,7 @@ onMounted(async () => {
 				await environment.loadContentPacks();
 
 				const panelId = await store.dispatch('panels/createPanel');
+				viewport.value.currentPanel = panelId;
 				if (
 					Object.keys(store.state.panels.panels[panelId].objects)
 						.length === 0
@@ -536,7 +538,7 @@ onMounted(async () => {
 				}
 				store.commit('panels/setCurrentBackground', {
 					current: 'dddg.buildin.backgrounds:ddlc.clubroom',
-					panelId: store.state.panels.currentPanel,
+					panelId: viewport.value.currentPanel,
 				} as ISetCurrentMutation);
 
 				store.commit('ui/setNsfw', settings.nsfw ?? false);

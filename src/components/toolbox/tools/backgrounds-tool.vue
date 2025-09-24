@@ -21,7 +21,7 @@
 			v-else-if="imageOptionsActive"
 			type="background"
 			title=""
-			:panel-id="store.state.panels.currentPanel"
+			:panel-id="viewport.currentPanel"
 			no-composition
 			@leave="imageOptionsActive = false"
 		/>
@@ -74,6 +74,7 @@
 <script lang="ts" setup>
 import DButton from '@/components/ui/d-button.vue';
 import environment, { type Folder } from '@/environments/environment';
+import { useViewport } from '@/hooks/use-viewport';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
@@ -107,19 +108,20 @@ const uploadedBackgroundsPackDefaults: ContentPack<string> = {
 
 const root = ref(null! as HTMLElement);
 setupPanelMixin(root);
+const viewport = useViewport();
 
 const colorPickerActive = ref(false);
 const imageOptionsActive = ref(false);
 const bgColor = computed({
 	get(): string {
-		return store.state.panels.panels[store.state.panels.currentPanel]
-			.background.color;
+		return store.state.panels.panels[viewport.value.currentPanel].background
+			.color;
 	},
 	set(color: string) {
 		transaction(() => {
 			store.commit('panels/setBackgroundColor', {
 				color,
-				panelId: store.state.panels.currentPanel,
+				panelId: viewport.value.currentPanel,
 			} as ISetColorMutation);
 		});
 	},
@@ -142,7 +144,7 @@ const showBackgroundsFolder = computed((): boolean => {
 function setBackground(id: Background<IAssetSwitch>['id']) {
 	store.commit('panels/setCurrentBackground', {
 		current: id,
-		panelId: store.state.panels.currentPanel,
+		panelId: viewport.value.currentPanel,
 	} as ISetCurrentMutation);
 }
 function openBackgroundFolder() {

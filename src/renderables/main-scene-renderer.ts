@@ -13,11 +13,11 @@ export function getMainSceneRenderer(
 	let sceneRenderer = lookup.get(viewport);
 	if (sceneRenderer == null || sceneRenderer.disposed) {
 		if (store == null) return null;
-		if (store.state.panels.currentPanel === -1) return null;
+		if (viewport.currentPanel === -1) return null;
 		const constants = getConstants().Base;
 		sceneRenderer = new SceneRenderer(
 			store,
-			store.state.panels.currentPanel,
+			viewport.currentPanel,
 			constants.screenWidth,
 			constants.screenHeight,
 			viewport

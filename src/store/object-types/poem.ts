@@ -44,7 +44,7 @@ export const poemActions: ActionTree<IPanels, IRootState> = {
 				y: constants.Poem.defaultY,
 				width: constants.Poem.defaultPoemWidth,
 				height: constants.Poem.defaultPoemHeight,
-				panelId: rootState.panels.currentPanel,
+				panelId: command.panelId,
 				flip: false,
 				rotation: 0,
 				id,
@@ -77,10 +77,10 @@ export const poemActions: ActionTree<IPanels, IRootState> = {
 	},
 	createConsole(
 		{ commit, rootState, state },
-		_command: ICreatePoemAction
+		command: ICreatePoemAction
 	): IObject['id'] {
 		const constants = getConstants();
-		const id = state.panels[_command.panelId].lastObjId + 1;
+		const id = state.panels[command.panelId].lastObjId + 1;
 		commit('create', {
 			object: {
 				...baseProps(),
@@ -89,7 +89,7 @@ export const poemActions: ActionTree<IPanels, IRootState> = {
 				y: constants.Poem.consoleHeight / 2,
 				width: constants.Poem.consoleWidth,
 				height: constants.Poem.consoleHeight,
-				panelId: rootState.panels.currentPanel,
+				panelId: command.panelId,
 				id,
 				onTop: true,
 				type: 'poem',

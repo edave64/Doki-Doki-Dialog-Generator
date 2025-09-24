@@ -1,3 +1,4 @@
+import { useViewportStore } from '@/newStore/viewport';
 import { arraySeeker } from '@/util/seekers';
 import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import type { Module } from 'vuex';
@@ -52,7 +53,6 @@ export interface IPanels {
 	lastPanelId: IPanel['id'];
 	panels: { [id: IPanel['id']]: IPanel };
 	panelOrder: IPanel['id'][];
-	currentPanel: IPanel['id'];
 }
 
 export const transparentId = 'buildin.transparent';
@@ -92,12 +92,8 @@ export default {
 		lastPanelId: -1,
 		panels: {},
 		panelOrder: [],
-		currentPanel: null!,
 	},
 	mutations: {
-		setCurrentPanel(state, { panelId }: ISetCurrentPanelMutation) {
-			state.currentPanel = panelId;
-		},
 		setPanelPreview(state, { panelId, url }: ISetPanelPreviewMutation) {
 			state.panels[panelId].lastRender = url;
 			previewManager.register(panelId, url);
@@ -182,9 +178,7 @@ export default {
 			commit('setPanelOrder', {
 				panelOrder: [...state.panelOrder, id],
 			} as ISetPanelOrder);
-			commit('setCurrentPanel', {
-				panelId: id,
-			} as ISetCurrentPanelMutation);
+			const viewportStore = useViewportStore();
 			return id;
 		},
 		duplicatePanel({ state, commit }, { panelId }: IDuplicatePanelAction) {
@@ -245,22 +239,19 @@ export default {
 					...state.panelOrder.slice(oldIdx + 1),
 				],
 			} as ISetPanelOrder);
-			commit('setCurrentPanel', {
-				panelId: id,
-			} as ISetCurrentPanelMutation);
 		},
 		seekBackgroundVariant(
 			{ state, rootGetters, commit },
-			{ delta }: ISeekVariantAction
+			{ delta, panelId }: ISeekVariantAction
 		) {
-			const panel = state.panels[state.currentPanel];
+			const panel = state.panels[panelId];
 			const backgrounds = rootGetters[
 				'content/getBackgrounds'
 			] as BackgroundLookup;
 			const background = backgrounds.get(panel.background.current);
 			if (!background) return;
 			commit('setBackgroundVariant', {
-				panelId: state.currentPanel,
+				panelId: panelId,
 				variant: arraySeeker(
 					background.variants,
 					panel.background.variant,
@@ -277,9 +268,12 @@ export default {
 			} else {
 				newOrderIdx = orderIdx + 1;
 			}
-			commit('setCurrentPanel', {
-				panelId: state.panelOrder[newOrderIdx],
-			} as ISetCurrentPanelMutation);
+			const viewportStore = useViewportStore();
+			for (const viewport of Object.values(viewportStore.viewports)) {
+				if (viewport.currentPanel === panelId) {
+					viewport.currentPanel = state.panelOrder[newOrderIdx];
+				}
+			}
 			commit('setPanelOrder', {
 				panelOrder: [
 					...state.panelOrder.slice(0, orderIdx),
@@ -405,10 +399,6 @@ export default {
 	},
 } as Module<IPanels, IRootState>;
 
-export interface ISetCurrentPanelMutation {
-	readonly panelId: IPanel['id'];
-}
-
 export interface IDeletePanelMutation {
 	readonly panelId: IPanel['id'];
 }
@@ -460,6 +450,7 @@ export interface ISetScalingMutation {
 }
 
 export interface ISeekVariantAction {
+	readonly panelId: IPanel['id'];
 	readonly delta: 1 | -1;
 }
 

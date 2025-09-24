@@ -42,7 +42,7 @@ setupPanelMixin(root);
 const viewport = inject<Ref<Viewport>>('viewport')!;
 
 const currentPanel = computed(() => {
-	return store.state.panels.panels[store.state.panels.currentPanel];
+	return store.state.panels.panels[viewport.value.currentPanel];
 });
 const object = computed((): INotification => {
 	const obj = currentPanel.value.objects[viewport.value.selection!];
