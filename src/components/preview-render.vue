@@ -50,7 +50,7 @@ import { isMouseEvent, isTouchEvent } from '@/util/cross-realm';
 import type { DeepReadonly } from 'ts-essentials';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import type { MutationPayload } from 'vuex';
-import * as Grabbies from './render-grabbies';
+import { Grabbies } from './render-grabbies';
 
 const props = withDefaults(
 	defineProps<{
@@ -68,6 +68,8 @@ const queuedRender = ref(null as null | number);
 const showingLast = ref(false);
 const dropPreventClick = ref(false);
 const viewport = useViewport();
+
+const grabbies = new Grabbies(viewport);
 
 const selection = useSelection();
 const currentPanel = computed(
@@ -154,7 +156,7 @@ function display(): void {
 
 	const obj = renderer?.getLastRenderObject(selection.value!);
 	if (obj) {
-		Grabbies.paint(
+		grabbies.paint(
 			sdCtx.value,
 			obj.preparedTransform.transformPoint(new DOMPoint(0, 0))
 		);
@@ -327,7 +329,7 @@ function dragStart(rx: number, ry: number) {
 
 	if (
 		selectionId != null &&
-		Grabbies.onDown(new DOMPointReadOnly(...toRendererCoordinate(rx, ry)))
+		grabbies.onDown(new DOMPointReadOnly(...toRendererCoordinate(rx, ry)))
 	)
 		return;
 
@@ -349,9 +351,8 @@ function onSpriteDragMove(e: MouseEvent | TouchEvent) {
 	const oY = isMouseEvent(e) ? e.clientY : e.touches[0].clientY;
 	let [x, y] = toRendererCoordinate(oX, oY, dragTransform);
 	if (
-		Grabbies.onMove(
+		grabbies.onMove(
 			store,
-			viewport.value,
 			new DOMPointReadOnly(...toRendererCoordinate(oX, oY)),
 			e.shiftKey
 		)
@@ -418,7 +419,7 @@ async function onDrop(e: DragEvent) {
 	}
 }
 function onSpriteDrop(e: MouseEvent | TouchEvent) {
-	if (Grabbies.onDrop()) {
+	if (grabbies.onDrop()) {
 		invalidateRender();
 		e.preventDefault();
 		draggedObject = null;
@@ -435,7 +436,7 @@ function onSpriteDrop(e: MouseEvent | TouchEvent) {
 function onMouseEnter(e: MouseEvent) {
 	if (e.buttons !== 1) {
 		draggedObject = null;
-		if (Grabbies.onDrop()) {
+		if (grabbies.onDrop()) {
 			invalidateRender();
 		}
 	}
