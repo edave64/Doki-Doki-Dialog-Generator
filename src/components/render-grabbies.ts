@@ -9,6 +9,7 @@ import rotate from '@/assets/rotate_left.svg';
 import rotateDark from '@/assets/rotate_left_dark.svg';
 import getConstants from '@/constants';
 import { SelectedState } from '@/constants/shared';
+import type { Viewport } from '@/newStore/viewport';
 import type { IAsset } from '@/render-utils/assets/asset';
 import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
 import { Renderable } from '@/renderables/renderable';
@@ -275,14 +276,19 @@ export function onDown(pos: DOMPointReadOnly) {
 	return false;
 }
 
-export function onMove(store: RStore, pos: DOMPointReadOnly, shift: boolean) {
+export function onMove(
+	store: RStore,
+	viewport: Viewport,
+	pos: DOMPointReadOnly,
+	shift: boolean
+) {
 	if (!dragData) return false;
 	const panels = store.state.panels;
 	const currentPanel = panels.panels[panels.currentPanel];
-	const obj = currentPanel.objects[store.state.ui.selection!];
+	const obj = currentPanel.objects[viewport.selection!];
 	if (!dragData.started) {
 		dragData.started = true;
-		const sceneRenderer = getMainSceneRenderer(store);
+		const sceneRenderer = getMainSceneRenderer(store, viewport);
 		const renderObj = sceneRenderer!.getLastRenderObject(obj.id)!;
 		const linkedTransform =
 			sceneRenderer?.getLastRenderObject(obj.linkedTo!)

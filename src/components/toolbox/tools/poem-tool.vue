@@ -75,6 +75,7 @@ import {
 	poemBackgrounds,
 	poemTextStyles,
 } from '@/constants/game_modes/ddlc/poem';
+import type { Viewport } from '@/newStore/viewport';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type {
@@ -84,7 +85,7 @@ import type {
 } from '@/store/object-types/poem';
 import { genericSetterSplit } from '@/util/simple-settable';
 import { UnreachableCaseError } from 'ts-essentials';
-import { computed, ref, watch } from 'vue';
+import { computed, inject, ref, watch, type Ref } from 'vue';
 import ObjectTool, { type Handler } from './object-tool.vue';
 
 const store = useStore();
@@ -102,11 +103,13 @@ watch(
 	}
 );
 
+const viewport = inject<Ref<Viewport>>('viewport')!;
+
 const currentPanel = computed(
 	() => store.state.panels.panels[store.state.panels.currentPanel]
 );
 const object = computed((): IPoem => {
-	const obj = currentPanel.value.objects[store.state.ui.selection!];
+	const obj = currentPanel.value.objects[viewport.value.selection!];
 	if (obj.type !== 'poem') return undefined!;
 	return obj as IPoem;
 });

@@ -22,17 +22,20 @@
 import { getAAssetUrl } from '@/asset-manager';
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import ObjectTool from '@/components/toolbox/tools/object-tool.vue';
+import type { Viewport } from '@/newStore/viewport';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { ISprite } from '@/store/object-types/sprite';
 import type { IPanel } from '@/store/panels';
 import type { DeepReadonly } from 'ts-essentials';
-import { computed, ref } from 'vue';
+import { computed, inject, ref, type Ref } from 'vue';
 
 const store = useStore();
 const root = ref(null! as HTMLElement);
 const missingSpriteUpload = ref(null! as HTMLInputElement);
 setupPanelMixin(root);
+
+const viewport = inject<Ref<Viewport>>('viewport')!;
 
 const missing = computed((): string | null => {
 	for (const asset of object.value.assets) {
@@ -46,7 +49,7 @@ const currentPanel = computed((): DeepReadonly<IPanel> => {
 	return store.state.panels.panels[store.state.panels.currentPanel];
 });
 const object = computed((): ISprite => {
-	const obj = currentPanel.value.objects[store.state.ui.selection!];
+	const obj = currentPanel.value.objects[viewport.value.selection!];
 	if (obj.type !== 'sprite') return undefined!;
 	return obj as ISprite;
 });

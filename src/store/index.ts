@@ -87,7 +87,6 @@ export default createStore({
 			>;
 			data.ui = {
 				...getDefaultUiState(),
-				vertical: state.ui.vertical,
 				lqRendering: state.ui.lqRendering,
 				nsfw:
 					contentData.find(

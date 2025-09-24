@@ -1,5 +1,5 @@
 <template>
-	<div id="app">
+	<div id="app" ref="app">
 		<div class="hidden-selectors">
 			<div
 				v-for="obj in objects"
@@ -14,8 +14,8 @@
 		</div>
 		<preview-render
 			ref="renderer"
-			:canvasWidth="canvasWidth"
-			:canvasHeight="canvasHeight"
+			:canvasWidth="viewport.canvasWidth"
+			:canvasHeight="viewport.canvasHeight"
 			:preLoading="preLoading"
 		/>
 		<message-console />
@@ -79,13 +79,16 @@ import {
 	nextTick,
 	onMounted,
 	onUnmounted,
+	provide,
 	ref,
+	useTemplateRef,
 	watch,
 } from 'vue';
 import { Repo } from './models/repo';
 import { type IRemovePacksAction, useStore } from './store';
 
 const store = useStore();
+const app = useTemplateRef('app');
 
 const SingleBox = defineAsyncComponent(
 	() => import('@/components/repo/layouts/single-box.vue')
@@ -113,86 +116,130 @@ function drawLastDownload(): void {
 	renderer.value.blendOver(last);
 }
 
+//#region Multi viewport
+const viewport = ref(setUpViewport(document));
+
+provide('viewport', viewport);
+
+watch(
+	() => app.value?.ownerDocument,
+	(owner, old) => {
+		if (owner != null) {
+			if (owner !== document) {
+				viewport.value = setUpViewport(owner);
+			}
+			if (old != null) {
+				unregisterGlobalEvents(old);
+			}
+			registerGlobalEvents(owner);
+		}
+	},
+	{ immediate: true }
+);
+
+const capturingSymbol = Symbol('capturing');
+const docListeners = new Map<string, Array<(e: Event) => void>>();
+function onDocEvent<K extends keyof DocumentEventMap>(
+	type: K,
+	callback: (e: DocumentEventMap[K]) => void,
+	capturing = false
+) {
+	if (capturing) {
+		const oldCallback = callback;
+		callback = (e: DocumentEventMap[K]) => oldCallback(e);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		(callback as any)[capturingSymbol] = true;
+	}
+	const listeners = docListeners.get(type);
+	if (listeners == null) {
+		docListeners.set(type, [callback as (e: Event) => void]);
+	} else {
+		listeners.push(callback as (e: Event) => void);
+	}
+	const appV = app.value;
+	if (appV != null) {
+		appV.ownerDocument.addEventListener(type, callback, capturing);
+	}
+}
+
+const winListeners = new Map<string, Array<(e: Event) => void>>();
+function onWinEvent<K extends keyof WindowEventMap>(
+	type: K,
+	callback: (e: WindowEventMap[K]) => void,
+	capturing = false
+) {
+	if (capturing) {
+		const oldCallback = callback;
+		callback = (e: WindowEventMap[K]) => oldCallback(e);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		(callback as any)[capturingSymbol] = true;
+	}
+	const listeners = winListeners.get(type);
+	if (listeners == null) {
+		winListeners.set(type, [callback as (e: Event) => void]);
+	} else {
+		listeners.push(callback as (e: Event) => void);
+	}
+	const appV = app.value;
+	if (appV != null) {
+		appV.ownerDocument.defaultView!.addEventListener(type, callback);
+	}
+}
+
+function registerGlobalEvents(doc: Document) {
+	for (const [type, callbacks] of docListeners) {
+		for (const callback of callbacks) {
+			doc.addEventListener(type, callback);
+		}
+	}
+	for (const [type, callbacks] of winListeners) {
+		for (const callback of callbacks) {
+			doc.defaultView?.addEventListener(type, callback);
+		}
+	}
+}
+
+function unregisterGlobalEvents(doc: Document) {
+	for (const [type, callbacks] of docListeners) {
+		for (const callback of callbacks) {
+			doc.removeEventListener(type, callback);
+		}
+	}
+	for (const [type, callbacks] of winListeners) {
+		for (const callback of callbacks) {
+			doc.defaultView?.removeEventListener(type, callback);
+		}
+	}
+}
+
+onUnmounted(() => {
+	const doc = viewport.value.doc;
+	unregisterGlobalEvents(doc);
+});
+//#endregion responsive layouting
 //#region drag-and-drop
 function cancleEvent(e: Event) {
 	e.preventDefault();
 }
-onMounted(() => {
-	document.body.addEventListener('drop', cancleEvent, true);
-	document.body.addEventListener('dragover', cancleEvent, true);
-});
-onUnmounted(() => {
-	document.body.removeEventListener('drop', cancleEvent, true);
-	document.body.removeEventListener('dragover', cancleEvent, true);
-});
+
+onDocEvent('drop', cancleEvent, true);
+onDocEvent('dragover', cancleEvent, true);
 //#endregion drag-and-drop
-//#region responsive layouting
-const aspectRatio = 16 / 9;
-const canvasWidth = ref(0);
-const canvasHeight = ref(0);
-const uiSize = ref(192);
-
-function optimum(sw: number, sh: number): [number, number] {
-	let rh = sw / aspectRatio;
-	let rw = sh * aspectRatio;
-
-	if (rh > sh) {
-		rh = sh;
-	} else {
-		rw = sw;
-	}
-
-	return [rw, rh];
-}
-
-function optimizeWithMenu(sw: number, sh: number): [number, number, boolean] {
-	const opth = optimum(sw, sh - uiSize.value);
-	const optv = optimum(sw - uiSize.value, sh);
-
-	if (opth[0] * opth[1] > optv[0] * optv[1]) {
-		return [opth[0], opth[1], false];
-	} else {
-		return [optv[0], optv[1], true];
-	}
-}
-
-function updateArea(): void {
-	const [cw, ch, v] = optimizeWithMenu(
-		document.documentElement.clientWidth,
-		document.documentElement.clientHeight
-	);
-
-	canvasWidth.value = cw;
-	canvasHeight.value = ch;
-
-	if (store.state.ui.vertical === v) return;
-	store.commit('ui/setVertical', v);
-}
-
-updateArea();
-onMounted(() => {
-	window.addEventListener('resize', updateArea);
-});
-onUnmounted(() => {
-	window.removeEventListener('resize', updateArea);
-});
-//#endregion responsive layouting
 //#region dark mode
 const systemPrefersDarkMode = ref(false);
 const userPrefersDarkMode = computed(() => store.state.ui.useDarkTheme);
-const useDarkTheme = computed(
-	() => userPrefersDarkMode.value ?? systemPrefersDarkMode.value
-);
 
 watch(
-	() => useDarkTheme.value,
+	() => userPrefersDarkMode.value ?? systemPrefersDarkMode.value,
 	(value) => {
-		document.body.classList.toggle('dark-theme', value);
+		viewport.value.doc.body.classList.toggle('dark-theme', value);
 	},
 	{ immediate: true }
 );
 
 if (window.matchMedia != null) {
+	// TODO: Setting doesn't depend on viewport. Move to main
+
 	/* The viewport is less than, or equal to, 700 pixels wide */
 	const matcher = window.matchMedia('(prefers-color-scheme: dark)');
 	systemPrefersDarkMode.value = matcher.matches;
@@ -237,6 +284,8 @@ function showDialog(search: string | undefined) {
 //#endregion pack dialog
 //#region nsfw
 import { NsfwNames, NsfwPaths } from './constants/nsfw';
+import { setUpViewport } from './newStore/viewport';
+import { isInput, isTextArea } from './util/cross-realm';
 
 const nsfw = computed(() => store.state.ui.nsfw);
 watch(
@@ -265,10 +314,7 @@ function rerender() {
 //#endregion rerender
 //#region keyboard actions
 function onKeydown(e: KeyboardEvent) {
-	if (
-		e.target instanceof HTMLInputElement ||
-		e.target instanceof HTMLTextAreaElement
-	) {
+	if (isInput(e.target) || isTextArea(e.target)) {
 		console.log('skip keydown on potential target');
 		return;
 	}
@@ -285,13 +331,13 @@ function onKeydown(e: KeyboardEvent) {
 			return;
 		}
 		if (noMod && e.key === 'Escape') {
-			if (store.state.ui.selection === null) return;
-			store.commit('ui/setSelection', null);
+			if (viewport.value.selection === null) return;
+			viewport.value.selection = null;
 			return;
 		}
 		const selectionPanel =
 			store.state.panels.panels[store.state.panels.currentPanel];
-		const selection = selectionPanel.objects[store.state.ui.selection!];
+		const selection = selectionPanel.objects[viewport.value.selection!];
 		if (selection == null) return;
 		if (ctrl) {
 			if (e.key === 'c' || e.key === 'x') {
@@ -381,12 +427,7 @@ function onKeydown(e: KeyboardEvent) {
 		}
 	});
 }
-onMounted(() => {
-	window.addEventListener('keydown', onKeydown);
-});
-onUnmounted(() => {
-	window.removeEventListener('keydown', onKeydown);
-});
+onWinEvent('keydown', onKeydown);
 //#endregion keyboard actions
 //#region shortcuts
 let ctrlTimeout: number | null = null;
@@ -412,29 +453,21 @@ function removeCtrlLables() {
 	document.body.classList.remove('ctrl-key');
 	ctrlShown = false;
 }
-onMounted(() => {
-	for (const eventType of ['keydown', 'keyup', 'mousemove'] as const) {
-		window.addEventListener(eventType, testShortcutKey, true);
-	}
-	window.addEventListener('blur', removeCtrlLables);
-});
-onUnmounted(() => {
-	for (const eventType of ['keydown', 'keyup', 'mousemove'] as const) {
-		window.removeEventListener(eventType, testShortcutKey, true);
-	}
-	window.removeEventListener('blur', removeCtrlLables);
-});
+onWinEvent('keydown', testShortcutKey, true);
+onWinEvent('keyup', testShortcutKey, true);
+onWinEvent('mousemove', testShortcutKey, true);
+onWinEvent('blur', removeCtrlLables);
 //#endregion shortcuts
 //#region selection
 function select(id: IObject['id']): void {
 	transaction(() => {
-		if (store.state.ui.selection === id) return;
-		store.commit('ui/setSelection', id);
+		if (viewport.value.selection === id) return;
+		viewport.value.selection = id;
 	});
 }
 
 watch(
-	() => store.state.ui.selection,
+	() => viewport.value.selection,
 	(id) => {
 		if (document.activeElement?.getAttribute('data-obj-id') !== '' + id) {
 			(
@@ -460,53 +493,56 @@ onMounted(async () => {
 	preLoading.value = false;
 	const settings = await environment.loadSettings();
 
-	await transaction(async () => {
-		environment.state.looseTextParsing = settings.looseTextParsing || true;
-		store.commit('ui/setLqRendering', settings.lq ?? false);
-		store.commit('ui/setDarkTheme', settings.darkMode ?? null);
-		store.commit(
-			'ui/setDefaultCharacterTalkingZoom',
-			settings.defaultCharacterTalkingZoom ?? true
-		);
+	if (store.state.panels.lastPanelId === -1) {
+		await transaction(async () => {
+			environment.state.looseTextParsing =
+				settings.looseTextParsing || true;
+			store.commit('ui/setLqRendering', settings.lq ?? false);
+			store.commit('ui/setDarkTheme', settings.darkMode ?? null);
+			store.commit(
+				'ui/setDefaultCharacterTalkingZoom',
+				settings.defaultCharacterTalkingZoom ?? true
+			);
 
-		await store.dispatch('content/loadContentPacks', [
-			`${packsUrl}buildin.base.backgrounds.json`,
-			`${packsUrl}buildin.base.monika.json`,
-			`${packsUrl}buildin.base.sayori.json`,
-			`${packsUrl}buildin.base.natsuki.json`,
-			`${packsUrl}buildin.base.yuri.json`,
-			`${packsUrl}buildin.extra.mc.json`,
-			`${packsUrl}buildin.extra.concept_mc_v2.json`,
-			`${packsUrl}buildin.extra.mc_chad.json`,
-			`${packsUrl}buildin.extra.femc.json`,
-			`${packsUrl}buildin.extra.concept_femc.json`,
-			`${packsUrl}buildin.extra.amy.json`,
-		]);
+			await store.dispatch('content/loadContentPacks', [
+				`${packsUrl}buildin.base.backgrounds.json`,
+				`${packsUrl}buildin.base.monika.json`,
+				`${packsUrl}buildin.base.sayori.json`,
+				`${packsUrl}buildin.base.natsuki.json`,
+				`${packsUrl}buildin.base.yuri.json`,
+				`${packsUrl}buildin.extra.mc.json`,
+				`${packsUrl}buildin.extra.concept_mc_v2.json`,
+				`${packsUrl}buildin.extra.mc_chad.json`,
+				`${packsUrl}buildin.extra.femc.json`,
+				`${packsUrl}buildin.extra.concept_femc.json`,
+				`${packsUrl}buildin.extra.amy.json`,
+			]);
 
-		if (!(await environment.loadDefaultTemplate())) {
-			await environment.loadContentPacks();
+			if (!(await environment.loadDefaultTemplate())) {
+				await environment.loadContentPacks();
 
-			const panelId = await store.dispatch('panels/createPanel');
-			if (
-				Object.keys(store.state.panels.panels[panelId].objects)
-					.length === 0
-			) {
-				await store.dispatch('panels/createTextBox', {
-					panelId,
-					text:
-						'Hi! Click here to edit this textbox! ' +
-						`${store.state.ui.vertical ? 'To the right' : 'At the bottom'}` +
-						' you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more! Use the camera icon to download the image.',
-				} as ICreateTextBoxAction);
+				const panelId = await store.dispatch('panels/createPanel');
+				if (
+					Object.keys(store.state.panels.panels[panelId].objects)
+						.length === 0
+				) {
+					await store.dispatch('panels/createTextBox', {
+						panelId,
+						text:
+							'Hi! Click here to edit this textbox! ' +
+							`${viewport.value.isVertical ? 'To the right' : 'At the bottom'}` +
+							' you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more! Use the camera icon to download the image.',
+					} as ICreateTextBoxAction);
+				}
+				store.commit('panels/setCurrentBackground', {
+					current: 'dddg.buildin.backgrounds:ddlc.clubroom',
+					panelId: store.state.panels.currentPanel,
+				} as ISetCurrentMutation);
+
+				store.commit('ui/setNsfw', settings.nsfw ?? false);
 			}
-			store.commit('panels/setCurrentBackground', {
-				current: 'dddg.buildin.backgrounds:ddlc.clubroom',
-				panelId: store.state.panels.currentPanel,
-			} as ISetCurrentMutation);
-
-			store.commit('ui/setNsfw', settings.nsfw ?? false);
-		}
-	});
+		});
+	}
 });
 //#endregion Initialize
 

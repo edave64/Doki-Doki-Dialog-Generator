@@ -105,6 +105,7 @@ import { getAAssetUrl } from '@/asset-manager';
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
+import type { Viewport } from '@/newStore/viewport';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import {
@@ -117,7 +118,7 @@ import {
 	type ISeekStyleAction,
 } from '@/store/object-types/characters';
 import { genericSetterMerged } from '@/util/simple-settable';
-import { computed, ref, watch } from 'vue';
+import { computed, inject, ref, watch, type Ref } from 'vue';
 import PartSelection from './character/part-selection.vue';
 import ObjectTool from './object-tool.vue';
 
@@ -141,7 +142,10 @@ const panelForParts = ref(null as string | null);
 const currentPanel = computed(
 	() => store.state.panels.panels[store.state.panels.currentPanel]
 );
-const selection = computed(() => store.state.ui.selection!);
+
+const viewport = inject<Ref<Viewport>>('viewport')!;
+
+const selection = computed(() => viewport.value.selection!);
 const object = computed(() => {
 	const obj = currentPanel.value.objects[selection.value];
 	if (obj.type !== 'character') return undefined!;

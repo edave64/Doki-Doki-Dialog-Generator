@@ -4,11 +4,13 @@
 -->
 <script lang="ts">
 import { VerticalScrollRedirect } from '@/components/mixins/vertical-scroll-redirect';
+import type { Viewport } from '@/newStore/viewport';
 import { defineComponent, h, type Prop, type PropType, type VNode } from 'vue';
 
 // This function still uses the old syntax because I don't know how to use a render function in the new syntax.
 export default defineComponent({
 	mixins: [VerticalScrollRedirect],
+	inject: ['viewport'],
 	props: {
 		/**
 		 * Indicates whether or not line-breaks are allowed. Otherwise all elements automatically get the maximum
@@ -33,12 +35,12 @@ export default defineComponent({
 	computed: {
 		finalDirection(): 'horizontal' | 'vertical' {
 			if (this.direction === 'global') {
-				return this.$store.state.ui.vertical
+				return (this.viewport as Viewport).isVertical
 					? 'vertical'
 					: 'horizontal';
 			}
 			if (this.direction === 'inverted') {
-				return this.$store.state.ui.vertical
+				return (this.viewport as Viewport).isVertical
 					? 'horizontal'
 					: 'vertical';
 			}

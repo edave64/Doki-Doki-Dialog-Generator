@@ -142,9 +142,9 @@
 
 <script lang="ts" setup>
 import getConstants from '@/constants';
+import { useVertical } from '@/hooks/use-viewport';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
-import { useStore } from '@/store';
-import { computed, nextTick, ref, watch } from 'vue';
+import { nextTick, ref, watch } from 'vue';
 import ColorPicker from '../color/color-picker.vue';
 
 defineOptions({
@@ -158,7 +158,6 @@ const emit = defineEmits<{
 	leave: [];
 }>();
 
-const store = useStore();
 const textArea = ref(null! as HTMLTextAreaElement);
 const colorSelector = ref('' as '' | 'text' | 'outline');
 const selectedFont = ref('');
@@ -168,7 +167,7 @@ const rememberedStart = ref(0);
 const rememberedEnd = ref(0);
 const error = ref('');
 
-const vertical = computed(() => store.state.ui.vertical);
+const vertical = useVertical();
 
 watch(
 	() => vertical.value,

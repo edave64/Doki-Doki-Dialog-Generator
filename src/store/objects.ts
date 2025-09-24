@@ -1,4 +1,6 @@
+import { useViewportStore } from '@/newStore/viewport';
 import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
+import type { Renderable } from '@/renderables/renderable';
 import type { CompositeModes } from '@/renderer/renderer-context';
 import { decomposeMatrix } from '@/util/math';
 import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
@@ -236,17 +238,32 @@ export const actions: ActionTree<IPanels, IRootState> = {
 	removeObject({ state, commit, rootState }, command: IRemoveObjectAction) {
 		const panel = state.panels[command.panelId];
 		const obj = panel.objects[command.id];
-		if (rootState.ui.selection === command.id) {
-			commit('ui/setSelection', null, { root: true });
+		const viewportStore = useViewportStore();
+
+		for (const viewport of Object.values(viewportStore.viewports)) {
+			if (viewport.selection === command.id) {
+				viewport.selection = null;
+			}
 		}
 		for (const key of [...panel.onTopOrder, ...panel.order]) {
 			if (obj.id === key) continue;
 			const otherObject = panel.objects[key] as ITextBox;
 			if (otherObject.linkedTo === obj.id) {
-				// Begging that no linked objects will get removed before the render.vue initializes the main renderer.
-				const currentSceneRenderer = getMainSceneRenderer(null!);
-				const otherObjRender =
-					currentSceneRenderer?.getLastRenderObject(otherObject.id);
+				// TODO: This sucks. The store should not depend on the renderers. Yes, often the edited object will be
+				// currently visible. But at least once I add undo, this will be a problem.
+				// Also this demands that nothing ever is removed before the preview renderer sets up the scene
+				// renderer.
+				// Also also, iterating over all viewports twice, but at least it's not super common :/
+				// Maybe during the pinia migration the matricies can be computed by the store? Obviously, it needs it.
+				let otherObjRender: Renderable<IObject> | null = null;
+				for (const viewport of Object.values(viewportStore.viewports)) {
+					otherObjRender =
+						getMainSceneRenderer(
+							null!,
+							viewport
+						)?.getLastRenderObject(otherObject.id) ?? null;
+					if (otherObjRender) break;
+				}
 				if (otherObjRender) {
 					commit('setLink', {
 						panelId: command.panelId,

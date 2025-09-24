@@ -60,6 +60,7 @@
 <script lang="ts" setup>
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
+import { useVertical } from '@/hooks/use-viewport';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { IAssetSwitch } from '@/store/content';
@@ -79,7 +80,8 @@ const emit = defineEmits<{
 }>();
 
 const store = useStore();
-const vertical = computed(() => store.state.ui.vertical);
+
+const vertical = useVertical();
 const background = computed(() => {
 	const currentPanel = store.state.panels.currentPanel;
 	return store.state.panels.panels[currentPanel].background;

@@ -92,8 +92,10 @@
 
 <script lang="ts" setup>
 import environment from '@/environments/environment';
+import { useSelection, useVertical, useViewport } from '@/hooks/use-viewport';
 import { useStore } from '@/store';
 import { type ObjectTypes } from '@/store/objects';
+import { isHTMLElement } from '@/util/cross-realm';
 import { computed, ref, watch } from 'vue';
 import DButton from '../ui/d-button.vue';
 import AddTool from './tools/add-tool.vue';
@@ -134,8 +136,9 @@ const panelSelection = ref('add' as PanelNames);
 const currentPanel = computed(() => {
 	return store.state.panels.panels[store.state.panels.currentPanel];
 });
-const vertical = computed(() => store.state.ui.vertical);
-const selection = computed(() => store.state.ui.selection);
+const viewport = useViewport();
+const vertical = useVertical();
+const selection = useSelection();
 const panel = computed((): PanelNames | ObjectTypes => {
 	if (panelSelection.value === 'selection') {
 		if (selection.value === null) {
@@ -152,11 +155,11 @@ function setPanel(name: PanelNames) {
 	if (name === panelSelection.value) name = 'add';
 	panelSelection.value = name;
 	if (selection.value !== null) {
-		store.commit('ui/setSelection', null);
+		viewport.value.selection = null;
 	}
 }
 function resetScroll() {
-	if (panels.value instanceof HTMLElement) {
+	if (isHTMLElement(panels.value)) {
 		panels.value.scrollTop = 0;
 		panels.value.scrollLeft = 0;
 	}
@@ -165,6 +168,7 @@ function resetScroll() {
 watch(
 	() => selection.value,
 	(newSelection) => {
+		console.log('selection changed', newSelection);
 		if (newSelection != null) {
 			panelSelection.value = 'selection';
 			return;

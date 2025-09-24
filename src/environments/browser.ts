@@ -192,6 +192,13 @@ export class Browser implements IEnvironment {
 		this.$store = store;
 	}
 
+	openNewWindow(): Window | null {
+		const win = window.open(undefined, '_blank', 'left=100,top=100');
+		if (!win) return null;
+		if (win.closed) return null;
+		return win;
+	}
+
 	public async saveToFile(
 		downloadCanvas: HTMLCanvasElement,
 		filename: string,

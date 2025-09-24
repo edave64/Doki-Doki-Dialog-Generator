@@ -38,6 +38,7 @@ import eventBus, {
 	RenderUpdatedEvent,
 	StateLoadingEvent,
 } from '@/eventbus/event-bus';
+import { useSelection, useViewport } from '@/hooks/use-viewport';
 import { transaction } from '@/plugins/vuex-history';
 import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
 import { RenderContext } from '@/renderer/renderer-context';
@@ -45,6 +46,7 @@ import { useStore } from '@/store';
 import type { ICreateSpriteAction } from '@/store/object-types/sprite';
 import type { IObject, ISetObjectPositionMutation } from '@/store/objects';
 import { disposeCanvas } from '@/util/canvas';
+import { isMouseEvent, isTouchEvent } from '@/util/cross-realm';
 import type { DeepReadonly } from 'ts-essentials';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import type { MutationPayload } from 'vuex';
@@ -66,14 +68,14 @@ const queuedRender = ref(null as null | number);
 const showingLast = ref(false);
 const dropPreventClick = ref(false);
 
-const selection = computed(() => store.state.ui.selection ?? null);
+const selection = useSelection();
 const currentPanel = computed(
 	() => store.state.panels.panels[store.state.panels.currentPanel]
 );
 const lqRendering = computed(() => store.state.ui.lqRendering);
 function getSceneRender() {
 	if (props.preLoading) return null!;
-	const renderer = getMainSceneRenderer(store);
+	const renderer = getMainSceneRenderer(store, viewport.value);
 	renderer?.setPanelId(store.state.panels.currentPanel);
 	return renderer;
 }
@@ -202,8 +204,8 @@ function onUiClick(e: MouseEvent): void {
 	}
 
 	transaction(() => {
-		if (store.state.ui.selection === selectedObject) return;
-		store.commit('ui/setSelection', selectedObject);
+		if (viewport.value.selection === selectedObject) return;
+		viewport.value.selection = selectedObject;
 	});
 }
 
@@ -224,6 +226,13 @@ store.subscribe((mut: MutationPayload) => {
 	if (mut.type === 'panels/currentPanel') return;
 	invalidateRender();
 });
+
+watch(
+	() => selection.value,
+	() => {
+		invalidateRender();
+	}
+);
 
 onMounted(() => {
 	sdCtx.value = sd.value.getContext('2d')!;
@@ -254,7 +263,8 @@ async function blendOver(url: string) {
 //#endregion Blend over
 //#endregion picker
 //#region picker
-const pickerMode = computed(() => store.state.ui.pickColor);
+const viewport = useViewport();
+const pickerMode = computed(() => viewport.value.pickColor);
 const cursor = computed((): 'default' | 'crosshair' =>
 	pickerMode.value ? 'crosshair' : 'default'
 );
@@ -310,7 +320,7 @@ function dragStart(rx: number, ry: number) {
 
 	draggedObject = currentPanel.value.objects[selectionId];
 	dragTransform =
-		getMainSceneRenderer(store)!
+		getMainSceneRenderer(store, viewport.value)!
 			.getLastRenderObject(draggedObject.linkedTo!)
 			?.preparedTransform?.inverse() ?? new DOMMatrixReadOnly();
 	const [x, y] = toRendererCoordinate(rx, ry, dragTransform);
@@ -335,12 +345,13 @@ function onDragOver(e: DragEvent) {
 function onSpriteDragMove(e: MouseEvent | TouchEvent) {
 	if (!draggedObject) return;
 	e.preventDefault();
-	const oX = e instanceof MouseEvent ? e.clientX : e.touches[0].clientX;
-	const oY = e instanceof MouseEvent ? e.clientY : e.touches[0].clientY;
+	const oX = isMouseEvent(e) ? e.clientX : e.touches[0].clientX;
+	const oY = isMouseEvent(e) ? e.clientY : e.touches[0].clientY;
 	let [x, y] = toRendererCoordinate(oX, oY, dragTransform);
 	if (
 		Grabbies.onMove(
 			store,
+			viewport.value,
 			new DOMPointReadOnly(...toRendererCoordinate(oX, oY)),
 			e.shiftKey
 		)
@@ -415,7 +426,7 @@ function onSpriteDrop(e: MouseEvent | TouchEvent) {
 		return;
 	}
 	if (draggedObject) {
-		if ('TouchEvent' in window && e instanceof TouchEvent) {
+		if ('TouchEvent' in window && isTouchEvent(e)) {
 			dropPreventClick.value = false;
 		}
 		draggedObject = null;

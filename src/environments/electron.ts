@@ -362,6 +362,10 @@ export class Electron implements IEnvironment {
 		);
 	}
 
+	openNewWindow(): Window | null {
+		return window.open(undefined, '_blank', 'left=100,top=100');
+	}
+
 	public connectToStore(store: Store<DeepReadonly<IRootState>>) {
 		this.$store = store;
 		this.invalidateInstalledBGs();

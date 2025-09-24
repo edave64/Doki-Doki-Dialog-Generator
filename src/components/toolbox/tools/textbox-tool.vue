@@ -255,14 +255,15 @@ import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
 import getConstants from '@/constants';
+import { Viewport } from '@/newStore/viewport';
 import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import {
+	textboxProperty,
 	type IResetTextboxBounds,
 	type ISetTextBoxTalkingObjMutation,
 	type ISplitTextbox,
 	type ITextBox,
-	textboxProperty,
 	type TextBoxSimpleProperties,
 } from '@/store/object-types/textbox';
 import { type IObject } from '@/store/objects';
@@ -271,7 +272,7 @@ import {
 	genericSetterSplit,
 } from '@/util/simple-settable';
 import { UnreachableCaseError } from 'ts-essentials';
-import { computed, ref, watch } from 'vue';
+import { computed, inject, ref, watch, type Ref } from 'vue';
 import ObjectTool, { type Handler } from './object-tool.vue';
 
 const store = useStore();
@@ -294,11 +295,13 @@ watch(
 	}
 );
 
+const viewport = inject<Ref<Viewport>>('viewport')!;
+
 const currentPanel = computed(
 	() => store.state.panels.panels[store.state.panels.currentPanel]
 );
 const object = computed((): ITextBox => {
-	const obj = currentPanel.value.objects[store.state.ui.selection!];
+	const obj = currentPanel.value.objects[viewport.value.selection!];
 	if (obj.type !== 'textBox') return undefined!;
 	return obj as ITextBox;
 });
@@ -471,7 +474,11 @@ function resetPosition(): void {
 }
 function jumpToCharacter(): void {
 	transaction(() => {
-		store.commit('ui/setSelection', talkingObjId.value);
+		const talkingObj = talkingObjId.value;
+		viewport.value.selection =
+			talkingObj === '$other$' || talkingObj === '$null$'
+				? null
+				: talkingObj;
 	});
 }
 //#endregion Actions

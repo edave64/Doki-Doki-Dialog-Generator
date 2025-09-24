@@ -241,6 +241,7 @@ import DFieldset from '@/components/ui/d-fieldset.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
 import getConstants from '@/constants';
 import eventBus, { FailureEvent } from '@/eventbus/event-bus';
+import { useViewport } from '@/hooks/use-viewport';
 import { transaction } from '@/plugins/vuex-history';
 import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
 import { SceneRenderer } from '@/renderables/scene-renderer';
@@ -286,6 +287,7 @@ const setable = <K extends keyof IObject>(prop: K, message: string) =>
 		prop
 	);
 setupPanelMixin(root);
+const viewport = useViewport();
 
 const transformLink = computed({
 	get(): IObject['id'] | '' {
@@ -294,8 +296,10 @@ const transformLink = computed({
 	set(value: IObject['id'] | '') {
 		const obj = props.object;
 		const link = value === '' ? null : value;
-		const currentSceneRenderer: SceneRenderer =
-			getMainSceneRenderer(store)!;
+		const currentSceneRenderer: SceneRenderer = getMainSceneRenderer(
+			store,
+			viewport.value
+		)!;
 		const objRender = currentSceneRenderer?.getLastRenderObject(obj.id);
 		const linkRender =
 			link === null
