@@ -108,7 +108,9 @@
 			<template v-if="inPlusMode"> Enter Classic Mode </template>
 			<template v-else> Enter DDLC Plus Mode </template>
 		</button>
-		<button @click="spawnChildWindow">Spawn additional window</button>
+		<button class="bt0" @click="spawnChildWindow" style="height: auto">
+			Open additional window
+		</button>
 		<toggle-box
 			v-if="lqAllowed"
 			label="Low quality preview?"
