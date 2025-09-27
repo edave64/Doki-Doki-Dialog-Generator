@@ -1,18 +1,32 @@
-// import { reactive } from 'vue';
-
-export const transaction = transactionLayer();
+/**
+ * DDDG's transaction system. It coordinates multiple user actions to happen in order, ensures that, even with async
+ * code, no two user actions are processed at the same time.
+ *
+ * It's also used to combine multiple history records into one history group, so multiple changes can be bundled into
+ * one.
+ */
+export const transaction: TransactionLayer = transactionLayer();
 
 type TransactionCallback =
 	| (() => Promise<void>)
 	| (() => void)
 	| ((subtransaction: TransactionLayer) => Promise<void>);
-export type TransactionLayer = (callback: TransactionCallback) => Promise<void>;
+
+export type TransactionLayer = TransactionLayerMethods &
+	((callback: TransactionCallback) => Promise<void>);
+
+interface TransactionLayerMethods {
+	/**
+	 * Called when one transaction has been completed.
+	 */
+	onClear(callback: () => void): void;
+}
 
 export function transactionLayer(): TransactionLayer {
 	const transactionQueue: (() => Promise<void>)[] = [];
 	let transactionRunning = false;
 
-	return function transaction(callback: TransactionCallback) {
+	const ret = function transaction(callback: TransactionCallback) {
 		return new Promise((resolve) => {
 			const exec = async () => {
 				try {
@@ -41,5 +55,8 @@ export function transactionLayer(): TransactionLayer {
 				exec();
 			}
 		});
-	};
+	} as TransactionLayer;
+
+	ret.onClear = function () {};
+	return ret;
 }

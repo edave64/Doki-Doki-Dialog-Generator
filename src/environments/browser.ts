@@ -1,5 +1,5 @@
+import { transaction } from '@/history-engine/transaction';
 import { Repo } from '@/models/repo';
-import { transaction } from '@/plugins/vuex-history';
 import type { IRootState } from '@/store';
 import { reactive, ref, type DeepReadonly } from 'vue';
 import { Store } from 'vuex';

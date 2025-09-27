@@ -3,8 +3,8 @@ import eventBus, {
 	ResolvableErrorEvent,
 	ShowMessageEvent,
 } from '@/eventbus/event-bus';
+import { transaction } from '@/history-engine/transaction';
 import { Repo } from '@/models/repo';
-import { transaction } from '@/plugins/vuex-history';
 import type { IRootState } from '@/store';
 import type { ReplaceContentPackAction } from '@/store/content';
 import type { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';

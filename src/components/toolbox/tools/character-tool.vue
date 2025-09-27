@@ -105,8 +105,8 @@ import { getAAssetUrl } from '@/asset-manager';
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
+import { transaction } from '@/history-engine/transaction';
 import type { Viewport } from '@/newStore/viewport';
-import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import {
 	getData,

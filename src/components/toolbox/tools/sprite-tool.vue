@@ -22,8 +22,8 @@
 import { getAAssetUrl } from '@/asset-manager';
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import ObjectTool from '@/components/toolbox/tools/object-tool.vue';
+import { transaction } from '@/history-engine/transaction';
 import type { Viewport } from '@/newStore/viewport';
-import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { ISprite } from '@/store/object-types/sprite';
 import type { IPanel } from '@/store/panels';

@@ -57,7 +57,7 @@ import ToolBox from '@/components/toolbox/tool-box.vue';
 import { packsUrl } from '@/config';
 import environment from '@/environments/environment';
 import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
-import { transaction } from '@/plugins/vuex-history';
+import { transaction } from '@/history-engine/transaction';
 import type {
 	ICharacter,
 	IShiftCharacterSlotAction,

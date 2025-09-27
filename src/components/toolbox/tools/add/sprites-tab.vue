@@ -65,8 +65,11 @@ import { getAAssetUrl } from '@/asset-manager';
 import MissingImage from '@/assets/missing_image.svg';
 import DButton from '@/components/ui/d-button.vue';
 import environment, { type Folder } from '@/environments/environment';
+import {
+	transaction,
+	type TransactionLayer,
+} from '@/history-engine/transaction';
 import { useViewport } from '@/hooks/use-viewport';
-import { transaction, type TransactionLayer } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
 import type { ICreateSpriteAction } from '@/store/object-types/sprite';

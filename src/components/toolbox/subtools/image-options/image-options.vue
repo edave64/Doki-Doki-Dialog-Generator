@@ -271,7 +271,7 @@ import ColorSlider from '@/components/toolbox/subtools/color/color-slider.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import ExternalLink from '@/components/ui/external-link.vue';
-import { transaction } from '@/plugins/vuex-history';
+import { transaction } from '@/history-engine/transaction';
 import type { CompositeModes } from '@/renderer/renderer-context';
 import { useStore } from '@/store';
 import type { IObject, ISetCompositionMutation } from '@/store/objects';

@@ -255,8 +255,8 @@ import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
 import getConstants from '@/constants';
+import { transaction } from '@/history-engine/transaction';
 import { Viewport } from '@/newStore/viewport';
-import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import {
 	textboxProperty,

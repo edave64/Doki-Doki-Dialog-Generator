@@ -75,8 +75,8 @@ import {
 	poemBackgrounds,
 	poemTextStyles,
 } from '@/constants/game_modes/ddlc/poem';
+import { transaction } from '@/history-engine/transaction';
 import type { Viewport } from '@/newStore/viewport';
-import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type {
 	IPoem,

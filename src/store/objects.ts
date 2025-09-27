@@ -373,43 +373,6 @@ export const actions: ActionTree<IPanels, IRootState> = {
 			ratio,
 		} as ISetSpriteRatioMutation);
 	},
-	copyObjects(
-		{ commit, state },
-		{ sourcePanelId, targetPanelId }: ICopyObjectsAction
-	) {
-		const sourcePanel = state.panels[sourcePanelId];
-		const targetPanel = state.panels[targetPanelId];
-		const allSourceIds = [...sourcePanel.onTopOrder, ...sourcePanel.order];
-		const transationTable = new Map<IObject['id'], IObject['id']>();
-		let lastObjId = targetPanel.lastObjId;
-		for (const sourceId of allSourceIds) {
-			const targetId = ++lastObjId;
-			transationTable.set(sourceId, targetId);
-		}
-		for (const sourceId of allSourceIds) {
-			const oldObject = sourcePanel.objects[sourceId];
-			const newObject: IObject = JSON.parse(JSON.stringify(oldObject));
-			if ('talkingObjId' in newObject) {
-				const newTextbox = newObject as ITextBox;
-				if (
-					newTextbox.talkingObjId !== null &&
-					newTextbox.talkingObjId !== '$other$' &&
-					transationTable.has(newTextbox.talkingObjId)
-				) {
-					newTextbox.talkingObjId = transationTable.get(
-						newTextbox.talkingObjId
-					)!;
-				}
-			}
-			commit('create', {
-				object: {
-					...newObject,
-					id: transationTable.get(sourceId)!,
-					panelId: targetPanelId,
-				},
-			} as ICreateObjectMutation);
-		}
-	},
 	copyObjectToClipboard(
 		{ commit, state },
 		{ id, panelId }: ICopyObjectToClipboardAction
@@ -648,11 +611,6 @@ export interface ISetPositionAction extends IObjectMutation {
 
 export interface IObjectContentPackRemovalAction extends IObjectMutation {
 	readonly oldPack: ContentPack<IAssetSwitch>;
-}
-
-export interface ICopyObjectsAction {
-	readonly sourcePanelId: IPanel['id'];
-	readonly targetPanelId: IPanel['id'];
 }
 
 export interface ICopyObjectToClipboardAction {

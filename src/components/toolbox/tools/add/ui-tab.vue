@@ -7,8 +7,8 @@
 </template>
 
 <script lang="ts" setup>
+import { transaction } from '@/history-engine/transaction';
 import { useViewport } from '@/hooks/use-viewport';
-import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 
 const store = useStore();

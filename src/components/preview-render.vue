@@ -38,8 +38,8 @@ import eventBus, {
 	RenderUpdatedEvent,
 	StateLoadingEvent,
 } from '@/eventbus/event-bus';
+import { transaction } from '@/history-engine/transaction';
 import { useSelection, useViewport } from '@/hooks/use-viewport';
-import { transaction } from '@/plugins/vuex-history';
 import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
 import { RenderContext } from '@/renderer/renderer-context';
 import { useStore } from '@/store';

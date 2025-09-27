@@ -173,7 +173,7 @@ import ExternalLink from '@/components/ui/external-link.vue';
 import { Electron } from '@/environments/electron';
 import environment from '@/environments/environment';
 import eventBus, { FailureEvent } from '@/eventbus/event-bus';
-import { transaction } from '@/plugins/vuex-history';
+import { transaction } from '@/history-engine/transaction';
 import rootStore, { useStore } from '@/store';
 import { safeAsync } from '@/util/errors';
 import { computed, createApp, ref, watch } from 'vue';

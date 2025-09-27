@@ -216,7 +216,7 @@ import eventBus, {
 	ShowMessageEvent,
 	StateLoadingEvent,
 } from '@/eventbus/event-bus';
-import { transaction } from '@/plugins/vuex-history';
+import { transaction } from '@/history-engine/transaction';
 import { SceneRenderer } from '@/renderables/scene-renderer';
 import { useStore } from '@/store';
 import type { IObject } from '@/store/objects';

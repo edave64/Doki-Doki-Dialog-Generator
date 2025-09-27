@@ -56,8 +56,8 @@
 <script lang="ts" setup>
 import DFlow from '@/components/ui/d-flow.vue';
 import eventBus, { ColorPickedEvent } from '@/eventbus/event-bus';
+import { transaction } from '@/history-engine/transaction';
 import { useVertical } from '@/hooks/use-viewport';
-import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
 import { RGBAColor } from '@/util/colors/rgb';

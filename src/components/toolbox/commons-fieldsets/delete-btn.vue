@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts" setup>
-import { transaction } from '@/plugins/vuex-history';
+import { transaction } from '@/history-engine/transaction';
 import { useStore } from '@/store';
 import type { IObject, IRemoveObjectAction } from '@/store/objects';
 

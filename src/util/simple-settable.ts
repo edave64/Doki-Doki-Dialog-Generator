@@ -1,6 +1,6 @@
 /** Helper methods that allow you to create simple vue getters/setters of vuex properties */
 
-import { transaction } from '@/plugins/vuex-history';
+import { transaction } from '@/history-engine/transaction';
 import type { IRootState } from '@/store';
 import type { IObject } from '@/store/objects';
 import { computed, type Ref } from 'vue';

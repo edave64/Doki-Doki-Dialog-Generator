@@ -149,7 +149,7 @@ import ToggleBox from '@/components/ui/d-toggle.vue';
 import ExternalLink from '@/components/ui/external-link.vue';
 import { SelectedState } from '@/constants/shared';
 import environment from '@/environments/environment';
-import { transaction } from '@/plugins/vuex-history';
+import { transaction } from '@/history-engine/transaction';
 import { AssetListRenderable } from '@/renderables/asset-list-renderable';
 import { Character } from '@/renderables/character';
 import { Renderer } from '@/renderer/renderer';

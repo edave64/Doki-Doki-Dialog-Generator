@@ -60,8 +60,8 @@
 <script lang="ts" setup>
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
+import { transaction } from '@/history-engine/transaction';
 import { useVertical, useViewport } from '@/hooks/use-viewport';
-import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { IAssetSwitch } from '@/store/content';
 import type {

@@ -51,8 +51,8 @@
 <script lang="ts" setup>
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import DButton from '@/components/ui/d-button.vue';
+import { transaction } from '@/history-engine/transaction';
 import { useViewport } from '@/hooks/use-viewport';
-import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { IPasteFromClipboardAction } from '@/store/objects';
 import { computed, ref } from 'vue';

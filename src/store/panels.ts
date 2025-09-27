@@ -178,7 +178,6 @@ export default {
 			commit('setPanelOrder', {
 				panelOrder: [...state.panelOrder, id],
 			} as ISetPanelOrder);
-			const viewportStore = useViewportStore();
 			return id;
 		},
 		duplicatePanel({ state, commit }, { panelId }: IDuplicatePanelAction) {

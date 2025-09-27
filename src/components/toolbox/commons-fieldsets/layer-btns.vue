@@ -42,7 +42,7 @@ import DButton from '@/components/ui/d-button.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
-import { transaction } from '@/plugins/vuex-history';
+import { transaction } from '@/history-engine/transaction';
 import { useStore } from '@/store';
 import type { IObject, IObjectShiftLayerAction } from '@/store/objects';
 import { genericSetterMerged } from '@/util/simple-settable';

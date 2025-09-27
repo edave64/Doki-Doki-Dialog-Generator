@@ -129,7 +129,7 @@
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
 import getConstants from '@/constants';
-import { transaction } from '@/plugins/vuex-history';
+import { transaction } from '@/history-engine/transaction';
 import { rendererLookup } from '@/renderables/textbox';
 import { useStore } from '@/store';
 import {

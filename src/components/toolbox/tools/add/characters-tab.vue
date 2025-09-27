@@ -23,8 +23,8 @@
 <script lang="ts" setup>
 import DButton from '@/components/ui/d-button.vue';
 import environment from '@/environments/environment';
+import { transaction } from '@/history-engine/transaction';
 import { useViewport } from '@/hooks/use-viewport';
-import { transaction } from '@/plugins/vuex-history';
 import { useStore } from '@/store';
 import type { IAssetSwitch } from '@/store/content';
 import type { ICreateCharacterAction } from '@/store/object-types/characters';
