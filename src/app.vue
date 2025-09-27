@@ -324,10 +324,9 @@ function onKeydown(e: KeyboardEvent) {
 		const ctrl = e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey;
 		const noMod = !e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey;
 		if (ctrl && e.key === 'v') {
-			await store.dispatch(
-				'panels/pasteObjectFromClipboard',
-				{} as IPasteFromClipboardAction
-			);
+			await store.dispatch('panels/pasteObjectFromClipboard', {
+				panelId: viewport.value.currentPanel,
+			} as IPasteFromClipboardAction);
 			e.preventDefault();
 			return;
 		}
