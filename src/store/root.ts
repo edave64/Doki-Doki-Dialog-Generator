@@ -1,10 +1,8 @@
 import { clearHistory } from '@/history-engine/history';
 import { content } from './content';
 import { panels } from './panels';
-import type v2_4 from './saveFormat/v2-4';
-import type v2_5 from './saveFormat/v2-5';
 import { ui } from './ui';
-import { uploadUrls } from './uploadUrls';
+import { uploadUrls } from './upload-urls';
 import { viewports } from './viewports';
 
 export const state = Object.freeze({
@@ -13,6 +11,7 @@ export const state = Object.freeze({
 	content,
 	uploadUrls,
 	viewports,
+	unsafe: false,
 } as const);
 
 export type IRootState = typeof state;
@@ -23,15 +22,18 @@ export async function loadSave(str: string) {
 
 		if (data.version == null || data.version < 2.5) {
 			const a = await import('@/store/migrations/v2-5');
-			a.migrateSave2_5(data as v2_4);
+			a.migrateSave2_5(data);
 		}
 
-		const migratedData = data as v2_5;
+		const migratedData = data;
 
 		state.ui.loadSave(migratedData.ui);
+		/*
+		TODO: Implement save
 		state.panels.loadSave(migratedData.panels);
 		state.content.loadSave(migratedData.content);
 		state.uploadUrls.loadSave(migratedData.uploadUrls);
+		*/
 
 		/*
 
@@ -113,11 +115,14 @@ export async function getSave(compact: boolean) {
 			//       If there are no changes to the save format, do not increment.
 			//       If this version does change, provide a migration function for older saves.
 			version: 2.5,
+			/*
+			TODO: Implement save
 			ui: state.ui.getSave(compact),
 			panels: state.panels.getSave(compact),
 			content: state.content.getSave(compact),
 			uploadUrls: state.uploadUrls.getSave(compact),
-		} as v2_5.Save,
+			*/
+		},
 		undefined,
 		'\t'
 	);

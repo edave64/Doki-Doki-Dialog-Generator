@@ -7,11 +7,7 @@
 import { createPinia } from 'pinia';
 import { createApp } from 'vue';
 import App from './app.vue';
-import store from './store';
 
 const pinia = createPinia();
 
-createApp(App)
-	.use(store) /* .use(History) */
-	.use(pinia)
-	.mount('#main_wrapper');
+createApp(App).use(pinia).mount('#main_wrapper');

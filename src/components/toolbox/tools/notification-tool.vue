@@ -24,17 +24,13 @@
 <script lang="ts" setup>
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import ToggleBox from '@/components/ui/d-toggle.vue';
-import type { Viewport } from '@/newStore/viewport';
-import { useStore } from '@/store';
-import {
-	type INotification,
-	type NotificationSimpleProperties,
-} from '@/store/object-types/notification';
-import { genericSetterSplit } from '@/util/simple-settable';
+import type Notification from '@/store/object-types/notification';
+import { state } from '@/store/root';
+import type { Viewport } from '@/store/viewport';
+import { propWithTransaction } from '@/util/simple-settable';
 import { computed, inject, ref, type Ref } from 'vue';
 import ObjectTool, { type Handler } from './object-tool.vue';
 
-const store = useStore();
 const root = ref(null! as HTMLElement);
 
 setupPanelMixin(root);
@@ -42,23 +38,16 @@ setupPanelMixin(root);
 const viewport = inject<Ref<Viewport>>('viewport')!;
 
 const currentPanel = computed(() => {
-	return store.state.panels.panels[viewport.value.currentPanel];
+	return state.panels.panels[viewport.value.currentPanel];
 });
-const object = computed((): INotification => {
+const object = computed((): Notification => {
 	const obj = currentPanel.value.objects[viewport.value.selection!];
 	if (obj.type !== 'notification') return undefined!;
-	return obj as INotification;
+	return obj as Notification;
 });
-const setableN = <K extends NotificationSimpleProperties>(key: K) =>
-	genericSetterSplit(
-		store,
-		object,
-		'panels/setNotificationProperty',
-		false,
-		key
-	);
-const text = setableN('text');
-const renderBackdrop = setableN('backdrop');
+
+const text = propWithTransaction(object, 'text');
+const renderBackdrop = propWithTransaction(object, 'backdrop');
 
 const textEditor = ref(false);
 

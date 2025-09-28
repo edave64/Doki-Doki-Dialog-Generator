@@ -23,14 +23,12 @@ import { getAAssetUrl } from '@/asset-manager';
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import ObjectTool from '@/components/toolbox/tools/object-tool.vue';
 import { transaction } from '@/history-engine/transaction';
-import type { Viewport } from '@/newStore/viewport';
-import { useStore } from '@/store';
-import type { ISprite } from '@/store/object-types/sprite';
-import type { IPanel } from '@/store/panels';
-import type { DeepReadonly } from 'ts-essentials';
+import type Sprite from '@/store/object-types/sprite';
+import type { Panel } from '@/store/panels';
+import { state } from '@/store/root';
+import type { Viewport } from '@/store/viewport';
 import { computed, inject, ref, type Ref } from 'vue';
 
-const store = useStore();
 const root = ref(null! as HTMLElement);
 const missingSpriteUpload = ref(null! as HTMLInputElement);
 setupPanelMixin(root);
@@ -45,13 +43,13 @@ const missing = computed((): string | null => {
 	}
 	return null;
 });
-const currentPanel = computed((): DeepReadonly<IPanel> => {
-	return store.state.panels.panels[viewport.value.currentPanel];
+const currentPanel = computed((): Panel => {
+	return state.panels.panels[viewport.value.currentPanel];
 });
-const object = computed((): ISprite => {
+const object = computed((): Sprite => {
 	const obj = currentPanel.value.objects[viewport.value.selection!];
 	if (obj.type !== 'sprite') return undefined!;
-	return obj as ISprite;
+	return obj;
 });
 
 function reupload() {
@@ -67,12 +65,9 @@ async function onMissingSpriteFileUpload() {
 	}
 
 	const file = uploadInput.files[0];
-	await transaction(async () => {
+	transaction(() => {
 		const url = URL.createObjectURL(file);
-		await store.dispatch('uploadUrls/add', {
-			name: missing.value,
-			url,
-		});
+		state.uploadUrls.add(missing.value!, url);
 	});
 }
 </script>

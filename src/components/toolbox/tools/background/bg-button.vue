@@ -35,24 +35,22 @@
 import { getAAssetUrl } from '@/asset-manager';
 import { transaction } from '@/history-engine/transaction';
 import { useViewport } from '@/hooks/use-viewport';
-import { useStore } from '@/store';
-import type { BackgroundLookup } from '@/store/content';
+import { state } from '@/store/root';
 import { computed, ref } from 'vue';
 
 const props = defineProps<{
 	backgroundId: string;
 }>();
 
-const store = useStore();
 const viewport = useViewport();
 const background = computed(() => {
 	const currentPanel = viewport.value.currentPanel;
-	return store.state.panels.panels[currentPanel].background;
+	return state.panels.panels[currentPanel].background;
 });
 
 const missingBackgroundUpload = ref(null! as HTMLInputElement);
 const missing = computed(() => {
-	Object.keys(store.state.uploadUrls);
+	Object.keys(state.uploadUrls);
 	const bg = bgData.value;
 	if (!bg) return null;
 	for (const v of bg.variants) {
@@ -60,7 +58,7 @@ const missing = computed(() => {
 			const url = getAAssetUrl(asset, false);
 			if (url.startsWith('uploads:')) {
 				// Force sprites to reload on upload
-				Object.keys(store.state.uploadUrls);
+				Object.keys(state.uploadUrls);
 				return url.substring(8);
 			}
 		}
@@ -69,8 +67,7 @@ const missing = computed(() => {
 });
 
 const bgData = computed(() => {
-	const backgrounds: BackgroundLookup =
-		store.getters['content/getBackgrounds'];
+	const backgrounds = state.content.backgrounds;
 	return backgrounds.get(props.backgroundId) || null;
 });
 
@@ -109,7 +106,7 @@ const style = computed((): { [id: string]: string } => {
 		.join(',');
 	if (missingAsset) {
 		// Force vue to update this when a file is uploaded
-		Object.keys(store.state.uploadUrls);
+		Object.keys(state.uploadUrls);
 	}
 	return {
 		backgroundImage: urls ?? '',
@@ -132,10 +129,7 @@ async function backgroundReupload() {
 	const file = uploadInput.files[0];
 	await transaction(async () => {
 		const url = URL.createObjectURL(file);
-		await store.dispatch('uploadUrls/add', {
-			name: spriteName,
-			url,
-		});
+		state.uploadUrls.add(spriteName!, url);
 	});
 }
 </script>

@@ -1,14 +1,12 @@
 import getConstants from '@/constants';
 import { SelectedState, selectionColors } from '@/constants/shared';
 import { applyFilter, ctxScope } from '@/renderer/canvas-tools';
-import type { IRootState } from '@/store';
-import type { ITextBox } from '@/store/object-types/textbox';
-import type { IObject } from '@/store/objects';
-import type { IPanel } from '@/store/panels';
+import type { GenObject } from '@/store/object-types/object';
+import type Textbox from '@/store/object-types/textbox';
+import type { Panel } from '@/store/panels';
 import { makeCanvas } from '@/util/canvas';
 import { matrixEquals } from '@/util/math';
 import type { DeepReadonly } from 'vue';
-import type { Store } from 'vuex';
 
 /**
  * An object that can be rendered onto the image. Every object type has it's own class that inherits from here.
@@ -25,7 +23,7 @@ import type { Store } from 'vuex';
  * - prepareRender: May return a promise that needs to be awaited that will fetch required assets.
  * - render: Paints the object to a given canvas.
  */
-export abstract class Renderable<ObjectType extends IObject> {
+export abstract class Renderable<ObjectType extends GenObject> {
 	public constructor(public obj: DeepReadonly<ObjectType>) {}
 
 	public get id(): ObjectType['id'] {
@@ -129,7 +127,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 	/**
 	 * The last version of the rendered object. Used to test if an object must be rendered again.
 	 */
-	protected lastVersion: IObject['version'] = null!;
+	protected lastVersion: GenObject['version'] = null!;
 	protected localCanvasInvalid = true;
 	protected lastHit: DOMPointReadOnly | null = null;
 	protected lastLocalTransform: DOMMatrixReadOnly | null = null;
@@ -139,7 +137,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 	protected get isTalking() {
 		return this.refTextbox !== null;
 	}
-	protected refTextbox: ITextBox | null = null;
+	protected refTextbox: Textbox | null = null;
 
 	public get linkedTo(): ObjectType['id'] | null {
 		return this.obj.linkedTo;
@@ -152,14 +150,11 @@ export abstract class Renderable<ObjectType extends IObject> {
 	 * @param _store - The vuex store
 	 * @returns
 	 */
-	public prepareData(
-		panel: DeepReadonly<IPanel>,
-		_store: Store<DeepReadonly<IRootState>>
-	): void {
+	public prepareData(panel: DeepReadonly<Panel>): void {
 		this.refTextbox = null;
-		const inPanel = [...panel.order, ...panel.onTopOrder];
+		const inPanel = [...panel.lowerOrder, ...panel.topOrder];
 		for (const key of inPanel) {
-			const obj = panel.objects[key] as ITextBox;
+			const obj = panel.objects[key] as Textbox;
 			if (obj.type === 'textBox' && obj.talkingObjId === this.obj.id) {
 				this.refTextbox = obj;
 				return;
@@ -277,25 +272,6 @@ export abstract class Renderable<ObjectType extends IObject> {
 					ctx.drawImage(this.localCanvas!, 0, 0);
 				}
 			}
-			/*
-			for (const pos of [
-				[0, 0],
-				[0, 0.5],
-				[0, 1],
-				[0.5, 0],
-				[0.5, 0.5],
-				[0.5, 1],
-				[1, 0],
-				[1, 0.5],
-				[1, 1],
-			]) {
-				ctx.save();
-				ctx.translate(pos[0] * this.width, pos[1] * this.height);
-				ctx.fillStyle = pos[0] === 0.5 && pos[1] === 0.5 ? '#fff' : '#f00';
-				ctx.fillRect(-2, -2, 5, 5);
-				ctx.restore();
-			}
-			*/
 		});
 	}
 

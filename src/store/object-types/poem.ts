@@ -1,131 +1,120 @@
 import getConstants from '@/constants';
-import type {
-	ICreateObjectMutation,
-	IObject,
-	IObjectMutation,
-} from '@/store/objects';
-import type { IPanel, IPanels } from '@/store/panels';
-import type { ActionTree, MutationTree } from 'vuex';
-import type { IRootState } from '..';
-import { baseProps } from './base-object-props';
+import { ref } from 'vue';
+import type { Panel } from '../panels';
+import BaseObject, { type GenObject } from './object';
 
-export interface IPoem extends IObject {
-	type: 'poem';
-	subType: 'poem' | 'console';
-	background: number;
-	font: number;
-	text: string;
-	autoWrap: boolean;
-	consoleColor: string;
-}
+export default class Poem extends BaseObject<'poem'> {
+	public get type() {
+		return 'poem' as const;
+	}
 
-export const poemMutations: MutationTree<IPanels> = {
-	setPoemProperty<T extends PoemSimpleProperties>(
-		state: IPanels,
-		command: ISetTextBoxProperty<T>
+	protected constructor(
+		panel: Panel,
+		public readonly subtype: 'poem' | 'console',
+		id?: GenObject['id']
 	) {
-		const obj = state.panels[command.panelId].objects[command.id] as IPoem;
-		obj[command.key] = command.value;
-		++obj.version;
-	},
-};
+		super(panel, id);
 
-export const poemActions: ActionTree<IPanels, IRootState> = {
-	createPoem(
-		{ commit, rootState, state },
-		command: ICreatePoemAction
-	): IObject['id'] {
 		const constants = getConstants();
-		const id = state.panels[command.panelId].lastObjId + 1;
-		commit('create', {
-			object: {
-				subType: 'poem',
-				x: constants.Poem.defaultX,
-				y: constants.Poem.defaultY,
-				width: constants.Poem.defaultPoemWidth,
-				height: constants.Poem.defaultPoemHeight,
-				panelId: command.panelId,
-				flip: false,
-				rotation: 0,
-				id,
-				onTop: true,
-				opacity: 100,
-				type: 'poem',
-				version: 0,
-				autoWrap: true,
-				background: constants.Poem.defaultPoemBackground,
-				font: constants.Poem.defaultPoemStyle,
-				text: 'New poem\n\nClick here to edit poem',
-				composite: 'source-over',
-				filters: [],
-				label: null,
-				textboxColor: null,
-				enlargeWhenTalking: true,
-				nameboxWidth: null,
-				scaleX: 1,
-				scaleY: 1,
-				skewX: 0,
-				skewY: 0,
-				ratio: 1,
-				preserveRatio: true,
-				consoleColor: constants.Poem.consoleBackgroundColor,
-				overflow: false,
-				linkedTo: null,
-			} as IPoem,
-		} as ICreateObjectMutation);
-		return id;
-	},
-	createConsole(
-		{ commit, rootState, state },
-		command: ICreatePoemAction
-	): IObject['id'] {
-		const constants = getConstants();
-		const id = state.panels[command.panelId].lastObjId + 1;
-		commit('create', {
-			object: {
-				...baseProps(),
-				subType: 'console',
-				x: constants.Poem.consoleWidth / 2,
-				y: constants.Poem.consoleHeight / 2,
-				width: constants.Poem.consoleWidth,
-				height: constants.Poem.consoleHeight,
-				panelId: command.panelId,
-				id,
-				onTop: true,
-				type: 'poem',
-				background: constants.Poem.defaultConsoleBackground,
-				font: constants.Poem.defaultConsoleStyle,
-				text: '> _\n  \n  Console command\n  Click here to edit',
-				autoWrap: true,
-				consoleColor: constants.Poem.consoleBackgroundColor,
-			} as IPoem,
-		} as ICreateObjectMutation);
-		return id;
-	},
-};
 
-export interface ISetBackgroundMutation extends IObjectMutation {
-	readonly background: IPoem['background'];
-}
+		if (subtype === 'poem') {
+			this._x.value = constants.Poem.defaultX;
+			this._y.value = constants.Poem.defaultY;
+			this._height.value = constants.Poem.defaultPoemHeight;
+			this._width.value = constants.Poem.defaultPoemWidth;
+			this._background.value = constants.Poem.defaultPoemBackground;
+			this._font.value = constants.Poem.defaultPoemStyle;
+			this._text.value = 'New poem\n\nClick here to edit poem';
+		} else {
+			this._x.value = constants.Poem.consoleWidth / 2;
+			this._y.value = constants.Poem.consoleHeight / 2;
+			this._height.value = constants.Poem.consoleHeight;
+			this._width.value = constants.Poem.consoleWidth;
+			this._background.value = constants.Poem.defaultConsoleBackground;
+			this._font.value = constants.Poem.defaultConsoleStyle;
+			this._text.value =
+				'> _\n  \n  Console command\n  Click here to edit';
+		}
+	}
 
-export interface ISetFontMutation extends IObjectMutation {
-	readonly font: IPoem['font'];
-}
+	public static createPoem(panel: Panel) {
+		return new Poem(panel, 'poem');
+	}
 
-export interface ISetTextMutation extends IObjectMutation {
-	readonly text: IPoem['text'];
-}
+	public static createConsole(panel: Panel) {
+		return new Poem(panel, 'console');
+	}
 
-export type PoemSimpleProperties =
-	| Exclude<keyof IPoem, keyof IObject | 'subType'>
-	| 'overflow';
+	public override makeClone(
+		panel: Panel,
+		idTranslationTable: Map<BaseObject['id'], BaseObject['id']>
+	): Poem {
+		const ret = new Poem(
+			panel,
+			this.subtype,
+			idTranslationTable.get(this.id)
+		);
+		this.moveAllRefs(this, ret);
+		return ret;
+	}
 
-export interface ISetTextBoxProperty<T extends PoemSimpleProperties>
-	extends IObjectMutation {
-	readonly key: T;
-	readonly value: IPoem[T];
-}
+	//#region Text
+	private _autoWrap = ref(true);
+	private _overflow = ref(false);
+	private _text = ref('');
 
-export interface ICreatePoemAction {
-	readonly panelId: IPanel['id'];
+	get autoWrap(): boolean {
+		return this._autoWrap.value;
+	}
+
+	set autoWrap(value: boolean) {
+		this.mutate(this._autoWrap, value);
+	}
+
+	get overflow(): boolean {
+		return this._overflow.value;
+	}
+
+	set overflow(value: boolean) {
+		this.mutate(this._overflow, value);
+	}
+
+	get text(): string {
+		return this._text.value;
+	}
+
+	set text(value: string) {
+		this.mutate(this._text, value);
+	}
+	//#endregion Text
+
+	//#region Style
+	private _background = ref(0);
+	private _font = ref(0);
+	private _consoleColor = ref(null as string | null);
+
+	get background(): number {
+		return this._background.value;
+	}
+
+	set background(value: number) {
+		this.mutate(this._background, value);
+	}
+
+	get font(): number {
+		return this._font.value;
+	}
+
+	set font(value: number) {
+		this.mutate(this._font, value);
+	}
+
+	get consoleColor(): string | null {
+		return this._consoleColor.value;
+	}
+
+	set consoleColor(value: string | null) {
+		this.mutate(this._consoleColor, value);
+	}
+	//#endregion Style
 }

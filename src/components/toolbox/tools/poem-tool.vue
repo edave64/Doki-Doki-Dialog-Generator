@@ -5,7 +5,7 @@
 	<object-tool
 		ref="root"
 		:object="object"
-		:title="object.subType === 'poem' ? 'Poem' : 'Console'"
+		:title="object.subtype === 'poem' ? 'Poem' : 'Console'"
 		:textHandler="textHandler"
 		:colorHandler="colorHandler"
 	>
@@ -27,7 +27,7 @@
 			v-model="overflow"
 			title="When text is too long, it is shown outside the container. Uses more memory"
 		/>
-		<template v-if="object.subType === 'poem'">
+		<template v-if="object.subtype === 'poem'">
 			<select v-model="poemBackground" @keydown.stop>
 				<option
 					v-for="(background, idx) of poemBackgrounds"
@@ -71,24 +71,19 @@
 <script lang="ts" setup>
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import ToggleBox from '@/components/ui/d-toggle.vue';
+import getConstants from '@/constants';
 import {
 	poemBackgrounds,
 	poemTextStyles,
 } from '@/constants/game_modes/ddlc/poem';
 import { transaction } from '@/history-engine/transaction';
-import type { Viewport } from '@/newStore/viewport';
-import { useStore } from '@/store';
-import type {
-	IPoem,
-	ISetTextBoxProperty,
-	PoemSimpleProperties,
-} from '@/store/object-types/poem';
-import { genericSetterSplit } from '@/util/simple-settable';
+import { state } from '@/store/root';
+import type { Viewport } from '@/store/viewport';
+import { propWithTransaction } from '@/util/simple-settable';
 import { UnreachableCaseError } from 'ts-essentials';
 import { computed, inject, ref, watch, type Ref } from 'vue';
 import ObjectTool, { type Handler } from './object-tool.vue';
 
-const store = useStore();
 const root = ref(null! as HTMLElement);
 const textarea = ref(null! as HTMLTextAreaElement);
 const { vertical } = setupPanelMixin(root);
@@ -106,22 +101,14 @@ watch(
 const viewport = inject<Ref<Viewport>>('viewport')!;
 
 const currentPanel = computed(
-	() => store.state.panels.panels[viewport.value.currentPanel]
+	() => state.panels.panels[viewport.value.currentPanel]
 );
-const object = computed((): IPoem => {
+const object = computed(() => {
 	const obj = currentPanel.value.objects[viewport.value.selection!];
 	if (obj.type !== 'poem') return undefined!;
-	return obj as IPoem;
+	return obj;
 });
 
-const setableP = <K extends PoemSimpleProperties>(k: K) =>
-	genericSetterSplit<IPoem, K>(
-		store,
-		object,
-		'panels/setPoemProperty',
-		false,
-		k
-	);
 const textHandler = computed((): Handler | undefined => {
 	if (!textEditor.value) return undefined;
 	return {
@@ -146,22 +133,19 @@ const colorHandler = computed((): Handler | undefined => {
 				case '':
 					return '#000000';
 				case 'base':
-					return object.value.consoleColor;
+					const constants = getConstants().Poem;
+					return (
+						object.value.consoleColor ??
+						constants.consoleBackgroundColor
+					);
 				default:
 					throw new UnreachableCaseError(colorSelect.value);
 			}
 		},
 		set: (color: string) => {
 			transaction(() => {
-				const panelId = currentPanel.value.id;
-				const id = object.value.id;
 				if (color === undefined) return;
-				store.commit('panels/setPoemProperty', {
-					key: 'consoleColor',
-					panelId,
-					id,
-					value: color,
-				} as ISetTextBoxProperty<'consoleColor'>);
+				object.value.consoleColor = color;
 			});
 		},
 		leave: () => {
@@ -169,11 +153,11 @@ const colorHandler = computed((): Handler | undefined => {
 		},
 	};
 });
-const text = setableP('text');
-const autoWrap = setableP('autoWrap');
-const poemStyle = setableP('font');
-const overflow = setableP('overflow');
-const poemBackground = setableP('background');
+const text = propWithTransaction(object, 'text');
+const autoWrap = propWithTransaction(object, 'autoWrap');
+const poemStyle = propWithTransaction(object, 'font');
+const overflow = propWithTransaction(object, 'overflow');
+const poemBackground = propWithTransaction(object, 'background');
 </script>
 
 <style lang="scss" scoped>

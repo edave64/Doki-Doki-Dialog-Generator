@@ -3,12 +3,10 @@ import {
 	type ITextStyle,
 	TextRenderer,
 } from '@/renderer/text-renderer/text-renderer';
-import type { IRootState } from '@/store';
-import type { ITextBox } from '@/store/object-types/textbox';
-import type { IObject } from '@/store/objects';
-import type { IPanel } from '@/store/panels';
+import type { GenObject } from '@/store/object-types/object';
+import type Textbox from '@/store/object-types/textbox';
+import type { Panel } from '@/store/panels';
 import type { DeepReadonly } from 'ts-essentials';
-import type { Store } from 'vuex';
 import { ScalingRenderable } from './scaling-renderable';
 import { Corrupted } from './textboxRenderers/corrupt';
 import { Custom } from './textboxRenderers/custom';
@@ -50,7 +48,7 @@ export function getStyles(): DeepReadonly<ITextboxRendererClass>[] {
 	return ret;
 }
 
-export class TextBox extends ScalingRenderable<ITextBox> {
+export class TextBox extends ScalingRenderable<Textbox> {
 	private nbTextRenderer: TextRenderer = null!;
 	private textRenderer: TextRenderer = null!;
 
@@ -82,8 +80,8 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		);
 	}
 
-	public prepareData(panel: DeepReadonly<IPanel>, store: Store<IRootState>) {
-		super.prepareData(panel, store);
+	public prepareData(panel: DeepReadonly<Panel>) {
+		super.prepareData(panel);
 
 		if (typeof this.obj.talkingObjId === 'number') {
 			this.refObject = panel.objects[this.obj.talkingObjId] ?? null;
@@ -177,7 +175,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		render.render(rx);
 	}
 
-	public get forcedStyle(): ITextBox['style'] {
+	public get forcedStyle(): Textbox['style'] {
 		const refObject = this.refObject;
 		if (
 			(this.obj.style === 'normal' || this.obj.style === 'normal_plus') &&
@@ -188,7 +186,7 @@ export class TextBox extends ScalingRenderable<ITextBox> {
 		return this.obj.style;
 	}
 
-	public refObject: DeepReadonly<IObject> | null = null;
+	public refObject: DeepReadonly<GenObject> | null = null;
 
 	private _lastRenderer: ITextboxRenderer | null = null;
 	public get textboxRenderer() {
@@ -229,7 +227,7 @@ export interface ITextboxRenderer {
 }
 
 export interface ITextboxRendererClass {
-	readonly id: ITextBox['style'];
+	readonly id: Textbox['style'];
 	readonly label: string;
 	readonly priority: number;
 	readonly gameMode: string;

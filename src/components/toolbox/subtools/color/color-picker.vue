@@ -57,9 +57,9 @@
 import DFlow from '@/components/ui/d-flow.vue';
 import eventBus, { ColorPickedEvent } from '@/eventbus/event-bus';
 import { transaction } from '@/history-engine/transaction';
-import { useVertical } from '@/hooks/use-viewport';
-import { useStore } from '@/store';
-import type { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
+import { useVertical, useViewport } from '@/hooks/use-viewport';
+import type { IAssetSwitch } from '@/store/content';
+import { state } from '@/store/root';
 import { RGBAColor } from '@/util/colors/rgb';
 import uniqId from '@/util/unique-id';
 import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
@@ -82,7 +82,6 @@ const model = defineModel<string>({
 const emit = defineEmits<{
 	leave: [];
 }>();
-const store = useStore();
 
 const generatedPackId = 'dddg.generated.colors';
 const id = uniqId();
@@ -114,12 +113,12 @@ function updateHex(event: Event) {
 	}
 }
 //#region Swatches
-const swatches = computed(() => store.state.content.current.colors);
+const swatches = computed(() => state.content.current.colors);
 
 function addSwatch() {
 	if (swatches.value.find((swatch) => swatch.color === color.value)) return;
 	const existingPack: DeepReadonly<ContentPack<IAssetSwitch>> =
-		store.state.content.contentPacks.find(
+		state.content.contentPacks.find(
 			(pack) => pack.packId === generatedPackId
 		) || {
 			packId: generatedPackId,
@@ -146,18 +145,19 @@ function addSwatch() {
 	} as unknown as ContentPack<IAssetSwitch>;
 
 	transaction(async () => {
-		await store.dispatch('content/replaceContentPack', {
+		await state.content.replaceContentPack({
 			contentPack: newPack,
 			processed: true,
-		} as ReplaceContentPackAction);
+		});
 	});
 }
 //#endregion Swatches
 //#region Picker
+const viewport = useViewport();
 function pickColor(): void {
 	transaction(() => {
 		// Notifies the render.vue to switch into color picker mode
-		store.commit('ui/setColorPicker', true);
+		viewport.value.pickColor = true;
 	});
 }
 

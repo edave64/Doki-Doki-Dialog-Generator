@@ -153,10 +153,10 @@ import { transaction } from '@/history-engine/transaction';
 import { AssetListRenderable } from '@/renderables/asset-list-renderable';
 import { Character } from '@/renderables/character';
 import { Renderer } from '@/renderer/renderer';
-import { useStore } from '@/store';
-import type { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
-import type { ICharacter } from '@/store/object-types/characters';
-import { type IPanel, ScalingModes } from '@/store/panels';
+import type { IAssetSwitch } from '@/store/content';
+import CharacterStore from '@/store/object-types/character';
+import { Panel } from '@/store/panels';
+import { state } from '@/store/root';
 import { WorkBatch } from '@/util/workBatch';
 import type {
 	Character as CharacterModel,
@@ -176,7 +176,6 @@ const props = defineProps<{
 const emit = defineEmits<{
 	leave: [];
 }>();
-const store = useStore();
 
 const uploadedExpressionsPackDefaults: ContentPack<IAssetSwitch> = {
 	packId: 'dddg.uploads.expressions',
@@ -205,7 +204,7 @@ const addExtras = ref(false);
 const names = ref({} as { [url: string]: string });
 
 const characterData = computed(() => {
-	return store.state.content.current.characters.find(
+	return state.content.current.characters.find(
 		(char) => char.id === props.character
 	)!;
 });
@@ -307,14 +306,11 @@ function dragEnter(e: DragEvent) {
 //#endregion Drag and Drop
 //#region Preview
 async function redraw() {
-	const previewChar = previewCharacter.value;
+	const previewChar = previewCharacter;
 	let charRenderer: Character;
 	const pose = previewPoses.value[previewPoseIdx.value];
 	try {
-		charRenderer = new Character(
-			previewChar,
-			temporaryCharacterModel.value
-		);
+		charRenderer = new Character(previewChar);
 	} catch {
 		return;
 	}
@@ -325,29 +321,9 @@ async function redraw() {
 		const renderer = new Renderer(pose.width, pose.height);
 		try {
 			await renderer.render(async (rx) => {
-				const background: IPanel['background'] = {
-					color: '',
-					composite: 'source-over',
-					current: 'buildin.transparent',
-					filters: [],
-					flipped: false,
-					scaling: ScalingModes.None,
-					variant: 0,
-				};
 				AssetListRenderable.prototype.prepareData.call(
 					charRenderer,
-					{
-						background,
-						composite: 'source-over',
-						filters: [],
-						id: 0,
-						lastObjId: 0,
-						lastRender: '',
-						objects: { [previewChar.id]: previewChar },
-						onTopOrder: [],
-						order: [previewChar.id],
-					},
-					store
+					panel
 				);
 				charRenderer.prepareTransform(new DOMMatrixReadOnly());
 				// Skip reloading the character data.
@@ -423,10 +399,11 @@ const expressionModels = computed((): IAssetSwitch[][] => {
 	]);
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const temporaryCharacterModel = computed((): CharacterModel<IAssetSwitch> => {
 	const poses = previewPoses.value;
 	const character: DeepReadonly<CharacterModel<IAssetSwitch>> =
-		store.state.content.current.characters.find(
+		state.content.current.characters.find(
 			(char) => char.id === props.character
 		)!;
 
@@ -617,12 +594,12 @@ async function finishUpload() {
 		await batchRunner.value.run(uploadedExpressions.value)
 	).filter((exp) => exp) as string[];
 
-	const storeCharacter = store.state.content.current.characters.find(
+	const storeCharacter = state.content.current.characters.find(
 		(char) => char.id === props.character
 	)!;
 
 	const old =
-		store.state.content.contentPacks.find(
+		state.content.contentPacks.find(
 			(x) => x.packId === uploadedExpressionsPackDefaults.packId
 		) || uploadedExpressionsPackDefaults;
 	const newPackVersion: ContentPack<IAssetSwitch> = JSON.parse(
@@ -660,10 +637,10 @@ async function finishUpload() {
 	}
 
 	for (const processedExpression of processedExpressions) {
-		const assetUrl: string = await store.dispatch('uploadUrls/add', {
-			name: 'expression_' + (names.value[processedExpression] || ''),
-			url: processedExpression,
-		});
+		const assetUrl = await state.uploadUrls.add(
+			'expression_' + (names.value[processedExpression] || ''),
+			processedExpression
+		);
 		headGroup_.variants.push([
 			{
 				hq: assetUrl,
@@ -674,10 +651,10 @@ async function finishUpload() {
 	}
 
 	await transaction(async () => {
-		await store.dispatch('content/replaceContentPack', {
+		state.content.replaceContentPack({
 			contentPack: newPackVersion,
 			processed: true,
-		} as ReplaceContentPackAction);
+		});
 	});
 
 	leave();
@@ -749,71 +726,32 @@ const listPaths: { [s: string]: string | undefined } = {
 	'dddg.buildin.mc_chad:ddlc.fan.mc_chad:straight_red': `${baseUrl}chad/red`,
 };
 
-const charDefDefaults: ICharacter = {
-	type: 'character',
-	characterType: '',
-	freeMove: false,
-	close: false,
-	styleGroupId: 0,
-	styleId: 0,
-	poseId: 0,
-	posePositions: {},
-	panelId: 0,
-	id: 0,
-	x: 0,
-	y: 0,
-	rotation: 0,
-	preserveRatio: true,
-	ratio: 1,
-	version: 1,
-	flip: false,
-	onTop: false,
-	composite: 'source-over',
-	filters: [],
-	linkedTo: null,
-	skewX: 0,
-	skewY: 0,
-	enlargeWhenTalking: false,
-	nameboxWidth: null,
-	scaleX: 1,
-	scaleY: 1,
-	height: 0,
-	width: 0,
-	label: null,
-	textboxColor: null,
-	overflow: false,
-};
-//#endregion Constants
-//#region data
-const previewCharacter = computed((): ICharacter => {
-	const pose = previewPoses.value[previewPoseIdx.value];
-	if (pose == null) return charDefDefaults;
-	return {
-		...charDefDefaults,
-		characterType: props.character,
-		width: pose.width,
-		height: pose.height,
-		poseId: previewPoseIdx.value,
-		x: pose.width / 2,
-		y: pose.height / 2,
-		posePositions: {
+const panel = new Panel(0);
+
+const previewCharacter: CharacterStore = CharacterStore.create(
+	panel,
+	props.character
+);
+
+watch(
+	() => previewPoses.value[previewPoseIdx.value],
+	(pose) => {
+		if (pose == null) return;
+		previewCharacter.width = pose.width;
+		previewCharacter.height = pose.height;
+		previewCharacter.setPart('pose', previewPoseIdx.value);
+		previewCharacter.x = pose.width / 2;
+		previewCharacter.y = pose.height / 2;
+		previewCharacter.setPosePosition({
 			headGroup: 0,
 			head: uploadedExpressions.value.indexOf(
 				currentUploadedExpression.value!
 			),
-		},
-		label: null,
-		textboxColor: null,
-		enlargeWhenTalking: false,
-		nameboxWidth: null,
-		scaleX: 1,
-		scaleY: 1,
-		linkedTo: null,
-		skewX: 0,
-		skewY: 0,
-	};
-});
-//#endregion data
+		});
+	},
+	{ immediate: true }
+);
+//#endregion Constants
 //#region init
 if (props.initHeadGroup != null) {
 	headGroup.value = availableHeadGroups.value.find(

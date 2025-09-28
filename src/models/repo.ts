@@ -1,6 +1,6 @@
 import environment from '@/environments/environment';
 import eventBus, { ShowMessageEvent } from '@/eventbus/event-bus';
-import type { IRootState } from '@/store';
+import { state } from '@/store/root';
 import type {
 	IAuthor,
 	IAuthors,
@@ -14,7 +14,6 @@ import {
 	type DeepReadonly,
 	type Ref,
 } from 'vue';
-import { Store } from 'vuex';
 
 const repoUrl = 'https://edave64.github.io/Doki-Doki-Dialog-Generator-Packs/';
 
@@ -25,11 +24,6 @@ export type LoadedRepo = {
 
 export class Repo {
 	private static instance: null | Promise<Repo>;
-	public static setStore: ($store: Store<DeepReadonly<IRootState>>) => void;
-	private static $store: Promise<Store<DeepReadonly<IRootState>>> =
-		new Promise((resolve) => {
-			Repo.setStore = resolve;
-		});
 
 	public static getInstance(): Promise<Repo> {
 		if (!Repo.instance) Repo.instance = this.createInstance();
@@ -42,13 +36,12 @@ export class Repo {
 			? await Repo.loadRepo(environment.localRepositoryUrl)
 			: null;
 
-		const [onlineRepoLoaded, localRepoLoaded, $store] = await Promise.all([
+		const [onlineRepoLoaded, localRepoLoaded] = await Promise.all([
 			onlineRepoLoading,
 			localRepoLoading,
-			Repo.$store,
 		]);
 
-		return new Repo(onlineRepoLoaded, localRepoLoaded, $store);
+		return new Repo(onlineRepoLoaded, localRepoLoaded);
 	}
 
 	private static async loadRepo(repo: string): Promise<LoadedRepo | null> {
@@ -81,8 +74,7 @@ export class Repo {
 
 	private constructor(
 		onlineRepo: LoadedRepo | null,
-		localRepo: LoadedRepo | null,
-		private $store: Store<DeepReadonly<IRootState>>
+		localRepo: LoadedRepo | null
 	) {
 		window.repo = this;
 		if (!onlineRepo) {
@@ -122,7 +114,7 @@ export class Repo {
 			);
 
 			const autoloads = new Set(environment.state.autoAdd);
-			const loadedPackOrder = this.$store.state.content.contentPacks
+			const loadedPackOrder = state.content.contentPacks
 				.map((pack) => pack.packId)
 				.filter((packId) => packId != null) as string[];
 			const loadedPacksSet = new Set(loadedPackOrder) as Set<string>;

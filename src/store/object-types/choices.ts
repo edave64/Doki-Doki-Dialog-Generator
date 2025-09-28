@@ -1,155 +1,104 @@
 import getConstants from '@/constants';
-import type {
-	ICreateObjectMutation,
-	IObject,
-	IObjectMutation,
-} from '@/store/objects';
-import type { IPanel, IPanels } from '@/store/panels';
-import type { ActionTree, MutationTree } from 'vuex';
-import type { IRootState } from '..';
-import { baseProps } from './base-object-props';
+import { undoAble } from '@/history-engine/history';
+import { ref, type DeepReadonly, type Ref } from 'vue';
+import type { Panel } from '../panels';
+import BaseObject, { type GenObject } from './object';
+
+export default class Choice extends BaseObject<'choice'> {
+	public get type() {
+		return 'choice' as const;
+	}
+
+	protected constructor(panel: Panel, id?: GenObject['id']) {
+		super(panel, id);
+
+		const constants = getConstants();
+		this._choiceDistance = ref(constants.Choices.ChoiceSpacing);
+		this._customColor = ref(constants.Choices.ChoiceButtonColor);
+	}
+
+	public static create(panel: Panel) {
+		return new Choice(panel);
+	}
+
+	public override makeClone(
+		panel: Panel,
+		idTranslationTable: Map<BaseObject['id'], BaseObject['id']>
+	): Choice {
+		const ret = new Choice(panel, idTranslationTable.get(this.id));
+		this.moveAllRefs(this, ret);
+		return ret;
+	}
+
+	//#region Style
+
+	// TODO: Implement recoloring of choices
+	private _customColor: Ref<string>;
+
+	//#region Choices
+	private _choices = ref<IChoice[]>([
+		{
+			selected: false,
+			text: 'Click here to edit choice',
+		},
+	]);
+	private _choiceDistance: Ref<number>;
+	private _autoWrap = ref(true);
+
+	get choices(): DeepReadonly<IChoice[]> {
+		return this._choices.value;
+	}
+
+	public addChoice(text: string) {
+		const choice = {
+			selected: false,
+			text,
+		};
+		undoAble(
+			() => void this._choices.value.push(choice),
+			() => void this._choices.value.pop()
+		);
+	}
+
+	public removeChoice(choiceIdx: number) {
+		const choice = this._choices.value[choiceIdx];
+		undoAble(
+			() => void this._choices.value.splice(choiceIdx, 1),
+			() => void this._choices.value.splice(choiceIdx, 0, choice)
+		);
+	}
+
+	public setChoiceProperty<Key extends keyof IChoice>(
+		choiceIdx: number,
+		key: Key,
+		value: IChoice[Key]
+	) {
+		const oldValue = this._choices.value[choiceIdx][key];
+		undoAble(
+			() => {
+				this._choices.value[choiceIdx][key] = value;
+			},
+			() => {
+				this._choices.value[choiceIdx][key] = oldValue;
+			}
+		);
+	}
+
+	get choiceDistance(): number {
+		return this._choiceDistance.value;
+	}
+
+	get autoWrap(): boolean {
+		return this._autoWrap.value;
+	}
+
+	set autoWrap(value: boolean) {
+		this.mutate(this._autoWrap, value);
+	}
+	//#endregion Choices
+}
 
 export interface IChoice {
 	text: string;
 	selected: boolean;
-}
-
-export interface IChoices extends IObject {
-	type: 'choice';
-	customColor: string;
-	choices: IChoice[];
-	choiceDistance: number;
-	autoWrap: boolean;
-}
-
-export const choiceMutations: MutationTree<IPanels> = {
-	setChoicesProperty<T extends ChoicesSimpleProperties>(
-		state: IPanels,
-		command: ISetChoicesProperty<T>
-	) {
-		const obj = state.panels[command.panelId].objects[
-			command.id
-		] as IChoices;
-		obj[command.key] = command.value;
-		++obj.version;
-	},
-	setChoiceProperty<T extends keyof IChoice>(
-		state: IPanels,
-		command: ISetChoiceProperty<T>
-	) {
-		const obj = state.panels[command.panelId].objects[
-			command.id
-		] as IChoices;
-		obj.choices[command.choiceIdx][command.key] = command.value;
-		++obj.version;
-	},
-	setChoices(state, command: ISetChoicesMutation) {
-		const obj = state.panels[command.panelId].objects[
-			command.id
-		] as IChoices;
-		obj.choices = command.choices;
-		++obj.version;
-	},
-};
-
-export const choiceActions: ActionTree<IPanels, IRootState> = {
-	createChoice(
-		{ commit, state },
-		command: ICreateChoicesAction
-	): IObject['id'] {
-		const constants = getConstants();
-		const id = state.panels[command.panelId].lastObjId + 1;
-		commit('create', {
-			object: {
-				...baseProps(),
-				y: constants.Choices.ChoiceY,
-				width: constants.Choices.ChoiceButtonWidth,
-				height: 0,
-				panelId: command.panelId,
-				id,
-				onTop: true,
-				autoWrap: true,
-				type: 'choice',
-				choiceDistance: constants.Choices.ChoiceSpacing,
-				choices: [
-					{
-						selected: false,
-						text: 'Click here to edit choice',
-					},
-				],
-				customColor: constants.Choices.ChoiceButtonColor,
-			} as IChoices,
-		} as ICreateObjectMutation);
-		return id;
-	},
-
-	addChoice({ state, commit }, command: IAddChoiceAction) {
-		const obj = state.panels[command.panelId].objects[
-			command.id
-		] as IChoices;
-		commit('setChoices', {
-			id: command.id,
-			panelId: command.panelId,
-			choices: [
-				...obj.choices,
-				{
-					selected: false,
-					text: command.text,
-				},
-			],
-		} as ISetChoicesMutation);
-	},
-
-	removeChoice({ state, commit }, command: IRemoveChoiceAction) {
-		const obj = state.panels[command.panelId].objects[
-			command.id
-		] as IChoices;
-		const choices = [...obj.choices];
-		choices.splice(command.choiceIdx, 1);
-		// Do not allow empty choices
-		if (choices.length === 0) {
-			choices.push({
-				selected: false,
-				text: '',
-			});
-		}
-		commit('setChoices', {
-			id: command.id,
-			panelId: command.panelId,
-			choices,
-		} as ISetChoicesMutation);
-	},
-};
-
-type ChoicesSimpleProperties = Exclude<
-	keyof IChoices,
-	keyof IObject | 'choices'
->;
-
-interface ISetChoicesProperty<T extends ChoicesSimpleProperties>
-	extends IObjectMutation {
-	readonly key: T;
-	readonly value: IChoices[T];
-}
-
-interface ISetChoiceProperty<T extends keyof IChoice> extends IObjectMutation {
-	readonly choiceIdx: number;
-	readonly key: T;
-	readonly value: IChoice[T];
-}
-
-export interface ISetChoicesMutation extends IObjectMutation {
-	readonly choices: IChoices['choices'];
-}
-
-export interface ICreateChoicesAction {
-	readonly panelId: IPanel['id'];
-}
-
-export interface IAddChoiceAction extends IObjectMutation {
-	readonly text: string;
-}
-
-export interface IRemoveChoiceAction extends IObjectMutation {
-	readonly choiceIdx: number;
 }

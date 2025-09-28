@@ -7,20 +7,16 @@
 
 <script lang="ts" setup>
 import { transaction } from '@/history-engine/transaction';
-import { useStore } from '@/store';
-import type { IObject, IRemoveObjectAction } from '@/store/objects';
+import type { GenObject } from '@/store/object-types/object';
+import { state } from '@/store/root';
 
 const props = defineProps<{
-	obj: IObject;
+	obj: GenObject;
 }>();
 
-const store = useStore();
 function onClick() {
 	transaction(async () => {
-		await store.dispatch('panels/removeObject', {
-			panelId: props.obj.panelId,
-			id: props.obj.id,
-		} as IRemoveObjectAction);
+		state.panels.panels[props.obj.panelId].removeObject(props.obj);
 	});
 }
 </script>

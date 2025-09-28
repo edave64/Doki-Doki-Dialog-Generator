@@ -5,14 +5,12 @@ import eventBus, {
 } from '@/eventbus/event-bus';
 import { transaction } from '@/history-engine/transaction';
 import { Repo } from '@/models/repo';
-import type { IRootState } from '@/store';
 import type { ReplaceContentPackAction } from '@/store/content';
+import { state } from '@/store/root';
 import type { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import type { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import type { DeepReadonly } from 'ts-essentials';
 import { reactive, ref } from 'vue';
-import { Store } from 'vuex';
 import type {
 	EnvCapabilities,
 	EnvState,
@@ -37,11 +35,7 @@ export class Electron implements IEnvironment {
 	private _gameMode: 'ddlc' | 'ddlc_plus' | null = null;
 	private readonly electron = window as unknown as IElectronWindow;
 
-	private $store: Store<DeepReadonly<IRootState>> | null = null;
 	private bgInvalidation: number | null = null;
-	private readonly pendingContentPacks: string[] = [];
-	private readonly pendingContentPacksReplace: ReplaceContentPackAction[] =
-		[];
 
 	private readonly loadingContentPacksAllowed: Promise<void>;
 	public loadContentPacks!: () => void;
@@ -60,15 +54,8 @@ export class Electron implements IEnvironment {
 			'add-persistent-content-pack',
 			async (filePath: string) => {
 				await this.loadingContentPacksAllowed;
-				if (!this.$store) {
-					this.pendingContentPacks.push(filePath);
-					return;
-				}
 				await transaction(async () => {
-					await this.$store!.dispatch(
-						'content/loadContentPacks',
-						filePath
-					);
+					await state.content.loadContentPacks(filePath);
 				});
 			}
 		);
@@ -113,17 +100,9 @@ export class Electron implements IEnvironment {
 						return pack.dddg2Path || pack.dddg1Path;
 					})
 				);
-				if (!this.$store) {
-					packUrls.forEach((url) =>
-						this.pendingContentPacks.push(url)
-					);
-					return;
-				}
+
 				await transaction(async () => {
-					await this.$store!.dispatch(
-						'content/loadContentPacks',
-						packUrls
-					);
+					await state.content.loadContentPacks(packUrls);
 				});
 			}
 		);
@@ -143,16 +122,9 @@ export class Electron implements IEnvironment {
 					processed: false,
 					contentPack,
 				};
-				if (!this.$store) {
-					this.pendingContentPacksReplace.push(action);
-				} else {
-					await transaction(async () => {
-						await this.$store!.dispatch(
-							'content/replaceContentPack',
-							action
-						);
-					});
-				}
+				await transaction(async () => {
+					await state.content.replaceContentPack(action);
+				});
 			}
 		);
 		this.electron.ipcRenderer.onConversation(
@@ -366,30 +338,7 @@ export class Electron implements IEnvironment {
 		return window.open(undefined, '_blank', 'left=100,top=100');
 	}
 
-	public connectToStore(store: Store<DeepReadonly<IRootState>>) {
-		this.$store = store;
-		this.invalidateInstalledBGs();
-
-		transaction(async () => {
-			if (this.pendingContentPacks.length > 0) {
-				await this.$store!.dispatch(
-					'content/loadContentPacks',
-					this.pendingContentPacks
-				);
-			}
-			if (this.pendingContentPacksReplace.length > 0) {
-				for (const action of this.pendingContentPacksReplace) {
-					await this.$store!.dispatch(
-						'content/replaceContentPack',
-						action
-					);
-				}
-			}
-		});
-	}
-
 	private invalidateInstalledBGs() {
-		if (!this.$store) return;
 		if (this.bgInvalidation !== null) return;
 		this.bgInvalidation = requestAnimationFrame(() => {
 			this.updateInstalledBGs();
@@ -401,12 +350,12 @@ export class Electron implements IEnvironment {
 			cancelAnimationFrame(this.bgInvalidation);
 			this.bgInvalidation = null;
 		}
-		if (!this.$store) return;
 
 		transaction(async () => {
-			await this.$store!.dispatch('content/replaceContentPack', {
+			await state.content.replaceContentPack({
 				contentPack: installedBackgroundsPack,
-			} as ReplaceContentPackAction);
+				processed: false,
+			});
 		});
 	}
 }

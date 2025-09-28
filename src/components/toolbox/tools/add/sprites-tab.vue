@@ -70,9 +70,9 @@ import {
 	type TransactionLayer,
 } from '@/history-engine/transaction';
 import { useViewport } from '@/hooks/use-viewport';
-import { useStore } from '@/store';
-import type { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
-import type { ICreateSpriteAction } from '@/store/object-types/sprite';
+import type { IAssetSwitch } from '@/store/content';
+import SpriteStore from '@/store/object-types/sprite';
+import { state } from '@/store/root';
 import type {
 	ContentPack,
 	Sprite,
@@ -85,21 +85,22 @@ const emit = defineEmits<{
 	'show-dialog': [search: string];
 }>();
 
-const store = useStore();
 const viewport = useViewport();
 interface ISprite extends Sprite<IAssetSwitch> {
 	missing: string | null;
 	urls: string[];
 }
 
-const sprites = computed((): DeepReadonly<Array<ISprite>> => {
-	return store.state.content.current.sprites.map((x) => {
+const panel = computed(() => state.panels.panels[viewport.value.currentPanel]);
+
+const sprites = computed((): Array<ISprite> => {
+	return state.content.current.sprites.map((x) => {
 		let missing: string | null = null;
 		const urls = x.variants[0].map((y) => {
 			const url = getAAssetUrl(y, false);
 			if (url.startsWith('uploads:')) {
 				// Force sprites to reload on upload
-				Object.keys(store.state.uploadUrls);
+				Object.keys(state.uploadUrls);
 				missing = url;
 				return MissingImage;
 			} else {
@@ -125,12 +126,9 @@ function assetSpriteBackground(sprite: DeepReadonly<Sprite<IAssetSwitch>>) {
 		.map((variant) => `url('${getAAssetUrl(variant, false)}')`)
 		.join(',');
 }
-async function addSpriteToScene(sprite: DeepReadonly<ISprite>) {
+async function addSpriteToScene(sprite: ISprite) {
 	await transaction(async () => {
-		await store.dispatch('panels/createSprite', {
-			panelId: viewport.value.currentPanel,
-			assets: sprite.variants[0],
-		} as ICreateSpriteAction);
+		SpriteStore.create(panel.value, sprite.variants[0]);
 	});
 }
 function openSpritesFolder() {
@@ -150,10 +148,7 @@ async function onMissingSpriteFileUpload() {
 	const file = uploadInput.files[0];
 	await transaction(async () => {
 		const url = URL.createObjectURL(file);
-		await store.dispatch('uploadUrls/add', {
-			name: spriteName,
-			url,
-		});
+		await state.uploadUrls.add(spriteName, url);
 	});
 }
 function reuploadingSprite(sprite: DeepReadonly<ISprite>) {
@@ -165,7 +160,7 @@ function reuploadingSprite(sprite: DeepReadonly<ISprite>) {
 }
 //#endregion Reupload missing sprite
 //#region Sprite Upload
-const uploadedSpritesPackDefault: ContentPack<string> = {
+const uploadedSpritesPackDefault: ContentPack<IAssetSwitch> = {
 	packId: 'dddg.uploads.sprites',
 	packCredits: [''],
 	dependencies: [],
@@ -197,10 +192,7 @@ async function uploadFromURL() {
 async function addCustomSpriteFile(file: File) {
 	await transaction(async (subTransaction: TransactionLayer) => {
 		const url = URL.createObjectURL(file);
-		const assetUrl: string = await store.dispatch('uploadUrls/add', {
-			name: file.name,
-			url,
-		});
+		const assetUrl = await state.uploadUrls.add(file.name, url);
 		await addNewCustomSprite(file.name, assetUrl, subTransaction);
 	});
 }
@@ -211,27 +203,35 @@ async function addNewCustomSprite(
 	subTransaction: TransactionLayer = transaction
 ) {
 	const old =
-		store.state.content.contentPacks.find(
+		state.content.contentPacks.find(
 			(x) => x.packId === uploadedSpritesPackDefault.packId
 		) || uploadedSpritesPackDefault;
-	const newPackVersion = {
+	const newPackVersion: ContentPack<IAssetSwitch> = {
 		...old,
 		sprites: [
 			...old.sprites,
 			{
 				id: url,
 				label,
-				variants: [[{ lq: url, hq: url }]],
+				variants: [
+					[
+						{
+							lq: url,
+							hq: url,
+							sourcePack: uploadedSpritesPackDefault.packId!,
+						},
+					],
+				],
 				defaultScale: [1.0, 1.0],
 				hd: null,
 			},
 		],
 	};
 	await subTransaction(async () => {
-		await store.dispatch('content/replaceContentPack', {
+		await state.content.replaceContentPack({
 			contentPack: newPackVersion,
 			processed: true,
-		} as ReplaceContentPackAction);
+		});
 	});
 }
 //#endregion Sprite Upload

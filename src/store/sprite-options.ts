@@ -1,21 +1,21 @@
+import { undoAble } from '@/history-engine/history';
 import type { CompositeModes } from '@/renderer/renderer-context';
 import { UnreachableCaseError } from 'ts-essentials';
-import type { IObject, ISetFiltersMutation } from './objects';
-import type { IPanel } from './panels';
+import { markRaw, ref, type Raw, type Ref } from 'vue';
 
 export type SpriteFilter =
-	| INumericSpriteFilter<'blur'>
-	| INumericSpriteFilter<'brightness'>
-	| INumericSpriteFilter<'contrast'>
-	| IDropShadowSpriteFilter
-	| INumericSpriteFilter<'grayscale'>
-	| INumericSpriteFilter<'hue-rotate'>
-	| INumericSpriteFilter<'invert'>
-	| INumericSpriteFilter<'opacity'>
-	| INumericSpriteFilter<'saturate'>
-	| INumericSpriteFilter<'sepia'>;
+	| NumericSpriteFilter<'blur'>
+	| NumericSpriteFilter<'brightness'>
+	| NumericSpriteFilter<'contrast'>
+	| DropShadowSpriteFilter
+	| NumericSpriteFilter<'grayscale'>
+	| NumericSpriteFilter<'hue-rotate'>
+	| NumericSpriteFilter<'invert'>
+	| NumericSpriteFilter<'opacity'>
+	| NumericSpriteFilter<'saturate'>
+	| NumericSpriteFilter<'sepia'>;
 
-export const percentageValue = new Set<SpriteFilter['type']>([
+export const percentageValue = new Set([
 	'brightness',
 	'contrast',
 	'grayscale',
@@ -25,186 +25,170 @@ export const percentageValue = new Set<SpriteFilter['type']>([
 	'sepia',
 ]);
 
-export interface IHasSpriteFilters {
-	filters: SpriteFilter[];
-	composite: CompositeModes;
-}
+export abstract class HasSpriteFilters {
+	protected _filters = ref<Raw<SpriteFilter>[]>([]);
+	protected _composite = ref<CompositeModes>('source-over');
 
-export interface INumericSpriteFilter<K extends string> {
-	readonly type: K;
-	readonly value: number;
-}
-
-export interface IDropShadowSpriteFilter {
-	readonly type: 'drop-shadow';
-	readonly offsetX: number;
-	readonly offsetY: number;
-	readonly blurRadius: number;
-	readonly color: string;
-}
-
-export interface ISetFilterValue {
-	readonly type: Exclude<SpriteFilter['type'], 'drop-shadow'>;
-	readonly value: number;
-}
-
-export interface ISetDropShadowFilter {
-	readonly type: 'drop-shadow';
-	readonly offsetX?: number;
-	readonly offsetY?: number;
-	readonly blurRadius?: number;
-	readonly color?: string;
-}
-
-export function addFilter(
-	action: IAddFilterAction,
-	objLookup: () => IHasSpriteFilters,
-	setMutation: (mutation: ISetFiltersMutation) => void
-): void {
-	const obj = objLookup();
-	const filters = [...obj.filters];
-	let newFilter: SpriteFilter;
-	switch (action.type) {
-		case 'hue-rotate':
-			newFilter = {
-				type: action.type,
-				value: 0,
-			};
-			break;
-		case 'sepia':
-		case 'invert':
-		case 'blur':
-		case 'grayscale':
-		case 'brightness':
-		case 'contrast':
-		case 'opacity':
-		case 'saturate':
-			newFilter = {
-				type: action.type,
-				value: 1,
-			};
-			break;
-		case 'drop-shadow':
-			newFilter = {
-				type: action.type,
-				blurRadius: 0,
-				offsetX: 10,
-				offsetY: 10,
-				color: '#555555',
-			};
-			break;
-		default:
-			throw new UnreachableCaseError(action.type);
+	get filters(): readonly SpriteFilter[] {
+		return this._filters.value;
 	}
-	filters.splice(action.idx, 0, newFilter);
 
-	setMutation({
-		panelId: action.panelId,
-		id: action.id!,
-		filters,
-	});
-}
-
-export function removeFilter(
-	action: IRemoveFilterAction,
-	objLookup: () => IHasSpriteFilters,
-	setMutation: (mutation: ISetFiltersMutation) => void
-) {
-	const obj = objLookup();
-	const filters = [...obj.filters];
-	filters.splice(action.idx, 1);
-	setMutation({
-		id: action.id,
-		panelId: action.panelId,
-		filters,
-	} as ISetFiltersMutation);
-}
-
-export function moveFilter(
-	action: IMoveFilterAction,
-	objLookup: () => IHasSpriteFilters,
-	setMutation: (mutation: ISetFiltersMutation) => void
-) {
-	const obj = objLookup();
-	const filters = [...obj.filters];
-	const filter = filters[action.idx];
-	filters.splice(action.idx, 1);
-	filters.splice(action.idx + action.moveBy, 0, filter);
-	setMutation({
-		id: action.id,
-		panelId: action.panelId,
-		filters,
-	} as ISetFiltersMutation);
-}
-
-export function setFilter(
-	action: ISetFilterAction,
-	objLookup: () => IHasSpriteFilters,
-	setMutation: (mutation: ISetFiltersMutation) => void
-) {
-	const obj = objLookup();
-	const filters = [...obj.filters];
-	const filter = { ...filters[action.idx] };
-	filters[action.idx] = filter;
-
-	if (filter.type === 'drop-shadow') {
-		if (action.blurRadius !== undefined) {
-			filter.blurRadius = action.blurRadius;
-		}
-		if (action.color !== undefined) {
-			filter.color = action.color;
-		}
-		if (action.offsetX !== undefined) {
-			filter.offsetX = action.offsetX;
-		}
-		if (action.offsetY !== undefined) {
-			filter.offsetY = action.offsetY;
-		}
-	} else {
-		filter.value = action.value!;
+	get composite(): CompositeModes {
+		return this._composite.value;
 	}
-	setMutation({
-		id: action.id,
-		panelId: action.panelId,
-		filters,
-	} as ISetFiltersMutation);
+
+	set composite(composite: CompositeModes) {
+		const old = this._composite.value;
+		undoAble(
+			() => void (this._composite.value = composite),
+			() => void (this._composite.value = old)
+		);
+	}
+
+	addFilter(type: SpriteFilter['type'], idx: number) {
+		let newFilter: SpriteFilter;
+		switch (type) {
+			case 'hue-rotate':
+				newFilter = new NumericSpriteFilter(type, 0);
+				break;
+			case 'sepia':
+			case 'invert':
+			case 'blur':
+			case 'grayscale':
+			case 'brightness':
+			case 'contrast':
+			case 'opacity':
+			case 'saturate':
+				// TODO: Typescript shits the bed with the as. Investigate. It's related to the clone method.
+				newFilter = new NumericSpriteFilter(type, 1) as SpriteFilter;
+				break;
+			case 'drop-shadow':
+				newFilter = new DropShadowSpriteFilter();
+				break;
+			default:
+				throw new UnreachableCaseError(type);
+		}
+		const filters = this._filters.value;
+		undoAble(
+			() => void filters.splice(idx, 0, markRaw(newFilter)),
+			() => void filters.splice(idx, 1)
+		);
+	}
+
+	removeFilter(idx: number) {
+		const filters = this._filters.value;
+		const filter = filters[idx];
+		undoAble(
+			() => void filters.splice(idx, 1),
+			() => void filters.splice(idx, 0, markRaw(filter))
+		);
+	}
+
+	moveFilter(idx: number, moveBy: -1 | 1) {
+		const filters = this._filters.value;
+		const filter = filters[idx];
+		undoAble(
+			() => {
+				filters.splice(idx, 1);
+				filters.splice(idx + moveBy, 0, filter);
+			},
+			() => {
+				filters.splice(idx + moveBy, 1);
+				filters.splice(idx, 0, filter);
+			}
+		);
+	}
 }
 
-export type SetFilterValue = ISetFilterValue | ISetDropShadowFilter;
+export class NumericSpriteFilter<K extends string> {
+	private readonly _value: Ref<number>;
 
-export function applyFilter(obj: IHasSpriteFilters, command: SetFilterValue) {
-	const filter = obj.filters.find((f) => f.type === command.type);
-	if (!filter) return;
-	Object.assign(filter, command);
+	constructor(
+		public readonly type: K,
+		value: number = 0
+	) {
+		this._value = ref(value);
+	}
+
+	get value() {
+		return this._value.value;
+	}
+
+	set value(value: number) {
+		const old = this.value;
+		undoAble(
+			() => void (this._value.value = value),
+			() => void (this._value.value = old)
+		);
+	}
+
+	public clone(): NumericSpriteFilter<K> {
+		return new NumericSpriteFilter(this.type, this.value);
+	}
 }
 
-export interface IAddFilterAction {
-	readonly id?: IObject['id'];
-	readonly panelId: IPanel['id'];
-	readonly type: SpriteFilter['type'];
-	readonly idx: number;
-}
+export class DropShadowSpriteFilter {
+	public readonly type = 'drop-shadow';
 
-export interface IRemoveFilterAction {
-	readonly id?: IObject['id'];
-	readonly panelId: IPanel['id'];
-	readonly idx: number;
-}
+	private readonly _offsetX = ref(10);
+	private readonly _offsetY = ref(10);
+	private readonly _blurRadius = ref(0);
+	private readonly _color = ref('#555555');
 
-export interface IMoveFilterAction {
-	readonly id?: IObject['id'];
-	readonly panelId: IPanel['id'];
-	readonly idx: number;
-	readonly moveBy: number;
-}
+	get offsetX() {
+		return this._offsetX.value;
+	}
 
-export interface ISetFilterAction {
-	readonly id?: IObject['id'];
-	readonly panelId: IPanel['id'];
-	readonly idx: number;
-	readonly value?: number;
-	readonly offsetX?: number;
-	readonly offsetY?: number;
-	readonly blurRadius?: number;
-	readonly color?: string;
+	set offsetX(value: number) {
+		const old = this._offsetX.value;
+		undoAble(
+			() => void (this._offsetX.value = value),
+			() => void (this._offsetX.value = old)
+		);
+	}
+
+	get offsetY() {
+		return this._offsetY.value;
+	}
+
+	set offsetY(value: number) {
+		const old = this._offsetY.value;
+		undoAble(
+			() => void (this._offsetY.value = value),
+			() => void (this._offsetY.value = old)
+		);
+	}
+
+	get blurRadius() {
+		return this._blurRadius.value;
+	}
+
+	set blurRadius(value: number) {
+		const old = this._blurRadius.value;
+		undoAble(
+			() => void (this._blurRadius.value = value),
+			() => void (this._blurRadius.value = old)
+		);
+	}
+
+	get color() {
+		return this._color.value;
+	}
+
+	set color(value: string) {
+		const old = this._color.value;
+		undoAble(
+			() => void (this._color.value = value),
+			() => void (this._color.value = old)
+		);
+	}
+
+	public clone(): DropShadowSpriteFilter {
+		const ret = new DropShadowSpriteFilter();
+		ret._offsetX.value = this._offsetX.value;
+		ret._offsetY.value = this._offsetY.value;
+		ret._blurRadius.value = this._blurRadius.value;
+		ret._color.value = this._color.value;
+		return ret;
+	}
 }

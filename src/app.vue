@@ -58,20 +58,7 @@ import { packsUrl } from '@/config';
 import environment from '@/environments/environment';
 import eventBus, { InvalidateRenderEvent } from '@/eventbus/event-bus';
 import { transaction } from '@/history-engine/transaction';
-import type {
-	ICharacter,
-	IShiftCharacterSlotAction,
-} from '@/store/object-types/characters';
-import type { ICreateTextBoxAction } from '@/store/object-types/textbox';
-import type {
-	ICopyObjectToClipboardAction,
-	IObject,
-	IPasteFromClipboardAction,
-	IRemoveObjectAction,
-	ISetObjectPositionMutation,
-	ISetSpriteRotationMutation,
-} from '@/store/objects';
-import type { ISetCurrentMutation } from '@/store/panels';
+import { state as store } from '@/store/root';
 import '@/styles/globals.scss';
 import {
 	computed,
@@ -84,10 +71,7 @@ import {
 	useTemplateRef,
 	watch,
 } from 'vue';
-import { Repo } from './models/repo';
-import { type IRemovePacksAction, useStore } from './store';
 
-const store = useStore();
 const app = useTemplateRef('app');
 
 const SingleBox = defineAsyncComponent(
@@ -104,7 +88,7 @@ const preLoading = ref(true);
 const renderer = ref(null! as typeof PreviewRender);
 
 function drawLastDownload(): void {
-	const last = store.state.ui.lastDownload;
+	const last = store.ui.lastDownload;
 	if (last == null) return;
 	renderer.value.blendOver(last);
 }
@@ -212,10 +196,10 @@ onUnmounted(() => {
 //#endregion responsive layouting
 
 const objects = computed(() => {
-	const panels = store.state.panels;
+	const panels = store.panels;
 	const currentPanel = panels.panels[viewport.value.currentPanel];
 	if (currentPanel == null) return [];
-	return [...currentPanel.order, ...currentPanel.onTopOrder];
+	return [...currentPanel.lowerOrder, ...currentPanel.topOrder];
 });
 
 //#region drag-and-drop
@@ -228,7 +212,7 @@ onDocEvent('dragover', cancleEvent, true);
 //#endregion drag-and-drop
 //#region dark mode
 const systemPrefersDarkMode = ref(false);
-const userPrefersDarkMode = computed(() => store.state.ui.useDarkTheme);
+const userPrefersDarkMode = computed(() => store.ui.useDarkTheme);
 
 watch(
 	() => userPrefersDarkMode.value ?? systemPrefersDarkMode.value,
@@ -285,19 +269,19 @@ function showDialog(search: string | undefined) {
 //#endregion pack dialog
 //#region nsfw
 import { NsfwNames, NsfwPaths } from './constants/nsfw';
-import { setUpViewport } from './newStore/viewport';
+import type { GenObject } from './store/object-types/object';
+import Textbox from './store/object-types/textbox';
+import { setUpViewport } from './store/viewport';
 import { isInput, isTextArea } from './util/cross-realm';
 
-const nsfw = computed(() => store.state.ui.nsfw);
+const nsfw = computed(() => store.ui.nsfw);
 watch(
 	() => nsfw.value,
 	async (value) => {
 		if (value) {
-			await store.dispatch('content/loadContentPacks', NsfwPaths);
+			store.content.loadContentPacks(NsfwPaths);
 		} else {
-			await store.dispatch('removePacks', {
-				packs: NsfwNames,
-			} as IRemovePacksAction);
+			store.content.removeContentPacks(NsfwNames);
 		}
 	}
 );
@@ -324,9 +308,10 @@ function onKeydown(e: KeyboardEvent) {
 		const ctrl = e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey;
 		const noMod = !e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey;
 		if (ctrl && e.key === 'v') {
-			await store.dispatch('panels/pasteObjectFromClipboard', {
+			// TODO: Fix this
+			/*store.panels.panels[viewport.value.currentPanel].pasteObjectFromClipboard({
 				panelId: viewport.value.currentPanel,
-			} as IPasteFromClipboardAction);
+			});*/
 			e.preventDefault();
 			return;
 		}
@@ -335,13 +320,13 @@ function onKeydown(e: KeyboardEvent) {
 			viewport.value.selection = null;
 			return;
 		}
-		const selectionPanel =
-			store.state.panels.panels[viewport.value.currentPanel];
+		const selectionPanel = store.panels.panels[viewport.value.currentPanel];
 		const selection = selectionPanel.objects[viewport.value.selection!];
 		if (selection == null) return;
 		if (ctrl) {
 			if (e.key === 'c' || e.key === 'x') {
-				await store.dispatch('panels/copyObjectToClipboard', {
+				// TODO: Fix this
+				/*await store.dispatch('panels/copyObjectToClipboard', {
 					id: selection.id,
 					panelId: selection.panelId,
 				} as ICopyObjectToClipboardAction);
@@ -350,16 +335,15 @@ function onKeydown(e: KeyboardEvent) {
 						id: selection.id,
 						panelId: selection.panelId,
 					} as IRemoveObjectAction);
-				}
+				}*/
 				e.preventDefault();
 				return;
 			}
 		} else if (noMod) {
 			if (e.key === 'Delete') {
-				await store.dispatch('panels/removeObject', {
-					id: selection.id,
-					panelId: selection.panelId,
-				} as IRemoveObjectAction);
+				store.panels.panels[viewport.value.currentPanel].removeObject(
+					selection
+				);
 				return;
 			}
 
@@ -368,62 +352,41 @@ function onKeydown(e: KeyboardEvent) {
 				if (e.shiftKey) {
 					delta /= Math.abs(delta);
 				}
-				store.commit('panels/setRotation', {
-					id: selection.id,
-					panelId: selection.panelId,
-					rotation: selection.rotation + delta,
-				} as ISetSpriteRotationMutation);
+				selection.rotation += delta;
 				e.stopPropagation();
 				e.preventDefault();
 				return;
 			}
 
 			if (selection.type === 'character') {
-				const character = selection as ICharacter;
-				if (!character.freeMove) {
+				if (!selection.freeMove) {
 					if (e.key === 'ArrowLeft') {
-						await store.dispatch('panels/shiftCharacterSlot', {
-							id: character.id,
-							panelId: character.panelId,
-							delta: -1,
-						} as IShiftCharacterSlotAction);
+						selection.shiftCharacterSlot(-1);
 						return;
 					}
 					if (e.key === 'ArrowRight') {
-						await store.dispatch('panels/shiftCharacterSlot', {
-							id: character.id,
-							panelId: character.panelId,
-							delta: 1,
-						} as IShiftCharacterSlotAction);
+						selection.shiftCharacterSlot(1);
 						return;
 					}
 				}
 			}
-			let { x, y } = selection;
 			const stepSize = e.shiftKey ? 1 : arrowMoveStepSize;
 			switch (e.key) {
 				case 'ArrowLeft':
-					x -= stepSize;
+					selection.x -= stepSize;
 					break;
 				case 'ArrowRight':
-					x += stepSize;
+					selection.x += stepSize;
 					break;
 				case 'ArrowUp':
-					y -= stepSize;
+					selection.y -= stepSize;
 					break;
 				case 'ArrowDown':
-					y += stepSize;
+					selection.y += stepSize;
 					break;
 				default:
 					return;
 			}
-
-			await store.dispatch('panels/setPosition', {
-				id: selection.id,
-				panelId: selection.panelId,
-				x,
-				y,
-			} as ISetObjectPositionMutation);
 		}
 	});
 }
@@ -459,7 +422,7 @@ onWinEvent('mousemove', testShortcutKey, true);
 onWinEvent('blur', removeCtrlLables);
 //#endregion shortcuts
 //#region selection
-function select(id: IObject['id']): void {
+function select(id: GenObject['id']): void {
 	transaction(() => {
 		if (viewport.value.selection === id) return;
 		viewport.value.selection = id;
@@ -482,29 +445,25 @@ watch(
 );
 //#endregion selection
 //#region initialize
-Repo.setStore(store);
-
 window.store = store;
 window.env = environment;
 
 onMounted(async () => {
 	await environment.loadGameMode();
-	environment.connectToStore(/* this.vuexHistory, */ store);
 	preLoading.value = false;
 	const settings = await environment.loadSettings();
 
-	if (store.state.panels.lastPanelId === -1) {
+	if (store.panels.lastPanelId === -1) {
 		await transaction(async () => {
 			environment.state.looseTextParsing =
 				settings.looseTextParsing || true;
-			store.commit('ui/setLqRendering', settings.lq ?? false);
-			store.commit('ui/setDarkTheme', settings.darkMode ?? null);
-			store.commit(
-				'ui/setDefaultCharacterTalkingZoom',
-				settings.defaultCharacterTalkingZoom ?? true
-			);
 
-			await store.dispatch('content/loadContentPacks', [
+			store.ui.lqRendering = settings.lq ?? false;
+			store.ui.useDarkTheme = settings.darkMode ?? null;
+			store.ui.defaultCharacterTalkingZoom =
+				settings.defaultCharacterTalkingZoom ?? true;
+
+			await store.content.loadContentPacks([
 				`${packsUrl}buildin.base.backgrounds.json`,
 				`${packsUrl}buildin.base.monika.json`,
 				`${packsUrl}buildin.base.sayori.json`,
@@ -519,28 +478,20 @@ onMounted(async () => {
 			]);
 
 			if (!(await environment.loadDefaultTemplate())) {
-				await environment.loadContentPacks();
+				environment.loadContentPacks();
 
-				const panelId = await store.dispatch('panels/createPanel');
-				viewport.value.currentPanel = panelId;
-				if (
-					Object.keys(store.state.panels.panels[panelId].objects)
-						.length === 0
-				) {
-					await store.dispatch('panels/createTextBox', {
-						panelId,
-						text:
-							'Hi! Click here to edit this textbox! ' +
+				const panel = store.panels.createPanel();
+				viewport.value.currentPanel = panel.id;
+				if (Object.keys(panel.objects).length === 0) {
+					Textbox.create(
+						panel,
+						'Hi! Click here to edit this textbox! ' +
 							`${viewport.value.isVertical ? 'To the right' : 'At the bottom'}` +
-							' you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more! Use the camera icon to download the image.',
-					} as ICreateTextBoxAction);
+							' you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more! Use the camera icon to download the image.'
+					);
 				}
-				store.commit('panels/setCurrentBackground', {
-					current: 'dddg.buildin.backgrounds:ddlc.clubroom',
-					panelId: viewport.value.currentPanel,
-				} as ISetCurrentMutation);
-
-				store.commit('ui/setNsfw', settings.nsfw ?? false);
+				panel.background.current = 'ddlc.clubroom';
+				store.ui.nsfw = settings.nsfw ?? false;
 			}
 		});
 	}

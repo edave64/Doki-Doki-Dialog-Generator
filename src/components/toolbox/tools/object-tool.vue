@@ -240,32 +240,17 @@ import ImageOptions from '@/components/toolbox/subtools/image-options/image-opti
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
 import getConstants from '@/constants';
-import eventBus, { FailureEvent } from '@/eventbus/event-bus';
 import { transaction } from '@/history-engine/transaction';
-import { useViewport } from '@/hooks/use-viewport';
-import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
-import { SceneRenderer } from '@/renderables/scene-renderer';
-import { useStore } from '@/store';
 import { allowScaleModification } from '@/store/migrations/v2-5';
-import type {
-	ICopyObjectToClipboardAction,
-	IObject,
-	ISetLabelMutation,
-	ISetLinkMutation,
-	ISetNameboxWidthMutation,
-	ISetObjectScaleMutation,
-	ISetObjectSkewMutation,
-	ISetRatioAction,
-	ISetTextBoxColor,
-} from '@/store/objects';
-import { decomposeMatrix } from '@/util/math';
-import { genericSetterMerged } from '@/util/simple-settable';
+import type { GenObject } from '@/store/object-types/object';
+import { state } from '@/store/root';
+import { propWithTransaction } from '@/util/simple-settable';
 import { computed, ref } from 'vue';
 import TextFormatting from '../subtools/text/text-formatting.vue';
 
 const props = withDefaults(
 	defineProps<{
-		object: IObject;
+		object: GenObject;
 		title: string;
 		textHandler?: Handler;
 		colorHandler?: Handler;
@@ -276,108 +261,37 @@ const props = withDefaults(
 	}
 );
 
-const store = useStore();
 const root = ref(null! as HTMLElement);
-const setable = <K extends keyof IObject>(prop: K, message: string) =>
-	genericSetterMerged(
-		store,
-		computed(() => props.object),
-		message,
-		false,
-		prop
-	);
-setupPanelMixin(root);
-const viewport = useViewport();
 
-const transformLink = computed({
-	get(): IObject['id'] | '' {
-		return props.object.linkedTo ?? '';
-	},
-	set(value: IObject['id'] | '') {
-		const obj = props.object;
-		const link = value === '' ? null : value;
-		const currentSceneRenderer: SceneRenderer = getMainSceneRenderer(
-			store,
-			viewport.value
-		)!;
-		const objRender = currentSceneRenderer?.getLastRenderObject(obj.id);
-		const linkRender =
-			link === null
-				? currentSceneRenderer?.getLastRenderObject(obj.linkedTo!)
-				: currentSceneRenderer?.getLastRenderObject(link);
-		try {
-			if (!objRender || !linkRender) {
-				store.commit('panels/setLink', {
-					panelId: currentPanel.value.id,
-					id: obj.id,
-					link,
-					x: obj.x,
-					y: obj.y,
-					scaleX: obj.scaleX,
-					scaleY: obj.scaleY,
-					skewX: obj.skewX,
-					skewY: obj.skewY,
-					rotation: obj.rotation,
-				} as ISetLinkMutation);
-			} else if (link == null) {
-				store.commit('panels/setLink', {
-					panelId: currentPanel.value.id,
-					id: obj.id,
-					link,
-					...decomposeMatrix(objRender.preparedTransform),
-				} as ISetLinkMutation);
-			} else {
-				const inverse = linkRender.preparedTransform.inverse();
-				const newTransform = inverse.multiply(
-					objRender.preparedTransform
-				);
-				console.log(objRender.preparedTransform);
-				console.log(
-					linkRender.preparedTransform.multiply(newTransform)
-				);
-				console.log(newTransform);
-				store.commit('panels/setLink', {
-					panelId: currentPanel.value.id,
-					id: obj.id,
-					link,
-					...decomposeMatrix(newTransform!),
-				} as ISetLinkMutation);
-			}
-		} catch (e) {
-			if (e instanceof Error) {
-				eventBus.fire(new FailureEvent(e.message));
-			} else {
-				eventBus.fire(new FailureEvent('' + e));
-			}
-		}
-	},
-});
+setupPanelMixin(root);
+
+const object = computed(() => props.object);
+
+const transformLink = propWithTransaction(object, 'linkedTo');
+
 const imageOptionsOpen = ref(false);
 const modalNameInput = ref('');
 const showRename = ref(false);
 const localColorHandler = ref(null as Handler | null);
 
-const flip = setable('flip', 'panels/setFlip');
-const rotation = setable('rotation', 'panels/setRotation');
-const enlargeWhenTalking = setable(
-	'enlargeWhenTalking',
-	'panels/setEnlargeWhenTalking'
-);
+const flip = propWithTransaction(object, 'flip');
+const rotation = propWithTransaction(object, 'rotation');
+const enlargeWhenTalking = propWithTransaction(object, 'enlargeWhenTalking');
 
 const allowZoom = computed(() => {
 	return allowScaleModification(props.object);
 });
 
 const currentPanel = computed(() => {
-	return store.state['panels'].panels[props.object.panelId];
+	return state.panels.panels[props.object.panelId];
 });
 
-const linkObjectList = computed((): [IObject['id'], string][] => {
+const linkObjectList = computed((): [GenObject['id'], string][] => {
 	const panel = currentPanel.value;
 
-	const ret: [IObject['id'], string][] = [];
+	const ret: [GenObject['id'], string][] = [];
 
-	for (const id of [...panel.order, ...panel.onTopOrder]) {
+	for (const id of [...panel.lowerOrder, ...panel.topOrder]) {
 		const obj = panel.objects[id];
 		if (obj.label === null || obj === props.object) continue;
 		ret.push([id, obj.label!]);
@@ -388,41 +302,8 @@ const linkObjectList = computed((): [IObject['id'], string][] => {
 // Don't think about it. Don't question it.
 const easterEgg = location.search.includes('alex');
 
-const preserveRatio = computed({
-	get(): boolean {
-		return props.object.preserveRatio;
-	},
-	set(preserveRatio: boolean) {
-		transaction(async () => {
-			await store.dispatch('panels/setPreserveRatio', {
-				id: props.object.id,
-				panelId: props.object.panelId,
-				preserveRatio,
-			} as ISetRatioAction);
-		});
-	},
-});
-
-const nameboxWidth = computed({
-	get(): number | '' {
-		const val = props.object.nameboxWidth;
-		if (val === null) return '';
-		return val;
-	},
-	set(value: number | '') {
-		const val =
-			typeof value === 'string' && value.trim() === ''
-				? null
-				: parseInt(value + '');
-		transaction(() => {
-			store.commit('panels/setObjectNameboxWidth', {
-				id: props.object.id,
-				panelId: props.object.panelId,
-				nameboxWidth: val,
-			} as ISetNameboxWidthMutation);
-		});
-	},
-});
+const preserveRatio = propWithTransaction(object, 'preserveRatio');
+const nameboxWidth = propWithTransaction(object, 'nameboxWidth');
 
 const scaleX = computed({
 	get(): number {
@@ -430,14 +311,7 @@ const scaleX = computed({
 	},
 	set(zoom: number): void {
 		transaction(() => {
-			store.commit('panels/setObjectScale', {
-				id: props.object.id,
-				panelId: props.object.panelId,
-				scaleX: zoom / 100,
-				scaleY: props.object.preserveRatio
-					? (zoom / 100) * props.object.ratio
-					: props.object.scaleY,
-			} as ISetObjectScaleMutation);
+			object.value.scaleX = zoom / 100;
 		});
 	},
 });
@@ -448,49 +322,13 @@ const scaleY = computed({
 	},
 	set(zoom: number): void {
 		transaction(() => {
-			store.commit('panels/setObjectScale', {
-				id: props.object.id,
-				panelId: props.object.panelId,
-				scaleX: props.object.preserveRatio
-					? zoom / 100 / props.object.ratio
-					: props.object.scaleX,
-				scaleY: zoom / 100,
-			} as ISetObjectScaleMutation);
+			object.value.scaleY = zoom / 100;
 		});
 	},
 });
 
-const skewX = computed({
-	get(): number {
-		return props.object.skewX;
-	},
-	set(skew: number): void {
-		transaction(() => {
-			store.commit('panels/setObjectSkew', {
-				id: props.object.id,
-				panelId: props.object.panelId,
-				skewX: skew,
-				skewY: props.object.skewY,
-			} as ISetObjectSkewMutation);
-		});
-	},
-});
-
-const skewY = computed({
-	get(): number {
-		return props.object.skewY;
-	},
-	set(skew: number): void {
-		transaction(() => {
-			store.commit('panels/setObjectSkew', {
-				id: props.object.id,
-				panelId: props.object.panelId,
-				skewX: props.object.skewX,
-				skewY: skew,
-			} as ISetObjectSkewMutation);
-		});
-	},
-});
+const skewX = propWithTransaction(object, 'skewX');
+const skewY = propWithTransaction(object, 'skewY');
 
 const defaultNameboxWidth = computed(() => getConstants().TextBox.NameboxWidth);
 const finalColorHandler = computed(
@@ -504,23 +342,22 @@ const useCustomTextboxColor = computed({
 	},
 	set(val: boolean) {
 		transaction(() => {
-			store.commit('panels/setTextboxColor', {
-				panelId: props.object.panelId,
-				id: props.object.id,
-				textboxColor: val
-					? getConstants().TextBoxCustom.textboxDefaultColor
-					: null,
-			} as ICopyObjectToClipboardAction);
+			object.value.textboxColor = val
+				? getConstants().TextBoxCustom.textboxDefaultColor
+				: null;
 		});
 	},
 });
 
 function copy() {
 	transaction(async () => {
+		/*
+		TODO: Implement copy
 		await store.dispatch('panels/copyObjectToClipboard', {
 			panelId: props.object.panelId,
 			id: props.object.id,
 		} as ICopyObjectToClipboardAction);
+		 */
 	});
 }
 
@@ -533,11 +370,7 @@ function renameOption(option: string) {
 	showRename.value = false;
 	if (option === 'Apply') {
 		transaction(() => {
-			store.commit('panels/setLabel', {
-				panelId: props.object.panelId,
-				id: props.object.id,
-				label: modalNameInput.value,
-			} as ISetLabelMutation);
+			object.value.label = modalNameInput.value;
 		});
 	}
 }
@@ -548,11 +381,7 @@ function selectTextboxColor() {
 		get: () => props.object.textboxColor,
 		set: (color: string) => {
 			transaction(() => {
-				store.commit('panels/setTextboxColor', {
-					panelId: props.object.panelId,
-					id: props.object.id,
-					textboxColor: color,
-				} as ISetTextBoxColor);
+				object.value.textboxColor = color;
 			});
 		},
 		leave: () => {

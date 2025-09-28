@@ -42,14 +42,13 @@ import { transaction } from '@/history-engine/transaction';
 import { useSelection, useViewport } from '@/hooks/use-viewport';
 import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
 import { RenderContext } from '@/renderer/renderer-context';
-import { useStore } from '@/store';
-import type { ICreateSpriteAction } from '@/store/object-types/sprite';
-import type { IObject, ISetObjectPositionMutation } from '@/store/objects';
+import type { GenObject } from '@/store/object-types/object';
+import Sprite from '@/store/object-types/sprite';
+import { state } from '@/store/root';
 import { disposeCanvas } from '@/util/canvas';
 import { isMouseEvent, isTouchEvent } from '@/util/cross-realm';
 import type { DeepReadonly } from 'ts-essentials';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import type { MutationPayload } from 'vuex';
 import { Grabbies } from './render-grabbies';
 
 const props = withDefaults(
@@ -61,24 +60,24 @@ const props = withDefaults(
 	{ preLoading: false, canvasWidth: 0, canvasHeight: 0 }
 );
 
-const store = useStore();
 const sd = ref(null! as HTMLCanvasElement);
 const sdCtx = ref(null! as CanvasRenderingContext2D);
 const queuedRender = ref(null as null | number);
 const showingLast = ref(false);
 const dropPreventClick = ref(false);
 const viewport = useViewport();
+const panel = computed(() => state.panels.panels[viewport.value.currentPanel]);
 
 const grabbies = new Grabbies(viewport);
 
 const selection = useSelection();
 const currentPanel = computed(
-	() => store.state.panels.panels[viewport.value.currentPanel]
+	() => state.panels.panels[viewport.value.currentPanel]
 );
-const lqRendering = computed(() => store.state.ui.lqRendering);
+const lqRendering = computed(() => state.ui.lqRendering);
 function getSceneRender() {
 	if (props.preLoading) return null!;
-	const renderer = getMainSceneRenderer(store, viewport.value);
+	const renderer = getMainSceneRenderer(viewport.value);
 	renderer?.setPanelId(viewport.value.currentPanel);
 	return renderer;
 }
@@ -105,7 +104,7 @@ async function render_(): Promise<void> {
 		queuedRender.value = null;
 	}
 	if (props.preLoading) return;
-	if (store.state.unsafe) return;
+	if (state.unsafe) return;
 
 	try {
 		await getSceneRender()?.render(!lqRendering.value, true, true);
@@ -195,7 +194,7 @@ function onUiClick(e: MouseEvent): void {
 	const selectionId = selection.value;
 
 	const currentObjectIdx = objects.findIndex((id) => id === selectionId);
-	let selectedObject: IObject['id'] | null;
+	let selectedObject: GenObject['id'] | null;
 
 	if (currentObjectIdx === 0) {
 		selectedObject = null;
@@ -224,9 +223,8 @@ eventBus.subscribe(StateLoadingEvent, () => {
 		cache.setPanelId(-1);
 	}
 });
-store.subscribe((mut: MutationPayload) => {
-	if (mut.type === 'panels/setPanelPreview') return;
-	if (mut.type === 'panels/currentPanel') return;
+
+transaction.onClear(() => {
 	invalidateRender();
 });
 
@@ -277,7 +275,7 @@ function handleColorPickerClick(sx: number, sy: number) {
 			data[3] / 255
 		).toString()})`;
 		transaction(() => {
-			store.commit('ui/setColorPicker', false);
+			viewport.value.pickColor = false;
 			eventBus.fire(new ColorPickedEvent(hex));
 		});
 		return true;
@@ -290,9 +288,9 @@ async function download(): Promise<void> {
 	const url = await getSceneRender()!.download();
 
 	await transaction(() => {
-		const oldUrl = store.state.ui.lastDownload;
+		const oldUrl = state.ui.lastDownload;
 
-		store.commit('ui/setLastDownload', url);
+		state.ui.lastDownload = url;
 		if (oldUrl != null) {
 			URL.revokeObjectURL(oldUrl);
 		}
@@ -300,7 +298,7 @@ async function download(): Promise<void> {
 }
 //#endregion download
 //#region drag and drop
-let draggedObject: DeepReadonly<IObject> | null = null;
+let draggedObject: DeepReadonly<GenObject> | null = null;
 let dragTransform: DOMMatrixReadOnly = null!;
 let dragXOffset = 0;
 let dragYOffset = 0;
@@ -322,7 +320,7 @@ function dragStart(rx: number, ry: number) {
 
 	draggedObject = currentPanel.value.objects[selectionId];
 	dragTransform =
-		getMainSceneRenderer(store, viewport.value)!
+		getMainSceneRenderer(viewport.value)!
 			.getLastRenderObject(draggedObject.linkedTo!)
 			?.preparedTransform?.inverse() ?? new DOMMatrixReadOnly();
 	const [x, y] = toRendererCoordinate(rx, ry, dragTransform);
@@ -352,7 +350,6 @@ function onSpriteDragMove(e: MouseEvent | TouchEvent) {
 	let [x, y] = toRendererCoordinate(oX, oY, dragTransform);
 	if (
 		grabbies.onMove(
-			store,
 			new DOMPointReadOnly(...toRendererCoordinate(oX, oY)),
 			e.shiftKey
 		)
@@ -373,12 +370,15 @@ function onSpriteDragMove(e: MouseEvent | TouchEvent) {
 		}
 	}
 	transaction(async () => {
-		await store.dispatch('panels/setPosition', {
-			panelId: draggedObject!.panelId,
-			id: draggedObject!.id,
-			x,
-			y,
-		} as ISetObjectPositionMutation);
+		const obj =
+			state.panels.panels[draggedObject!.panelId].objects[
+				draggedObject!.id
+			];
+
+		transaction(() => {
+			obj.x = x;
+			obj.y = y;
+		});
 	});
 }
 async function onDrop(e: DragEvent) {
@@ -392,25 +392,16 @@ async function onDrop(e: DragEvent) {
 			const file = item.getAsFile()!;
 			const url = URL.createObjectURL(file);
 			try {
-				const assetUrl: string = await store.dispatch(
-					'uploadUrls/add',
-					{
-						name: file.name,
-						url,
-					}
-				);
+				const assetUrl = await state.uploadUrls.add(file.name, url);
 
 				await transaction(async () => {
-					await store.dispatch('panels/createSprite', {
-						panelId: viewport.value.currentPanel,
-						assets: [
-							{
-								hq: assetUrl,
-								lq: assetUrl,
-								sourcePack: 'dddg.uploaded.sprites',
-							},
-						],
-					} as ICreateSpriteAction);
+					Sprite.create(panel.value, [
+						{
+							hq: assetUrl,
+							lq: assetUrl,
+							sourcePack: 'dddg.uploaded.sprites',
+						},
+					]);
 				});
 			} catch {
 				URL.revokeObjectURL(url);

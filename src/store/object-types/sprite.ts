@@ -1,47 +1,37 @@
-import { getAAsset } from '@/asset-manager';
-import getConstants from '@/constants';
-import { ImageAsset } from '@/render-utils/assets/image-asset';
-import type { ICreateObjectMutation, IObject } from '@/store/objects';
-import type { ActionTree, MutationTree } from 'vuex';
-import type { IRootState } from '..';
-import type { IAssetSwitch } from '../content';
-import type { IPanel, IPanels } from '../panels';
-import { baseProps } from './base-object-props';
+import type { IAssetSwitch } from '@/store/content';
+import type { Panel } from '../panels';
+import { ui } from '../ui';
+import BaseObject, { type GenObject } from './object';
 
-export interface ISprite extends IObject {
-	type: 'sprite';
-	assets: IAssetSwitch[];
-}
+export default class Sprite extends BaseObject<'sprite'> {
+	public get type() {
+		return 'sprite' as const;
+	}
 
-export const spriteMutations: MutationTree<IPanels> = {};
+	protected constructor(
+		panel: Panel,
+		public readonly assets: IAssetSwitch[],
+		id?: GenObject['id']
+	) {
+		super(panel, id);
 
-export const spriteActions: ActionTree<IPanels, IRootState> = {
-	async createSprite(
-		{ commit, rootState, state },
-		command: ICreateSpriteAction
-	): Promise<IObject['id'] | undefined> {
-		const asset = await getAAsset(command.assets[0], false);
-		if (!(asset instanceof ImageAsset)) return;
-		const id = state.panels[command.panelId].lastObjId + 1;
-		commit('create', {
-			object: {
-				...baseProps(),
-				assets: command.assets,
-				height: asset.height,
-				width: asset.width,
-				id,
-				panelId: command.panelId,
-				onTop: false,
-				type: 'sprite',
-				y: getConstants().Base.screenHeight / 2,
-				enlargeWhenTalking: rootState.ui.defaultCharacterTalkingZoom,
-			} as ISprite,
-		} as ICreateObjectMutation);
-		return id;
-	},
-};
+		this._enlargeWhenTalking.value = ui.defaultCharacterTalkingZoom;
+	}
 
-export interface ICreateSpriteAction {
-	readonly assets: IAssetSwitch[];
-	readonly panelId: IPanel['id'];
+	public static create(panel: Panel, assets: IAssetSwitch[]) {
+		return new Sprite(panel, assets);
+	}
+
+	public override makeClone(
+		panel: Panel,
+		idTranslationTable: Map<BaseObject['id'], BaseObject['id']>
+	): Sprite {
+		const ret = new Sprite(
+			panel,
+			this.assets,
+			idTranslationTable.get(this.id)
+		);
+		this.moveAllRefs(this, ret);
+		return ret;
+	}
 }

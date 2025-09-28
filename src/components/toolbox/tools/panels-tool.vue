@@ -214,31 +214,19 @@ import environment from '@/environments/environment';
 import eventBus, {
 	RenderUpdatedEvent,
 	ShowMessageEvent,
-	StateLoadingEvent,
 } from '@/eventbus/event-bus';
 import { transaction } from '@/history-engine/transaction';
 import { SceneRenderer } from '@/renderables/scene-renderer';
-import { useStore } from '@/store';
-import type { IObject } from '@/store/objects';
-import type {
-	IDeletePanelAction,
-	IDuplicatePanelAction,
-	IMovePanelAction,
-	IPanel,
-	ISetPanelPreviewMutation,
-} from '@/store/panels';
 import { safeAsync } from '@/util/errors';
 import type { DeepReadonly } from 'ts-essentials';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import ImageOptions from '../subtools/image-options/image-options.vue';
 
 interface IPanelButton {
-	id: IPanel['id'];
+	id: Panel['id'];
 	image: string;
 	text: string;
 }
-
-const store = useStore();
 
 const qualityFactor = 100;
 const defaultQuality = 90;
@@ -257,7 +245,7 @@ const loadUpload = ref(null! as HTMLInputElement);
 const baseConst = getConstants().Base;
 
 const currentPanel = computed(
-	() => store.state.panels.panels[viewport.value.currentPanel]
+	() => state.panels.panels[viewport.value.currentPanel]
 );
 const isLossy = computed(() => format.value !== 'image/png');
 const canDeletePanel = computed(() => panelButtons.value.length > 1);
@@ -280,33 +268,25 @@ Promise.allSettled([isWebPSupported(), isHeifSupported()]).then(
 );
 //#endregion Format-Support
 //#region Panel-Buttons
-import type { IChoices } from '@/store/object-types/choices';
-import type { INotification } from '@/store/object-types/notification';
-import type { IPoem } from '@/store/object-types/poem';
-import type { ITextBox } from '@/store/object-types/textbox';
-
 const canMoveAhead = computed((): boolean => {
-	const panelOrder = store.state.panels.panelOrder;
-	const idx = panelOrder.indexOf(currentPanel.value.id);
+	const idx = state.panels.panels.indexOf(currentPanel.value);
 	return idx > 0;
 });
 
 const canMoveBehind = computed((): boolean => {
-	const panelOrder = store.state.panels.panelOrder;
-	const idx = panelOrder.indexOf(currentPanel.value.id);
-	return idx < panelOrder.length - 1;
+	const panels = state.panels.panels;
+	const idx = panels.indexOf(currentPanel.value);
+	return idx < panels.length - 1;
 });
 
 const panelButtons = computed((): IPanelButton[] => {
-	const panelOrder = store.state.panels.panelOrder;
-	return panelOrder.map((id) => {
-		const panel = store.state.panels.panels[id];
-		const objectOrders = store.state.panels.panels[id];
-		const txtBox = [...objectOrders.order, ...objectOrders.onTopOrder]
-			.map((objId) => store.state.panels.panels[id].objects[objId])
+	const panels = state.panels.panels;
+	return panels.map((panel) => {
+		const txtBox = [...panel.lowerOrder, ...panel.topOrder]
+			.map((objId) => panel.objects[objId])
 			.map(extractObjectText);
 		return {
-			id,
+			id: panel.id,
 			image: panel.lastRender,
 			text: txtBox.reduce(
 				(acc, current) => (acc.length > current.length ? acc : current),
@@ -316,18 +296,16 @@ const panelButtons = computed((): IPanelButton[] => {
 	});
 });
 
-function extractObjectText(obj: DeepReadonly<IObject>) {
+function extractObjectText(obj: DeepReadonly<GenObject>) {
 	switch (obj.type) {
 		case 'textBox':
-			return (obj as ITextBox).text;
+			return obj.text;
 		case 'notification':
-			return (obj as INotification).text;
+			return obj.text;
 		case 'poem':
-			return (obj as IPoem).text;
+			return obj.text;
 		case 'choice':
-			return (obj as IChoices).choices
-				.map((choice) => `[${choice.text}]`)
-				.join('\n');
+			return obj.choices.map((choice) => `[${choice.text}]`).join('\n');
 	}
 	return '';
 }
@@ -389,7 +367,7 @@ async function download() {
 	});
 }
 async function renderObjects<T>(
-	distribution: DeepReadonly<IPanel['id'][][]>,
+	distribution: DeepReadonly<Panel['id'][][]>,
 	hq: boolean,
 	horizontal: boolean,
 	mapper: (imageIdx: number, canvas: HTMLCanvasElement) => Promise<T>
@@ -413,7 +391,6 @@ async function renderObjects<T>(
 			for (let panelIdx = 0; panelIdx < image.length; ++panelIdx) {
 				const panelId = image[panelIdx];
 				const sceneRenderer = new SceneRenderer(
-					store,
 					panelId,
 					baseConst.screenWidth,
 					baseConst.screenHeight
@@ -439,8 +416,8 @@ async function renderObjects<T>(
 	}
 	return ret;
 }
-function getLimitedPanelList(): DeepReadonly<IPanel['id'][]> {
-	const max = store.state.panels.panelOrder.length - 1;
+function getLimitedPanelList(): DeepReadonly<Panel['id'][]> {
+	const max = state.panels.panels.length - 1;
 	const min = 0;
 	const parts = pages.value.split(',');
 	const listedPages: number[] = [];
@@ -473,21 +450,21 @@ function getLimitedPanelList(): DeepReadonly<IPanel['id'][]> {
 	}
 
 	if (!foundMatch) {
-		return store.state.panels.panelOrder;
+		return state.panels.panels.map((panel) => panel.id);
 	}
 
 	return listedPages
 		.sort((a, b) => a - b)
 		.filter((value, idx, ary) => ary[idx - 1] !== value)
-		.map((pageIdx) => store.state.panels.panelOrder[pageIdx]);
+		.map((pageIdx) => state.panels.panels[pageIdx].id);
 }
-function getPanelDistibution(): DeepReadonly<IPanel['id'][][]> {
+function getPanelDistibution(): DeepReadonly<Panel['id'][][]> {
 	const panelOrder = getLimitedPanelList();
 	if (isNaN(ppi.value)) {
 		ppi.value = 0;
 	}
 	if (ppi.value === 0) return [panelOrder];
-	const images: IPanel['id'][][] = [];
+	const images: Panel['id'][][] = [];
 	for (let imageI = 0; imageI < panelOrder.length / ppi.value; ++imageI) {
 		const sliceStart = imageI * ppi.value;
 		const sliceEnd = sliceStart + ppi.value;
@@ -498,16 +475,16 @@ function getPanelDistibution(): DeepReadonly<IPanel['id'][][]> {
 //#endregion Download
 //#region Actions
 async function addNewPanel(): Promise<void> {
-	await transaction(async () => {
-		await store.dispatch('panels/duplicatePanel', {
-			panelId: viewport.value.currentPanel,
-		} as IDuplicatePanelAction);
-		viewport.value.currentPanel = store.state.panels.lastPanelId;
+	transaction(async () => {
+		state.panels.duplicatePanel(
+			state.panels.panels[viewport.value.currentPanel]
+		);
+		viewport.value.currentPanel = state.panels.lastPanelId;
 	});
 	await nextTick();
 	moveFocusToActivePanel();
 }
-function updateCurrentPanel(panelId: IPanel['id']) {
+function updateCurrentPanel(panelId: Panel['id']) {
 	transaction(() => {
 		viewport.value.currentPanel = panelId;
 	});
@@ -517,34 +494,37 @@ function updateCurrentPanel(panelId: IPanel['id']) {
 }
 function deletePanel() {
 	transaction(async () => {
-		await store.dispatch('panels/delete', {
-			panelId: viewport.value.currentPanel,
-		} as IDeletePanelAction);
+		state.panels.deletePanel(
+			state.panels.panels[viewport.value.currentPanel]
+		);
 	});
 	nextTick(() => {
 		moveFocusToActivePanel();
 	});
 }
 function moveAhead() {
-	transaction(async () => {
-		await store.dispatch('panels/move', {
-			panelId: currentPanel.value.id,
-			delta: -1,
-		} as IMovePanelAction);
+	transaction(() => {
+		state.panels.movePanel(
+			state.panels.panels[viewport.value.currentPanel],
+			-1
+		);
 	});
 }
 function moveBehind() {
-	transaction(async () => {
-		await store.dispatch('panels/move', {
-			panelId: currentPanel.value.id,
-			delta: 1,
-		} as IMovePanelAction);
+	transaction(() => {
+		state.panels.movePanel(
+			state.panels.panels[viewport.value.currentPanel],
+			1
+		);
 	});
 }
 //#endregion Actions
 //#region Thumbnails
 import { useViewport } from '@/hooks/use-viewport';
 import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
+import type { GenObject } from '@/store/object-types/object';
+import type { Panel } from '@/store/panels';
+import { state } from '@/store/root';
 import { disposeCanvas, makeCanvas } from '@/util/canvas';
 
 const thumbnailFactor = 1 / 4;
@@ -556,18 +536,18 @@ const thumbnailCtx = targetCanvas.getContext('2d')!;
 const isMounted = ref(false);
 const viewport = useViewport();
 
-const missingThumbnails = computed((): IPanel['id'][] => {
-	const panelOrder = store.state.panels.panelOrder;
-	return panelOrder.filter((id) => {
-		const panel = store.state.panels.panels[id];
-		return panel.lastRender == null;
-	});
+const missingThumbnails = computed((): Panel['id'][] => {
+	return state.panels.panels
+		.filter((panel) => {
+			return panel.lastRender == null;
+		})
+		.map((panel) => panel.id);
 });
 
 async function renderCurrentThumbnail() {
 	// FIXME: This sadly makes it so the selection halo is visible in the thumbnails.
 	//        The renderer will lose that once the panels tab is selected, so maybe delay this?
-	const sceneRenderer = getMainSceneRenderer(store, viewport.value);
+	const sceneRenderer = getMainSceneRenderer(viewport.value);
 	if (!sceneRenderer) return;
 	await renderPanelThumbnail(sceneRenderer);
 }
@@ -587,10 +567,7 @@ async function renderPanelThumbnail(sceneRenderer: SceneRenderer) {
 				if (!blob) return;
 				const url = URL.createObjectURL(blob);
 				transaction(() => {
-					store.commit('panels/setPanelPreview', {
-						panelId,
-						url,
-					} as ISetPanelPreviewMutation);
+					state.panels.panels[panelId].lastRender = url;
 				});
 			},
 			(await isWebPSupported()) ? 'image/webp' : 'image/jpeg',
@@ -607,7 +584,6 @@ async function restoreThumbnails() {
 	if (missingThumbnails_.length === 0) return;
 	const toRender = missingThumbnails_[0];
 	const localRenderer = new SceneRenderer(
-		store,
 		toRender,
 		baseConst.screenWidth,
 		baseConst.screenHeight
@@ -635,7 +611,9 @@ eventBus.subscribe(RenderUpdatedEvent, () =>
 //#endregion Thumbnails
 //#region Saving/Loading
 async function save() {
-	const str = await store.dispatch('getSave', true);
+	// TODO: Implement
+	//	const str = await store.dispatch('getSave', true);
+	const str = '';
 	const saveBlob = new Blob([str], {
 		type: 'text/plain',
 	});
@@ -652,6 +630,8 @@ async function save() {
 }
 
 async function load() {
+	// TODO: Implement
+	/*
 	await transaction(async () => {
 		const uploadInput = loadUpload.value;
 		if (!uploadInput.files) return;
@@ -666,6 +646,7 @@ async function load() {
 			);
 		}
 	});
+	*/
 
 	await renderCurrentThumbnail();
 
@@ -674,6 +655,7 @@ async function load() {
 	}, 1000);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function blobToText(file: File): Promise<string> {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();

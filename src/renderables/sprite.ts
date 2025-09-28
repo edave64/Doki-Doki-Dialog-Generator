@@ -1,11 +1,11 @@
-import type { ISprite } from '@/store/object-types/sprite';
+import type SpriteStore from '@/store/object-types/sprite';
 import {
 	AssetListRenderable,
 	type IDrawAssets,
 	type IDrawAssetsUnloaded,
 } from './asset-list-renderable';
 
-export class Sprite extends AssetListRenderable<ISprite> {
+export class Sprite extends AssetListRenderable<SpriteStore> {
 	protected getAssetList(): (IDrawAssets | IDrawAssetsUnloaded)[] {
 		return [
 			{

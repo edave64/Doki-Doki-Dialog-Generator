@@ -3,16 +3,21 @@ import { undoAble } from '@/history-engine/history';
 import type { IAssetSwitch } from '@/store/content';
 import { decomposeMatrix, mod } from '@/util/math';
 import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { computed, ref, type Ref } from 'vue';
+import { computed, isRef, ref, type Ref } from 'vue';
 import type { Panel } from '../panels';
 import { HasSpriteFilters } from '../sprite-options';
+import type Character from './character';
+import type Choice from './choices';
+import type Notification from './notification';
+import type Poem from './poem';
+import type Sprite from './sprite';
 import type Textbox from './textbox';
 
 export default abstract class BaseObject<
 	T extends string = string,
 > extends HasSpriteFilters {
 	public abstract readonly type: T;
-	public readonly panelId: Panel['id'] | null = null;
+	public readonly panelId: Panel['id'];
 	public readonly id: number;
 	// Using a computed property here, to avoid having to repeat the array lookup unless the panel order changes
 	protected _onTop = computed({
@@ -30,7 +35,7 @@ export default abstract class BaseObject<
 	}
 
 	protected constructor(
-		private panel: Panel,
+		protected panel: Panel,
 		id?: BaseObject['id']
 	) {
 		super();
@@ -95,6 +100,10 @@ export default abstract class BaseObject<
 	 * Incremented every time the object is modified. This is used to optimize the render cache.
 	 */
 	protected _version = ref(0);
+
+	public get version(): number {
+		return this._version.value;
+	}
 
 	//#region Positioning and layering
 	protected _x = ref(0);
@@ -232,7 +241,14 @@ export default abstract class BaseObject<
 	}
 
 	set scaleX(value: number) {
-		this.mutate(this._scaleX, roundTo2Dec(value));
+		if (this.preserveRatio) {
+			this.mutateX(
+				[this._scaleX, this._scaleY],
+				[roundTo2Dec(value), roundTo2Dec(value * this.ratio)]
+			);
+		} else {
+			this.mutate(this._scaleX, roundTo2Dec(value));
+		}
 	}
 
 	get scaleY(): number {
@@ -240,7 +256,14 @@ export default abstract class BaseObject<
 	}
 
 	set scaleY(value: number) {
-		this.mutate(this._scaleY, roundTo2Dec(value));
+		if (this.preserveRatio) {
+			this.mutateX(
+				[this._scaleX, this._scaleY],
+				[roundTo2Dec(value / this.ratio), roundTo2Dec(value)]
+			);
+		} else {
+			this.mutate(this._scaleY, roundTo2Dec(value));
+		}
 	}
 
 	get skewX(): number {
@@ -266,57 +289,11 @@ export default abstract class BaseObject<
 	set rotation(value: number) {
 		this.mutate(this._rotation, roundTo2Dec(mod(value, 360)));
 	}
-	//#endregion Transformation
-
-	//#region Talking properties
-	protected _label = ref<string | null>(null);
-	protected _textboxColor = ref<string | null>(null);
-	protected _enlargeWhenTalking = ref(false);
-	protected _nameboxWidth = ref<number | null>(null);
-
-	get label(): string | null {
-		return this._label.value;
-	}
-
-	set label(value: string | null) {
-		this.mutate(this._label, value);
-	}
-
-	get textboxColor(): string | null {
-		return this._textboxColor.value;
-	}
-
-	set textboxColor(value: string | null) {
-		this.mutate(this._textboxColor, value);
-	}
-
-	get enlargeWhenTalking(): boolean {
-		return this._enlargeWhenTalking.value;
-	}
-
-	set enlargeWhenTalking(value: boolean) {
-		this.mutate(this._enlargeWhenTalking, value);
-	}
-
-	get nameboxWidth(): number | null {
-		return this._nameboxWidth.value;
-	}
-
-	set nameboxWidth(value: number | null) {
-		this.mutate(this._nameboxWidth, value);
-	}
-	//#endregion Talking properties
-
-	fixContentPackRemoval(oldContent: ContentPack<IAssetSwitch>) {}
-	abstract makeClone(
-		panel: Panel,
-		idTranslationTable: Map<BaseObject['id'], BaseObject['id']>
-	): BaseObject<T>;
 
 	protected _isTalking = computed(() => {
 		// TODO: Improve lookup of this property.
 		return !!Object.values(this.panel.objects).find(
-			(obj) => obj.type === 'textbox' && obj.talkingObjId === this.id
+			(obj) => obj.type === 'textBox' && obj.talkingObjId === this.id
 		);
 	});
 
@@ -380,12 +357,73 @@ export default abstract class BaseObject<
 	public get globalTransform(): DOMMatrixReadOnly {
 		return this._globalTransform.value;
 	}
+	//#endregion Transformation
+
+	//#region Talking properties
+	protected _label = ref<string | null>(null);
+	protected _textboxColor = ref<string | null>(null);
+	protected _enlargeWhenTalking = ref(false);
+	protected _nameboxWidth = ref<number | null>(null);
+
+	get label(): string | null {
+		return this._label.value;
+	}
+
+	set label(value: string | null) {
+		this.mutate(this._label, value);
+	}
+
+	get textboxColor(): string | null {
+		return this._textboxColor.value;
+	}
+
+	set textboxColor(value: string | null) {
+		this.mutate(this._textboxColor, value);
+	}
+
+	get enlargeWhenTalking(): boolean {
+		return this._enlargeWhenTalking.value;
+	}
+
+	set enlargeWhenTalking(value: boolean) {
+		this.mutate(this._enlargeWhenTalking, value);
+	}
+
+	get nameboxWidth(): number | null {
+		return this._nameboxWidth.value;
+	}
+
+	set nameboxWidth(value: number | null) {
+		this.mutate(this._nameboxWidth, value);
+	}
+	//#endregion Talking properties
+
+	fixContentPackRemoval(oldContent: ContentPack<IAssetSwitch>) {}
+
+	abstract makeClone(
+		panel: Panel,
+		idTranslationTable: Map<BaseObject['id'], BaseObject['id']>
+	): BaseObject<T>;
+
+	protected moveAllRefs<T extends BaseObject>(source: T, target: T) {
+		for (const [key, value] of Object.entries(source)) {
+			if (isRef(value)) {
+				// Scary `any`, but both objects are of the same type, so they should have the same keys
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(target as any)[key].value = value.value;
+			}
+		}
+	}
 }
 
 function roundTo2Dec(val: number): number {
 	return Math.round(val * 100) / 100;
 }
 
-export type GenObject = Textbox;
-
-type Pair<K> = [Ref<K>, K];
+export type GenObject =
+	| Textbox
+	| Character
+	| Choice
+	| Notification
+	| Poem
+	| Sprite;

@@ -1,8 +1,8 @@
 import { CanvasAspectRatio, ToolboxSize } from '@/constants/ui';
-import type { IObject } from '@/store/objects';
-import type { IPanel } from '@/store/panels';
 import { defineStore } from 'pinia';
 import { markRaw, ref, type Raw, type Ref } from 'vue';
+import type { GenObject } from './object-types/object';
+import type { Panel } from './panels';
 
 export const useViewportStore = defineStore('viewport', {
 	state: () => ({
@@ -28,9 +28,9 @@ export function setUpViewport(doc: Document): Raw<Viewport> {
 }
 
 export class Viewport {
-	public _selection: Ref<IObject['id'] | null> = ref(null);
+	public _selection: Ref<GenObject['id'] | null> = ref(null);
 	public _pickColor = ref(false);
-	public _currentPanel: Ref<IPanel['id']> = ref(null!);
+	public _currentPanel: Ref<Panel['id']> = ref(null!);
 
 	private _width: Ref<number>;
 	private _height: Ref<number>;
@@ -58,19 +58,19 @@ export class Viewport {
 		return this._height.value;
 	}
 
-	public get selection(): IObject['id'] | null {
+	public get selection(): GenObject['id'] | null {
 		return this._selection.value;
 	}
 
-	public set selection(newValue: IObject['id'] | null) {
+	public set selection(newValue: GenObject['id'] | null) {
 		this._selection.value = newValue;
 	}
 
-	public get currentPanel(): IPanel['id'] {
+	public get currentPanel(): Panel['id'] {
 		return this._currentPanel.value;
 	}
 
-	public set currentPanel(newValue: IPanel['id']) {
+	public set currentPanel(newValue: Panel['id']) {
 		this._currentPanel.value = newValue;
 	}
 

@@ -1,6 +1,6 @@
 import environment from '@/environments/environment';
 import type { ITextStyle } from '@/renderer/text-renderer/text-renderer';
-import type { ITextBox } from '@/store/object-types/textbox';
+import type Textbox from '@/store/object-types/textbox';
 import { HSLAColor } from '@/util/colors/hsl';
 import Ddlc from './game_modes/ddlc';
 import type { IPoemTextStyle } from './game_modes/ddlc/poem';
@@ -67,7 +67,7 @@ export interface IConstants {
 		readonly poemTextStyles: IPoemTextStyle[];
 	};
 	readonly TextBox: {
-		readonly DefaultTextboxStyle: ITextBox['style'];
+		readonly DefaultTextboxStyle: Textbox['style'];
 	};
 	readonly TextBoxCustom: Record<string, never>;
 }

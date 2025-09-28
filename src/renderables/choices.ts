@@ -1,9 +1,9 @@
 import getConstants from '@/constants';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
-import type { IChoices } from '@/store/object-types/choices';
+import type ChoiceStore from '@/store/object-types/choices';
 import { ScalingRenderable } from './scaling-renderable';
 
-export class Choice extends ScalingRenderable<IChoices> {
+export class Choice extends ScalingRenderable<ChoiceStore> {
 	private _height: number = 0;
 
 	protected get height(): number {

@@ -1,18 +1,9 @@
-import type { IRootState } from '@/store';
 import type { IAssetSwitch } from '@/store/content';
-import {
-	getData,
-	getHeads,
-	getPose,
-	type ICharacter,
-} from '@/store/object-types/characters';
-import type { IPanel } from '@/store/panels';
-import type {
-	Character as CharacterModel,
-	Pose,
-} from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
+import type CharacterStore from '@/store/object-types/character';
+import type { Panel } from '@/store/panels';
+import { state } from '@/store/root';
+import type { Character as CharacterModel } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import type { DeepReadonly } from 'ts-essentials';
-import { Store } from 'vuex';
 import {
 	AssetListRenderable,
 	type IDrawAssets,
@@ -22,17 +13,16 @@ import {
 /**
  * Renders a character (Like Monika, Sayori, etc.) to the scene.
  */
-export class Character extends AssetListRenderable<ICharacter> {
-	public constructor(
-		obj: DeepReadonly<ICharacter>,
-		private data: DeepReadonly<CharacterModel<IAssetSwitch>>
-	) {
+export class Character extends AssetListRenderable<CharacterStore> {
+	private data: DeepReadonly<CharacterModel<IAssetSwitch>>;
+
+	public constructor(obj: DeepReadonly<CharacterStore>) {
 		super(obj);
+		this.data = state.content.characters.get(this.obj.characterType)!;
 	}
 
-	public prepareData(panel: DeepReadonly<IPanel>, store: Store<IRootState>) {
-		super.prepareData(panel, store);
-		this.data = getData(store, this.obj);
+	public prepareData(panel: DeepReadonly<Panel>) {
+		super.prepareData(panel);
 	}
 
 	public prepareRender(lq: boolean): void | Promise<unknown> {
@@ -44,8 +34,8 @@ export class Character extends AssetListRenderable<ICharacter> {
 	}
 
 	protected getAssetList(): Array<IDrawAssetsUnloaded | IDrawAssets> {
-		const pose = getPose(this.data, this.obj) as Pose<IAssetSwitch>;
-		const currentHeads = getHeads(this.data, this.obj);
+		const pose = this.obj.poseData;
+		const currentHeads = this.obj.headsData;
 		const drawAssetsNew: Array<IDrawAssetsUnloaded | IDrawAssets> = [];
 		const oldAssets = this.assetList ?? [];
 

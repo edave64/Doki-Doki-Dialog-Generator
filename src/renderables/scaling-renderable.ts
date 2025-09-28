@@ -1,5 +1,5 @@
 import envX from '@/environments/environment';
-import type { IObject } from '@/store/objects';
+import type { GenObject } from '@/store/object-types/object';
 import { Renderable } from './renderable';
 
 /**
@@ -8,7 +8,7 @@ import { Renderable } from './renderable';
  * of the same size as the main canvas.
  */
 export abstract class ScalingRenderable<
-	Obj extends IObject,
+	Obj extends GenObject,
 > extends Renderable<Obj> {
 	protected get canSkipLocal(): boolean {
 		return (
@@ -18,7 +18,7 @@ export abstract class ScalingRenderable<
 	}
 	protected get transformIsLocal(): boolean {
 		const transform = this.preparedTransform;
-		if (this.obj.overflow) return true;
+		if ('overflow' in this.obj && this.obj.overflow) return true;
 		if (envX.supports.limitedCanvasSpace) return false;
 		// Test if the transform one does translation. Anything else looks blury when you first render and then
 		// transform

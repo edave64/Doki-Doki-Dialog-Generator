@@ -9,17 +9,14 @@ import rotate from '@/assets/rotate_left.svg';
 import rotateDark from '@/assets/rotate_left_dark.svg';
 import getConstants from '@/constants';
 import { SelectedState } from '@/constants/shared';
-import type { Viewport } from '@/newStore/viewport';
+import { transaction } from '@/history-engine/transaction';
 import type { IAsset } from '@/render-utils/assets/asset';
 import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
 import { Renderable } from '@/renderables/renderable';
 import { ctxScope } from '@/renderer/canvas-tools';
-import type { RStore } from '@/store';
-import type {
-	IObject,
-	ISetObjectScaleMutation,
-	ISetSpriteRotationMutation,
-} from '@/store/objects';
+import type { GenObject } from '@/store/object-types/object';
+import { state } from '@/store/root';
+import type { Viewport } from '@/store/viewport';
 import { safeAsync } from '@/util/errors';
 import { between, mod } from '@/util/math';
 import type { Ref } from 'vue';
@@ -108,15 +105,15 @@ export class Grabbies {
 		return false;
 	}
 
-	onMove(store: RStore, pos: DOMPointReadOnly, shift: boolean) {
+	onMove(pos: DOMPointReadOnly, shift: boolean) {
 		if (!this.dragData) return false;
 		const viewport = this.viewport.value;
-		const panels = store.state.panels;
+		const panels = state.panels;
 		const currentPanel = panels.panels[viewport.currentPanel];
 		const obj = currentPanel.objects[viewport.selection!];
 		if (!this.dragData.started) {
 			this.dragData.started = true;
-			const sceneRenderer = getMainSceneRenderer(store, viewport);
+			const sceneRenderer = getMainSceneRenderer(viewport);
 			const renderObj = sceneRenderer!.getLastRenderObject(obj.id)!;
 			const linkedTransform =
 				sceneRenderer?.getLastRenderObject(obj.linkedTo!)
@@ -129,7 +126,7 @@ export class Grabbies {
 			this.dragData.grabby.onStartMove(obj, this.dragData);
 		}
 		this.dragData.lastPos = pos;
-		this.dragData.grabby.onMove(store, obj, shift, this.dragData);
+		this.dragData.grabby.onMove(obj, shift, this.dragData);
 		return true;
 	}
 
@@ -148,13 +145,8 @@ abstract class Grabby<T extends IDragData = IDragData> {
 
 	abstract icon: string;
 	abstract iconDark: string;
-	abstract onStartMove(obj: IObject, dragData: T): void;
-	abstract onMove(
-		store: RStore,
-		obj: IObject,
-		shift: boolean,
-		dragData: T
-	): void;
+	abstract onStartMove(obj: GenObject, dragData: T): void;
+	abstract onMove(obj: GenObject, shift: boolean, dragData: T): void;
 	abstract paint(ctx: CanvasRenderingContext2D, dragData: T): void;
 
 	drawGrabby(ctx: CanvasRenderingContext2D, pos: DOMPointReadOnly) {
@@ -225,7 +217,7 @@ class RotateGrabby extends Grabby<IRotationDragData> {
 		ctx.fill();
 		ctx.globalCompositeOperation = 'source-over';
 	}
-	onStartMove(obj: IObject, dragData: IRotationDragData) {
+	onStartMove(obj: GenObject, dragData: IRotationDragData) {
 		dragData.initalObjRotation = obj.rotation;
 		const { angle } = vectorToAngleAndDistance(
 			pointsToVector(dragData.center, dragData.lastPos)
@@ -233,8 +225,7 @@ class RotateGrabby extends Grabby<IRotationDragData> {
 		dragData.initialDragAngle = angle;
 	}
 	onMove(
-		store: RStore,
-		obj: IObject,
+		obj: GenObject,
 		shift: boolean,
 		{
 			center,
@@ -257,11 +248,10 @@ class RotateGrabby extends Grabby<IRotationDragData> {
 		}
 
 		if (obj.rotation === rotation) return;
-		store.commit('panels/setRotation', {
-			panelId: obj.panelId,
-			id: obj.id,
-			rotation,
-		} as ISetSpriteRotationMutation);
+		transaction(() => {
+			state.panels.panels[obj.panelId].objects[obj.id].rotation =
+				rotation;
+		});
 	}
 }
 
@@ -289,7 +279,7 @@ class ScaleGrabby extends Grabby<IScaleDragData> {
 			renderObj.preparedTransform = currentTransform;
 		}
 	}
-	onStartMove(obj: IObject, dragData: IScaleDragData) {
+	onStartMove(obj: GenObject, dragData: IScaleDragData) {
 		dragData.originalObjTransform = dragData.renderObj.preparedTransform;
 		dragData.initialScaleX = obj.scaleX;
 		dragData.initialScaleY = obj.scaleY;
@@ -299,8 +289,7 @@ class ScaleGrabby extends Grabby<IScaleDragData> {
 		);
 	}
 	onMove(
-		store: RStore,
-		obj: IObject,
+		obj: GenObject,
 		shift: boolean,
 		{
 			initialScaleX,
@@ -361,12 +350,10 @@ class ScaleGrabby extends Grabby<IScaleDragData> {
 		}
 
 		if (obj.scaleX === scaleX && obj.scaleY === scaleY) return;
-		store.commit('panels/setObjectScale', {
-			panelId: obj.panelId,
-			id: obj.id,
-			scaleX,
-			scaleY,
-		} as ISetObjectScaleMutation);
+		transaction(() => {
+			state.panels.panels[obj.panelId].objects[obj.id].scaleX = scaleX;
+			state.panels.panels[obj.panelId].objects[obj.id].scaleY = scaleY;
+		});
 	}
 }
 
@@ -422,7 +409,7 @@ interface IDragData {
 	center: DOMPointReadOnly;
 	started: boolean;
 	grabby: Grabby<IDragData>;
-	renderObj: Renderable<IObject>;
+	renderObj: Renderable<GenObject>;
 	viewport: Viewport;
 }
 

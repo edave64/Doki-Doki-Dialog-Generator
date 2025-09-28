@@ -1,47 +1,18 @@
-import type { Module } from 'vuex';
-import type { IRootState } from '.';
+import { reactive } from 'vue';
 
-export interface IUiState {
-	nsfw: boolean;
-	lqRendering: boolean;
-	lastDownload: string | null;
-	clipboard: string | null;
-	useDarkTheme: boolean | null;
-	defaultCharacterTalkingZoom: boolean;
-}
-
-export function getDefaultUiState(): IUiState {
-	return {
+export const ui = reactive(
+	Object.seal({
 		lqRendering: true,
 		nsfw: false,
-		lastDownload: null,
+		lastDownload: null as string | null,
 		clipboard: null,
-		useDarkTheme: null,
+		useDarkTheme: null as boolean | null,
 		defaultCharacterTalkingZoom: true,
-	};
-}
 
-export default {
-	namespaced: true,
-	state: getDefaultUiState(),
-	mutations: {
-		setNsfw(state, nsfw: boolean) {
-			state.nsfw = nsfw;
+		loadSave(_save: any) {},
+
+		save() {
+			return undefined;
 		},
-		setLqRendering(state, lqRendering: boolean) {
-			state.lqRendering = lqRendering;
-		},
-		setLastDownload(state, download: string) {
-			state.lastDownload = download;
-		},
-		setClipboard(state, contents: string) {
-			state.clipboard = contents;
-		},
-		setDarkTheme(state, theme: boolean | null) {
-			state.useDarkTheme = theme;
-		},
-		setDefaultCharacterTalkingZoom(state, zoom: boolean) {
-			state.defaultCharacterTalkingZoom = zoom;
-		},
-	},
-} as Module<IUiState, IRootState>;
+	})
+);

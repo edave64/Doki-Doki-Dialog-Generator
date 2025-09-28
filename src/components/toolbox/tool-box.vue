@@ -93,8 +93,8 @@
 <script lang="ts" setup>
 import environment from '@/environments/environment';
 import { useSelection, useVertical, useViewport } from '@/hooks/use-viewport';
-import { useStore } from '@/store';
-import { type ObjectTypes } from '@/store/objects';
+import type { GenObject } from '@/store/object-types/object';
+import { state } from '@/store/root';
 import { isHTMLElement } from '@/util/cross-realm';
 import { computed, ref, watch } from 'vue';
 import DButton from '../ui/d-button.vue';
@@ -128,18 +128,17 @@ const emit = defineEmits<{
 	'show-expression-dialog': [settings: { character: string }];
 }>();
 
-const store = useStore();
 const panels = ref(null! as HTMLDivElement);
 
 const panelSelection = ref('add' as PanelNames);
 
 const currentPanel = computed(() => {
-	return store.state.panels.panels[viewport.value.currentPanel];
+	return state.panels.panels[viewport.value.currentPanel];
 });
 const viewport = useViewport();
 const vertical = useVertical();
 const selection = useSelection();
-const panel = computed((): PanelNames | ObjectTypes => {
+const panel = computed((): PanelNames | GenObject['type'] => {
 	if (panelSelection.value === 'selection') {
 		if (selection.value === null) {
 			// eslint-disable-next-line vue/no-side-effects-in-computed-properties
@@ -150,7 +149,7 @@ const panel = computed((): PanelNames | ObjectTypes => {
 	}
 	return panelSelection.value;
 });
-const hasPrevRender = computed(() => store.state.ui.lastDownload !== null);
+const hasPrevRender = computed(() => state.ui.lastDownload !== null);
 function setPanel(name: PanelNames) {
 	if (name === panelSelection.value) name = 'add';
 	panelSelection.value = name;

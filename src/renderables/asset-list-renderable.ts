@@ -1,23 +1,22 @@
 import { getAAsset } from '@/asset-manager';
 import type { IAsset } from '@/render-utils/assets/asset';
 import { ErrorAsset } from '@/render-utils/assets/error-asset';
-import type { IRootState } from '@/store';
 import type { IAssetSwitch } from '@/store/content';
-import type { ITextBox } from '@/store/object-types/textbox';
-import type { IObject } from '@/store/objects';
-import type { IPanel } from '@/store/panels';
+import type { GenObject } from '@/store/object-types/object';
+import type Textbox from '@/store/object-types/textbox';
+import type { Panel } from '@/store/panels';
+import { state } from '@/store/root';
 import type { PoseRenderCommand } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import type { DeepReadonly } from 'ts-essentials';
-import { Store } from 'vuex';
 import { Renderable } from './renderable';
 
 /**
  * An abstraction over objects that are just a bunch of images drawn on top of each other. (Sprites and characters)
  */
 export abstract class AssetListRenderable<
-	Obj extends IObject,
+	Obj extends GenObject,
 > extends Renderable<Obj> {
-	protected refTextbox: ITextBox | null = null;
+	protected refTextbox: Textbox | null = null;
 	protected abstract getAssetList(): Array<IDrawAssetsUnloaded | IDrawAssets>;
 
 	private lastUploadCount = 0;
@@ -31,13 +30,10 @@ export abstract class AssetListRenderable<
 		return false;
 	}
 
-	public override prepareData(
-		panel: DeepReadonly<IPanel>,
-		store: Store<DeepReadonly<IRootState>>
-	): void {
-		super.prepareData(panel, store);
+	public override prepareData(panel: DeepReadonly<Panel>): void {
+		super.prepareData(panel);
 		if (this.missingAsset) {
-			const uploadCount = Object.keys(store.state.uploadUrls).length;
+			const uploadCount = Object.keys(state.uploadUrls).length;
 			if (uploadCount !== this.lastUploadCount) {
 				// Force asset invalidation
 				this.lastHq = null!;
