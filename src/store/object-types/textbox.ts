@@ -345,7 +345,7 @@ export default class Textbox extends BaseObject<'textBox'> {
 			this.style === 'custom_plus' ? 'custom_plus' : 'custom';
 		this.mutate(this._style, newStyle);
 
-		const newBox = new Textbox(this.panel, this.id, {
+		const newBox = new Textbox(this.panel, undefined, {
 			resetBounds: {
 				x: boxTwoCoords.x,
 				y: boxTwoCoords.y,
@@ -366,7 +366,7 @@ export default class Textbox extends BaseObject<'textBox'> {
 
 		// Positioning should already be done through the reset bounds, so we don't use the full
 		// this.linkedTo setter here
-		this.mutate(this._linkedTo, newBox.id);
+		this.mutate(newBox._linkedTo, this._linkedTo.value);
 	}
 	//#endregion Splitting
 
