@@ -490,7 +490,8 @@ onMounted(async () => {
 							' you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more! Use the camera icon to download the image.'
 					);
 				}
-				panel.background.current = 'ddlc.clubroom';
+				panel.background.current =
+					'dddg.buildin.backgrounds:ddlc.clubroom';
 				store.ui.nsfw = settings.nsfw ?? false;
 			}
 		});

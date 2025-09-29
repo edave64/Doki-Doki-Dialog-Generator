@@ -566,9 +566,7 @@ async function renderPanelThumbnail(sceneRenderer: SceneRenderer) {
 			(blob: Blob | null) => {
 				if (!blob) return;
 				const url = URL.createObjectURL(blob);
-				transaction(() => {
-					state.panels.panels[panelId].lastRender = url;
-				});
+				state.panels.panels[panelId].lastRender = url;
 			},
 			(await isWebPSupported()) ? 'image/webp' : 'image/jpeg',
 			thumbnailQuality

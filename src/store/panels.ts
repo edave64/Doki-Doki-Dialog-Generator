@@ -7,6 +7,7 @@ import { content } from './content';
 import type BaseObject from './object-types/object';
 import type { GenObject } from './object-types/object';
 import { HasSpriteFilters } from './sprite-options';
+import { useViewportStore } from './viewport';
 
 export const panels = new (class Panels {
 	private _panels: Raw<Panel>[] = [];
@@ -142,17 +143,13 @@ export class Panel extends HasSpriteFilters {
 	}
 
 	public set lastRender(url: string | null) {
+		// NO UNDO: Rending typically happens implicitly asynchronously after a transaction. It is not triggered by
+		//          user action. Also, undoing a whatever state change occured will already trigger a re-render.
 		this._lastRender.value = url;
 	}
 
 	public get lastObjId(): number {
 		return this._lastObjId;
-	}
-
-	public setLastRender(url: string) {
-		// NO UNDO: Rending typically happens implicitly asynchronously after a transaction. It is not triggered by
-		//          user action. Also, undoing a whatever state change occured will already trigger a re-render.
-		this._lastRender.value = url;
 	}
 
 	public fixContentPackRemoval(oldContent: ContentPack<IAssetSwitch>) {
@@ -190,8 +187,20 @@ export class Panel extends HasSpriteFilters {
 
 		const idx = collection.indexOf(object.id);
 
-		for (const obj of Object.values(this._objects)) {
-			obj.prepareSiblingRemoval(object, this);
+		for (const obj of Object.values(this._objects.value) as GenObject[]) {
+			if (obj === object) continue;
+			obj.prepareSiblingRemoval(object);
+		}
+
+		const viewports = useViewportStore();
+
+		for (const viewport of Object.values(viewports.viewports)) {
+			if (
+				viewport.currentPanel === this.id &&
+				viewport.selection === object.id
+			) {
+				viewport.selection = null;
+			}
 		}
 
 		undoAble(

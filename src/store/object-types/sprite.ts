@@ -8,6 +8,10 @@ export default class Sprite extends BaseObject<'sprite'> {
 		return 'sprite' as const;
 	}
 
+	override get initialOnTop(): boolean {
+		return false;
+	}
+
 	protected constructor(
 		panel: Panel,
 		public readonly assets: IAssetSwitch[],

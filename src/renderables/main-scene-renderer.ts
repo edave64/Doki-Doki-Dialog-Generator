@@ -4,6 +4,9 @@ import { SceneRenderer } from './scene-renderer';
 
 const lookup = new WeakMap<Viewport, SceneRenderer>();
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(window as any).asdwefweg = lookup;
+
 export function getMainSceneRenderer(viewport: Viewport) {
 	let sceneRenderer = lookup.get(viewport);
 	if (sceneRenderer == null || sceneRenderer.disposed) {

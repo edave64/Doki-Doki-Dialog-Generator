@@ -135,7 +135,10 @@ const showBackgroundsFolder = computed((): boolean => {
 });
 
 function setBackground(id: Background<IAssetSwitch>['id']) {
-	state.panels.panels[viewport.value.currentPanel].background.current = id;
+	transaction(() => {
+		state.panels.panels[viewport.value.currentPanel].background.current =
+			id;
+	});
 }
 function openBackgroundFolder() {
 	environment.openFolder('backgrounds');

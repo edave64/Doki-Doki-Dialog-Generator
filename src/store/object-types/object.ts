@@ -42,6 +42,8 @@ export default abstract class BaseObject<
 		this.panelId = panel.id;
 		if (id == null) id = panel.lastObjId + 1;
 		this.id = id;
+		const constants = getConstants();
+		this._x = ref(constants.Base.screenWidth / 2);
 		panel.insertObject(this as unknown as GenObject);
 	}
 
@@ -96,6 +98,12 @@ export default abstract class BaseObject<
 		);
 	}
 
+	public prepareSiblingRemoval(object: BaseObject) {
+		if (this.linkedTo === object.id) {
+			this.linkedTo = null;
+		}
+	}
+
 	/**
 	 * Incremented every time the object is modified. This is used to optimize the render cache.
 	 */
@@ -106,7 +114,7 @@ export default abstract class BaseObject<
 	}
 
 	//#region Positioning and layering
-	protected _x = ref(0);
+	protected _x: Ref<number>;
 	protected _y = ref(0);
 	protected _width = ref(0);
 	protected _height = ref(0);
@@ -205,9 +213,11 @@ export default abstract class BaseObject<
 			const inverse = linkedObj.globalTransform.inverse();
 			const newTransform = inverse.multiply(this.globalTransform);
 			this.mutateByMatrix(newTransform);
+			this.mutate(this._linkedTo, val);
 		} else {
 			// Take all linked transforms and move them into the local object
 			this.mutateByMatrix(this.globalTransform);
+			this.mutate(this._linkedTo, null);
 		}
 	}
 
@@ -225,13 +235,13 @@ export default abstract class BaseObject<
 				this._y,
 			],
 			[
-				newVals.scaleX,
-				newVals.scaleY,
-				newVals.skewX,
-				newVals.skewY,
-				newVals.rotation,
-				newVals.x,
-				newVals.y,
+				roundTo2Dec(newVals.scaleX),
+				roundTo2Dec(newVals.scaleY),
+				roundTo2Dec(newVals.skewX),
+				roundTo2Dec(newVals.skewY),
+				roundTo2Dec(newVals.rotation),
+				roundTo2Dec(newVals.x),
+				roundTo2Dec(newVals.y),
 			]
 		);
 	}

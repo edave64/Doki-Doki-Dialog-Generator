@@ -73,6 +73,13 @@ export default class Textbox extends BaseObject<'textBox'> {
 		return new Textbox(panel, undefined, { text });
 	}
 
+	override prepareSiblingRemoval(object: BaseObject): void {
+		if (object.id === this.talkingObjId) {
+			this.talkingObjId = null;
+		}
+		super.prepareSiblingRemoval(object);
+	}
+
 	//#region Talking properties
 	protected readonly _text = ref('Click here to edit the textbox');
 	protected readonly _talkingObjId = ref<null | '$other$' | GenObject['id']>(

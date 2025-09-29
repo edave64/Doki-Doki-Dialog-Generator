@@ -287,14 +287,12 @@ function handleColorPickerClick(sx: number, sy: number) {
 async function download(): Promise<void> {
 	const url = await getSceneRender()!.download();
 
-	await transaction(() => {
-		const oldUrl = state.ui.lastDownload;
+	const oldUrl = state.ui.lastDownload;
 
-		state.ui.lastDownload = url;
-		if (oldUrl != null) {
-			URL.revokeObjectURL(oldUrl);
-		}
-	});
+	state.ui.lastDownload = url;
+	if (oldUrl != null) {
+		URL.revokeObjectURL(oldUrl);
+	}
 }
 //#endregion download
 //#region drag and drop
@@ -318,7 +316,7 @@ function dragStart(rx: number, ry: number) {
 	const selectionId = selection.value;
 	if (selectionId === null) return;
 
-	draggedObject = currentPanel.value.objects[selectionId];
+	draggedObject = currentPanel.value.objects[selectionId]!;
 	dragTransform =
 		getMainSceneRenderer(viewport.value)!
 			.getLastRenderObject(draggedObject.linkedTo!)

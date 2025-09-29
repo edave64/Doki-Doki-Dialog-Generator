@@ -25,6 +25,7 @@ interface TransactionLayerMethods {
 export function transactionLayer(): TransactionLayer {
 	const transactionQueue: (() => Promise<void>)[] = [];
 	let transactionRunning = false;
+	const clearCallbacks: (() => void)[] = [];
 
 	const ret = function transaction(callback: TransactionCallback) {
 		return new Promise((resolve) => {
@@ -36,6 +37,7 @@ export function transactionLayer(): TransactionLayer {
 					} else {
 						await (callback as () => Promise<void>)();
 					}
+					clearCallbacks.forEach((callback) => callback());
 				} catch (e) {
 					console.log('Error during transaction!: ', e);
 				} finally {
@@ -57,6 +59,8 @@ export function transactionLayer(): TransactionLayer {
 		});
 	} as TransactionLayer;
 
-	ret.onClear = function () {};
+	ret.onClear = function (callback: () => void) {
+		clearCallbacks.push(callback);
+	};
 	return ret;
 }

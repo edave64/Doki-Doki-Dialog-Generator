@@ -17,6 +17,10 @@ export default class Character extends BaseObject<'character'> {
 		return 'character' as const;
 	}
 
+	override get initialOnTop(): boolean {
+		return false;
+	}
+
 	protected constructor(
 		panel: Panel,
 		public characterType: string,
@@ -24,6 +28,18 @@ export default class Character extends BaseObject<'character'> {
 	) {
 		super(panel, id);
 
+		const constants = getConstants();
+		const data = this.charData;
+		const charScale = data.hd
+			? constants.Base.hdCharacterScaleFactor
+			: constants.Base.sdCharacterScaleFactor;
+
+		this._y.value = constants.Base.BaseCharacterYPos;
+		this._width.value = data.size[0];
+		this._height.value = data.size[1];
+		this._scaleX.value = data.defaultScale[0] * charScale;
+		this._scaleY.value = data.defaultScale[1] * charScale;
+		this._label.value = data.label ?? data.id;
 		this._enlargeWhenTalking.value = ui.defaultCharacterTalkingZoom;
 	}
 
@@ -39,6 +55,7 @@ export default class Character extends BaseObject<'character'> {
 	}
 
 	set freeMove(freeMove: boolean) {
+		if (!freeMove && this.linkedTo != null) return;
 		if (!freeMove) {
 			// If free move is disabled, we need to reset the position to the closest slot
 			const constants = getConstants();
@@ -57,6 +74,10 @@ export default class Character extends BaseObject<'character'> {
 		}
 	}
 
+	override get x(): number {
+		return this._x.value;
+	}
+
 	override set x(x: number) {
 		if (!this.freeMove) {
 			const constants = getConstants();
@@ -65,12 +86,28 @@ export default class Character extends BaseObject<'character'> {
 		super.x = x;
 	}
 
+	override get y(): number {
+		return this._y.value;
+	}
+
 	override set y(y: number) {
 		if (!this.freeMove) {
 			const constants = getConstants();
 			y = constants.Base.BaseCharacterYPos;
 		}
 		super.y = y;
+	}
+
+	get linkedTo(): number | null {
+		return this._linkedTo.value;
+	}
+
+	set linkedTo(val: number | null) {
+		super.linkedTo = val;
+
+		if (this._linkedTo.value != null) {
+			this.mutate(this._freeMove, true);
+		}
 	}
 
 	shiftCharacterSlot(delta: -1 | 1): void {

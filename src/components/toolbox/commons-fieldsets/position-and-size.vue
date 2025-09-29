@@ -184,7 +184,9 @@ const easterEgg = computed(() => {
 });
 //#endregion Size
 //#region Step Position
-const allowStepMove = computed(() => 'freeMove' in props.obj!);
+const allowStepMove = computed(
+	() => 'freeMove' in props.obj! && props.obj.linkedTo == null
+);
 const positionNames = computed(() => getConstants().Base.positions);
 const isFirstPos = computed(() => pos.value === 0);
 const isLastPos = computed(
