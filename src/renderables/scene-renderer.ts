@@ -159,7 +159,6 @@ export class SceneRenderer {
 			await Promise.all(promises);
 		}
 
-		// TODO: support multiple viewports
 		const selection = this.viewport?.selection ?? null;
 		const links = new Set<GenObject['id']>();
 		if (selection !== null) fetchLinks(selection, links);

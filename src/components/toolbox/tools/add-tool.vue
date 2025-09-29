@@ -52,6 +52,7 @@
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import DButton from '@/components/ui/d-button.vue';
 import { transaction } from '@/history-engine/transaction';
+import { useViewport } from '@/hooks/use-viewport';
 import { state } from '@/store/root';
 import { computed, ref } from 'vue';
 import CharactersTab from './add/characters-tab.vue';
@@ -93,14 +94,11 @@ const hasClipboardContent = computed(() => {
 	return state.ui.clipboard != null;
 });
 
+const viewport = useViewport();
+
 function paste() {
 	transaction(async () => {
-		// TODO: Fix this
-		/*
-		await store.dispatch('panels/pasteObjectFromClipboard', {
-			panelId: viewport.value.currentPanel,
-		} as IPasteFromClipboardAction);
-		 */
+		state.ui.pasteObjects(state.panels.panels[viewport.value.currentPanel]);
 	});
 }
 </script>

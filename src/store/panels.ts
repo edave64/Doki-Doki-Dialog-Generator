@@ -4,8 +4,14 @@ import { arraySeeker } from '@/util/seekers';
 import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { markRaw, ref, type Raw } from 'vue';
 import { content } from './content';
+import Character from './object-types/character';
+import Choice from './object-types/choices';
+import Notification from './object-types/notification';
 import type BaseObject from './object-types/object';
 import type { GenObject } from './object-types/object';
+import Poem from './object-types/poem';
+import Sprite from './object-types/sprite';
+import Textbox from './object-types/textbox';
 import { HasSpriteFilters } from './sprite-options';
 import { useViewportStore } from './viewport';
 
@@ -159,8 +165,8 @@ export class Panel extends HasSpriteFilters {
 		}
 	}
 
-	public insertObject(object: GenObject) {
-		const collection = object.initialOnTop
+	public insertObject(object: GenObject, onTop: boolean) {
+		const collection = onTop
 			? this._topOrder.value
 			: this._lowerOrder.value;
 		const oldLastObjId = this._lastObjId;
@@ -256,7 +262,49 @@ export class Panel extends HasSpriteFilters {
 			}
 		);
 	}
+
+	protected static objectClassTable: Record<
+		GenObject['type'],
+		{
+			fromSave: (
+				panel: Panel,
+				save: Record<string, unknown>,
+				idTranslationTable: IdTranslationTable
+			) => GenObject;
+		}
+	> = {
+		character: Character,
+		choice: Choice,
+		notification: Notification,
+		poem: Poem,
+		sprite: Sprite,
+		textBox: Textbox,
+	};
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	public pasteObjects(objects: Record<string, any>[]) {
+		const idTranslationTable = new Map<
+			BaseObject['id'],
+			BaseObject['id']
+		>();
+		let lastObjId = this.lastObjId;
+
+		for (const object of objects) {
+			idTranslationTable.set(+object.id, ++lastObjId);
+		}
+
+		for (const object of objects) {
+			const objClass =
+				Panel.objectClassTable[object.type as GenObject['type']];
+			if (!objClass) {
+				throw new Error(`Unknown object type: ${object.type}`);
+			}
+			objClass.fromSave(this, object, idTranslationTable);
+		}
+	}
 }
+
+const a = Textbox;
 
 export const transparentId = 'buildin.transparent';
 export const staticColorId = 'buildin.static-color';
@@ -402,3 +450,5 @@ export class PanelBackground extends HasSpriteFilters {
 		}
 	}
 }
+
+export type IdTranslationTable = Map<BaseObject['id'], BaseObject['id']>;

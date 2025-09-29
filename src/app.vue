@@ -223,8 +223,6 @@ watch(
 );
 
 if (window.matchMedia != null) {
-	// TODO: Setting doesn't depend on viewport. Move to main
-
 	/* The viewport is less than, or equal to, 700 pixels wide */
 	const matcher = window.matchMedia('(prefers-color-scheme: dark)');
 	systemPrefersDarkMode.value = matcher.matches;
@@ -308,10 +306,9 @@ function onKeydown(e: KeyboardEvent) {
 		const ctrl = e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey;
 		const noMod = !e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey;
 		if (ctrl && e.key === 'v') {
-			// TODO: Fix this
-			/*store.panels.panels[viewport.value.currentPanel].pasteObjectFromClipboard({
-				panelId: viewport.value.currentPanel,
-			});*/
+			await store.ui.pasteObjects(
+				store.panels.panels[viewport.value.currentPanel]
+			);
 			e.preventDefault();
 			return;
 		}
@@ -325,17 +322,12 @@ function onKeydown(e: KeyboardEvent) {
 		if (selection == null) return;
 		if (ctrl) {
 			if (e.key === 'c' || e.key === 'x') {
-				// TODO: Fix this
-				/*await store.dispatch('panels/copyObjectToClipboard', {
-					id: selection.id,
-					panelId: selection.panelId,
-				} as ICopyObjectToClipboardAction);
+				store.ui.copyObjectToClipboard(selectionPanel.id, [
+					selection.id,
+				]);
 				if (e.key === 'x') {
-					await store.dispatch('panels/removeObject', {
-						id: selection.id,
-						panelId: selection.panelId,
-					} as IRemoveObjectAction);
-				}*/
+					selectionPanel.removeObject(selection);
+				}
 				e.preventDefault();
 				return;
 			}

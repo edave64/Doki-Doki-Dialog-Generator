@@ -2,7 +2,7 @@ import getConstants from '@/constants';
 import { rendererLookup } from '@/renderables/textbox';
 import { between } from '@/util/math';
 import { ref, type Ref } from 'vue';
-import type { Panel } from '../panels';
+import type { IdTranslationTable, Panel } from '../panels';
 import BaseObject, { type GenObject } from './object';
 
 export type TextboxStyle =
@@ -24,6 +24,7 @@ export default class Textbox extends BaseObject<'textBox'> {
 	protected constructor(
 		panel: Panel,
 		id?: GenObject['id'],
+		onTop?: boolean,
 		{
 			text,
 			resetBounds,
@@ -34,7 +35,7 @@ export default class Textbox extends BaseObject<'textBox'> {
 			style?: TextboxStyle;
 		} = {}
 	) {
-		super(panel, id);
+		super(panel, onTop ?? true, id);
 
 		const constants = getConstants();
 		style ??= constants.TextBox.DefaultTextboxStyle;
@@ -70,7 +71,31 @@ export default class Textbox extends BaseObject<'textBox'> {
 	}
 
 	public static create(panel: Panel, text?: string) {
-		return new Textbox(panel, undefined, { text });
+		return new Textbox(panel, undefined, undefined, { text });
+	}
+
+	public override makeClone(
+		panel: Panel,
+		idTranslationTable: IdTranslationTable
+	): Textbox {
+		const newObj = new Textbox(panel, idTranslationTable.get(this.id));
+		this.moveAllRefs(this, newObj);
+		return newObj;
+	}
+
+	public static fromSave(
+		panel: Panel,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		save: Record<string, any>,
+		idTranslationTable: IdTranslationTable
+	): Textbox {
+		const ret = new Textbox(
+			panel,
+			idTranslationTable.get(save.id),
+			save.onTop
+		);
+		ret.loadPropsFromSave(save);
+		return ret;
 	}
 
 	override prepareSiblingRemoval(object: BaseObject): void {
@@ -345,7 +370,7 @@ export default class Textbox extends BaseObject<'textBox'> {
 			this.style === 'custom_plus' ? 'custom_plus' : 'custom';
 		this.mutate(this._style, newStyle);
 
-		const newBox = new Textbox(this.panel, undefined, {
+		const newBox = new Textbox(this.panel, undefined, this.onTop, {
 			resetBounds: {
 				x: boxTwoCoords.x,
 				y: boxTwoCoords.y,
@@ -408,15 +433,6 @@ export default class Textbox extends BaseObject<'textBox'> {
 		this.mutate(this._continue, value);
 	}
 	//#endregion Controls
-
-	public override makeClone(
-		panel: Panel,
-		idTranslationTable: Map<GenObject['id'], GenObject['id']>
-	): Textbox {
-		const newObj = new Textbox(panel, idTranslationTable.get(this.id));
-		this.moveAllRefs(this, newObj);
-		return newObj;
-	}
 }
 
 interface ResetBounds {

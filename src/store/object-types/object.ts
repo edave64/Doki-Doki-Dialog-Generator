@@ -3,8 +3,8 @@ import { undoAble } from '@/history-engine/history';
 import type { IAssetSwitch } from '@/store/content';
 import { decomposeMatrix, mod } from '@/util/math';
 import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { computed, isRef, ref, type Ref } from 'vue';
-import type { Panel } from '../panels';
+import { computed, isReadonly, isRef, ref, type Ref } from 'vue';
+import type { IdTranslationTable, Panel } from '../panels';
 import { HasSpriteFilters } from '../sprite-options';
 import type Character from './character';
 import type Choice from './choices';
@@ -29,13 +29,9 @@ export default abstract class BaseObject<
 		},
 	});
 
-	public get initialOnTop(): boolean {
-		// Most object types are UI elements, which default to being on top.
-		return true;
-	}
-
 	protected constructor(
 		protected panel: Panel,
+		onTop: boolean,
 		id?: BaseObject['id']
 	) {
 		super();
@@ -44,7 +40,7 @@ export default abstract class BaseObject<
 		this.id = id;
 		const constants = getConstants();
 		this._x = ref(constants.Base.screenWidth / 2);
-		panel.insertObject(this as unknown as GenObject);
+		panel.insertObject(this as unknown as GenObject, onTop);
 	}
 
 	protected mutate<T>(ref: Ref<T>, value: T): void {
@@ -412,7 +408,7 @@ export default abstract class BaseObject<
 
 	abstract makeClone(
 		panel: Panel,
-		idTranslationTable: Map<BaseObject['id'], BaseObject['id']>
+		idTranslationTable: IdTranslationTable
 	): BaseObject<T>;
 
 	protected moveAllRefs<T extends BaseObject>(source: T, target: T) {
@@ -423,6 +419,53 @@ export default abstract class BaseObject<
 				(target as any)[key].value = value.value;
 			}
 		}
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	protected loadPropsFromSave(save: Record<string, any>) {
+		for (const [key, prop] of Object.entries(
+			Object.getOwnPropertyDescriptors(this)
+		)) {
+			if (key.startsWith('_')) {
+				const val = prop.value;
+				const saveKey = key.substring(1);
+				if (saveKey === 'version') continue;
+				if (
+					saveKey in save &&
+					isRef(val) &&
+					!isReadonly(val) &&
+					!(('effect' in val) /* Discard computed */)
+				) {
+					val.value = save[saveKey];
+				}
+			}
+		}
+	}
+
+	public save(): Record<string, unknown> {
+		const ret: Record<string, unknown> = {
+			id: this.id,
+			type: this.type,
+			panelId: this.panelId,
+			onTop: this.onTop,
+		};
+
+		for (const [key, prop] of Object.entries(
+			Object.getOwnPropertyDescriptors(this)
+		)) {
+			if (key.startsWith('_')) {
+				const val = prop.value;
+				if (
+					isRef(val) &&
+					!isReadonly(val) &&
+					!(('effect' in val) /* Discard computed */)
+				) {
+					ret[key.substring(1)] = val.value;
+				}
+			}
+		}
+
+		return ret;
 	}
 }
 

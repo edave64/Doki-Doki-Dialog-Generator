@@ -8,7 +8,7 @@ import type {
 import type { DeepReadonly } from 'ts-essentials';
 import { computed, ref, type Ref } from 'vue';
 import { content, type IAssetSwitch } from '../content';
-import type { Panel } from '../panels';
+import type { IdTranslationTable, Panel } from '../panels';
 import { ui } from '../ui';
 import BaseObject, { type GenObject } from './object';
 
@@ -17,16 +17,13 @@ export default class Character extends BaseObject<'character'> {
 		return 'character' as const;
 	}
 
-	override get initialOnTop(): boolean {
-		return false;
-	}
-
 	protected constructor(
 		panel: Panel,
 		public characterType: string,
-		id?: GenObject['id']
+		id?: GenObject['id'],
+		onTop?: boolean
 	) {
-		super(panel, id);
+		super(panel, onTop ?? false, id);
 
 		const constants = getConstants();
 		const data = this.charData;
@@ -45,6 +42,41 @@ export default class Character extends BaseObject<'character'> {
 
 	public static create(panel: Panel, characterType: string) {
 		return new Character(panel, characterType);
+	}
+
+	public override makeClone(
+		panel: Panel,
+		idTranslationTable: IdTranslationTable
+	) {
+		const ret = new Character(
+			panel,
+			this.characterType,
+			idTranslationTable.get(this.id)
+		);
+		this.moveAllRefs(this, ret);
+		return ret;
+	}
+
+	public static fromSave(
+		panel: Panel,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		save: Record<string, any>,
+		idTranslationTable: IdTranslationTable
+	): Character {
+		const ret = new Character(
+			panel,
+			save.characterType,
+			idTranslationTable.get(save.id),
+			save.onTop
+		);
+		ret.loadPropsFromSave(save);
+		return ret;
+	}
+
+	override save(): Record<string, unknown> {
+		const ret = super.save();
+		ret.characterType = this.characterType;
+		return ret;
 	}
 
 	//#region Positioning
@@ -283,19 +315,6 @@ export default class Character extends BaseObject<'character'> {
 		});
 	}
 	//#endregion Character configuration
-
-	public override makeClone(
-		panel: Panel,
-		idTranslationTable: Map<BaseObject['id'], BaseObject['id']>
-	) {
-		const ret = new Character(
-			panel,
-			this.characterType,
-			idTranslationTable.get(this.id)
-		);
-		this.moveAllRefs(this, ret);
-		return ret;
-	}
 
 	//#region Helpers
 	protected _characterData = computed(

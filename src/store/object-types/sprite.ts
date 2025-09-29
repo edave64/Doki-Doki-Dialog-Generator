@@ -1,5 +1,5 @@
 import type { IAssetSwitch } from '@/store/content';
-import type { Panel } from '../panels';
+import type { IdTranslationTable, Panel } from '../panels';
 import { ui } from '../ui';
 import BaseObject, { type GenObject } from './object';
 
@@ -8,16 +8,13 @@ export default class Sprite extends BaseObject<'sprite'> {
 		return 'sprite' as const;
 	}
 
-	override get initialOnTop(): boolean {
-		return false;
-	}
-
 	protected constructor(
 		panel: Panel,
 		public readonly assets: IAssetSwitch[],
-		id?: GenObject['id']
+		id?: GenObject['id'],
+		onTop?: boolean
 	) {
-		super(panel, id);
+		super(panel, onTop ?? false, id);
 
 		this._enlargeWhenTalking.value = ui.defaultCharacterTalkingZoom;
 	}
@@ -28,7 +25,7 @@ export default class Sprite extends BaseObject<'sprite'> {
 
 	public override makeClone(
 		panel: Panel,
-		idTranslationTable: Map<BaseObject['id'], BaseObject['id']>
+		idTranslationTable: IdTranslationTable
 	): Sprite {
 		const ret = new Sprite(
 			panel,
@@ -36,6 +33,28 @@ export default class Sprite extends BaseObject<'sprite'> {
 			idTranslationTable.get(this.id)
 		);
 		this.moveAllRefs(this, ret);
+		return ret;
+	}
+
+	public static fromSave(
+		panel: Panel,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		save: Record<string, any>,
+		idTranslationTable: IdTranslationTable
+	): Sprite {
+		const ret = new Sprite(
+			panel,
+			save.assets,
+			idTranslationTable.get(save.id),
+			save.onTop
+		);
+		ret.loadPropsFromSave(save);
+		return ret;
+	}
+
+	override save(): Record<string, unknown> {
+		const ret = super.save();
+		ret.assets = this.assets;
 		return ret;
 	}
 }

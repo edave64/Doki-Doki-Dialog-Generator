@@ -1,7 +1,7 @@
 import getConstants from '@/constants';
 import { undoAble } from '@/history-engine/history';
 import { ref, type DeepReadonly, type Ref } from 'vue';
-import type { Panel } from '../panels';
+import type { IdTranslationTable, Panel } from '../panels';
 import BaseObject, { type GenObject } from './object';
 
 export default class Choice extends BaseObject<'choice'> {
@@ -9,8 +9,8 @@ export default class Choice extends BaseObject<'choice'> {
 		return 'choice' as const;
 	}
 
-	protected constructor(panel: Panel, id?: GenObject['id']) {
-		super(panel, id);
+	protected constructor(panel: Panel, id?: GenObject['id'], onTop?: boolean) {
+		super(panel, onTop ?? true, id);
 
 		const constants = getConstants();
 		this._choiceDistance = ref(constants.Choices.ChoiceSpacing);
@@ -23,10 +23,25 @@ export default class Choice extends BaseObject<'choice'> {
 
 	public override makeClone(
 		panel: Panel,
-		idTranslationTable: Map<BaseObject['id'], BaseObject['id']>
+		idTranslationTable: IdTranslationTable
 	): Choice {
 		const ret = new Choice(panel, idTranslationTable.get(this.id));
 		this.moveAllRefs(this, ret);
+		return ret;
+	}
+
+	public static fromSave(
+		panel: Panel,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		save: Record<string, any>,
+		idTranslationTable: IdTranslationTable
+	): Choice {
+		const ret = new Choice(
+			panel,
+			idTranslationTable.get(save.id),
+			save.onTop
+		);
+		ret.loadPropsFromSave(save);
 		return ret;
 	}
 

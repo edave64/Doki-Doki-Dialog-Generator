@@ -351,13 +351,7 @@ const useCustomTextboxColor = computed({
 
 function copy() {
 	transaction(async () => {
-		/*
-		TODO: Implement copy
-		await store.dispatch('panels/copyObjectToClipboard', {
-			panelId: props.object.panelId,
-			id: props.object.id,
-		} as ICopyObjectToClipboardAction);
-		 */
+		state.ui.copyObjectToClipboard(props.object.panelId, [props.object.id]);
 	});
 }
 

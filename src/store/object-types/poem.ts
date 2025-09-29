@@ -1,6 +1,6 @@
 import getConstants from '@/constants';
 import { ref } from 'vue';
-import type { Panel } from '../panels';
+import type { IdTranslationTable, Panel } from '../panels';
 import BaseObject, { type GenObject } from './object';
 
 export default class Poem extends BaseObject<'poem'> {
@@ -11,9 +11,10 @@ export default class Poem extends BaseObject<'poem'> {
 	protected constructor(
 		panel: Panel,
 		public readonly subtype: 'poem' | 'console',
-		id?: GenObject['id']
+		id?: GenObject['id'],
+		onTop?: boolean
 	) {
-		super(panel, id);
+		super(panel, onTop ?? true, id);
 
 		const constants = getConstants();
 
@@ -47,7 +48,7 @@ export default class Poem extends BaseObject<'poem'> {
 
 	public override makeClone(
 		panel: Panel,
-		idTranslationTable: Map<BaseObject['id'], BaseObject['id']>
+		idTranslationTable: IdTranslationTable
 	): Poem {
 		const ret = new Poem(
 			panel,
@@ -55,6 +56,28 @@ export default class Poem extends BaseObject<'poem'> {
 			idTranslationTable.get(this.id)
 		);
 		this.moveAllRefs(this, ret);
+		return ret;
+	}
+
+	public static fromSave(
+		panel: Panel,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		save: Record<string, any>,
+		idTranslationTable: IdTranslationTable
+	): Poem {
+		const ret = new Poem(
+			panel,
+			save.subtype,
+			idTranslationTable.get(save.id),
+			save.onTop
+		);
+		ret.loadPropsFromSave(save);
+		return ret;
+	}
+
+	override save(): Record<string, unknown> {
+		const ret = super.save();
+		ret.subtype = this.subtype;
 		return ret;
 	}
 
