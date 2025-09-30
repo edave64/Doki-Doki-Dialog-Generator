@@ -15,7 +15,8 @@ export const ui = reactive(
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		loadSave(_save: any) {},
 
-		save() {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		getSave(_compact: boolean): any {
 			return {};
 		},
 

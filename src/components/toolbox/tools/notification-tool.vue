@@ -26,7 +26,7 @@ import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import ToggleBox from '@/components/ui/d-toggle.vue';
 import type Notification from '@/store/object-types/notification';
 import { state } from '@/store/root';
-import type { Viewport } from '@/store/viewport';
+import type { Viewport } from '@/store/viewports';
 import { propWithTransaction } from '@/util/simple-settable';
 import { computed, inject, ref, type Ref } from 'vue';
 import ObjectTool, { type Handler } from './object-tool.vue';

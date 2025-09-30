@@ -2,7 +2,7 @@ import { undoAble } from '@/history-engine/history';
 import type { IAssetSwitch } from '@/store/content';
 import { arraySeeker } from '@/util/seekers';
 import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { markRaw, ref, type Raw } from 'vue';
+import { markRaw, ref, type Raw, type Ref } from 'vue';
 import { content } from './content';
 import Character from './object-types/character';
 import Choice from './object-types/choices';
@@ -12,11 +12,11 @@ import type { GenObject } from './object-types/object';
 import Poem from './object-types/poem';
 import Sprite from './object-types/sprite';
 import Textbox from './object-types/textbox';
-import { HasSpriteFilters } from './sprite-options';
-import { useViewportStore } from './viewport';
+import { state } from './root';
+import { HasSpriteFilters, loadFilters } from './sprite-options';
 
 export const panels = new (class Panels {
-	private _panels: Raw<Panel>[] = [];
+	private _panels: Ref<Raw<Panel>[]> = ref([]);
 	private _lastPanelId = -1;
 
 	constructor() {
@@ -24,7 +24,7 @@ export const panels = new (class Panels {
 	}
 
 	get panels(): readonly Panel[] {
-		return this._panels;
+		return this._panels.value;
 	}
 
 	get lastPanelId(): number {
@@ -37,44 +37,44 @@ export const panels = new (class Panels {
 	createPanel(): Panel {
 		const panel = new Panel(++this._lastPanelId);
 		undoAble(
-			() => void this._panels.push(panel),
-			() => void this._panels.pop()
+			() => void this._panels.value.push(markRaw(panel)),
+			() => void this._panels.value.pop()
 		);
 		return panel;
 	}
 
 	duplicatePanel(panel: Panel) {
 		const newPanel = Panel.fromExisting(panel, ++this._lastPanelId);
-		const idx = this._panels.indexOf(panel);
+		const idx = this._panels.value.indexOf(panel);
 		undoAble(
-			() => void this._panels.splice(idx + 1, 0, newPanel),
-			() => void this._panels.splice(idx + 1, 1)
+			() => void this._panels.value.splice(idx + 1, 0, markRaw(newPanel)),
+			() => void this._panels.value.splice(idx + 1, 1)
 		);
 		return newPanel;
 	}
 
 	deletePanel(panel: Panel) {
-		const idx = this._panels.indexOf(panel);
+		const idx = this._panels.value.indexOf(panel);
 		if (idx === -1) return;
 
 		undoAble(
-			() => void this._panels.splice(idx, 1),
-			() => void this._panels.splice(idx, 0, panel)
+			() => void this._panels.value.splice(idx, 1),
+			() => void this._panels.value.splice(idx, 0, markRaw(panel))
 		);
 	}
 
 	movePanel(panel: Panel, delta: number) {
-		const idx = this._panels.indexOf(panel);
+		const idx = this._panels.value.indexOf(panel);
 		if (idx === -1) return;
 
 		undoAble(
 			() => {
-				this._panels.splice(idx, 1);
-				this._panels.splice(idx + delta, 0, panel);
+				this._panels.value.splice(idx, 1);
+				this._panels.value.splice(idx + delta, 0, markRaw(panel));
 			},
 			() => {
-				this._panels.splice(idx + delta, 1);
-				this._panels.splice(idx, 0, panel);
+				this._panels.value.splice(idx + delta, 1);
+				this._panels.value.splice(idx, 0, markRaw(panel));
 			}
 		);
 	}
@@ -83,6 +83,35 @@ export const panels = new (class Panels {
 		for (const panel of Object.values(this._panels)) {
 			panel.fixContentPackRemoval(oldContent);
 		}
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	public getSave(): any {
+		return {
+			lastPanelId: this._lastPanelId,
+			panelOrder: this._panels.value.map((panel) => panel.id),
+			currentPanel: state.viewports.list[0].currentPanel,
+			panels: Object.fromEntries(
+				this._panels.value.map((panel) => [panel.id, panel.getSave()])
+			),
+		};
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	public loadSave(data: any) {
+		const panelOrder = data.panelOrder;
+		let currentPanelId = -1;
+		const panels: Raw<Panel>[] = [];
+
+		for (const panelKey of panelOrder) {
+			const dataPanel = data.panels[panelKey];
+			const panel = new Panel(++currentPanelId);
+			panel.loadSave(dataPanel);
+			panels.push(markRaw(panel));
+		}
+
+		this._panels.value = panels;
+		this._lastPanelId = currentPanelId;
 	}
 })();
 
@@ -130,6 +159,42 @@ export class Panel extends HasSpriteFilters {
 		ret._composite.value = panel._composite.value;
 		ret._filters.value = panel._filters.value.map((x) => x.clone());
 		return ret;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	public loadSave(data: any) {
+		this.background.loadSave(data.background);
+		this._filters.value = loadFilters(data.background.filters);
+		this._composite.value = data.composite;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const objectLine: Record<string, any>[] = [];
+
+		for (const key in [...data.order, ...data.onTopOrder]) {
+			const obj = data.objects[key];
+			if (obj == null) continue;
+			objectLine.push(obj);
+		}
+
+		this.pasteObjects(objectLine);
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	public getSave(): any {
+		return {
+			id: this.id,
+			background: this.background.getSave(),
+			composite: this._composite.value,
+			filters: this._filters.value.map((x) => x.getSave()),
+			order: [...this._lowerOrder.value],
+			onTopOrder: [...this._topOrder.value],
+			lastObjId: this._lastObjId,
+			objects: Object.fromEntries(
+				Object.entries(this.objects).map(([id, obj]) => [
+					id,
+					obj.save(),
+				])
+			),
+		};
 	}
 
 	public get lowerOrder(): GenObject['id'][] {
@@ -198,9 +263,7 @@ export class Panel extends HasSpriteFilters {
 			obj.prepareSiblingRemoval(object);
 		}
 
-		const viewports = useViewportStore();
-
-		for (const viewport of Object.values(viewports.viewports)) {
+		for (const viewport of state.viewports.list) {
 			if (
 				viewport.currentPanel === this.id &&
 				viewport.selection === object.id
@@ -304,8 +367,6 @@ export class Panel extends HasSpriteFilters {
 	}
 }
 
-const a = Textbox;
-
 export const transparentId = 'buildin.transparent';
 export const staticColorId = 'buildin.static-color';
 
@@ -334,6 +395,30 @@ export class PanelBackground extends HasSpriteFilters {
 		ret._variant.value = background.variant;
 		ret._scaling.value = background.scaling;
 		return ret;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	public getSave(): any {
+		return {
+			current: this.current,
+			color: this.color,
+			flipped: this.flipped,
+			variant: this.variant,
+			scaling: this.scaling,
+			composite: this.composite,
+			filters: this._filters.value.map((x) => x.getSave()),
+		};
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	public loadSave(data: any) {
+		this.current = data.current;
+		this.color = data.color;
+		this.flipped = data.flipped;
+		this.variant = data.variant;
+		this.scaling = data.scaling;
+		this._composite.value = data.composite;
+		this._filters.value = loadFilters(data.filters);
 	}
 
 	get current(): string {

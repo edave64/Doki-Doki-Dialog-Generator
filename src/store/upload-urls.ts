@@ -19,5 +19,13 @@ export const uploadUrls = reactive(
 			await afterImageUpload2_5(assertUrl);
 			return assertUrl;
 		},
+
+		getSave(compact: boolean) {
+			return Object.keys(this.urls);
+		},
+
+		loadSave(data: string[]) {
+			this.urls = {};
+		},
 	})
 );

@@ -94,7 +94,7 @@ function drawLastDownload(): void {
 }
 
 //#region Multi viewport
-const viewport = ref(setUpViewport(document));
+const viewport = ref(store.viewports.setUpViewport(document));
 
 provide('viewport', viewport);
 
@@ -103,7 +103,7 @@ watch(
 	(owner, old) => {
 		if (owner != null) {
 			if (owner !== document) {
-				viewport.value = setUpViewport(owner);
+				viewport.value = store.viewports.setUpViewport(owner);
 			}
 			if (old != null) {
 				unregisterGlobalEvents(old);
@@ -269,7 +269,6 @@ function showDialog(search: string | undefined) {
 import { NsfwNames, NsfwPaths } from './constants/nsfw';
 import type { GenObject } from './store/object-types/object';
 import Textbox from './store/object-types/textbox';
-import { setUpViewport } from './store/viewport';
 import { isInput, isTextArea } from './util/cross-realm';
 
 const nsfw = computed(() => store.ui.nsfw);

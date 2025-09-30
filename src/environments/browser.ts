@@ -274,8 +274,7 @@ export class Browser implements IEnvironment {
 		const data = await IndexedDBHandler.loadTemplate();
 		if (data == null) return false;
 		this.state.hasTemplate = true;
-		// TODO: Implement
-		//await state.loadSave(data);
+		await state.loadSave(data);
 		return true;
 	}
 
@@ -284,9 +283,9 @@ export class Browser implements IEnvironment {
 		await this.creatingDB;
 		if (!this.isSavingEnabled.value) return;
 		// TODO: Implement
-		/*const data: string = await state.getSave(true);
+		const data: string = await state.getSave(true);
 		IndexedDBHandler.saveTemplate(data);
-		this.state.hasTemplate = true;*/
+		this.state.hasTemplate = true;
 	}
 
 	public async clearDefaultTemplate(): Promise<void> {

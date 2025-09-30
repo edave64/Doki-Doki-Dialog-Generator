@@ -78,7 +78,7 @@ import {
 } from '@/constants/game_modes/ddlc/poem';
 import { transaction } from '@/history-engine/transaction';
 import { state } from '@/store/root';
-import type { Viewport } from '@/store/viewport';
+import type { Viewport } from '@/store/viewports';
 import { propWithTransaction } from '@/util/simple-settable';
 import { UnreachableCaseError } from 'ts-essentials';
 import { computed, inject, ref, watch, type Ref } from 'vue';

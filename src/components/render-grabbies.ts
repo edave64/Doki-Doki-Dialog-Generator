@@ -16,7 +16,7 @@ import { Renderable } from '@/renderables/renderable';
 import { ctxScope } from '@/renderer/canvas-tools';
 import type { GenObject } from '@/store/object-types/object';
 import { state } from '@/store/root';
-import type { Viewport } from '@/store/viewport';
+import type { Viewport } from '@/store/viewports';
 import { safeAsync } from '@/util/errors';
 import { between, mod } from '@/util/math';
 import type { Ref } from 'vue';
@@ -267,20 +267,19 @@ class ScaleGrabby extends Grabby<IScaleDragData> {
 		{ renderObj, originalObjTransform }: IScaleDragData
 	) {
 		if (originalObjTransform == null) return;
-		const currentTransform = renderObj.preparedTransform;
 		try {
-			renderObj.preparedTransform = originalObjTransform;
+			renderObj.transformOverride = originalObjTransform;
 			ctxScope(ctx, () => {
 				ctx.globalAlpha = 0.5;
 				renderObj.render(ctx, SelectedState.None, true, false, true);
 				ctx.globalAlpha = 1;
 			});
 		} finally {
-			renderObj.preparedTransform = currentTransform;
+			renderObj.transformOverride = null;
 		}
 	}
 	onStartMove(obj: GenObject, dragData: IScaleDragData) {
-		dragData.originalObjTransform = dragData.renderObj.preparedTransform;
+		dragData.originalObjTransform = dragData.renderObj.obj.globalTransform;
 		dragData.initialScaleX = obj.scaleX;
 		dragData.initialScaleY = obj.scaleY;
 		dragData.initialDelta = pointsToVector(

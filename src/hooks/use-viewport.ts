@@ -1,4 +1,4 @@
-import type { Viewport } from '@/store/viewport';
+import type { Viewport } from '@/store/viewports';
 import {
 	computed,
 	inject,

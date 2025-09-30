@@ -157,7 +157,7 @@ function display(): void {
 	if (obj) {
 		grabbies.paint(
 			sdCtx.value,
-			obj.preparedTransform.transformPoint(new DOMPoint(0, 0))
+			obj.transform.transformPoint(new DOMPoint(0, 0))
 		);
 	}
 
@@ -210,6 +210,11 @@ function onUiClick(e: MouseEvent): void {
 		viewport.value.selection = selectedObject;
 	});
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(window as any).redraw = function () {
+	eventBus.fire(new InvalidateRenderEvent());
+};
 
 watch(
 	() => [props.canvasWidth, props.canvasHeight],
@@ -316,11 +321,11 @@ function dragStart(rx: number, ry: number) {
 	const selectionId = selection.value;
 	if (selectionId === null) return;
 
-	draggedObject = currentPanel.value.objects[selectionId]!;
+	draggedObject = currentPanel.value.objects[selectionId];
 	dragTransform =
 		getMainSceneRenderer(viewport.value)!
 			.getLastRenderObject(draggedObject.linkedTo!)
-			?.preparedTransform?.inverse() ?? new DOMMatrixReadOnly();
+			?.transform?.inverse() ?? new DOMMatrixReadOnly();
 	const [x, y] = toRendererCoordinate(rx, ry, dragTransform);
 
 	if (
@@ -329,10 +334,10 @@ function dragStart(rx: number, ry: number) {
 	)
 		return;
 
-	dragXOffset = x - draggedObject.x;
-	dragYOffset = y - draggedObject.y;
-	dragXOriginal = draggedObject.x;
-	dragYOriginal = draggedObject.y;
+	dragXOffset = x - draggedObject!.x;
+	dragYOffset = y - draggedObject!.y;
+	dragXOriginal = draggedObject!.x;
+	dragYOriginal = draggedObject!.y;
 }
 
 function onDragOver(e: DragEvent) {

@@ -125,6 +125,14 @@ export class NumericSpriteFilter<K extends string> {
 	public clone(): NumericSpriteFilter<K> {
 		return new NumericSpriteFilter(this.type, this.value);
 	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	public getSave(): any {
+		return {
+			type: this.type,
+			value: this.value,
+		};
+	}
 }
 
 export class DropShadowSpriteFilter {
@@ -191,4 +199,37 @@ export class DropShadowSpriteFilter {
 		ret._color.value = this._color.value;
 		return ret;
 	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	public getSave(): any {
+		return {
+			type: 'drop-shadow',
+			offsetX: this._offsetX.value,
+			offsetY: this._offsetY.value,
+			blurRadius: this._blurRadius.value,
+			color: this._color.value,
+		};
+	}
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function loadFilters(data: any[]): SpriteFilter[] {
+	const ret: SpriteFilter[] = [];
+	for (const filterData of data) {
+		if (filterData.type === 'drop-shadow') {
+			const filter = new DropShadowSpriteFilter();
+			filter.offsetX = filterData.offsetX;
+			filter.offsetY = filterData.offsetY;
+			filter.blurRadius = filterData.blurRadius;
+			filter.color = filterData.color;
+			ret.push(filter);
+		} else {
+			const filter = new NumericSpriteFilter(
+				filterData.type,
+				filterData.value
+			);
+			ret.push(filter);
+		}
+	}
+	return ret;
 }

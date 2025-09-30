@@ -214,6 +214,7 @@ import environment from '@/environments/environment';
 import eventBus, {
 	RenderUpdatedEvent,
 	ShowMessageEvent,
+	StateLoadingEvent,
 } from '@/eventbus/event-bus';
 import { transaction } from '@/history-engine/transaction';
 import { SceneRenderer } from '@/renderables/scene-renderer';
@@ -609,9 +610,7 @@ eventBus.subscribe(RenderUpdatedEvent, () =>
 //#endregion Thumbnails
 //#region Saving/Loading
 async function save() {
-	// TODO: Implement
-	//	const str = await store.dispatch('getSave', true);
-	const str = '';
+	const str = await state.getSave(true);
 	const saveBlob = new Blob([str], {
 		type: 'text/plain',
 	});
@@ -628,14 +627,12 @@ async function save() {
 }
 
 async function load() {
-	// TODO: Implement
-	/*
 	await transaction(async () => {
 		const uploadInput = loadUpload.value;
 		if (!uploadInput.files) return;
 		eventBus.fire(new StateLoadingEvent());
 		const data = await blobToText(uploadInput.files[0]);
-		await store.dispatch('loadSave', data);
+		await state.loadSave(data);
 		if (environment.supports.limitedCanvasSpace) {
 			eventBus.fire(
 				new ShowMessageEvent(
@@ -644,7 +641,6 @@ async function load() {
 			);
 		}
 	});
-	*/
 
 	await renderCurrentThumbnail();
 

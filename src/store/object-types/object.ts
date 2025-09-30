@@ -5,7 +5,11 @@ import { decomposeMatrix, mod } from '@/util/math';
 import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { computed, isReadonly, isRef, ref, type Ref } from 'vue';
 import type { IdTranslationTable, Panel } from '../panels';
-import { HasSpriteFilters } from '../sprite-options';
+import {
+	HasSpriteFilters,
+	loadFilters,
+	type SpriteFilter,
+} from '../sprite-options';
 import type Character from './character';
 import type Choice from './choices';
 import type Notification from './notification';
@@ -436,7 +440,11 @@ export default abstract class BaseObject<
 					!isReadonly(val) &&
 					!(('effect' in val) /* Discard computed */)
 				) {
-					val.value = save[saveKey];
+					if (saveKey === 'filters') {
+						val.value = loadFilters(save[saveKey]);
+					} else {
+						val.value = save[saveKey];
+					}
 				}
 			}
 		}
@@ -460,7 +468,13 @@ export default abstract class BaseObject<
 					!isReadonly(val) &&
 					!(('effect' in val) /* Discard computed */)
 				) {
-					ret[key.substring(1)] = val.value;
+					if (key === '_filters') {
+						ret.filters = (val.value as SpriteFilter[]).map((x) =>
+							x.getSave()
+						);
+					} else {
+						ret[key.substring(1)] = val.value;
+					}
 				}
 			}
 		}

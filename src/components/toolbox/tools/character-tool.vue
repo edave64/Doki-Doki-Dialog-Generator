@@ -108,7 +108,7 @@ import ToggleBox from '@/components/ui/d-toggle.vue';
 import { transaction } from '@/history-engine/transaction';
 import type Character from '@/store/object-types/character';
 import { state } from '@/store/root';
-import type { Viewport } from '@/store/viewport';
+import type { Viewport } from '@/store/viewports';
 import {
 	methodWithTransaction,
 	propWithTransaction,

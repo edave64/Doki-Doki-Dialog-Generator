@@ -1,5 +1,5 @@
 import getConstants from '@/constants';
-import { Viewport } from '@/store/viewport';
+import type { Viewport } from '@/store/viewports';
 import { SceneRenderer } from './scene-renderer';
 
 const lookup = new WeakMap<Viewport, SceneRenderer>();

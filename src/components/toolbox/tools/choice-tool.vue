@@ -59,7 +59,7 @@ import type Choice from '@/store/object-types/choices';
 import type { IChoice } from '@/store/object-types/choices';
 import type { Panel } from '@/store/panels';
 import { state } from '@/store/root';
-import type { Viewport } from '@/store/viewport';
+import type { Viewport } from '@/store/viewports';
 import { propWithTransaction } from '@/util/simple-settable';
 import type { DeepReadonly } from 'ts-essentials';
 import { computed, inject, type Ref, ref } from 'vue';

@@ -258,7 +258,7 @@ import getConstants from '@/constants';
 import { transaction } from '@/history-engine/transaction';
 import type { GenObject } from '@/store/object-types/object';
 import { state } from '@/store/root';
-import { Viewport } from '@/store/viewport';
+import { Viewport } from '@/store/viewports';
 import {
 	methodWithTransaction,
 	propWithTransaction,

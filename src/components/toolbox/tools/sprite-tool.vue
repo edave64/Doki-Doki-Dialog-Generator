@@ -26,7 +26,7 @@ import { transaction } from '@/history-engine/transaction';
 import type Sprite from '@/store/object-types/sprite';
 import type { Panel } from '@/store/panels';
 import { state } from '@/store/root';
-import type { Viewport } from '@/store/viewport';
+import type { Viewport } from '@/store/viewports';
 import { computed, inject, ref, type Ref } from 'vue';
 
 const root = ref(null! as HTMLElement);

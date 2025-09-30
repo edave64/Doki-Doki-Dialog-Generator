@@ -1,6 +1,9 @@
 import { isWebPSupported } from '@/asset-manager';
 import { allowLq, assetUrl } from '@/config';
+import { NsfwPacks } from '@/constants/nsfw';
+import eventBus, { FailureEvent } from '@/eventbus/event-bus';
 import { clearHistory } from '@/history-engine/history';
+import { Repo } from '@/models/repo';
 import { normalizeCharacter as normalizeCharacterV1 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v1/parser';
 import { convert as convertV1 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/convertV1';
 import type {
@@ -17,17 +20,23 @@ import { computed, ref } from 'vue';
 import { mergeContentPacks } from './content/merge';
 import { panels } from './panels';
 
+const emptyPack: ContentPack<IAssetSwitch> = {
+	dependencies: [],
+	characters: [],
+	fonts: [],
+	sprites: [],
+	poemStyles: [],
+	poemBackgrounds: [],
+	backgrounds: [],
+	colors: [],
+};
 export const content = new (class Content {
 	private _contentPacks = ref<Array<ContentPack<IAssetSwitch>>>([]);
-	private _current = ref<ContentPack<IAssetSwitch>>({
-		dependencies: [],
-		backgrounds: [],
-		characters: [],
-		fonts: [],
-		poemStyles: [],
-		poemBackgrounds: [],
-		sprites: [],
-		colors: [],
+	private _current = computed(() => {
+		if (this._contentPacks.value.length === 0) return emptyPack;
+		return this._contentPacks.value.reduce((acc, value) =>
+			mergeContentPacks(acc, value)
+		);
 	});
 
 	get contentPacks(): Readonly<Array<ContentPack<IAssetSwitch>>> {
@@ -47,9 +56,6 @@ export const content = new (class Content {
 		);
 		clearHistory(() => {
 			this._contentPacks.value = newContentPacks;
-			this._current.value = (
-				newContentPacks as Array<ContentPack<IAssetSwitch>>
-			).reduce((acc, value) => mergeContentPacks(acc, value));
 			panels.fixContentPackRemoval(oldState);
 		});
 	}
@@ -72,9 +78,6 @@ export const content = new (class Content {
 
 		clearHistory(() => {
 			this._contentPacks.value = packs;
-			this._current.value = (
-				packs as Array<ContentPack<IAssetSwitch>>
-			).reduce((acc, value) => mergeContentPacks(acc, value));
 		});
 	}
 
@@ -91,7 +94,6 @@ export const content = new (class Content {
 		);
 
 		const existingPacks = new Set(this.contentPacks.map((x) => x.packId!));
-		let combinedPack = this.current;
 
 		for (const convertedPack of convertedPacks) {
 			for (const dependency of convertedPack.dependencies) {
@@ -101,7 +103,6 @@ export const content = new (class Content {
 					);
 				}
 			}
-			combinedPack = mergeContentPacks(combinedPack, convertedPack);
 		}
 
 		await clearHistory(async () => {
@@ -109,7 +110,6 @@ export const content = new (class Content {
 				...this.contentPacks,
 				...convertedPacks,
 			];
-			this._current.value = combinedPack;
 		});
 	}
 
@@ -141,6 +141,96 @@ export const content = new (class Content {
 
 	public get backgrounds() {
 		return this._backgrounds.value;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	public async loadSave(save: any) {
+		const repo = await Repo.getInstance();
+		const loadedIds = new Set<string>();
+
+		const contentPackLoads = await Promise.allSettled(
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			save.map(async (x: any) => {
+				if (typeof x !== 'string') return x;
+				let url: string | null = null;
+				let packId: string;
+				if (x.indexOf(';') >= 0) {
+					[packId, url] = x.split(';');
+				} else {
+					packId = x;
+				}
+				if (loadedIds.has(packId)) return null;
+				loadedIds.add(packId);
+				const alreadyLoaded = content.contentPacks.find(
+					(pack) => pack.packId === packId
+				);
+				if (alreadyLoaded) return alreadyLoaded;
+				if (x.startsWith('dddg.buildin.') && x.endsWith('.nsfw')) {
+					const loaded = await loadContentPack(
+						(NsfwPacks as { [id: string]: string })[x]
+					);
+
+					return await convertContentPack(loaded);
+				}
+				if (url != null && !repo.hasPack(packId)) {
+					await repo.loadTempPack(url);
+				}
+				const pack = repo.getPack(packId);
+				if (!pack) {
+					console.warn(`Pack Id ${x} not found!`);
+					return null!;
+				}
+				const loaded = await loadContentPack(
+					pack.dddg2Path || pack.dddg1Path
+				);
+
+				return await convertContentPack(loaded);
+			})
+		);
+
+		for (const contentPack of contentPackLoads) {
+			if (contentPack.status === 'rejected') {
+				eventBus.fire(new FailureEvent('' + contentPack.reason));
+				console.error(contentPack.reason);
+			}
+		}
+
+		content._contentPacks.value = [
+			...content._contentPacks.value.filter((x) =>
+				x.packId?.startsWith('dddg.buildin.')
+			),
+			...contentPackLoads
+				.filter((x) => x.status === 'fulfilled')
+				.map((x) => x.value)
+				.filter((x) => x !== null),
+		];
+	}
+
+	public async getSave(compact: boolean) {
+		const packs = [...content._contentPacks.value];
+		const repo = await Repo.getInstance();
+
+		if (compact) {
+			return packs
+				.filter(
+					(x) =>
+						!x.packId?.startsWith('dddg.buildin.') ||
+						x.packId?.endsWith('.nsfw')
+				)
+				.map((x) => {
+					let id = x.packId?.startsWith('dddg.uploads.')
+						? x
+						: x.packId;
+					if (x.packId != null) {
+						const pack = repo.getPack(x.packId);
+						if (pack && pack.repoUrl != null)
+							id += `;${pack.repoUrl}`;
+					}
+					return id;
+				});
+		} else {
+			return packs;
+		}
 	}
 })();
 
