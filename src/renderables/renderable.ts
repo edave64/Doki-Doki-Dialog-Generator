@@ -143,6 +143,14 @@ export abstract class Renderable<ObjectType extends GenObject> {
 		return this.obj.linkedTo;
 	}
 
+	public transformOverride: DOMMatrixReadOnly | null = null;
+	public get transform(): DOMMatrixReadOnly {
+		if (this.transformOverride != null) {
+			return this.transformOverride;
+		}
+		return this.obj.globalTransform;
+	}
+
 	/**
 	 * Fetches changes in data from the vuex store.
 	 *
@@ -162,21 +170,6 @@ export abstract class Renderable<ObjectType extends GenObject> {
 		}
 	}
 
-	public preparedTransform!: DOMMatrixReadOnly;
-	/**
-	 * Sets and returns a new 2D transform.
-	 * NOTE: Must be called after prepareData, so the "enlargeWithTalking" transform functions correctly.
-	 * NOTE: Must be called in order of linkage, so the this must be called after prepareTransform of the object it is
-	 *       linked to. The parameter "relative" needs to be the return value of that linkedTo prepareTransform.
-	 *
-	 * @param relative
-	 * @returns
-	 */
-	public prepareTransform(relative: DOMMatrixReadOnly): DOMMatrixReadOnly {
-		this.preparedTransform = relative.multiply(this.getTransfrom());
-		return this.preparedTransform;
-	}
-
 	/**
 	 * An optionally async method that prepares the object to be rendered by resolving assets, processing the transform
 	 * of linked objects, check if the object is talking, etc.
@@ -194,7 +187,7 @@ export abstract class Renderable<ObjectType extends GenObject> {
 			this.lastVersion = this.obj.version;
 		}
 		if (this.transformIsLocal) {
-			const newTransform = this.preparedTransform;
+			const newTransform = this.transform;
 			if (!matrixEquals(newTransform, this.lastLocalTransform)) {
 				this.localCanvasInvalid = true;
 				this.lastLocalTransform = newTransform;
@@ -219,7 +212,7 @@ export abstract class Renderable<ObjectType extends GenObject> {
 			skipLocal = false;
 		}
 		const localCanvasSize = this.getLocalSize();
-		const transform = this.preparedTransform.translate(
+		const transform = this.transform.translate(
 			-this.width / 2,
 			-this.height / 2
 		);
@@ -292,7 +285,7 @@ export abstract class Renderable<ObjectType extends GenObject> {
 	private hitDetectionFallback = false;
 	public hitTest(point: DOMPointReadOnly) {
 		const transposed = point.matrixTransform(
-			this.preparedTransform
+			this.transform
 				.translate(-this.width / 2, -this.height / 2)
 				.inverse()
 		);

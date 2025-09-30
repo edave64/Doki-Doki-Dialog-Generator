@@ -5,7 +5,7 @@ import { RenderContext } from '@/renderer/renderer-context';
 import type { GenObject } from '@/store/object-types/object';
 import type { Panel } from '@/store/panels';
 import { state } from '@/store/root';
-import { Viewport } from '@/store/viewport';
+import type { Viewport } from '@/store/viewports';
 import { UnreachableCaseError, type DeepReadonly } from 'ts-essentials';
 import { Background, color, type IBackgroundRenderer } from './background';
 import { Character } from './character';
@@ -119,39 +119,6 @@ export class SceneRenderer {
 
 		const renderables = this.getRenderObjects();
 
-		// Step 1: Prepare the matrix transformation of all objects.
-		// Resolves all transforms in order, so that objects that are linked by other objects are always resolved
-		// before their dependencies.
-		const waiting: Map<
-			GenObject['id'],
-			Array<Renderable<GenObject>>
-		> = new Map();
-		const processed: Map<GenObject['id'], DOMMatrixReadOnly> = new Map();
-		for (const renderable of renderables) {
-			renderable.prepareData(this.panel!);
-			const linked = renderable.linkedTo;
-			let linkTransform = new DOMMatrixReadOnly();
-			if (linked != null) {
-				const lookupTransform = processed.get(linked);
-				if (lookupTransform) {
-					linkTransform = lookupTransform;
-				} else {
-					const waitList = waiting.get(linked);
-					if (waitList) {
-						waitList.push(renderable);
-					} else {
-						waiting.set(linked, [renderable]);
-					}
-					continue;
-				}
-			}
-			prepareTransform(renderable, linkTransform);
-		}
-
-		if (waiting.size > 0) {
-			console.warn('Not all renderables processed. Infinite loop?');
-		}
-
 		const promises = renderables
 			.map((x) => x.prepareRender(!rx.hq))
 			.filter((x) => x !== undefined);
@@ -201,21 +168,6 @@ export class SceneRenderer {
 
 			for (const obj of renderables.filter((x) => x.linkedTo === objId)) {
 				fetchLinks(obj.id, links);
-			}
-		}
-
-		function prepareTransform(
-			renderable: Renderable<GenObject>,
-			linkTransform: DOMMatrixReadOnly
-		) {
-			const newTransform = renderable.prepareTransform(linkTransform);
-			processed.set(renderable.id, newTransform);
-			const waitList = waiting.get(renderable.id);
-			if (waitList) {
-				for (const sub of waitList) {
-					prepareTransform(sub, newTransform);
-				}
-				waiting.delete(renderable.id);
 			}
 		}
 	}

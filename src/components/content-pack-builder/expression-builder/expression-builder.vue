@@ -325,7 +325,6 @@ async function redraw() {
 					charRenderer,
 					panel
 				);
-				charRenderer.prepareTransform(new DOMMatrixReadOnly());
 				// Skip reloading the character data.
 				await charRenderer.prepareRender(!rx.hq);
 

@@ -116,8 +116,8 @@ export class Grabbies {
 			const sceneRenderer = getMainSceneRenderer(viewport);
 			const renderObj = sceneRenderer!.getLastRenderObject(obj.id)!;
 			const linkedTransform =
-				sceneRenderer?.getLastRenderObject(obj.linkedTo!)
-					?.preparedTransform ?? new DOMMatrixReadOnly();
+				sceneRenderer?.getLastRenderObject(obj.linkedTo!)?.transform ??
+				new DOMMatrixReadOnly();
 
 			this.dragData.renderObj = renderObj;
 			this.dragData.center = linkedTransform.transformPoint(
