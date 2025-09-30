@@ -309,9 +309,11 @@ function choose(index: string | number) {
 		const [headTypeIdx, headIdx] = ('' + index)
 			.split('_', 2)
 			.map((part) => parseInt(part, 10));
-		props.character.setPosePosition({
-			headType: headTypeIdx,
-			head: headIdx,
+		transaction(() => {
+			props.character.setPosePosition({
+				headType: headTypeIdx,
+				head: headIdx,
+			});
 		});
 	} else {
 		setPart(props.part, parseInt('' + index, 10));
