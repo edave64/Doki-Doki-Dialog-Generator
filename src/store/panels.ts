@@ -157,7 +157,10 @@ export class Panel extends HasSpriteFilters {
 		ret._objects.value = newObjects;
 		ret._lastRender.value = panel._lastRender.value;
 		ret._composite.value = panel._composite.value;
-		ret._filters.value = panel._filters.value.map((x) => x.clone());
+		ret._filters.value = panel._filters.value.map((x) =>
+			markRaw(x.clone())
+		);
+		ret.background.fromExisting(panel.background);
 		return ret;
 	}
 
@@ -387,14 +390,14 @@ export class PanelBackground extends HasSpriteFilters {
 		super();
 	}
 
-	public static fromExisting(background: PanelBackground): PanelBackground {
-		const ret = new PanelBackground();
-		ret._current.value = background.current;
-		ret._color.value = background.color;
-		ret._flipped.value = background.flipped;
-		ret._variant.value = background.variant;
-		ret._scaling.value = background.scaling;
-		return ret;
+	public fromExisting(background: PanelBackground): void {
+		this._current.value = background.current;
+		this._color.value = background.color;
+		this._flipped.value = background.flipped;
+		this._variant.value = background.variant;
+		this._scaling.value = background.scaling;
+		this._composite.value = background.composite;
+		this._filters.value = background.filters.map((x) => markRaw(x.clone()));
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any

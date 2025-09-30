@@ -3,7 +3,15 @@ import { undoAble } from '@/history-engine/history';
 import type { IAssetSwitch } from '@/store/content';
 import { decomposeMatrix, mod } from '@/util/math';
 import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import { computed, isReadonly, isRef, ref, type Ref } from 'vue';
+import {
+	computed,
+	isReadonly,
+	isRef,
+	markRaw,
+	ref,
+	type Raw,
+	type Ref,
+} from 'vue';
 import type { IdTranslationTable, Panel } from '../panels';
 import {
 	HasSpriteFilters,
@@ -418,15 +426,24 @@ export default abstract class BaseObject<
 	protected moveAllRefs<T extends BaseObject>(source: T, target: T) {
 		for (const [key, value] of Object.entries(source)) {
 			if (isRef(value)) {
-				// Scary `any`, but both objects are of the same type, so they should have the same keys
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(target as any)[key].value = value.value;
+				if (key === '_filters') {
+					// This is an array of objects. If we don't clone them, the filters will be shared between objects.
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					(target as any)[key].value = (
+						value as Ref<Raw<SpriteFilter>[]>
+					).value.map((x) => markRaw(x.clone()));
+				} else {
+					// Scary `any`, but both objects are of the same type, so they should have the same keys
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					(target as any)[key].value = value.value;
+				}
 			}
 		}
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	protected loadPropsFromSave(
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		save: Record<string, any>,
 		idTranslationTable: IdTranslationTable
 	) {
