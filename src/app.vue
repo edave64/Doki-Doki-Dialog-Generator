@@ -302,7 +302,8 @@ function onKeydown(e: KeyboardEvent) {
 	}
 
 	transaction(async () => {
-		const ctrl = e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey;
+		const ctrl =
+			(e.ctrlKey || e.metaKey) /* mac */ && !e.altKey && !e.shiftKey;
 		const noMod = !e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey;
 		if (ctrl && e.key === 'v') {
 			await store.ui.pasteObjects(
