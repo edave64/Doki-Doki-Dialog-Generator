@@ -164,7 +164,7 @@ export class Panel extends HasSpriteFilters {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public loadSave(data: any) {
 		this.background.loadSave(data.background);
-		this._filters.value = loadFilters(data.background.filters);
+		this._filters.value = loadFilters(data.filters);
 		this._composite.value = data.composite;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const objectLine: Record<string, any>[] = [];

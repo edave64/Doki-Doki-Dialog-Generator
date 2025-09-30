@@ -213,8 +213,8 @@ export class DropShadowSpriteFilter {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function loadFilters(data: any[]): SpriteFilter[] {
-	const ret: SpriteFilter[] = [];
+export function loadFilters(data: any[]): Raw<SpriteFilter>[] {
+	const ret: Raw<SpriteFilter>[] = [];
 	for (const filterData of data) {
 		if (filterData.type === 'drop-shadow') {
 			const filter = new DropShadowSpriteFilter();
@@ -222,13 +222,13 @@ export function loadFilters(data: any[]): SpriteFilter[] {
 			filter.offsetY = filterData.offsetY;
 			filter.blurRadius = filterData.blurRadius;
 			filter.color = filterData.color;
-			ret.push(filter);
+			ret.push(markRaw(filter));
 		} else {
 			const filter = new NumericSpriteFilter(
 				filterData.type,
 				filterData.value
 			);
-			ret.push(filter);
+			ret.push(markRaw(filter));
 		}
 	}
 	return ret;
