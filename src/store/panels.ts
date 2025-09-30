@@ -16,15 +16,20 @@ import { state } from './root';
 import { HasSpriteFilters, loadFilters } from './sprite-options';
 
 export const panels = new (class Panels {
-	private _panels: Ref<Raw<Panel>[]> = ref([]);
+	private _panels: Ref<Record<Panel['id'], Raw<Panel>>> = ref({});
+	private _order: Ref<Panel['id'][]> = ref([]);
 	private _lastPanelId = -1;
 
 	constructor() {
 		Object.seal(this);
 	}
 
-	get panels(): readonly Panel[] {
+	get panels(): Readonly<Record<Panel['id'], Raw<Panel>>> {
 		return this._panels.value;
+	}
+
+	get order(): Readonly<Panel['id'][]> {
+		return this._order.value;
 	}
 
 	get lastPanelId(): number {
@@ -35,46 +40,72 @@ export const panels = new (class Panels {
 	 * Creates a new, empty panel at the end.
 	 */
 	createPanel(): Panel {
-		const panel = new Panel(++this._lastPanelId);
+		const oldPanelId = this._lastPanelId;
+		const panelId = oldPanelId + 1;
+		const panel = new Panel(panelId);
 		undoAble(
-			() => void this._panels.value.push(markRaw(panel)),
-			() => void this._panels.value.pop()
+			() => {
+				this._lastPanelId = panelId;
+				this._panels.value[panel.id] = markRaw(panel);
+				this._order.value.push(panel.id);
+			},
+			() => {
+				this._lastPanelId = oldPanelId;
+				delete this._panels.value[panel.id];
+				this._order.value.pop();
+			}
 		);
 		return panel;
 	}
 
 	duplicatePanel(panel: Panel) {
-		const newPanel = Panel.fromExisting(panel, ++this._lastPanelId);
-		const idx = this._panels.value.indexOf(panel);
+		const oldPanelId = this._lastPanelId;
+		const panelId = oldPanelId + 1;
+		const newPanel = Panel.fromExisting(panel, panelId);
+		const idx = this._order.value.indexOf(panel.id);
 		undoAble(
-			() => void this._panels.value.splice(idx + 1, 0, markRaw(newPanel)),
-			() => void this._panels.value.splice(idx + 1, 1)
+			() => {
+				this._lastPanelId = panelId;
+				this._panels.value[panelId] = markRaw(newPanel);
+				this._order.value.splice(idx + 1, 0, panelId);
+			},
+			() => {
+				this._lastPanelId = oldPanelId;
+				delete this._panels.value[panelId];
+				this._order.value.splice(idx + 1, 1);
+			}
 		);
 		return newPanel;
 	}
 
 	deletePanel(panel: Panel) {
-		const idx = this._panels.value.indexOf(panel);
+		const idx = this._order.value.indexOf(panel.id);
 		if (idx === -1) return;
 
 		undoAble(
-			() => void this._panels.value.splice(idx, 1),
-			() => void this._panels.value.splice(idx, 0, markRaw(panel))
+			() => {
+				delete this._panels.value[panel.id];
+				this._order.value.splice(idx, 1);
+			},
+			() => {
+				this._panels.value[panel.id] = markRaw(panel);
+				this._order.value.splice(idx, 0, panel.id);
+			}
 		);
 	}
 
 	movePanel(panel: Panel, delta: number) {
-		const idx = this._panels.value.indexOf(panel);
+		const idx = this._order.value.indexOf(panel.id);
 		if (idx === -1) return;
 
 		undoAble(
 			() => {
-				this._panels.value.splice(idx, 1);
-				this._panels.value.splice(idx + delta, 0, markRaw(panel));
+				this._order.value.splice(idx, 1);
+				this._order.value.splice(idx + delta, 0, panel.id);
 			},
 			() => {
-				this._panels.value.splice(idx + delta, 1);
-				this._panels.value.splice(idx, 0, markRaw(panel));
+				this._order.value.splice(idx + delta, 1);
+				this._order.value.splice(idx, 0, panel.id);
 			}
 		);
 	}
@@ -89,10 +120,13 @@ export const panels = new (class Panels {
 	public getSave(): any {
 		return {
 			lastPanelId: this._lastPanelId,
-			panelOrder: this._panels.value.map((panel) => panel.id),
+			panelOrder: [...this._order.value],
 			currentPanel: state.viewports.list[0].currentPanel,
 			panels: Object.fromEntries(
-				this._panels.value.map((panel) => [panel.id, panel.getSave()])
+				Object.values(this._panels.value).map((panel) => [
+					panel.id,
+					panel.getSave(),
+				])
 			),
 		};
 	}
@@ -100,18 +134,20 @@ export const panels = new (class Panels {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public loadSave(data: any) {
 		const panelOrder = data.panelOrder;
-		let currentPanelId = -1;
-		const panels: Raw<Panel>[] = [];
+		const panels: Record<Panel['id'], Raw<Panel>> = {};
+		let lastPanelId = -1;
 
 		for (const panelKey of panelOrder) {
 			const dataPanel = data.panels[panelKey];
-			const panel = new Panel(++currentPanelId);
+			const panel = new Panel(+panelKey);
 			panel.loadSave(dataPanel);
-			panels.push(markRaw(panel));
+			panels[panel.id] = markRaw(panel);
+			lastPanelId = Math.max(lastPanelId, panel.id);
 		}
 
+		this._order.value = panelOrder;
 		this._panels.value = panels;
-		this._lastPanelId = currentPanelId;
+		this._lastPanelId = lastPanelId;
 	}
 })();
 

@@ -270,19 +270,20 @@ Promise.allSettled([isWebPSupported(), isHeifSupported()]).then(
 //#endregion Format-Support
 //#region Panel-Buttons
 const canMoveAhead = computed((): boolean => {
-	const idx = state.panels.panels.indexOf(currentPanel.value);
+	const idx = state.panels.order.indexOf(currentPanel.value.id);
 	return idx > 0;
 });
 
 const canMoveBehind = computed((): boolean => {
-	const panels = state.panels.panels;
-	const idx = panels.indexOf(currentPanel.value);
+	const panels = state.panels.order;
+	const idx = panels.indexOf(currentPanel.value.id);
 	return idx < panels.length - 1;
 });
 
 const panelButtons = computed((): IPanelButton[] => {
-	const panels = state.panels.panels;
-	return panels.map((panel) => {
+	const panels = state.panels.order;
+	return panels.map((panelId) => {
+		const panel = state.panels.panels[panelId];
 		const txtBox = [...panel.lowerOrder, ...panel.topOrder]
 			.map((objId) => panel.objects[objId])
 			.map(extractObjectText);
@@ -418,7 +419,7 @@ async function renderObjects<T>(
 	return ret;
 }
 function getLimitedPanelList(): DeepReadonly<Panel['id'][]> {
-	const max = state.panels.panels.length - 1;
+	const max = state.panels.order.length - 1;
 	const min = 0;
 	const parts = pages.value.split(',');
 	const listedPages: number[] = [];
@@ -451,7 +452,7 @@ function getLimitedPanelList(): DeepReadonly<Panel['id'][]> {
 	}
 
 	if (!foundMatch) {
-		return state.panels.panels.map((panel) => panel.id);
+		return state.panels.order;
 	}
 
 	return listedPages
@@ -538,11 +539,10 @@ const isMounted = ref(false);
 const viewport = useViewport();
 
 const missingThumbnails = computed((): Panel['id'][] => {
-	return state.panels.panels
-		.filter((panel) => {
-			return panel.lastRender == null;
-		})
-		.map((panel) => panel.id);
+	return state.panels.order.filter((panelId) => {
+		const panel = state.panels.panels[panelId];
+		return panel.lastRender == null;
+	});
 });
 
 async function renderCurrentThumbnail() {
@@ -566,8 +566,10 @@ async function renderPanelThumbnail(sceneRenderer: SceneRenderer) {
 		thumbnailCtx.canvas.toBlob(
 			(blob: Blob | null) => {
 				if (!blob) return;
+				const panel = state.panels.panels[panelId];
+				if (!panel) return;
 				const url = URL.createObjectURL(blob);
-				state.panels.panels[panelId].lastRender = url;
+				panel.lastRender = url;
 			},
 			(await isWebPSupported()) ? 'image/webp' : 'image/jpeg',
 			thumbnailQuality
