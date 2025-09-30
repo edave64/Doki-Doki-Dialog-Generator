@@ -13,6 +13,9 @@ export default class Notification extends BaseObject<'notification'> {
 
 		const constants = getConstants();
 		this._customColor = ref(constants.Choices.ChoiceButtonColor);
+		this._y.value = constants.Base.screenHeight / 2;
+		this._width.value = constants.Choices.ChoiceButtonWidth;
+		this._height.value = 0;
 	}
 
 	public static create(panel: Panel) {
@@ -44,8 +47,8 @@ export default class Notification extends BaseObject<'notification'> {
 	}
 
 	//#region Text
-	private _text = ref('');
-	private _autoWrap = ref(true);
+	private _text = ref('Click here to edit notification');
+	private _autoWrap = ref(false);
 
 	get text(): string {
 		return this._text.value;

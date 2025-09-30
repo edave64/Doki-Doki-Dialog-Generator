@@ -15,6 +15,9 @@ export default class Choice extends BaseObject<'choice'> {
 		const constants = getConstants();
 		this._choiceDistance = ref(constants.Choices.ChoiceSpacing);
 		this._customColor = ref(constants.Choices.ChoiceButtonColor);
+		this._y.value = constants.Choices.ChoiceY;
+		this._width.value = constants.Choices.ChoiceButtonWidth;
+		this._height.value = 0;
 	}
 
 	public static create(panel: Panel) {
@@ -89,12 +92,15 @@ export default class Choice extends BaseObject<'choice'> {
 		value: IChoice[Key]
 	) {
 		const oldValue = this._choices.value[choiceIdx][key];
+		const oldVersion = this._version.value;
 		undoAble(
 			() => {
 				this._choices.value[choiceIdx][key] = value;
+				this._version.value = oldVersion + 1;
 			},
 			() => {
 				this._choices.value[choiceIdx][key] = oldValue;
+				this._version.value = oldVersion;
 			}
 		);
 	}
