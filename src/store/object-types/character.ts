@@ -69,7 +69,7 @@ export default class Character extends BaseObject<'character'> {
 			idTranslationTable.get(save.id),
 			save.onTop
 		);
-		ret.loadPropsFromSave(save);
+		ret.loadPropsFromSave(save, idTranslationTable);
 		return ret;
 	}
 

@@ -169,7 +169,7 @@ export class Panel extends HasSpriteFilters {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const objectLine: Record<string, any>[] = [];
 
-		for (const key in [...data.order, ...data.onTopOrder]) {
+		for (const key of [...data.order, ...data.onTopOrder]) {
 			const obj = data.objects[key];
 			if (obj == null) continue;
 			objectLine.push(obj);

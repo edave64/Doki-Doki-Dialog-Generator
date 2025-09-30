@@ -48,7 +48,7 @@ export default class Sprite extends BaseObject<'sprite'> {
 			idTranslationTable.get(save.id),
 			save.onTop
 		);
-		ret.loadPropsFromSave(save);
+		ret.loadPropsFromSave(save, idTranslationTable);
 		return ret;
 	}
 

@@ -71,7 +71,7 @@ export default class Poem extends BaseObject<'poem'> {
 			idTranslationTable.get(save.id),
 			save.onTop
 		);
-		ret.loadPropsFromSave(save);
+		ret.loadPropsFromSave(save, idTranslationTable);
 		return ret;
 	}
 

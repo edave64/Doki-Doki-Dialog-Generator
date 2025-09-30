@@ -41,7 +41,7 @@ export default class Choice extends BaseObject<'choice'> {
 			idTranslationTable.get(save.id),
 			save.onTop
 		);
-		ret.loadPropsFromSave(save);
+		ret.loadPropsFromSave(save, idTranslationTable);
 		return ret;
 	}
 

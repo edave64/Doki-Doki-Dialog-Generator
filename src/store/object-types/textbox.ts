@@ -94,7 +94,17 @@ export default class Textbox extends BaseObject<'textBox'> {
 			idTranslationTable.get(save.id),
 			save.onTop
 		);
-		ret.loadPropsFromSave(save);
+		if (
+			save.panelId !== panel.id &&
+			!idTranslationTable.has(save.talkingObjId)
+		) {
+			save.talkingObjId = null;
+		} else {
+			save.talkingObjId =
+				idTranslationTable.get(save.talkingObjId) ?? save.talkingObjId;
+		}
+		save.talkingObjId = save.talkingObjId ?? null;
+		ret.loadPropsFromSave(save, idTranslationTable);
 		return ret;
 	}
 

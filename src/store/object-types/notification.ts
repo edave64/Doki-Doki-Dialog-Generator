@@ -39,7 +39,7 @@ export default class Notification extends BaseObject<'notification'> {
 			idTranslationTable.get(save.id),
 			save.onTop
 		);
-		ret.loadPropsFromSave(save);
+		ret.loadPropsFromSave(save, idTranslationTable);
 		return ret;
 	}
 

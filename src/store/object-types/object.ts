@@ -426,7 +426,10 @@ export default abstract class BaseObject<
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	protected loadPropsFromSave(save: Record<string, any>) {
+	protected loadPropsFromSave(
+		save: Record<string, any>,
+		idTranslationTable: IdTranslationTable
+	) {
 		for (const [key, prop] of Object.entries(
 			Object.getOwnPropertyDescriptors(this)
 		)) {
@@ -440,7 +443,9 @@ export default abstract class BaseObject<
 					!isReadonly(val) &&
 					!(('effect' in val) /* Discard computed */)
 				) {
-					if (saveKey === 'filters') {
+					if (saveKey === 'linkedTo') {
+						val.value = idTranslationTable.get(save[saveKey]);
+					} else if (saveKey === 'filters') {
 						val.value = loadFilters(save[saveKey]);
 					} else {
 						val.value = save[saveKey];
