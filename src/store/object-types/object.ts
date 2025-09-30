@@ -432,6 +432,14 @@ export default abstract class BaseObject<
 					(target as any)[key].value = (
 						value as Ref<Raw<SpriteFilter>[]>
 					).value.map((x) => markRaw(x.clone()));
+				} else if (key === '_choices') {
+					// This is an array of objects. If we don't clone them, the choices will be shared between objects.
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					(target as any)[key].value = (
+						value as Ref<Raw<Choice>[]>
+					).value.map((x) => ({
+						...x,
+					}));
 				} else {
 					// Scary `any`, but both objects are of the same type, so they should have the same keys
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
