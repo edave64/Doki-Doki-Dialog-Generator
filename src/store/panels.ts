@@ -325,11 +325,11 @@ export class Panel extends HasSpriteFilters {
 
 	public setOnTop(object: BaseObject, onTop: boolean) {
 		const sourceCollection = onTop
-			? this._topOrder.value
-			: this._lowerOrder.value;
-		const targetCollection = onTop
 			? this._lowerOrder.value
 			: this._topOrder.value;
+		const targetCollection = onTop
+			? this._topOrder.value
+			: this._lowerOrder.value;
 		const oldIdx = sourceCollection.indexOf(object.id);
 		if (oldIdx === -1) return;
 
