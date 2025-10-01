@@ -2,8 +2,6 @@ import getConstants from '@/constants';
 import { SelectedState, selectionColors } from '@/constants/shared';
 import { applyFilter, ctxScope } from '@/renderer/canvas-tools';
 import type { GenObject } from '@/store/object-types/object';
-import type Textbox from '@/store/object-types/textbox';
-import type { Panel } from '@/store/panels';
 import { makeCanvas } from '@/util/canvas';
 import { matrixEquals } from '@/util/math';
 import type { DeepReadonly } from 'vue';
@@ -17,7 +15,6 @@ import type { DeepReadonly } from 'vue';
  * draw over the same pixels multiple times to work properly with reduced opacity.
  *
  * If you want to render an object, you need to call the following methods in the following order:
- * - prepareData: Updates data from the vuex-store
  * - prepareTransform: Sets a new transform. Needs the transform that was returned by the prepareTransform call
  *                     of the object this object is linked to.
  * - prepareRender: May return a promise that needs to be awaited that will fetch required assets.
@@ -135,9 +132,8 @@ export abstract class Renderable<ObjectType extends GenObject> {
 	 * Indicates if the object is currently talking, since talking objects receive a zoom of 1.05.
 	 */
 	protected get isTalking() {
-		return this.refTextbox !== null;
+		return this.obj.isTalking;
 	}
-	protected refTextbox: Textbox | null = null;
 
 	public get linkedTo(): ObjectType['id'] | null {
 		return this.obj.linkedTo;
@@ -149,25 +145,6 @@ export abstract class Renderable<ObjectType extends GenObject> {
 			return this.transformOverride;
 		}
 		return this.obj.globalTransform;
-	}
-
-	/**
-	 * Fetches changes in data from the vuex store.
-	 *
-	 * @param panel - The currently active panel
-	 * @param _store - The vuex store
-	 * @returns
-	 */
-	public prepareData(panel: DeepReadonly<Panel>): void {
-		this.refTextbox = null;
-		const inPanel = [...panel.lowerOrder, ...panel.topOrder];
-		for (const key of inPanel) {
-			const obj = panel.objects[key] as Textbox;
-			if (obj.type === 'textBox' && obj.talkingObjId === this.obj.id) {
-				this.refTextbox = obj;
-				return;
-			}
-		}
 	}
 
 	/**

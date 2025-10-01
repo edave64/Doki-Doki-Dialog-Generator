@@ -150,7 +150,6 @@ import ExternalLink from '@/components/ui/external-link.vue';
 import { SelectedState } from '@/constants/shared';
 import environment from '@/environments/environment';
 import { transaction } from '@/history-engine/transaction';
-import { AssetListRenderable } from '@/renderables/asset-list-renderable';
 import { Character } from '@/renderables/character';
 import { Renderer } from '@/renderer/renderer';
 import type { IAssetSwitch } from '@/store/content';
@@ -321,10 +320,6 @@ async function redraw() {
 		const renderer = new Renderer(pose.width, pose.height);
 		try {
 			await renderer.render(async (rx) => {
-				AssetListRenderable.prototype.prepareData.call(
-					charRenderer,
-					panel
-				);
 				// Skip reloading the character data.
 				await charRenderer.prepareRender(!rx.hq);
 

@@ -5,8 +5,9 @@ import {
 } from '@/renderer/text-renderer/text-renderer';
 import type { GenObject } from '@/store/object-types/object';
 import type Textbox from '@/store/object-types/textbox';
-import type { Panel } from '@/store/panels';
+import { state } from '@/store/root';
 import type { DeepReadonly } from 'ts-essentials';
+import { computed, type Ref } from 'vue';
 import { ScalingRenderable } from './scaling-renderable';
 import { Corrupted } from './textboxRenderers/corrupt';
 import { Custom } from './textboxRenderers/custom';
@@ -57,7 +58,7 @@ export class TextBox extends ScalingRenderable<Textbox> {
 	 * textbox. So the textbox must be re-rendered if they change.
 	 */
 	public getRefVars(): string | null {
-		const refObj = this.refObject;
+		const refObj = this.refObject.value;
 		if (!refObj) return null;
 		return JSON.stringify([
 			refObj.label,
@@ -70,7 +71,7 @@ export class TextBox extends ScalingRenderable<Textbox> {
 	public getName(): string {
 		return this.obj.talkingObjId === '$other$'
 			? this.obj.talkingOther
-			: (this.refObject?.label ?? 'Missing name');
+			: (this.refObject.value?.label ?? 'Missing name');
 	}
 
 	protected get canSkipLocal(): boolean {
@@ -78,14 +79,6 @@ export class TextBox extends ScalingRenderable<Textbox> {
 			super.canSkipLocal &&
 			(this._lastRenderer?.allowSkippingLocal ?? true)
 		);
-	}
-
-	public prepareData(panel: DeepReadonly<Panel>) {
-		super.prepareData(panel);
-
-		if (typeof this.obj.talkingObjId === 'number') {
-			this.refObject = panel.objects[this.obj.talkingObjId] ?? null;
-		}
 	}
 
 	public override prepareRender(lq: boolean): void | Promise<unknown> {
@@ -176,7 +169,7 @@ export class TextBox extends ScalingRenderable<Textbox> {
 	}
 
 	public get forcedStyle(): Textbox['style'] {
-		const refObject = this.refObject;
+		const refObject = this.refObject.value;
 		if (
 			(this.obj.style === 'normal' || this.obj.style === 'normal_plus') &&
 			refObject &&
@@ -186,7 +179,14 @@ export class TextBox extends ScalingRenderable<Textbox> {
 		return this.obj.style;
 	}
 
-	public refObject: DeepReadonly<GenObject> | null = null;
+	public refObject: Ref<DeepReadonly<GenObject> | null> = computed(() => {
+		if (this.obj.talkingObjId == null) return null;
+		return (
+			state.panels.panels[this.obj.panelId]?.objects[
+				+this.obj.talkingObjId
+			] ?? null
+		);
+	});
 
 	private _lastRenderer: ITextboxRenderer | null = null;
 	public get textboxRenderer() {

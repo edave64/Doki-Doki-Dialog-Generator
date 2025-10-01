@@ -50,8 +50,9 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 	}
 
 	public get nameboxWidth() {
-		if (this.refObject && this.refObject.nameboxWidth !== null) {
-			return this.refObject.nameboxWidth;
+		const refObject = this.refObject.value;
+		if (refObject && refObject.nameboxWidth !== null) {
+			return refObject.nameboxWidth;
 		}
 		return this.obj.customNameboxWidth ?? TBConstants.NameboxWidth;
 	}
@@ -86,7 +87,7 @@ export class Custom extends DdlcBase implements ITextboxRenderer {
 
 	public get customColor(): string {
 		if (this.obj.overrideColor) return this.obj.customColor;
-		const refObject = this.refObject;
+		const refObject = this.refObject.value;
 		if (refObject != null && refObject.textboxColor != null)
 			return refObject.textboxColor;
 		return textboxDefaultColor;

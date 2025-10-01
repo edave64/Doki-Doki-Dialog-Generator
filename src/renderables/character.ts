@@ -1,6 +1,5 @@
 import type { IAssetSwitch } from '@/store/content';
 import type CharacterStore from '@/store/object-types/character';
-import type { Panel } from '@/store/panels';
 import { state } from '@/store/root';
 import type { Character as CharacterModel } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import type { DeepReadonly } from 'ts-essentials';
@@ -19,10 +18,6 @@ export class Character extends AssetListRenderable<CharacterStore> {
 	public constructor(obj: DeepReadonly<CharacterStore>) {
 		super(obj);
 		this.data = state.content.characters.get(this.obj.characterType)!;
-	}
-
-	public prepareData(panel: DeepReadonly<Panel>) {
-		super.prepareData(panel);
 	}
 
 	public prepareRender(lq: boolean): void | Promise<unknown> {

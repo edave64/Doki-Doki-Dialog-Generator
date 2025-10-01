@@ -3,11 +3,9 @@ import type { IAsset } from '@/render-utils/assets/asset';
 import { ErrorAsset } from '@/render-utils/assets/error-asset';
 import type { IAssetSwitch } from '@/store/content';
 import type { GenObject } from '@/store/object-types/object';
-import type Textbox from '@/store/object-types/textbox';
-import type { Panel } from '@/store/panels';
 import { state } from '@/store/root';
 import type { PoseRenderCommand } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
-import type { DeepReadonly } from 'ts-essentials';
+import { type DeepReadonly } from 'vue';
 import { Renderable } from './renderable';
 
 /**
@@ -16,11 +14,10 @@ import { Renderable } from './renderable';
 export abstract class AssetListRenderable<
 	Obj extends GenObject,
 > extends Renderable<Obj> {
-	protected refTextbox: Textbox | null = null;
 	protected abstract getAssetList(): Array<IDrawAssetsUnloaded | IDrawAssets>;
 
 	private lastUploadCount = 0;
-	private lastHq: boolean = false;
+	private lastHq: boolean | null = null;
 	private missingAsset = false;
 	private _canSkipLocal = false;
 	protected get canSkipLocal() {
@@ -30,8 +27,11 @@ export abstract class AssetListRenderable<
 		return false;
 	}
 
-	public override prepareData(panel: DeepReadonly<Panel>): void {
-		super.prepareData(panel);
+	public prepareRender(lq: boolean): void | Promise<unknown> {
+		super.prepareRender(lq);
+
+		let reloadAssets = false;
+
 		if (this.missingAsset) {
 			const uploadCount = Object.keys(state.uploadUrls).length;
 			if (uploadCount !== this.lastUploadCount) {
@@ -40,11 +40,6 @@ export abstract class AssetListRenderable<
 			}
 			this.lastUploadCount = uploadCount;
 		}
-	}
-
-	public prepareRender(lq: boolean): void | Promise<unknown> {
-		super.prepareRender(lq);
-		let reloadAssets = false;
 		if (this.isAssetListOutdated()) {
 			this.assetList = this.getAssetList();
 			// reloadAssets = true;
