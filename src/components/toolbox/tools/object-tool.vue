@@ -215,7 +215,7 @@
 									id="namebox_width"
 									type="number"
 									:placeholder="defaultNameboxWidth + ''"
-									v-model.lazy="nameboxWidth"
+									v-model="nameboxWidth"
 								/>
 							</td>
 						</tr>
@@ -303,7 +303,16 @@ const linkObjectList = computed((): [GenObject['id'], string][] => {
 const easterEgg = location.search.includes('alex');
 
 const preserveRatio = propWithTransaction(object, 'preserveRatio');
-const nameboxWidth = propWithTransaction(object, 'nameboxWidth');
+const nameboxWidth = computed({
+	get(): number | null {
+		return props.object.nameboxWidth;
+	},
+	set(val: number | '' | null) {
+		transaction(() => {
+			object.value.nameboxWidth = val === '' ? null : val;
+		});
+	},
+});
 
 const scaleX = computed({
 	get(): number {
