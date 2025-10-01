@@ -128,7 +128,7 @@ function assetSpriteBackground(sprite: DeepReadonly<Sprite<IAssetSwitch>>) {
 }
 async function addSpriteToScene(sprite: ISprite) {
 	await transaction(async () => {
-		SpriteStore.create(panel.value, sprite.variants[0]);
+		await SpriteStore.create(panel.value, sprite.variants[0]);
 	});
 }
 function openSpritesFolder() {

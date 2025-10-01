@@ -398,7 +398,7 @@ async function onDrop(e: DragEvent) {
 				const assetUrl = await state.uploadUrls.add(file.name, url);
 
 				await transaction(async () => {
-					Sprite.create(panel.value, [
+					await Sprite.create(panel.value, [
 						{
 							hq: assetUrl,
 							lq: assetUrl,
