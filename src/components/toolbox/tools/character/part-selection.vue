@@ -295,8 +295,10 @@ function updatePose(styleGroupId?: number) {
 		if (subSelect.length > 0) selection = subSelect;
 	}
 	transaction(async () => {
-		// eslint-disable-next-line vue/no-mutating-props
-		props.character.styleId = styleGroups.styles.indexOf(selection[0]);
+		props.character.setCharStyle(
+			styleGroupId,
+			styleGroups.styles.indexOf(selection[0])
+		);
 	});
 }
 
