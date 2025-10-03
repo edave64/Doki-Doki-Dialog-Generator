@@ -189,22 +189,55 @@
 				</table>
 			</d-fieldset>
 			<div class="column">
-				<d-button icon="save" @click="save">Save</d-button>
+				<d-button icon="save" @click="save">Save (light)</d-button>
+				<d-button
+					v-if="canDoFullSave"
+					class="bt0"
+					icon="save"
+					@click="saveFolder"
+					>Save Folder
+				</d-button>
 				<d-button
 					class="bt0"
 					icon="folder_open"
 					@click="loadUpload.click()"
 				>
-					Load
+					Load (light)
 					<input type="file" ref="loadUpload" @change="load" />
+				</d-button>
+				<d-button
+					v-if="canDoFullSave"
+					class="bt0"
+					icon="folder_open"
+					@click="loadOpenFolder.click()"
+					>Load Folder
+					<input
+						type="file"
+						ref="loadOpenFolder"
+						@change="loadFolder"
+						webkitdirectory
+					/>
 				</d-button>
 			</div>
 		</template>
 	</div>
+	<teleport to="#modal-messages">
+		<modal-dialog
+			:options="['No', 'Yes']"
+			no-base-size
+			class="modal-rename"
+			v-if="showConfirmModal"
+			@option="confirmOption"
+			@leave="confirmOption('No')"
+		>
+			<p class="modal-text">{{ confirmText }}</p>
+		</modal-dialog>
+	</teleport>
 </template>
 
 <script lang="ts" setup>
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
+import ModalDialog from '@/components/modal-dialog.vue';
 import DButton from '@/components/ui/d-button.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
@@ -243,7 +276,12 @@ const quality = ref(defaultQuality);
 const horizontalExport = ref(false);
 const imageOptionsActive = ref(false);
 const loadUpload = ref(null! as HTMLInputElement);
+const loadOpenFolder = ref(null! as HTMLInputElement);
 const baseConst = getConstants().Base;
+
+const canDoFullSave =
+	window.showDirectoryPicker !== undefined &&
+	'webkitRelativePath' in (File?.prototype ?? {});
 
 const currentPanel = computed(
 	() => state.panels.panels[viewport.value.currentPanel]
@@ -254,6 +292,24 @@ const canDeletePanel = computed(() => panelButtons.value.length > 1);
 function emptyStringInInt(v: string | number) {
 	if (v === '') return true;
 	return false;
+}
+
+const showConfirmModal = ref(false);
+const confirmText = ref('');
+const confirmResolve = ref<null | ((val: boolean) => void)>(null);
+function confirmOption(option: string) {
+	showConfirmModal.value = false;
+	if (option === 'Yes') {
+		confirmResolve.value?.(true);
+	}
+}
+
+function confirmMessage(text: string): Promise<boolean> {
+	return new Promise<boolean>((resolve) => {
+		confirmText.value = text;
+		showConfirmModal.value = true;
+		confirmResolve.value = resolve;
+	});
 }
 
 //#region Format-Support
@@ -545,6 +601,98 @@ const missingThumbnails = computed((): Panel['id'][] => {
 	});
 });
 
+async function saveFolder() {
+	const entry = await window.showDirectoryPicker();
+	if (!entry) return;
+
+	const entries: FileSystemHandle[] = await Array.fromAsync(entry.values());
+
+	if (
+		entries.some(
+			(entry) => entry.kind === 'file' && entry.name === 'save.dddg'
+		)
+	) {
+		if (
+			!(await confirmMessage(
+				'A save file already exists in this folder. Do you want to overwrite it?'
+			))
+		) {
+			return;
+		}
+	} else if (entries.length > 0) {
+		if (
+			!(await confirmMessage(
+				'This folder already contains files. They might get overwritten. Do you want to continue?'
+			))
+		) {
+			return;
+		}
+	}
+
+	const promises: Promise<unknown>[] = [
+		(async () => {
+			const saveFile = await entry.getFileHandle(`save.dddg`, {
+				create: true,
+			});
+			const saveBlob = new Blob([await state.getSave(false)], {
+				type: 'text/plain',
+			});
+			const writable = await saveFile.createWritable();
+			await writable.write(saveBlob);
+			await writable.close();
+		})(),
+	];
+
+	for (const [name, url] of Object.entries(state.uploadUrls.urls)) {
+		promises.push(
+			(async () => {
+				const file = await entry.getFileHandle(name, {
+					create: true,
+				});
+				const writable = await file.createWritable();
+				const fileLoader = await fetch(url);
+				const blob = await fileLoader.blob();
+				await writable.write(blob);
+				await writable.close();
+			})()
+		);
+	}
+}
+
+async function loadFolder(e: Event) {
+	const files = (e.target as HTMLInputElement).files;
+
+	if (!files) return;
+
+	await transaction(async () => {
+		for (const file of files) {
+			const name = file.name;
+
+			if (name === 'save.dddg') {
+				const data = await file.text();
+				await state.loadSave(data);
+			}
+
+			const url = URL.createObjectURL(file);
+			state.uploadUrls.add(name, url);
+		}
+	});
+
+	await renderCurrentThumbnail();
+
+	if (!environment.supports.limitedCanvasSpace) {
+		setTimeout(() => {
+			restoreThumbnails();
+		}, 1000);
+	} else {
+		eventBus.fire(
+			new ShowMessageEvent(
+				'To prevent running out of memory, thumbnails will not be automatically restored in the background.'
+			)
+		);
+	}
+}
+
 async function renderCurrentThumbnail() {
 	// FIXME: This sadly makes it so the selection halo is visible in the thumbnails.
 	//        The renderer will lose that once the panels tab is selected, so maybe delay this?
@@ -578,24 +726,28 @@ async function renderPanelThumbnail(sceneRenderer: SceneRenderer) {
 }
 
 async function restoreThumbnails() {
-	const baseConst = getConstants().Base;
-	if (!isMounted.value) return;
-	if (environment.supports.limitedCanvasSpace) return;
-	const missingThumbnails_ = missingThumbnails.value;
-	if (missingThumbnails_.length === 0) return;
-	const toRender = missingThumbnails_[0];
-	const localRenderer = new SceneRenderer(
-		toRender,
-		baseConst.screenWidth,
-		baseConst.screenHeight
-	);
+	try {
+		const baseConst = getConstants().Base;
+		if (!isMounted.value) return;
+		if (environment.supports.limitedCanvasSpace) return;
+		const missingThumbnails_ = missingThumbnails.value;
+		if (missingThumbnails_.length === 0) return;
+		const toRender = missingThumbnails_[0];
+		const localRenderer = new SceneRenderer(
+			toRender,
+			baseConst.screenWidth,
+			baseConst.screenHeight
+		);
 
-	await localRenderer.render(false, false, true);
+		await localRenderer.render(false, false, true);
 
-	await renderPanelThumbnail(localRenderer);
+		await renderPanelThumbnail(localRenderer);
+	} catch (e) {
+		console.error(e);
+	}
 	setTimeout(() => {
 		restoreThumbnails();
-	}, 500);
+	}, 100);
 }
 
 onMounted(() => {
@@ -635,20 +787,21 @@ async function load() {
 		eventBus.fire(new StateLoadingEvent());
 		const data = await blobToText(uploadInput.files[0]);
 		await state.loadSave(data);
-		if (environment.supports.limitedCanvasSpace) {
-			eventBus.fire(
-				new ShowMessageEvent(
-					'To prevent running out of memory, thumbnails will not be automatically restored in the background.'
-				)
-			);
-		}
 	});
 
 	await renderCurrentThumbnail();
 
-	setTimeout(() => {
-		restoreThumbnails();
-	}, 1000);
+	if (!environment.supports.limitedCanvasSpace) {
+		setTimeout(() => {
+			restoreThumbnails();
+		}, 1000);
+	} else {
+		eventBus.fire(
+			new ShowMessageEvent(
+				'To prevent running out of memory, thumbnails will not be automatically restored in the background.'
+			)
+		);
+	}
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -207,27 +207,22 @@ export const content = new (class Content {
 	}
 
 	public async getSave(compact: boolean) {
-		const packs = [...content._contentPacks.value];
+		const packs = content._contentPacks.value.filter(
+			(x) =>
+				!x.packId?.startsWith('dddg.buildin.') ||
+				x.packId?.endsWith('.nsfw')
+		);
 		const repo = await Repo.getInstance();
 
 		if (compact) {
-			return packs
-				.filter(
-					(x) =>
-						!x.packId?.startsWith('dddg.buildin.') ||
-						x.packId?.endsWith('.nsfw')
-				)
-				.map((x) => {
-					let id = x.packId?.startsWith('dddg.uploads.')
-						? x
-						: x.packId;
-					if (x.packId != null) {
-						const pack = repo.getPack(x.packId);
-						if (pack && pack.repoUrl != null)
-							id += `;${pack.repoUrl}`;
-					}
-					return id;
-				});
+			return packs.map((x) => {
+				let id = x.packId?.startsWith('dddg.uploads.') ? x : x.packId;
+				if (x.packId != null) {
+					const pack = repo.getPack(x.packId);
+					if (pack && pack.repoUrl != null) id += `;${pack.repoUrl}`;
+				}
+				return id;
+			});
 		} else {
 			return packs;
 		}
