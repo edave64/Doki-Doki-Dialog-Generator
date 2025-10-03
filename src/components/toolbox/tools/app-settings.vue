@@ -108,9 +108,14 @@
 			<template v-if="inPlusMode"> Enter Classic Mode </template>
 			<template v-else> Enter DDLC Plus Mode </template>
 		</button>
-		<button class="bt0" @click="spawnChildWindow" style="height: auto">
+		<d-button
+			class="bt0"
+			@click="spawnChildWindow"
+			icon="open_in_new"
+			style="height: auto"
+		>
 			Open additional window
-		</button>
+		</d-button>
 		<toggle-box
 			v-if="lqAllowed"
 			label="Low quality preview?"
@@ -168,6 +173,7 @@
 import App from '@/app.vue';
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import ModalDialog from '@/components/modal-dialog.vue';
+import dButton from '@/components/ui/d-button.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
 import ExternalLink from '@/components/ui/external-link.vue';
 import { Electron } from '@/environments/electron';
