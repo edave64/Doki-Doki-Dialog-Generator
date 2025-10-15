@@ -45,6 +45,7 @@ import { RenderContext } from '@/renderer/renderer-context';
 import type { GenObject } from '@/store/object-types/object';
 import Sprite from '@/store/object-types/sprite';
 import { state } from '@/store/root';
+import { NumericSpriteFilter } from '@/store/sprite-options';
 import { disposeCanvas } from '@/util/canvas';
 import { isMouseEvent, isTouchEvent } from '@/util/cross-realm';
 import type { DeepReadonly } from 'ts-essentials';
@@ -107,7 +108,12 @@ async function render_(): Promise<void> {
 	if (state.unsafe) return;
 
 	try {
-		await getSceneRender()?.render(!lqRendering.value, true, true);
+		if (state.panels.order.includes(viewport.value.currentPanel)) {
+			await getSceneRender()?.render(!lqRendering.value, true, true);
+		} else {
+			renderMissingScreen();
+			return;
+		}
 	} catch (e) {
 		console.log(e);
 	}
@@ -142,6 +148,33 @@ function renderLoadingScreen() {
 	} finally {
 		disposeCanvas(loadingScreen);
 	}
+}
+function renderMissingScreen() {
+	const canvas = sd.value as HTMLCanvasElement;
+
+	const rctx = RenderContext.make(canvas, true, false);
+	const renderer = getSceneRender();
+	renderer?.paintOnto(rctx.fsCtx, {
+		x: 0,
+		y: 0,
+		w: bitmapWidth.value,
+		h: bitmapHeight.value,
+	});
+	rctx.applyFilters([new NumericSpriteFilter('blur', 10)]);
+	rctx.drawText({
+		text: 'No panel selected',
+		x: canvas.width / 2,
+		y: canvas.height / 2,
+		align: 'center',
+		outline: {
+			width: 5,
+			style: '#b59',
+		},
+		font: '32px riffic',
+		fill: {
+			style: 'white',
+		},
+	});
 }
 function display(): void {
 	const renderer = getSceneRender();
