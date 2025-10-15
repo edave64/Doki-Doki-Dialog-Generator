@@ -10,7 +10,7 @@
 			v-if="imageOptionsActive"
 			type="panel"
 			title=""
-			:panel-id="currentPanel.id"
+			:panel-id="viewport.currentPanel"
 			no-composition
 			@leave="
 				imageOptionsActive = false;
@@ -28,7 +28,7 @@
 						:key="panel.id"
 						:class="{
 							panel_button: true,
-							active: panel.id === currentPanel.id,
+							active: panel.id === viewport.currentPanel,
 						}"
 						:style="`background-image: url('${panel.image}')`"
 						tabindex="0"
@@ -189,21 +189,25 @@
 				</table>
 			</d-fieldset>
 			<div class="column">
-				<d-button icon="save" @click="save">Save (light)</d-button>
+				<div style="display: flex">
+					<d-button icon="download" @click="save"
+						>Quick Save</d-button
+					>
+					<d-button
+						class="bl0"
+						icon="upload"
+						@click="loadUpload.click()"
+						style="width: auto"
+					>
+						<input type="file" ref="loadUpload" @change="load" />
+					</d-button>
+				</div>
 				<d-button
 					v-if="canDoFullSave"
 					class="bt0"
 					icon="save"
 					@click="saveFolder"
 					>Save Folder
-				</d-button>
-				<d-button
-					class="bt0"
-					icon="folder_open"
-					@click="loadUpload.click()"
-				>
-					Load (light)
-					<input type="file" ref="loadUpload" @change="load" />
 				</d-button>
 				<d-button
 					v-if="canDoFullSave"
@@ -326,13 +330,13 @@ Promise.allSettled([isWebPSupported(), isHeifSupported()]).then(
 //#endregion Format-Support
 //#region Panel-Buttons
 const canMoveAhead = computed((): boolean => {
-	const idx = state.panels.order.indexOf(currentPanel.value.id);
+	const idx = state.panels.order.indexOf(viewport.value.currentPanel);
 	return idx > 0;
 });
 
 const canMoveBehind = computed((): boolean => {
 	const panels = state.panels.order;
-	const idx = panels.indexOf(currentPanel.value.id);
+	const idx = panels.indexOf(viewport.value.currentPanel);
 	return idx < panels.length - 1;
 });
 
@@ -865,6 +869,13 @@ watch(
 
 <style lang="scss" scoped>
 @use '@/styles/fixes.scss';
+
+.row {
+	border: 10px solid #fff;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
 
 .panel_button {
 	height: 150px;
