@@ -79,17 +79,28 @@ export const panels = new (class Panels {
 	}
 
 	deletePanel(panel: Panel) {
-		const idx = this._order.value.indexOf(panel.id);
+		const order = this._order.value;
+		const idx = order.indexOf(panel.id);
 		if (idx === -1) return;
+
+		const viewportsToUpdate = state.viewports.list.filter(
+			(x) => x.currentPanel === panel.id
+		);
+		const newPanelActivePanel =
+			order.length - 1 === idx ? order[idx - 1] : order[idx + 1];
 
 		undoAble(
 			() => {
 				delete this._panels.value[panel.id];
 				this._order.value.splice(idx, 1);
+				viewportsToUpdate.forEach(
+					(x) => (x.currentPanel = newPanelActivePanel)
+				);
 			},
 			() => {
 				this._panels.value[panel.id] = markRaw(panel);
 				this._order.value.splice(idx, 0, panel.id);
+				viewportsToUpdate.forEach((x) => (x.currentPanel = panel.id));
 			}
 		);
 	}
