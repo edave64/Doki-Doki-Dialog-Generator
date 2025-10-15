@@ -1,4 +1,5 @@
 import { CanvasAspectRatio, ToolboxSize } from '@/constants/ui';
+import { isInput } from '@/util/cross-realm';
 import { markRaw, reactive, ref, type Raw, type Ref } from 'vue';
 import type { GenObject } from './object-types/object';
 import type { Panel } from './panels';
@@ -26,6 +27,55 @@ export const viewports = reactive(
 			const newViewport = new Viewport(doc);
 
 			this._list[newViewportId] = markRaw(newViewport);
+
+			// Little known feature: You can use the wheel to change the value of a number input
+			// That's default behavior, but at the same time browsers aren't
+			// smart enough to prevent the viewport from scrolling behind the input.
+			// This replicates the default behavior, but stops the scroll when
+			// the input is focused and hovered.
+			let lastListener: AbortController | null = null;
+			doc.addEventListener(
+				'focus',
+				(e) => {
+					if (lastListener != null) {
+						lastListener.abort();
+						lastListener = null;
+					}
+
+					const target = e.target as HTMLElement;
+					if (isInput(target) && target.type === 'number') {
+						lastListener = new AbortController();
+						target.addEventListener(
+							'wheel',
+							(wheelEvent) => {
+								const inc =
+									wheelEvent.deltaY > 0 ||
+									wheelEvent.deltaX > 0;
+								wheelEvent.preventDefault();
+								wheelEvent.stopPropagation();
+								target.valueAsNumber +=
+									(inc ? 1 : -1) *
+									(wheelEvent.shiftKey
+										? 10
+										: wheelEvent.altKey
+											? 0.1
+											: 1);
+								target.dispatchEvent(
+									new Event('input', {
+										bubbles: true,
+										cancelable: true,
+									})
+								);
+							},
+							{
+								passive: false,
+								signal: lastListener.signal,
+							}
+						);
+					}
+				},
+				{ capture: true }
+			);
 
 			doc.defaultView!.addEventListener('close', (e) => {
 				this.removeViewport(e.target as Document);
