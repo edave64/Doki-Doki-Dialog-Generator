@@ -2,12 +2,12 @@
 	The toolbox is the set of all the controls next to the preview render. It has multiple tabs that are called tools.
 -->
 <template>
-	<div id="panels" :class="{ vertical }" @scroll="resetScroll" ref="panels">
+	<div id="tools" :class="{ vertical }" @scroll="resetScroll" ref="tools">
 		<div id="toolbar">
 			<d-button
 				icon="add_box"
 				icon-pos="top"
-				:class="{ active: panel === 'add' }"
+				:class="{ active: tool === 'add' }"
 				title="Add new objects to the scene"
 				shortcut="a"
 				@click="setPanel('add')"
@@ -15,7 +15,7 @@
 			<d-button
 				icon="panorama"
 				icon-pos="top"
-				:class="{ active: panel === 'backgrounds' }"
+				:class="{ active: tool === 'backgrounds' }"
 				title="Change the current background"
 				shortcut="s"
 				@click="setPanel('backgrounds')"
@@ -23,7 +23,7 @@
 			<d-button
 				icon="view_module"
 				icon-pos="top"
-				:class="{ active: panel === 'panels' }"
+				:class="{ active: tool === 'panels' }"
 				title="Panels"
 				shortcut="d"
 				@click="setPanel('panels')"
@@ -31,39 +31,20 @@
 			<d-button
 				icon="settings_applications"
 				icon-pos="top"
-				:class="{ active: panel === 'settings' }"
+				:class="{ active: tool === 'settings' }"
 				title="Settings"
 				shortcut="f"
 				@click="setPanel('settings')"
 			/>
-		</div>
-		<app-settings v-if="panel === 'settings'" />
-		<backgrounds-tool
-			v-else-if="panel === 'backgrounds'"
-			@show-dialog="emit('show-dialog', $event)"
-		/>
-		<app-credits v-else-if="panel === 'help_credits'" />
-		<character-tool
-			v-else-if="panel === 'character'"
-			@show-dialog="emit('show-dialog', $event)"
-			@show-expression-dialog="emit('show-expression-dialog', $event)"
-		/>
-		<sprite-tool v-else-if="panel === 'sprite'" />
-		<textbox-tool v-else-if="panel === 'textBox'" />
-		<choice-tool v-else-if="panel === 'choice'" />
-		<panels-tool v-else-if="panel === 'panels'" />
-		<notification-tool v-else-if="panel === 'notification'" />
-		<poem-tool v-else-if="panel === 'poem'" />
-		<add-tool v-else @show-dialog="emit('show-dialog', $event)" />
-		<div id="toolbar-end">
 			<d-button
 				icon="help"
 				icon-pos="top"
-				:class="{ active: panel === 'help_credits' }"
+				:class="{ active: tool === 'help_credits' }"
 				title="Help &amp; Credits"
 				shortcut="h"
 				@click="setPanel('help_credits')"
 			/>
+			<div id="toolbar-spacer"></div>
 			<d-button
 				icon="extension"
 				icon-pos="top"
@@ -87,6 +68,24 @@
 				@click="emit('download')"
 			/>
 		</div>
+		<app-settings v-if="tool === 'settings'" />
+		<backgrounds-tool
+			v-else-if="tool === 'backgrounds'"
+			@show-dialog="emit('show-dialog', $event)"
+		/>
+		<app-credits v-else-if="tool === 'help_credits'" />
+		<character-tool
+			v-else-if="tool === 'character'"
+			@show-dialog="emit('show-dialog', $event)"
+			@show-expression-dialog="emit('show-expression-dialog', $event)"
+		/>
+		<sprite-tool v-else-if="tool === 'sprite'" />
+		<textbox-tool v-else-if="tool === 'textBox'" />
+		<choice-tool v-else-if="tool === 'choice'" />
+		<panels-tool v-else-if="tool === 'panels'" />
+		<notification-tool v-else-if="tool === 'notification'" />
+		<poem-tool v-else-if="tool === 'poem'" />
+		<add-tool v-else @show-dialog="emit('show-dialog', $event)" />
 	</div>
 </template>
 
@@ -129,7 +128,7 @@ const emit = defineEmits<{
 }>();
 
 const store = useStore();
-const panels = ref(null! as HTMLDivElement);
+const tools = ref(null! as HTMLDivElement);
 
 const panelSelection = ref('add' as PanelNames);
 
@@ -139,7 +138,7 @@ const currentPanel = computed(() => {
 const viewport = useViewport();
 const vertical = useVertical();
 const selection = useSelection();
-const panel = computed((): PanelNames | ObjectTypes => {
+const tool = computed((): PanelNames | ObjectTypes => {
 	if (panelSelection.value === 'selection') {
 		if (selection.value === null) {
 			// eslint-disable-next-line vue/no-side-effects-in-computed-properties
@@ -159,9 +158,9 @@ function setPanel(name: PanelNames) {
 	}
 }
 function resetScroll() {
-	if (isHTMLElement(panels.value)) {
-		panels.value.scrollTop = 0;
-		panels.value.scrollLeft = 0;
+	if (isHTMLElement(tools.value)) {
+		tools.value.scrollTop = 0;
+		tools.value.scrollLeft = 0;
 	}
 }
 
@@ -184,13 +183,14 @@ environment.onPanelChange((panel: string) => {
 </script>
 
 <style lang="scss">
-#panels {
+#tools {
+	--button-size: 42px;
+	--tool-size: 192px;
+
 	position: fixed;
 	background-color: var(--native-background);
-	border: 3px solid var(--border);
 	display: flex;
-	height: 100%;
-	//overflow: hidden;
+
 	.panel {
 		display: flex;
 		flex-grow: 1;
@@ -198,60 +198,107 @@ environment.onPanelChange((panel: string) => {
 		padding: 4px;
 	}
 
+	#toolbar {
+		display: flex;
+
+		button {
+			outline: 0;
+			background-color: var(--accent-background);
+			border: 3px solid var(--border);
+			position: relative;
+
+			i {
+				vertical-align: sub;
+			}
+
+			&.active {
+				background: var(--native-background);
+			}
+
+			&:focus-visible {
+				background: #0000ee;
+			}
+		}
+
+		#toolbar-spacer {
+			flex-grow: 1;
+		}
+	}
+
 	&:not(.vertical) {
-		flex-direction: row;
+		flex-direction: column;
 		left: 0;
 		bottom: 0;
-		height: 192px;
+		height: calc(var(--tool-size) + var(--button-size));
 		width: 100vw;
 
 		.panel {
+			border-top: 0;
 			flex-wrap: wrap;
 			align-content: flex-start;
 			overflow-x: auto;
 			overflow-y: hidden;
+			height: 192px;
 
 			> * {
 				margin-right: 8px;
 			}
 		}
 
-		#toolbar,
-		#toolbar-end {
-			width: 48px;
-			min-width: 48px;
-			height: 100%;
-			display: flex;
-			flex-direction: column;
+		#toolbar {
+			width: 100%;
+			height: var(--button-size);
+			flex-direction: row;
 
 			button {
-				flex-grow: 1;
-				width: 48px;
-				border-bottom: none;
+				flex-grow: 0;
+				width: var(--button-size);
+				border-right: 0;
+
+				::after {
+					/* To prevent the toolbox border being cut off by other button border, we put another one on top */
+					content: ' ';
+					position: absolute;
+					height: 3px;
+					left: -3px;
+					right: -3px;
+					bottom: -3px;
+					border-bottom: 3px solid var(--toolbox-border);
+					z-index: 1;
+				}
 
 				&:first-child {
-					border-top: none;
+					border-left: 0;
+					padding-left: 3px;
 				}
-			}
-		}
 
-		#toolbar {
-			button {
-				border-left: none;
+				&:last-child {
+					border-bottom: 3px solid var(--border);
+				}
 
 				&.active {
-					border-right-color: var(--native-background);
+					padding-bottom: 3px;
+					border-color: var(--toolbox-border);
+					border-bottom: none;
+					::after {
+						right: none;
+						top: -6px;
+					}
 				}
 			}
-		}
 
-		#toolbar-end {
-			button {
-				border-right: none;
+			button + #toolbar-spacer {
+				border-left: 3px solid var(--border);
+			}
 
-				&.active {
-					border-left-color: var(--native-background);
-				}
+			button.active + #toolbar-spacer,
+			button.active + button {
+				border-left-color: var(--toolbox-border);
+			}
+
+			#toolbar-spacer {
+				border-bottom: 3px solid var(--toolbox-border);
+				border-top: 3px solid var(--border);
 			}
 		}
 
@@ -263,79 +310,86 @@ environment.onPanelChange((panel: string) => {
 	}
 
 	&.vertical {
-		flex-direction: column;
+		flex-direction: row;
 		top: 0;
 		right: 0;
 		height: 100%;
-		width: 192px;
+		width: 234px;
+		border-top-left-radius: 16px;
+		border-bottom-left-radius: 16px;
 
 		.panel {
+			border-left: 0;
 			overflow-x: hidden;
 			overflow-y: auto;
-
+			width: 192px;
 			> * {
 				flex-shrink: 0;
 			}
 		}
 
-		#toolbar,
-		#toolbar-end {
-			width: 100%;
-			min-height: 48px;
-			max-height: 48px;
+		#toolbar {
+			width: var(--button-size) !important;
+			height: 100%;
 			display: flex;
+			flex-direction: column;
+			overflow: visible;
 
 			button {
-				height: 48px;
-				flex-grow: 1;
-				border-right: none;
+				height: var(--button-size) !important;
+				flex-shrink: 0;
+				border-bottom: none;
+				border-right-color: var(--toolbox-border);
+				position: relative;
+
+				::after {
+					/* To prevent the toolbox border being cut off by other button border, we put another one on top */
+					content: ' ';
+					width: 3px;
+					top: -3px;
+					bottom: -3px;
+					position: absolute;
+					right: -3px;
+					border-right: 3px solid var(--toolbox-border);
+					z-index: 1;
+				}
 
 				&:first-child {
-					border-left: none;
+					border-top: 0;
+					padding-top: 3px;
 				}
-			}
-		}
-
-		#toolbar {
-			button {
-				border-top: none;
 
 				&.active {
-					border-bottom-color: var(--native-background);
+					padding-right: 3px;
+					border-color: var(--toolbox-border);
+					border-right: none;
+					::after {
+						right: none;
+						left: -6px;
+					}
 				}
 			}
-		}
 
-		#toolbar-end {
-			button {
-				border-bottom: none;
+			button + #toolbar-spacer {
+				border-top: 3px solid var(--border);
+			}
 
-				&.active {
-					border-top-color: var(--native-background);
-				}
+			button.active + #toolbar-spacer,
+			button.active + button {
+				border-top-color: var(--toolbox-border);
+			}
+
+			#toolbar-spacer {
+				border-right: 3px solid var(--toolbox-border);
+				border-left: 3px solid var(--border);
 			}
 		}
 	}
+}
 
-	#toolbar button,
-	#toolbar-end button {
-		outline: 0;
-		background-color: var(--accent-background);
-		border: 3px solid var(--border);
-		position: relative;
-
-		i {
-			vertical-align: sub;
-		}
-
-		&.active {
-			background: var(--native-background);
-		}
-
-		&:focus-visible {
-			background: #0000ee;
-		}
-	}
+#toolbar-spacer {
+	min-height: 8px;
+	min-width: 8px;
 }
 
 h1,

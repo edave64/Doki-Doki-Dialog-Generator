@@ -125,6 +125,7 @@ body {
 	--pinkHue: 326;
 	--native-background: #f8f8f8;
 	--accent-background: hsl(var(--pinkHue), 100%, 95%);
+	--toolbox-border: #000;
 	--border: hsl(var(--pinkHue), 100%, 75%);
 	--border-fieldset: hsla(var(--pinkHue), 100%, 75%, 50%);
 	--text: #000000;
@@ -135,11 +136,13 @@ body {
 	--modal-backdrop-light: rgba(0, 0, 0, 0.25);
 
 	color: var(--text);
-	background: var(--native-background);
+	background-color: var(--native-background);
+	background-image: url('img/bg-light.svg');
 }
 
 //noinspection CssUnusedSymbol
 body.dark-theme {
+	--toolbox-border: #ffffff;
 	--native-background: #080808;
 	--accent-background: hsl(var(--pinkHue), 100%, 5%);
 	--border: hsl(var(--pinkHue), 100%, 25%);
@@ -150,6 +153,7 @@ body.dark-theme {
 	--link: #6666ee;
 	--modal-backdrop: rgba(255, 255, 255, 0.5);
 	--modal-backdrop-light: rgba(255, 255, 255, 0.75);
+	background-image: url('img/bg-dark.svg');
 }
 
 .panel.vertical {
