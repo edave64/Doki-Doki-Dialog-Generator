@@ -60,16 +60,10 @@
 <script lang="ts" setup>
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
+import { transaction } from '@/history-engine/transaction';
 import { useVertical, useViewport } from '@/hooks/use-viewport';
-import { transaction } from '@/plugins/vuex-history';
-import { useStore } from '@/store';
 import type { IAssetSwitch } from '@/store/content';
-import type {
-	ISeekVariantAction,
-	ISetColorMutation,
-	ISetFlipMutation,
-	ISetScalingMutation,
-} from '@/store/panels';
+import { state } from '@/store/root';
 import type { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import type { DeepReadonly } from 'ts-essentials';
 import { computed } from 'vue';
@@ -79,13 +73,11 @@ const emit = defineEmits<{
 	'change-color': [];
 }>();
 
-const store = useStore();
-
 const viewport = useViewport();
 const vertical = useVertical();
 const background = computed(() => {
 	const currentPanel = viewport.value.currentPanel;
-	return store.state.panels.panels[currentPanel].background;
+	return state.panels.panels[currentPanel].background;
 });
 const flipped = computed({
 	get(): boolean {
@@ -93,10 +85,9 @@ const flipped = computed({
 	},
 	set(flipped: boolean) {
 		transaction(() => {
-			store.commit('panels/setBackgroundFlipped', {
-				flipped,
-				panelId: viewport.value.currentPanel,
-			} as ISetFlipMutation);
+			state.panels.panels[
+				viewport.value.currentPanel
+			].background.flipped = flipped;
 		});
 	},
 });
@@ -107,17 +98,16 @@ const scaling = computed({
 
 	set(scaling: string) {
 		transaction(() => {
-			store.commit('panels/setBackgroundScaling', {
-				scaling: parseInt(scaling, 10),
-				panelId: viewport.value.currentPanel,
-			} as ISetScalingMutation);
+			state.panels.panels[
+				viewport.value.currentPanel
+			].background.scaling = parseInt(scaling, 10);
 		});
 	},
 });
 const currentBackgroundId = computed(() => background.value.current);
 const bgData = computed((): DeepReadonly<Background<IAssetSwitch>> | null => {
 	return (
-		store.state.content.current.backgrounds.find(
+		state.content.current.backgrounds.find(
 			(background) => background.id === currentBackgroundId.value
 		) || null
 	);
@@ -132,10 +122,8 @@ const color = computed({
 	},
 	set(color: string): void {
 		transaction(() => {
-			store.commit('panels/setBackgroundColor', {
-				color,
-				panelId: viewport.value.currentPanel,
-			} as ISetColorMutation);
+			state.panels.panels[viewport.value.currentPanel].background.color =
+				color;
 		});
 	},
 });
@@ -148,10 +136,9 @@ const hasVariants = computed(() =>
 
 function seekVariant(delta: 1 | -1) {
 	transaction(async () => {
-		await store.dispatch('panels/seekBackgroundVariant', {
-			delta,
-			panelId: viewport.value.currentPanel,
-		} as ISeekVariantAction);
+		state.panels.panels[
+			viewport.value.currentPanel
+		].background.seekBackgroundVariant(delta);
 	});
 }
 //#endregion Variants

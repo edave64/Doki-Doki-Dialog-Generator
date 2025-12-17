@@ -1,74 +1,84 @@
 import getConstants from '@/constants';
-import type {
-	ICreateObjectMutation,
-	IObject,
-	IObjectMutation,
-} from '@/store/objects';
-import type { IPanel, IPanels } from '@/store/panels';
-import type { ActionTree, MutationTree } from 'vuex';
-import type { IRootState } from '..';
-import { baseProps } from './base-object-props';
+import { ref, type Ref } from 'vue';
+import type { IdTranslationTable, Panel } from '../panels';
+import BaseObject, { type GenObject } from './object';
 
-export interface INotification extends IObject {
-	type: 'notification';
-	customColor: string;
-	text: string;
-	backdrop: boolean;
-	autoWrap: boolean;
-}
+export default class Notification extends BaseObject<'notification'> {
+	public get type() {
+		return 'notification' as const;
+	}
 
-export const notificationMutations: MutationTree<IPanels> = {
-	setNotificationProperty<T extends NotificationSimpleProperties>(
-		state: IPanels,
-		command: ISetNotificationProperty<T>
-	) {
-		const obj = state.panels[command.panelId].objects[
-			command.id
-		] as INotification;
-		obj[command.key] = command.value;
-		++obj.version;
-	},
-};
+	protected constructor(panel: Panel, id?: GenObject['id'], onTop?: boolean) {
+		super(panel, onTop ?? true, id);
 
-export const notificationActions: ActionTree<IPanels, IRootState> = {
-	createNotification(
-		{ commit, rootState, state },
-		command: ICreateNotificationAction
-	): IObject['id'] {
 		const constants = getConstants();
-		const id = state.panels[command.panelId].lastObjId + 1;
-		commit('create', {
-			object: {
-				...baseProps(),
-				y: constants.Base.screenHeight / 2,
-				width: constants.Choices.ChoiceButtonWidth,
-				height: 0,
-				panelId: command.panelId,
-				autoWrap: false,
-				id,
-				onTop: true,
-				type: 'notification',
-				customColor: constants.Choices.ChoiceButtonColor,
-				text: 'Click here to edit notification',
-				backdrop: true,
-			} as INotification,
-		} as ICreateObjectMutation);
-		return id;
-	},
-};
+		this._customColor = ref(constants.Choices.ChoiceButtonColor);
+		this._y.value = constants.Base.screenHeight / 2;
+		this._width.value = constants.Choices.ChoiceButtonWidth;
+		this._height.value = 0;
+	}
 
-export type NotificationSimpleProperties = Exclude<
-	keyof INotification,
-	keyof IObject
->;
+	public static create(panel: Panel) {
+		return new Notification(panel);
+	}
 
-export interface ISetNotificationProperty<
-	T extends NotificationSimpleProperties,
-> extends IObjectMutation {
-	readonly key: T;
-	readonly value: INotification[T];
-}
+	public override makeClone(
+		panel: Panel,
+		idTranslationTable: IdTranslationTable
+	): Notification {
+		const ret = new Notification(panel, idTranslationTable.get(this.id));
+		this.moveAllRefs(this, ret);
+		return ret;
+	}
 
-export interface ICreateNotificationAction {
-	readonly panelId: IPanel['id'];
+	public static fromSave(
+		panel: Panel,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		save: Record<string, any>,
+		idTranslationTable: IdTranslationTable
+	): Notification {
+		const ret = new Notification(
+			panel,
+			idTranslationTable.get(save.id),
+			save.onTop
+		);
+		ret.loadPropsFromSave(save, idTranslationTable);
+		return ret;
+	}
+
+	//#region Text
+	private _text = ref('Click here to edit notification');
+	private _autoWrap = ref(false);
+
+	get text(): string {
+		return this._text.value;
+	}
+
+	set text(value: string) {
+		this.mutate(this._text, value);
+	}
+
+	get autoWrap(): boolean {
+		return this._autoWrap.value;
+	}
+
+	set autoWrap(value: boolean) {
+		this.mutate(this._autoWrap, value);
+	}
+	//#endregion Text
+
+	//#region Style
+	private _backdrop = ref(true);
+
+	// TODO: Implement recoloring of notifications
+	private _customColor: Ref<string>;
+
+	get backdrop(): boolean {
+		return this._backdrop.value;
+	}
+
+	set backdrop(value: boolean) {
+		this.mutate(this._backdrop, value);
+	}
+	//#endregion Style
 }

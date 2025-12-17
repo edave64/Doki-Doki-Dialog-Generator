@@ -1,20 +1,12 @@
 import { getBuildInAsset } from '@/asset-manager';
 import { SelectedState } from '@/constants/shared';
-import { Viewport } from '@/newStore/viewport';
 import { Renderer } from '@/renderer/renderer';
 import { RenderContext } from '@/renderer/renderer-context';
-import type { IRootState } from '@/store';
-import type { BackgroundLookup } from '@/store/content';
-import { getData, type ICharacter } from '@/store/object-types/characters';
-import type { IChoices } from '@/store/object-types/choices';
-import type { INotification } from '@/store/object-types/notification';
-import type { IPoem } from '@/store/object-types/poem';
-import type { ISprite } from '@/store/object-types/sprite';
-import type { ITextBox } from '@/store/object-types/textbox';
-import type { IObject } from '@/store/objects';
-import type { IPanel } from '@/store/panels';
+import type { GenObject } from '@/store/object-types/object';
+import type { Panel } from '@/store/panels';
+import { state } from '@/store/root';
+import type { Viewport } from '@/store/viewports';
 import { UnreachableCaseError, type DeepReadonly } from 'ts-essentials';
-import { Store } from 'vuex';
 import { Background, color, type IBackgroundRenderer } from './background';
 import { Character } from './character';
 import { Choice } from './choices';
@@ -34,13 +26,15 @@ export class SceneRenderer {
 			? ':focus-visible'
 			: ':focus';
 
-	private renderObjectCache = new Map<IObject['id'], Renderable<IObject>>();
+	private renderObjectCache = new Map<
+		GenObject['id'],
+		Renderable<GenObject>
+	>();
 	private renderer: Renderer;
 	private _disposed: boolean = false;
 
 	public constructor(
-		private store: Store<DeepReadonly<IRootState>>,
-		private _panelId: IPanel['id'],
+		private _panelId: Panel['id'],
 		readonly canvasWidth: number,
 		readonly canvasHeight: number,
 		readonly viewport?: Viewport
@@ -48,11 +42,11 @@ export class SceneRenderer {
 		this.renderer = new Renderer(canvasWidth, canvasHeight);
 	}
 
-	public get panelId(): IPanel['id'] {
+	public get panelId(): Panel['id'] {
 		return this._panelId;
 	}
 
-	public setPanelId(panelId: IPanel['id']): void {
+	public setPanelId(panelId: Panel['id']): void {
 		if (this._disposed) throw new Error('Disposed scene-renderer called');
 		if (this._panelId === panelId) return;
 		this._panelId = panelId;
@@ -100,14 +94,16 @@ export class SceneRenderer {
 		this.renderer.paintOnto(c, opts);
 	}
 
-	public objectsAt(x: number, y: number): IObject['id'][] {
+	public objectsAt(x: number, y: number): GenObject['id'][] {
 		const point = new DOMPointReadOnly(x, y);
 		return this.getRenderObjects()
 			.filter((renderObject) => renderObject.hitTest(point))
 			.map((renderObject) => renderObject.id);
 	}
 
-	public getLastRenderObject(id: IObject['id']): Renderable<IObject> | null {
+	public getLastRenderObject(
+		id: GenObject['id']
+	): Renderable<GenObject> | null {
 		return this.renderObjectCache.get(id) ?? null;
 	}
 
@@ -123,39 +119,6 @@ export class SceneRenderer {
 
 		const renderables = this.getRenderObjects();
 
-		// Step 1: Prepare the matrix transformation of all objects.
-		// Resolves all transforms in order, so that objects that are linked by other objects are always resolved
-		// before their dependencies.
-		const waiting: Map<
-			IObject['id'],
-			Array<Renderable<IObject>>
-		> = new Map();
-		const processed: Map<IObject['id'], DOMMatrixReadOnly> = new Map();
-		for (const renderable of renderables) {
-			renderable.prepareData(this.panel!, this.store);
-			const linked = renderable.linkedTo;
-			let linkTransform = new DOMMatrixReadOnly();
-			if (linked != null) {
-				const lookupTransform = processed.get(linked);
-				if (lookupTransform) {
-					linkTransform = lookupTransform;
-				} else {
-					const waitList = waiting.get(linked);
-					if (waitList) {
-						waitList.push(renderable);
-					} else {
-						waiting.set(linked, [renderable]);
-					}
-					continue;
-				}
-			}
-			prepareTransform(renderable, linkTransform);
-		}
-
-		if (waiting.size > 0) {
-			console.warn('Not all renderables processed. Infinite loop?');
-		}
-
 		const promises = renderables
 			.map((x) => x.prepareRender(!rx.hq))
 			.filter((x) => x !== undefined);
@@ -163,9 +126,8 @@ export class SceneRenderer {
 			await Promise.all(promises);
 		}
 
-		// TODO: support multiple viewports
 		const selection = this.viewport?.selection ?? null;
-		const links = new Set<IObject['id']>();
+		const links = new Set<GenObject['id']>();
 		if (selection !== null) fetchLinks(selection, links);
 		const focusedObjId = document
 			.querySelector(SceneRenderer.FocusProp)
@@ -199,8 +161,8 @@ export class SceneRenderer {
 		}
 
 		function fetchLinks(
-			objId: IObject['id'],
-			links: Set<IObject['id']>
+			objId: GenObject['id'],
+			links: Set<GenObject['id']>
 		): void {
 			links.add(objId);
 
@@ -208,26 +170,11 @@ export class SceneRenderer {
 				fetchLinks(obj.id, links);
 			}
 		}
-
-		function prepareTransform(
-			renderable: Renderable<IObject>,
-			linkTransform: DOMMatrixReadOnly
-		) {
-			const newTransform = renderable.prepareTransform(linkTransform);
-			processed.set(renderable.id, newTransform);
-			const waitList = waiting.get(renderable.id);
-			if (waitList) {
-				for (const sub of waitList) {
-					prepareTransform(sub, newTransform);
-				}
-				waiting.delete(renderable.id);
-			}
-		}
 	}
 
-	private getRenderObjects(): Renderable<IObject>[] {
-		const objectsState = this.store.state.panels.panels[this.panelId];
-		const order = [...objectsState.order, ...objectsState.onTopOrder];
+	private getRenderObjects(): Renderable<GenObject>[] {
+		const objectsState = state.panels.panels[this.panelId];
+		const order = [...objectsState.lowerOrder, ...objectsState.topOrder];
 		const objects = objectsState.objects;
 		const toUncache = Array.from(this.renderObjectCache.keys()).filter(
 			(id) => !order.includes(id)
@@ -245,33 +192,23 @@ export class SceneRenderer {
 				const type = obj.type;
 				switch (type) {
 					case 'sprite':
-						renderObject = new Sprite(obj as DeepReadonly<ISprite>);
+						renderObject = new Sprite(obj);
 						break;
 					case 'character': {
-						const char = obj as DeepReadonly<ICharacter>;
-						renderObject = new Character(
-							char,
-							getData(this.store, char)
-						);
+						renderObject = new Character(obj);
 						break;
 					}
 					case 'textBox':
-						renderObject = new TextBox(
-							obj as DeepReadonly<ITextBox>
-						);
+						renderObject = new TextBox(obj);
 						break;
 					case 'choice':
-						renderObject = new Choice(
-							obj as DeepReadonly<IChoices>
-						);
+						renderObject = new Choice(obj);
 						break;
 					case 'notification':
-						renderObject = new Notification(
-							obj as DeepReadonly<INotification>
-						);
+						renderObject = new Notification(obj);
 						break;
 					case 'poem':
-						renderObject = new Poem(obj as DeepReadonly<IPoem>);
+						renderObject = new Poem(obj);
 						break;
 					default:
 						throw new UnreachableCaseError(type);
@@ -282,8 +219,8 @@ export class SceneRenderer {
 		});
 	}
 
-	private get panel(): DeepReadonly<IPanel> | undefined {
-		return this.store.state.panels.panels[this.panelId];
+	private get panel(): DeepReadonly<Panel> | undefined {
+		return state.panels.panels[this.panelId];
 	}
 
 	private getBackgroundRenderer(): IBackgroundRenderer | null {
@@ -293,9 +230,7 @@ export class SceneRenderer {
 				color.color = panel.background.color;
 				return color;
 			default: {
-				const lookup = this.store.getters[
-					'content/getBackgrounds'
-				] as BackgroundLookup;
+				const lookup = state.content.backgrounds;
 				const current = lookup.get(panel.background.current);
 				if (!current) return null;
 				const variant = current.variants[panel.background.variant];

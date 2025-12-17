@@ -1,47 +1,74 @@
 import { getAAsset } from '@/asset-manager';
 import getConstants from '@/constants';
 import { ImageAsset } from '@/render-utils/assets/image-asset';
-import type { ICreateObjectMutation, IObject } from '@/store/objects';
-import type { ActionTree, MutationTree } from 'vuex';
-import type { IRootState } from '..';
-import type { IAssetSwitch } from '../content';
-import type { IPanel, IPanels } from '../panels';
-import { baseProps } from './base-object-props';
+import type { IAssetSwitch } from '@/store/content';
+import type { IdTranslationTable, Panel } from '../panels';
+import { ui } from '../ui';
+import BaseObject, { type GenObject } from './object';
 
-export interface ISprite extends IObject {
-	type: 'sprite';
-	assets: IAssetSwitch[];
-}
+export default class Sprite extends BaseObject<'sprite'> {
+	public get type() {
+		return 'sprite' as const;
+	}
 
-export const spriteMutations: MutationTree<IPanels> = {};
+	protected constructor(
+		panel: Panel,
+		public readonly assets: IAssetSwitch[],
+		id?: GenObject['id'],
+		onTop?: boolean,
+		{ width, height }: { width?: number; height?: number } = {}
+	) {
+		super(panel, onTop ?? false, id);
 
-export const spriteActions: ActionTree<IPanels, IRootState> = {
-	async createSprite(
-		{ commit, rootState, state },
-		command: ICreateSpriteAction
-	): Promise<IObject['id'] | undefined> {
-		const asset = await getAAsset(command.assets[0], false);
+		if (width != null) this._width.value = width;
+		if (height != null) this._height.value = height;
+
+		const constants = getConstants();
+		this._y.value = constants.Base.screenHeight / 2;
+		this._enlargeWhenTalking.value = ui.defaultCharacterTalkingZoom;
+	}
+
+	public static async create(panel: Panel, assets: IAssetSwitch[]) {
+		const asset = await getAAsset(assets[0], false);
 		if (!(asset instanceof ImageAsset)) return;
-		const id = state.panels[command.panelId].lastObjId + 1;
-		commit('create', {
-			object: {
-				...baseProps(),
-				assets: command.assets,
-				height: asset.height,
-				width: asset.width,
-				id,
-				panelId: command.panelId,
-				onTop: false,
-				type: 'sprite',
-				y: getConstants().Base.screenHeight / 2,
-				enlargeWhenTalking: rootState.ui.defaultCharacterTalkingZoom,
-			} as ISprite,
-		} as ICreateObjectMutation);
-		return id;
-	},
-};
+		return new Sprite(panel, assets, undefined, false, {
+			width: asset.width,
+			height: asset.height,
+		});
+	}
 
-export interface ICreateSpriteAction {
-	readonly assets: IAssetSwitch[];
-	readonly panelId: IPanel['id'];
+	public override makeClone(
+		panel: Panel,
+		idTranslationTable: IdTranslationTable
+	): Sprite {
+		const ret = new Sprite(
+			panel,
+			this.assets,
+			idTranslationTable.get(this.id)
+		);
+		this.moveAllRefs(this, ret);
+		return ret;
+	}
+
+	public static fromSave(
+		panel: Panel,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		save: Record<string, any>,
+		idTranslationTable: IdTranslationTable
+	): Sprite {
+		const ret = new Sprite(
+			panel,
+			save.assets,
+			idTranslationTable.get(save.id),
+			save.onTop
+		);
+		ret.loadPropsFromSave(save, idTranslationTable);
+		return ret;
+	}
+
+	override save(): Record<string, unknown> {
+		const ret = super.save();
+		ret.assets = this.assets;
+		return ret;
+	}
 }

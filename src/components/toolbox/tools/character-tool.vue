@@ -105,19 +105,14 @@ import { getAAssetUrl } from '@/asset-manager';
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
-import type { Viewport } from '@/newStore/viewport';
-import { transaction } from '@/plugins/vuex-history';
-import { useStore } from '@/store';
+import { transaction } from '@/history-engine/transaction';
+import type Character from '@/store/object-types/character';
+import { state } from '@/store/root';
+import type { Viewport } from '@/store/viewports';
 import {
-	getData,
-	getHeads,
-	getParts,
-	type ICharacter,
-	type ISeekPoseAction,
-	type ISeekPosePartAction,
-	type ISeekStyleAction,
-} from '@/store/object-types/characters';
-import { genericSetterMerged } from '@/util/simple-settable';
+	methodWithTransaction,
+	propWithTransaction,
+} from '@/util/simple-settable';
 import { computed, inject, ref, watch, type Ref } from 'vue';
 import PartSelection from './character/part-selection.vue';
 import ObjectTool from './object-tool.vue';
@@ -131,8 +126,6 @@ const emit = defineEmits<{
 	];
 }>();
 
-const store = useStore();
-
 const root = ref(null! as HTMLElement);
 const missingHeadUpload = ref(null! as HTMLInputElement);
 setupPanelMixin(root);
@@ -141,26 +134,25 @@ const panelForParts = ref(null as string | null);
 const viewport = inject<Ref<Viewport>>('viewport')!;
 
 const currentPanel = computed(
-	() => store.state.panels.panels[viewport.value.currentPanel]
+	() => state.panels.panels[viewport.value.currentPanel]
 );
 
 const selection = computed(() => viewport.value.selection!);
 const object = computed(() => {
 	const obj = currentPanel.value.objects[selection.value];
 	if (obj.type !== 'character') return undefined!;
-	return obj as ICharacter;
+	return obj as Character;
 });
-const closeUp = genericSetterMerged(
-	store,
-	object,
-	'panels/setClose',
-	false,
-	'close'
-);
+
+const closeUp = propWithTransaction(object, 'close');
+const seekStyle = methodWithTransaction(object, 'seekStyle');
+const seekPart = methodWithTransaction(object, 'seekPart');
+const seekPose = methodWithTransaction(object, 'seekPose');
+
 const missingHead = computed(() => {
 	const obj = object.value;
 
-	const heads = getHeads(charData.value, obj);
+	const heads = obj.headsData;
 	if (!heads) return null;
 	for (const asset of heads.variants) {
 		const url = getAAssetUrl(asset[0], false);
@@ -168,9 +160,11 @@ const missingHead = computed(() => {
 	}
 	return null;
 });
-const charData = computed(() => getData(store, object.value));
+const charData = computed(
+	() => state.content.characters.get(object.value.characterType)!
+);
 const label = computed(() => charData.value.label ?? '');
-const parts = computed(() => getParts(charData.value, object.value));
+const parts = computed(() => object.value.availablePartsKeys);
 const hasMultipleStyles = computed(
 	() =>
 		charData.value.styleGroups[object.value.styleGroupId].styles.length >
@@ -197,41 +191,7 @@ async function onMissingHeadFileUpload() {
 	const file = uploadInput.files[0];
 	await transaction(async () => {
 		const url = URL.createObjectURL(file);
-		await store.dispatch('uploadUrls/add', {
-			name: missingHead.value,
-			url,
-		});
-	});
-}
-
-function seekPose(delta: number): void {
-	transaction(async () => {
-		await store.dispatch('panels/seekPose', {
-			id: object.value.id,
-			panelId: object.value.panelId,
-			delta,
-		} as ISeekPoseAction);
-	});
-}
-
-function seekStyle(delta: number): void {
-	transaction(async () => {
-		await store.dispatch('panels/seekStyle', {
-			id: object.value.id,
-			panelId: object.value.panelId,
-			delta,
-		} as ISeekStyleAction);
-	});
-}
-
-function seekPart(part: string, delta: number): void {
-	transaction(async () => {
-		await store.dispatch('panels/seekPart', {
-			id: object.value.id,
-			panelId: object.value.panelId,
-			delta,
-			part,
-		} as ISeekPosePartAction);
+		state.uploadUrls.add(missingHead.value!, url);
 	});
 }
 

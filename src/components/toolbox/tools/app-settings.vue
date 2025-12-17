@@ -108,9 +108,14 @@
 			<template v-if="inPlusMode"> Enter Classic Mode </template>
 			<template v-else> Enter DDLC Plus Mode </template>
 		</button>
-		<button class="bt0" @click="spawnChildWindow" style="height: auto">
+		<d-button
+			class="bt0"
+			@click="spawnChildWindow"
+			icon="open_in_new"
+			style="height: auto"
+		>
 			Open additional window
-		</button>
+		</d-button>
 		<toggle-box
 			v-if="lqAllowed"
 			label="Low quality preview?"
@@ -168,28 +173,28 @@
 import App from '@/app.vue';
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import ModalDialog from '@/components/modal-dialog.vue';
+import dButton from '@/components/ui/d-button.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
 import ExternalLink from '@/components/ui/external-link.vue';
 import { Electron } from '@/environments/electron';
 import environment from '@/environments/environment';
 import eventBus, { FailureEvent } from '@/eventbus/event-bus';
-import { transaction } from '@/plugins/vuex-history';
-import rootStore, { useStore } from '@/store';
+import { transaction } from '@/history-engine/transaction';
+import { state } from '@/store/root';
 import { safeAsync } from '@/util/errors';
 import { computed, createApp, ref, watch } from 'vue';
 
-const store = useStore();
 const root = ref(null! as HTMLElement);
 const updateProgress = environment.updateProgress as Electron['updateProgress'];
 setupPanelMixin(root);
 
 function saveSettings() {
 	environment.saveSettings({
-		lq: store.state.ui.lqRendering,
-		nsfw: store.state.ui.nsfw,
-		darkMode: store.state.ui.useDarkTheme ?? undefined,
+		lq: state.ui.lqRendering,
+		nsfw: state.ui.nsfw,
+		darkMode: state.ui.useDarkTheme ?? undefined,
 		looseTextParsing: environment.state.looseTextParsing,
-		defaultCharacterTalkingZoom: store.state.ui.defaultCharacterTalkingZoom,
+		defaultCharacterTalkingZoom: state.ui.defaultCharacterTalkingZoom,
 	});
 }
 //#region Allow saving
@@ -247,11 +252,11 @@ function modeChange(choice: string) {
 const lqAllowed = computed(() => environment.supports.lq);
 const lqRendering = computed({
 	get(): boolean {
-		return store.state.ui.lqRendering;
+		return state.ui.lqRendering;
 	},
 	set(lqRendering: boolean) {
 		transaction(() => {
-			store.commit('ui/setLqRendering', lqRendering);
+			state.ui.lqRendering = lqRendering;
 		});
 		saveSettings();
 	},
@@ -260,11 +265,11 @@ const lqRendering = computed({
 //#region NSFW mode
 const nsfw = computed({
 	get(): boolean {
-		return !!store.state.ui.nsfw;
+		return !!state.ui.nsfw;
 	},
 	set(value: boolean) {
 		transaction(() => {
-			store.commit('ui/setNsfw', value);
+			state.ui.nsfw = value;
 			saveSettings();
 		});
 	},
@@ -273,11 +278,11 @@ const nsfw = computed({
 //#region Enlarge when talking
 const defaultCharacterTalkingZoom = computed({
 	get(): boolean {
-		return !!store.state.ui.defaultCharacterTalkingZoom;
+		return !!state.ui.defaultCharacterTalkingZoom;
 	},
 	set(value: boolean) {
 		transaction(() => {
-			store.commit('ui/setDefaultCharacterTalkingZoom', value);
+			state.ui.defaultCharacterTalkingZoom = value;
 			saveSettings();
 		});
 	},
@@ -297,11 +302,11 @@ const looseTextParsing = computed({
 //#region Theme
 const theme = computed({
 	get(): boolean | null {
-		return store.state.ui.useDarkTheme;
+		return state.ui.useDarkTheme;
 	},
 	set(value: boolean | null) {
 		transaction(() => {
-			store.commit('ui/setDarkTheme', value);
+			state.ui.useDarkTheme = value;
 			saveSettings();
 		});
 	},
@@ -362,7 +367,7 @@ function spawnChildWindow() {
 	win.document.title = 'DDLC child';
 	win.document.head.appendChild(title);
 
-	createApp(App).use(rootStore).mount(wrapper);
+	createApp(App).mount(wrapper);
 }
 //#endregion Spawn child window
 </script>

@@ -1,49 +1,312 @@
 import getConstants from '@/constants';
 import { rendererLookup } from '@/renderables/textbox';
-import type {
-	ICreateObjectMutation,
-	IObject,
-	IObjectMutation,
-	ISetLinkMutation,
-	ISetObjectFlipMutation,
-	ISetObjectPositionMutation,
-	ISetObjectScaleMutation,
-	ISetObjectSkewMutation,
-	ISetSpriteRotationMutation,
-} from '@/store/objects';
-import type { IPanel, IPanels } from '@/store/panels';
 import { between } from '@/util/math';
-import type { ActionTree, MutationTree } from 'vuex';
-import type { IRootState } from '..';
-import { baseProps } from './base-object-props';
-import type { ISetSpriteSizeMutation } from './characters';
+import { ref, type Ref } from 'vue';
+import type { IdTranslationTable, Panel } from '../panels';
+import BaseObject, { type GenObject } from './object';
 
-export interface ITextBox extends IObject {
-	type: 'textBox';
-	text: string;
-	talkingObjId: null | '$other$' | IObject['id'];
-	talkingOther: string;
-	style:
-		| 'normal'
-		| 'normal_plus'
-		| 'corrupt'
-		| 'corrupt_plus'
-		| 'custom'
-		| 'custom_plus'
-		| 'none';
-	overrideColor: boolean;
-	customColor: string;
-	deriveCustomColors: boolean;
-	customControlsColor: string;
-	customNameboxColor: string;
-	customNameboxStroke: string;
-	customNameboxWidth: number | null;
-	controls: boolean;
-	skip: boolean;
-	autoQuoting: boolean;
-	autoWrap: boolean;
-	continue: boolean;
-	resetBounds: {
+export type TextboxStyle =
+	| 'normal'
+	| 'normal_plus'
+	| 'corrupt'
+	| 'corrupt_plus'
+	| 'custom'
+	| 'custom_plus'
+	| 'none';
+
+const splitTextboxSpacing = 4;
+
+export default class Textbox extends BaseObject<'textBox'> {
+	public get type() {
+		return 'textBox' as const;
+	}
+
+	protected constructor(
+		panel: Panel,
+		id?: GenObject['id'],
+		onTop?: boolean,
+		{
+			text,
+			resetBounds,
+			style,
+		}: {
+			text?: string;
+			resetBounds?: ResetBounds;
+			style?: TextboxStyle;
+		} = {}
+	) {
+		super(panel, onTop ?? true, id);
+
+		const constants = getConstants();
+		style ??= constants.TextBox.DefaultTextboxStyle;
+		const renderer = rendererLookup[style];
+		this._resetBounds = ref(
+			resetBounds ?? {
+				x: renderer.defaultX,
+				y: renderer.defaultY,
+				width: renderer.defaultWidth,
+				height: renderer.defaultHeight,
+				rotation: 0,
+				scaleX: 1,
+				scaleY: 1,
+				skewX: 0,
+				skewY: 0,
+			}
+		);
+		this._customColor = ref(constants.TextBoxCustom.textboxDefaultColor);
+		this._customControlsColor = ref(
+			constants.TextBoxCustom.controlsDefaultColor
+		);
+		this._customNameboxColor = ref(
+			constants.TextBoxCustom.nameboxDefaultColor
+		);
+		this._customNameboxStroke = ref(
+			constants.TextBoxCustom.nameboxStrokeDefaultColor
+		);
+		this.applyResetBounds();
+		this._style.value = style;
+		if (text) {
+			this._text.value = text;
+		}
+	}
+
+	public static create(panel: Panel, text?: string) {
+		return new Textbox(panel, undefined, undefined, { text });
+	}
+
+	public override makeClone(
+		panel: Panel,
+		idTranslationTable: IdTranslationTable
+	): Textbox {
+		const newObj = new Textbox(panel, idTranslationTable.get(this.id));
+		this.moveAllRefs(this, newObj);
+		return newObj;
+	}
+
+	public static fromSave(
+		panel: Panel,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		save: Record<string, any>,
+		idTranslationTable: IdTranslationTable
+	): Textbox {
+		const ret = new Textbox(
+			panel,
+			idTranslationTable.get(save.id),
+			save.onTop
+		);
+		if (
+			save.panelId !== panel.id &&
+			!idTranslationTable.has(save.talkingObjId)
+		) {
+			save.talkingObjId = null;
+		} else {
+			save.talkingObjId =
+				idTranslationTable.get(save.talkingObjId) ?? save.talkingObjId;
+		}
+		save.talkingObjId = save.talkingObjId ?? null;
+		ret.loadPropsFromSave(save, idTranslationTable);
+		return ret;
+	}
+
+	override prepareSiblingRemoval(object: BaseObject): void {
+		if (object.id === this.talkingObjId) {
+			this.talkingObjId = null;
+		}
+		super.prepareSiblingRemoval(object);
+	}
+
+	//#region Talking properties
+	protected readonly _text = ref('Click here to edit the textbox');
+	protected readonly _talkingObjId = ref<null | '$other$' | GenObject['id']>(
+		null
+	);
+	protected readonly _talkingOther = ref('');
+	protected readonly _autoQuoting = ref(true);
+	protected readonly _overflow = ref(false);
+
+	public get text(): string {
+		return this._text.value;
+	}
+
+	public set text(value: string) {
+		this.mutate(this._text, value);
+	}
+
+	public get talkingObjId(): null | '$other$' | GenObject['id'] {
+		return this._talkingObjId.value;
+	}
+
+	public set talkingObjId(value: null | '$other$' | GenObject['id']) {
+		this.mutate(this._talkingObjId, value);
+	}
+
+	public get talkingOther(): string {
+		return this._talkingOther.value;
+	}
+
+	public set talkingOther(value: string) {
+		if (this.talkingObjId === '$other$') {
+			this.mutate(this._talkingOther, value);
+		} else {
+			this.mutateX(
+				//@ts-expect-error: mutateX doesn't like union types
+				[this._talkingObjId, this._talkingOther],
+				['$other$', value]
+			);
+		}
+	}
+
+	public get autoQuoting(): boolean {
+		return this._autoQuoting.value;
+	}
+
+	public set autoQuoting(value: boolean) {
+		this.mutate(this._autoQuoting, value);
+	}
+
+	public get overflow(): boolean {
+		return this._overflow.value;
+	}
+
+	public set overflow(value: boolean) {
+		this.mutate(this._overflow, value);
+	}
+	//#endregion Talking properties
+
+	//#region Style
+	protected readonly _style = ref<TextboxStyle>('normal');
+	protected readonly _overrideColor = ref(false);
+	protected readonly _customColor: Ref<string>;
+	protected readonly _deriveCustomColors = ref(true);
+	protected readonly _customControlsColor: Ref<string>;
+	protected readonly _customNameboxColor: Ref<string>;
+	protected readonly _customNameboxStroke: Ref<string>;
+	protected readonly _customNameboxWidth = ref<number | null>(null);
+
+	public get style(): TextboxStyle {
+		return this._style.value;
+	}
+
+	public set style(value: TextboxStyle) {
+		const constants = getConstants();
+
+		const oldStyle = this.style;
+		const oldX = this.x;
+		const oldY = this.y;
+		const oldWidth = this.width;
+		const oldHeight = this.height;
+
+		const oldRenderer = rendererLookup[oldStyle];
+		const newRenderer = rendererLookup[value];
+
+		let newX = oldX;
+		let newY = oldY;
+		let newWidth = oldWidth;
+		let newHeight = oldHeight;
+
+		const safetyMargin = 10;
+
+		if (!newRenderer.resizable) {
+			newWidth = newRenderer.defaultWidth;
+			newHeight = newRenderer.defaultHeight;
+		} else {
+			if (oldRenderer.defaultWidth !== newRenderer.defaultWidth) {
+				newWidth = Math.max(
+					newWidth +
+						newRenderer.defaultWidth -
+						oldRenderer.defaultWidth,
+					safetyMargin
+				);
+			}
+			if (oldRenderer.defaultHeight !== newRenderer.defaultHeight) {
+				newHeight = Math.max(
+					newHeight +
+						newRenderer.defaultHeight -
+						oldRenderer.defaultHeight,
+					safetyMargin
+				);
+			}
+		}
+		if (oldRenderer.defaultX !== newRenderer.defaultX) {
+			newX = between(
+				-newWidth + safetyMargin,
+				newX + newRenderer.defaultX - oldRenderer.defaultX,
+				constants.Base.screenWidth - safetyMargin
+			);
+		}
+		if (oldRenderer.defaultY !== newRenderer.defaultY) {
+			newY = between(
+				-newHeight + safetyMargin,
+				newY + newRenderer.defaultY - oldRenderer.defaultY,
+				constants.Base.screenHeight - safetyMargin
+			);
+		}
+
+		this.mutateX(
+			[this._x, this._y, this._height, this._width, this._style],
+			[newX, newY, newHeight, newWidth, value]
+		);
+	}
+
+	get overrideColor(): boolean {
+		return this._overrideColor.value;
+	}
+
+	set overrideColor(value: boolean) {
+		this.mutate(this._overrideColor, value);
+	}
+
+	get customColor(): string {
+		return this._customColor.value;
+	}
+
+	set customColor(value: string) {
+		this.mutate(this._customColor, value);
+	}
+
+	get deriveCustomColors(): boolean {
+		return this._deriveCustomColors.value;
+	}
+
+	set deriveCustomColors(value: boolean) {
+		this.mutate(this._deriveCustomColors, value);
+	}
+
+	get customControlsColor(): string {
+		return this._customControlsColor.value;
+	}
+
+	set customControlsColor(value: string) {
+		this.mutate(this._customControlsColor, value);
+	}
+
+	get customNameboxColor(): string {
+		return this._customNameboxColor.value;
+	}
+
+	set customNameboxColor(value: string) {
+		this.mutate(this._customNameboxColor, value);
+	}
+
+	get customNameboxStroke(): string {
+		return this._customNameboxStroke.value;
+	}
+
+	set customNameboxStroke(value: string) {
+		this.mutate(this._customNameboxStroke, value);
+	}
+
+	get customNameboxWidth(): number | null {
+		return this._customNameboxWidth.value;
+	}
+
+	set customNameboxWidth(value: number | null) {
+		this.mutate(this._customNameboxWidth, value);
+	}
+	//#endregion Style
+
+	//#region Reset bounds
+	protected readonly _resetBounds: Ref<{
 		x: number;
 		y: number;
 		width: number;
@@ -53,246 +316,43 @@ export interface ITextBox extends IObject {
 		skewY: number;
 		scaleX: number;
 		scaleY: number;
-	};
-}
+	}>;
 
-const splitTextboxSpacing = 4;
-
-export const textBoxMutations: MutationTree<IPanels> = {
-	setTalkingObject(state, command: ISetTextBoxTalkingObjMutation) {
-		const obj = state.panels[command.panelId].objects[
-			command.id
-		] as ITextBox;
-		obj.talkingObjId = command.talkingObjId;
-		++obj.version;
-	},
-	setTalkingOther(state, command: ISetTextBoxTalkingOtherMutation) {
-		const obj = state.panels[command.panelId].objects[
-			command.id
-		] as ITextBox;
-		obj.talkingOther = command.talkingOther;
-		obj.talkingObjId = '$other$';
-		++obj.version;
-	},
-	setResetBounds(state, command: ISetResetBoundsMutation) {
-		const obj = state.panels[command.panelId].objects[
-			command.id
-		] as ITextBox;
-		obj.resetBounds = command.resetBounds;
-		obj.x = command.resetBounds.x;
-		obj.y = command.resetBounds.y;
-		obj.height = command.resetBounds.height;
-		obj.width = command.resetBounds.width;
-		obj.rotation = command.resetBounds.rotation;
-		obj.skewX = command.resetBounds.skewX;
-		obj.skewY = command.resetBounds.skewY;
-		obj.scaleX = command.resetBounds.scaleX;
-		obj.scaleY = command.resetBounds.scaleY;
-		++obj.version;
-	},
-	setTextBoxProperty<T extends TextBoxSimpleProperties>(
-		state: IPanels,
-		command: ISetTextBoxProperty<T>
-	) {
-		const obj = state.panels[command.panelId].objects[
-			command.id
-		] as ITextBox;
-		obj[command.key] = command.value;
-		++obj.version;
-	},
-};
-
-export const textBoxActions: ActionTree<IPanels, IRootState> = {
-	createTextBox(
-		{ commit, state, rootState },
-		command: ICreateTextBoxAction
-	): IObject['id'] {
-		const constants = getConstants();
-		const id = state.panels[command.panelId].lastObjId + 1;
-		const style = constants.TextBox.DefaultTextboxStyle;
-		const renderer = rendererLookup[style];
-
-		const resetBounds = command.resetBounds || {
-			x: renderer.defaultX,
-			y: renderer.defaultY,
-			width: renderer.defaultWidth,
-			height: renderer.defaultHeight,
-			rotation: 0,
-			scaleX: 1,
-			scaleY: 1,
-			skewX: 0,
-			skewY: 0,
-		};
-		commit('create', {
-			object: {
-				...baseProps(),
-				...resetBounds,
-				panelId: command.panelId,
-				id,
-				onTop: true,
-				type: 'textBox',
-				continue: true,
-				controls: true,
-				skip: true,
-				autoQuoting: true,
-				autoWrap: true,
-				style,
-				overrideColor: false,
-				customColor: constants.TextBoxCustom.textboxDefaultColor,
-				deriveCustomColors: true,
-				customControlsColor:
-					constants.TextBoxCustom.controlsDefaultColor,
-				customNameboxColor: constants.TextBoxCustom.nameboxDefaultColor,
-				customNameboxWidth: null,
-				customNameboxStroke:
-					constants.TextBoxCustom.nameboxStrokeDefaultColor,
-				talkingObjId: null,
-				talkingOther: '',
-				text: command.text ?? 'Click here to edit the textbox',
-				resetBounds,
-				overflow: false,
-			} as ITextBox,
-		} as ICreateObjectMutation);
-		return id;
-	},
-
-	setStyle({ state, commit }, command: ISetTextBoxStyleAction) {
-		const constants = getConstants();
-		const obj = state.panels[command.panelId].objects[
-			command.id
-		] as ITextBox;
-		const oldRenderer = rendererLookup[obj.style];
-		const newRenderer = rendererLookup[command.style];
-
-		const safetyMargin = 10;
-
-		let updatePos = false;
-		const posUpdate = {
-			panelId: command.panelId,
-			id: command.id,
-			x: obj.x,
-			y: obj.y,
-		};
-		let updateSize = false;
-		const sizeUpdate = {
-			panelId: command.panelId,
-			id: command.id,
-			width: obj.width,
-			height: obj.height,
-		};
-
-		if (!newRenderer.resizable) {
-			updateSize = true;
-			sizeUpdate.width = newRenderer.defaultWidth;
-			sizeUpdate.height = newRenderer.defaultHeight;
-		} else {
-			if (oldRenderer.defaultWidth !== newRenderer.defaultWidth) {
-				updateSize = true;
-				sizeUpdate.width = Math.max(
-					sizeUpdate.width +
-						newRenderer.defaultWidth -
-						oldRenderer.defaultWidth,
-					safetyMargin
-				);
-			}
-			if (oldRenderer.defaultHeight !== newRenderer.defaultHeight) {
-				updateSize = true;
-				sizeUpdate.height = Math.max(
-					sizeUpdate.height +
-						newRenderer.defaultHeight -
-						oldRenderer.defaultHeight,
-					safetyMargin
-				);
-			}
-		}
-		if (oldRenderer.defaultX !== newRenderer.defaultX) {
-			updatePos = true;
-			posUpdate.x = between(
-				-sizeUpdate.width + safetyMargin,
-				posUpdate.x + newRenderer.defaultX - oldRenderer.defaultX,
-				constants.Base.screenWidth - safetyMargin
-			);
-		}
-		if (oldRenderer.defaultY !== newRenderer.defaultY) {
-			updatePos = true;
-			posUpdate.y = between(
-				-sizeUpdate.height + safetyMargin,
-				posUpdate.y + newRenderer.defaultY - oldRenderer.defaultY,
-				constants.Base.screenHeight - safetyMargin
-			);
-		}
-
-		if (updatePos) {
-			commit('setPosition', posUpdate as ISetObjectPositionMutation);
-		}
-		if (updateSize) {
-			commit('setSize', sizeUpdate as ISetSpriteSizeMutation);
-		}
-
-		commit(
-			'setTextBoxProperty',
-			textboxProperty(command.panelId, command.id, 'style', command.style)
+	public applyResetBounds() {
+		const resetBounds = this._resetBounds.value;
+		this.mutateX(
+			[
+				this._x,
+				this._y,
+				this._height,
+				this._width,
+				this._rotation,
+				this._skewX,
+				this._skewY,
+				this._scaleX,
+				this._scaleY,
+			],
+			[
+				resetBounds.x,
+				resetBounds.y,
+				resetBounds.height,
+				resetBounds.width,
+				resetBounds.rotation,
+				resetBounds.skewX,
+				resetBounds.skewY,
+				resetBounds.scaleX,
+				resetBounds.scaleY,
+			]
 		);
-	},
+	}
+	//#endregion Reset bounds
 
-	resetTextboxBounds({ commit, state }, command: IResetTextboxBounds) {
-		const obj = state.panels[command.panelId].objects[
-			command.id
-		] as ITextBox;
-		commit('setPosition', {
-			panelId: command.panelId,
-			id: command.id,
-			x: obj.resetBounds.x,
-			y: obj.resetBounds.y,
-		} as ISetObjectPositionMutation);
-		commit('setSize', {
-			panelId: command.panelId,
-			id: command.id,
-			height: obj.resetBounds.height,
-			width: obj.resetBounds.width,
-		} as ISetSpriteSizeMutation);
-		commit('setRotation', {
-			panelId: command.panelId,
-			id: command.id,
-			rotation: obj.resetBounds.rotation,
-		} as ISetSpriteRotationMutation);
-		commit('setObjectScale', {
-			panelId: command.panelId,
-			id: command.id,
-			scaleX: obj.resetBounds.scaleX,
-			scaleY: obj.resetBounds.scaleY,
-		} as ISetObjectScaleMutation);
-		commit('setObjectSkew', {
-			panelId: command.panelId,
-			id: command.id,
-			skewX: obj.resetBounds.skewX,
-			skewY: obj.resetBounds.skewY,
-		} as ISetObjectSkewMutation);
-	},
-
-	async splitTextbox({ commit, state, dispatch }, command: ISplitTextbox) {
-		const obj = state.panels[command.panelId].objects[
-			command.id
-		] as ITextBox;
-		if (obj.type !== 'textBox') return;
-
-		const newWidth = (obj.width - splitTextboxSpacing) / 2;
+	//#region Splitting
+	splitTextbox() {
+		const newWidth = (this.width - splitTextboxSpacing) / 2;
 		const centerDistance = newWidth / 2 + splitTextboxSpacing / 2;
 
-		let transform = new DOMMatrixReadOnly().translate(obj.x, obj.y);
-		if (obj.rotation !== 0) {
-			transform = transform.rotate(0, 0, obj.rotation);
-		}
-		if (obj.skewX !== 0) {
-			transform = transform.skewX(obj.skewX);
-		}
-		if (obj.skewY !== 0) {
-			transform = transform.skewY(obj.skewY);
-		}
-		if (obj.flip) {
-			transform = transform.flipX();
-		}
-		transform = transform.scale(obj.scaleX, obj.scaleY);
+		const transform = this.localTransform;
 
 		const boxOneCoords = transform.transformPoint(
 			new DOMPointReadOnly(-centerDistance, 0)
@@ -302,115 +362,97 @@ export const textBoxActions: ActionTree<IPanels, IRootState> = {
 			new DOMPointReadOnly(centerDistance, 0)
 		);
 
-		commit('setResetBounds', {
-			id: command.id,
-			panelId: command.panelId,
-			resetBounds: {
-				x: boxOneCoords.x,
-				y: boxOneCoords.y,
-				width: newWidth,
-				height: obj.height,
-				rotation: obj.rotation,
-				scaleX: obj.scaleX,
-				scaleY: obj.scaleY,
-				skewX: obj.skewX,
-				skewY: obj.skewY,
-			},
-		} as ISetResetBoundsMutation);
-		const newStyle = obj.style === 'custom_plus' ? 'custom_plus' : 'custom';
-		if (obj.style !== newStyle) {
-			await dispatch('setStyle', {
-				...command,
-				style: newStyle,
-			} as ISetTextBoxStyleAction);
-		}
-		const id = (await dispatch('createTextBox', {
-			panelId: command.panelId,
+		const newBounds = {
+			x: boxOneCoords.x,
+			y: boxOneCoords.y,
+			width: newWidth,
+			height: this.height,
+			rotation: this.rotation,
+			scaleX: this.scaleX,
+			scaleY: this.scaleY,
+			skewX: this.skewX,
+			skewY: this.skewY,
+		};
+		this.mutate(this._resetBounds, newBounds);
+		this.applyResetBounds();
+
+		const newStyle =
+			this.style === 'custom_plus' ? 'custom_plus' : 'custom';
+		this.mutate(this._style, newStyle);
+
+		const newBox = new Textbox(this.panel, undefined, this.onTop, {
 			resetBounds: {
 				x: boxTwoCoords.x,
 				y: boxTwoCoords.y,
 				width: newWidth,
-				height: obj.height,
-				rotation: obj.rotation,
-				scaleX: obj.scaleX,
-				scaleY: obj.scaleY,
-				skewX: obj.skewX,
-				skewY: obj.skewY,
+				height: this.height,
+				rotation: this.rotation,
+				scaleX: this.scaleX,
+				scaleY: this.scaleY,
+				skewX: this.skewX,
+				skewY: this.skewY,
 			},
-		} as ICreateTextBoxAction)) as number;
-		await dispatch('setStyle', {
-			panelId: command.panelId,
-			id,
 			style: newStyle,
-		} as ISetTextBoxStyleAction);
-		if (obj.flip) {
-			commit('setFlip', {
-				id,
-				panelId: command.panelId,
-				flip: obj.flip,
-			} as ISetObjectFlipMutation);
+		});
+
+		if (this.flip) {
+			newBox.flip = true;
 		}
-		commit('setLink', {
-			id,
-			panelId: command.panelId,
-			link: obj.linkedTo,
-			rotation: obj.rotation,
-			scaleX: obj.scaleX,
-			scaleY: obj.scaleY,
-			skewX: obj.skewX,
-			skewY: obj.skewY,
-			x: boxTwoCoords.x,
-			y: boxTwoCoords.y,
-		} as ISetLinkMutation);
-	},
-};
 
-export interface ISetTextBoxTalkingObjMutation extends IObjectMutation {
-	readonly talkingObjId: ITextBox['talkingObjId'];
+		// Positioning should already be done through the reset bounds, so we don't use the full
+		// this.linkedTo setter here
+		this.mutate(newBox._linkedTo, this._linkedTo.value);
+	}
+	//#endregion Splitting
+
+	//#region Controls
+	protected readonly _controls = ref(true);
+	protected readonly _skip = ref(true);
+	protected readonly _autoWrap = ref(true);
+	protected readonly _continue = ref(true);
+
+	public get controls(): boolean {
+		return this._controls.value;
+	}
+
+	public set controls(value: boolean) {
+		this.mutate(this._controls, value);
+	}
+
+	public get skip(): boolean {
+		return this._skip.value;
+	}
+
+	public set skip(value: boolean) {
+		this.mutate(this._skip, value);
+	}
+
+	public get autoWrap(): boolean {
+		return this._autoWrap.value;
+	}
+
+	public set autoWrap(value: boolean) {
+		this.mutate(this._autoWrap, value);
+	}
+
+	public get continue(): boolean {
+		return this._continue.value;
+	}
+
+	public set continue(value: boolean) {
+		this.mutate(this._continue, value);
+	}
+	//#endregion Controls
 }
 
-export interface ISetTextBoxTalkingOtherMutation extends IObjectMutation {
-	readonly talkingOther: string;
+interface ResetBounds {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+	rotation: number;
+	skewX: number;
+	skewY: number;
+	scaleX: number;
+	scaleY: number;
 }
-
-export interface ISetResetBoundsMutation extends IObjectMutation {
-	readonly resetBounds: ITextBox['resetBounds'];
-}
-
-export type TextBoxSimpleProperties =
-	| Exclude<keyof ITextBox, keyof IObject>
-	| 'overflow'
-	| 'talkingObjId'
-	| 'talkingOther'
-	| 'resetBounds';
-
-export function textboxProperty<T extends TextBoxSimpleProperties>(
-	panelId: IPanel['id'],
-	id: IObject['id'],
-	key: T,
-	value: ITextBox[T]
-): ISetTextBoxProperty<T> {
-	return { id, panelId, key, value };
-}
-
-interface ISetTextBoxProperty<T extends TextBoxSimpleProperties>
-	extends IObjectMutation {
-	readonly key: T;
-	readonly value: ITextBox[T];
-}
-
-export interface ICreateTextBoxAction {
-	readonly panelId: IPanel['id'];
-	readonly text?: ITextBox['text'];
-	readonly resetBounds?: ITextBox['resetBounds'];
-}
-
-export interface ISetTextBoxStyleAction extends IObjectMutation {
-	readonly style: ITextBox['style'];
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface ISplitTextbox extends IObjectMutation {}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface IResetTextboxBounds extends IObjectMutation {}

@@ -4,7 +4,7 @@
 -->
 <script lang="ts">
 import { VerticalScrollRedirect } from '@/components/mixins/vertical-scroll-redirect';
-import type { Viewport } from '@/newStore/viewport';
+import type { Viewport } from '@/store/viewports';
 import { defineComponent, h, type Prop, type PropType, type VNode } from 'vue';
 
 // This function still uses the old syntax because I don't know how to use a render function in the new syntax.

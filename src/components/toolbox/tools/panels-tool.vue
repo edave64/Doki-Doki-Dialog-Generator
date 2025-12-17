@@ -10,7 +10,7 @@
 			v-if="imageOptionsActive"
 			type="panel"
 			title=""
-			:panel-id="currentPanel.id"
+			:panel-id="viewport.currentPanel"
 			no-composition
 			@leave="
 				imageOptionsActive = false;
@@ -28,7 +28,7 @@
 						:key="panel.id"
 						:class="{
 							panel_button: true,
-							active: panel.id === currentPanel.id,
+							active: panel.id === viewport.currentPanel,
 						}"
 						:style="`background-image: url('${panel.image}')`"
 						tabindex="0"
@@ -189,22 +189,59 @@
 				</table>
 			</d-fieldset>
 			<div class="column">
-				<d-button icon="save" @click="save">Save</d-button>
+				<div style="display: flex">
+					<d-button icon="download" @click="save"
+						>Quick Save</d-button
+					>
+					<d-button
+						class="bl0"
+						icon="upload"
+						@click="loadUpload.click()"
+						style="width: auto"
+					>
+						<input type="file" ref="loadUpload" @change="load" />
+					</d-button>
+				</div>
 				<d-button
+					v-if="canDoFullSave"
+					class="bt0"
+					icon="save"
+					@click="saveFolder"
+					>Save Folder
+				</d-button>
+				<d-button
+					v-if="canDoFullSave"
 					class="bt0"
 					icon="folder_open"
-					@click="loadUpload.click()"
-				>
-					Load
-					<input type="file" ref="loadUpload" @change="load" />
+					@click="loadOpenFolder.click()"
+					>Load Folder
+					<input
+						type="file"
+						ref="loadOpenFolder"
+						@change="loadFolder"
+						webkitdirectory
+					/>
 				</d-button>
 			</div>
 		</template>
 	</div>
+	<teleport to="#modal-messages">
+		<modal-dialog
+			:options="['No', 'Yes']"
+			no-base-size
+			class="modal-rename"
+			v-if="showConfirmModal"
+			@option="confirmOption"
+			@leave="confirmOption('No')"
+		>
+			<p class="modal-text">{{ confirmText }}</p>
+		</modal-dialog>
+	</teleport>
 </template>
 
 <script lang="ts" setup>
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
+import ModalDialog from '@/components/modal-dialog.vue';
 import DButton from '@/components/ui/d-button.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
@@ -216,29 +253,18 @@ import eventBus, {
 	ShowMessageEvent,
 	StateLoadingEvent,
 } from '@/eventbus/event-bus';
-import { transaction } from '@/plugins/vuex-history';
+import { transaction } from '@/history-engine/transaction';
 import { SceneRenderer } from '@/renderables/scene-renderer';
-import { useStore } from '@/store';
-import type { IObject } from '@/store/objects';
-import type {
-	IDeletePanelAction,
-	IDuplicatePanelAction,
-	IMovePanelAction,
-	IPanel,
-	ISetPanelPreviewMutation,
-} from '@/store/panels';
 import { safeAsync } from '@/util/errors';
 import type { DeepReadonly } from 'ts-essentials';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import ImageOptions from '../subtools/image-options/image-options.vue';
 
 interface IPanelButton {
-	id: IPanel['id'];
+	id: Panel['id'];
 	image: string;
 	text: string;
 }
-
-const store = useStore();
 
 const qualityFactor = 100;
 const defaultQuality = 90;
@@ -254,10 +280,15 @@ const quality = ref(defaultQuality);
 const horizontalExport = ref(false);
 const imageOptionsActive = ref(false);
 const loadUpload = ref(null! as HTMLInputElement);
+const loadOpenFolder = ref(null! as HTMLInputElement);
 const baseConst = getConstants().Base;
 
+const canDoFullSave =
+	window.showDirectoryPicker !== undefined &&
+	'webkitRelativePath' in (File?.prototype ?? {});
+
 const currentPanel = computed(
-	() => store.state.panels.panels[viewport.value.currentPanel]
+	() => state.panels.panels[viewport.value.currentPanel]
 );
 const isLossy = computed(() => format.value !== 'image/png');
 const canDeletePanel = computed(() => panelButtons.value.length > 1);
@@ -265,6 +296,24 @@ const canDeletePanel = computed(() => panelButtons.value.length > 1);
 function emptyStringInInt(v: string | number) {
 	if (v === '') return true;
 	return false;
+}
+
+const showConfirmModal = ref(false);
+const confirmText = ref('');
+const confirmResolve = ref<null | ((val: boolean) => void)>(null);
+function confirmOption(option: string) {
+	showConfirmModal.value = false;
+	if (option === 'Yes') {
+		confirmResolve.value?.(true);
+	}
+}
+
+function confirmMessage(text: string): Promise<boolean> {
+	return new Promise<boolean>((resolve) => {
+		confirmText.value = text;
+		showConfirmModal.value = true;
+		confirmResolve.value = resolve;
+	});
 }
 
 //#region Format-Support
@@ -280,33 +329,26 @@ Promise.allSettled([isWebPSupported(), isHeifSupported()]).then(
 );
 //#endregion Format-Support
 //#region Panel-Buttons
-import type { IChoices } from '@/store/object-types/choices';
-import type { INotification } from '@/store/object-types/notification';
-import type { IPoem } from '@/store/object-types/poem';
-import type { ITextBox } from '@/store/object-types/textbox';
-
 const canMoveAhead = computed((): boolean => {
-	const panelOrder = store.state.panels.panelOrder;
-	const idx = panelOrder.indexOf(currentPanel.value.id);
+	const idx = state.panels.order.indexOf(viewport.value.currentPanel);
 	return idx > 0;
 });
 
 const canMoveBehind = computed((): boolean => {
-	const panelOrder = store.state.panels.panelOrder;
-	const idx = panelOrder.indexOf(currentPanel.value.id);
-	return idx < panelOrder.length - 1;
+	const panels = state.panels.order;
+	const idx = panels.indexOf(viewport.value.currentPanel);
+	return idx < panels.length - 1;
 });
 
 const panelButtons = computed((): IPanelButton[] => {
-	const panelOrder = store.state.panels.panelOrder;
-	return panelOrder.map((id) => {
-		const panel = store.state.panels.panels[id];
-		const objectOrders = store.state.panels.panels[id];
-		const txtBox = [...objectOrders.order, ...objectOrders.onTopOrder]
-			.map((objId) => store.state.panels.panels[id].objects[objId])
+	const panels = state.panels.order;
+	return panels.map((panelId) => {
+		const panel = state.panels.panels[panelId];
+		const txtBox = [...panel.lowerOrder, ...panel.topOrder]
+			.map((objId) => panel.objects[objId])
 			.map(extractObjectText);
 		return {
-			id,
+			id: panel.id,
 			image: panel.lastRender,
 			text: txtBox.reduce(
 				(acc, current) => (acc.length > current.length ? acc : current),
@@ -316,18 +358,16 @@ const panelButtons = computed((): IPanelButton[] => {
 	});
 });
 
-function extractObjectText(obj: DeepReadonly<IObject>) {
+function extractObjectText(obj: DeepReadonly<GenObject>) {
 	switch (obj.type) {
 		case 'textBox':
-			return (obj as ITextBox).text;
+			return obj.text;
 		case 'notification':
-			return (obj as INotification).text;
+			return obj.text;
 		case 'poem':
-			return (obj as IPoem).text;
+			return obj.text;
 		case 'choice':
-			return (obj as IChoices).choices
-				.map((choice) => `[${choice.text}]`)
-				.join('\n');
+			return obj.choices.map((choice) => `[${choice.text}]`).join('\n');
 	}
 	return '';
 }
@@ -389,7 +429,7 @@ async function download() {
 	});
 }
 async function renderObjects<T>(
-	distribution: DeepReadonly<IPanel['id'][][]>,
+	distribution: DeepReadonly<Panel['id'][][]>,
 	hq: boolean,
 	horizontal: boolean,
 	mapper: (imageIdx: number, canvas: HTMLCanvasElement) => Promise<T>
@@ -413,7 +453,6 @@ async function renderObjects<T>(
 			for (let panelIdx = 0; panelIdx < image.length; ++panelIdx) {
 				const panelId = image[panelIdx];
 				const sceneRenderer = new SceneRenderer(
-					store,
 					panelId,
 					baseConst.screenWidth,
 					baseConst.screenHeight
@@ -439,8 +478,8 @@ async function renderObjects<T>(
 	}
 	return ret;
 }
-function getLimitedPanelList(): DeepReadonly<IPanel['id'][]> {
-	const max = store.state.panels.panelOrder.length - 1;
+function getLimitedPanelList(): DeepReadonly<Panel['id'][]> {
+	const max = state.panels.order.length - 1;
 	const min = 0;
 	const parts = pages.value.split(',');
 	const listedPages: number[] = [];
@@ -473,21 +512,21 @@ function getLimitedPanelList(): DeepReadonly<IPanel['id'][]> {
 	}
 
 	if (!foundMatch) {
-		return store.state.panels.panelOrder;
+		return state.panels.order;
 	}
 
 	return listedPages
 		.sort((a, b) => a - b)
 		.filter((value, idx, ary) => ary[idx - 1] !== value)
-		.map((pageIdx) => store.state.panels.panelOrder[pageIdx]);
+		.map((pageIdx) => state.panels.panels[pageIdx].id);
 }
-function getPanelDistibution(): DeepReadonly<IPanel['id'][][]> {
+function getPanelDistibution(): DeepReadonly<Panel['id'][][]> {
 	const panelOrder = getLimitedPanelList();
 	if (isNaN(ppi.value)) {
 		ppi.value = 0;
 	}
 	if (ppi.value === 0) return [panelOrder];
-	const images: IPanel['id'][][] = [];
+	const images: Panel['id'][][] = [];
 	for (let imageI = 0; imageI < panelOrder.length / ppi.value; ++imageI) {
 		const sliceStart = imageI * ppi.value;
 		const sliceEnd = sliceStart + ppi.value;
@@ -498,16 +537,16 @@ function getPanelDistibution(): DeepReadonly<IPanel['id'][][]> {
 //#endregion Download
 //#region Actions
 async function addNewPanel(): Promise<void> {
-	await transaction(async () => {
-		await store.dispatch('panels/duplicatePanel', {
-			panelId: viewport.value.currentPanel,
-		} as IDuplicatePanelAction);
-		viewport.value.currentPanel = store.state.panels.lastPanelId;
+	transaction(async () => {
+		state.panels.duplicatePanel(
+			state.panels.panels[viewport.value.currentPanel]
+		);
+		viewport.value.currentPanel = state.panels.lastPanelId;
 	});
 	await nextTick();
 	moveFocusToActivePanel();
 }
-function updateCurrentPanel(panelId: IPanel['id']) {
+function updateCurrentPanel(panelId: Panel['id']) {
 	transaction(() => {
 		viewport.value.currentPanel = panelId;
 	});
@@ -517,34 +556,37 @@ function updateCurrentPanel(panelId: IPanel['id']) {
 }
 function deletePanel() {
 	transaction(async () => {
-		await store.dispatch('panels/delete', {
-			panelId: viewport.value.currentPanel,
-		} as IDeletePanelAction);
+		state.panels.deletePanel(
+			state.panels.panels[viewport.value.currentPanel]
+		);
 	});
 	nextTick(() => {
 		moveFocusToActivePanel();
 	});
 }
 function moveAhead() {
-	transaction(async () => {
-		await store.dispatch('panels/move', {
-			panelId: currentPanel.value.id,
-			delta: -1,
-		} as IMovePanelAction);
+	transaction(() => {
+		state.panels.movePanel(
+			state.panels.panels[viewport.value.currentPanel],
+			-1
+		);
 	});
 }
 function moveBehind() {
-	transaction(async () => {
-		await store.dispatch('panels/move', {
-			panelId: currentPanel.value.id,
-			delta: 1,
-		} as IMovePanelAction);
+	transaction(() => {
+		state.panels.movePanel(
+			state.panels.panels[viewport.value.currentPanel],
+			1
+		);
 	});
 }
 //#endregion Actions
 //#region Thumbnails
 import { useViewport } from '@/hooks/use-viewport';
 import { getMainSceneRenderer } from '@/renderables/main-scene-renderer';
+import type { GenObject } from '@/store/object-types/object';
+import type { Panel } from '@/store/panels';
+import { state } from '@/store/root';
 import { disposeCanvas, makeCanvas } from '@/util/canvas';
 
 const thumbnailFactor = 1 / 4;
@@ -556,18 +598,109 @@ const thumbnailCtx = targetCanvas.getContext('2d')!;
 const isMounted = ref(false);
 const viewport = useViewport();
 
-const missingThumbnails = computed((): IPanel['id'][] => {
-	const panelOrder = store.state.panels.panelOrder;
-	return panelOrder.filter((id) => {
-		const panel = store.state.panels.panels[id];
+const missingThumbnails = computed((): Panel['id'][] => {
+	return state.panels.order.filter((panelId) => {
+		const panel = state.panels.panels[panelId];
 		return panel.lastRender == null;
 	});
 });
 
+async function saveFolder() {
+	const entry = await window.showDirectoryPicker();
+	if (!entry) return;
+
+	const entries: FileSystemHandle[] = await Array.fromAsync(entry.values());
+
+	if (
+		entries.some(
+			(entry) => entry.kind === 'file' && entry.name === 'save.dddg'
+		)
+	) {
+		if (
+			!(await confirmMessage(
+				'A save file already exists in this folder. Do you want to overwrite it?'
+			))
+		) {
+			return;
+		}
+	} else if (entries.length > 0) {
+		if (
+			!(await confirmMessage(
+				'This folder already contains files. They might get overwritten. Do you want to continue?'
+			))
+		) {
+			return;
+		}
+	}
+
+	const promises: Promise<unknown>[] = [
+		(async () => {
+			const saveFile = await entry.getFileHandle(`save.dddg`, {
+				create: true,
+			});
+			const saveBlob = new Blob([await state.getSave(false)], {
+				type: 'text/plain',
+			});
+			const writable = await saveFile.createWritable();
+			await writable.write(saveBlob);
+			await writable.close();
+		})(),
+	];
+
+	for (const [name, url] of Object.entries(state.uploadUrls.urls)) {
+		promises.push(
+			(async () => {
+				const file = await entry.getFileHandle(name, {
+					create: true,
+				});
+				const writable = await file.createWritable();
+				const fileLoader = await fetch(url);
+				const blob = await fileLoader.blob();
+				await writable.write(blob);
+				await writable.close();
+			})()
+		);
+	}
+}
+
+async function loadFolder(e: Event) {
+	const files = (e.target as HTMLInputElement).files;
+
+	if (!files) return;
+
+	await transaction(async () => {
+		for (const file of files) {
+			const name = file.name;
+
+			if (name === 'save.dddg') {
+				const data = await file.text();
+				await state.loadSave(data);
+			}
+
+			const url = URL.createObjectURL(file);
+			state.uploadUrls.add(name, url);
+		}
+	});
+
+	await renderCurrentThumbnail();
+
+	if (!environment.supports.limitedCanvasSpace) {
+		setTimeout(() => {
+			restoreThumbnails();
+		}, 1000);
+	} else {
+		eventBus.fire(
+			new ShowMessageEvent(
+				'To prevent running out of memory, thumbnails will not be automatically restored in the background.'
+			)
+		);
+	}
+}
+
 async function renderCurrentThumbnail() {
 	// FIXME: This sadly makes it so the selection halo is visible in the thumbnails.
 	//        The renderer will lose that once the panels tab is selected, so maybe delay this?
-	const sceneRenderer = getMainSceneRenderer(store, viewport.value);
+	const sceneRenderer = getMainSceneRenderer(viewport.value);
 	if (!sceneRenderer) return;
 	await renderPanelThumbnail(sceneRenderer);
 }
@@ -585,13 +718,10 @@ async function renderPanelThumbnail(sceneRenderer: SceneRenderer) {
 		thumbnailCtx.canvas.toBlob(
 			(blob: Blob | null) => {
 				if (!blob) return;
+				const panel = state.panels.panels[panelId];
+				if (!panel) return;
 				const url = URL.createObjectURL(blob);
-				transaction(() => {
-					store.commit('panels/setPanelPreview', {
-						panelId,
-						url,
-					} as ISetPanelPreviewMutation);
-				});
+				panel.lastRender = url;
 			},
 			(await isWebPSupported()) ? 'image/webp' : 'image/jpeg',
 			thumbnailQuality
@@ -600,25 +730,28 @@ async function renderPanelThumbnail(sceneRenderer: SceneRenderer) {
 }
 
 async function restoreThumbnails() {
-	const baseConst = getConstants().Base;
-	if (!isMounted.value) return;
-	if (environment.supports.limitedCanvasSpace) return;
-	const missingThumbnails_ = missingThumbnails.value;
-	if (missingThumbnails_.length === 0) return;
-	const toRender = missingThumbnails_[0];
-	const localRenderer = new SceneRenderer(
-		store,
-		toRender,
-		baseConst.screenWidth,
-		baseConst.screenHeight
-	);
+	try {
+		const baseConst = getConstants().Base;
+		if (!isMounted.value) return;
+		if (environment.supports.limitedCanvasSpace) return;
+		const missingThumbnails_ = missingThumbnails.value;
+		if (missingThumbnails_.length === 0) return;
+		const toRender = missingThumbnails_[0];
+		const localRenderer = new SceneRenderer(
+			toRender,
+			baseConst.screenWidth,
+			baseConst.screenHeight
+		);
 
-	await localRenderer.render(false, false, true);
+		await localRenderer.render(false, false, true);
 
-	await renderPanelThumbnail(localRenderer);
+		await renderPanelThumbnail(localRenderer);
+	} catch (e) {
+		console.error(e);
+	}
 	setTimeout(() => {
 		restoreThumbnails();
-	}, 500);
+	}, 100);
 }
 
 onMounted(() => {
@@ -635,7 +768,7 @@ eventBus.subscribe(RenderUpdatedEvent, () =>
 //#endregion Thumbnails
 //#region Saving/Loading
 async function save() {
-	const str = await store.dispatch('getSave', true);
+	const str = await state.getSave(true);
 	const saveBlob = new Blob([str], {
 		type: 'text/plain',
 	});
@@ -657,23 +790,25 @@ async function load() {
 		if (!uploadInput.files) return;
 		eventBus.fire(new StateLoadingEvent());
 		const data = await blobToText(uploadInput.files[0]);
-		await store.dispatch('loadSave', data);
-		if (environment.supports.limitedCanvasSpace) {
-			eventBus.fire(
-				new ShowMessageEvent(
-					'To prevent running out of memory, thumbnails will not be automatically restored in the background.'
-				)
-			);
-		}
+		await state.loadSave(data);
 	});
 
 	await renderCurrentThumbnail();
 
-	setTimeout(() => {
-		restoreThumbnails();
-	}, 1000);
+	if (!environment.supports.limitedCanvasSpace) {
+		setTimeout(() => {
+			restoreThumbnails();
+		}, 1000);
+	} else {
+		eventBus.fire(
+			new ShowMessageEvent(
+				'To prevent running out of memory, thumbnails will not be automatically restored in the background.'
+			)
+		);
+	}
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function blobToText(file: File): Promise<string> {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
@@ -734,6 +869,13 @@ watch(
 
 <style lang="scss" scoped>
 @use '@/styles/fixes.scss';
+
+.row {
+	border: 10px solid #fff;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
 
 .panel_button {
 	height: 150px;

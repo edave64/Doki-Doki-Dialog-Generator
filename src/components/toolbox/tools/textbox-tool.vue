@@ -255,27 +255,18 @@ import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
 import getConstants from '@/constants';
-import { Viewport } from '@/newStore/viewport';
-import { transaction } from '@/plugins/vuex-history';
-import { useStore } from '@/store';
+import { transaction } from '@/history-engine/transaction';
+import type { GenObject } from '@/store/object-types/object';
+import { state } from '@/store/root';
+import { Viewport } from '@/store/viewports';
 import {
-	textboxProperty,
-	type IResetTextboxBounds,
-	type ISetTextBoxTalkingObjMutation,
-	type ISplitTextbox,
-	type ITextBox,
-	type TextBoxSimpleProperties,
-} from '@/store/object-types/textbox';
-import { type IObject } from '@/store/objects';
-import {
-	genericSetterMerged,
-	genericSetterSplit,
+	methodWithTransaction,
+	propWithTransaction,
 } from '@/util/simple-settable';
 import { UnreachableCaseError } from 'ts-essentials';
 import { computed, inject, ref, watch, type Ref } from 'vue';
 import ObjectTool, { type Handler } from './object-tool.vue';
 
-const store = useStore();
 const root = ref(null! as HTMLElement);
 const textarea = ref(null! as HTMLTextAreaElement);
 const { vertical } = setupPanelMixin(root);
@@ -298,21 +289,13 @@ watch(
 const viewport = inject<Ref<Viewport>>('viewport')!;
 
 const currentPanel = computed(
-	() => store.state.panels.panels[viewport.value.currentPanel]
+	() => state.panels.panels[viewport.value.currentPanel]
 );
-const object = computed((): ITextBox => {
+const object = computed(() => {
 	const obj = currentPanel.value.objects[viewport.value.selection!];
 	if (obj.type !== 'textBox') return undefined!;
-	return obj as ITextBox;
+	return obj;
 });
-const tbSetable = <K extends TextBoxSimpleProperties>(k: K) =>
-	genericSetterSplit<ITextBox, K>(
-		store,
-		object,
-		'panels/setTextBoxProperty',
-		false,
-		k
-	);
 const textHandler = computed((): Handler | undefined => {
 	if (!textEditor.value) return undefined;
 	return {
@@ -353,20 +336,19 @@ const colorHandler = computed((): Handler | undefined => {
 		},
 		set: (color: string) => {
 			transaction(() => {
-				const panelId = currentPanel.value.id;
-				const id = object.value.id;
-				const colorKey = {
-					base: 'customColor',
-					controls: 'customControlsColor',
-					namebox: 'customNameboxColor',
-					nameboxStroke: 'customNameboxStroke',
-					'': undefined,
-				}[colorSelect.value] as TextBoxSimpleProperties | undefined;
+				const colorKey = (
+					{
+						base: 'customColor',
+						controls: 'customControlsColor',
+						namebox: 'customNameboxColor',
+						nameboxStroke: 'customNameboxStroke',
+						'': undefined,
+					} as const
+				)[colorSelect.value];
 				if (color === undefined) return;
-				store.commit(
-					'panels/setTextBoxProperty',
-					textboxProperty(panelId, id, colorKey!, color)
-				);
+				transaction(() => {
+					object.value[colorKey!] = color;
+				});
 			});
 		},
 		leave: () => {
@@ -375,32 +357,23 @@ const colorHandler = computed((): Handler | undefined => {
 	};
 });
 const talkingObjId = computed({
-	get(): '$null$' | '$other$' | IObject['id'] {
+	get(): '$null$' | '$other$' | GenObject['id'] {
 		return object.value.talkingObjId ?? '$null$';
 	},
-	set(val: '$null$' | '$other$' | IObject['id']): void {
+	set(val: '$null$' | '$other$' | GenObject['id']): void {
 		transaction(() => {
-			store.commit('panels/setTalkingObject', {
-				id: object.value.id,
-				panelId: object.value.panelId,
-				talkingObjId: val === '$null$' ? null : val,
-			} as ISetTextBoxTalkingObjMutation);
+			object.value.talkingObjId = val === '$null$' ? null : val;
 		});
 	},
 });
-const talkingOther = genericSetterMerged(
-	store,
-	object,
-	'panels/setTalkingOther',
-	false,
-	'talkingOther'
-);
-const nameList = computed((): [IObject['id'], string][] => {
+const talkingOther = propWithTransaction(object, 'talkingOther');
+
+const nameList = computed((): [GenObject['id'], string][] => {
 	const panel = currentPanel.value;
 
-	const ret: [IObject['id'], string][] = [];
+	const ret: [GenObject['id'], string][] = [];
 
-	for (const id of [...panel.order, ...panel.onTopOrder]) {
+	for (const id of [...panel.lowerOrder, ...panel.topOrder]) {
 		const obj = panel.objects[id];
 		if (obj.label === null) continue;
 		ret.push([id, obj.label!]);
@@ -429,49 +402,29 @@ const colorName = computed((): string => {
 	}
 });
 //#region Text
-const autoQuoting = tbSetable('autoQuoting');
-const autoWrap = tbSetable('autoWrap');
-const overflow = tbSetable('overflow');
-const dialog = tbSetable('text');
+const autoQuoting = propWithTransaction(object, 'autoQuoting');
+const autoWrap = propWithTransaction(object, 'autoWrap');
+const overflow = propWithTransaction(object, 'overflow');
+const dialog = propWithTransaction(object, 'text');
 //#endregion Text
 //#region Style
 const customizable = computed(() => textBoxStyle.value.startsWith('custom'));
-const textBoxStyle = genericSetterMerged(
-	store,
-	object,
-	'panels/setStyle',
-	true,
-	'style'
-);
+const textBoxStyle = propWithTransaction(object, 'style');
 //#endregion Style
 //#region Customization - General
-const showControls = tbSetable('controls');
-const allowSkipping = tbSetable('skip');
-const showContinueArrow = tbSetable('continue');
+const showControls = propWithTransaction(object, 'controls');
+const allowSkipping = propWithTransaction(object, 'skip');
+const showContinueArrow = propWithTransaction(object, 'continue');
 //#endregion Customization - General
 //#region Customization - Custom
-const overrideColor = tbSetable('overrideColor');
-const deriveCustomColors = tbSetable('deriveCustomColors');
-const customNameboxWidth = tbSetable('customNameboxWidth');
+const overrideColor = propWithTransaction(object, 'overrideColor');
+const deriveCustomColors = propWithTransaction(object, 'deriveCustomColors');
+const customNameboxWidth = propWithTransaction(object, 'customNameboxWidth');
 const nameboxWidthDefault = computed(() => getConstants().TextBox.NameboxWidth);
 //#endregion Customization - Custom
 //#region Actions
-function splitTextbox(): void {
-	transaction(async () => {
-		await store.dispatch('panels/splitTextbox', {
-			id: object.value.id,
-			panelId: object.value.panelId,
-		} as ISplitTextbox);
-	});
-}
-function resetPosition(): void {
-	transaction(async () => {
-		await store.dispatch('panels/resetTextboxBounds', {
-			id: object.value.id,
-			panelId: object.value.panelId,
-		} as IResetTextboxBounds);
-	});
-}
+const splitTextbox = methodWithTransaction(object, 'splitTextbox');
+const resetPosition = methodWithTransaction(object, 'applyResetBounds');
 function jumpToCharacter(): void {
 	transaction(() => {
 		const talkingObj = talkingObjId.value;

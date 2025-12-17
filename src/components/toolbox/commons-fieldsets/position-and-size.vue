@@ -129,29 +129,23 @@
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
 import getConstants from '@/constants';
-import { transaction } from '@/plugins/vuex-history';
+import { transaction } from '@/history-engine/transaction';
 import { rendererLookup } from '@/renderables/textbox';
-import { useStore } from '@/store';
-import {
+import Character, {
 	closestCharacterSlot,
-	type ICharacter,
-	type ISetFreeMoveMutation,
-} from '@/store/object-types/characters';
-import type { IPoem } from '@/store/object-types/poem';
-import type { ITextBox } from '@/store/object-types/textbox';
-import type {
-	IObject,
-	ISetObjectPositionMutation,
-	ISetPositionAction,
-	ISetSpriteSizeMutation,
-} from '@/store/objects';
+} from '@/store/object-types/character';
+import type { GenObject } from '@/store/object-types/object';
+import type Poem from '@/store/object-types/poem';
+import type Textbox from '@/store/object-types/textbox';
+import { propWithTransaction } from '@/util/simple-settable';
 import { computed } from 'vue';
 
 const props = defineProps<{
-	obj: IObject;
+	obj: GenObject;
 }>();
 
-const store = useStore();
+const obj = computed(() => props.obj);
+
 //#region Size
 const height = computed({
 	get(): number {
@@ -163,40 +157,22 @@ const height = computed({
 	set(height: number) {
 		const constants = getConstants().TextBox;
 		transaction(() => {
-			store.commit('panels/setSize', {
-				id: props.obj.id,
-				panelId: props.obj.panelId,
-				height:
-					height + (easterEgg.value ? constants.NameboxHeight : 0),
-				width: props.obj.width,
-			} as ISetSpriteSizeMutation);
+			// eslint-disable-next-line vue/no-mutating-props
+			props.obj.height =
+				height + (easterEgg.value ? constants.NameboxHeight : 0);
 		});
 	},
 });
-const width = computed({
-	get(): number {
-		return props.obj.width;
-	},
-	set(width: number) {
-		transaction(() => {
-			store.commit('panels/setSize', {
-				id: props.obj.id,
-				panelId: props.obj.panelId,
-				height: props.obj.height,
-				width,
-			} as ISetSpriteSizeMutation);
-		});
-	},
-});
+const width = propWithTransaction(obj, 'width');
 const allowSize = computed(() => {
 	const obj = props.obj;
 	if (obj.type === 'textBox') {
-		const renderer = rendererLookup[(obj as ITextBox).style];
+		const renderer = rendererLookup[(obj as Textbox).style];
 		return renderer.resizable;
 	}
 	const constants = getConstants().Poem;
 	if (obj.type === 'poem') {
-		const bg = constants.poemBackgrounds[(obj as IPoem).background];
+		const bg = constants.poemBackgrounds[(obj as Poem).background];
 		return bg.file.startsWith('internal:');
 	}
 	return false;
@@ -208,7 +184,9 @@ const easterEgg = computed(() => {
 });
 //#endregion Size
 //#region Step Position
-const allowStepMove = computed(() => 'freeMove' in props.obj!);
+const allowStepMove = computed(
+	() => 'freeMove' in props.obj! && props.obj.linkedTo == null
+);
 const positionNames = computed(() => getConstants().Base.positions);
 const isFirstPos = computed(() => pos.value === 0);
 const isLastPos = computed(
@@ -220,12 +198,8 @@ const pos = computed({
 	},
 	set(value: number) {
 		transaction(async () => {
-			await store.dispatch('panels/setPosition', {
-				id: props.obj.id,
-				panelId: props.obj.panelId,
-				x: getConstants().Base.characterPositions[value],
-				y: props.obj.y,
-			} as ISetPositionAction);
+			// eslint-disable-next-line vue/no-mutating-props
+			props.obj.x = getConstants().Base.characterPositions[value];
 		});
 	},
 });
@@ -233,48 +207,16 @@ const pos = computed({
 //#region Position
 const freeMove = computed({
 	get(): boolean {
-		return !!(props.obj as ICharacter).freeMove;
+		return !!(props.obj as Character).freeMove;
 	},
 	set(freeMove: boolean) {
 		transaction(() => {
-			store.commit('panels/setFreeMove', {
-				id: props.obj.id,
-				panelId: props.obj.panelId,
-				freeMove,
-			} as ISetFreeMoveMutation);
+			(props.obj as Character).freeMove = freeMove;
 		});
 	},
 });
-const x = computed({
-	get(): number {
-		return props.obj.x;
-	},
-	set(x: number) {
-		transaction(() => {
-			store.commit('panels/setPosition', {
-				id: props.obj.id,
-				panelId: props.obj.panelId,
-				x,
-				y: y.value,
-			} as ISetObjectPositionMutation);
-		});
-	},
-});
-const y = computed({
-	get(): number {
-		return props.obj.y;
-	},
-	set(y: number) {
-		transaction(() => {
-			store.commit('panels/setPosition', {
-				id: props.obj.id,
-				panelId: props.obj.panelId,
-				x: x.value,
-				y,
-			} as ISetObjectPositionMutation);
-		});
-	},
-});
+const x = propWithTransaction(obj, 'x');
+const y = propWithTransaction(obj, 'y');
 //#endregion Position
 </script>
 

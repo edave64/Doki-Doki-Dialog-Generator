@@ -1,22 +1,18 @@
 import getConstants from '@/constants';
-import { Viewport } from '@/newStore/viewport';
-import type { IRootState } from '@/store';
-import { Store } from 'vuex';
+import type { Viewport } from '@/store/viewports';
 import { SceneRenderer } from './scene-renderer';
 
 const lookup = new WeakMap<Viewport, SceneRenderer>();
 
-export function getMainSceneRenderer(
-	store: Store<IRootState> | null,
-	viewport: Viewport
-) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(window as any).asdwefweg = lookup;
+
+export function getMainSceneRenderer(viewport: Viewport) {
 	let sceneRenderer = lookup.get(viewport);
 	if (sceneRenderer == null || sceneRenderer.disposed) {
-		if (store == null) return null;
 		if (viewport.currentPanel === -1) return null;
 		const constants = getConstants().Base;
 		sceneRenderer = new SceneRenderer(
-			store,
 			viewport.currentPanel,
 			constants.screenWidth,
 			constants.screenHeight,

@@ -1,17 +1,26 @@
-/**
+/*
  * Some helpful math functions
  */
 
+/**
+ * Limits a value to be between a minimum and maximum value.
+ */
 export function between(min: number, val: number, max: number) {
 	if (min > val) return min;
 	if (val > max) return max;
 	return val;
 }
 
+/**
+ * True modulo operation that works properly with negative numbers.
+ */
 export function mod(a: number, b: number) {
 	return ((a % b) + b) % b;
 }
 
+/**
+ * Checks if two matrices are equal in value.
+ */
 export function matrixEquals(
 	a: DOMMatrixReadOnly | null,
 	b: DOMMatrixReadOnly | null
@@ -28,6 +37,9 @@ export function matrixEquals(
 	);
 }
 
+/**
+ * Splits a transformation matrix into its individual offset, scale, rotation, and skew components.
+ */
 export function decomposeMatrix(mat: DOMMatrixReadOnly) {
 	const { a, b, c, d, e, f } = mat;
 	const delta = a * d - b * c;

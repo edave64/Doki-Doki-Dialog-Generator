@@ -24,9 +24,7 @@ declare interface Window {
 	};
 	repo: import('./models/repo').Repo;
 	env: import('./environments/environment').IEnvironment;
-	store: import('vuex').Store<
-		import('vue').DeepReadonly<import('./store').IRootState>
-	>;
+	store: typeof import('./store/root').state;
 }
 
 declare interface Navigator {

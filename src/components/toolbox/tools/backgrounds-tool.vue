@@ -74,11 +74,10 @@
 <script lang="ts" setup>
 import DButton from '@/components/ui/d-button.vue';
 import environment, { type Folder } from '@/environments/environment';
+import { transaction } from '@/history-engine/transaction';
 import { useViewport } from '@/hooks/use-viewport';
-import { transaction } from '@/plugins/vuex-history';
-import { useStore } from '@/store';
-import type { IAssetSwitch, ReplaceContentPackAction } from '@/store/content';
-import type { ISetColorMutation, ISetCurrentMutation } from '@/store/panels';
+import type { IAssetSwitch } from '@/store/content';
+import { state } from '@/store/root';
 import type {
 	Background,
 	ContentPack,
@@ -91,9 +90,7 @@ import ImageOptions from '../subtools/image-options/image-options.vue';
 import BgButton from './background/bg-button.vue';
 import BgSettings from './background/bg-settings.vue';
 
-const store = useStore();
-
-const uploadedBackgroundsPackDefaults: ContentPack<string> = {
+const uploadedBackgroundsPackDefaults: ContentPack<IAssetSwitch> = {
 	packId: 'dddg.uploads.backgrounds',
 	dependencies: [],
 	packCredits: [],
@@ -114,23 +111,19 @@ const colorPickerActive = ref(false);
 const imageOptionsActive = ref(false);
 const bgColor = computed({
 	get(): string {
-		return store.state.panels.panels[viewport.value.currentPanel].background
+		return state.panels.panels[viewport.value.currentPanel].background
 			.color;
 	},
 	set(color: string) {
 		transaction(() => {
-			store.commit('panels/setBackgroundColor', {
-				color,
-				panelId: viewport.value.currentPanel,
-			} as ISetColorMutation);
+			state.panels.panels[viewport.value.currentPanel].background.color =
+				color;
 		});
 	},
 });
 const backgrounds = computed((): Array<Background<IAssetSwitch>['id']> => {
 	return [
-		...store.state.content.current.backgrounds.map(
-			(background) => background.id
-		),
+		...state.content.current.backgrounds.map((background) => background.id),
 		'buildin.static-color',
 		'buildin.transparent',
 	];
@@ -142,10 +135,10 @@ const showBackgroundsFolder = computed((): boolean => {
 });
 
 function setBackground(id: Background<IAssetSwitch>['id']) {
-	store.commit('panels/setCurrentBackground', {
-		current: id,
-		panelId: viewport.value.currentPanel,
-	} as ISetCurrentMutation);
+	transaction(() => {
+		state.panels.panels[viewport.value.currentPanel].background.current =
+			id;
+	});
 }
 function openBackgroundFolder() {
 	environment.openFolder('backgrounds');
@@ -162,10 +155,7 @@ function onFileUpload() {
 async function addImageFile(file: File) {
 	await transaction(async () => {
 		const url = URL.createObjectURL(file);
-		const assetUrl: string = await store.dispatch('uploadUrls/add', {
-			name: file.name,
-			url,
-		});
+		const assetUrl: string = await state.uploadUrls.add(file.name, url);
 		await addNewCustomBackground(file.name, file.name, assetUrl);
 	});
 }
@@ -181,11 +171,11 @@ async function addNewCustomBackground(
 	url: string
 ) {
 	const old =
-		store.state.content.contentPacks.find(
+		state.content.contentPacks.find(
 			(x: ContentPack<IAssetSwitch>) =>
 				x.packId === uploadedBackgroundsPackDefaults.packId
 		) || uploadedBackgroundsPackDefaults;
-	const newPackVersion = {
+	const newPackVersion: ContentPack<IAssetSwitch> = {
 		...old,
 		backgrounds: [
 			...old.backgrounds,
@@ -197,7 +187,7 @@ async function addNewCustomBackground(
 						{
 							hq: url,
 							lq: url,
-							sourcePack: uploadedBackgroundsPackDefaults.packId,
+							sourcePack: uploadedBackgroundsPackDefaults.packId!,
 						},
 					],
 				],
@@ -206,10 +196,10 @@ async function addNewCustomBackground(
 		],
 	};
 	await transaction(async () => {
-		await store.dispatch('content/replaceContentPack', {
+		await state.content.replaceContentPack({
 			contentPack: newPackVersion,
 			processed: true,
-		} as ReplaceContentPackAction);
+		});
 		setBackground(id);
 	});
 }

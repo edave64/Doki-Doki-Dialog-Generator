@@ -1,9 +1,7 @@
-import type { IRootState } from '@/store';
 import type { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import type { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 import type { DeepReadonly } from 'ts-essentials';
 import type { Ref } from 'vue';
-import { Store } from 'vuex';
 import { Browser } from './browser';
 import { OldEdge } from './edge';
 import { Electron } from './electron';
@@ -85,8 +83,6 @@ export interface IEnvironment {
 	setGameMode(mode: IEnvironment['gameMode']): Promise<void>;
 
 	storeSaveFile(save: Blob, defaultName: string): Promise<void>;
-
-	connectToStore(store: Store<DeepReadonly<IRootState>>): void;
 
 	openNewWindow(): Window | null;
 }

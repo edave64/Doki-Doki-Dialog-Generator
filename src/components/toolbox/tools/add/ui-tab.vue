@@ -7,32 +7,40 @@
 </template>
 
 <script lang="ts" setup>
+import { transaction } from '@/history-engine/transaction';
 import { useViewport } from '@/hooks/use-viewport';
-import { transaction } from '@/plugins/vuex-history';
-import { useStore } from '@/store';
+import Choice from '@/store/object-types/choices';
+import Notification from '@/store/object-types/notification';
+import Poem from '@/store/object-types/poem';
+import Textbox from '@/store/object-types/textbox';
+import { state } from '@/store/root';
+import { computed } from 'vue';
 
-const store = useStore();
 const viewport = useViewport();
+const panel = computed(() => state.panels.panels[viewport.value.currentPanel]);
 async function addTextBox() {
-	return await createUiElement('createTextBox');
+	transaction(() => {
+		Textbox.create(panel.value);
+	});
 }
 async function addChoice() {
-	return await createUiElement('createChoice');
+	transaction(() => {
+		Choice.create(panel.value);
+	});
 }
 async function addDialog() {
-	return await createUiElement('createNotification');
+	transaction(() => {
+		Notification.create(panel.value);
+	});
 }
 async function addPoem() {
-	return await createUiElement('createPoem');
+	transaction(() => {
+		Poem.createPoem(panel.value);
+	});
 }
 async function addConsole() {
-	return await createUiElement('createConsole');
-}
-async function createUiElement(messageName: string): Promise<void> {
-	await transaction(async () => {
-		await store.dispatch(`panels/${messageName}`, {
-			panelId: viewport.value.currentPanel,
-		});
+	transaction(() => {
+		Poem.createConsole(panel.value);
 	});
 }
 </script>

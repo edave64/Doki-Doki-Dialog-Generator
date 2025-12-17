@@ -42,32 +42,24 @@ import DButton from '@/components/ui/d-button.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
-import { transaction } from '@/plugins/vuex-history';
-import { useStore } from '@/store';
-import type { IObject, IObjectShiftLayerAction } from '@/store/objects';
-import { genericSetterMerged } from '@/util/simple-settable';
+import { transaction } from '@/history-engine/transaction';
+import type { GenObject } from '@/store/object-types/object';
+import { state } from '@/store/root';
+import { propWithTransaction } from '@/util/simple-settable';
 import { computed } from 'vue';
 
 const props = defineProps<{
-	object: IObject;
+	object: GenObject;
 }>();
 
-const store = useStore();
-const onTop = genericSetterMerged(
-	store,
-	computed(() => props.object),
-	'panels/setOnTop',
-	true,
-	'onTop'
-);
+const obj = computed(() => props.object);
+const panel = computed(() => state.panels.panels[props.object.panelId]);
+
+const onTop = propWithTransaction(obj, 'onTop');
 
 function shiftLayer(delta: number) {
 	transaction(async () => {
-		await store.dispatch('panels/shiftLayer', {
-			id: props.object.id,
-			panelId: props.object.panelId,
-			delta,
-		} as IObjectShiftLayerAction);
+		panel.value.shiftLayer(props.object, delta);
 	});
 }
 </script>

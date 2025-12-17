@@ -1,8 +1,7 @@
+import { transaction } from '@/history-engine/transaction';
 import { Repo } from '@/models/repo';
-import { transaction } from '@/plugins/vuex-history';
-import type { IRootState } from '@/store';
+import { state } from '@/store/root';
 import { reactive, ref, type DeepReadonly } from 'vue';
-import { Store } from 'vuex';
 import type {
 	EnvCapabilities,
 	EnvState,
@@ -30,8 +29,6 @@ export class Browser implements IEnvironment {
 	}
 
 	private _gameMode: 'ddlc' | 'ddlc_plus' | null = null;
-
-	private $store: Store<DeepReadonly<IRootState>> | null = null;
 
 	private readonly isSavingEnabled = ref(false);
 
@@ -130,10 +127,7 @@ export class Browser implements IEnvironment {
 					})
 				);
 				await transaction(async () => {
-					await this.$store!.dispatch(
-						'content/loadContentPacks',
-						packUrls
-					);
+					await state.content.loadContentPacks(packUrls);
 				});
 			}
 		});
@@ -186,10 +180,6 @@ export class Browser implements IEnvironment {
 
 	openFolder(): void {
 		throw new Error('Method not implemented.');
-	}
-
-	public connectToStore(store: Store<DeepReadonly<IRootState>>) {
-		this.$store = store;
 	}
 
 	openNewWindow(): Window | null {
@@ -284,7 +274,7 @@ export class Browser implements IEnvironment {
 		const data = await IndexedDBHandler.loadTemplate();
 		if (data == null) return false;
 		this.state.hasTemplate = true;
-		await this.$store?.dispatch('loadSave', data);
+		await state.loadSave(data);
 		return true;
 	}
 
@@ -292,7 +282,8 @@ export class Browser implements IEnvironment {
 		await this.loading;
 		await this.creatingDB;
 		if (!this.isSavingEnabled.value) return;
-		const data: string = await this.$store?.dispatch('getSave', true);
+		// TODO: Implement
+		const data: string = await state.getSave(true);
 		IndexedDBHandler.saveTemplate(data);
 		this.state.hasTemplate = true;
 	}

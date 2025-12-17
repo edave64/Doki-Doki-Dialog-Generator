@@ -63,17 +63,9 @@ import { isWebPSupported as queryWebPSupport } from '@/asset-manager';
 import DButton from '@/components/ui/d-button.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
-import { transaction } from '@/plugins/vuex-history';
-import { useStore } from '@/store';
+import { transaction } from '@/history-engine/transaction';
 import type { IAssetSwitch } from '@/store/content';
-import {
-	getData,
-	getPose,
-	type ICharacter,
-	type ISetPartAction,
-	type ISetPosePositionMutation,
-	type ISetStyleAction,
-} from '@/store/object-types/characters';
+import type Character from '@/store/object-types/character';
 import { safeAsync } from '@/util/errors';
 import { type Pose } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { type DeepReadonly } from 'ts-essentials';
@@ -90,7 +82,7 @@ interface IPartStyleGroup {
 }
 
 const props = defineProps<{
-	character: DeepReadonly<ICharacter>;
+	character: Character;
 	part: string | 'pose' | 'style';
 }>();
 const emit = defineEmits<{
@@ -103,7 +95,6 @@ const emit = defineEmits<{
 	];
 }>();
 
-const store = useStore();
 const isWebPSupported = ref(null as boolean | null);
 // [styleComponentKey, styleComponentValue]
 const stylePriorities = ref([] as Array<[string, string]>);
@@ -119,7 +110,7 @@ const packSearchType = computed(() => {
 	}
 });
 
-const charData = computed(() => getData(store, props.character));
+const charData = computed(() => props.character.charData);
 const styleComponents = computed(() => {
 	if (props.part !== 'style') return [];
 	const styleComponents =
@@ -145,7 +136,7 @@ const parts = computed((): { [id: string]: DeepReadonly<IPartButtonImage> } => {
 	let offset: DeepReadonly<IPartButtonImage['offset']>;
 	let size: DeepReadonly<IPartButtonImage['size']>;
 	const data = charData.value;
-	const currentPose = getPose(data, props.character);
+	const currentPose = props.character.poseData;
 	switch (props.part) {
 		case 'head': {
 			const activeHeadTypeIdx =
@@ -304,12 +295,10 @@ function updatePose(styleGroupId?: number) {
 		if (subSelect.length > 0) selection = subSelect;
 	}
 	transaction(async () => {
-		await store.dispatch('panels/setCharStyle', {
-			id: props.character.id,
-			panelId: props.character.panelId,
+		props.character.setCharStyle(
 			styleGroupId,
-			styleId: styleGroups.styles.indexOf(selection[0]),
-		} as ISetStyleAction);
+			styleGroups.styles.indexOf(selection[0])
+		);
 	});
 }
 
@@ -322,14 +311,12 @@ function choose(index: string | number) {
 		const [headTypeIdx, headIdx] = ('' + index)
 			.split('_', 2)
 			.map((part) => parseInt(part, 10));
-		store.commit('panels/setPosePosition', {
-			id: props.character.id,
-			panelId: props.character.panelId,
-			posePositions: {
+		transaction(() => {
+			props.character.setPosePosition({
 				headType: headTypeIdx,
 				head: headIdx,
-			},
-		} as ISetPosePositionMutation);
+			});
+		});
 	} else {
 		setPart(props.part, parseInt('' + index, 10));
 	}
@@ -352,14 +339,9 @@ function onKeydown(e: KeyboardEvent): void {
 	}
 }
 
-function setPart(part: ISetPartAction['part'], index: number): void {
+function setPart(part: string, index: number): void {
 	transaction(async () => {
-		await store.dispatch('panels/setPart', {
-			id: props.character.id,
-			panelId: props.character.panelId,
-			part,
-			val: index,
-		} as ISetPartAction);
+		props.character.setPart(part, index);
 	});
 }
 

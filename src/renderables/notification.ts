@@ -2,10 +2,10 @@ import getConstants from '@/constants';
 import { SelectedState } from '@/constants/shared';
 import { ctxScope } from '@/renderer/canvas-tools';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
-import type { INotification } from '@/store/object-types/notification';
+import type NotificationStore from '@/store/object-types/notification';
 import { ScalingRenderable } from './scaling-renderable';
 
-export class Notification extends ScalingRenderable<INotification> {
+export class Notification extends ScalingRenderable<NotificationStore> {
 	private _height: number = 0;
 	public get height(): number {
 		const constants = getConstants().Choices;

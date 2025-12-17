@@ -83,7 +83,7 @@ import { sanitize } from '@/components/toolbox/tools/character-pack-sanitizer';
 import ExternalLink from '@/components/ui/external-link.vue';
 import environment from '@/environments/environment';
 import { Repo } from '@/models/repo';
-import { type IRemovePacksAction, useStore } from '@/store';
+import { state } from '@/store/root';
 import { errorReport } from '@/util/errors';
 import type {
 	IAuthor,
@@ -98,7 +98,6 @@ const props = defineProps<{
 	repo: DeepReadonly<Repo> | null;
 	showBack?: boolean;
 }>();
-const store = useStore();
 
 const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 	['reddit', 'https://reddit.com/u/%1', 'reddit.png'],
@@ -207,14 +206,11 @@ async function uninstall(): Promise<void> {
 }
 
 async function remove(): Promise<void> {
-	await store.dispatch('removePacks', {
-		packs: new Set([pack.value.id]),
-	} as IRemovePacksAction);
+	state.content.removeContentPacks(new Set([pack.value.id]));
 }
 
 async function add(): Promise<void> {
-	await store.dispatch(
-		'content/loadContentPacks',
+	await state.content.loadContentPacks(
 		pack.value.dddg2Path || pack.value.dddg1Path
 	);
 }

@@ -23,11 +23,11 @@
 <script lang="ts" setup>
 import DButton from '@/components/ui/d-button.vue';
 import environment from '@/environments/environment';
+import { transaction } from '@/history-engine/transaction';
 import { useViewport } from '@/hooks/use-viewport';
-import { transaction } from '@/plugins/vuex-history';
-import { useStore } from '@/store';
 import type { IAssetSwitch } from '@/store/content';
-import type { ICreateCharacterAction } from '@/store/object-types/characters';
+import CharacterStore from '@/store/object-types/character';
+import { state } from '@/store/root';
 import type { Character } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { computed } from 'vue';
 
@@ -35,11 +35,12 @@ const emit = defineEmits<{
 	'show-dialog': [search: string];
 }>();
 
-const store = useStore();
 const viewport = useViewport();
 const characters = computed(() => {
-	return store.state.content.current.characters;
+	return state.content.current.characters;
 });
+
+const panel = computed(() => state.panels.panels[viewport.value.currentPanel]);
 
 function assetPath(character: Character<IAssetSwitch>) {
 	return character.chibi
@@ -51,10 +52,7 @@ function assetPath(character: Character<IAssetSwitch>) {
 
 function onChosen(id: string) {
 	transaction(async () => {
-		await store.dispatch('panels/createCharacters', {
-			characterType: id,
-			panelId: viewport.value.currentPanel,
-		} as ICreateCharacterAction);
+		CharacterStore.create(panel.value, id);
 	});
 }
 </script>

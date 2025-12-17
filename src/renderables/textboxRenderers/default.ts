@@ -2,12 +2,12 @@ import { getBuildInAsset } from '@/asset-manager';
 import * as TBConstants from '@/constants/game_modes/ddlc/text-box';
 import type { IAsset } from '@/render-utils/assets/asset';
 import { ImageAsset } from '@/render-utils/assets/image-asset';
-import type { ITextBox } from '@/store/object-types/textbox';
+import type Textbox from '@/store/object-types/textbox';
 import type { ITextboxRenderer } from '../textbox';
 import { DdlcBase } from './ddlc-base';
 
 export class Default extends DdlcBase implements ITextboxRenderer {
-	static readonly id: ITextBox['style'] = 'normal';
+	static readonly id: Textbox['style'] = 'normal';
 	static readonly label: string = 'Normal';
 	static readonly priority: number = 0;
 	static readonly gameMode: string = 'ddlc';

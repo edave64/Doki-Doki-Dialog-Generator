@@ -1,14 +1,10 @@
 import getConstants from '@/constants';
 import { SelectedState, selectionColors } from '@/constants/shared';
 import { applyFilter, ctxScope } from '@/renderer/canvas-tools';
-import type { IRootState } from '@/store';
-import type { ITextBox } from '@/store/object-types/textbox';
-import type { IObject } from '@/store/objects';
-import type { IPanel } from '@/store/panels';
+import type { GenObject } from '@/store/object-types/object';
 import { makeCanvas } from '@/util/canvas';
 import { matrixEquals } from '@/util/math';
 import type { DeepReadonly } from 'vue';
-import type { Store } from 'vuex';
 
 /**
  * An object that can be rendered onto the image. Every object type has it's own class that inherits from here.
@@ -19,13 +15,12 @@ import type { Store } from 'vuex';
  * draw over the same pixels multiple times to work properly with reduced opacity.
  *
  * If you want to render an object, you need to call the following methods in the following order:
- * - prepareData: Updates data from the vuex-store
  * - prepareTransform: Sets a new transform. Needs the transform that was returned by the prepareTransform call
  *                     of the object this object is linked to.
  * - prepareRender: May return a promise that needs to be awaited that will fetch required assets.
  * - render: Paints the object to a given canvas.
  */
-export abstract class Renderable<ObjectType extends IObject> {
+export abstract class Renderable<ObjectType extends GenObject> {
 	public constructor(public obj: DeepReadonly<ObjectType>) {}
 
 	public get id(): ObjectType['id'] {
@@ -129,7 +124,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 	/**
 	 * The last version of the rendered object. Used to test if an object must be rendered again.
 	 */
-	protected lastVersion: IObject['version'] = null!;
+	protected lastVersion: GenObject['version'] = null!;
 	protected localCanvasInvalid = true;
 	protected lastHit: DOMPointReadOnly | null = null;
 	protected lastLocalTransform: DOMMatrixReadOnly | null = null;
@@ -137,49 +132,19 @@ export abstract class Renderable<ObjectType extends IObject> {
 	 * Indicates if the object is currently talking, since talking objects receive a zoom of 1.05.
 	 */
 	protected get isTalking() {
-		return this.refTextbox !== null;
+		return this.obj.isTalking;
 	}
-	protected refTextbox: ITextBox | null = null;
 
 	public get linkedTo(): ObjectType['id'] | null {
 		return this.obj.linkedTo;
 	}
 
-	/**
-	 * Fetches changes in data from the vuex store.
-	 *
-	 * @param panel - The currently active panel
-	 * @param _store - The vuex store
-	 * @returns
-	 */
-	public prepareData(
-		panel: DeepReadonly<IPanel>,
-		_store: Store<DeepReadonly<IRootState>>
-	): void {
-		this.refTextbox = null;
-		const inPanel = [...panel.order, ...panel.onTopOrder];
-		for (const key of inPanel) {
-			const obj = panel.objects[key] as ITextBox;
-			if (obj.type === 'textBox' && obj.talkingObjId === this.obj.id) {
-				this.refTextbox = obj;
-				return;
-			}
+	public transformOverride: DOMMatrixReadOnly | null = null;
+	public get transform(): DOMMatrixReadOnly {
+		if (this.transformOverride != null) {
+			return this.transformOverride;
 		}
-	}
-
-	public preparedTransform!: DOMMatrixReadOnly;
-	/**
-	 * Sets and returns a new 2D transform.
-	 * NOTE: Must be called after prepareData, so the "enlargeWithTalking" transform functions correctly.
-	 * NOTE: Must be called in order of linkage, so the this must be called after prepareTransform of the object it is
-	 *       linked to. The parameter "relative" needs to be the return value of that linkedTo prepareTransform.
-	 *
-	 * @param relative
-	 * @returns
-	 */
-	public prepareTransform(relative: DOMMatrixReadOnly): DOMMatrixReadOnly {
-		this.preparedTransform = relative.multiply(this.getTransfrom());
-		return this.preparedTransform;
+		return this.obj.globalTransform;
 	}
 
 	/**
@@ -199,7 +164,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 			this.lastVersion = this.obj.version;
 		}
 		if (this.transformIsLocal) {
-			const newTransform = this.preparedTransform;
+			const newTransform = this.transform;
 			if (!matrixEquals(newTransform, this.lastLocalTransform)) {
 				this.localCanvasInvalid = true;
 				this.lastLocalTransform = newTransform;
@@ -224,7 +189,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 			skipLocal = false;
 		}
 		const localCanvasSize = this.getLocalSize();
-		const transform = this.preparedTransform.translate(
+		const transform = this.transform.translate(
 			-this.width / 2,
 			-this.height / 2
 		);
@@ -277,25 +242,6 @@ export abstract class Renderable<ObjectType extends IObject> {
 					ctx.drawImage(this.localCanvas!, 0, 0);
 				}
 			}
-			/*
-			for (const pos of [
-				[0, 0],
-				[0, 0.5],
-				[0, 1],
-				[0.5, 0],
-				[0.5, 0.5],
-				[0.5, 1],
-				[1, 0],
-				[1, 0.5],
-				[1, 1],
-			]) {
-				ctx.save();
-				ctx.translate(pos[0] * this.width, pos[1] * this.height);
-				ctx.fillStyle = pos[0] === 0.5 && pos[1] === 0.5 ? '#fff' : '#f00';
-				ctx.fillRect(-2, -2, 5, 5);
-				ctx.restore();
-			}
-			*/
 		});
 	}
 
@@ -316,7 +262,7 @@ export abstract class Renderable<ObjectType extends IObject> {
 	private hitDetectionFallback = false;
 	public hitTest(point: DOMPointReadOnly) {
 		const transposed = point.matrixTransform(
-			this.preparedTransform
+			this.transform
 				.translate(-this.width / 2, -this.height / 2)
 				.inverse()
 		);

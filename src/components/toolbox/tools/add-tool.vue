@@ -51,10 +51,9 @@
 <script lang="ts" setup>
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
 import DButton from '@/components/ui/d-button.vue';
+import { transaction } from '@/history-engine/transaction';
 import { useViewport } from '@/hooks/use-viewport';
-import { transaction } from '@/plugins/vuex-history';
-import { useStore } from '@/store';
-import type { IPasteFromClipboardAction } from '@/store/objects';
+import { state } from '@/store/root';
 import { computed, ref } from 'vue';
 import CharactersTab from './add/characters-tab.vue';
 import SpritesTab from './add/sprites-tab.vue';
@@ -66,8 +65,6 @@ interface Group {
 	text: string;
 	shortcut: string;
 }
-
-const store = useStore();
 
 const groups = {
 	characters: {
@@ -91,17 +88,17 @@ const root = ref(null! as HTMLElement);
 const group = ref('characters' as GroupNames);
 const sprites = ref(null! as typeof SpritesTab | null);
 const { vertical } = setupPanelMixin(root);
-const viewport = useViewport();
+//const viewport = useViewport();
 
 const hasClipboardContent = computed(() => {
-	return store.state.ui.clipboard != null;
+	return state.ui.clipboard != null;
 });
+
+const viewport = useViewport();
 
 function paste() {
 	transaction(async () => {
-		await store.dispatch('panels/pasteObjectFromClipboard', {
-			panelId: viewport.value.currentPanel,
-		} as IPasteFromClipboardAction);
+		state.ui.pasteObjects(state.panels.panels[viewport.value.currentPanel]);
 	});
 }
 </script>

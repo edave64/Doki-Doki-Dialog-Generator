@@ -9,11 +9,10 @@
 import { getAssetByUrl } from '@/asset-manager';
 import getConstants from '@/constants';
 import { decomposeMatrix } from '@/util/math';
-import type { IRootState } from '..';
-import type { ICharacter } from '../object-types/characters';
-import type { ISprite } from '../object-types/sprite';
-import type { ITextBox } from '../object-types/textbox';
-import type { IObject } from '../objects';
+import type Character from '../object-types/character';
+import type { GenObject } from '../object-types/object';
+import type Sprite from '../object-types/sprite';
+import { state } from '../root';
 
 /**
  * Take a save from a version before 2.5 and migrate it.
@@ -21,14 +20,14 @@ import type { IObject } from '../objects';
  * @param data
  * @returns
  */
-export function migrateSave2_5(data: IRootState) {
+export function migrateSave2_5(data: typeof state) {
 	const panels = Object.values(data.panels.panels);
 	// Detect and skip 2.5 prerelease version
 	if (panels.find((x) => Object.values(x.objects).find((x) => 'scaleX' in x)))
 		return;
 
 	for (const panel of panels) {
-		for (const object of Object.values(panel.objects) as (IObject & {
+		for (const object of Object.values(panel.objects) as (GenObject & {
 			zoom?: number;
 		})[]) {
 			object.scaleX = object.zoom ?? 1;
@@ -39,7 +38,7 @@ export function migrateSave2_5(data: IRootState) {
 			const constants = getConstants();
 
 			if (object.type === 'character') {
-				const character = object as unknown as ICharacter;
+				const character = object as unknown as Character;
 				const charData = data.content.current.characters.find(
 					(c) => c.id === character.characterType
 				);
@@ -49,11 +48,10 @@ export function migrateSave2_5(data: IRootState) {
 				adjustObjectSize2_5(character, object.zoom ?? 1, size);
 			}
 			if (object.type === 'textBox') {
-				const textbox = object as unknown as ITextBox;
 				// Textbox height used to not include the namebox
-				textbox.height += constants.TextBox.NameboxHeight;
+				object.height += constants.TextBox.NameboxHeight;
 				// Textboxes used to be positioned from the top-center
-				textbox.y += textbox.height / 2;
+				object.y += object.height / 2;
 			}
 			if (object.type === 'sprite') {
 				// For uploaded sprites, coordinates cannot be fixed here, because the the full size is required, and
@@ -76,7 +74,7 @@ export function migrateSave2_5(data: IRootState) {
  * @param size - The full, unscaled size of the object
  */
 export function adjustObjectSize2_5(
-	obj: ISprite | ICharacter,
+	obj: Sprite | Character,
 	zoom: number,
 	size: [number, number]
 ): void {
@@ -109,48 +107,31 @@ export function adjustObjectSize2_5(
 /**
  * Functions that will be added as migrations to the root model
  */
-export const rootStateMigrations2_5 = {
-	fixSprites2_5(
-		state: IRootState,
-		data: { url: string; size: [number, number] }
-	) {
-		for (const panel of Object.values(state.panels.panels)) {
-			for (const object of Object.values(panel.objects)) {
-				if (
-					object.type !== 'sprite' ||
-					!(object as any).requireFixing25 ||
-					object.scaleX !== object.scaleY
-				)
-					continue;
-				const sprite = object as ISprite;
-				if (
-					sprite.assets.length === 1 &&
-					sprite.assets[0].hq === data.url
-				) {
-					adjustObjectSize2_5(sprite, object.scaleX, data.size);
-					delete (object as any).requireFixing25;
-				}
+export function fixSprites2_5(data: { url: string; size: [number, number] }) {
+	for (const panel of Object.values(state.panels.panels)) {
+		for (const object of Object.values(panel.objects)) {
+			if (
+				object.type !== 'sprite' ||
+				!(object as any).requireFixing25 ||
+				object.scaleX !== object.scaleY
+			)
+				continue;
+			const sprite = object as Sprite;
+			if (
+				sprite.assets.length === 1 &&
+				sprite.assets[0].hq === data.url
+			) {
+				adjustObjectSize2_5(sprite, object.scaleX, data.size);
+				delete (object as any).requireFixing25;
 			}
 		}
-	},
-};
+	}
+}
 
-export async function afterImageUpload2_5(
-	rootState: IRootState,
-	commit: (
-		messageName: string,
-		payload: any,
-		options?: { root: boolean }
-	) => void,
-	assertUrl: string
-) {
-	if ('requireFixing25' in rootState) {
+export async function afterImageUpload2_5(assertUrl: string) {
+	if ('requireFixing25' in state) {
 		const asset = await getAssetByUrl(assertUrl);
-		commit(
-			'fixSprites2_5',
-			{ url: assertUrl, size: [asset.width, asset.height] },
-			{ root: true }
-		);
+		fixSprites2_5({ url: assertUrl, size: [asset.width, asset.height] });
 	}
 }
 
@@ -158,6 +139,6 @@ export async function afterImageUpload2_5(
  * Because the sprites the need reuploading need their scale properties intact (As it stores the old zoom value)
  * We mustn't allow any modification of the scale values in an outdated sprite that has yet to be reuploaded.
  */
-export function allowScaleModification(obj: IObject) {
+export function allowScaleModification(obj: GenObject) {
 	return !(obj as any).requireFixing25;
 }
