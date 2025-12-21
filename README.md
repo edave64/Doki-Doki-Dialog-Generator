@@ -14,6 +14,8 @@ To get all dependencies of the project, run:
 npm install
 ```
 
+If this fails, check the [Github packages](#github-packages) section.
+
 The repository only contains full quality png images. A proper web build contains png and webp both lossless and lossy compressed. To generate these files, run:
 
 ```sh
@@ -21,6 +23,12 @@ npm run assetConversions
 ```
 
 This takes a while initialy, but only needs to be repeated when new pngs are added. It also doesn't try to convert files that are already done, so it is faster on subsequent runs.
+
+### Github packages
+
+DDDG has some components split into separate projects. These are hosted on githubs package registry, not on npm.
+
+Follow these [instructions](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-with-a-personal-access-token) on how to allow npm to access the github packages.
 
 ### Compiles and hot-reloads for development
 
