@@ -238,8 +238,8 @@ function onUiClick(e: MouseEvent): void {
 		selectedObject = objects[objects.length - 1] ?? null;
 	}
 
+	if (viewport.value.selection === selectedObject) return;
 	transaction(() => {
-		if (viewport.value.selection === selectedObject) return;
 		viewport.value.selection = selectedObject;
 	});
 }
@@ -407,9 +407,7 @@ function onSpriteDragMove(e: MouseEvent | TouchEvent) {
 	}
 	transaction(async () => {
 		const obj =
-			state.panels.panels[draggedObject!.panelId].objects[
-				draggedObject!.id
-			];
+			state.panels.panels[draggedObject!.panelId].objects[draggedObject!.id];
 
 		transaction(() => {
 			obj.x = x;
