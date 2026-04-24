@@ -62,6 +62,7 @@
 						v-model="addEffectSelection"
 						@keydown.stop
 					>
+						<option :value="null" disabled>Select an effect</option>
 						<option
 							v-for="filterType of filterTypes"
 							:key="filterType"
