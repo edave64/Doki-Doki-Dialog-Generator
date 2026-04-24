@@ -32,8 +32,8 @@
 				<option value="source-atop">source-atop</option>
 				<option value="destination-over">destination-over</option>
 				<option value="destination-in">destination-in</option>
-				<option value="destination-in">destination-out</option>
-				<option value="destination-in">destination-atop</option>
+				<option value="destination-out">destination-out</option>
+				<option value="destination-atop">destination-atop</option>
 				<option value="lighter">lighter</option>
 				<option value="xor">xor</option>
 				<option value="multiply">multiply</option>
