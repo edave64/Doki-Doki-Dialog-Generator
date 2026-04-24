@@ -329,6 +329,8 @@ const filterTypes: ReadonlyArray<SpriteFilter['type']> = (() => {
 	} catch {
 		// Ignore
 	}
+	// Opacity uses the globalAlpha property, so it can be supported even if filter is not supported
+	// Meaning, in Safari.
 	return ['opacity'];
 })();
 
@@ -461,7 +463,8 @@ function moveFilter(moveBy: 1 | -1) {
 }
 
 function updateValue(event: Event) {
-	let value = Number((event.target as HTMLInputElement).value);
+	let value = parseFloat((event.target as HTMLInputElement).value);
+	if (isNaN(value)) return;
 	if (isPercentFilter.value) {
 		value = value / 100;
 	}
