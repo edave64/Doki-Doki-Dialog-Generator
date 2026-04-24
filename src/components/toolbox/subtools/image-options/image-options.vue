@@ -286,7 +286,7 @@ import { disposeCanvas, makeCanvas } from '@/util/canvas';
 import type { IColor } from '@/util/colors/color';
 import { HSLAColor } from '@/util/colors/hsl';
 import { UnreachableCaseError } from 'ts-essentials';
-import { computed, ref, type WritableComputedRef } from 'vue';
+import { computed, ref, watch, type WritableComputedRef } from 'vue';
 
 const props = defineProps<{
 	type: 'object' | 'background' | 'panel';
@@ -361,6 +361,15 @@ const compositionMode = computed({
 const filters = computed(() => object.value.filters);
 const currentFilter = computed(
 	() => filters.value[currentFilterIdx.value] ?? null
+);
+
+watch(
+	() => filters.value.length,
+	(len) => {
+		if (currentFilterIdx.value >= len) {
+			currentFilterIdx.value = len - 1;
+		}
+	}
 );
 
 const isPercentFilter = computed(() => {
@@ -438,11 +447,6 @@ function selectFilter(idx: number) {
 function removeFilter() {
 	transaction(() => {
 		object.value.removeFilter(currentFilterIdx.value);
-
-		if (currentFilterIdx.value >= object.value.filters.length) {
-			currentFilterIdx.value = object.value.filters.length - 1;
-		}
-
 		return;
 	});
 }
