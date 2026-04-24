@@ -497,6 +497,10 @@ const shadowX = shadowProp('offsetX');
 const shadowY = shadowProp('offsetY');
 const shadowBlur = shadowProp('blurRadius');
 
+watch(currentFilter, () => {
+	showShadowColor.value = false;
+});
+
 function shadowProp<K extends keyof Omit<DropShadowSpriteFilter, 'type'>>(
 	prop: K
 ): WritableComputedRef<DropShadowSpriteFilter[K]> {
