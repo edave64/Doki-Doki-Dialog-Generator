@@ -1,3 +1,9 @@
+/**
+ * This is a legacy special case for the old, non-chromium based Edge browser.
+ * It just differs in the way it saves files, otherwise it's the same as the
+ * regular browser environment.
+ */
+
 import { Browser } from './browser';
 
 export class OldEdge extends Browser {

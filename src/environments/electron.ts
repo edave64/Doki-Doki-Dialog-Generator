@@ -1,3 +1,8 @@
+/**
+ * This file implements the environment for the dddg-desktop electron app.
+ * https://github.com/edave64/dddg-desktop-version
+ */
+
 import { registerAssetWithURL } from '@/asset-manager';
 import eventBus, {
 	ResolvableErrorEvent,

@@ -13,7 +13,7 @@ export const state = {
 	viewports,
 	unsafe: false,
 
-	async loadSave(str: string) {
+	async loadSave(str: string): Promise<void> {
 		const data = JSON.parse(str);
 
 		if (data.version == null || data.version < 2.5) {
@@ -27,7 +27,7 @@ export const state = {
 		viewports.loadSave(data.panels);
 	},
 
-	async getSave(compact: boolean) {
+	async getSave(compact: boolean): Promise<string> {
 		return JSON.stringify(
 			{
 				version: 2.5,

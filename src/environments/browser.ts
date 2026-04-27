@@ -1,3 +1,7 @@
+/**
+ * This file implements the environment for the web browser.
+ */
+
 import {
 	loadFromDirectory,
 	saveInDirectory,
