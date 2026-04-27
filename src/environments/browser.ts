@@ -31,189 +31,221 @@ export class Browser implements IEnvironment {
 		autoAdd: [],
 		downloadLocation: 'Default download folder',
 		hasTemplate: false,
-		storagePersisted: false,
 	});
 	public readonly supports: DeepReadonly<EnvCapabilities>;
-	public storage = {
-		tempSaves: reactive([] as EnvStorageEntry[]),
-		persisted: ref(false),
-		saveDirectory: lazy(async () => {
+	public storage = (() => {
+		const isPersisted = ref(false);
+		const tempSaves = reactive([] as EnvStorageEntry[]);
+
+		const saveDirectory = (async () => {
 			const dir = await navigator.storage.getDirectory();
 			return await dir.getDirectoryHandle('saves', {
 				create: true,
 			});
-		}),
+		})();
 
-		getSaves() {
-			(async () => {
-				try {
-					const saveDir = await this.saveDirectory();
+		navigator.storage
+			.persisted()
+			.then((persisted) => (isPersisted.value = persisted));
 
-					for await (const [name, handle] of saveDir) {
-						if (handle.kind === 'directory') {
-							if (this.tempSaves.findIndex((s) => s.name === name) === -1) {
-								const entry = {
-									name,
-									size: 0,
-									timestamp: new Date(),
-								};
-								this.tempSaves.push(entry);
-								try {
-									const entryInfoFile = await (
-										handle as FileSystemDirectoryHandle
-									).getFileHandle('info.json');
-									const info = JSON.parse(
-										await (await entryInfoFile.getFile()).text()
-									);
-									entry.size = info.size;
-									entry.timestamp = new Date(info.timestamp);
-								} catch (e) {
-									console.error(e);
-								}
+		(async () => {
+			try {
+				const saveDir = await saveDirectory;
+
+				for await (const [name, handle] of saveDir) {
+					if (handle.kind === 'directory') {
+						if (
+							tempSaves.findIndex((s) => s.name === name) === -1
+						) {
+							const entry = {
+								name,
+								size: 0,
+								timestamp: new Date(),
+							};
+							tempSaves.push(entry);
+							try {
+								const entryInfoFile = await (
+									handle as FileSystemDirectoryHandle
+								).getFileHandle('info.json');
+								const info = JSON.parse(
+									await (await entryInfoFile.getFile()).text()
+								);
+								entry.size = info.size;
+								entry.timestamp = new Date(info.timestamp);
+							} catch (e) {
+								console.error(e);
 							}
 						}
 					}
-				} catch (e) {
-					console.error(e);
-					// TODO: Somehow disable storage support?
 				}
-			})();
-			return this.tempSaves;
-		},
-		async save(name: string) {
-			const saveFolder = await this.saveDirectory();
-			const timestamp = new Date();
-
-			const entryFolder = await saveFolder.getDirectoryHandle(name, {
-				create: true,
-			});
-
-			const size = await saveInDirectory(entryFolder);
-
-			const entryInfoFile = await entryFolder.getFileHandle('info.json', {
-				create: true,
-			});
-			const writable = await entryInfoFile.createWritable();
-			await writable.write(JSON.stringify({ size, timestamp }));
-			await writable.close();
-
-			let entry = this.tempSaves.find((s) => s.name === name);
-			if (!entry) {
-				entry = {
-					name,
-					size,
-					timestamp,
-				};
-
-				this.tempSaves.push(entry);
+			} catch (e) {
+				console.error(e);
+				// TODO: Somehow disable storage support?
 			}
-			return entry;
-		},
-		async load(name: string): Promise<void> {
-			const saveFolder = await this.saveDirectory();
-			const entryFolder = await saveFolder.getDirectoryHandle(name);
+		})();
 
-			if (!entryFolder) {
-				throw new Error(`Save ${name} not found`);
-			}
+		return {
+			saveDirectory: lazy(async () => {}),
 
-			await loadFromDirectory(entryFolder);
-		},
-		async downloadAsZip(name: string): Promise<void> {
-			const saveFolder = await this.saveDirectory();
-			const entryFolder = await saveFolder.getDirectoryHandle(name);
+			getSaves() {
+				return tempSaves;
+			},
+			async save(name: string) {
+				const saveFolder = await saveDirectory;
+				const timestamp = new Date();
 
-			if (!entryFolder) {
-				throw new Error(`Save ${name} not found`);
-			}
+				const entryFolder = await saveFolder.getDirectoryHandle(name, {
+					create: true,
+				});
 
-			const JSZip = (await import('jszip')).default;
+				const size = await saveInDirectory(entryFolder);
 
-			const zip = new JSZip();
-
-			async function addFolder(folder: FileSystemDirectoryHandle, zip: JSZip) {
-				for await (const [path, file] of folder) {
-					if (file.kind === 'file') {
-						zip.file(path, await (file as FileSystemFileHandle).getFile());
-					} else if (file.kind === 'directory') {
-						await addFolder(
-							file as FileSystemDirectoryHandle,
-							zip.folder(path)!
-						);
+				const entryInfoFile = await entryFolder.getFileHandle(
+					'info.json',
+					{
+						create: true,
 					}
+				);
+				const writable = await entryInfoFile.createWritable();
+				await writable.write(JSON.stringify({ size, timestamp }));
+				await writable.close();
+
+				let entry = tempSaves.find((s) => s.name === name);
+				if (!entry) {
+					entry = {
+						name,
+						size,
+						timestamp,
+					};
+
+					tempSaves.push(entry);
 				}
-			}
+				return entry;
+			},
+			async load(name: string): Promise<void> {
+				const saveFolder = await saveDirectory;
+				const entryFolder = await saveFolder.getDirectoryHandle(name);
 
-			await addFolder(entryFolder, zip);
-			const blob = await zip.generateAsync({ type: 'blob' });
-			const url = URL.createObjectURL(blob);
-			const a = document.createElement('a');
-			a.href = url;
-			a.download = `${name}.zip`;
-			a.click();
-		},
-		async uploadFromZip(name: string, zip: Blob): Promise<void> {
-			const saveFolder = await this.saveDirectory();
-			const entryFolder = await saveFolder.getDirectoryHandle(name, {
-				create: true,
-			});
+				if (!entryFolder) {
+					throw new Error(`Save ${name} not found`);
+				}
 
-			const JSZip = (await import('jszip')).default;
-			const loadedZip = await JSZip.loadAsync(zip);
+				await loadFromDirectory(entryFolder);
+			},
+			async downloadAsZip(name: string): Promise<void> {
+				const saveFolder = await saveDirectory;
+				const entryFolder = await saveFolder.getDirectoryHandle(name);
 
-			const subFolders = new Map<string, Promise<FileSystemDirectoryHandle>>();
+				if (!entryFolder) {
+					throw new Error(`Save ${name} not found`);
+				}
 
-			await Promise.all(
-				Object.entries(loadedZip.files).map(async ([path, file]) => {
-					if (file.dir) {
-						return;
-					}
-					const segments = path.split('/');
-					const baseName = segments.pop()!;
-					const foldername = segments.join('/');
-					let folder: FileSystemDirectoryHandle;
-					if (foldername) {
-						if (subFolders.has(foldername)) {
-							folder = await subFolders.get(foldername)!;
-						} else {
-							const folderPromise = saveFolder.getDirectoryHandle(foldername, {
-								create: true,
-							});
-							subFolders.set(foldername, folderPromise);
-							folder = await folderPromise;
+				const JSZip = (await import('jszip')).default;
+
+				const zip = new JSZip();
+
+				async function addFolder(
+					folder: FileSystemDirectoryHandle,
+					zip: JSZip
+				) {
+					for await (const [path, file] of folder) {
+						if (file.kind === 'file') {
+							zip.file(
+								path,
+								await (file as FileSystemFileHandle).getFile()
+							);
+						} else if (file.kind === 'directory') {
+							await addFolder(
+								file as FileSystemDirectoryHandle,
+								zip.folder(path)!
+							);
 						}
-					} else {
-						folder = entryFolder;
 					}
-					const blob = await loadedZip.file(path)!.async('blob');
-					await (
-						await (
-							await folder.getFileHandle(baseName, { create: true })
-						).createWritable()
-					).write(blob);
-				})
-			);
-		},
+				}
 
-		async delete(name: string) {
-			const saveFolder = await this.saveDirectory();
-			await saveFolder.removeEntry(name, { recursive: true });
+				await addFolder(entryFolder, zip);
+				const blob = await zip.generateAsync({ type: 'blob' });
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = `${name}.zip`;
+				a.click();
+			},
+			async uploadFromZip(name: string, zip: Blob): Promise<void> {
+				const saveFolder = await saveDirectory;
+				const entryFolder = await saveFolder.getDirectoryHandle(name, {
+					create: true,
+				});
 
-			this.tempSaves.splice(
-				this.tempSaves.findIndex((x) => x.name === name),
-				1
-			);
-		},
-		async requestPersistance() {
-			await navigator.storage.persist();
-		},
-		isPersisted() {
-			navigator.storage
-				.persisted()
-				.then((persisted) => (this.persisted.value = persisted));
-			return this.persisted.value;
-		},
-	};
+				const JSZip = (await import('jszip')).default;
+				const loadedZip = await JSZip.loadAsync(zip);
+
+				const subFolders = new Map<
+					string,
+					Promise<FileSystemDirectoryHandle>
+				>();
+
+				await Promise.all(
+					Object.entries(loadedZip.files).map(
+						async ([path, file]) => {
+							if (file.dir) {
+								return;
+							}
+							const segments = path.split('/');
+							const baseName = segments.pop()!;
+							const foldername = segments.join('/');
+							let folder: FileSystemDirectoryHandle;
+							if (foldername) {
+								if (subFolders.has(foldername)) {
+									folder = await subFolders.get(foldername)!;
+								} else {
+									const folderPromise =
+										saveFolder.getDirectoryHandle(
+											foldername,
+											{
+												create: true,
+											}
+										);
+									subFolders.set(foldername, folderPromise);
+									folder = await folderPromise;
+								}
+							} else {
+								folder = entryFolder;
+							}
+							const blob = await loadedZip
+								.file(path)!
+								.async('blob');
+							await (
+								await (
+									await folder.getFileHandle(baseName, {
+										create: true,
+									})
+								).createWritable()
+							).write(blob);
+						}
+					)
+				);
+			},
+
+			async delete(name: string) {
+				const saveFolder = await saveDirectory;
+				await saveFolder.removeEntry(name, { recursive: true });
+
+				tempSaves.splice(
+					tempSaves.findIndex((x) => x.name === name),
+					1
+				);
+			},
+			async requestPersistance(): Promise<boolean> {
+				const persisted = await navigator.storage.persist();
+				isPersisted.value = persisted;
+				return persisted;
+			},
+			isPersisted(): boolean {
+				return isPersisted.value;
+			},
+		};
+	})();
 
 	public get gameMode(): 'ddlc' | 'ddlc_plus' | null {
 		return this._gameMode;
@@ -313,7 +345,10 @@ export class Browser implements IEnvironment {
 				const repo = await Repo.getInstance();
 				const packUrls = await Promise.all(
 					autoload.map(async (compoundId) => {
-						const [id, url] = compoundId.split(';', 2) as [string, string?];
+						const [id, url] = compoundId.split(';', 2) as [
+							string,
+							string?,
+						];
 						if (url != null && !repo.hasPack(id)) {
 							await repo.loadTempPack(url);
 						}

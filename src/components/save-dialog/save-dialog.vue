@@ -3,15 +3,18 @@
 		<h1>Save Manager</h1>
 		<div v-if="!persisted">
 			<p>
-				Storage is not persisted. This means that the browser might delete your
-				data at any time. Do not treat this as a permanent storage. Consider
-				downloading your saves as ZIP files.
+				Storage is not persisted. This means that the browser might
+				delete your data at any time. Do not treat this as a permanent
+				storage. Consider downloading your saves as ZIP files.
 			</p>
-			<button @click="envX.storage.requestPersistance()">
-				Request persistence
-			</button>
+			<button @click="requestPersistance()">Request persistence</button>
 			<p v-if="chromeDetected">
 				This might not work in chrome and chromium based browsers.
+			</p>
+			<p v-if="persistanceRejected">
+				The browser rejected the request for persistance. This might be
+				due to the browser's settings or because the user denied the
+				request.
 			</p>
 		</div>
 		<p v-else-if="estimate">
@@ -104,10 +107,16 @@ const availableSaves = computed(() => {
 	return envX.storage.getSaves();
 });
 const saveName = ref('');
+const persistanceRejected = ref(false);
 const persisted = computed(() => envX.storage.isPersisted());
 
 //@ts-expect-error: Not in standard lib
 const chromeDetected = ref(typeof chrome !== 'undefined');
+
+async function requestPersistance() {
+	const ret = await envX.storage.requestPersistance();
+	persistanceRejected.value = !ret;
+}
 
 const activeSelection = computed(() =>
 	availableSaves.value.find((save) => save.name === saveName.value)

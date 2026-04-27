@@ -1,3 +1,11 @@
+/**
+ * Environments are DDDGs way of handling different runtime environments.
+ * These are mainly a web browser or the dddg-desktop electron app.
+ *
+ * This file describes the common interfaces, other files in this folder
+ * implement them for specific environments.
+ */
+
 import type { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import type { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 import type { DeepReadonly } from 'ts-essentials';
@@ -34,7 +42,11 @@ export interface IEnvironment {
 	prompt(message: string, defaultValue?: string): Promise<string | null>;
 	onPanelChange(handler: (panel: string) => void): void;
 
-	localRepoInstall(url: string, repo: IPack, authors: IAuthors): Promise<void>;
+	localRepoInstall(
+		url: string,
+		repo: IPack,
+		authors: IAuthors
+	): Promise<void>;
 	localRepoUninstall(id: string): Promise<void>;
 	autoLoadAdd(id: string): Promise<void>;
 	autoLoadRemove(id: string): Promise<void>;
@@ -64,7 +76,7 @@ export interface EnvStorage {
 	delete(name: string): Promise<void>;
 	downloadAsZip(name: string): Promise<void>;
 	uploadFromZip(name: string, zip: Blob): Promise<void>;
-	requestPersistance(): Promise<void>;
+	requestPersistance(): Promise<boolean>;
 	isPersisted(): boolean;
 }
 
