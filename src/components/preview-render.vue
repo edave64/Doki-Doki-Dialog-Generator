@@ -65,7 +65,35 @@ const sd = ref(null! as HTMLCanvasElement);
 const sdCtx = ref(null! as CanvasRenderingContext2D);
 const queuedRender = ref(null as null | number);
 const showingLast = ref(false);
-const dropPreventClick = ref(false);
+
+/**
+ * Prevent a click event immediately after drag-and-drop from triggering a selection.
+ *
+ * Written somewhat eleborately to ensure the value is reset after a timeout, so it
+ * can't get stuck. (Since the thing it prevents is inheritently temporary)
+ */
+const dropClickPrevention = (() => {
+	let val = false;
+	let timeout: number | null = null;
+
+	return {
+		get() {
+			return val;
+		},
+		set(value: boolean) {
+			val = value;
+			if (value) {
+				timeout = window.setTimeout(() => {
+					val = false;
+					timeout = null;
+				}, 0);
+			} else {
+				if (timeout != null) clearTimeout(timeout);
+			}
+		},
+	};
+})();
+
 const viewport = useViewport();
 const panel = computed(() => state.panels.panels[viewport.value.currentPanel]);
 
@@ -218,8 +246,8 @@ function onUiClick(e: MouseEvent): void {
 
 	if (handleColorPickerClick(sx, sy)) return;
 
-	if (dropPreventClick.value) {
-		dropPreventClick.value = false;
+	if (dropClickPrevention.get()) {
+		dropClickPrevention.set(false);
 		return;
 	}
 
@@ -397,7 +425,6 @@ function onSpriteDragMove(e: MouseEvent | TouchEvent) {
 	y -= dragYOffset;
 	const deltaX = Math.abs(x - dragXOriginal);
 	const deltaY = Math.abs(y - dragYOriginal);
-	if (deltaX + deltaY > 1) dropPreventClick.value = true;
 	if (e.shiftKey) {
 		if (deltaX > deltaY) {
 			y = dragYOriginal;
@@ -407,7 +434,9 @@ function onSpriteDragMove(e: MouseEvent | TouchEvent) {
 	}
 	transaction(async () => {
 		const obj =
-			state.panels.panels[draggedObject!.panelId].objects[draggedObject!.id];
+			state.panels.panels[draggedObject!.panelId].objects[
+				draggedObject!.id
+			];
 
 		transaction(() => {
 			obj.x = x;
@@ -448,12 +477,14 @@ function onSpriteDrop(e: MouseEvent | TouchEvent) {
 		invalidateRender();
 		e.preventDefault();
 		draggedObject = null;
-		dropPreventClick.value = true;
+		dropClickPrevention.set(true);
 		return;
 	}
 	if (draggedObject) {
 		if ('TouchEvent' in window && isTouchEvent(e)) {
-			dropPreventClick.value = false;
+			dropClickPrevention.set(false);
+		} else {
+			dropClickPrevention.set(true);
 		}
 		draggedObject = null;
 	}
