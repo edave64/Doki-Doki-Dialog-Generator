@@ -18,7 +18,10 @@
 			"
 		/>
 		<template v-else>
-			<d-fieldset class="existing_panels_fieldset" title="Existing Panels">
+			<d-fieldset
+				class="existing_panels_fieldset"
+				title="Existing Panels"
+			>
 				<d-flow no-wraping maxSize="350px">
 					<div
 						v-for="(panel, idx) of panelButtons"
@@ -41,7 +44,9 @@
 				</d-flow>
 			</d-fieldset>
 			<div class="column">
-				<d-button icon="add_to_queue" @click="addNewPanel"> Add new</d-button>
+				<d-button icon="add_to_queue" @click="addNewPanel">
+					Add new</d-button
+				>
 				<d-button
 					icon="remove_from_queue"
 					class="bt0"
@@ -80,7 +85,11 @@
 					<tbody>
 						<tr>
 							<td colspan="2">
-								<d-button icon="photo_camera" class="w100" @click="download">
+								<d-button
+									icon="photo_camera"
+									class="w100"
+									@click="download"
+								>
 									Download
 								</d-button>
 							</td>
@@ -91,15 +100,27 @@
 							</td>
 							<td>
 								<select id="export_format" v-model="format">
-									<option value="image/png">PNG (lossless)</option>
-									<option value="image/webp" v-if="webpSupport">
+									<option value="image/png">
+										PNG (lossless)
+									</option>
+									<option
+										value="image/webp"
+										v-if="webpSupport"
+									>
 										WebP (lossy)
 									</option>
-									<option value="image/heif" v-if="heifSupport">
+									<option
+										value="image/heif"
+										v-if="heifSupport"
+									>
 										HEIF (lossy)
 									</option>
-									<option value="image/jpeg">JPEG (lossy)</option>
-									<option value="image/jpeg">WebM (lossy, video)</option>
+									<option value="image/jpeg">
+										JPEG (lossy)
+									</option>
+									<option value="image/jpeg">
+										WebM (lossy, video)
+									</option>
 								</select>
 							</td>
 						</tr>
@@ -169,7 +190,9 @@
 			</d-fieldset>
 			<div class="column">
 				<div style="display: grid; grid-template-columns: auto auto">
-					<d-button icon="download" @click="save">Quick Save</d-button>
+					<d-button icon="download" @click="save">
+						Quick Save
+					</d-button>
 					<d-button
 						class="bl0"
 						icon="upload"
@@ -178,26 +201,6 @@
 					>
 						Quick Load
 						<input type="file" ref="loadUpload" @change="load" />
-					</d-button>
-					<d-button
-						v-if="canDoFullSave"
-						class="bt0"
-						icon="save"
-						@click="saveFolder"
-						>Save Folder
-					</d-button>
-					<d-button
-						v-if="canDoFullSave"
-						class="bl0 bt0"
-						icon="folder_open"
-						@click="loadOpenFolder.click()"
-						>Load Folder
-						<input
-							type="file"
-							ref="loadOpenFolder"
-							@change="loadFolder"
-							webkitdirectory
-						/>
 					</d-button>
 				</div>
 				<d-button
@@ -259,12 +262,7 @@ const quality = ref(defaultQuality);
 const horizontalExport = ref(false);
 const imageOptionsActive = ref(false);
 const loadUpload = ref(null! as HTMLInputElement);
-const loadOpenFolder = ref(null! as HTMLInputElement);
 const baseConst = getConstants().Base;
-
-const canDoFullSave =
-	window.showDirectoryPicker !== undefined &&
-	'webkitRelativePath' in (File?.prototype ?? {});
 
 const isLossy = computed(() => format.value !== 'image/png');
 const canDeletePanel = computed(() => panelButtons.value.length > 1);
@@ -330,7 +328,9 @@ function extractObjectText(obj: DeepReadonly<GenObject>) {
 	return '';
 }
 function moveFocusToActivePanel() {
-	const active = getRoot().querySelector('.panel_button.active') as HTMLElement;
+	const active = getRoot().querySelector(
+		'.panel_button.active'
+	) as HTMLElement;
 	if (active != null) {
 		scrollIntoView(active);
 	}
@@ -447,7 +447,9 @@ function getLimitedPanelList(): DeepReadonly<Panel['id'][]> {
 		if (!match) {
 			if (trimmedPart !== '') {
 				eventBus.fire(
-					new ShowMessageEvent(`Could not read '${part}' in the page list.`)
+					new ShowMessageEvent(
+						`Could not read '${part}' in the page list.`
+					)
 				);
 			}
 			continue;
@@ -510,7 +512,9 @@ function updateCurrentPanel(panelId: Panel['id']) {
 }
 function deletePanel() {
 	transaction(async () => {
-		state.panels.deletePanel(state.panels.panels[viewport.value.currentPanel]);
+		state.panels.deletePanel(
+			state.panels.panels[viewport.value.currentPanel]
+		);
 	});
 	nextTick(() => {
 		moveFocusToActivePanel();
@@ -526,7 +530,10 @@ function moveAhead() {
 }
 function moveBehind() {
 	transaction(() => {
-		state.panels.movePanel(state.panels.panels[viewport.value.currentPanel], 1);
+		state.panels.movePanel(
+			state.panels.panels[viewport.value.currentPanel],
+			1
+		);
 	});
 }
 //#endregion Actions

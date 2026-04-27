@@ -1,66 +1,9 @@
 import eventBus, { InvalidateAllThumbnails } from '@/eventbus/event-bus';
 import { transaction } from '@/history-engine/transaction';
 import { state } from '@/store/root';
-import { confirm } from '@/util/dialogs';
 import { ref } from 'vue';
 
 export const folderDownloadAvailable = ref('showDirectoryPicker' in window);
-
-export async function saveFolder() {
-	const entry = await window.showDirectoryPicker();
-	if (!entry) return;
-
-	const entries: FileSystemHandle[] = await Array.fromAsync(entry.values());
-
-	if (
-		entries.some((entry) => entry.kind === 'file' && entry.name === 'save.dddg')
-	) {
-		if (
-			!(await confirm(
-				'A save file already exists in this folder. Do you want to overwrite it?'
-			))
-		) {
-			return;
-		}
-	} else if (entries.length > 0) {
-		if (
-			!(await confirm(
-				'This folder already contains files. They might get overwritten. Do you want to continue?'
-			))
-		) {
-			return;
-		}
-	}
-
-	const promises: Promise<unknown>[] = [
-		(async () => {
-			const saveFile = await entry.getFileHandle(`save.dddg`, {
-				create: true,
-			});
-			const saveBlob = new Blob([await state.getSave(false)], {
-				type: 'text/plain',
-			});
-			const writable = await saveFile.createWritable();
-			await writable.write(saveBlob);
-			await writable.close();
-		})(),
-	];
-
-	for (const [name, url] of Object.entries(state.uploadUrls.urls)) {
-		promises.push(
-			(async () => {
-				const file = await entry.getFileHandle(name, {
-					create: true,
-				});
-				const writable = await file.createWritable();
-				const fileLoader = await fetch(url);
-				const blob = await fileLoader.blob();
-				await writable.write(blob);
-				await writable.close();
-			})()
-		);
-	}
-}
 
 export async function loadFolder(files: Iterable<File>) {
 	await transaction(async () => {

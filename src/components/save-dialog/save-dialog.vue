@@ -38,9 +38,13 @@
 						<td class="small timestamp">
 							{{ save.timestamp.toLocaleString() }}
 						</td>
-						<td class="small size">{{ prettyPrintSize(save.size) }}</td>
+						<td class="small size">
+							{{ prettyPrintSize(save.size) }}
+						</td>
 						<td class="small actions">
-							<button @click="deleteSave(save.name)">Delete</button>
+							<button @click="deleteSave(save.name)">
+								Delete
+							</button>
 						</td>
 					</tr>
 					<tr v-if="availableSaves.length === 0">
@@ -60,7 +64,11 @@
 		</div>
 		<button
 			:disabled="saveName === ''"
-			:title="saveName === '' ? 'Save needs a name' : 'Saves the current state'"
+			:title="
+				saveName === ''
+					? 'Save needs a name'
+					: 'Saves the current state'
+			"
 			@click="createSave"
 		>
 			{{ activeSelection ? 'Override' : 'Create' }} save
@@ -77,10 +85,6 @@
 		>
 			Download save as zip
 		</button>
-		<button v-if="folderDownloadAvailable" @click="downloadSaveAsFolder">
-			Download
-			{{ activeSelection ? 'selected save' : 'current state' }} as folder
-		</button>
 	</div>
 </template>
 
@@ -90,7 +94,6 @@ import eventBus, { StateLoadingEvent } from '@/eventbus/event-bus';
 import { transaction } from '@/history-engine/transaction';
 import { confirm } from '@/util/dialogs';
 import { computed, ref } from 'vue';
-import { folderDownloadAvailable } from './saving';
 const estimate = ref(null as null | StorageEstimate);
 
 navigator.storage.estimate().then((e) => {
@@ -147,14 +150,10 @@ async function loadSave() {
 	});
 }
 
-function downloadSaveAsFolder() {
-	if (activeSelection.value) {
-		// TODO: Implement folder download
-	}
-}
-
 async function deleteSave(save: string) {
-	if (!(await confirm(`Are you sure you want to delete the save "${save}"?`))) {
+	if (
+		!(await confirm(`Are you sure you want to delete the save "${save}"?`))
+	) {
 		return;
 	}
 	await transaction(async () => {
