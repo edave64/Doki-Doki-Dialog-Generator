@@ -2,35 +2,7 @@
 	<drop-target ref="spriteDt" class="drop-target" @drop="addCustomSpriteFile"
 		>Drop here to add as a new sprite
 	</drop-target>
-	<template v-for="sprite of sprites">
-		<div
-			class="sprite"
-			tabindex="0"
-			:key="`${sprite.label}_missing`"
-			:title="sprite.label"
-			:style="{ background: assetSpriteBackground(sprite) }"
-			@click="reuploadingSprite(sprite)"
-			@keypress.enter.prevent.stop="reuploadingSprite(sprite)"
-			@keypress.space.prevent.stop="reuploadingSprite(sprite)"
-			v-if="sprite.missing !== null"
-		>
-			{{ sprite.label }}
-		</div>
-		<div
-			class="sprite"
-			tabindex="0"
-			:key="sprite.label"
-			:title="sprite.label"
-			:style="{ background: assetSpriteBackground(sprite) }"
-			@click="addSpriteToScene(sprite)"
-			@keypress.enter.prevent.stop="addSpriteToScene(sprite)"
-			@keypress.space.prevent.stop="addSpriteToScene(sprite)"
-			v-else
-		>
-			{{ sprite.label }}
-		</div>
-	</template>
-
+	<input placeholder="Search" class="search" v-model="filter" />
 	<d-button
 		class="custom-sprite v-w100"
 		icon="publish"
@@ -58,6 +30,36 @@
 		ref="missingSpriteUpload"
 		@change="onMissingSpriteFileUpload"
 	/>
+	<template v-for="sprite of sprites">
+		<template v-if="!filter || sprite.search.includes(filter_lower)">
+			<div
+				class="sprite"
+				tabindex="0"
+				:key="`${sprite.label}_missing`"
+				:title="sprite.label"
+				:style="{ background: assetSpriteBackground(sprite) }"
+				@click="reuploadingSprite(sprite)"
+				@keypress.enter.prevent.stop="reuploadingSprite(sprite)"
+				@keypress.space.prevent.stop="reuploadingSprite(sprite)"
+				v-if="sprite.missing !== null"
+			>
+				{{ sprite.label }}
+			</div>
+			<div
+				class="sprite"
+				tabindex="0"
+				:key="sprite.label"
+				:title="sprite.label"
+				:style="{ background: assetSpriteBackground(sprite) }"
+				@click="addSpriteToScene(sprite)"
+				@keypress.enter.prevent.stop="addSpriteToScene(sprite)"
+				@keypress.space.prevent.stop="addSpriteToScene(sprite)"
+				v-else
+			>
+				{{ sprite.label }}
+			</div>
+		</template>
+	</template>
 </template>
 
 <script lang="ts" setup>
@@ -85,10 +87,14 @@ const emit = defineEmits<{
 	'show-dialog': [search: string];
 }>();
 
+const filter = ref('');
+const filter_lower = computed(() => filter.value.toLowerCase());
+
 const viewport = useViewport();
 interface ISprite extends Sprite<IAssetSwitch> {
 	missing: string | null;
 	urls: string[];
+	search: string;
 }
 
 const panel = computed(() => state.panels.panels[viewport.value.currentPanel]);
@@ -111,6 +117,7 @@ const sprites = computed((): Array<ISprite> => {
 			...x,
 			missing,
 			urls,
+			search: x.label.toLocaleLowerCase(),
 		} as ISprite;
 	});
 });
@@ -267,7 +274,11 @@ defineExpose({ showDropTarget, hideDropTarget });
 <style lang="scss" scoped>
 //noinspection CssOverwrittenProperties
 
-input {
+input.search {
+	width: 100%;
+}
+
+input[type='file'] {
 	display: none;
 }
 
