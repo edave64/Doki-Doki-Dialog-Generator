@@ -19,6 +19,7 @@ import { reactive, ref } from 'vue';
 import type {
 	EnvCapabilities,
 	EnvState,
+	EnvStorageEntry,
 	Folder,
 	IEnvironment,
 	Settings,
@@ -49,6 +50,90 @@ export class Electron implements IEnvironment {
 		IEnvironment['updateProgress'],
 		null
 	>;
+
+	public storage = (() => {
+		const tempSaves = ref([] as EnvStorageEntry[]);
+		const electron = window as unknown as IElectronWindow;
+
+		(async () => {
+			tempSaves.value = await electron.ipcRenderer.sendConvo('get-saves');
+		})();
+
+		return {
+			getSaves() {
+				return tempSaves.value;
+			},
+			async save(name: string) {
+				await electron.ipcRenderer.sendConvo('save-begin', name);
+
+				const saveBlob = new Blob([await state.getSave(false)], {
+					type: 'text/plain',
+				});
+				await electron.ipcRenderer.sendConvo(
+					'save-file',
+					name,
+					'save.dddg',
+					saveBlob
+				);
+
+				for (const [name, url] of Object.entries(
+					state.uploadUrls.urls
+				)) {
+					const fileLoader = await fetch(url);
+					const blob = await fileLoader.blob();
+					await electron.ipcRenderer.sendConvo(
+						'save-file',
+						name,
+						blob
+					);
+				}
+
+				const entry = (await electron.ipcRenderer.sendConvo(
+					'save-end',
+					name
+				)) as EnvStorageEntry;
+
+				tempSaves.value.push(entry);
+
+				return entry;
+			},
+			async load(name: string): Promise<void> {
+				const [mainBlob, files] = (await electron.ipcRenderer.sendConvo(
+					'load-save',
+					name
+				)) as [Blob, File[]];
+
+				await state.loadSave(await mainBlob.text());
+				for (const file of files) {
+					await state.uploadUrls.add(
+						file.name,
+						URL.createObjectURL(file)
+					);
+				}
+			},
+			async downloadAsZip(name: string): Promise<void> {
+				await electron.ipcRenderer.sendConvo('download-zip', name);
+			},
+			async uploadFromZip(name: string, zip: Blob): Promise<void> {
+				await electron.ipcRenderer.sendConvo('upload-zip', name, zip);
+			},
+
+			async delete(name: string) {
+				await electron.ipcRenderer.sendConvo('delete-save', name);
+				tempSaves.value.splice(
+					tempSaves.value.findIndex((x) => x.name === name),
+					1
+				);
+			},
+			async requestPersistance(): Promise<boolean> {
+				// Persistance is always supported on desktop
+				return true;
+			},
+			isPersisted(): boolean {
+				return true;
+			},
+		};
+	})();
 
 	constructor() {
 		this.loadingContentPacksAllowed = new Promise((resolve) => {
@@ -217,6 +302,7 @@ export class Electron implements IEnvironment {
 		assetCaching: true,
 		allowWebP: true,
 		limitedCanvasSpace: false,
+		storage: true,
 	};
 	public readonly savingEnabled: boolean = true;
 
