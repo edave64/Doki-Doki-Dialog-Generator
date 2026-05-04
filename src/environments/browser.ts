@@ -9,7 +9,6 @@ import {
 import { transaction } from '@/history-engine/transaction';
 import { Repo } from '@/models/repo';
 import { state } from '@/store/root';
-import { lazy } from '@/util/lazy';
 import type JSZip from 'jszip';
 import { reactive, ref, type DeepReadonly } from 'vue';
 import type {
@@ -34,6 +33,43 @@ export class Browser implements IEnvironment {
 	});
 	public readonly supports: DeepReadonly<EnvCapabilities>;
 	public storage = (() => {
+		// TODO: If navigator.storage is not available, supports.storage will be false.
+		// However, the API is still expected to exist, so we need to return a dummy object.
+		// Find a better way to handle this.
+		if (!navigator?.storage?.getDirectory) {
+			return {
+				getSaves() {
+					return [];
+				},
+				async save(name: string): Promise<EnvStorageEntry> {
+					return {
+						name,
+						size: 0,
+						timestamp: new Date(),
+					};
+				},
+				async load(name: string): Promise<void> {
+					return;
+				},
+				async downloadAsZip(name: string): Promise<void> {
+					return;
+				},
+				async uploadFromZip(name: string, zip: Blob): Promise<void> {
+					return;
+				},
+
+				async delete(name: string) {
+					return;
+				},
+				async requestPersistance(): Promise<boolean> {
+					return false;
+				},
+				isPersisted(): boolean {
+					return false;
+				},
+			};
+		}
+
 		const isPersisted = ref(false);
 		const tempSaves = reactive([] as EnvStorageEntry[]);
 
@@ -85,8 +121,6 @@ export class Browser implements IEnvironment {
 		})();
 
 		return {
-			saveDirectory: lazy(async () => {}),
-
 			getSaves() {
 				return tempSaves;
 			},
