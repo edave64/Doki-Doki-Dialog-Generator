@@ -1,0 +1,166 @@
+{
+	"version": 2.5,
+	"panels": {
+		"lastPanelId": 1,
+		"panelOrder": [
+			0,
+			1
+		],
+		"currentPanel": 1,
+		"panels": {
+			"0": {
+				"id": 0,
+				"background": {
+					"current": "dddg.buildin.backgrounds:ddlc.clubroom",
+					"color": "#000000",
+					"flipped": false,
+					"variant": 0,
+					"scaling": 0,
+					"composite": "source-over",
+					"filters": []
+				},
+				"composite": "source-over",
+				"filters": [],
+				"order": [],
+				"onTopOrder": [
+					0
+				],
+				"lastObjId": 0,
+				"objects": {
+					"0": {
+						"id": 0,
+						"type": "textBox",
+						"panelId": 0,
+						"onTop": true,
+						"filters": [],
+						"composite": "source-over",
+						"version": 8,
+						"x": 640,
+						"y": 621.5,
+						"width": 816,
+						"height": 185,
+						"preserveRatio": true,
+						"ratio": 1,
+						"flip": false,
+						"linkedTo": null,
+						"scaleX": 1,
+						"scaleY": 1,
+						"skewX": 0,
+						"skewY": 0,
+						"rotation": 0,
+						"label": null,
+						"textboxColor": null,
+						"enlargeWhenTalking": false,
+						"nameboxWidth": null,
+						"text": "Panel 1",
+						"talkingObjId": null,
+						"talkingOther": "",
+						"autoQuoting": true,
+						"overflow": false,
+						"style": "normal",
+						"overrideColor": false,
+						"customColor": "#ffa8d2",
+						"deriveCustomColors": true,
+						"customControlsColor": "#552222",
+						"customNameboxColor": "#ffeef6",
+						"customNameboxStroke": "#bb5599",
+						"customNameboxWidth": null,
+						"resetBounds": {
+							"x": 640,
+							"y": 621.5,
+							"width": 816,
+							"height": 185,
+							"rotation": 0,
+							"scaleX": 1,
+							"scaleY": 1,
+							"skewX": 0,
+							"skewY": 0
+						},
+						"controls": true,
+						"skip": true,
+						"autoWrap": true,
+						"continue": true
+					}
+				}
+			},
+			"1": {
+				"id": 1,
+				"background": {
+					"current": "dddg.buildin.backgrounds:ddlc.clubroom",
+					"color": "#000000",
+					"flipped": false,
+					"variant": 0,
+					"scaling": 0,
+					"composite": "source-over",
+					"filters": []
+				},
+				"composite": "source-over",
+				"filters": [],
+				"order": [],
+				"onTopOrder": [
+					0
+				],
+				"lastObjId": 0,
+				"objects": {
+					"0": {
+						"id": 0,
+						"type": "textBox",
+						"panelId": 1,
+						"onTop": true,
+						"filters": [],
+						"composite": "source-over",
+						"version": 8,
+						"x": 640,
+						"y": 621.5,
+						"width": 816,
+						"height": 185,
+						"preserveRatio": true,
+						"ratio": 1,
+						"flip": false,
+						"linkedTo": null,
+						"scaleX": 1,
+						"scaleY": 1,
+						"skewX": 0,
+						"skewY": 0,
+						"rotation": 0,
+						"label": null,
+						"textboxColor": null,
+						"enlargeWhenTalking": false,
+						"nameboxWidth": null,
+						"text": "Panel 2",
+						"talkingObjId": null,
+						"talkingOther": "",
+						"autoQuoting": true,
+						"overflow": false,
+						"style": "normal",
+						"overrideColor": false,
+						"customColor": "#ffa8d2",
+						"deriveCustomColors": true,
+						"customControlsColor": "#552222",
+						"customNameboxColor": "#ffeef6",
+						"customNameboxStroke": "#bb5599",
+						"customNameboxWidth": null,
+						"resetBounds": {
+							"x": 640,
+							"y": 621.5,
+							"width": 816,
+							"height": 185,
+							"rotation": 0,
+							"scaleX": 1,
+							"scaleY": 1,
+							"skewX": 0,
+							"skewY": 0
+						},
+						"controls": true,
+						"skip": true,
+						"autoWrap": true,
+						"continue": true
+					}
+				}
+			}
+		}
+	},
+	"content": [],
+	"uploadUrls": [],
+	"unsafe": false
+}

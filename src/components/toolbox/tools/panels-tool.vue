@@ -684,11 +684,14 @@ async function load() {
 					)
 				)
 			);
-			return;
+		} else {
+			eventBus.fire(new StateLoadingEvent());
+			const data = await blobToText(uploadInput.files[0]);
+			await state.loadSave(data);
 		}
-		eventBus.fire(new StateLoadingEvent());
-		const data = await blobToText(uploadInput.files[0]);
-		await state.loadSave(data);
+		uploadInput.dispatchEvent(
+			new Event('dddg-load-finished', { bubbles: true })
+		);
 	});
 
 	await renderCurrentThumbnail();
