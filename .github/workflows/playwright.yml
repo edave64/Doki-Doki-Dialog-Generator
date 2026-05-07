@@ -26,6 +26,7 @@ jobs:
         with:
           name: test-results
           path: |
+            tests/visual/actual-output/
+            tests/visual/diffs/
             test-results/
-            tests/visual/results/
           retention-days: 30
