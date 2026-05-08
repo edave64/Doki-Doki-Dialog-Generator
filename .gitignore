@@ -39,3 +39,6 @@ coverage
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+/tests/visual/actual-output/
+/tests/visual/diffs/
+/tests/visual/expected-output/

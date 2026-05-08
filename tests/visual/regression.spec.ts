@@ -5,7 +5,15 @@ import pixelmatch from 'pixelmatch';
 import { PNG, PNGWithMetadata } from 'pngjs';
 import consumers from 'stream/consumers';
 
-const expectedDir = path.resolve('tests/visual/expected-output');
+const ci = !!process.env.CI;
+
+// We use a different set of expected output files in CI, since rendering sadly varies wildly
+// between environments. Even the same browser on different OSes can produce different results.
+// expected-output is for your local dev environment, expected-output-ci for CI.
+// Don't attempt to compare them 1:1, but obviously they should be very similar.
+const expectedDir = ci
+	? path.resolve('tests/visual/expected-output-ci')
+	: path.resolve('tests/visual/expected-output');
 const savesDir = path.resolve('tests/visual/saves');
 const diffDir = path.resolve('tests/visual/diffs');
 const actualDir = path.resolve('tests/visual/actual-output');
@@ -18,6 +26,7 @@ test.describe('Visual Regression Tests', () => {
 	for (const save of saves) {
 		const fullSavePath = path.join(savesDir, save);
 		const testName = path.basename(save).split('.').slice(0, -1).join('.');
+		if (testName === '') continue;
 		test(`${testName} should match expected output`, async ({
 			page,
 			browserName,
@@ -50,13 +59,23 @@ test.describe('Visual Regression Tests', () => {
 				.click();
 			const download = await downloadPromise;
 
-			const expectedPngPath = path.join(
+			let expectedPngPath = path.join(
 				expectedDir,
 				browserName,
 				testName + '.png'
 			);
 
-			if (!fs.existsSync(expectedPngPath) || updateExpected) {
+			if (updateExpected || !fs.existsSync(expectedPngPath)) {
+				// In CI, we write to the actual output directory, since that gets saved as an
+				// artifact.
+				// In local development we write to the expected output directory, for convenience
+				if (ci) {
+					expectedPngPath = path.join(
+						actualDir,
+						browserName,
+						testName + '.png'
+					);
+				}
 				await fs.promises.mkdir(path.dirname(expectedPngPath), {
 					recursive: true,
 				});
@@ -78,16 +97,22 @@ test.describe('Visual Regression Tests', () => {
 
 			const actualPNG = PNG.sync.read(actualBuffer);
 			const { width, height } = expectedPNG;
-			const diff = new PNG({ width, height });
+			let diff: PNG | null = null;
 
-			const difference = pixelmatch(
-				expectedPNG.data,
-				actualPNG.data,
-				diff.data,
-				width,
-				height,
-				{ threshold: 0 }
-			);
+			let difference = 0;
+			if (width !== actualPNG.width || height !== actualPNG.height) {
+				difference = -1;
+			} else {
+				diff = new PNG({ width, height });
+				difference = pixelmatch(
+					expectedPNG.data,
+					actualPNG.data,
+					diff.data,
+					width,
+					height,
+					{ threshold: 0 }
+				);
+			}
 
 			if (difference > 0) {
 				// Only save if there is a difference
@@ -102,15 +127,24 @@ test.describe('Visual Regression Tests', () => {
 					testName + '.png'
 				);
 				await Promise.all([
-					fs.promises.mkdir(path.dirname(actualPath), {
-						recursive: true,
-					}),
-					fs.promises.mkdir(path.dirname(diffPath), {
-						recursive: true,
-					}),
+					(async () => {
+						await fs.promises.mkdir(path.dirname(actualPath), {
+							recursive: true,
+						});
+						await fs.promises.writeFile(actualPath, actualBuffer);
+					})(),
+					async () => {
+						if (diff) {
+							await fs.promises.mkdir(path.dirname(diffPath), {
+								recursive: true,
+							});
+							await fs.promises.writeFile(
+								diffPath,
+								PNG.sync.write(diff)
+							);
+						}
+					},
 				]);
-				fs.writeFileSync(actualPath, actualBuffer);
-				fs.writeFileSync(diffPath, PNG.sync.write(diff));
 			}
 			expect(difference).toBe(0);
 		});
