@@ -241,7 +241,6 @@ import DFieldset from '@/components/ui/d-fieldset.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
 import getConstants from '@/constants';
 import { transaction } from '@/history-engine/transaction';
-import { allowScaleModification } from '@/store/migrations/v2-5';
 import type { GenObject } from '@/store/object-types/object';
 import { state } from '@/store/root';
 import { propWithTransaction } from '@/util/simple-settable';
@@ -279,7 +278,8 @@ const rotation = propWithTransaction(object, 'rotation');
 const enlargeWhenTalking = propWithTransaction(object, 'enlargeWhenTalking');
 
 const allowZoom = computed(() => {
-	return allowScaleModification(props.object);
+	if (props.object.type === 'sprite') return props.object.mayScale;
+	return true;
 });
 
 const currentPanel = computed(() => {

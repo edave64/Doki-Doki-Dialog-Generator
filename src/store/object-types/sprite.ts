@@ -11,6 +11,14 @@ export default class Sprite extends BaseObject<'sprite'> {
 		return 'sprite' as const;
 	}
 
+	/**
+	 * Used for migrations from <= 2.4 saves. The needed transformation changes cannot be computed
+	 * until we know the size of the sprite. And that format didn't store the size, loading it from
+	 * the asset instead. But we don't have the asset yet, so we store the data here and calculate
+	 * the transformations once the asset is loaded.
+	 */
+	private _migrationData?: Record<string, unknown>;
+
 	protected constructor(
 		panel: Panel,
 		public readonly assets: IAssetSwitch[],
@@ -54,7 +62,8 @@ export default class Sprite extends BaseObject<'sprite'> {
 		panel: Panel,
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		save: Record<string, any>,
-		idTranslationTable: IdTranslationTable
+		idTranslationTable: IdTranslationTable,
+		sourceVersion?: number
 	): Sprite {
 		const ret = new Sprite(
 			panel,
@@ -62,6 +71,9 @@ export default class Sprite extends BaseObject<'sprite'> {
 			idTranslationTable.get(save.id),
 			save.onTop
 		);
+		if (sourceVersion != null && sourceVersion <= 2.4) {
+			ret._migrationData = save;
+		}
 		ret.loadPropsFromSave(save, idTranslationTable);
 		return ret;
 	}
@@ -70,5 +82,31 @@ export default class Sprite extends BaseObject<'sprite'> {
 		const ret = super.save();
 		ret.assets = this.assets;
 		return ret;
+	}
+
+	public async applyMigration(data: { url: string; size: [number, number] }) {
+		if (
+			this._migrationData &&
+			this.assets.length === 1 &&
+			this.assets[0].hq === data.url
+		) {
+			// TODO: This does correctly reconstruct the scale, but the positioning seems wrong if
+			// a sprite was scaled down via width/height.
+			// The visual regression test actually has two incorrectly positioned sprites in
+			// panel 3, compared to if you actually load in 2.4. But it is significantly better
+			// than nothing.
+			(await import('@/store/migrations/v2-5')).adjustObjectSize2_5(
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				this._migrationData as any,
+				(this._migrationData.scaleX as number) ?? 1,
+				data.size
+			);
+			this.loadPropsFromSave(this._migrationData, new Map());
+			this._migrationData = undefined;
+		}
+	}
+
+	get mayScale() {
+		return !this._migrationData;
 	}
 }

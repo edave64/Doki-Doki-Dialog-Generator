@@ -6,13 +6,11 @@
  * type basis. The zoom property has also been split into scaleX and scaleY
  */
 
-import { getAssetByUrl } from '@/asset-manager';
 import getConstants from '@/constants';
 import { decomposeMatrix } from '@/util/math';
 import type Character from '../object-types/character';
-import type { GenObject } from '../object-types/object';
 import type Sprite from '../object-types/sprite';
-import { state } from '../root';
+import { state, type IRootState } from '../root';
 
 /**
  * Take a save from a version before 2.5 and migrate it.
@@ -20,16 +18,11 @@ import { state } from '../root';
  * @param data
  * @returns
  */
-export function migrateSave2_5(data: typeof state) {
-	const panels = Object.values(data.panels.panels);
-	// Detect and skip 2.5 prerelease version
-	if (panels.find((x) => Object.values(x.objects).find((x) => 'scaleX' in x)))
-		return;
+export function migrateSave2_5(data: any, store: IRootState) {
+	const panels: any[] = Object.values(data.panels.panels);
 
 	for (const panel of panels) {
-		for (const object of Object.values(panel.objects) as (GenObject & {
-			zoom?: number;
-		})[]) {
+		for (const object of Object.values(panel.objects) as any[]) {
 			object.scaleX = object.zoom ?? 1;
 			object.scaleY = object.zoom ?? 1;
 			object.skewX = 0;
@@ -39,7 +32,7 @@ export function migrateSave2_5(data: typeof state) {
 
 			if (object.type === 'character') {
 				const character = object as unknown as Character;
-				const charData = data.content.current.characters.find(
+				const charData = store.content.current.characters.find(
 					(c) => c.id === character.characterType
 				);
 				const size = charData?.styleGroups[character.styleGroupId]
@@ -52,13 +45,6 @@ export function migrateSave2_5(data: typeof state) {
 				object.height += constants.TextBox.NameboxHeight;
 				// Textboxes used to be positioned from the top-center
 				object.y += object.height / 2;
-			}
-			if (object.type === 'sprite') {
-				// For uploaded sprites, coordinates cannot be fixed here, because the the full size is required, and
-				// we didn't store that.
-				// So the sprites need to be fixed when they are re-uploaded.
-				(object as any).requireFixing25 = true;
-				(data as any).requireFixing25 = true;
 			}
 			delete object.zoom;
 		}
@@ -107,38 +93,16 @@ export function adjustObjectSize2_5(
 /**
  * Functions that will be added as migrations to the root model
  */
-export function fixSprites2_5(data: { url: string; size: [number, number] }) {
+export async function fixSprites2_5(data: {
+	url: string;
+	size: [number, number];
+}) {
 	for (const panel of Object.values(state.panels.panels)) {
 		for (const object of Object.values(panel.objects)) {
-			if (
-				object.type !== 'sprite' ||
-				!(object as any).requireFixing25 ||
-				object.scaleX !== object.scaleY
-			)
+			if (object.type !== 'sprite' || object.scaleX !== object.scaleY)
 				continue;
 			const sprite = object as Sprite;
-			if (
-				sprite.assets.length === 1 &&
-				sprite.assets[0].hq === data.url
-			) {
-				adjustObjectSize2_5(sprite, object.scaleX, data.size);
-				delete (object as any).requireFixing25;
-			}
+			await sprite.applyMigration(data);
 		}
 	}
-}
-
-export async function afterImageUpload2_5(assertUrl: string) {
-	if ('requireFixing25' in state) {
-		const asset = await getAssetByUrl(assertUrl);
-		fixSprites2_5({ url: assertUrl, size: [asset.width, asset.height] });
-	}
-}
-
-/**
- * Because the sprites the need reuploading need their scale properties intact (As it stores the old zoom value)
- * We mustn't allow any modification of the scale values in an outdated sprite that has yet to be reuploaded.
- */
-export function allowScaleModification(obj: GenObject) {
-	return !(obj as any).requireFixing25;
 }
