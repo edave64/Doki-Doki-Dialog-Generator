@@ -1,6 +1,6 @@
-import { registerAssetWithURL } from '@/asset-manager';
-import { afterImageUpload2_5 } from '@/store/migrations/v2-5';
+import { getAssetByUrl, registerAssetWithURL } from '@/asset-manager';
 import { reactive } from 'vue';
+import { state } from './root';
 
 export const uploadUrls = reactive(
 	Object.seal({
@@ -16,7 +16,15 @@ export const uploadUrls = reactive(
 
 			this.urls[name] = url;
 			registerAssetWithURL(assertUrl, url);
-			await afterImageUpload2_5(assertUrl);
+			if (state.fromVersion <= 2.4) {
+				const asset = await getAssetByUrl(assertUrl);
+				await (
+					await import('@/store/migrations/v2-5')
+				).fixSprites2_5({
+					url: assertUrl,
+					size: [asset.width, asset.height],
+				});
+			}
 			return assertUrl;
 		},
 

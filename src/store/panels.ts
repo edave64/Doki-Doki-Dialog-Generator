@@ -143,7 +143,7 @@ export const panels = new (class Panels {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	public loadSave(data: any) {
+	public loadSave(data: any, sourceVersion: number) {
 		const panelOrder = data.panelOrder;
 		const panels: Record<Panel['id'], Raw<Panel>> = {};
 		let lastPanelId = -1;
@@ -151,7 +151,7 @@ export const panels = new (class Panels {
 		for (const panelKey of panelOrder) {
 			const dataPanel = data.panels[panelKey];
 			const panel = new Panel(+panelKey);
-			panel.loadSave(dataPanel);
+			panel.loadSave(dataPanel, sourceVersion);
 			panels[panel.id] = markRaw(panel);
 			lastPanelId = Math.max(lastPanelId, panel.id);
 		}
@@ -212,7 +212,7 @@ export class Panel extends HasSpriteFilters {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	public loadSave(data: any) {
+	public loadSave(data: any, sourceVersion: number) {
 		this.background.loadSave(data.background);
 		this._filters.value = loadFilters(data.filters);
 		this._composite.value = data.composite;
@@ -225,7 +225,7 @@ export class Panel extends HasSpriteFilters {
 			objectLine.push(obj);
 		}
 
-		this.pasteObjects(objectLine);
+		this.pasteObjects(objectLine, sourceVersion);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -382,7 +382,8 @@ export class Panel extends HasSpriteFilters {
 			fromSave: (
 				panel: Panel,
 				save: Record<string, unknown>,
-				idTranslationTable: IdTranslationTable
+				idTranslationTable: IdTranslationTable,
+				sourceVersion?: number
 			) => GenObject;
 		}
 	> = {
@@ -394,8 +395,11 @@ export class Panel extends HasSpriteFilters {
 		textBox: Textbox,
 	};
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	public pasteObjects(objects: Record<string, any>[]) {
+	public pasteObjects(
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		objects: Record<string, any>[],
+		sourceVersion?: number
+	) {
 		const idTranslationTable = new Map<
 			BaseObject['id'],
 			BaseObject['id']
@@ -412,7 +416,7 @@ export class Panel extends HasSpriteFilters {
 			if (!objClass) {
 				throw new Error(`Unknown object type: ${object.type}`);
 			}
-			objClass.fromSave(this, object, idTranslationTable);
+			objClass.fromSave(this, object, idTranslationTable, sourceVersion);
 		}
 	}
 }
