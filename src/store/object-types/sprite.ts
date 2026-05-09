@@ -1,5 +1,6 @@
 import { getAAsset } from '@/asset-manager';
 import getConstants from '@/constants';
+import eventBus, { RenderUpdatedEvent } from '@/eventbus/event-bus';
 import { ImageAsset } from '@/render-utils/assets/image-asset';
 import type { IAssetSwitch } from '@/store/content';
 import type { IdTranslationTable, Panel } from '../panels';
@@ -73,6 +74,14 @@ export default class Sprite extends BaseObject<'sprite'> {
 		);
 		if (sourceVersion != null && sourceVersion <= 2.4) {
 			ret._migrationData = save;
+			(async () => {
+				const asset = await getAAsset(ret.assets[0], false);
+				if (!(asset instanceof ImageAsset)) return;
+				await ret.applyMigration({
+					url: ret.assets[0].hq,
+					size: [asset.width, asset.height],
+				});
+			})();
 		}
 		ret.loadPropsFromSave(save, idTranslationTable);
 		return ret;
@@ -103,6 +112,9 @@ export default class Sprite extends BaseObject<'sprite'> {
 			);
 			this.loadPropsFromSave(this._migrationData, new Map());
 			this._migrationData = undefined;
+			// Migration can be applied divorced from any transaction, so we need to manually
+			// trigger a render update
+			eventBus.fire(new RenderUpdatedEvent());
 		}
 	}
 

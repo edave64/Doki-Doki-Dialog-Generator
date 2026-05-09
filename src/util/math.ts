@@ -53,7 +53,11 @@ export function decomposeMatrix(mat: DOMMatrixReadOnly) {
 		skewY: 0,
 	};
 
-	if (a != 0 || b != 0) {
+	if (b == 0 && c == 0) {
+		// Matrix is translation and scale only
+		result.scaleX = a;
+		result.scaleY = d;
+	} else if (a != 0 || b != 0) {
 		const r = Math.sqrt(a * a + b * b);
 		result.rotation =
 			((b > 0 ? Math.acos(a / r) : -Math.acos(a / r)) / Math.PI) * 180;
