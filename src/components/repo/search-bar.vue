@@ -135,7 +135,7 @@ function updateInternalValue() {
 
 function onUpdate() {
 	if (debounceTimeout.value != null) clearTimeout(debounceTimeout.value);
-	debounceTimeout.value = setTimeout(doUpdate, debounce);
+	debounceTimeout.value = window.setTimeout(doUpdate, debounce);
 }
 
 function doUpdate() {

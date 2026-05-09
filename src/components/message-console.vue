@@ -106,7 +106,7 @@ function onLoadingChange(newValue: boolean) {
 			hideLoadingTimeout.value = 0;
 		}
 		if (!showLoading.value && !showLoadingTimeout.value) {
-			showLoadingTimeout.value = setTimeout(() => {
+			showLoadingTimeout.value = window.setTimeout(() => {
 				showLoading.value = true;
 				showLoadingTimeout.value = 0;
 			}, hideShowTimeouts);
@@ -117,7 +117,7 @@ function onLoadingChange(newValue: boolean) {
 			showLoadingTimeout.value = 0;
 		}
 		if (showLoading.value && !hideLoadingTimeout.value) {
-			hideLoadingTimeout.value = setTimeout(() => {
+			hideLoadingTimeout.value = window.setTimeout(() => {
 				showLoading.value = false;
 				hideLoadingTimeout.value = 0;
 			}, hideShowTimeouts);

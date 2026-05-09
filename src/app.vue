@@ -322,7 +322,8 @@ function onKeydown(e: KeyboardEvent) {
 	}
 
 	transaction(async () => {
-		const ctrl = (e.ctrlKey || e.metaKey) /* mac */ && !e.altKey && !e.shiftKey;
+		const ctrl =
+			(e.ctrlKey || e.metaKey) /* mac */ && !e.altKey && !e.shiftKey;
 		const noMod = !e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey;
 		if (ctrl && e.key === 'v') {
 			await store.ui.pasteObjects(
@@ -341,7 +342,9 @@ function onKeydown(e: KeyboardEvent) {
 		if (selection == null) return;
 		if (ctrl) {
 			if (e.key === 'c' || e.key === 'x') {
-				store.ui.copyObjectToClipboard(selectionPanel.id, [selection.id]);
+				store.ui.copyObjectToClipboard(selectionPanel.id, [
+					selection.id,
+				]);
 				if (e.key === 'x') {
 					selectionPanel.removeObject(selection);
 				}
@@ -407,7 +410,7 @@ let ctrlShown = false;
 function testShortcutKey(e: MouseEvent | KeyboardEvent) {
 	if (e.ctrlKey) {
 		if (!ctrlShown && ctrlTimeout === null) {
-			ctrlTimeout = setTimeout(showCtrlLabels);
+			ctrlTimeout = window.setTimeout(showCtrlLabels);
 		}
 	} else {
 		removeCtrlLables();
@@ -442,7 +445,9 @@ watch(
 	() => viewport.value.selection,
 	(id) => {
 		if (document.activeElement?.getAttribute('data-obj-id') !== '' + id) {
-			(document.querySelector(`*[data-obj-id='${id}']`) as HTMLElement)?.focus({
+			(
+				document.querySelector(`*[data-obj-id='${id}']`) as HTMLElement
+			)?.focus({
 				focusVisible: false,
 				preventScroll: true,
 			});
@@ -462,7 +467,8 @@ onMounted(async () => {
 
 	if (store.panels.lastPanelId === -1) {
 		await transaction(async () => {
-			environment.state.looseTextParsing = settings.looseTextParsing || true;
+			environment.state.looseTextParsing =
+				settings.looseTextParsing || true;
 
 			store.ui.lqRendering = settings.lq ?? false;
 			store.ui.useDarkTheme = settings.darkMode ?? null;
@@ -496,7 +502,8 @@ onMounted(async () => {
 							' you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more! Use the camera icon to download the image.'
 					);
 				}
-				panel.background.current = 'dddg.buildin.backgrounds:ddlc.clubroom';
+				panel.background.current =
+					'dddg.buildin.backgrounds:ddlc.clubroom';
 				store.ui.nsfw = settings.nsfw ?? false;
 			}
 		});
