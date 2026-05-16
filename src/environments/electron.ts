@@ -5,6 +5,7 @@
 
 import { registerAssetWithURL } from '@/asset-manager';
 import eventBus, {
+	FailureEvent,
 	ResolvableErrorEvent,
 	ShowMessageEvent,
 } from '@/eventbus/event-bus';
@@ -56,7 +57,9 @@ export class Electron implements IEnvironment {
 		const electron = window as unknown as IElectronWindow;
 
 		(async () => {
-			tempSaves.value = await electron.ipcRenderer.sendConvo('get-saves');
+			tempSaves.value = await electron.ipcRenderer.sendConvo(
+				'save-states.get-all'
+			);
 		})();
 
 		return {
@@ -64,62 +67,41 @@ export class Electron implements IEnvironment {
 				return tempSaves.value;
 			},
 			async save(name: string) {
-				await electron.ipcRenderer.sendConvo('save-begin', name);
-
-				const saveBlob = new Blob([await state.getSave(false)], {
-					type: 'text/plain',
-				});
-				await electron.ipcRenderer.sendConvo(
-					'save-file',
+				await electron.ipcRenderer.sendConvo('save-states.begin', name);
+				const entry = await sendSaveToElectron(
 					name,
-					'save.dddg',
-					saveBlob
+					electron.ipcRenderer
 				);
-
-				for (const [name, url] of Object.entries(
-					state.uploadUrls.urls
-				)) {
-					const fileLoader = await fetch(url);
-					const blob = await fileLoader.blob();
-					await electron.ipcRenderer.sendConvo(
-						'save-file',
-						name,
-						blob
-					);
-				}
-
-				const entry = (await electron.ipcRenderer.sendConvo(
-					'save-end',
-					name
-				)) as EnvStorageEntry;
-
 				tempSaves.value.push(entry);
-
 				return entry;
 			},
 			async load(name: string): Promise<void> {
-				const [mainBlob, files] = (await electron.ipcRenderer.sendConvo(
-					'load-save',
+				const files = (await electron.ipcRenderer.sendConvo(
+					'save-states.load',
 					name
-				)) as [Blob, File[]];
+				)) as { name: string; data: ArrayBuffer }[];
 
-				await state.loadSave(await mainBlob.text());
-				for (const file of files) {
-					await state.uploadUrls.add(
-						file.name,
-						URL.createObjectURL(file)
-					);
-				}
+				await loadFromFiles(files);
 			},
 			async downloadAsZip(name: string): Promise<void> {
-				await electron.ipcRenderer.sendConvo('download-zip', name);
+				await electron.ipcRenderer.sendConvo(
+					'save-states.download-zip',
+					name
+				);
 			},
 			async uploadFromZip(name: string, zip: Blob): Promise<void> {
-				await electron.ipcRenderer.sendConvo('upload-zip', name, zip);
+				await electron.ipcRenderer.sendConvo(
+					'save-states.upload-zip',
+					name,
+					await zip.arrayBuffer()
+				);
 			},
 
 			async delete(name: string) {
-				await electron.ipcRenderer.sendConvo('delete-save', name);
+				await electron.ipcRenderer.sendConvo(
+					'save-states.delete',
+					name
+				);
 				tempSaves.value.splice(
 					tempSaves.value.findIndex((x) => x.name === name),
 					1
@@ -260,14 +242,36 @@ export class Electron implements IEnvironment {
 		});
 		this.electron.ipcRenderer.send('init-dddg');
 	}
-	loadDefaultTemplate(): Promise<boolean> {
-		throw new Error('Method not implemented.');
+	async loadDefaultTemplate(): Promise<boolean> {
+		const files = (await this.electron.ipcRenderer.sendConvo(
+			'save-states.load-default'
+		)) as { name: string; data: ArrayBuffer }[] | null;
+
+		if (files == null) return false;
+		try {
+			await loadFromFiles(files);
+			this.state.hasTemplate = true;
+		} catch (e) {
+			eventBus.fire(
+				new FailureEvent(
+					`Error loading default save: ${e && typeof e === 'object' && 'message' in e ? e.message : e}`
+				)
+			);
+			return false;
+		}
+		return true;
 	}
-	saveDefaultTemplate(): Promise<void> {
-		throw new Error('Method not implemented.');
+	async saveDefaultTemplate(): Promise<void> {
+		await this.electron.ipcRenderer.sendConvo('save-states.default-begin');
+		// For default saves, we must send the name 'default'.
+		// Otherwise electron will reject the save.
+		await sendSaveToElectron('default', this.electron.ipcRenderer);
+		this.state.hasTemplate = true;
 	}
-	clearDefaultTemplate(): Promise<void> {
-		throw new Error('Method not implemented.');
+	async clearDefaultTemplate(): Promise<void> {
+		await this.electron.ipcRenderer.sendConvo('save-states.default-begin');
+		await this.electron.ipcRenderer.sendConvo('save-states.end', 'default');
+		this.state.hasTemplate = false;
 	}
 	storeSaveFile(saveBlob: Blob, defaultName: string): Promise<void> {
 		const a = document.createElement('a');
@@ -449,6 +453,55 @@ export class Electron implements IEnvironment {
 			});
 		});
 	}
+}
+
+async function loadFromFiles(
+	files: { name: string; data: ArrayBuffer }[]
+): Promise<void> {
+	const mainSave = files.find((x) => x.name === 'save.dddg');
+
+	if (mainSave == null) {
+		throw new Error('No save.dddg found');
+	}
+
+	const decoder = new TextDecoder();
+	await state.loadSave(decoder.decode(mainSave.data));
+	for (const file of files) {
+		if (file === mainSave) continue;
+		const blob = new Blob([file.data], { type: 'image/*' });
+		await state.uploadUrls.add(file.name, URL.createObjectURL(blob));
+	}
+}
+
+async function sendSaveToElectron(
+	saveName: string,
+	ipcRenderer: IpcRenderer
+): Promise<EnvStorageEntry> {
+	const saveBlob = new Blob([await state.getSave(false)], {
+		type: 'text/plain',
+	});
+	await ipcRenderer.sendConvo(
+		'save-states.file',
+		saveName,
+		'save.dddg',
+		await saveBlob.arrayBuffer()
+	);
+
+	for (const [name, url] of Object.entries(state.uploadUrls.urls)) {
+		const fileLoader = await fetch(url);
+		const blob = await fileLoader.blob();
+		await ipcRenderer.sendConvo(
+			'save-states.file',
+			saveName,
+			name,
+			await blob.arrayBuffer()
+		);
+	}
+
+	return (await ipcRenderer.sendConvo(
+		'save-states.end',
+		saveName
+	)) as EnvStorageEntry;
 }
 
 const installedBackgroundsPack: ContentPack<string> = {
