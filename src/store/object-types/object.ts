@@ -202,14 +202,14 @@ export default abstract class BaseObject<
 	set linkedTo(val: number | null) {
 		if (this.linkedTo === val) return;
 
-		if (val !== null) {
+		if (val != null) {
 			// Detect loops
 			if (val === this.id) {
 				throw new Error('Object cannot link to itself.');
 			}
 			const linkedObj = this.panel.objects[val];
 			let obj = linkedObj;
-			while (obj.linkedTo !== null) {
+			while (obj.linkedTo != null) {
 				if (obj.linkedTo === this.id) {
 					throw new Error('Objects cannot be linked recursively.');
 				}
@@ -361,7 +361,7 @@ export default abstract class BaseObject<
 	}
 
 	protected _globalTransform = computed((): DOMMatrixReadOnly => {
-		if (this._linkedTo.value) {
+		if (this._linkedTo.value != null) {
 			const linkedObj = this.panel.objects[this._linkedTo.value];
 			// During cloning, this might temporarily be set to a non-existing id.
 			// TODO: Verify if that's actually needed

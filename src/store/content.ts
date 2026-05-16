@@ -202,7 +202,7 @@ export const content = new (class Content {
 			...contentPackLoads
 				.filter((x) => x.status === 'fulfilled')
 				.map((x) => x.value)
-				.filter((x) => x !== null),
+				.filter((x) => x != null),
 		];
 	}
 
