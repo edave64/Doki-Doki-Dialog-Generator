@@ -58,10 +58,10 @@
 				<select
 					id="linked_to"
 					class="v-w100"
-					v-model="transformLink"
+					v-model="normalizedTransformLink"
 					@keydown.stop
 				>
-					<option value="">None</option>
+					<option :value="null">None</option>
 					<option
 						v-for="[id, label] in linkObjectList"
 						:key="id"
@@ -267,6 +267,15 @@ setupPanelMixin(root);
 const object = computed(() => props.object);
 
 const transformLink = propWithTransaction(object, 'linkedTo');
+
+const normalizedTransformLink = computed({
+	get() {
+		return transformLink.value ?? null;
+	},
+	set(val) {
+		transformLink.value = val;
+	},
+});
 
 const imageOptionsOpen = ref(false);
 const modalNameInput = ref('');
