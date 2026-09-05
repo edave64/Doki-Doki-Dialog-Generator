@@ -287,6 +287,7 @@ function showSaveDialog() {
 //#endregion save dialog
 //#region nsfw
 import { NsfwNames, NsfwPaths } from './constants/nsfw';
+import { Repo } from './models/repo.ts';
 import type { GenObject } from './store/object-types/object';
 import Textbox from './store/object-types/textbox';
 import { isInput, isTextArea } from './util/cross-realm';
@@ -489,22 +490,52 @@ onMounted(async () => {
 				`${packsUrl}buildin.extra.amy.json`,
 			]);
 
-			if (!(await environment.loadDefaultTemplate())) {
-				environment.loadContentPacks();
+			// Load content packs that are provided by the environment, treat them like builtins
+			await environment.loadEnvironmentPacks();
 
-				const panel = store.panels.createPanel();
-				viewport.value.currentPanel = panel.id;
-				if (Object.keys(panel.objects).length === 0) {
-					Textbox.create(
-						panel,
-						'Hi! Click here to edit this textbox! ' +
-							`${viewport.value.isVertical ? 'To the right' : 'At the bottom'}` +
-							' you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more! Use the camera icon to download the image.'
-					);
+			try {
+				if (!(await environment.loadDefaultTemplate())) {
+					const panel = store.panels.createPanel();
+					viewport.value.currentPanel = panel.id;
+					if (Object.keys(panel.objects).length === 0) {
+						Textbox.create(
+							panel,
+							'Hi! Click here to edit this textbox! ' +
+								`${viewport.value.isVertical ? 'To the right' : 'At the bottom'}` +
+								' you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more! Use the camera icon to download the image.'
+						);
+					}
+					panel.background.current =
+						'dddg.buildin.backgrounds:ddlc.clubroom';
+					store.ui.nsfw = settings.nsfw ?? false;
 				}
-				panel.background.current =
-					'dddg.buildin.backgrounds:ddlc.clubroom';
-				store.ui.nsfw = settings.nsfw ?? false;
+			} finally {
+				// The default save should be in sync with the configured autoloads, but there
+				// might not be one. Also, they might have gotten out of sync.
+				// In which case we need to load the autoloads after the save, so that the IDs in
+				// the save keep pointing to the correct assets.
+				const loadedContentPacks = store.content.contentPacks.map(
+					(x) => x.packId
+				);
+				const autoLoads = (await environment.getAutoloads()).filter(
+					(x) => !loadedContentPacks.includes(x)
+				);
+				await transaction(async () => {
+					const repo = await Repo.getInstance();
+					const packUrls = await Promise.all(
+						autoLoads.map(async (compoundId) => {
+							const pack =
+								await repo.getPackWithCompoundId(compoundId);
+							if (pack == null)
+								throw new Error(
+									`Could not find pack '${compoundId}'`
+								);
+
+							return pack.dddg2Path ?? pack.dddg1Path;
+						})
+					);
+					await store.content.loadContentPacks(packUrls);
+				});
 			}
 		});
 	}

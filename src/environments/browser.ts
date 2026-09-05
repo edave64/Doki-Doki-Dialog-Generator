@@ -27,9 +27,10 @@ const mobileSafari = iOS && webkit && !ua.match(/CriOS/i);
 export class Browser implements IEnvironment {
 	public readonly state: EnvState = reactive({
 		looseTextParsing: true,
-		autoAdd: [],
+		autoLoads: [],
 		downloadLocation: 'Default download folder',
 		hasTemplate: false,
+		templateSaveContentPacks: [],
 	});
 	public readonly supports: DeepReadonly<EnvCapabilities>;
 	public storage = (() => {
@@ -294,9 +295,6 @@ export class Browser implements IEnvironment {
 	private readonly loading: Promise<void>;
 	private creatingDB?: Promise<IDBDatabase | void>;
 
-	private readonly loadingContentPacksAllowed: Promise<void>;
-	public loadContentPacks!: () => void;
-
 	public updateProgress = null;
 
 	public get savingEnabled() {
@@ -316,6 +314,7 @@ export class Browser implements IEnvironment {
 			// be absolutely no trace if you revoke saving.
 			localStorage.clear();
 			this.isSavingEnabled.value = false;
+			this.state.templateSaveContentPacks = [];
 			this.creatingDB = IndexedDBHandler.clearDB()
 				.then(() => {
 					this.creatingDB = undefined;
@@ -334,10 +333,6 @@ export class Browser implements IEnvironment {
 			// Chrome requires returnValue to be set
 			e.returnValue =
 				'Are you sure you want to leave? All your progress will be lost!';
-		});
-
-		this.loadingContentPacksAllowed = new Promise((resolve) => {
-			this.loadContentPacks = () => resolve();
 		});
 
 		const storageSupported = ref(
@@ -371,11 +366,10 @@ export class Browser implements IEnvironment {
 		}
 
 		this.loading.then(async () => {
-			await this.loadingContentPacksAllowed;
 			if (this.creatingDB) await this.creatingDB;
 			if (this.savingEnabled) {
 				const autoload = (await IndexedDBHandler.loadAutoload()) ?? [];
-				this.state.autoAdd = autoload;
+				this.state.autoLoads = autoload;
 				const repo = await Repo.getInstance();
 				const packUrls = await Promise.all(
 					autoload.map(async (compoundId) => {
@@ -396,6 +390,8 @@ export class Browser implements IEnvironment {
 			}
 		});
 	}
+
+	async loadEnvironmentPacks(): Promise<void> {}
 
 	storeSaveFile(saveBlob: Blob, defaultName: string): Promise<void> {
 		const a = document.createElement('a');
@@ -482,8 +478,8 @@ export class Browser implements IEnvironment {
 	public async autoLoadAdd(id: string): Promise<void> {
 		await this.loading;
 		await this.creatingDB;
-		await IndexedDBHandler.saveAutoload([...this.state.autoAdd, id]);
-		this.state.autoAdd.push(id);
+		await IndexedDBHandler.saveAutoload([...this.state.autoLoads, id]);
+		this.state.autoLoads.push(id);
 	}
 
 	public async autoLoadRemove(id: string): Promise<void> {
@@ -493,10 +489,18 @@ export class Browser implements IEnvironment {
 		const packId = this.normalizePackId(id);
 
 		await IndexedDBHandler.saveAutoload(
-			this.state.autoAdd.filter((x) => this.normalizePackId(x) != packId)
+			this.state.autoLoads.filter(
+				(x) => this.normalizePackId(x) != packId
+			)
 		);
-		const idx = this.state.autoAdd.indexOf(id);
-		this.state.autoAdd.splice(idx, 1);
+		const idx = this.state.autoLoads.indexOf(id);
+		this.state.autoLoads.splice(idx, 1);
+	}
+
+	public async getAutoloads(): Promise<string[]> {
+		await this.loading;
+		await this.creatingDB;
+		return this.state.autoLoads;
 	}
 
 	public normalizePackId(id: string): string {
@@ -539,6 +543,9 @@ export class Browser implements IEnvironment {
 		if (data == null) return false;
 		this.state.hasTemplate = true;
 		await state.loadSave(data);
+		this.state.templateSaveContentPacks = state.content.contentPacks
+			.map((x) => x.packId)
+			.filter((x) => x != null);
 		return true;
 	}
 
@@ -548,6 +555,9 @@ export class Browser implements IEnvironment {
 		if (!this.isSavingEnabled.value) return;
 		// TODO: Implement
 		const data: string = await state.getSave(true);
+		this.state.templateSaveContentPacks = state.content.contentPacks
+			.map((x) => x.packId)
+			.filter((x) => x != null);
 		IndexedDBHandler.saveTemplate(data);
 		this.state.hasTemplate = true;
 	}
@@ -557,6 +567,7 @@ export class Browser implements IEnvironment {
 		await this.creatingDB;
 		if (!this.isSavingEnabled.value) return;
 		await IndexedDBHandler.saveTemplate(null);
+		this.state.templateSaveContentPacks = [];
 		this.state.hasTemplate = false;
 	}
 

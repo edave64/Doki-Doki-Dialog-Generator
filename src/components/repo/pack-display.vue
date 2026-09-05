@@ -46,6 +46,13 @@
 				label="Load on startup"
 				v-model="autoload"
 			/>
+			<template v-if="isInTemplateSave && !autoload">
+				<strong>
+					NOTE: This pack is loaded as part of the template save. If
+					you want to stop it from loading on startup, deactivate the
+					pack then overwrite or clear the template save.
+				</strong>
+			</template>
 		</section>
 		<section>
 			<h3>Authors</h3>
@@ -127,7 +134,7 @@ const uninstallable = computed(() => {
 });
 const autoload = computed({
 	get(): boolean {
-		return environment.state.autoAdd.includes(props.selected);
+		return environment.state.autoLoads.includes(props.selected);
 	},
 	set(val: boolean): void {
 		let loadId = props.selected;
@@ -139,6 +146,9 @@ const autoload = computed({
 			environment.autoLoadRemove(loadId);
 		}
 	},
+});
+const isInTemplateSave = computed(() => {
+	return environment.state.templateSaveContentPacks.includes(props.selected);
 });
 const processingPack = ref(false);
 

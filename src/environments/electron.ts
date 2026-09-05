@@ -29,9 +29,10 @@ import type {
 export class Electron implements IEnvironment {
 	public readonly state: EnvState = reactive({
 		looseTextParsing: true,
-		autoAdd: [],
+		autoLoads: [],
 		downloadLocation: '',
 		hasTemplate: false,
+		templateSaveContentPacks: [],
 	} as EnvState);
 	public readonly localRepositoryUrl = '/repo/';
 
@@ -45,7 +46,7 @@ export class Electron implements IEnvironment {
 	private bgInvalidation: number | null = null;
 
 	private readonly loadingContentPacksAllowed: Promise<void>;
-	public loadContentPacks!: () => void;
+	private unlockLoadContentPacks!: () => void;
 
 	public updateProgress = ref('wait' as const) as Exclude<
 		IEnvironment['updateProgress'],
@@ -117,10 +118,17 @@ export class Electron implements IEnvironment {
 		};
 	})();
 
+	private autoLoadsReceived: () => void;
+	private autoLoadsReceivedPromise: Promise<void>;
+
 	constructor() {
 		this.loadingContentPacksAllowed = new Promise((resolve) => {
-			this.loadContentPacks = () => resolve();
+			this.unlockLoadContentPacks = () => resolve();
 		});
+
+		const { promise, resolve } = Promise.withResolvers<void>();
+		this.autoLoadsReceivedPromise = promise;
+		this.autoLoadsReceived = resolve;
 
 		this.electron.ipcRenderer.on(
 			'add-persistent-content-pack',
@@ -181,7 +189,8 @@ export class Electron implements IEnvironment {
 		this.electron.ipcRenderer.onConversation(
 			'auto-load.changed',
 			(packIds: string[]) => {
-				this.state.autoAdd = packIds;
+				this.autoLoadsReceived();
+				this.state.autoLoads = packIds;
 			}
 		);
 		this.electron.ipcRenderer.onConversation('reload-repo', async () => {
@@ -242,6 +251,12 @@ export class Electron implements IEnvironment {
 		});
 		this.electron.ipcRenderer.send('init-dddg');
 	}
+
+	async loadEnvironmentPacks(): Promise<void> {
+		this.unlockLoadContentPacks();
+		await this.electron.ipcRenderer.sendConvo('load-env-packs');
+	}
+
 	async loadDefaultTemplate(): Promise<boolean> {
 		const files = (await this.electron.ipcRenderer.sendConvo(
 			'save-states.load-default'
@@ -389,6 +404,11 @@ export class Electron implements IEnvironment {
 
 	public async autoLoadRemove(id: string): Promise<void> {
 		await this.electron.ipcRenderer.sendConvo('auto-load.remove', id);
+	}
+
+	public async getAutoloads(): Promise<string[]> {
+		await this.autoLoadsReceivedPromise;
+		return this.state.autoLoads;
 	}
 
 	public saveToFile(

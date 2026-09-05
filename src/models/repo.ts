@@ -117,7 +117,7 @@ export class Repo {
 				tempPacks.map((pack) => [pack.id, pack])
 			);
 
-			const autoloads = new Set(environment.state.autoAdd);
+			const autoloads = new Set(environment.state.autoLoads);
 			const loadedPackOrder = state.content.contentPacks
 				.map((pack) => pack.packId)
 				.filter((packId) => packId != null) as string[];
@@ -199,6 +199,16 @@ export class Repo {
 
 	public getPack(id: string): DeepReadonly<Pack | null> {
 		return this.getPacks().find((pack) => pack.id === id) ?? null;
+	}
+
+	public async getPackWithCompoundId(
+		compoundId: string
+	): Promise<DeepReadonly<Pack | null>> {
+		const [id, url] = compoundId.split(';', 2) as [string, string?];
+		if (url != null && !this.hasPack(id)) {
+			await this.loadTempPack(url);
+		}
+		return this.getPack(id);
 	}
 
 	public getAuthor(id: string): DeepReadonly<IAuthor | null> {
