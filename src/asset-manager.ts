@@ -2,8 +2,8 @@
  * Loads assets from urls for use in canvas painting, keeps them cached, and loads webP images if supported.
  */
 
+import environment from '@/environments/environment';
 import { allowLq, allowWebP, assetUrl } from './config';
-import environment from './environments/environment';
 import EventBus, { AssetFailureEvent } from './eventbus/event-bus';
 import type { IAsset } from './render-utils/assets/asset';
 import { ErrorAsset } from './render-utils/assets/error-asset';
