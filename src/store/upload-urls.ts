@@ -2,8 +2,8 @@ import { getAssetByUrl, registerAssetWithURL } from '@/asset-manager';
 import { reactive } from 'vue';
 import { state } from './root';
 
-export const uploadUrls = reactive(
-	Object.seal({
+export const uploadUrls = Object.seal(
+	reactive({
 		urls: {} as Record<string, string>,
 
 		async add(name: string, url: string) {
