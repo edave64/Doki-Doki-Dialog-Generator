@@ -27,7 +27,7 @@
 	},
 	"dependencies": {
 		"@edave64/dddg-repo-filters": "^0.4.0",
-		"@edave64/doki-doki-dialog-generator-pack-format": "^2.0.0",
+		"@edave64/doki-doki-dialog-generator-pack-format": "^2.0.1",
 		"@tauri-apps/api": "^2",
 		"jszip": "^3.10.1",
 		"mitt": "^3.0.1",

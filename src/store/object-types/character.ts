@@ -2,6 +2,7 @@ import getConstants from '@/constants';
 import { arraySeeker } from '@/util/seekers';
 import type {
 	Character as CharacterModel,
+	ContentPack,
 	HeadCollection,
 	Pose,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
@@ -77,6 +78,129 @@ export default class Character extends BaseObject<'character'> {
 		const ret = super.save();
 		ret.characterType = this.characterType;
 		return ret;
+	}
+
+	override fixContentPackRemoval(oldContent: ContentPack<IAssetSwitch>) {
+		super.fixContentPackRemoval(oldContent);
+
+		if (!content.characters.has(this.characterType)) {
+			// The character is no longer available, remove it
+			console.error(
+				`Character '${this.characterType}' is no longer available. Removing.`
+			);
+			this.panel.removeObject(this);
+			return;
+		}
+		const oldCharacter = oldContent.characters.find(
+			(x) => x.id === this.characterType
+		);
+		const newCharacter = content.characters.get(this.characterType)!;
+
+		const oldStyleGroupId = this._styleGroupId.value;
+		const oldStyleId = this._styleId.value;
+		const oldPoseId = this._poseId.value;
+		const oldPosePositions = { ...this._posePositions.value };
+
+		let newStyleGroupId = oldStyleGroupId;
+		let newStyleId = oldStyleId;
+		let newPoseId = oldPoseId;
+		const newPosePositions = { ...oldPosePositions };
+
+		const oldStyleGroup =
+			oldCharacter?.styleGroups[this._styleGroupId.value];
+		let newStyleGroup = newCharacter?.styleGroups[newStyleGroupId];
+		if (oldStyleGroup?.id !== newStyleGroup?.id) {
+			newStyleGroupId = newCharacter.styleGroups.findIndex(
+				(x) => x.id === oldStyleGroup?.id
+			);
+			if (newStyleGroupId === -1) {
+				newStyleGroupId = 0;
+			}
+			newStyleGroup = newCharacter.styleGroups[newStyleGroupId];
+		}
+		const oldStyle = oldStyleGroup?.styles[this.styleId];
+		let newStyle = newStyleGroup?.styles[newStyleId];
+		const oldStyleGroupJson = JSON.stringify(oldStyle?.components);
+		if (oldStyleGroupJson !== JSON.stringify(newStyle?.components)) {
+			newStyleId = newStyleGroup.styles.findIndex(
+				(x) => JSON.stringify(x.components) === oldStyleGroupJson
+			);
+			if (newStyleId === -1) {
+				newStyleId = 0;
+			}
+			newStyle = newStyleGroup.styles[newStyleId];
+		}
+		const oldPose = oldStyle?.poses[this.poseId]!;
+		let newPose = newStyle?.poses[newPoseId];
+		if (oldPose?.id !== newPose?.id) {
+			newPoseId = newStyle.poses.findIndex((x) => x.id === oldPose?.id);
+			if (newPoseId === -1) {
+				// TODO: Maybe there could be a smarter fallback?
+				// E.g. find a new pose with the highest overlap in positions?
+				// Might be more effort than it's worth though.
+				newPoseId = 0;
+			}
+			newPose = newStyle.poses[newPoseId];
+		}
+
+		for (const key in newPosePositions) {
+			if (!Object.prototype.hasOwnProperty.call(newPosePositions, key))
+				break;
+			if (key === 'head') continue;
+			if (key === 'headType') continue;
+			// Drop positions the old pose had, but the new one doesn't have
+			if (!(key in newPose.positions)) {
+				delete newPosePositions[key];
+				continue;
+			}
+			// Ensure positions are within bounds
+			if (newPosePositions[key] >= newPose.positions[key].length) {
+				newPosePositions[key] = 0;
+			}
+		}
+		// Fill in positions that the old pose didn't have
+		for (const key in newPose.positions) {
+			if (!Object.prototype.hasOwnProperty.call(newPose.positions, key))
+				break;
+			if (!(key in newPosePositions)) {
+				newPosePositions[key] = 0;
+			}
+		}
+
+		if (newPose.compatibleHeads.length > 0) {
+			const oldHeadCollection =
+				oldPose.compatibleHeads[oldPosePositions.headType];
+			newPosePositions.headType =
+				newPose.compatibleHeads.indexOf(oldHeadCollection);
+
+			if (newPosePositions.headType === -1) {
+				newPosePositions.headType = 0;
+			}
+
+			const oldHead = JSON.stringify(
+				oldCharacter?.heads[oldHeadCollection]?.variants[
+					oldPosePositions.head
+				]
+			);
+			newPosePositions.head =
+				newCharacter?.heads[
+					newPose.compatibleHeads[newPosePositions.headType]
+				]?.variants.findIndex((x) => JSON.stringify(x) == oldHead) ??
+				-1;
+			if (newPosePositions.head === -1) {
+				newPosePositions.head = 0;
+			}
+		} else {
+			delete newPosePositions.headType;
+			delete newPosePositions.head;
+		}
+
+		this.commitPoseAndPositionChanges({
+			styleGroupId: newStyleGroupId,
+			styleId: newStyleId,
+			poseId: newPoseId,
+			posePositions: newPosePositions,
+		});
 	}
 
 	//#region Positioning

@@ -122,7 +122,7 @@ export const panels = new (class Panels {
 	}
 
 	fixContentPackRemoval(oldContent: ContentPack<IAssetSwitch>) {
-		for (const panel of Object.values(this._panels)) {
+		for (const panel of Object.values(this._panels.value)) {
 			panel.fixContentPackRemoval(oldContent);
 		}
 	}
