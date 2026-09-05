@@ -48,14 +48,16 @@ export interface IEnvironment {
 		authors: IAuthors
 	): Promise<void>;
 	localRepoUninstall(id: string): Promise<void>;
+
 	autoLoadAdd(id: string): Promise<void>;
 	autoLoadRemove(id: string): Promise<void>;
+	getAutoloads(): Promise<string[]>;
+
+	loadEnvironmentPacks(): Promise<void>;
 
 	loadDefaultTemplate(): Promise<boolean>;
 	saveDefaultTemplate(): Promise<void>;
 	clearDefaultTemplate(): Promise<void>;
-
-	loadContentPacks(): void;
 
 	saveSettings(settings: Settings): Promise<void>;
 	loadSettings(): Promise<Settings>;
@@ -88,9 +90,10 @@ export interface EnvStorageEntry {
 
 export interface EnvState {
 	looseTextParsing: boolean;
-	autoAdd: string[];
+	autoLoads: string[];
 	downloadLocation: string;
 	hasTemplate: boolean;
+	templateSaveContentPacks: string[];
 }
 
 export interface EnvCapabilities {
