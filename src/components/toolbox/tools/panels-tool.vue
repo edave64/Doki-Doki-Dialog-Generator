@@ -217,6 +217,7 @@
 
 <script lang="ts" setup>
 import { setupPanelMixin } from '@/components/mixins/panel-mixin';
+import ImageOptions from '@/components/toolbox/subtools/image-options/image-options.vue';
 import DButton from '@/components/ui/d-button.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
@@ -234,7 +235,6 @@ import { SceneRenderer } from '@/renderables/scene-renderer';
 import { safeAsync } from '@/util/errors';
 import type { DeepReadonly } from 'ts-essentials';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
-import ImageOptions from '../subtools/image-options/image-options.vue';
 
 const emit = defineEmits<{
 	'show-save-dialog': [];

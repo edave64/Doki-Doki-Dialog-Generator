@@ -13,10 +13,10 @@ import {
 } from '@/constants/game_modes/ddlc/text-box';
 import type { IAsset } from '@/render-utils/assets/asset';
 import { ImageAsset } from '@/render-utils/assets/image-asset';
+import { type ITextboxRenderer, TextBox } from '@/renderables/textbox';
 import { applyStyle } from '@/renderer/canvas-tools';
 import type { ITextStyle } from '@/renderer/text-renderer/text-renderer';
 import type { DeepReadonly } from 'vue';
-import { type ITextboxRenderer, TextBox } from '../textbox';
 
 export abstract class DdlcBase implements ITextboxRenderer {
 	public abstract readonly width: number;

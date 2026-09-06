@@ -3,8 +3,8 @@ import getConstants from '@/constants';
 import eventBus, { RenderUpdatedEvent } from '@/eventbus/event-bus';
 import { ImageAsset } from '@/render-utils/assets/image-asset';
 import type { IAssetSwitch } from '@/store/content';
-import type { IdTranslationTable, Panel } from '../panels';
-import { ui } from '../ui';
+import type { IdTranslationTable, Panel } from '@/store/panels';
+import { ui } from '@/store/ui';
 import BaseObject, { type GenObject } from './object';
 
 export default class Sprite extends BaseObject<'sprite'> {

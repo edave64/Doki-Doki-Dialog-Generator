@@ -1,4 +1,7 @@
 import getConstants from '@/constants';
+import { content, type IAssetSwitch } from '@/store/content';
+import type { IdTranslationTable, Panel } from '@/store/panels';
+import { ui } from '@/store/ui';
 import { arraySeeker } from '@/util/seekers';
 import type {
 	Character as CharacterModel,
@@ -8,9 +11,6 @@ import type {
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import type { DeepReadonly } from 'ts-essentials';
 import { computed, ref, type Ref } from 'vue';
-import { content, type IAssetSwitch } from '../content';
-import type { IdTranslationTable, Panel } from '../panels';
-import { ui } from '../ui';
 import BaseObject, { type GenObject } from './object';
 
 export default class Character extends BaseObject<'character'> {

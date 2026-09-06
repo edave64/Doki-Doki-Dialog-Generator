@@ -141,11 +141,11 @@
 </template>
 
 <script lang="ts" setup>
+import ColorPicker from '@/components/toolbox/subtools/color/color-picker.vue';
 import getConstants from '@/constants';
 import { useVertical } from '@/hooks/use-viewport';
 import { TextRenderer } from '@/renderer/text-renderer/text-renderer';
 import { nextTick, ref, watch } from 'vue';
-import ColorPicker from '../color/color-picker.vue';
 
 defineOptions({
 	inheritAttrs: false,

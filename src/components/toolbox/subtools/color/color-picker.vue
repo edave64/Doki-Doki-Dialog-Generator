@@ -54,6 +54,7 @@
 </template>
 
 <script lang="ts" setup>
+import DButton from '@/components/ui/d-button.vue';
 import DFlow from '@/components/ui/d-flow.vue';
 import eventBus, { ColorPickedEvent } from '@/eventbus/event-bus';
 import { transaction } from '@/history-engine/transaction';
@@ -65,7 +66,6 @@ import uniqId from '@/util/unique-id';
 import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import type { DeepReadonly } from 'ts-essentials';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import DButton from '../../../ui/d-button.vue';
 import SliderGroup from './slider-group.vue';
 
 defineOptions({ inheritAttrs: false });

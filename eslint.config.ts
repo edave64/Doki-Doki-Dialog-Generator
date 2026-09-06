@@ -56,6 +56,22 @@ export default defineConfigWithVueTs(
 			'vue/define-props-declaration': 'error',
 			'vue/html-comment-content-spacing': 'error',
 			'vue/html-comment-indent': ['error', 'tab'],
+			'no-restricted-imports': [
+				'error',
+				{
+					patterns: [
+						{
+							regex: '^\\.\\./',
+							message:
+								'Relative imports from parent directories are not allowed.',
+						},
+					],
+				},
+			],
+			'@typescript-eslint/no-unused-vars': [
+				'error',
+				{ argsIgnorePattern: '^_' },
+			],
 		},
 	}
 );

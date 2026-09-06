@@ -1,6 +1,12 @@
 import getConstants from '@/constants';
 import { undoAble } from '@/history-engine/history';
 import type { IAssetSwitch } from '@/store/content';
+import type { IdTranslationTable, Panel } from '@/store/panels';
+import {
+	HasSpriteFilters,
+	loadFilters,
+	type SpriteFilter,
+} from '@/store/sprite-options';
 import { decomposeMatrix, mod } from '@/util/math';
 import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import {
@@ -12,12 +18,6 @@ import {
 	type Raw,
 	type Ref,
 } from 'vue';
-import type { IdTranslationTable, Panel } from '../panels';
-import {
-	HasSpriteFilters,
-	loadFilters,
-	type SpriteFilter,
-} from '../sprite-options';
 import type Character from './character';
 import type Choice from './choices';
 import type Notification from './notification';

@@ -144,6 +144,7 @@
 <script lang="ts" setup>
 import { getAAssetUrl, getAssetByUrl } from '@/asset-manager';
 import { verticalScrollRedirect } from '@/components/mixins/vertical-scroll-redirect';
+import DropTarget from '@/components/toolbox/drop-target.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
 import ExternalLink from '@/components/ui/external-link.vue';
@@ -164,7 +165,6 @@ import type {
 	Pose,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { type DeepReadonly, computed, nextTick, ref, watch } from 'vue';
-import DropTarget from '../../toolbox/drop-target.vue';
 import ExpressionOption from './expression-option.vue';
 import ExpressionSelect from './expression-select.vue';
 

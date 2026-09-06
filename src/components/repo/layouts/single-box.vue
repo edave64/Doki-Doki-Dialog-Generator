@@ -42,16 +42,16 @@
 </template>
 
 <script lang="ts" setup>
+import PackDisplay from '@/components/repo/pack-display.vue';
+import PackList from '@/components/repo/pack-list.vue';
+import SearchBar from '@/components/repo/search-bar.vue';
+import type { SelectedEvent } from '@/components/repo/types';
 import eventBus, { VueErrorEvent } from '@/eventbus/event-bus';
 import { type Pack, Repo } from '@/models/repo';
 import { safeAsync } from '@/util/errors';
 import type { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import type { DeepReadonly } from 'ts-essentials';
 import { computed, nextTick, onActivated, onMounted, ref } from 'vue';
-import PackDisplay from '../pack-display.vue';
-import PackList from '../pack-list.vue';
-import SearchBar from '../search-bar.vue';
-import type { SelectedEvent } from '../types';
 
 const emit = defineEmits<{ leave: [] }>();
 const searchBar = ref(null! as typeof SearchBar);

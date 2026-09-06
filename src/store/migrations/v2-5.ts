@@ -7,10 +7,10 @@
  */
 
 import getConstants from '@/constants';
+import type Character from '@/store/object-types/character';
+import type Sprite from '@/store/object-types/sprite';
+import { state, type IRootState } from '@/store/root';
 import { decomposeMatrix } from '@/util/math';
-import type Character from '../object-types/character';
-import type Sprite from '../object-types/sprite';
-import { state, type IRootState } from '../root';
 
 /**
  * Take a save from a version before 2.5 and migrate it.

@@ -1,8 +1,8 @@
 import getConstants from '@/constants';
 import { rendererLookup } from '@/renderables/textbox';
+import type { IdTranslationTable, Panel } from '@/store/panels';
 import { between } from '@/util/math';
 import { ref, type Ref } from 'vue';
-import type { IdTranslationTable, Panel } from '../panels';
 import BaseObject, { type GenObject } from './object';
 
 export type TextboxStyle =

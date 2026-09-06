@@ -1,7 +1,7 @@
 import getConstants from '@/constants';
 import { undoAble } from '@/history-engine/history';
+import type { IdTranslationTable, Panel } from '@/store/panels';
 import { ref, type DeepReadonly, type Ref } from 'vue';
-import type { IdTranslationTable, Panel } from '../panels';
 import BaseObject, { type GenObject } from './object';
 
 export default class Choice extends BaseObject<'choice'> {

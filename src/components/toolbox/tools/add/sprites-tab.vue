@@ -65,6 +65,7 @@
 <script lang="ts" setup>
 import { getAAssetUrl } from '@/asset-manager';
 import MissingImage from '@/assets/missing_image.svg';
+import DropTarget from '@/components/toolbox/drop-target.vue';
 import DButton from '@/components/ui/d-button.vue';
 import environment, { type Folder } from '@/environments/environment';
 import {
@@ -81,7 +82,6 @@ import type {
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import type { DeepReadonly } from 'ts-essentials';
 import { computed, ref } from 'vue';
-import DropTarget from '../../drop-target.vue';
 
 const emit = defineEmits<{
 	'show-dialog': [search: string];

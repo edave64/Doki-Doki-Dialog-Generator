@@ -237,6 +237,7 @@ import LayerBtns from '@/components/toolbox/commons-fieldsets/layer-btns.vue';
 import PositionAndSize from '@/components/toolbox/commons-fieldsets/position-and-size.vue';
 import ColorPicker from '@/components/toolbox/subtools/color/color-picker.vue';
 import ImageOptions from '@/components/toolbox/subtools/image-options/image-options.vue';
+import TextFormatting from '@/components/toolbox/subtools/text/text-formatting.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import ToggleBox from '@/components/ui/d-toggle.vue';
 import getConstants from '@/constants';
@@ -245,7 +246,6 @@ import type { GenObject } from '@/store/object-types/object';
 import { state } from '@/store/root';
 import { propWithTransaction } from '@/util/simple-settable';
 import { computed, ref } from 'vue';
-import TextFormatting from '../subtools/text/text-formatting.vue';
 
 const props = withDefaults(
 	defineProps<{

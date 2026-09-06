@@ -1,5 +1,5 @@
+import type { ITextboxRenderer } from '@/renderables/textbox';
 import type { ITextStyle } from '@/renderer/text-renderer/text-renderer';
-import type { ITextboxRenderer } from '../textbox';
 
 export class TextboxStylePack implements ITextboxRenderer {
 	get height(): number {

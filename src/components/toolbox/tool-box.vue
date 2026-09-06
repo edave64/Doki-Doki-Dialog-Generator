@@ -94,13 +94,13 @@
 </template>
 
 <script lang="ts" setup>
+import DButton from '@/components/ui/d-button.vue';
 import environment from '@/environments/environment';
 import { useSelection, useVertical, useViewport } from '@/hooks/use-viewport';
 import type { GenObject } from '@/store/object-types/object';
 import { state } from '@/store/root';
 import { isHTMLElement } from '@/util/cross-realm';
 import { computed, ref, watch } from 'vue';
-import DButton from '../ui/d-button.vue';
 import AddTool from './tools/add-tool.vue';
 import AppCredits from './tools/app-credits.vue';
 import AppSettings from './tools/app-settings.vue';

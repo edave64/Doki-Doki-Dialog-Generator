@@ -87,6 +87,7 @@
 
 <script lang="ts" setup>
 import { sanitize } from '@/components/toolbox/tools/character-pack-sanitizer';
+import ToggleBox from '@/components/ui/d-toggle.vue';
 import ExternalLink from '@/components/ui/external-link.vue';
 import environment from '@/environments/environment';
 import { Repo } from '@/models/repo';
@@ -98,7 +99,6 @@ import type {
 } from '@edave64/dddg-repo-filters/dist/authors';
 import type { DeepReadonly } from 'ts-essentials';
 import { computed, ref } from 'vue';
-import ToggleBox from '../ui/d-toggle.vue';
 
 const props = defineProps<{
 	selected: string;

@@ -1,6 +1,6 @@
 import getConstants from '@/constants';
+import type { IdTranslationTable, Panel } from '@/store/panels';
 import { ref, type Ref } from 'vue';
-import type { IdTranslationTable, Panel } from '../panels';
 import BaseObject, { type GenObject } from './object';
 
 export default class Notification extends BaseObject<'notification'> {

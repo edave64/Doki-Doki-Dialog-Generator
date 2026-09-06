@@ -11,13 +11,13 @@ import {
 	textboxOutlineWidth,
 	textboxRounding,
 } from '@/constants/game_modes/ddlc_plus/text-box-custom';
+import type { ITextboxRenderer } from '@/renderables/textbox';
 import {
 	ctxScope,
 	roundedRectangle,
 	roundedTopRectangle,
 } from '@/renderer/canvas-tools';
 import { RGBAColor } from '@/util/colors/rgb';
-import type { ITextboxRenderer } from '../textbox';
 import { Custom } from './custom';
 import { DdlcPlusBase } from './ddlc-plus-base';
 

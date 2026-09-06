@@ -72,6 +72,10 @@
 </template>
 
 <script lang="ts" setup>
+import { setupPanelMixin } from '@/components/mixins/panel-mixin';
+import DropTarget from '@/components/toolbox/drop-target.vue';
+import ColorPicker from '@/components/toolbox/subtools/color/color-picker.vue';
+import ImageOptions from '@/components/toolbox/subtools/image-options/image-options.vue';
 import DButton from '@/components/ui/d-button.vue';
 import environment, { type Folder } from '@/environments/environment';
 import { transaction } from '@/history-engine/transaction';
@@ -83,10 +87,6 @@ import type {
 	ContentPack,
 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { computed, ref } from 'vue';
-import { setupPanelMixin } from '../../mixins/panel-mixin';
-import DropTarget from '../drop-target.vue';
-import ColorPicker from '../subtools/color/color-picker.vue';
-import ImageOptions from '../subtools/image-options/image-options.vue';
 import BgButton from './background/bg-button.vue';
 import BgSettings from './background/bg-settings.vue';
 
