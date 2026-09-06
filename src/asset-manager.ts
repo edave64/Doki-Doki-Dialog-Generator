@@ -2,11 +2,11 @@
  * Loads assets from urls for use in canvas painting, keeps them cached, and loads webP images if supported.
  */
 
+import MissingImage from '@/assets/missing_image.svg';
 import environment from '@/environments/environment';
 import { allowLq, assetUrl } from './config';
 import EventBus, { AssetFailureEvent } from './eventbus/event-bus';
 import type { IAsset } from './render-utils/assets/asset';
-import { ErrorAsset } from './render-utils/assets/error-asset';
 import { ImageAsset } from './render-utils/assets/image-asset';
 import type { IAssetSwitch } from './store/content';
 import { isWebPSupported } from './util/format-support';
@@ -147,3 +147,26 @@ export function imagePromise(url: string, noCache = false): Promise<IAsset> {
 		document.body.appendChild(img);
 	});
 }
+
+// Kept in here, asset-manager depends on it, and it depends on asset-manager.
+// So other constructs would create circular dependencies.
+export class ErrorAsset implements IAsset {
+	public readonly width = 300;
+	public readonly height = 300;
+
+	paintOnto(
+		fsCtx: CanvasRenderingContext2D,
+		opts: { x?: number; y?: number; w?: number; h?: number } = {}
+	): void {
+		if (missing_image) {
+			missing_image.paintOnto(fsCtx, opts);
+		}
+	}
+}
+
+let missing_image: ImageAsset | null = null;
+
+// No point in caching, no-one else should reference this and we are caching it in a var.
+imagePromise(MissingImage, true).then((x) => {
+	if (x instanceof ImageAsset) missing_image = x;
+});

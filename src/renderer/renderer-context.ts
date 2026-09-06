@@ -151,7 +151,6 @@ export class RenderContext {
 			IORotation
 	): void {
 		if (this.aborted) throw new RenderAbortedException();
-		//if (params.image instanceof ErrorAsset) return;
 		const { image, flip, x, y, w, h, filters, composite } = {
 			flip: false,
 			w: params.image.width,

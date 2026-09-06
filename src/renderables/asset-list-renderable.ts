@@ -1,6 +1,5 @@
-import { getAAsset } from '@/asset-manager';
+import { ErrorAsset, getAAsset } from '@/asset-manager';
 import type { IAsset } from '@/render-utils/assets/asset';
-import { ErrorAsset } from '@/render-utils/assets/error-asset';
 import type { IAssetSwitch } from '@/store/content';
 import type { GenObject } from '@/store/object-types/object';
 import { state } from '@/store/root';
