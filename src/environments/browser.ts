@@ -350,7 +350,6 @@ export class Browser implements IEnvironment {
 			setDownloadFolder: false,
 			openableFolders: new Set([]),
 			assetCaching: !mobileSafari,
-			allowWebP: true,
 			limitedCanvasSpace: mobileSafari,
 			get storage(): boolean {
 				return storageSupported.value;

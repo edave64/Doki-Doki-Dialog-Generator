@@ -1,9 +1,9 @@
-import { isWebPSupported } from '@/asset-manager';
 import { allowLq, assetUrl } from '@/config';
 import { NsfwPacks } from '@/constants/nsfw';
 import eventBus, { FailureEvent } from '@/eventbus/event-bus';
 import { clearHistory } from '@/history-engine/history';
 import { Repo } from '@/models/repo';
+import { isWebPSupported } from '@/util/format-support';
 import { normalizeCharacter as normalizeCharacterV1 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v1/parser';
 import { convert as convertV1 } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/convertV1';
 import type {

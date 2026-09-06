@@ -59,7 +59,6 @@
 </template>
 
 <script lang="ts" setup>
-import { isWebPSupported as queryWebPSupport } from '@/asset-manager';
 import DButton from '@/components/ui/d-button.vue';
 import DFieldset from '@/components/ui/d-fieldset.vue';
 import DFlow from '@/components/ui/d-flow.vue';
@@ -67,6 +66,7 @@ import { transaction } from '@/history-engine/transaction';
 import type { IAssetSwitch } from '@/store/content';
 import type Character from '@/store/object-types/character';
 import { safeAsync } from '@/util/errors';
+import { isWebPSupported as queryWebPSupport } from '@/util/format-support';
 import { type Pose } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { type DeepReadonly } from 'ts-essentials';
 import { computed, ref, watch } from 'vue';

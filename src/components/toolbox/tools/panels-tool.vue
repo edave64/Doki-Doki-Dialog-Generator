@@ -273,7 +273,7 @@ function emptyStringInInt(v: string | number) {
 }
 
 //#region Format-Support
-import { isHeifSupported, isWebPSupported } from '@/asset-manager';
+import { isHeifSupported, isWebPSupported } from '@/util/format-support';
 const webpSupport = ref(false);
 const heifSupport = ref(false);
 

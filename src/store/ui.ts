@@ -1,7 +1,6 @@
 import { reactive } from 'vue';
 import type { GenObject } from './object-types/object';
-import type { Panel } from './panels';
-import { state } from './root';
+import { panels, type Panel } from './panels';
 
 export const ui = Object.seal(
 	reactive({
@@ -24,7 +23,7 @@ export const ui = Object.seal(
 			panelId: Panel['id'],
 			objects: GenObject['id'][]
 		) {
-			const panel = state.panels.panels[panelId];
+			const panel = panels.panels[panelId];
 			const allObject = Object.values(panel.objects);
 			const objectsToCopy: Set<GenObject> = new Set();
 

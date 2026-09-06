@@ -12,8 +12,8 @@ import type { GenObject } from './object-types/object';
 import Poem from './object-types/poem';
 import Sprite from './object-types/sprite';
 import Textbox from './object-types/textbox';
-import { state } from './root';
 import { HasSpriteFilters, loadFilters } from './sprite-options';
+import { viewports } from './viewports';
 
 export const panels = new (class Panels {
 	private _panels: Ref<Record<Panel['id'], Raw<Panel>>> = ref({});
@@ -83,7 +83,7 @@ export const panels = new (class Panels {
 		const idx = order.indexOf(panel.id);
 		if (idx === -1) return;
 
-		const viewportsToUpdate = state.viewports.list.filter(
+		const viewportsToUpdate = viewports.list.filter(
 			(x) => x.currentPanel === panel.id
 		);
 		const newPanelActivePanel =
@@ -132,7 +132,7 @@ export const panels = new (class Panels {
 		return {
 			lastPanelId: this._lastPanelId,
 			panelOrder: [...this._order.value],
-			currentPanel: state.viewports.list[0].currentPanel,
+			currentPanel: viewports.list[0].currentPanel,
 			panels: Object.fromEntries(
 				Object.values(this._panels.value).map((panel) => [
 					panel.id,
@@ -313,7 +313,7 @@ export class Panel extends HasSpriteFilters {
 			obj.prepareSiblingRemoval(object);
 		}
 
-		for (const viewport of state.viewports.list) {
+		for (const viewport of viewports.list) {
 			if (
 				viewport.currentPanel === this.id &&
 				viewport.selection === object.id

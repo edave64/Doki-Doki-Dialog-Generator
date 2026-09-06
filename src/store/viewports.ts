@@ -2,8 +2,7 @@ import { CanvasAspectRatio, ToolboxSize } from '@/constants/ui';
 import { isInput } from '@/util/cross-realm';
 import { markRaw, reactive, ref, type Raw, type Ref } from 'vue';
 import type { GenObject } from './object-types/object';
-import type { Panel } from './panels';
-import { state } from './root';
+import { panels, type Panel } from './panels';
 
 export const viewports = reactive(
 	new (class Viewports {
@@ -51,12 +50,18 @@ export const viewports = reactive(
 						target.addEventListener(
 							'wheel',
 							(wheelEvent) => {
-								const inc = wheelEvent.deltaY > 0 || wheelEvent.deltaX > 0;
+								const inc =
+									wheelEvent.deltaY > 0 ||
+									wheelEvent.deltaX > 0;
 								wheelEvent.preventDefault();
 								wheelEvent.stopPropagation();
 								target.valueAsNumber +=
 									(inc ? 1 : -1) *
-									(wheelEvent.shiftKey ? 10 : wheelEvent.altKey ? 0.1 : 1);
+									(wheelEvent.shiftKey
+										? 10
+										: wheelEvent.altKey
+											? 0.1
+											: 1);
 								target.dispatchEvent(
 									new Event('input', {
 										bubbles: true,
@@ -97,13 +102,13 @@ export const viewports = reactive(
 				if (!primary) return;
 				primary.currentPanel = data.currentPanel;
 			}
-			const firstPanel = state.panels.panels[0];
+			const firstPanel = panels.panels[0];
 
 			for (const viewport of this.list) {
-				if (!state.panels.panels[viewport.currentPanel]) {
+				if (!panels.panels[viewport.currentPanel]) {
 					viewport.currentPanel = firstPanel.id;
 				}
-				const panel = state.panels.panels[viewport.currentPanel];
+				const panel = panels.panels[viewport.currentPanel];
 				if (panel.objects[viewport.selection!] === undefined) {
 					viewport.selection = null;
 				}
@@ -181,7 +186,8 @@ export class Viewport {
 			return Math.min(availableWidth, maxWidthByRatio);
 		} else {
 			const availableWidth = this.width;
-			const maxWidthByRatio = (this.height - ToolboxSize) * CanvasAspectRatio;
+			const maxWidthByRatio =
+				(this.height - ToolboxSize) * CanvasAspectRatio;
 
 			return Math.min(availableWidth, maxWidthByRatio);
 		}
@@ -190,7 +196,8 @@ export class Viewport {
 	public get canvasHeight(): number {
 		if (this.isVertical) {
 			const availableHeight = this.height;
-			const maxHeightByRatio = (this.width - ToolboxSize) / CanvasAspectRatio;
+			const maxHeightByRatio =
+				(this.width - ToolboxSize) / CanvasAspectRatio;
 
 			return Math.min(availableHeight, maxHeightByRatio);
 		} else {
