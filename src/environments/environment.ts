@@ -8,11 +8,13 @@
 
 import type { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import type { IPack } from '@edave64/dddg-repo-filters/dist/pack';
+import { isTauri } from '@tauri-apps/api/core';
 import type { DeepReadonly } from 'ts-essentials';
 import type { Ref } from 'vue';
 import { Browser } from './browser';
 import { OldEdge } from './edge';
 import { Electron } from './electron';
+import { Tauri } from './tauri';
 
 export type Folder = 'downloads' | 'sprites' | 'backgrounds';
 
@@ -105,7 +107,6 @@ export interface EnvCapabilities {
 	lq: boolean;
 	openableFolders: ReadonlySet<Folder>;
 	assetCaching: boolean;
-	allowWebP: boolean;
 	limitedCanvasSpace: boolean;
 	storage: boolean;
 }
@@ -121,6 +122,9 @@ export interface Settings {
 function chooseEnv(): IEnvironment {
 	if (window.isElectron) {
 		return new Electron();
+	}
+	if (isTauri()) {
+		return new Tauri();
 	}
 	if ('msSaveOrOpenBlob' in window.navigator) {
 		return new OldEdge();

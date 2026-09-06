@@ -3,7 +3,6 @@
  * https://github.com/edave64/dddg-desktop-version
  */
 
-import { registerAssetWithURL } from '@/asset-manager';
 import eventBus, {
 	FailureEvent,
 	ResolvableErrorEvent,
@@ -137,21 +136,6 @@ export class Electron implements IEnvironment {
 				await transaction(async () => {
 					await state.content.loadContentPacks(filePath);
 				});
-			}
-		);
-		this.electron.ipcRenderer.on(
-			'add-persistent-background',
-			async (filepath: string) => {
-				const name = 'persistentBg-' + filepath;
-				const parts = filepath.split('/');
-				registerAssetWithURL(name, filepath);
-				installedBackgroundsPack.backgrounds.push({
-					id: name,
-					variants: [[name]],
-					label: parts[parts.length - 1],
-					scaling: 'none',
-				});
-				this.invalidateInstalledBGs();
 			}
 		);
 		this.electron.ipcRenderer.on('push-message', (message: string) => {
