@@ -6,9 +6,8 @@ import {
 	loadFromDirectory,
 	saveInDirectory,
 } from '@/components/save-dialog/saving';
-import { transaction } from '@/history-engine/transaction';
-import { Repo } from '@/models/repo';
-import { state } from '@/store/root';
+import { type IRootState } from '@/store/root';
+import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import type JSZip from 'jszip';
 import { reactive, ref, type DeepReadonly } from 'vue';
 import type {
@@ -42,14 +41,17 @@ export class Browser implements IEnvironment {
 				getSaves() {
 					return [];
 				},
-				async save(name: string): Promise<EnvStorageEntry> {
+				async save(
+					_state: IRootState,
+					name: string
+				): Promise<EnvStorageEntry> {
 					return {
 						name,
 						size: 0,
 						timestamp: new Date(),
 					};
 				},
-				async load(_name: string): Promise<void> {
+				async load(_state: IRootState, _name: string): Promise<void> {
 					return;
 				},
 				async downloadAsZip(_name: string): Promise<void> {
@@ -125,7 +127,7 @@ export class Browser implements IEnvironment {
 			getSaves() {
 				return tempSaves;
 			},
-			async save(name: string) {
+			async save(state: IRootState, name: string) {
 				const saveFolder = await saveDirectory;
 				const timestamp = new Date();
 
@@ -133,7 +135,7 @@ export class Browser implements IEnvironment {
 					create: true,
 				});
 
-				const size = await saveInDirectory(entryFolder);
+				const size = await saveInDirectory(state, entryFolder);
 
 				const entryInfoFile = await entryFolder.getFileHandle(
 					'info.json',
@@ -157,7 +159,7 @@ export class Browser implements IEnvironment {
 				}
 				return entry;
 			},
-			async load(name: string): Promise<void> {
+			async load(state: IRootState, name: string): Promise<void> {
 				const saveFolder = await saveDirectory;
 				const entryFolder = await saveFolder.getDirectoryHandle(name);
 
@@ -165,7 +167,7 @@ export class Browser implements IEnvironment {
 					throw new Error(`Save ${name} not found`);
 				}
 
-				await loadFromDirectory(entryFolder);
+				await loadFromDirectory(state, entryFolder);
 			},
 			async downloadAsZip(name: string): Promise<void> {
 				const saveFolder = await saveDirectory;
@@ -323,6 +325,11 @@ export class Browser implements IEnvironment {
 		}
 	}
 
+	private readonly contentPackLoader =
+		Promise.withResolvers<(packIds: string[]) => Promise<void>>();
+	private readonly contentPackReplacer =
+		Promise.withResolvers<(pack: ContentPack<string>) => Promise<void>>();
+
 	constructor() {
 		const canSave = IndexedDBHandler.canSave();
 		const isSavingEnabled = this.isSavingEnabled;
@@ -369,28 +376,20 @@ export class Browser implements IEnvironment {
 			if (this.savingEnabled) {
 				const autoload = (await IndexedDBHandler.loadAutoload()) ?? [];
 				this.state.autoLoads = autoload;
-				const repo = await Repo.getInstance();
-				const packUrls = await Promise.all(
-					autoload.map(async (compoundId) => {
-						const [id, url] = compoundId.split(';', 2) as [
-							string,
-							string?,
-						];
-						if (url != null && !repo.hasPack(id)) {
-							await repo.loadTempPack(url);
-						}
-						const pack = repo.getPack(id)!;
-						return pack.dddg2Path ?? pack.dddg1Path;
-					})
-				);
-				await transaction(async () => {
-					await state.content.loadContentPacks(packUrls);
-				});
+				await (
+					await this.contentPackLoader.promise
+				)(autoload);
 			}
 		});
 	}
 
-	async loadEnvironmentPacks(): Promise<void> {}
+	async loadEnvironmentPacks(
+		loadContentPack: (packIdWithRepo: string[]) => Promise<void>,
+		replaceContentPack: (contentPack: ContentPack<string>) => Promise<void>
+	): Promise<void> {
+		this.contentPackLoader.resolve(loadContentPack);
+		this.contentPackReplacer.resolve(replaceContentPack);
+	}
 
 	storeSaveFile(saveBlob: Blob, defaultName: string): Promise<void> {
 		const a = document.createElement('a');
@@ -534,7 +533,7 @@ export class Browser implements IEnvironment {
 		await IndexedDBHandler.saveSettings(settings);
 	}
 
-	public async loadDefaultTemplate(): Promise<boolean> {
+	public async loadDefaultTemplate(state: IRootState): Promise<boolean> {
 		await this.loading;
 		await this.creatingDB;
 		if (!this.isSavingEnabled.value) return false;
@@ -548,7 +547,7 @@ export class Browser implements IEnvironment {
 		return true;
 	}
 
-	public async saveDefaultTemplate(): Promise<void> {
+	public async saveDefaultTemplate(state: IRootState): Promise<void> {
 		await this.loading;
 		await this.creatingDB;
 		if (!this.isSavingEnabled.value) return;

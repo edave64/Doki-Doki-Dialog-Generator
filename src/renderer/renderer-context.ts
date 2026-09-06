@@ -2,7 +2,7 @@ import type { IAsset } from '@/render-utils/assets/asset';
 import type { SpriteFilter } from '@/store/sprite-options';
 import type { DeepReadonly } from 'ts-essentials';
 import { RenderAbortedException } from './render-aborted-exception';
-import { Renderer } from './renderer';
+import type { Renderer } from './renderer';
 
 export type CompositeModes =
 	| 'source-over'
@@ -302,7 +302,7 @@ export class RenderContext {
 		image: HTMLImageElement | Renderer | HTMLCanvasElement,
 		repetition: 'repeat' | 'repeat-x' | 'repeat-y' | 'no-repeat' = 'repeat'
 	): CanvasPattern {
-		if (image instanceof Renderer) {
+		if (!(image instanceof HTMLElement)) {
 			image = image.previewCanvas;
 		}
 		return this.fsCtx.createPattern(image, repetition)!;

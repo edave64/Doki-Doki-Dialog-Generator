@@ -1,5 +1,8 @@
 import environment from '@/environments/environment';
-import eventBus, { ShowMessageEvent } from '@/eventbus/event-bus';
+import eventBus, {
+	ReloadLocalRepoEvent,
+	ShowMessageEvent,
+} from '@/eventbus/event-bus';
 import { state } from '@/store/root';
 import type {
 	IAuthor,
@@ -21,6 +24,10 @@ export type LoadedRepo = {
 	packs: IPrimitivePack[];
 	authors: IAuthors;
 };
+
+eventBus.subscribe(ReloadLocalRepoEvent, async () =>
+	(await Repo.getInstance()).reloadLocalRepo()
+);
 
 export class Repo {
 	private static instance: null | Promise<Repo>;

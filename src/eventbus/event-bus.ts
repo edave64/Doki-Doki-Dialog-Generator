@@ -111,6 +111,12 @@ export class ColorPickedEvent implements IEvent {
 	public readonly kind = 'ColorPickedEvent';
 	public constructor(public color: string) {}
 }
+
+export class ReloadLocalRepoEvent implements IEvent {
+	public static readonly kind = 'ReloadLocalRepoEvent';
+	public readonly kind = 'ReloadLocalRepoEvent';
+}
+
 export class VueErrorEvent implements IEvent {
 	public static readonly kind = 'VueErrorEvent';
 	public readonly kind = 'VueErrorEvent';

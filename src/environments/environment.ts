@@ -6,15 +6,17 @@
  * implement them for specific environments.
  */
 
+import type { IRootState } from '@/store/root';
 import type { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import type { IPack } from '@edave64/dddg-repo-filters/dist/pack';
+import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { isTauri } from '@tauri-apps/api/core';
 import type { DeepReadonly } from 'ts-essentials';
 import type { Ref } from 'vue';
 import { Browser } from './browser';
 import { OldEdge } from './edge';
 import { Electron } from './electron';
-import { Tauri } from './tauri';
+//import { Tauri } from './tauri';
 
 export type Folder = 'downloads' | 'sprites' | 'backgrounds';
 
@@ -32,6 +34,15 @@ export interface IEnvironment {
 	 */
 	readonly updateProgress: Ref<number | 'done' | 'none' | 'wait'> | null;
 	savingEnabled: boolean;
+
+	/**
+	 * This call enables the environment to load content packs. Note that these callbacks are
+	 * retained. Even after the promise resolves, the callbacks will be called.
+	 */
+	loadEnvironmentPacks(
+		loadContentPack: (packIdWithRepo: string[]) => Promise<void>,
+		replaceContentPack: (contentPack: ContentPack<string>) => Promise<void>
+	): Promise<void>;
 
 	saveToFile(
 		canvas: HTMLCanvasElement,
@@ -55,10 +66,8 @@ export interface IEnvironment {
 	autoLoadRemove(id: string): Promise<void>;
 	getAutoloads(): Promise<string[]>;
 
-	loadEnvironmentPacks(): Promise<void>;
-
-	loadDefaultTemplate(): Promise<boolean>;
-	saveDefaultTemplate(): Promise<void>;
+	loadDefaultTemplate(state: IRootState): Promise<boolean>;
+	saveDefaultTemplate(state: IRootState): Promise<void>;
 	clearDefaultTemplate(): Promise<void>;
 
 	saveSettings(settings: Settings): Promise<void>;
@@ -75,8 +84,8 @@ export interface IEnvironment {
 
 export interface EnvStorage {
 	getSaves(): EnvStorageEntry[];
-	save(name: string): Promise<EnvStorageEntry>;
-	load(name: string): Promise<void>;
+	save(state: IRootState, name: string): Promise<EnvStorageEntry>;
+	load(state: IRootState, name: string): Promise<void>;
 	delete(name: string): Promise<void>;
 	downloadAsZip(name: string): Promise<void>;
 	uploadFromZip(name: string, zip: Blob): Promise<void>;
@@ -124,7 +133,7 @@ function chooseEnv(): IEnvironment {
 		return new Electron();
 	}
 	if (isTauri()) {
-		return new Tauri();
+		//return new Tauri();
 	}
 	if ('msSaveOrOpenBlob' in window.navigator) {
 		return new OldEdge();

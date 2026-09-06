@@ -491,10 +491,38 @@ onMounted(async () => {
 			]);
 
 			// Load content packs that are provided by the environment, treat them like builtins
-			await environment.loadEnvironmentPacks();
+			await environment.loadEnvironmentPacks(
+				async (packIdsWithRepo) => {
+					const repo = await Repo.getInstance();
+					const packUrls = await Promise.all(
+						packIdsWithRepo.map(async (compoundId) => {
+							const [id, url] = compoundId.split(';', 2) as [
+								string,
+								string?,
+							];
+							if (url != null && !repo.hasPack(id)) {
+								await repo.loadTempPack(url);
+							}
+							const pack = repo.getPack(id)!;
+							return pack.dddg2Path || pack.dddg1Path;
+						})
+					);
+					await transaction(async () => {
+						await store.content.loadContentPacks(packUrls);
+					});
+				},
+				async (contentPack) => {
+					await transaction(async () => {
+						await store.content.replaceContentPack({
+							contentPack,
+							processed: false,
+						});
+					});
+				}
+			);
 
 			try {
-				if (!(await environment.loadDefaultTemplate())) {
+				if (!(await environment.loadDefaultTemplate(store))) {
 					const panel = store.panels.createPanel();
 					viewport.value.currentPanel = panel.id;
 					if (Object.keys(panel.objects).length === 0) {

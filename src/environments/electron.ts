@@ -5,13 +5,11 @@
 
 import eventBus, {
 	FailureEvent,
+	ReloadLocalRepoEvent,
 	ResolvableErrorEvent,
 	ShowMessageEvent,
 } from '@/eventbus/event-bus';
-import { transaction } from '@/history-engine/transaction';
-import { Repo } from '@/models/repo';
-import type { ReplaceContentPackAction } from '@/store/content';
-import { state } from '@/store/root';
+import { type IRootState } from '@/store/root';
 import type { IAuthors } from '@edave64/dddg-repo-filters/dist/authors';
 import type { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
@@ -66,22 +64,23 @@ export class Electron implements IEnvironment {
 			getSaves() {
 				return tempSaves.value;
 			},
-			async save(name: string) {
+			async save(state: IRootState, name: string) {
 				await electron.ipcRenderer.sendConvo('save-states.begin', name);
 				const entry = await sendSaveToElectron(
+					state,
 					name,
 					electron.ipcRenderer
 				);
 				tempSaves.value.push(entry);
 				return entry;
 			},
-			async load(name: string): Promise<void> {
+			async load(state: IRootState, name: string): Promise<void> {
 				const files = (await electron.ipcRenderer.sendConvo(
 					'save-states.load',
 					name
 				)) as { name: string; data: ArrayBuffer }[];
 
-				await loadFromFiles(files);
+				await loadFromFiles(state, files);
 			},
 			async downloadAsZip(name: string): Promise<void> {
 				await electron.ipcRenderer.sendConvo(
@@ -120,6 +119,11 @@ export class Electron implements IEnvironment {
 	private autoLoadsReceived: () => void;
 	private autoLoadsReceivedPromise: Promise<void>;
 
+	private readonly contentPackLoader =
+		Promise.withResolvers<(packIds: string[]) => Promise<void>>();
+	private readonly contentPackReplacer =
+		Promise.withResolvers<(pack: ContentPack<string>) => Promise<void>>();
+
 	constructor() {
 		this.loadingContentPacksAllowed = new Promise((resolve) => {
 			this.unlockLoadContentPacks = () => resolve();
@@ -129,15 +133,6 @@ export class Electron implements IEnvironment {
 		this.autoLoadsReceivedPromise = promise;
 		this.autoLoadsReceived = resolve;
 
-		this.electron.ipcRenderer.on(
-			'add-persistent-content-pack',
-			async (filePath: string) => {
-				await this.loadingContentPacksAllowed;
-				await transaction(async () => {
-					await state.content.loadContentPacks(filePath);
-				});
-			}
-		);
 		this.electron.ipcRenderer.on('push-message', (message: string) => {
 			eventBus.fire(new ShowMessageEvent(message));
 		});
@@ -150,24 +145,9 @@ export class Electron implements IEnvironment {
 		this.electron.ipcRenderer.onConversation(
 			'load-packs',
 			async (packIds: string[]) => {
-				const repo = await Repo.getInstance();
-				const packUrls = await Promise.all(
-					packIds.map(async (compoundId) => {
-						const [id, url] = compoundId.split(';', 2) as [
-							string,
-							string?,
-						];
-						if (url != null && !repo.hasPack(id)) {
-							await repo.loadTempPack(url);
-						}
-						const pack = repo.getPack(id)!;
-						return pack.dddg2Path || pack.dddg1Path;
-					})
-				);
-
-				await transaction(async () => {
-					await state.content.loadContentPacks(packUrls);
-				});
+				await (
+					await this.contentPackLoader.promise
+				)(packIds);
 			}
 		);
 		this.electron.ipcRenderer.onConversation(
@@ -178,18 +158,14 @@ export class Electron implements IEnvironment {
 			}
 		);
 		this.electron.ipcRenderer.onConversation('reload-repo', async () => {
-			await (await Repo.getInstance()).reloadLocalRepo();
+			eventBus.fire(new ReloadLocalRepoEvent());
 		});
 		this.electron.ipcRenderer.onConversation(
 			'replace-pack',
 			async (contentPack: ContentPack<string>) => {
-				const action: ReplaceContentPackAction = {
-					processed: false,
-					contentPack,
-				};
-				await transaction(async () => {
-					await state.content.replaceContentPack(action);
-				});
+				await (
+					await this.contentPackReplacer.promise
+				)(contentPack);
 			}
 		);
 		this.electron.ipcRenderer.onConversation(
@@ -236,19 +212,24 @@ export class Electron implements IEnvironment {
 		this.electron.ipcRenderer.send('init-dddg');
 	}
 
-	async loadEnvironmentPacks(): Promise<void> {
+	async loadEnvironmentPacks(
+		loadContentPack: (packIdWithRepo: string[]) => Promise<void>,
+		replaceContentPack: (contentPack: ContentPack<string>) => Promise<void>
+	) {
 		this.unlockLoadContentPacks();
+		this.contentPackLoader.resolve(loadContentPack);
+		this.contentPackReplacer.resolve(replaceContentPack);
 		await this.electron.ipcRenderer.sendConvo('load-env-packs');
 	}
 
-	async loadDefaultTemplate(): Promise<boolean> {
+	async loadDefaultTemplate(state: IRootState): Promise<boolean> {
 		const files = (await this.electron.ipcRenderer.sendConvo(
 			'save-states.load-default'
 		)) as { name: string; data: ArrayBuffer }[] | null;
 
 		if (files == null) return false;
 		try {
-			await loadFromFiles(files);
+			await loadFromFiles(state, files);
 			this.state.hasTemplate = true;
 		} catch (e) {
 			eventBus.fire(
@@ -260,11 +241,11 @@ export class Electron implements IEnvironment {
 		}
 		return true;
 	}
-	async saveDefaultTemplate(): Promise<void> {
+	async saveDefaultTemplate(state: IRootState): Promise<void> {
 		await this.electron.ipcRenderer.sendConvo('save-states.default-begin');
 		// For default saves, we must send the name 'default'.
 		// Otherwise electron will reject the save.
-		await sendSaveToElectron('default', this.electron.ipcRenderer);
+		await sendSaveToElectron(state, 'default', this.electron.ipcRenderer);
 		this.state.hasTemplate = true;
 	}
 	async clearDefaultTemplate(): Promise<void> {
@@ -435,30 +416,10 @@ export class Electron implements IEnvironment {
 	openNewWindow(): Window | null {
 		return window.open(undefined, '_blank', 'left=100,top=100');
 	}
-
-	private invalidateInstalledBGs() {
-		if (this.bgInvalidation !== null) return;
-		this.bgInvalidation = requestAnimationFrame(() => {
-			this.updateInstalledBGs();
-		});
-	}
-
-	private updateInstalledBGs() {
-		if (this.bgInvalidation != null) {
-			cancelAnimationFrame(this.bgInvalidation);
-			this.bgInvalidation = null;
-		}
-
-		transaction(async () => {
-			await state.content.replaceContentPack({
-				contentPack: installedBackgroundsPack,
-				processed: false,
-			});
-		});
-	}
 }
 
 async function loadFromFiles(
+	state: IRootState,
 	files: { name: string; data: ArrayBuffer }[]
 ): Promise<void> {
 	const mainSave = files.find((x) => x.name === 'save.dddg');
@@ -477,6 +438,7 @@ async function loadFromFiles(
 }
 
 async function sendSaveToElectron(
+	state: IRootState,
 	saveName: string,
 	ipcRenderer: IpcRenderer
 ): Promise<EnvStorageEntry> {
@@ -506,19 +468,6 @@ async function sendSaveToElectron(
 		saveName
 	)) as EnvStorageEntry;
 }
-
-const installedBackgroundsPack: ContentPack<string> = {
-	packId: 'dddg.buildin.installedBackgrounds',
-	dependencies: [],
-	packCredits: [],
-	characters: [],
-	fonts: [],
-	sprites: [],
-	poemStyles: [],
-	poemBackgrounds: [],
-	backgrounds: [],
-	colors: [],
-};
 
 interface IElectronWindow {
 	isElectron: boolean;

@@ -166,6 +166,18 @@
 				Clear template
 			</button>
 		</template>
+		<template v-if="savesAllowed">
+			<button @click="repoManagerVisible = true">
+				Manage repositories
+			</button>
+			<modal-dialog
+				v-if="repoManagerVisible"
+				ref="dialog"
+				@leave="repoManagerVisible = false"
+			>
+				<repo-manager />
+			</modal-dialog>
+		</template>
 	</div>
 </template>
 
@@ -185,6 +197,7 @@ import { safeAsync } from '@/util/errors';
 import { computed, createApp, ref, watch } from 'vue';
 
 const root = ref(null! as HTMLElement);
+const repoManagerVisible = ref(false);
 const updateProgress = environment.updateProgress as Electron['updateProgress'];
 setupPanelMixin(root);
 
@@ -332,7 +345,7 @@ function openDownloadFolder() {
 const hasTemplate = computed(() => environment.state.hasTemplate);
 
 function saveDefaultTemplate() {
-	environment.saveDefaultTemplate();
+	environment.saveDefaultTemplate(state);
 }
 
 function clearDefaultTemplate() {

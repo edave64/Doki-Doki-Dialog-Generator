@@ -95,6 +95,7 @@
 import envX from '@/environments/environment';
 import eventBus, { StateLoadingEvent } from '@/eventbus/event-bus';
 import { transaction } from '@/history-engine/transaction';
+import { state } from '@/store/root';
 import { confirm } from '@/util/dialogs';
 import { computed, ref } from 'vue';
 const estimate = ref(null as null | StorageEstimate);
@@ -129,7 +130,7 @@ async function createSave() {
 		}
 	}
 	await transaction(async () => {
-		await envX.storage.save(saveName.value);
+		await envX.storage.save(state, saveName.value);
 	});
 }
 
@@ -153,7 +154,7 @@ async function loadSave() {
 	}
 	await transaction(async () => {
 		if (activeSelection.value) {
-			await envX.storage.load(saveName.value);
+			await envX.storage.load(state, saveName.value);
 		}
 		eventBus.fire(new StateLoadingEvent());
 	});

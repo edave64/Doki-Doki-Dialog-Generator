@@ -685,6 +685,7 @@ async function load() {
 			await zip.loadAsync(uploadInput.files[0]);
 
 			await loadFolder(
+				state,
 				await Promise.all(
 					Object.values(zip.files).map(
 						async (file) =>

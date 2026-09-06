@@ -4,7 +4,8 @@ import {
 	defineConfigWithVueTs,
 	vueTsConfigs,
 } from '@vue/eslint-config-typescript';
-import pluginOxlint from 'eslint-plugin-oxlint';
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
+import { createNodeResolver, importX } from 'eslint-plugin-import-x';
 import pluginVue from 'eslint-plugin-vue';
 import { globalIgnores } from 'eslint/config';
 
@@ -17,6 +18,49 @@ export default defineConfigWithVueTs(
 	{
 		name: 'app/files-to-lint',
 		files: ['**/*.{ts,mts,tsx,vue}'],
+	},
+	importX.flatConfigs.recommended,
+	importX.flatConfigs.typescript,
+	{
+		files: ['**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
+		plugins: {
+			'import-x': importX,
+		},
+		settings: {
+			'import-x/resolver-next': [
+				createTypeScriptImportResolver(/* Your override options go here */),
+				createNodeResolver(/* Your override options go here */),
+			],
+		},
+		rules: {
+			'import-x/no-restricted-paths': [
+				'warn',
+				{
+					zones: [
+						{
+							target: './src/eventbus',
+							from: './src',
+							except: ['./eventbus'],
+						},
+						{
+							target: './src/util',
+							from: './src',
+							except: [
+								'./util',
+								'./config.ts',
+								'./eventbus',
+								'./history-engine',
+							],
+						},
+						{
+							target: './src/environments',
+							from: './src',
+							except: ['./util', './environments', './eventbus'],
+						},
+					],
+				},
+			],
+		},
 	},
 
 	globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),

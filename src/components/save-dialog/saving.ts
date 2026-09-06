@@ -1,11 +1,11 @@
 import eventBus, { InvalidateAllThumbnails } from '@/eventbus/event-bus';
 import { transaction } from '@/history-engine/transaction';
-import { state } from '@/store/root';
+import { type IRootState } from '@/store/root';
 import { ref } from 'vue';
 
 export const folderDownloadAvailable = ref('showDirectoryPicker' in window);
 
-export async function loadFolder(files: Iterable<File>) {
+export async function loadFolder(state: IRootState, files: Iterable<File>) {
 	await transaction(async () => {
 		const filesAry = Array.from(files);
 
@@ -34,6 +34,7 @@ export async function loadFolder(files: Iterable<File>) {
  * @returns The size of the saved data in bytes.
  */
 export async function saveInDirectory(
+	state: IRootState,
 	entry: FileSystemDirectoryHandle
 ): Promise<number> {
 	let size = 0;
@@ -64,26 +65,16 @@ export async function saveInDirectory(
 	return size;
 }
 
-export async function loadFromDirectory(folder: FileSystemDirectoryHandle) {
-	await transaction(async () => {
-		const saveFile = await folder.getFileHandle(`save.dddg`, {
-			create: false,
-		});
-		const fileLoader = await fetch(
-			URL.createObjectURL(await saveFile.getFile())
-		);
-		const data = await fileLoader.text();
-		await state.loadSave(data);
-
-		for await (const [name, subEntry] of folder.entries()) {
-			if (name === 'save.dddg') continue;
-			if (subEntry.kind === 'directory') continue;
-			const url = URL.createObjectURL(
-				await (subEntry as FileSystemFileHandle).getFile()
-			);
-			state.uploadUrls.add(name, url);
-		}
-	});
-
-	eventBus.fire(new InvalidateAllThumbnails());
+export async function loadFromDirectory(
+	state: IRootState,
+	folder: FileSystemDirectoryHandle
+) {
+	return loadFolder(
+		state,
+		await Promise.all(
+			(await Array.fromAsync(folder.entries()))
+				.filter((x) => x instanceof FileSystemFileHandle)
+				.map((x) => x.getFile())
+		)
+	);
 }
