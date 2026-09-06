@@ -17,7 +17,7 @@ import {
 	roundedRectangle,
 	roundedTopRectangle,
 } from '@/renderer/canvas-tools';
-import { RGBAColor } from '@/util/colors/rgb';
+import { RGBAColor } from '@/util/colors';
 import { Custom } from './custom';
 import { DdlcPlusBase } from './ddlc-plus-base';
 

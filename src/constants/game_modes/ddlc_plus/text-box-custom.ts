@@ -1,4 +1,4 @@
-import { HSLAColor } from '@/util/colors/hsl';
+import { HSLAColor } from '@/util/colors';
 
 export const textboxDefaultColor = '#ffa8d2';
 export const controlsDefaultColor = '#552222';

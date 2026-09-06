@@ -61,7 +61,7 @@ import { transaction } from '@/history-engine/transaction';
 import { useVertical, useViewport } from '@/hooks/use-viewport';
 import type { IAssetSwitch } from '@/store/content';
 import { state } from '@/store/root';
-import { RGBAColor } from '@/util/colors/rgb';
+import { RGBAColor } from '@/util/colors';
 import uniqId from '@/util/unique-id';
 import type { ContentPack } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import type { DeepReadonly } from 'ts-essentials';

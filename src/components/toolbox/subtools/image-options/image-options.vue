@@ -284,8 +284,8 @@ import {
 	type SpriteFilter,
 } from '@/store/sprite-options';
 import { disposeCanvas, makeCanvas } from '@/util/canvas';
-import type { IColor } from '@/util/colors/color';
-import { HSLAColor } from '@/util/colors/hsl';
+import type { IColor } from '@/util/colors';
+import { HSLAColor } from '@/util/colors';
 import { UnreachableCaseError } from 'ts-essentials';
 import { computed, ref, watch, type WritableComputedRef } from 'vue';
 

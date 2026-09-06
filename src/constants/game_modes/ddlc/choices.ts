@@ -1,5 +1,5 @@
 import type { ITextStyle } from '@/renderer/text-renderer/text-renderer';
-import { HSLAColor } from '@/util/colors/hsl';
+import { HSLAColor } from '@/util/colors';
 import { screenHeight } from './base';
 
 export const nameboxTextOutlineDelta = new HSLAColor(

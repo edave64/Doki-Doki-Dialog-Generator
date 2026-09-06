@@ -31,9 +31,8 @@
 </template>
 
 <script lang="ts" setup>
-import type { IColor } from '@/util/colors/color';
-import { HSLAColor } from '@/util/colors/hsl';
-import { RGBAColor } from '@/util/colors/rgb';
+import { HSLAColor, RGBAColor } from '@/util/colors';
+import type { IColor } from '@/util/colors.ts';
 import { computed, type ComputedRef, ref, watch } from 'vue';
 import ColorSlider from './color-slider.vue';
 
