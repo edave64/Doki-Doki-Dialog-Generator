@@ -133,7 +133,7 @@ test.describe('Visual Regression Tests', () => {
 						});
 						await fs.promises.writeFile(actualPath, actualBuffer);
 					})(),
-					async () => {
+					(async () => {
 						if (diff) {
 							await fs.promises.mkdir(path.dirname(diffPath), {
 								recursive: true,
@@ -143,7 +143,7 @@ test.describe('Visual Regression Tests', () => {
 								PNG.sync.write(diff)
 							);
 						}
-					},
+					})(),
 				]);
 			}
 			expect(difference).toBe(0);
