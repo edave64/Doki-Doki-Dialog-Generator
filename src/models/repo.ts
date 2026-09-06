@@ -309,6 +309,5 @@ export interface Pack extends IPrimitivePack {
 	autoloading: boolean;
 	online: boolean;
 	installed: boolean;
-	loaded: boolean;
 	repoUrl?: string;
 }

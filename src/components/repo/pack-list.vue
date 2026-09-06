@@ -58,15 +58,14 @@
 </template>
 
 <script lang="ts" setup>
-import type { IPackWithState } from '@/components/repo/types';
+import { type IPackWithState, PackStates } from '@/components/repo/types';
 import { type Pack, Repo } from '@/models/repo';
 import { state } from '@/store/root';
 import run from '@edave64/dddg-repo-filters/dist/main';
-import type { IPack } from '@edave64/dddg-repo-filters/dist/pack';
-import type { DeepReadonly } from 'ts-essentials';
 import {
 	type ComponentPublicInstance,
 	computed,
+	type DeepReadonly,
 	nextTick,
 	ref,
 	watch,
@@ -93,26 +92,37 @@ const sort = ref('' as keyof IPackWithState | '');
 const desc = ref(false);
 const focusedItem = ref('');
 
-const packs = computed(() => {
+const packs = computed<DeepReadonly<IPackWithState[]>>(() => {
 	if (!props.repo) return [];
-	return props.repo.getPacks();
+	return props.repo.getPacks().map((x) => ({
+		...x,
+		state: loadedPacks.has(x.id)
+			? PackStates.Active
+			: x.installed
+				? PackStates.Installed
+				: PackStates.Unknown,
+	}));
 });
 
 const loadedPacks = state.content.loadedContentPacks;
 
-const list = computed((): DeepReadonly<Pack[]> => {
+const list = computed((): DeepReadonly<IPackWithState[]> => {
 	// Push loaded packs to the top
-	const presorted = [...packs.value].sort(
-		(a, b) => Number(loadedPacks.has(b.id)) - Number(loadedPacks.has(a.id))
-	);
+	const presorted = [...packs.value].sort((a, b) => b.state - a.state);
 	const filtered = filterList(presorted, props.search);
 	if (sort.value && filtered.length > 0) {
-		const sort_ = sort.value as keyof IPack;
+		const sort_ = sort.value as keyof IPackWithState;
 		let sortFunc:
-			| ((a: DeepReadonly<IPack>, b: DeepReadonly<IPack>) => number)
+			| ((
+					a: DeepReadonly<IPackWithState>,
+					b: DeepReadonly<IPackWithState>
+			  ) => number)
 			| undefined;
 		if (typeof filtered[0][sort_] === 'string') {
-			sortFunc = (a, b) => a.name.localeCompare(b.name);
+			sortFunc = (a, b) =>
+				(a[sort_] as string).localeCompare(b[sort_] as string);
+		} else if (typeof filtered[0][sort_] === 'number') {
+			sortFunc = (a, b) => (b[sort_] as number) - (a[sort_] as number);
 		} else if (filtered[0][sort_] instanceof Array) {
 			sortFunc = (a, b) =>
 				(a[sort_] as string[])
@@ -127,7 +137,7 @@ const list = computed((): DeepReadonly<Pack[]> => {
 			filtered.sort(sortFunc);
 		}
 	}
-	return filtered as Pack[];
+	return filtered;
 });
 
 function focus(): void {
@@ -254,13 +264,16 @@ function sortBy(by: keyof IPackWithState) {
 	}
 }
 
-function filterList(list: DeepReadonly<Array<Pack>>, search: string): IPack[] {
-	if (!search) return [...(list as Pack[])];
+function filterList(
+	list: DeepReadonly<IPackWithState[]>,
+	search: string
+): DeepReadonly<IPackWithState>[] {
+	if (!search) return [...list];
 	return run(
 		search,
 		props.repo ? props.repo!.getAuthors() : {},
-		list as Pack[]
-	);
+		list as unknown as Pack[]
+	) as IPackWithState[];
 }
 
 function translatePackState(state: DeepReadonly<Pack>) {
