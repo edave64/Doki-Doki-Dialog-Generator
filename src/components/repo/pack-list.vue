@@ -276,9 +276,9 @@ function filterList(
 	) as IPackWithState[];
 }
 
-function translatePackState(state: DeepReadonly<Pack>) {
-	if (loadedPacks.has(state.id)) return 'Active';
-	if (state.installed) return 'Installed';
+function translatePackState(pack: DeepReadonly<IPackWithState>) {
+	if (pack.state === PackStates.Active) return 'Active';
+	if (pack.state === PackStates.Installed) return 'Installed';
 	return '';
 }
 
