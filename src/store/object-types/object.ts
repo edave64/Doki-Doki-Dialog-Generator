@@ -416,7 +416,7 @@ export default abstract class BaseObject<
 	}
 	//#endregion Talking properties
 
-	fixContentPackRemoval(oldContent: ContentPack<IAssetSwitch>) {}
+	fixContentPackRemoval(_oldContent: ContentPack<IAssetSwitch>) {}
 
 	abstract makeClone(
 		panel: Panel,
@@ -449,7 +449,6 @@ export default abstract class BaseObject<
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	protected loadPropsFromSave(
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		save: Record<string, any>,

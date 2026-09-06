@@ -28,11 +28,13 @@ export const uploadUrls = Object.seal(
 			return assertUrl;
 		},
 
-		getSave(compact: boolean) {
+		getSave(_compact: boolean) {
 			return Object.keys(this.urls);
 		},
 
-		loadSave(data: string[]) {
+		loadSave(_data: string[]) {
+			// If we are loading a compact save, uploads are not saved, so there is nothing to load
+			// If we are loading a full save, uploads are added in later, because they get new URLs
 			this.urls = {};
 		},
 	})

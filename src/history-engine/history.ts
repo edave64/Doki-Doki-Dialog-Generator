@@ -23,7 +23,7 @@ export async function undoAble(
 ): Promise<void>;
 export function undoAble(
 	callback: () => Promise<void> | void,
-	undo: () => Promise<void> | void
+	_undo: () => Promise<void> | void
 ): Promise<void> | void {
 	return callback();
 }

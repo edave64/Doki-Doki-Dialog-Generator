@@ -11,9 +11,7 @@
 		"test:visual:update": "DDDG_VRT_UPDATE_EXPECTED=1 playwright test",
 		"test:visual:install": "playwright install --with-deps",
 		"type-check": "vue-tsc --build",
-		"lint:oxlint": "oxlint . --fix -D correctness --ignore-path .gitignore",
-		"lint:eslint": "eslint . --fix",
-		"lint": "run-s lint:*",
+		"lint": "eslint . --fix",
 		"format": "prettier --write src/",
 		"assetConversions": "node ./scripts/asset-conversions.ts",
 		"build:web": "vite build",
@@ -31,38 +29,44 @@
 		"@tauri-apps/api": "^2",
 		"jszip": "^3.10.1",
 		"mitt": "^3.0.1",
-		"pinia": "^3.0.3",
-		"prettier-plugin-organize-imports": "^4.1.0",
-		"vue": "^3.5.13",
-		"vuex": "^4.1.0"
+		"pinia": "^4.0.3",
+		"prettier-plugin-organize-imports": "^4.3.0",
+		"vue": "^3.5.42"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.60.0",
 		"@tsconfig/node22": "^22.0.1",
 		"@types/jsdom": "^21.1.7",
 		"@types/pngjs": "^6.0.5",
-		"@vitejs/plugin-vue": "^5.2.3",
-		"@vitest/eslint-plugin": "^1.1.39",
+		"@vitejs/plugin-vue": "^6.0.8",
+		"@vitest/eslint-plugin": "^1.6.27",
 		"@vue/eslint-config-prettier": "^10.2.0",
-		"@vue/eslint-config-typescript": "^14.5.0",
+		"@vue/eslint-config-typescript": "^14.9.0",
 		"@vue/test-utils": "^2.4.6",
-		"@vue/tsconfig": "^0.7.0",
-		"eslint": "^9.22.0",
-		"eslint-plugin-oxlint": "^0.16.0",
-		"eslint-plugin-vue": "~10.0.0",
+		"@vue/tsconfig": "^0.9.1",
+		"eslint": "^10.10.0",
+		"eslint-plugin-import-x": "^4.17.1",
+		"eslint-plugin-vue": "~10.11.0",
 		"jiti": "^2.4.2",
 		"jsdom": "^26.0.0",
 		"npm-run-all2": "^7.0.2",
-		"oxlint": "^0.16.0",
 		"pixelmatch": "^7.2.0",
 		"pngjs": "^7.0.0",
-		"prettier": "3.5.3",
-		"sass-embedded": "^1.86.3",
-		"ts-essentials": "^10.0.4",
-		"typescript": "^5.8.3",
-		"vite": "^6.4.2",
-		"vite-plugin-vue-devtools": "^7.7.2",
-		"vitest": "^3.1.1",
-		"vue-tsc": "^2.2.8"
+		"prettier": "^3.9.6",
+		"sass-embedded": "^1.104.0",
+		"ts-essentials": "^10.2.1",
+		"typescript": "^6.0.3",
+		"vite": "^8.2.2",
+		"vite-plugin-vue-devtools": "^8.2.1",
+		"vitest": "^5.0.0",
+		"vue-tsc": "^3.3.11"
+	},
+	"madge": {
+		"detectiveOptions": {
+			"ts": {
+				"skipTypeImports": true,
+				"skipAsyncImports": true
+			}
+		}
 	}
 }

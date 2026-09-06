@@ -130,7 +130,7 @@ export default class Character extends BaseObject<'character'> {
 			}
 			newStyle = newStyleGroup.styles[newStyleId];
 		}
-		const oldPose = oldStyle?.poses[this.poseId]!;
+		const oldPose = oldStyle?.poses[this.poseId];
 		let newPose = newStyle?.poses[newPoseId];
 		if (oldPose?.id !== newPose?.id) {
 			newPoseId = newStyle.poses.findIndex((x) => x.id === oldPose?.id);
@@ -169,16 +169,17 @@ export default class Character extends BaseObject<'character'> {
 
 		if (newPose.compatibleHeads.length > 0) {
 			const oldHeadCollection =
-				oldPose.compatibleHeads[oldPosePositions.headType];
-			newPosePositions.headType =
-				newPose.compatibleHeads.indexOf(oldHeadCollection);
+				oldPose?.compatibleHeads[oldPosePositions.headType];
+			newPosePositions.headType = newPose.compatibleHeads.indexOf(
+				oldHeadCollection!
+			);
 
 			if (newPosePositions.headType === -1) {
 				newPosePositions.headType = 0;
 			}
 
 			const oldHead = JSON.stringify(
-				oldCharacter?.heads[oldHeadCollection]?.variants[
+				oldCharacter?.heads[oldHeadCollection!]?.variants[
 					oldPosePositions.head
 				]
 			);

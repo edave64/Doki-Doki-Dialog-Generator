@@ -1,4 +1,4 @@
-/** Helper methods that allow you to create simple vue getters/setters of vuex properties */
+/** Helper methods that allow you to create simple vue getters/setters of pinia properties */
 
 import { transaction } from '@/history-engine/transaction';
 import type { GenObject } from '@/store/object-types/object';

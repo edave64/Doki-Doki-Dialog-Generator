@@ -49,17 +49,17 @@ export class Browser implements IEnvironment {
 						timestamp: new Date(),
 					};
 				},
-				async load(name: string): Promise<void> {
+				async load(_name: string): Promise<void> {
 					return;
 				},
-				async downloadAsZip(name: string): Promise<void> {
+				async downloadAsZip(_name: string): Promise<void> {
 					return;
 				},
-				async uploadFromZip(name: string, zip: Blob): Promise<void> {
+				async uploadFromZip(_name: string, _zip: Blob): Promise<void> {
 					return;
 				},
 
-				async delete(name: string) {
+				async delete(_name: string) {
 					return;
 				},
 				async requestPersistance(): Promise<boolean> {
