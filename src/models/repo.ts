@@ -3,7 +3,6 @@ import eventBus, {
 	ReloadLocalRepoEvent,
 	ShowMessageEvent,
 } from '@/eventbus/event-bus';
-import { state } from '@/store/root';
 import type {
 	IAuthor,
 	IAuthors,
@@ -125,14 +124,9 @@ export class Repo {
 			);
 
 			const autoloads = new Set(environment.state.autoLoads);
-			const loadedPackOrder = state.content.contentPacks
-				.map((pack) => pack.packId)
-				.filter((packId) => packId != null) as string[];
-			const loadedPacksSet = new Set(loadedPackOrder) as Set<string>;
 
 			const addedPacks = new Set();
 			return [
-				...loadedPackOrder,
 				...localPacks.map((pack) => pack.id),
 				...onlinePacks.map((pack) => pack.id),
 				...tempPacks.map((pack) => pack.id),
@@ -164,7 +158,6 @@ export class Repo {
 						online:
 							onlineRepoLookup.has(packId) ||
 							tempRepoLookup.has(packId),
-						loaded: loadedPacksSet.has(packId),
 					} as Pack;
 				});
 		});

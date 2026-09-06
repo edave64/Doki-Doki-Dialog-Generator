@@ -117,12 +117,14 @@ const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 	['website', '%1', 'website.svg'],
 ];
 
+const loadedPacks = state.content.loadedContentPacks;
+
 const pack = computed(() => props.repo!.getPack(props.selected)!);
 const backgroundImage = computed(() =>
 	pack.value.preview.map((preview) => `url('${preview}')`).join(',')
 );
-const removable = computed(() => pack.value.loaded);
-const addable = computed(() => !pack.value.loaded);
+const removable = computed(() => loadedPacks.has(pack.value.id));
+const addable = computed(() => !loadedPacks.has(pack.value.id));
 const autoloadEnabled = computed(() => environment.supports.autoLoading);
 const installable = computed(() => {
 	if (!environment.supports.localRepo) return false;

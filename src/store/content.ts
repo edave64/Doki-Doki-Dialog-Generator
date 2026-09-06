@@ -38,6 +38,13 @@ export const content = new (class Content {
 			mergeContentPacks(acc, value)
 		);
 	});
+	private _loadedContentPacks = computed(() => {
+		return new Set(
+			this._contentPacks.value
+				.map((pack) => pack.packId)
+				.filter((x) => x != null)
+		);
+	});
 
 	get contentPacks(): Readonly<Array<ContentPack<IAssetSwitch>>> {
 		return this._contentPacks.value;
@@ -45,6 +52,10 @@ export const content = new (class Content {
 
 	get current(): Readonly<ContentPack<IAssetSwitch>> {
 		return this._current.value;
+	}
+
+	get loadedContentPacks(): Readonly<Set<string>> {
+		return this._loadedContentPacks.value;
 	}
 
 	public removeContentPacks(packIds: Set<string>) {

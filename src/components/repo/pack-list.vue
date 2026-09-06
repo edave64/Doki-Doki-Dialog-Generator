@@ -60,6 +60,7 @@
 <script lang="ts" setup>
 import type { IPackWithState } from '@/components/repo/types';
 import { type Pack, Repo } from '@/models/repo';
+import { state } from '@/store/root';
 import run from '@edave64/dddg-repo-filters/dist/main';
 import type { IPack } from '@edave64/dddg-repo-filters/dist/pack';
 import type { DeepReadonly } from 'ts-essentials';
@@ -97,8 +98,14 @@ const packs = computed(() => {
 	return props.repo.getPacks();
 });
 
+const loadedPacks = state.content.loadedContentPacks;
+
 const list = computed((): DeepReadonly<Pack[]> => {
-	const filtered = filterList(packs.value, props.search);
+	// Push loaded packs to the top
+	const presorted = [...packs.value].sort(
+		(a, b) => Number(loadedPacks.has(b.id)) - Number(loadedPacks.has(a.id))
+	);
+	const filtered = filterList(presorted, props.search);
 	if (sort.value && filtered.length > 0) {
 		const sort_ = sort.value as keyof IPack;
 		let sortFunc:
@@ -257,7 +264,7 @@ function filterList(list: DeepReadonly<Array<Pack>>, search: string): IPack[] {
 }
 
 function translatePackState(state: DeepReadonly<Pack>) {
-	if (state.loaded) return 'Active';
+	if (loadedPacks.has(state.id)) return 'Active';
 	if (state.installed) return 'Installed';
 	return '';
 }
