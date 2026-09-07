@@ -214,8 +214,7 @@ export class TextRenderer {
 		}
 
 		const lastPart = this.renderParts[lastChar] as
-			| IDrawCharacterItem
-			| undefined;
+			IDrawCharacterItem | undefined;
 		if (lastPart && state === State.Star) {
 			this.renderParts.splice(lastChar + 1, 0, {
 				type: 'character',
@@ -661,13 +660,16 @@ export class TextRenderer {
 	}
 }
 
-const tmpCanvas = makeCanvas();
-tmpCanvas.width = 0;
-tmpCanvas.height = 0;
-const tmpContext = tmpCanvas.getContext('2d')!;
+let tmpContext: CanvasRenderingContext2D | null = null;
 let lastStyle: ITextStyle | null = null;
 
 function measureWidth(textStyle: ITextStyle, character: string): number {
+	if (!tmpContext) {
+		const tmpCanvas = makeCanvas();
+		tmpCanvas.width = 0;
+		tmpCanvas.height = 0;
+		tmpContext = tmpCanvas.getContext('2d')!;
+	}
 	if (textStyle !== lastStyle) {
 		applyTextStyleToCanvas(textStyle, tmpContext);
 		lastStyle = textStyle;
