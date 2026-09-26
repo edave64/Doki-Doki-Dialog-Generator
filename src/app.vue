@@ -92,9 +92,7 @@ const SingleBox = defineAsyncComponent(
 );
 const ExpressionBuilder = defineAsyncComponent(
 	() =>
-		import(
-			'@/components/content-pack-builder/expression-builder/expression-builder.vue'
-		)
+		import('@/components/content-pack-builder/expression-builder/expression-builder.vue')
 );
 const arrowMoveStepSize = 20;
 const preLoading = ref(true);
@@ -286,10 +284,12 @@ function showSaveDialog() {
 }
 //#endregion save dialog
 //#region nsfw
+import type { Background } from '@edave64/doki-doki-dialog-generator-pack-format/dist/v2/model';
 import { NsfwNames, NsfwPaths } from './constants/nsfw';
 import { Repo } from './models/repo.ts';
 import type { GenObject } from './store/object-types/object';
 import Textbox from './store/object-types/textbox';
+import { ScalingModes } from './store/panels.ts';
 import { isInput, isTextArea } from './util/cross-realm';
 
 const nsfw = computed(() => store.ui.nsfw);
@@ -461,6 +461,12 @@ watch(
 window.store = store;
 window.env = environment;
 
+const scaling: Record<Background<string>['scaling'], ScalingModes> = {
+	cover: ScalingModes.Cover,
+	strech: ScalingModes.Stretch,
+	none: ScalingModes.None,
+};
+
 onMounted(async () => {
 	await environment.loadGameMode();
 	preLoading.value = false;
@@ -533,8 +539,13 @@ onMounted(async () => {
 								' you find the toolbox. There you can add things (try clicking the chibis), change backgrounds and more! Use the camera icon to download the image.'
 						);
 					}
-					panel.background.current =
-						'dddg.buildin.backgrounds:ddlc.clubroom';
+					const background = store.content.current.backgrounds.find(
+						(x) => x.id === 'dddg.buildin.backgrounds:ddlc.clubroom'
+					);
+					if (background) {
+						panel.background.current = background.id;
+						panel.background.scaling = scaling[background.scaling];
+					}
 					store.ui.nsfw = settings.nsfw ?? false;
 				}
 			} finally {
