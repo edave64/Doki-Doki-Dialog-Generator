@@ -2,6 +2,8 @@
  * Loads assets from urls for use in canvas painting, keeps them cached, and loads webP images if supported.
  */
 
+import '@/polyfill/promise';
+
 import MissingImage from '@/assets/missing_image.svg';
 import environment from '@/environments/environment';
 import { allowLq, assetUrl } from './config';

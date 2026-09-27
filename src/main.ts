@@ -4,6 +4,7 @@
  * For a more telling entry point, check the mounted hook of the app component.
  */
 
+import '@/polyfill/promise';
 import { createApp } from 'vue';
 import App from './app.vue';
 
