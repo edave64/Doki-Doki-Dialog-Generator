@@ -3,10 +3,74 @@ import Character from '@/store/object-types/character';
 import Sprite from '@/store/object-types/sprite';
 import Textbox from '@/store/object-types/textbox';
 import { IdTranslationTable, Panel, panels } from '@/store/panels';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('panel lifecycle', () => {
-	it('Cloning renumbers objects, but preserves references', () => {
+	beforeEach(() => {
+		panels.loadSave({ panelOrder: [], panels: {} }, 0);
+	});
+
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	it('creates panels', () => {
+		const first = panels.createPanel();
+		const second = panels.createPanel();
+
+		expect(first.id).toBe(0);
+		expect(second.id).toBe(1);
+		expect(panels.order).toEqual([first.id, second.id]);
+	});
+
+	it('reorders panels', () => {
+		const first = panels.createPanel();
+		const second = panels.createPanel();
+
+		panels.movePanel(second, -1);
+
+		expect(panels.order).toEqual([second.id, first.id]);
+	});
+
+	it('duplicates panels', () => {
+		const first = panels.createPanel();
+
+		const copy = panels.duplicatePanel(first);
+
+		expect(copy.id).toBeGreaterThan(first.id);
+		expect(panels.order).toEqual([first.id, copy.id]);
+	});
+
+	it('inserts and removes objects', () => {
+		const panel = new Panel(0);
+		const original = Sprite.fromSave(
+			panel,
+			{ id: 101, onTop: false, assets: [] },
+			identityTable
+		);
+
+		expect(panel.objects[original.id]).toBe(original);
+		panel.removeObject(original);
+		expect(panel.objects[original.id]).toBeUndefined();
+	});
+
+	it('renumbers objects when duplicating a panel', () => {
+		const panel = new Panel(7);
+		Sprite.fromSave(
+			panel,
+			{ id: 10, onTop: false, assets: [] },
+			identityTable
+		);
+
+		const clone = Panel.fromExisting(panel, 8);
+		const clonedObject = Object.values(clone.objects)[0];
+
+		expect(clone.objects).toHaveProperty('0');
+		expect(clonedObject.id).toBe(0);
+		expect(clonedObject.save().panelId).toBe(8);
+	});
+
+	it('preserves references when cloning', () => {
 		const characterA = {
 			id: 'character-a',
 			hd: false,
@@ -66,57 +130,6 @@ describe('panel lifecycle', () => {
 		expect(clonedTextbox.id).toBe(2);
 		expect(clonedTextbox).toBeInstanceOf(Textbox);
 		expect(clonedTextbox.talkingObjId).toBe(clonedB.id);
-	});
-
-	it('creates, duplicates, reorders, and removes objects while preserving references', () => {
-		const first = panels.createPanel();
-		const second = panels.createPanel();
-		panels.movePanel(second, -1);
-		expect(panels.order).toEqual([second.id, first.id]);
-
-		const copy = panels.duplicatePanel(first);
-		expect(copy.id).toBeGreaterThan(first.id);
-		expect(panels.order).toEqual([second.id, first.id, copy.id]);
-
-		const original = {
-			id: 101,
-			onTop: false,
-			prepareSiblingRemoval: vi.fn(),
-		} as unknown as Sprite;
-		first.insertObject(original, false);
-		expect(first.objects[101]).toBe(original);
-		first.removeObject(original);
-		expect(first.objects[101]).toBeUndefined();
-
-		const panel = new Panel(7);
-		const duplicateSource = {
-			id: 10,
-			onTop: false,
-			prepareSiblingRemoval: vi.fn(),
-			makeClone: vi.fn(
-				(targetPanel: Panel, table: Map<number, number>) => ({
-					id: table.get(10)!,
-					onTop: false,
-					prepareSiblingRemoval: vi.fn(),
-					makeClone: vi.fn(),
-					save: () => ({
-						id: table.get(10)!,
-						type: 'sprite',
-						panelId: targetPanel.id,
-					}),
-				})
-			),
-		};
-		//@ts-expect-error: private access, ok for tests
-		panel._objects.value = { 10: duplicateSource };
-		//@ts-expect-error: private access, ok for tests
-		panel._lowerOrder.value = [10];
-		//@ts-expect-error: private access, ok for tests
-		panel._lastObjId = 10;
-		const clone = Panel.fromExisting(panel, 8);
-		expect(clone.objects).toHaveProperty('0');
-		expect(Object.values(clone.objects)[0].id).toBe(0);
-		expect(Object.values(clone.objects)[0].save().panelId).toBe(8);
 	});
 });
 
