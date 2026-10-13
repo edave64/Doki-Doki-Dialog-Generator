@@ -27,7 +27,7 @@ export default class Notification extends BaseObject<'notification'> {
 		idTranslationTable: IdTranslationTable
 	): Notification {
 		const ret = new Notification(panel, idTranslationTable.get(this.id));
-		this.moveAllRefs(this, ret);
+		this.moveAllRefs(this, ret, idTranslationTable);
 		return ret;
 	}
 

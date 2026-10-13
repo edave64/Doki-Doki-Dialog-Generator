@@ -134,28 +134,28 @@ export default abstract class BaseObject<
 		return this._x.value;
 	}
 	set x(value: number) {
-		this.mutate(this._x, value);
+		this.mutate(this._x, roundTo2Dec(value));
 	}
 
 	get y(): number {
 		return this._y.value;
 	}
 	set y(value: number) {
-		this.mutate(this._y, value);
+		this.mutate(this._y, roundTo2Dec(value));
 	}
 
 	get width(): number {
 		return this._width.value;
 	}
 	set width(value: number) {
-		this.mutate(this._width, value);
+		this.mutate(this._width, roundTo2Dec(value));
 	}
 
 	get height(): number {
 		return this._height.value;
 	}
 	set height(value: number) {
-		this.mutate(this._height, value);
+		this.mutate(this._height, roundTo2Dec(value));
 	}
 
 	get preserveRatio(): boolean {
@@ -188,7 +188,7 @@ export default abstract class BaseObject<
 	//#endregion Positioning and layering
 
 	//#region Transformation
-	protected _linkedTo = ref<number | null>(null);
+	protected _linkedTo = markForeignObjectRef(ref(null as number | null));
 	protected _scaleX = ref(1);
 	protected _scaleY = ref(1);
 	protected _skewX = ref(0);
@@ -412,7 +412,7 @@ export default abstract class BaseObject<
 	}
 
 	set nameboxWidth(value: number | null) {
-		this.mutate(this._nameboxWidth, value);
+		this.mutate(this._nameboxWidth, value ? roundTo2Dec(value) : null);
 	}
 	//#endregion Talking properties
 
@@ -423,7 +423,11 @@ export default abstract class BaseObject<
 		idTranslationTable: IdTranslationTable
 	): BaseObject<T>;
 
-	protected moveAllRefs<T extends BaseObject>(source: T, target: T) {
+	protected moveAllRefs<T extends BaseObject>(
+		source: T,
+		target: T,
+		translationTable: IdTranslationTable
+	) {
 		for (const [key, value] of Object.entries(source)) {
 			if (isRef(value)) {
 				if (key === '_filters') {
@@ -440,7 +444,14 @@ export default abstract class BaseObject<
 					).value.map((x) => ({
 						...x,
 					}));
-				} else {
+				} else if (isForeignObjectRef(value)) {
+					const val = value.value;
+					const translated = translationTable.get(val as number);
+					// References not in the translation table must be left as-is, since the
+					// textbox can store the extra value $other$, that must be preserved.
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					(target as any)[key].value = translated ?? val;
+				} else if (!isReadonly(value)) {
 					// Scary `any`, but both objects are of the same type, so they should have the same keys
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					(target as any)[key].value = value.value;
@@ -465,7 +476,7 @@ export default abstract class BaseObject<
 					saveKey in save &&
 					isRef(val) &&
 					!isReadonly(val) &&
-					!(('effect' in val) /* Discard computed */)
+					!('effect' in val /* Discard computed */)
 				) {
 					if (saveKey === 'linkedTo') {
 						val.value = idTranslationTable.get(save[saveKey]);
@@ -495,7 +506,7 @@ export default abstract class BaseObject<
 				if (
 					isRef(val) &&
 					!isReadonly(val) &&
-					!(('effect' in val) /* Discard computed */)
+					!('effect' in val /* Discard computed */)
 				) {
 					if (key === '_filters') {
 						ret.filters = (val.value as SpriteFilter[]).map((x) =>
@@ -512,14 +523,32 @@ export default abstract class BaseObject<
 	}
 }
 
+const foreignObjSym = Symbol('foreignObjectRef');
+
+export function isForeignObjectRef(val: Ref): boolean {
+	return foreignObjSym in val;
+}
+
+export type ForeignObjectRef = Ref<number | null> & {
+	[foreignObjSym]?: true;
+};
+
+/**
+ * Marks a ref as containing the id of a different object. These refs are automatically adjusted
+ * when the object is cloned.
+ * Values that are not valid IDs are left as-is during cloning.
+ */
+export function markForeignObjectRef<T extends Ref>(val: T): T {
+	// Readonly refs cannot be translated, so no need to mark them.
+	if (isReadonly(val)) return val;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	(val as any)[foreignObjSym] = true;
+	return val;
+}
+
 function roundTo2Dec(val: number): number {
 	return Math.round(val * 100) / 100;
 }
 
 export type GenObject =
-	| Textbox
-	| Character
-	| Choice
-	| Notification
-	| Poem
-	| Sprite;
+	Textbox | Character | Choice | Notification | Poem | Sprite;

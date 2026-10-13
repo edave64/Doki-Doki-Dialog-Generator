@@ -54,7 +54,7 @@ export default class Character extends BaseObject<'character'> {
 			this.characterType,
 			idTranslationTable.get(this.id)
 		);
-		this.moveAllRefs(this, ret);
+		this.moveAllRefs(this, ret, idTranslationTable);
 		return ret;
 	}
 

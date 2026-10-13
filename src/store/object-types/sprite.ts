@@ -55,7 +55,7 @@ export default class Sprite extends BaseObject<'sprite'> {
 			this.assets,
 			idTranslationTable.get(this.id)
 		);
-		this.moveAllRefs(this, ret);
+		this.moveAllRefs(this, ret, idTranslationTable);
 		return ret;
 	}
 

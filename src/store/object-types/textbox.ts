@@ -3,7 +3,7 @@ import { rendererLookup } from '@/renderables/textbox';
 import type { IdTranslationTable, Panel } from '@/store/panels';
 import { between } from '@/util/math';
 import { ref, type Ref } from 'vue';
-import BaseObject, { type GenObject } from './object';
+import BaseObject, { markForeignObjectRef, type GenObject } from '@/store/object-types/object';
 
 export type TextboxStyle =
 	| 'normal'
@@ -79,7 +79,7 @@ export default class Textbox extends BaseObject<'textBox'> {
 		idTranslationTable: IdTranslationTable
 	): Textbox {
 		const newObj = new Textbox(panel, idTranslationTable.get(this.id));
-		this.moveAllRefs(this, newObj);
+		this.moveAllRefs(this, newObj, idTranslationTable);
 		return newObj;
 	}
 
@@ -117,9 +117,9 @@ export default class Textbox extends BaseObject<'textBox'> {
 
 	//#region Talking properties
 	protected readonly _text = ref('Click here to edit the textbox');
-	protected readonly _talkingObjId = ref<null | '$other$' | GenObject['id']>(
+	protected readonly _talkingObjId = markForeignObjectRef(ref<null | '$other$' | GenObject['id']>(
 		null
-	);
+	));
 	protected readonly _talkingOther = ref('');
 	protected readonly _autoQuoting = ref(true);
 	protected readonly _overflow = ref(false);

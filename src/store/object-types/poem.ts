@@ -55,7 +55,7 @@ export default class Poem extends BaseObject<'poem'> {
 			this.subtype,
 			idTranslationTable.get(this.id)
 		);
-		this.moveAllRefs(this, ret);
+		this.moveAllRefs(this, ret, idTranslationTable);
 		return ret;
 	}
 

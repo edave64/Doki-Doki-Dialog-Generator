@@ -29,7 +29,7 @@ export default class Choice extends BaseObject<'choice'> {
 		idTranslationTable: IdTranslationTable
 	): Choice {
 		const ret = new Choice(panel, idTranslationTable.get(this.id));
-		this.moveAllRefs(this, ret);
+		this.moveAllRefs(this, ret, idTranslationTable);
 		return ret;
 	}
 
