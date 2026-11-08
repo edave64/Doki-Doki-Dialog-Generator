@@ -26,7 +26,7 @@
 				<i class="material-icons">add</i>
 				Activate
 			</button>
-			<button v-if="removable" @click="remove">
+			<button v-else @click="remove">
 				<i class="material-icons">remove</i>
 				Deactivate
 			</button>
@@ -117,14 +117,11 @@ const linkablePlatforms: Array<[keyof IAuthor, string, string]> = [
 	['website', '%1', 'website.svg'],
 ];
 
-const loadedPacks = state.content.loadedContentPacks;
-
 const pack = computed(() => props.repo!.getPack(props.selected)!);
 const backgroundImage = computed(() =>
 	pack.value.preview.map((preview) => `url('${preview}')`).join(',')
 );
-const removable = computed(() => loadedPacks.has(pack.value.id));
-const addable = computed(() => !loadedPacks.has(pack.value.id));
+const addable = computed(() => !state.content.loadedContentPacks.has(pack.value.id));
 const autoloadEnabled = computed(() => environment.supports.autoLoading);
 const installable = computed(() => {
 	if (!environment.supports.localRepo) return false;
