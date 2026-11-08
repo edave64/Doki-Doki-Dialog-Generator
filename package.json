@@ -1,6 +1,6 @@
 {
 	"name": "doki-doki-dialog-generator",
-	"version": "2.6.3",
+	"version": "2.6.4",
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
