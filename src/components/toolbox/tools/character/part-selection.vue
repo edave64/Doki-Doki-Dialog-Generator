@@ -8,7 +8,7 @@
 				@click="
 					emit(
 						'show-dialog',
-						`type: ${packSearchType} character: ${charData.label}`
+						`type: ${packSearchType} character: ${charData.label};${charData.id}`
 					)
 				"
 			>
