@@ -56,6 +56,17 @@
 								<button @click="seekStyle(1)">&gt;</button>
 							</td>
 						</tr>
+						<tr v-else>
+						    <!-- Always show the style button, so the user can look up style content packs -->
+							<td colspan="3">
+								<button
+    								class="middle-button"
+    								@click="panelForParts = 'style'"
+								>
+									Style
+								</button>
+							</td>
+						</tr>
 						<tr v-if="hasMultiplePoses">
 							<td class="arrow-col">
 								<button @click="seekPose(-1)">&lt;</button>
